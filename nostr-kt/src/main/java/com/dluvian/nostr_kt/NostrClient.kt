@@ -64,7 +64,7 @@ class NostrClient(private val httpClient: OkHttpClient) {
 
                         is RelayMessage.Ok -> nostrListener?.onOk(
                             relayUrl = relayUrl,
-                            id = it.eventId,
+                            eventId = it.eventId,
                             accepted = it.status,
                             msg = it.message
                         )
@@ -145,7 +145,7 @@ class NostrClient(private val httpClient: OkHttpClient) {
         socket.send(request)
     }
 
-    private fun addRelays(relayUrls: Collection<RelayUrl>) {
+    fun addRelays(relayUrls: Collection<RelayUrl>) {
         relayUrls.forEach { addRelay(it) }
     }
 
