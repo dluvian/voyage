@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Voyage"
 include(":app")
+include(":nostr-kt")
