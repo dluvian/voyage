@@ -1,15 +1,16 @@
 package com.dluvian.nostr_kt
 
 import android.util.Log
-import okhttp3.OkHttpClient
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
 import java.util.Collections
 
-class NostrService(eventProcessor: EventProcessor) {
+class NostrService(
+    private val client: NostrClient,
+    private val eventProcessor: EventProcessor
+) {
     private val tag = "NostrService"
-    private val client = NostrClient(httpClient = OkHttpClient())
     private val unsubOnEOSECache = Collections.synchronizedSet(mutableSetOf<String>())
 
     private val listener = object : INostrListener {

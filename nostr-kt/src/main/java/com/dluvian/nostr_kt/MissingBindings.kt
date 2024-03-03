@@ -68,3 +68,23 @@ fun createEventRequest(event: Event): String {
 fun createAuthRequest(authEvent: Event): String {
     return """["AUTH",${authEvent.asJson()}]"""
 }
+
+fun getCurrentTimeInSeconds(): Long {
+    return System.currentTimeMillis() / 1000
+}
+
+fun Filter.matches(event: Event): Boolean {
+    // TODO: This is not complete
+    return true
+}
+
+object Kind {
+    const val METADATA = 0
+    const val TEXT_NOTE = 1
+    const val CONTACT_LIST = 3
+    const val DELETE = 5
+    const val REPOST = 6
+    const val REACTION = 7
+    const val NIP65 = 10002
+    const val AUTH = 22242
+}
