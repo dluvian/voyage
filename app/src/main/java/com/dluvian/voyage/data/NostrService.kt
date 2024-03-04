@@ -18,9 +18,10 @@ import rust.nostr.protocol.Timestamp
 import java.util.Collections
 
 class NostrService(
-    private val client: NostrClient,
+    private val nostrClient: NostrClient,
     private val eventProcessor: EventProcessor,
     private val singleUseKeyManager: SingleUseKeyManager,
+    private val filterCache: MutableMap<SubId, List<Filter>>,
 ) {
     private val tag = "NostrService"
     private val unsubOnEOSECache = Collections.synchronizedSet(mutableSetOf<SubId>())
@@ -42,7 +43,7 @@ class NostrService(
             Log.d(tag, "OnEOSE($relayUrl): $subId")
             if (unsubOnEOSECache.remove(subId)) {
                 Log.d(tag, "Unsubscribe onEOSE($relayUrl) $subId")
-                client.unsubscribe(subId)
+                nostrClient.unsubscribe(subId)
             }
         }
 
@@ -72,9 +73,9 @@ class NostrService(
     }
 
     fun initialize(initRelayUrls: Collection<RelayUrl>) {
-        client.setListener(listener)
+        nostrClient.setListener(listener)
         Log.i(tag, "Add ${initRelayUrls.size} relays: $initRelayUrls")
-        client.addRelays(initRelayUrls)
+        nostrClient.addRelays(initRelayUrls)
     }
 
     fun publishPost(
@@ -92,7 +93,7 @@ class NostrService(
         val event = EventBuilder.textNote(content, tags)
             .customCreatedAt(timestamp)
             .toEvent(keys)
-        client.publishToRelays(event = event, relayUrls = relayUrls)
+        nostrClient.publishToRelays(event = event, relayUrls = relayUrls)
 
         return event
     }
@@ -108,7 +109,7 @@ class NostrService(
         val content = if (isPositive) "+" else "-"
         val event = EventBuilder.reaction(eventId, pubkey, content)
             .toEvent(Keys.generate()) // TODO: real keys
-        client.publishToRelays(event = event, relayUrls = relayUrls)
+        nostrClient.publishToRelays(event = event, relayUrls = relayUrls)
 
         return event
     }
@@ -116,26 +117,27 @@ class NostrService(
     fun subscribe(filters: List<Filter>, relayUrl: RelayUrl): SubId? {
         if (filters.isEmpty()) return null
 
-        val subId = client.subscribe(filters = filters, relayUrl = relayUrl)
+        val subId = nostrClient.subscribe(filters = filters, relayUrl = relayUrl)
         if (subId == null) {
             Log.w(tag, "Failed to create subscription ID")
             return null
         }
+        filterCache[subId] = filters
         unsubOnEOSECache.add(subId)
 
         return subId
     }
 
     fun unsubscribe(subIds: Collection<SubId>) {
-        if (subIds.isEmpty()) return
-
         subIds.forEach {
-            client.unsubscribe(it)
+            nostrClient.unsubscribe(it)
+            filterCache.remove(it)
         }
     }
 
     fun close() {
-        Log.i(tag, "Close connections")
-        client.close()
+        unsubOnEOSECache.clear()
+        filterCache.clear()
+        nostrClient.close()
     }
 }

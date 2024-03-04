@@ -1,4 +1,4 @@
-package com.dluvian.voyage.data
+package com.dluvian.voyage.data.model
 
 import com.dluvian.nostr_kt.RelayUrl
 import rust.nostr.protocol.Event

@@ -2,9 +2,12 @@ package com.dluvian.voyage.core
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.dluvian.voyage.data.NostrService
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class Core : ViewModel() {
+class Core(
+    private val nostrService: NostrService
+) : ViewModel() {
     val nav = mutableStateOf(listOf("home"))
     val home = MutableStateFlow(UiState())
     val post = MutableStateFlow(UiState())
@@ -17,5 +20,10 @@ class Core : ViewModel() {
                 if (nav.value.size > 1) nav
             }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        nostrService.close()
     }
 }

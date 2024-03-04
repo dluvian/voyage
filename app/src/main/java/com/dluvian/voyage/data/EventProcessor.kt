@@ -5,6 +5,7 @@ import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
 import com.dluvian.nostr_kt.isPost
 import com.dluvian.nostr_kt.matches
+import com.dluvian.voyage.data.model.RelayedEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
