@@ -12,8 +12,8 @@ import rust.nostr.protocol.RelayMessage
 import java.util.Collections
 import java.util.UUID
 
+private const val TAG = "Client"
 class NostrClient(private val httpClient: OkHttpClient) {
-    private val tag = "Client"
     private val sockets: MutableMap<RelayUrl, WebSocket> =
         Collections.synchronizedMap(mutableMapOf())
     private val subscriptions: MutableMap<SubId, WebSocket> =
@@ -109,13 +109,13 @@ class NostrClient(private val httpClient: OkHttpClient) {
         addRelay(relayUrl)
         val socket = sockets[relayUrl]
         if (socket == null) {
-            Log.w(tag, "Failed to sub ${filters.size} filters. Relay $relayUrl is not registered")
+            Log.w(TAG, "Failed to sub ${filters.size} filters. Relay $relayUrl is not registered")
             return null
         }
         val subId = UUID.randomUUID().toString()
         subscriptions[subId] = socket
         val request = createSubscriptionRequest(subId = subId, filters = filters)
-        Log.d(tag, "Subscribe in $relayUrl: $request")
+        Log.d(TAG, "Subscribe in $relayUrl: $request")
         socket.send(request)
 
         return subId
@@ -123,7 +123,7 @@ class NostrClient(private val httpClient: OkHttpClient) {
 
     fun unsubscribe(subId: SubId) {
         subscriptions[subId]?.let { socket ->
-            Log.d(tag, "Unsubscribe from $subId")
+            Log.d(TAG, "Unsubscribe from $subId")
             socket.send(createCloseRequest(subId))
             subscriptions.remove(subId)
         }
@@ -133,7 +133,7 @@ class NostrClient(private val httpClient: OkHttpClient) {
         addRelays(relayUrls)
         val filteredRelays = filterSocketsByRelays(relays = relayUrls)
         val request = createEventRequest(event)
-        Log.i(tag, "Publish to ${filteredRelays.size} relays: $request")
+        Log.i(TAG, "Publish to ${filteredRelays.size} relays: $request")
         filteredRelays.forEach { it.value.send(request) }
     }
 
@@ -145,18 +145,18 @@ class NostrClient(private val httpClient: OkHttpClient) {
         if (sockets.containsKey(relayUrl)) return
         if (!relayUrl.startsWith(WEBSOCKET_PREFIX)) return
 
-        Log.i(tag, "Add relay $relayUrl")
+        Log.i(TAG, "Add relay $relayUrl")
         runCatching {
             val request = Request.Builder().url(relayUrl).build()
             val socket = httpClient.newWebSocket(request = request, listener = baseListener)
             sockets[relayUrl] = socket
         }.onFailure {
-            Log.e(tag, "Failed to connect to $relayUrl", it)
+            Log.e(TAG, "Failed to connect to $relayUrl", it)
         }
     }
 
     fun close() {
-        Log.i(tag, "Close connections")
+        Log.i(TAG, "Close connections")
         synchronized(sockets) {
             sockets.keys.forEach { removeRelay(it) }
         }
@@ -164,7 +164,7 @@ class NostrClient(private val httpClient: OkHttpClient) {
     }
 
     private fun removeRelay(relayUrl: RelayUrl) {
-        Log.i(tag, "Remove relay $relayUrl")
+        Log.i(TAG, "Remove relay $relayUrl")
         val removedSocket = sockets.remove(relayUrl)
         removedSocket?.close(1000, "Normal closure")
     }

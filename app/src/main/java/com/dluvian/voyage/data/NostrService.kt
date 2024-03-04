@@ -5,22 +5,17 @@ import com.dluvian.nostr_kt.INostrListener
 import com.dluvian.nostr_kt.NostrClient
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
-import com.dluvian.nostr_kt.createHashtagTag
-import com.dluvian.nostr_kt.createKindTag
-import com.dluvian.nostr_kt.createTitleTag
+import com.dluvian.voyage.data.model.EventSubset
 import rust.nostr.protocol.Event
-import rust.nostr.protocol.EventBuilder
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
-import rust.nostr.protocol.Keys
 import rust.nostr.protocol.PublicKey
-import rust.nostr.protocol.Timestamp
 import java.util.Collections
 
 class NostrService(
     private val nostrClient: NostrClient,
     private val eventProcessor: EventProcessor,
-    private val singleUseKeyManager: SingleUseKeyManager,
+    private val eventMaker: EventMaker,
     private val filterCache: MutableMap<SubId, List<Filter>>,
 ) {
     private val tag = "NostrService"
@@ -72,6 +67,7 @@ class NostrService(
         }
     }
 
+    // TODO: Initialize
     fun initialize(initRelayUrls: Collection<RelayUrl>) {
         nostrClient.setListener(listener)
         Log.i(tag, "Add ${initRelayUrls.size} relays: $initRelayUrls")
@@ -84,15 +80,20 @@ class NostrService(
         topic: String,
         relayUrls: Collection<RelayUrl>
     ): Event {
-        val timestamp = Timestamp.now()
-        val keys = singleUseKeyManager.getPostingKeys(timestamp)
-        val tags = listOf(
-            createTitleTag(title),
-            createHashtagTag(hashtag = topic)
-        )
-        val event = EventBuilder.textNote(content, tags)
-            .customCreatedAt(timestamp)
-            .toEvent(keys)
+        val event = eventMaker.buildPost(title, content, topic)
+        nostrClient.publishToRelays(event = event, relayUrls = relayUrls)
+
+        return event
+    }
+
+    fun publishReply(
+        rootEvent: EventSubset,
+        parentEvent: EventSubset,
+        relayHint: RelayUrl,
+        content: String,
+        relayUrls: Collection<RelayUrl>
+    ): Event {
+        val event = eventMaker.buildReply(rootEvent, parentEvent, relayHint, content)
         nostrClient.publishToRelays(event = event, relayUrls = relayUrls)
 
         return event
@@ -105,10 +106,7 @@ class NostrService(
         kind: Int,
         relayUrls: Collection<RelayUrl>,
     ): Event {
-        val tags = listOf(createKindTag(kind))
-        val content = if (isPositive) "+" else "-"
-        val event = EventBuilder.reaction(eventId, pubkey, content)
-            .toEvent(Keys.generate()) // TODO: real keys
+        val event = eventMaker.buildVote(eventId, pubkey, isPositive, kind)
         nostrClient.publishToRelays(event = event, relayUrls = relayUrls)
 
         return event

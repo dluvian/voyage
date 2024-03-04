@@ -80,7 +80,22 @@ fun createTitleTag(title: String) = Tag.fromEnum(TagEnum.Title(title))
 
 fun createHashtagTag(hashtag: String) = Tag.fromEnum(TagEnum.Hashtag(hashtag))
 
+fun createLabelTag(label: String) = Tag.parse(listOf("l", "$label"))
+
 fun createKindTag(kind: Int) = Tag.parse(listOf("k", "$kind"))
+
+fun createReplyTag(parentEventId: EventId, relayHint: RelayUrl, parentIsRoot: Boolean) =
+    Tag.parse(
+        listOf(
+            "e",
+            parentEventId.toHex(),
+            relayHint,
+            if (parentIsRoot) "root" else "reply"
+        )
+    )
+
+fun generateMnemonic() =
+    "leader monkey parrot ring guide accident before fence cannon height naive bean"
 
 object Kind {
     const val METADATA = 0
