@@ -1,18 +1,25 @@
-package com.dluvian.nostr_kt
+package com.dluvian.voyage.data
 
 import android.util.Log
+import com.dluvian.nostr_kt.RelayUrl
+import com.dluvian.nostr_kt.SubId
+import com.dluvian.nostr_kt.isPost
+import com.dluvian.nostr_kt.matches
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.Filter
+import rust.nostr.protocol.Timestamp
 import java.util.concurrent.atomic.AtomicBoolean
 
 class EventProcessor(
     private val filterCache: Map<SubId, List<Filter>>
 ) {
     private val tag = "EventProcessor"
+    private val eventProcessingDelay = 500L
+    private val maxSqlParams = 210
     private val scope = CoroutineScope(Dispatchers.IO)
 
     // TODO: cache
@@ -53,7 +60,7 @@ class EventProcessor(
         Log.i(tag, "Start job")
         scope.launch {
             while (true) {
-                delay(EVENT_PROCESSING_DELAY)
+                delay(eventProcessingDelay)
 
                 val items = mutableSetOf<RelayedEvent>()
                 synchronized(queue) {
@@ -78,7 +85,7 @@ class EventProcessor(
             if (it.event.isPost()) posts.add(it)
         }
 
-        posts.chunked(MAX_SQL_PARAMS).forEach { processPosts(relayedEvents = it) }
+        posts.chunked(maxSqlParams).forEach { processPosts(relayedEvents = it) }
     }
 
     private fun isValid(event: Event): Boolean {
@@ -106,7 +113,7 @@ class EventProcessor(
     }
 
     private fun getUpperTimeBoundary(): Long {
-        return getCurrentTimeInSeconds() + MINUTE_IN_SECONDS
+        return Timestamp.now().asSecs().toLong() + 60
     }
 
     private fun isFromFuture(event: Event): Boolean {

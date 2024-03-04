@@ -4,6 +4,8 @@ import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
 import rust.nostr.protocol.RelayMessage
+import rust.nostr.protocol.Tag
+import rust.nostr.protocol.TagEnum
 
 // File for functions that should have been exposed in the kotlin bindings
 // TODO: Remove functions once they're exposed in the bindings
@@ -15,7 +17,7 @@ fun getRelayMessagefromJson(json: String): Result<RelayMessage> {
         .map { it.trim().removeSurrounding("\"") }
     if (items.size != 4) return Result.failure(IllegalArgumentException("Json array is not of size 4, it's ${items.size}"))
 
-    return kotlin.runCatching {
+    return runCatching {
         when (items.first()) {
             "EVENT" -> Result.success(
                 RelayMessage.EventMsg(
@@ -69,14 +71,16 @@ fun createAuthRequest(authEvent: Event): String {
     return """["AUTH",${authEvent.asJson()}]"""
 }
 
-fun getCurrentTimeInSeconds(): Long {
-    return System.currentTimeMillis() / 1000
-}
-
 fun Filter.matches(event: Event): Boolean {
     // TODO: This is not complete
     return true
 }
+
+fun createTitleTag(title: String) = Tag.fromEnum(TagEnum.Title(title))
+
+fun createHashtagTag(hashtag: String) = Tag.fromEnum(TagEnum.Hashtag(hashtag))
+
+fun createKindTag(kind: Int) = Tag.parse(listOf("k", "$kind"))
 
 object Kind {
     const val METADATA = 0

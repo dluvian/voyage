@@ -1,17 +1,29 @@
-package com.dluvian.nostr_kt
+package com.dluvian.voyage.data
 
 import android.util.Log
+import com.dluvian.nostr_kt.INostrListener
+import com.dluvian.nostr_kt.NostrClient
+import com.dluvian.nostr_kt.RelayUrl
+import com.dluvian.nostr_kt.SubId
+import com.dluvian.nostr_kt.createHashtagTag
+import com.dluvian.nostr_kt.createKindTag
+import com.dluvian.nostr_kt.createTitleTag
 import rust.nostr.protocol.Event
+import rust.nostr.protocol.EventBuilder
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
+import rust.nostr.protocol.Keys
+import rust.nostr.protocol.PublicKey
+import rust.nostr.protocol.Timestamp
 import java.util.Collections
 
 class NostrService(
     private val client: NostrClient,
-    private val eventProcessor: EventProcessor
+    private val eventProcessor: EventProcessor,
+    private val singleUseKeyManager: SingleUseKeyManager,
 ) {
     private val tag = "NostrService"
-    private val unsubOnEOSECache = Collections.synchronizedSet(mutableSetOf<String>())
+    private val unsubOnEOSECache = Collections.synchronizedSet(mutableSetOf<SubId>())
 
     private val listener = object : INostrListener {
         override fun onOpen(relayUrl: RelayUrl, msg: String) {
@@ -56,7 +68,6 @@ class NostrService(
 
         override fun onAuth(relayUrl: RelayUrl, challengeString: String) {
             Log.d(tag, "OnAuth($relayUrl): challenge=$challengeString")
-            sendAuthentication(relayUrl = relayUrl, challengeString = challengeString)
         }
     }
 
@@ -66,23 +77,45 @@ class NostrService(
         client.addRelays(initRelayUrls)
     }
 
-    fun sendPost(): Event {
-        TODO()
+    fun publishPost(
+        title: String,
+        content: String,
+        topic: String,
+        relayUrls: Collection<RelayUrl>
+    ): Event {
+        val timestamp = Timestamp.now()
+        val keys = singleUseKeyManager.getPostingKeys(timestamp)
+        val tags = listOf(
+            createTitleTag(title),
+            createHashtagTag(hashtag = topic)
+        )
+        val event = EventBuilder.textNote(content, tags)
+            .customCreatedAt(timestamp)
+            .toEvent(keys)
+        client.publishToRelays(event = event, relayUrls = relayUrls)
+
+        return event
     }
 
-    fun sendVote(isPositive: Boolean): Event {
-        TODO()
-    }
+    fun publishVote(
+        eventId: EventId,
+        pubkey: PublicKey,
+        isPositive: Boolean,
+        kind: Int,
+        relayUrls: Collection<RelayUrl>,
+    ): Event {
+        val tags = listOf(createKindTag(kind))
+        val content = if (isPositive) "+" else "-"
+        val event = EventBuilder.reaction(eventId, pubkey, content)
+            .toEvent(Keys.generate()) // TODO: real keys
+        client.publishToRelays(event = event, relayUrls = relayUrls)
 
-    fun sendReply(): Event {
-        TODO()
-    }
-
-    fun deleteEvent() {
-        TODO()
+        return event
     }
 
     fun subscribe(filters: List<Filter>, relayUrl: RelayUrl): SubId? {
+        if (filters.isEmpty()) return null
+
         val subId = client.subscribe(filters = filters, relayUrl = relayUrl)
         if (subId == null) {
             Log.w(tag, "Failed to create subscription ID")
@@ -101,16 +134,8 @@ class NostrService(
         }
     }
 
-    fun getActiveRelays(): List<RelayUrl> {
-        return client.getAllConnectedUrls()
-    }
-
     fun close() {
         Log.i(tag, "Close connections")
         client.close()
-    }
-
-    private fun sendAuthentication(relayUrl: RelayUrl, challengeString: String) {
-        TODO()
     }
 }

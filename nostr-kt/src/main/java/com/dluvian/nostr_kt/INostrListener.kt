@@ -5,12 +5,7 @@ import rust.nostr.protocol.EventId
 
 interface INostrListener {
     fun onOpen(relayUrl: RelayUrl, msg: String)
-    fun onEvent(
-        subId: SubId,
-        event: Event,
-        relayUrl: RelayUrl?
-    )
-
+    fun onEvent(subId: SubId, event: Event, relayUrl: RelayUrl?)
     fun onError(relayUrl: RelayUrl, msg: String, throwable: Throwable? = null)
     fun onEOSE(relayUrl: RelayUrl, subId: SubId)
     fun onClosed(relayUrl: RelayUrl, subId: SubId, reason: String)

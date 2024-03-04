@@ -99,6 +99,10 @@ class NostrClient(private val httpClient: OkHttpClient) {
         }
     }
 
+    fun setListener(listener: INostrListener) {
+        nostrListener = listener
+    }
+
     fun subscribe(filters: List<Filter>, relayUrl: RelayUrl): SubId? {
         if (filters.isEmpty()) return null
 
@@ -125,24 +129,12 @@ class NostrClient(private val httpClient: OkHttpClient) {
         }
     }
 
-    fun publishToRelays(event: Event, relays: Collection<RelayUrl>? = null) {
-        relays?.let { addRelays(it) }
-        val filteredRelays = filterSocketsByRelays(relays = relays)
+    fun publishToRelays(event: Event, relayUrls: Collection<RelayUrl>) {
+        addRelays(relayUrls)
+        val filteredRelays = filterSocketsByRelays(relays = relayUrls)
         val request = createEventRequest(event)
         Log.i(tag, "Publish to ${filteredRelays.size} relays: $request")
         filteredRelays.forEach { it.value.send(request) }
-    }
-
-    fun publishAuth(authEvent: Event, relayUrl: RelayUrl) {
-        addRelay(relayUrl)
-        val socket = sockets.entries.toList().find { (relayUrl, _) -> relayUrl == relayUrl }?.value
-        if (socket == null) {
-            Log.e(tag, "Failed to send AUTH. Socket for $relayUrl is not registered")
-            return
-        }
-        val request = createAuthRequest(authEvent)
-        Log.i(tag, "Publish AUTH to $relayUrl: $request")
-        socket.send(request)
     }
 
     fun addRelays(relayUrls: Collection<RelayUrl>) {
@@ -163,26 +155,18 @@ class NostrClient(private val httpClient: OkHttpClient) {
         }
     }
 
-    fun getAllConnectedUrls(): List<RelayUrl> {
-        return sockets.keys.toList()
-    }
-
-    private fun removeRelay(relayUrl: RelayUrl) {
-        Log.i(tag, "Remove relay $relayUrl")
-        val removedSocket = sockets.remove(relayUrl)
-        removedSocket?.close(1000, "Normal closure")
-    }
-
-    fun setListener(listener: INostrListener) {
-        nostrListener = listener
-    }
-
     fun close() {
         Log.i(tag, "Close connections")
         synchronized(sockets) {
             sockets.keys.forEach { removeRelay(it) }
         }
         httpClient.dispatcher.executorService.shutdown()
+    }
+
+    private fun removeRelay(relayUrl: RelayUrl) {
+        Log.i(tag, "Remove relay $relayUrl")
+        val removedSocket = sockets.remove(relayUrl)
+        removedSocket?.close(1000, "Normal closure")
     }
 
     private fun getRelayUrl(webSocket: WebSocket): RelayUrl? {
