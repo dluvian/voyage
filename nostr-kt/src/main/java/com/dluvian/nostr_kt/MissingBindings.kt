@@ -6,6 +6,7 @@ import rust.nostr.protocol.Filter
 import rust.nostr.protocol.RelayMessage
 import rust.nostr.protocol.Tag
 import rust.nostr.protocol.TagEnum
+import rust.nostr.protocol.TagKind
 
 // File for functions that should have been exposed in the kotlin bindings
 // TODO: Remove functions once they're exposed in the bindings
@@ -67,10 +68,6 @@ fun createEventRequest(event: Event): String {
     return """["EVENT",${event.asJson()}]"""
 }
 
-fun createAuthRequest(authEvent: Event): String {
-    return """["AUTH",${authEvent.asJson()}]"""
-}
-
 fun Filter.matches(event: Event): Boolean {
     // TODO: This is not complete
     return true
@@ -97,13 +94,37 @@ fun createReplyTag(parentEventId: EventId, relayHint: RelayUrl, parentIsRoot: Bo
 fun generateMnemonic() =
     "leader monkey parrot ring guide accident before fence cannon height naive bean"
 
+fun Event.isPostOrReply(): Boolean {
+    return this.kind().toInt() == Kind.TEXT_NOTE
+}
+
+fun Event.isReply(): Boolean {
+    return this.isPostOrReply() &&
+            this.tags()
+                .filter { it.kind() == TagKind.E }
+                .map { it.asVec() }
+                .any { it.getOrNull(3).let { marker -> marker == "root" || marker == "reply" } }
+}
+
+fun Tag.isReplyTag(): Boolean {
+    TODO()
+}
+
+fun Event.isContactList(): Boolean {
+    return this.kind().toInt() == Kind.CONTACT_LIST
+}
+
+fun Event.isTopicList(): Boolean {
+    return this.kind().toInt() == Kind.TOPIC_LIST
+}
+
+fun Event.isVote(): Boolean {
+    return this.kind().toInt() == Kind.REACTION
+}
+
 object Kind {
-    const val METADATA = 0
     const val TEXT_NOTE = 1
     const val CONTACT_LIST = 3
-    const val DELETE = 5
-    const val REPOST = 6
     const val REACTION = 7
-    const val NIP65 = 10002
-    const val AUTH = 22242
+    const val TOPIC_LIST = 10015
 }

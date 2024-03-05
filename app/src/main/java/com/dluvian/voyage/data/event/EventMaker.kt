@@ -1,4 +1,4 @@
-package com.dluvian.voyage.data
+package com.dluvian.voyage.data.event
 
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.createHashtagTag
@@ -30,8 +30,7 @@ class EventMaker(
             createTitleTag(title),
             createHashtagTag(topic)
         )
-        return EventBuilder
-            .textNote(content, tags)
+        return EventBuilder.textNote(content, tags)
             .customCreatedAt(timestamp)
             .toEvent(keys = singleUseKeyManager.getPostingKeys(timestamp))
     }
@@ -52,8 +51,7 @@ class EventMaker(
             ),
             Tag.publicKey(parentEvent.pubkey)
         )
-        return EventBuilder
-            .textNote(content, tags)
+        return EventBuilder.textNote(content, tags)
             .customCreatedAt(timestamp)
             .toEvent(keys = singleUseKeyManager.getReplySectionKeys(rootEvent))
     }
@@ -61,8 +59,7 @@ class EventMaker(
     fun buildVote(eventId: EventId, pubkey: PublicKey, isPositive: Boolean, kind: Int): Event {
         val tags = listOf(createKindTag(kind)) // TODO: Set kind tags
         val content = if (isPositive) "+" else "-"
-        val unsignedEvent = EventBuilder
-            .reaction(eventId, pubkey, content)
+        val unsignedEvent = EventBuilder.reaction(eventId, pubkey, content)
             .toUnsignedEvent(accountKeyManager.getPublicKey())
 
         return accountKeyManager.sign(unsignedEvent)

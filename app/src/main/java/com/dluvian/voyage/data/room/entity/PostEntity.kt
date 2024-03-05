@@ -9,8 +9,6 @@ import com.dluvian.voyage.core.PubkeyHex
 
 @Entity(
     tableName = "post",
-    // ksp suggestion bc it's refrenced by post.replyToId and vote.postId
-    indices = [Index(value = ["id"], unique = true)],
     primaryKeys = ["id"],
     foreignKeys = [ForeignKey(
         entity = PostEntity::class,
@@ -18,7 +16,8 @@ import com.dluvian.voyage.core.PubkeyHex
         childColumns = ["replyToId"],
         onDelete = ForeignKey.CASCADE,
         onUpdate = ForeignKey.NO_ACTION
-    )]
+    )],
+    indices = [Index(value = ["replyToId"], unique = false)], // ksp suggestion: "Highly advised"
 )
 data class PostEntity(
     val id: EventIdHex,

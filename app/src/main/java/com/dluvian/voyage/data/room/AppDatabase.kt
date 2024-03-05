@@ -2,10 +2,17 @@ package com.dluvian.voyage.data.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.dluvian.voyage.data.room.dao.AccountDao
+import com.dluvian.voyage.data.room.dao.FriendDao
 import com.dluvian.voyage.data.room.dao.PostDao
+import com.dluvian.voyage.data.room.dao.PostRelayDao
+import com.dluvian.voyage.data.room.dao.TopicDao
+import com.dluvian.voyage.data.room.dao.VoteDao
+import com.dluvian.voyage.data.room.dao.WebOfTrustDao
 import com.dluvian.voyage.data.room.entity.AccountEntity
 import com.dluvian.voyage.data.room.entity.FriendEntity
 import com.dluvian.voyage.data.room.entity.PostEntity
+import com.dluvian.voyage.data.room.entity.PostRelayEntity
 import com.dluvian.voyage.data.room.entity.TopicEntity
 import com.dluvian.voyage.data.room.entity.VoteEntity
 import com.dluvian.voyage.data.room.entity.WebOfTrustEntity
@@ -20,6 +27,7 @@ import com.dluvian.voyage.data.room.entity.WebOfTrustEntity
     entities = [
         PostEntity::class,
         VoteEntity::class,
+        PostRelayEntity::class,
         AccountEntity::class,
         FriendEntity::class,
         WebOfTrustEntity::class,
@@ -28,4 +36,11 @@ import com.dluvian.voyage.data.room.entity.WebOfTrustEntity
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun postDao(): PostDao
+    abstract fun voteDao(): VoteDao
+    abstract fun postRelayDao(): PostRelayDao
+    abstract fun accountDao(): AccountDao
+    abstract fun friendDao(): FriendDao
+    abstract fun webOfTrustDao(): WebOfTrustDao
+    abstract fun topicDao(): TopicDao
+
 }

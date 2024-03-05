@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "9f6f193b78248dc13bdf0fd1ecaf9888",
+    "identityHash": "bae5d2be3ba8acbf83c1f7c0bf0b7b1f",
     "entities": [
       {
         "tableName": "post",
@@ -65,13 +65,13 @@
         },
         "indices": [
           {
-            "name": "index_post_id",
-            "unique": true,
+            "name": "index_post_replyToId",
+            "unique": false,
             "columnNames": [
-              "id"
+              "replyToId"
             ],
             "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_post_id` ON `${TABLE_NAME}` (`id`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_post_replyToId` ON `${TABLE_NAME}` (`replyToId`)"
           }
         ],
         "foreignKeys": [
@@ -146,6 +146,45 @@
         ]
       },
       {
+        "tableName": "postRelay",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`postId` TEXT NOT NULL, `relayUrl` TEXT NOT NULL, PRIMARY KEY(`postId`, `relayUrl`), FOREIGN KEY(`postId`) REFERENCES `post`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "postId",
+            "columnName": "postId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "relayUrl",
+            "columnName": "relayUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "postId",
+            "relayUrl"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "post",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "postId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
         "tableName": "account",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`pubkey` TEXT NOT NULL, PRIMARY KEY(`pubkey`))",
         "fields": [
@@ -162,17 +201,7 @@
             "pubkey"
           ]
         },
-        "indices": [
-          {
-            "name": "index_account_pubkey",
-            "unique": true,
-            "columnNames": [
-              "pubkey"
-            ],
-            "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_account_pubkey` ON `${TABLE_NAME}` (`pubkey`)"
-          }
-        ],
+        "indices": [],
         "foreignKeys": []
       },
       {
@@ -204,7 +233,17 @@
             "friendPubkey"
           ]
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_friend_myPubkey",
+            "unique": false,
+            "columnNames": [
+              "myPubkey"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_friend_myPubkey` ON `${TABLE_NAME}` (`myPubkey`)"
+          }
+        ],
         "foreignKeys": [
           {
             "table": "account",
@@ -221,7 +260,7 @@
       },
       {
         "tableName": "weboftrust",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`friendPubkey` TEXT NOT NULL, `webOfTrustPubkey` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`friendPubkey`, `webOfTrustPubkey`), FOREIGN KEY(`friendPubkey`) REFERENCES `friend`(`friendPubkey`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`friendPubkey` TEXT NOT NULL, `webOfTrustPubkey` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`webOfTrustPubkey`), FOREIGN KEY(`friendPubkey`) REFERENCES `friend`(`friendPubkey`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "friendPubkey",
@@ -245,11 +284,20 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "friendPubkey",
             "webOfTrustPubkey"
           ]
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_weboftrust_friendPubkey",
+            "unique": false,
+            "columnNames": [
+              "friendPubkey"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_weboftrust_friendPubkey` ON `${TABLE_NAME}` (`friendPubkey`)"
+          }
+        ],
         "foreignKeys": [
           {
             "table": "friend",
@@ -293,7 +341,17 @@
             "topic"
           ]
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_topic_myPubkey",
+            "unique": false,
+            "columnNames": [
+              "myPubkey"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_topic_myPubkey` ON `${TABLE_NAME}` (`myPubkey`)"
+          }
+        ],
         "foreignKeys": [
           {
             "table": "account",
@@ -312,7 +370,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9f6f193b78248dc13bdf0fd1ecaf9888')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bae5d2be3ba8acbf83c1f7c0bf0b7b1f')"
     ]
   }
 }
