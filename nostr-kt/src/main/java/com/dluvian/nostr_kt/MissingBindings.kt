@@ -125,6 +125,10 @@ fun Event.getTopic(): String? {
     TODO()
 }
 
+fun Event.getTopics(): Set<String> {
+    TODO()
+}
+
 fun Event.getTitle(): String? {
     TODO()
 }

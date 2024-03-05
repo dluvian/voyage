@@ -3,12 +3,11 @@ package com.dluvian.voyage.data.room.entity
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
-import com.dluvian.nostr_kt.getReplyToId
-import com.dluvian.nostr_kt.getTitle
-import com.dluvian.nostr_kt.getTopic
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
-import rust.nostr.protocol.Event
+import com.dluvian.voyage.data.model.ValidatedPost
+import com.dluvian.voyage.data.model.ValidatedReplyPost
+import com.dluvian.voyage.data.model.ValidatedRootPost
 
 @Entity(
     tableName = "post",
@@ -26,22 +25,34 @@ data class PostEntity(
     val id: EventIdHex,
     val pubkey: PubkeyHex,
     val replyToId: EventIdHex?,
-    val topic: String,
-    val title: String,
+    val topic: String?,
+    val title: String?,
     val content: String,
     val createdAt: Long,
 ) {
     companion object {
-        fun from(event: Event): PostEntity {
-            return PostEntity(
-                id = event.id().toHex(),
-                pubkey = event.author().toHex(),
-                replyToId = event.getReplyToId(),
-                topic = event.getTopic()!!, // TODO from(event: ValidEvent)
-                title = event.getTitle().orEmpty(),
-                content = event.content(),
-                createdAt = event.createdAt().asSecs().toLong(),
-            )
+        fun from(post: ValidatedPost): PostEntity {
+            return when (post) {
+                is ValidatedRootPost -> PostEntity(
+                    id = post.id.toHex(),
+                    pubkey = post.pubkey.toHex(),
+                    replyToId = null,
+                    topic = post.topic,
+                    title = post.title,
+                    content = post.content,
+                    createdAt = post.createdAt,
+                )
+
+                is ValidatedReplyPost -> PostEntity(
+                    id = post.id.toHex(),
+                    pubkey = post.pubkey.toHex(),
+                    replyToId = post.replyToId,
+                    topic = null,
+                    title = null,
+                    content = post.content,
+                    createdAt = post.createdAt,
+                )
+            }
         }
     }
 }

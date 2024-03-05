@@ -8,7 +8,7 @@ import com.dluvian.voyage.data.NostrService
 import com.dluvian.voyage.data.event.EventMaker
 import com.dluvian.voyage.data.event.EventProcessor
 import com.dluvian.voyage.data.event.EventQueue
-import com.dluvian.voyage.data.event.EventQueueQualityGate
+import com.dluvian.voyage.data.event.EventValidator
 import com.dluvian.voyage.data.keys.AccountKeyManager
 import com.dluvian.voyage.data.keys.SingleUseKeyManager
 import com.dluvian.voyage.data.room.AppDatabase
@@ -25,10 +25,10 @@ class AppContainer(context: Context) {
     private val client = OkHttpClient()
     private val nostrClient = NostrClient(httpClient = client)
     private val filterCache = Collections.synchronizedMap(mutableMapOf<SubId, List<Filter>>())
-    private val eventQueueQualityGate = EventQueueQualityGate(filterCache = filterCache)
+    private val eventValidator = EventValidator(filterCache = filterCache)
     private val eventProcessor = EventProcessor(postInsertDao = roomDb.postInsertDao())
     private val eventQueue = EventQueue(
-        qualityGate = eventQueueQualityGate,
+        eventValidator = eventValidator,
         eventProcessor = eventProcessor
     )
     private val singleUseKeyManager = SingleUseKeyManager(context)
