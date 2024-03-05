@@ -3,6 +3,7 @@ package com.dluvian.voyage.data.event
 import android.util.Log
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
+import com.dluvian.voyage.data.model.RelayedItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -20,7 +21,7 @@ class EventQueue(
     private val scope = CoroutineScope(Dispatchers.IO)
 
     // Not a synchronized set bc we synchronize with `synchronized()`
-    private val queue = mutableSetOf<Event>()
+    private val queue = mutableSetOf<RelayedItem<Event>>()
     private val isProcessingEvents = AtomicBoolean(false)
 
     init {
@@ -35,7 +36,7 @@ class EventQueue(
         if (!qualityGate.isSubmittable(event = event, subId = subId, relayUrl = relayUrl)) {
             return
         }
-        synchronized(queue) { queue.add(event) }
+        synchronized(queue) { queue.add(RelayedItem(item = event, relayUrl = relayUrl)) }
         if (!isProcessingEvents.get()) startProcessingJob()
     }
 
@@ -45,7 +46,7 @@ class EventQueue(
         scope.launch {
             while (true) {
                 delay(EVENT_PROCESSING_DELAY)
-                val events = mutableSetOf<Event>()
+                val events = mutableSetOf<RelayedItem<Event>>()
                 synchronized(queue) {
                     events.addAll(queue)
                     queue.clear()

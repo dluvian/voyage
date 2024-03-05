@@ -98,7 +98,22 @@ fun Event.isPostOrReply(): Boolean {
     return this.kind().toInt() == Kind.TEXT_NOTE
 }
 
-fun Event.isReply(): Boolean {
+fun Event.isRootPost(): Boolean {
+    return this.isPostOrReply() && !this.isReplyPost()
+}
+
+fun Event.getReplyToId(): String? {
+    if (this.isRootPost()) return null
+    val replyTags = this.tags()
+        .filter { it.kind() == TagKind.E }
+        .map { it.asVec() }
+        .filter { it.getOrNull(3).let { marker -> marker == "root" || marker == "reply" } }
+    return if (replyTags.size == 1) replyTags.first()[1]
+    else replyTags.find { it[3] == "reply" }?.get(1)
+}
+
+
+fun Event.isReplyPost(): Boolean {
     return this.isPostOrReply() &&
             this.tags()
                 .filter { it.kind() == TagKind.E }
@@ -106,7 +121,11 @@ fun Event.isReply(): Boolean {
                 .any { it.getOrNull(3).let { marker -> marker == "root" || marker == "reply" } }
 }
 
-fun Tag.isReplyTag(): Boolean {
+fun Event.getTopic(): String? {
+    TODO()
+}
+
+fun Event.getTitle(): String? {
     TODO()
 }
 

@@ -17,7 +17,7 @@ import rust.nostr.protocol.Filter
 import java.util.Collections
 
 class AppContainer(context: Context) {
-    val roomDb: AppDatabase = Room.databaseBuilder(
+    private val roomDb: AppDatabase = Room.databaseBuilder(
         context = context,
         klass = AppDatabase::class.java,
         name = "voyage_database",
@@ -26,7 +26,7 @@ class AppContainer(context: Context) {
     private val nostrClient = NostrClient(httpClient = client)
     private val filterCache = Collections.synchronizedMap(mutableMapOf<SubId, List<Filter>>())
     private val eventQueueQualityGate = EventQueueQualityGate(filterCache = filterCache)
-    private val eventProcessor = EventProcessor()
+    private val eventProcessor = EventProcessor(postInsertDao = roomDb.postInsertDao())
     private val eventQueue = EventQueue(
         qualityGate = eventQueueQualityGate,
         eventProcessor = eventProcessor

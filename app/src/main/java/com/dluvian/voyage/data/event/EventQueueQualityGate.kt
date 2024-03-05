@@ -3,8 +3,11 @@ package com.dluvian.voyage.data.event
 import android.util.Log
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
+import com.dluvian.nostr_kt.getTopic
 import com.dluvian.nostr_kt.isContactList
 import com.dluvian.nostr_kt.isPostOrReply
+import com.dluvian.nostr_kt.isReplyPost
+import com.dluvian.nostr_kt.isRootPost
 import com.dluvian.nostr_kt.isTopicList
 import com.dluvian.nostr_kt.isVote
 import com.dluvian.nostr_kt.matches
@@ -19,6 +22,7 @@ private const val TAG = "EventQueueQualityGate"
 
 class EventQueueQualityGate(private val filterCache: Map<SubId, List<Filter>>) {
 
+    // TODO: Return a new object. Use type system to know event is valid
     fun isSubmittable(event: Event, subId: SubId, relayUrl: RelayUrl): Boolean {
         if (isCached(event = event, relayUrl = relayUrl)) return false
 
@@ -75,9 +79,9 @@ class EventQueueQualityGate(private val filterCache: Map<SubId, List<Filter>>) {
         return cache.any { it.matches(event) }
     }
 
-
     private fun isValid(event: Event): Boolean {
-        return (event.isPostOrReply() ||
+        return ((event.isRootPost() && event.getTopic() != null) ||
+                event.isReplyPost() ||
                 event.isVote() ||
                 event.isContactList() ||
                 event.isTopicList()) &&
