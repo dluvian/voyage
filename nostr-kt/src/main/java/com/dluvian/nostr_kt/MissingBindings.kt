@@ -77,7 +77,7 @@ fun createTitleTag(title: String) = Tag.fromEnum(TagEnum.Title(title))
 
 fun createHashtagTag(hashtag: String) = Tag.fromEnum(TagEnum.Hashtag(hashtag))
 
-fun createLabelTag(label: String) = Tag.parse(listOf("l", "$label"))
+fun createLabelTag(label: String) = Tag.parse(listOf("l", label))
 
 fun createKindTag(kind: Int) = Tag.parse(listOf("k", "$kind"))
 
@@ -121,16 +121,21 @@ fun Event.isReplyPost(): Boolean {
                 .any { it.getOrNull(3).let { marker -> marker == "root" || marker == "reply" } }
 }
 
-fun Event.getTopic(): String? {
-    TODO()
+fun Event.getHashtag(): String? {
+    return this.tags().firstOrNull { it.kind() == TagKind.T }?.asVec()?.getOrNull(1)
 }
 
 fun Event.getTopics(): Set<String> {
-    TODO()
+    return this.tags()
+        .filter { it.kind() == TagKind.T }
+        .mapNotNull { it.asVec().getOrNull(1) }
+        .toSet()
+
 }
 
 fun Event.getTitle(): String? {
-    TODO()
+    return this.tags().firstOrNull { it.kind() == TagKind.Title }?.asVec()?.getOrNull(1)
+
 }
 
 fun Event.isContactList(): Boolean {
