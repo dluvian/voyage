@@ -24,9 +24,9 @@ class AppContainer(context: Context) {
     ).build()
     private val mnemonicManager = MnemonicManager(context = context)
     private val accountKeyManager = AccountKeyManager(
-        accountDao = roomDb.accountDao(),
         context = context,
-        mnemonicManager = mnemonicManager
+        mnemonicManager = mnemonicManager,
+        accountDao = roomDb.accountDao(),
     )
     private val client = OkHttpClient()
     private val nostrClient = NostrClient(httpClient = client)

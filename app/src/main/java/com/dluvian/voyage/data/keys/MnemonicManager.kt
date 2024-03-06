@@ -1,7 +1,6 @@
 package com.dluvian.voyage.data.keys
 
 import android.content.Context
-import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.dluvian.nostr_kt.generateMnemonic
@@ -12,7 +11,6 @@ import rust.nostr.protocol.Timestamp
 
 typealias Mnemonic = String
 
-private const val TAG = "SingleUseKeyManager"
 private const val MNEMONIC = "mnemonic"
 private const val FILENAME = "voyage_encrypted_mnemonic"
 private const val POSTING_ACCOUNT = 50000u
@@ -34,7 +32,11 @@ class MnemonicManager(context: Context) {
     )
 
     init {
-        getMnemonicOrGenerateAndSaveNew()
+        if (getMnemonic() == null) {
+            sharedPreferences.edit()
+                .putString(MNEMONIC, generateMnemonic())
+                .apply()
+        }
     }
 
     fun getPostingKeys(timestamp: Timestamp): Keys {
@@ -51,24 +53,11 @@ class MnemonicManager(context: Context) {
 
     private fun deriveKeysFromMnemonic(account: UInt): Keys {
         return Keys.fromMnemonic(
-            mnemonic = getMnemonicOrGenerateAndSaveNew(),
+            mnemonic = getMnemonic() ?: throw IllegalStateException("No mnemonic saved"),
             passphrase = null,
             account = account
         )
     }
 
-    private fun getMnemonicOrGenerateAndSaveNew(): Mnemonic {
-        val mnemonic = sharedPreferences.getString(MNEMONIC, null)
-
-        if (mnemonic == null) {
-            Log.e(TAG, "Failed to read mnemonic. Created a new one")
-            val newMnemonic = generateMnemonic()
-            sharedPreferences.edit()
-                .putString(MNEMONIC, newMnemonic)
-                .apply()
-            return newMnemonic
-        }
-
-        return mnemonic
-    }
+    private fun getMnemonic(): Mnemonic? = sharedPreferences.getString(MNEMONIC, null)
 }
