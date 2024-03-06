@@ -7,7 +7,7 @@ import com.dluvian.nostr_kt.createLabelTag
 import com.dluvian.nostr_kt.createReplyTag
 import com.dluvian.nostr_kt.createTitleTag
 import com.dluvian.voyage.data.keys.AccountKeyManager
-import com.dluvian.voyage.data.keys.SingleUseKeyManager
+import com.dluvian.voyage.data.keys.MnemonicManager
 import com.dluvian.voyage.data.model.EventSubset
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventBuilder
@@ -20,7 +20,7 @@ private const val POST_LABEL = "post"
 private const val REPLY_LABEL = "reply"
 
 class EventMaker(
-    private val singleUseKeyManager: SingleUseKeyManager,
+    private val singleUseKeyManager: MnemonicManager,
     private val accountKeyManager: AccountKeyManager,
 ) {
     fun buildPost(title: String, content: String, topic: String): Event {
@@ -56,7 +56,12 @@ class EventMaker(
             .toEvent(keys = singleUseKeyManager.getReplySectionKeys(rootEvent))
     }
 
-    fun buildVote(eventId: EventId, pubkey: PublicKey, isPositive: Boolean, kind: Int): Event {
+    fun buildVote(
+        eventId: EventId,
+        pubkey: PublicKey,
+        isPositive: Boolean,
+        kind: Int
+    ): Result<Event> {
         val tags = listOf(createKindTag(kind)) // TODO: Set kind tags
         val content = if (isPositive) "+" else "-"
         val unsignedEvent = EventBuilder.reaction(eventId, pubkey, content)

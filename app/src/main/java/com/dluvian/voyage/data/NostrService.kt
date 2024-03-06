@@ -106,11 +106,9 @@ class NostrService(
         isPositive: Boolean,
         kind: Int,
         relayUrls: Collection<RelayUrl>,
-    ): Event {
-        val event = eventMaker.buildVote(eventId, pubkey, isPositive, kind)
-        nostrClient.publishToRelays(event = event, relayUrls = relayUrls)
-
-        return event
+    ): Result<Event> {
+        return eventMaker.buildVote(eventId, pubkey, isPositive, kind)
+            .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
     fun subscribe(filters: List<Filter>, relayUrl: RelayUrl): SubId? {

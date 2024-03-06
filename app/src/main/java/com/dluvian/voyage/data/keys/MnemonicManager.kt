@@ -17,8 +17,9 @@ private const val MNEMONIC = "mnemonic"
 private const val FILENAME = "voyage_encrypted_mnemonic"
 private const val POSTING_ACCOUNT = 50000u
 private const val REPLY_SECTION_ACCOUNT = 50001u
+private const val MAIN_ACCOUNT_INDEX = 0u
 
-class SingleUseKeyManager(context: Context) {
+class MnemonicManager(context: Context) {
     private val masterKey = MasterKey.Builder(context)
         .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
         .build()
@@ -42,6 +43,10 @@ class SingleUseKeyManager(context: Context) {
 
     fun getReplySectionKeys(rootEvent: EventSubset): Keys {
         return deriveKeysFromMnemonic(account = REPLY_SECTION_ACCOUNT)
+    }
+
+    fun getMainAccountKeys(): Keys {
+        return deriveKeysFromMnemonic(MAIN_ACCOUNT_INDEX)
     }
 
     private fun deriveKeysFromMnemonic(account: UInt): Keys {

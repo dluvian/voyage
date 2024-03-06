@@ -10,7 +10,7 @@ import com.dluvian.voyage.data.event.EventProcessor
 import com.dluvian.voyage.data.event.EventQueue
 import com.dluvian.voyage.data.event.EventValidator
 import com.dluvian.voyage.data.keys.AccountKeyManager
-import com.dluvian.voyage.data.keys.SingleUseKeyManager
+import com.dluvian.voyage.data.keys.MnemonicManager
 import com.dluvian.voyage.data.room.AppDatabase
 import okhttp3.OkHttpClient
 import rust.nostr.protocol.Filter
@@ -22,19 +22,31 @@ class AppContainer(context: Context) {
         klass = AppDatabase::class.java,
         name = "voyage_database",
     ).build()
+    private val mnemonicManager = MnemonicManager(context = context)
+    private val accountKeyManager = AccountKeyManager(
+        accountDao = roomDb.accountDao(),
+        context = context,
+        mnemonicManager = mnemonicManager
+    )
     private val client = OkHttpClient()
     private val nostrClient = NostrClient(httpClient = client)
     private val filterCache = Collections.synchronizedMap(mutableMapOf<SubId, List<Filter>>())
-    private val eventValidator = EventValidator(filterCache = filterCache)
-    private val eventProcessor = EventProcessor(postInsertDao = roomDb.postInsertDao())
+    private val eventValidator =
+        EventValidator(filterCache = filterCache, pubkeyProvider = accountKeyManager)
+    private val eventProcessor = EventProcessor(
+        postInsertDao = roomDb.postInsertDao(),
+        voteUpsertDao = roomDb.voteUpsertDao(),
+        friendUpsertDao = roomDb.friendUpsertDao(),
+        webOfTrustUpsertDao = roomDb.webOfTrustUpsertDao(),
+        topicUpsertDao = roomDb.topicUpsertDao(),
+        pubkeyProvider = accountKeyManager
+    )
     private val eventQueue = EventQueue(
         eventValidator = eventValidator,
         eventProcessor = eventProcessor
     )
-    private val singleUseKeyManager = SingleUseKeyManager(context)
-    private val accountKeyManager = AccountKeyManager(context)
     private val eventMaker = EventMaker(
-        singleUseKeyManager = singleUseKeyManager,
+        singleUseKeyManager = mnemonicManager,
         accountKeyManager = accountKeyManager
     )
     val nostrService = NostrService(

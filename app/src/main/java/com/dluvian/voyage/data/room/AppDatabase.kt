@@ -2,7 +2,12 @@ package com.dluvian.voyage.data.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.dluvian.voyage.data.room.dao.AccountDao
+import com.dluvian.voyage.data.room.dao.FriendUpsertDao
 import com.dluvian.voyage.data.room.dao.PostInsertDao
+import com.dluvian.voyage.data.room.dao.TopicUpsertDao
+import com.dluvian.voyage.data.room.dao.VoteUpsertDao
+import com.dluvian.voyage.data.room.dao.WebOfTrustUpsertDao
 import com.dluvian.voyage.data.room.entity.AccountEntity
 import com.dluvian.voyage.data.room.entity.FriendEntity
 import com.dluvian.voyage.data.room.entity.PostEntity
@@ -29,6 +34,11 @@ import com.dluvian.voyage.data.room.entity.WebOfTrustEntity
     ],
 )
 abstract class AppDatabase : RoomDatabase() {
+    abstract fun accountDao(): AccountDao
     abstract fun postInsertDao(): PostInsertDao
+    abstract fun voteUpsertDao(): VoteUpsertDao
+    abstract fun friendUpsertDao(): FriendUpsertDao
+    abstract fun webOfTrustUpsertDao(): WebOfTrustUpsertDao
+    abstract fun topicUpsertDao(): TopicUpsertDao
 
 }

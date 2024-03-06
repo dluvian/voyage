@@ -4,6 +4,9 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.core.MAX_CONTENT_LEN
+import com.dluvian.voyage.core.MAX_TITLE_LEN
+import com.dluvian.voyage.core.MAX_TOPIC_LENGTH
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.model.ValidatedPost
 import com.dluvian.voyage.data.model.ValidatedReplyPost
@@ -31,15 +34,16 @@ data class PostEntity(
     val createdAt: Long,
 ) {
     companion object {
+
         fun from(post: ValidatedPost): PostEntity {
             return when (post) {
                 is ValidatedRootPost -> PostEntity(
                     id = post.id.toHex(),
                     pubkey = post.pubkey.toHex(),
                     replyToId = null,
-                    topic = post.topic,
-                    title = post.title,
-                    content = post.content,
+                    topic = post.topic.trim().take(MAX_TOPIC_LENGTH),
+                    title = post.title?.trim()?.take(MAX_TITLE_LEN),
+                    content = post.content.trim().take(MAX_CONTENT_LEN),
                     createdAt = post.createdAt,
                 )
 
@@ -49,7 +53,7 @@ data class PostEntity(
                     replyToId = post.replyToId,
                     topic = null,
                     title = null,
-                    content = post.content,
+                    content = post.content.trim().take(MAX_CONTENT_LEN),
                     createdAt = post.createdAt,
                 )
             }
