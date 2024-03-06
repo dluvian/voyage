@@ -4,10 +4,11 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.data.model.ValidatedContactList
 
 @Entity(
     tableName = "weboftrust",
-    primaryKeys = ["webOfTrustPubkey"],
+    primaryKeys = ["webOfTrustPubkey"], // To prevent hundreds of duplicates
     foreignKeys = [ForeignKey(
         entity = FriendEntity::class,
         parentColumns = ["friendPubkey"],
@@ -21,4 +22,17 @@ data class WebOfTrustEntity(
     val friendPubkey: PubkeyHex,
     val webOfTrustPubkey: PubkeyHex,
     val createdAt: Long
-)
+) {
+    companion object {
+        fun from(validatedContactList: ValidatedContactList): List<WebOfTrustEntity> {
+            val pubkey = validatedContactList.pubkey.toHex()
+            return validatedContactList.friendPubkeys.map { webOfTrustPubkey ->
+                WebOfTrustEntity(
+                    friendPubkey = pubkey,
+                    webOfTrustPubkey = webOfTrustPubkey.toHex(),
+                    createdAt = validatedContactList.createdAt
+                )
+            }
+        }
+    }
+}

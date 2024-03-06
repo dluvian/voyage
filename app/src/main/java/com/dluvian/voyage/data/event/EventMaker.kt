@@ -60,7 +60,7 @@ class EventMaker(
         val tags = listOf(createKindTag(kind)) // TODO: Set kind tags
         val content = if (isPositive) "+" else "-"
         val unsignedEvent = EventBuilder.reaction(eventId, pubkey, content)
-            .toUnsignedEvent(accountKeyManager.getPublicKey())
+            .toUnsignedEvent(accountKeyManager.getPubkey())
 
         return accountKeyManager.sign(unsignedEvent)
     }

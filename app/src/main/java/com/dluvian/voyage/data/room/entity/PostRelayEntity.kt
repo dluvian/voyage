@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.data.model.RelayedItem
 
 @Entity(
     tableName = "postRelay",
@@ -19,4 +20,13 @@ import com.dluvian.voyage.core.EventIdHex
 data class PostRelayEntity(
     val postId: EventIdHex,
     val relayUrl: RelayUrl
-)
+) {
+    companion object {
+        fun from(relayedPostEntity: RelayedItem<PostEntity>): PostRelayEntity {
+            return PostRelayEntity(
+                postId = relayedPostEntity.item.id,
+                relayUrl = relayedPostEntity.relayUrl
+            )
+        }
+    }
+}

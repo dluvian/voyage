@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.data.model.ValidatedTopicList
 
 
 @Entity(
@@ -22,4 +23,17 @@ data class TopicEntity(
     val myPubkey: PubkeyHex,
     val topic: String,
     val createdAt: Long,
-)
+) {
+    companion object {
+        fun from(validatedTopicList: ValidatedTopicList): List<TopicEntity> {
+            val myPubkey = validatedTopicList.myPubkey.toHex()
+            return validatedTopicList.topics.map { topic ->
+                TopicEntity(
+                    myPubkey = myPubkey,
+                    topic = topic,
+                    createdAt = validatedTopicList.createdAt
+                )
+            }
+        }
+    }
+}

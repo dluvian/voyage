@@ -4,8 +4,10 @@ import com.dluvian.voyage.core.EventIdHex
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.PublicKey
 
-sealed class ValidatedEvent()
+sealed class ValidatedEvent
+
 sealed class ValidatedPost : ValidatedEvent()
+sealed class ValidatedList(val owner: PublicKey, open val createdAt: Long) : ValidatedEvent()
 
 data class ValidatedRootPost(
     val id: EventId,
@@ -16,7 +18,7 @@ data class ValidatedRootPost(
     val createdAt: Long
 ) : ValidatedPost()
 
-class ValidatedReplyPost(
+data class ValidatedReplyPost(
     val id: EventId,
     val pubkey: PublicKey,
     val replyToId: EventIdHex,
@@ -35,11 +37,11 @@ data class ValidatedVote(
 data class ValidatedContactList(
     val pubkey: PublicKey,
     val friendPubkeys: Set<PublicKey>,
-    val createdAt: Long
-) : ValidatedEvent()
+    override val createdAt: Long
+) : ValidatedList(owner = pubkey, createdAt = createdAt)
 
 data class ValidatedTopicList(
     val myPubkey: PublicKey,
     val topics: Set<String>,
-    val createdAt: Long
-) : ValidatedEvent()
+    override val createdAt: Long
+) : ValidatedList(owner = myPubkey, createdAt = createdAt)

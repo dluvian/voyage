@@ -4,12 +4,13 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
+import com.dluvian.voyage.core.PubkeyHex
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.Keys
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.UnsignedEvent
 
-class AccountKeyManager(context: Context) {
+class AccountKeyManager(context: Context) : IPubkeyProvider {
 
     init {
         val pubkey = Keys.generate()
@@ -23,9 +24,12 @@ class AccountKeyManager(context: Context) {
         return Keys.generate()
     }
 
-    fun getPublicKey(): PublicKey {
-        // TODO: Real keys, with Amber
-        return Keys.generate().publicKey()
+    override fun getPubkeyHex(): PubkeyHex {
+        TODO("Not yet implemented")
+    }
+
+    fun getPubkey(): PublicKey {
+        TODO("Not yet implemented")
     }
 
     fun sign(unsignedEvent: UnsignedEvent): Event {

@@ -14,6 +14,7 @@ import com.dluvian.nostr_kt.isRootPost
 import com.dluvian.nostr_kt.isTopicList
 import com.dluvian.nostr_kt.isVote
 import com.dluvian.nostr_kt.matches
+import com.dluvian.voyage.data.keys.IPubkeyProvider
 import com.dluvian.voyage.data.model.RelayedItem
 import com.dluvian.voyage.data.model.ValidatedContactList
 import com.dluvian.voyage.data.model.ValidatedEvent
@@ -30,7 +31,10 @@ import java.util.Collections
 
 private const val TAG = "EventQueueQualityGate"
 
-class EventValidator(private val filterCache: Map<SubId, List<Filter>>) {
+class EventValidator(
+    private val filterCache: Map<SubId, List<Filter>>,
+    private val pubkeyProvider: IPubkeyProvider,
+) {
 
     fun getValidatedEvent(
         event: Event,
@@ -88,9 +92,11 @@ class EventValidator(private val filterCache: Map<SubId, List<Filter>>) {
     }
 
     private fun matchesFilter(subId: SubId, event: Event): Boolean {
-        val cache = filterCache.getOrDefault(subId, emptyList()).toList()
-        if (cache.isEmpty()) return false
-        return cache.any { it.matches(event) }
+        val filters = filterCache.getOrDefault(subId, emptyList()).toList()
+        if (filters.isEmpty()) return false
+        // TODO: Make sure ReplyEvents match queried e tag. Or we get Foreign Key exceptions
+        //TODO: Make sure to not subscribe root posts and replies in a single Subscription. Replies we receive need to be matched against a list of root ids
+        return filters.any { it.matches(event) }
     }
 
     private fun validate(event: Event): ValidatedEvent? {
@@ -136,6 +142,7 @@ class EventValidator(private val filterCache: Map<SubId, List<Filter>>) {
             )
         }
         if (event.isTopicList()) {
+            if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) return null
             return ValidatedTopicList(
                 myPubkey = event.author(),
                 topics = event.getTopics(),

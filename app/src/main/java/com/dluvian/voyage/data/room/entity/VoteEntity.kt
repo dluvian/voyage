@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.data.model.ValidatedVote
 
 @Entity(
     tableName = "vote",
@@ -22,4 +23,16 @@ data class VoteEntity(
     val pubkey: PubkeyHex,
     val isPositive: Boolean,
     val createdAt: Long
-)
+) {
+    companion object {
+        fun from(validatedVote: ValidatedVote): VoteEntity {
+            return VoteEntity(
+                id = validatedVote.id.toHex(),
+                postId = validatedVote.postId.toHex(),
+                pubkey = validatedVote.pubkey.toHex(),
+                isPositive = validatedVote.isPositive,
+                createdAt = validatedVote.createdAt,
+            )
+        }
+    }
+}
