@@ -18,8 +18,8 @@ class Core(
 
     val onUpdate: (UIEvent) -> Unit = { uiEvent ->
         when (uiEvent) {
-            is BackPress -> navigator.pop()
-            is ClickCreate -> navigator.push(view = CreatePostNavView)
+            is SystemBackPress, GoBack -> navigator.pop()
+            ClickCreate -> navigator.push(view = CreatePostNavView)
             ClickHome -> navigator.push(view = HomeNavView)
             ClickInbox -> navigator.push(view = InboxNavView)
             ClickSettings -> navigator.push(view = SettingsNavView)

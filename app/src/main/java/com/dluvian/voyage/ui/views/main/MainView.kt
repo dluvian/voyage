@@ -6,12 +6,10 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.navigation.HomeNavView
 import com.dluvian.voyage.core.navigation.InboxNavView
 import com.dluvian.voyage.core.navigation.MainNavView
-import com.dluvian.voyage.core.navigation.SettingsNavView
 import com.dluvian.voyage.core.navigation.TopicsNavView
 import com.dluvian.voyage.ui.views.main.components.MainScaffold
 import com.dluvian.voyage.ui.views.main.subViews.HomeView
 import com.dluvian.voyage.ui.views.main.subViews.InboxView
-import com.dluvian.voyage.ui.views.main.subViews.SettingsView
 import com.dluvian.voyage.ui.views.main.subViews.TopicsView
 
 @Composable
@@ -23,9 +21,8 @@ fun MainView(currentView: MainNavView, snackbarHostState: SnackbarHostState, onU
     ) {
         when (currentView) {
             is HomeNavView -> HomeView()
-            is InboxNavView -> InboxView()
-            is SettingsNavView -> SettingsView()
-            is TopicsNavView -> TopicsView()
+            InboxNavView -> InboxView()
+            TopicsNavView -> TopicsView()
         }
     }
 }

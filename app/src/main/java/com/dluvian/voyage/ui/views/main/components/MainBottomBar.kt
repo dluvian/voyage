@@ -20,7 +20,6 @@ import com.dluvian.voyage.core.UIEvent
 import com.dluvian.voyage.core.navigation.HomeNavView
 import com.dluvian.voyage.core.navigation.InboxNavView
 import com.dluvian.voyage.core.navigation.MainNavView
-import com.dluvian.voyage.core.navigation.SettingsNavView
 import com.dluvian.voyage.core.navigation.TopicsNavView
 import com.dluvian.voyage.ui.AddIcon
 import com.dluvian.voyage.ui.HomeIcon
@@ -36,7 +35,12 @@ fun MainBottomBar(currentView: MainNavView, onUpdate: (UIEvent) -> Unit) {
                 selected = currentView is HomeNavView,
                 onClick = { onUpdate(ClickHome) },
                 label = { Text(text = stringResource(id = R.string.home)) },
-                icon = { Icon(imageVector = HomeIcon, contentDescription = null) }
+                icon = {
+                    Icon(
+                        imageVector = HomeIcon,
+                        contentDescription = null
+                    )
+                } // TODO: ContentDescription
             )
             NavigationBarItem(
                 selected = currentView is TopicsNavView,
@@ -57,7 +61,7 @@ fun MainBottomBar(currentView: MainNavView, onUpdate: (UIEvent) -> Unit) {
                 icon = { Icon(imageVector = InboxIcon, contentDescription = null) }
             )
             NavigationBarItem(
-                selected = currentView is SettingsNavView,
+                selected = false,
                 onClick = { onUpdate(ClickSettings) },
                 label = { Text(text = stringResource(id = R.string.settings)) },
                 icon = { Icon(imageVector = SettingsIcon, contentDescription = null) }

@@ -15,7 +15,6 @@ sealed class MainNavView : NavView() {
         return when (this) {
             is HomeNavView -> stringResource(id = R.string.home)
             is InboxNavView -> stringResource(id = R.string.inbox)
-            is SettingsNavView -> stringResource(id = R.string.settings)
             is TopicsNavView -> stringResource(id = R.string.topics)
         }
     }
@@ -24,7 +23,6 @@ sealed class MainNavView : NavView() {
 data object HomeNavView : MainNavView()
 data object TopicsNavView : MainNavView()
 data object InboxNavView : MainNavView()
-data object SettingsNavView : MainNavView()
 
 
 sealed class NonMainNavView : NavView() {
@@ -33,9 +31,10 @@ sealed class NonMainNavView : NavView() {
     fun getTitle(): String? {
         return when (this) {
             is CreatePostNavView -> null
+            SettingsNavView -> stringResource(id = R.string.settings)
         }
     }
 }
 
-sealed class ClosableNonMainNavView : NonMainNavView()
-data object CreatePostNavView : ClosableNonMainNavView()
+data object CreatePostNavView : NonMainNavView()
+data object SettingsNavView : NonMainNavView()
