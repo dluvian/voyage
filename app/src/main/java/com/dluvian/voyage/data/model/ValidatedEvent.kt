@@ -7,8 +7,6 @@ import rust.nostr.protocol.PublicKey
 sealed class ValidatedEvent
 
 sealed class ValidatedPost : ValidatedEvent()
-sealed class ValidatedList(val owner: PublicKey, open val createdAt: Long) : ValidatedEvent()
-
 data class ValidatedRootPost(
     val id: EventId,
     val pubkey: PublicKey,
@@ -17,7 +15,6 @@ data class ValidatedRootPost(
     val content: String,
     val createdAt: Long
 ) : ValidatedPost()
-
 data class ValidatedReplyPost(
     val id: EventId,
     val pubkey: PublicKey,
@@ -34,12 +31,12 @@ data class ValidatedVote(
     val createdAt: Long
 ) : ValidatedEvent()
 
+sealed class ValidatedList(val owner: PublicKey, open val createdAt: Long) : ValidatedEvent()
 data class ValidatedContactList(
     val pubkey: PublicKey,
     val friendPubkeys: Set<PublicKey>,
     override val createdAt: Long
 ) : ValidatedList(owner = pubkey, createdAt = createdAt)
-
 data class ValidatedTopicList(
     val myPubkey: PublicKey,
     val topics: Set<String>,

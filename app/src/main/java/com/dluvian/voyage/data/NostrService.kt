@@ -7,7 +7,7 @@ import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
 import com.dluvian.voyage.data.event.EventMaker
 import com.dluvian.voyage.data.event.EventQueue
-import com.dluvian.voyage.data.model.EventSubset
+import com.dluvian.voyage.data.model.EventIdAndPubkey
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
@@ -88,13 +88,20 @@ class NostrService(
     }
 
     fun publishReply(
-        rootEvent: EventSubset,
-        parentEvent: EventSubset,
+        rootId: EventId,
+        rootCreatedAt: Long,
+        parentEvent: EventIdAndPubkey,
         relayHint: RelayUrl,
         content: String,
         relayUrls: Collection<RelayUrl>
     ): Event {
-        val event = eventMaker.buildReply(rootEvent, parentEvent, relayHint, content)
+        val event = eventMaker.buildReply(
+            rootId = rootId,
+            rootCreatedAt = rootCreatedAt,
+            parentEvent = parentEvent,
+            relayHint = relayHint,
+            content = content
+        )
         nostrClient.publishToRelays(event = event, relayUrls = relayUrls)
 
         return event

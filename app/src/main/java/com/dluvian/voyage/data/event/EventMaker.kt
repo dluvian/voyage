@@ -8,7 +8,7 @@ import com.dluvian.nostr_kt.createReplyTag
 import com.dluvian.nostr_kt.createTitleTag
 import com.dluvian.voyage.data.keys.AccountKeyManager
 import com.dluvian.voyage.data.keys.MnemonicManager
-import com.dluvian.voyage.data.model.EventSubset
+import com.dluvian.voyage.data.model.EventIdAndPubkey
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventBuilder
 import rust.nostr.protocol.EventId
@@ -36,24 +36,30 @@ class EventMaker(
     }
 
     fun buildReply(
-        rootEvent: EventSubset,
-        parentEvent: EventSubset,
+        rootId: EventId,
+        rootCreatedAt: Long,
+        parentEvent: EventIdAndPubkey,
         relayHint: RelayUrl,
         content: String
     ): Event {
         val timestamp = Timestamp.now()
         val tags = listOf(
-            createLabelTag(REPLY_LABEL),
+            createLabelTag(label = REPLY_LABEL),
             createReplyTag(
-                parentEvent.id,
-                relayHint,
-                parentIsRoot = rootEvent.id.toHex() == parentEvent.id.toHex()
+                parentEventId = parentEvent.id,
+                relayHint = relayHint,
+                parentIsRoot = rootId.toHex() == parentEvent.id.toHex()
             ),
-            Tag.publicKey(parentEvent.pubkey)
+            Tag.publicKey(publicKey = parentEvent.pubkey)
         )
-        return EventBuilder.textNote(content, tags)
-            .customCreatedAt(timestamp)
-            .toEvent(keys = singleUseKeyManager.getReplySectionKeys(rootEvent))
+        return EventBuilder.textNote(content = content, tags = tags)
+            .customCreatedAt(createdAt = timestamp)
+            .toEvent(
+                keys = singleUseKeyManager.getReplySectionKeys(
+                    rootId = rootId,
+                    rootCreatedAt = rootCreatedAt
+                )
+            )
     }
 
     fun buildVote(

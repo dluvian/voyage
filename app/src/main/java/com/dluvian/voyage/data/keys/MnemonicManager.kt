@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.dluvian.nostr_kt.generateMnemonic
-import com.dluvian.voyage.data.model.EventSubset
+import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Keys
 import rust.nostr.protocol.Timestamp
 
@@ -43,7 +43,7 @@ class MnemonicManager(context: Context) {
         return deriveKeysFromMnemonic(account = POSTING_ACCOUNT)
     }
 
-    fun getReplySectionKeys(rootEvent: EventSubset): Keys {
+    fun getReplySectionKeys(rootId: EventId, rootCreatedAt: Long): Keys {
         return deriveKeysFromMnemonic(account = REPLY_SECTION_ACCOUNT)
     }
 
