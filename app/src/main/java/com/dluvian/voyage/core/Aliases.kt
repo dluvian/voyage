@@ -8,5 +8,6 @@ typealias EventIdHex = String
 typealias PubkeyHex = String
 typealias OnUpdate = (UIEvent) -> Unit
 typealias ComposableContent = @Composable () -> Unit
+typealias Lambda = () -> Unit
 
 typealias RelayedValidatedEvent = RelayedItem<ValidatedEvent>
