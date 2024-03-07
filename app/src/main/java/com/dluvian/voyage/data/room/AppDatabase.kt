@@ -40,5 +40,4 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun friendUpsertDao(): FriendUpsertDao
     abstract fun webOfTrustUpsertDao(): WebOfTrustUpsertDao
     abstract fun topicUpsertDao(): TopicUpsertDao
-
 }

@@ -111,12 +111,12 @@ class EventProcessor(
 
         val entitiesToInsert = filterNewestVotes(votes = votes).map { VoteEntity.from(it) }
 
-        scope.launch {
-            entitiesToInsert.forEach { vote ->
+        entitiesToInsert.forEach { vote ->
+            scope.launch {
                 voteUpsertDao.upsertVote(voteEntity = vote)
+            }.invokeOnCompletion { exception ->
+                if (exception != null) Log.w(TAG, "Failed to process vote ${vote.id}", exception)
             }
-        }.invokeOnCompletion { exception ->
-            if (exception != null) Log.w(TAG, "Failed to process votes", exception)
         }
     }
 
@@ -146,12 +146,12 @@ class EventProcessor(
     private fun processWebOfTrustList(webOfTrustList: Collection<ValidatedContactList>) {
         if (webOfTrustList.isEmpty()) return
 
-        scope.launch {
-            webOfTrustList.forEach { wot ->
-                runCatching { webOfTrustUpsertDao.upsertWebOfTrust(validatedWebOfTrust = wot) }
+        webOfTrustList.forEach { wot ->
+            scope.launch {
+                webOfTrustUpsertDao.upsertWebOfTrust(validatedWebOfTrust = wot)
+            }.invokeOnCompletion { exception ->
+                if (exception != null) Log.w(TAG, "Failed to process web of trust list", exception)
             }
-        }.invokeOnCompletion { exception ->
-            if (exception != null) Log.w(TAG, "Failed to process web of trust list", exception)
         }
     }
 

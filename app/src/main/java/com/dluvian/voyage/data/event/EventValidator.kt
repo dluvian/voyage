@@ -3,10 +3,9 @@ package com.dluvian.voyage.data.event
 import android.util.Log
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
-import com.dluvian.nostr_kt.getHashtag
+import com.dluvian.nostr_kt.getHashtags
 import com.dluvian.nostr_kt.getReplyToId
 import com.dluvian.nostr_kt.getTitle
-import com.dluvian.nostr_kt.getTopics
 import com.dluvian.nostr_kt.isContactList
 import com.dluvian.nostr_kt.isPostOrReply
 import com.dluvian.nostr_kt.isReplyPost
@@ -103,7 +102,7 @@ class EventValidator(
         if (!event.verify()) return null
 
         if (event.isRootPost()) {
-            val topic = event.getHashtag() ?: return null
+            val topic = event.getHashtags().firstOrNull() ?: return null
             return ValidatedRootPost(
                 id = event.id(),
                 pubkey = event.author(),
@@ -145,7 +144,7 @@ class EventValidator(
             if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) return null
             return ValidatedTopicList(
                 myPubkey = event.author(),
-                topics = event.getTopics(),
+                topics = event.getHashtags().toSet(),
                 createdAt = event.createdAt().asSecs().toLong()
             )
         }

@@ -8,7 +8,7 @@ import com.dluvian.voyage.data.model.ValidatedContactList
 
 @Entity(
     tableName = "weboftrust",
-    primaryKeys = ["webOfTrustPubkey"], // To prevent hundreds of duplicates
+    primaryKeys = ["webOfTrustPubkey"], // Only webOfTrustPubkey to prevent hundreds of duplicates
     foreignKeys = [ForeignKey(
         entity = FriendEntity::class,
         parentColumns = ["friendPubkey"],

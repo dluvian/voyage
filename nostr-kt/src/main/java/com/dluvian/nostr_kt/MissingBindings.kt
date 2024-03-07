@@ -121,16 +121,11 @@ fun Event.isReplyPost(): Boolean {
                 .any { it.getOrNull(3).let { marker -> marker == "root" || marker == "reply" } }
 }
 
-fun Event.getHashtag(): String? {
-    return this.tags().firstOrNull { it.kind() == TagKind.T }?.asVec()?.getOrNull(1)
-}
-
-fun Event.getTopics(): Set<String> {
+fun Event.getHashtags(): List<String> {
     return this.tags()
         .filter { it.kind() == TagKind.T }
         .mapNotNull { it.asVec().getOrNull(1) }
-        .toSet()
-
+        .distinct()
 }
 
 fun Event.getTitle(): String? {
