@@ -118,7 +118,7 @@ class NostrService(
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
-    fun subscribe(filters: List<Filter>, relayUrl: RelayUrl): SubId? {
+    fun subscribe(filters: List<Filter>, relayUrl: RelayUrl, unsubOnEOSE: Boolean = true): SubId? {
         if (filters.isEmpty()) return null
 
         val subId = nostrClient.subscribe(filters = filters, relayUrl = relayUrl)
@@ -127,7 +127,7 @@ class NostrService(
             return null
         }
         filterCache[subId] = filters
-        unsubOnEOSECache.add(subId)
+        if (unsubOnEOSE) unsubOnEOSECache.add(subId)
 
         return subId
     }
