@@ -1,27 +1,24 @@
 package com.dluvian.voyage.core.navigation
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 
-class Navigator {
-    private val navBackStack: MutableState<List<NavView>> = mutableStateOf(listOf(Home))
-    val currentView by lazy { derivedStateOf { navBackStack.value.last() } }
+class Navigator : INavigator {
+    override val stack = mutableStateOf<List<NavView>>(listOf(HomeNavView))
 
-    fun push(view: NavView) {
-        synchronized(navBackStack) {
-            val current = navBackStack.value
+    override fun push(view: NavView) {
+        synchronized(stack) {
+            val current = stack.value
             if (current.last() == view) return
 
-            navBackStack.value = current + view
+            stack.value = current + view
         }
     }
 
-    fun pop() {
-        synchronized(navBackStack) {
-            val current = navBackStack.value
+    override fun pop() {
+        synchronized(stack) {
+            val current = stack.value
             if (current.size <= 1) return
-            navBackStack.value = current.dropLast(1)
+            stack.value = current.dropLast(1)
         }
     }
 }
