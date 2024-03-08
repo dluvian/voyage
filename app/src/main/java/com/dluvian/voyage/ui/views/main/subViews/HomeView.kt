@@ -15,44 +15,40 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ClickDownvote
 import com.dluvian.voyage.core.ClickUpvote
-import com.dluvian.voyage.core.Lambda
 import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.core.RefreshHomeView
 import com.dluvian.voyage.core.model.Downvote
 import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.model.Upvote
-import com.dluvian.voyage.ui.OptionsIcon
+import com.dluvian.voyage.ui.components.PullRefreshBox
 
 @Composable
 fun HomeView(posts: List<RootPost>, isRefreshing: Boolean, onUpdate: OnUpdate) {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(posts) { post ->
-            PostRow(post = post, onUpdate = onUpdate)
+    PullRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(RefreshHomeView) }) {
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            items(posts) { post ->
+                PostRow(post = post, onUpdate = onUpdate)
+            }
         }
     }
 }
 
 @Composable
 private fun PostRow(post: RootPost, onUpdate: OnUpdate) {
-    val showOptions = remember { mutableStateOf(false) }
     Column(modifier = Modifier.fillMaxWidth()) {
         Header(
             topic = post.topic,
-            timeStr = post.timeStr,
-            onClickOptions = { showOptions.value = true })
+            timeStr = post.timeStr
+        )
         Spacer(modifier = Modifier.height(8.dp))
         if (post.title.isNotEmpty()) Text(
             text = post.title,
@@ -76,19 +72,11 @@ private fun PostRow(post: RootPost, onUpdate: OnUpdate) {
 }
 
 @Composable
-private fun Header(topic: String, timeStr: String, onClickOptions: Lambda) {
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Row {
-            Text(text = "#$topic")
-            Spacer(modifier = Modifier.width(6.dp)) // TODO: Define spacing in different file
-            Text(text = timeStr)
-        }
-        IconButton(onClick = onClickOptions) {
-            Icon(
-                imageVector = OptionsIcon,
-                contentDescription = stringResource(id = R.string.options)
-            )
-        }
+private fun Header(topic: String, timeStr: String) {
+    Row(modifier = Modifier.fillMaxWidth()) {
+        Text(text = "#$topic")
+        Spacer(modifier = Modifier.width(6.dp)) // TODO: Define spacing in different file
+        Text(text = timeStr)
     }
 }
 

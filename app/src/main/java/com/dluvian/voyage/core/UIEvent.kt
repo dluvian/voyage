@@ -13,3 +13,5 @@ data object ClickSettings : UIEvent()
 data class ClickUpvote(val postId: EventIdHex, val pubkey: PubkeyHex) : UIEvent()
 data class ClickDownvote(val postId: EventIdHex, val pubkey: PubkeyHex) : UIEvent()
 data class ClickNeutralizeVote(val postId: EventIdHex) : UIEvent()
+
+data object RefreshHomeView : UIEvent()

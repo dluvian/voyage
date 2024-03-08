@@ -24,9 +24,11 @@ class Core(
             ClickInbox -> navigator.push(view = InboxNavView)
             ClickSettings -> navigator.push(view = SettingsNavView)
             ClickTopics -> navigator.push(view = TopicsNavView)
-            is ClickDownvote -> TODO()
-            is ClickNeutralizeVote -> TODO()
-            is ClickUpvote -> TODO()
+            // TODO: Implement Updates
+            RefreshHomeView -> {}
+            is ClickDownvote -> {}
+            is ClickNeutralizeVote -> {}
+            is ClickUpvote -> {}
         }
     }
 
