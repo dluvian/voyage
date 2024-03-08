@@ -29,6 +29,7 @@ class Core(
             is ClickDownvote -> {}
             is ClickNeutralizeVote -> {}
             is ClickUpvote -> {}
+            is ClickComment -> {}
         }
     }
 

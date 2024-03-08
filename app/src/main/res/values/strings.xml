@@ -7,4 +7,6 @@
     <string name="create">Create</string>
     <string name="go_back">Go back</string>
     <string name="options">Options</string>
+    <string name="comment">Comment</string>
+    <string name="comments">Comments</string>
 </resources>

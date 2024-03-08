@@ -22,7 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
+import com.dluvian.voyage.core.ClickComment
 import com.dluvian.voyage.core.ClickDownvote
 import com.dluvian.voyage.core.ClickUpvote
 import com.dluvian.voyage.core.OnUpdate
@@ -30,6 +30,7 @@ import com.dluvian.voyage.core.RefreshHomeView
 import com.dluvian.voyage.core.model.Downvote
 import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.model.Upvote
+import com.dluvian.voyage.ui.components.CommentButton
 import com.dluvian.voyage.ui.components.EdgeToEdgeColWithDivider
 import com.dluvian.voyage.ui.components.PullRefreshBox
 import com.dluvian.voyage.ui.components.RelativeTime
@@ -54,7 +55,7 @@ private fun PostRow(post: RootPost, onUpdate: OnUpdate) {
             topic = post.topic,
             time = post.time
         )
-        Spacer(modifier = Modifier.height(spacing.small))
+        Spacer(modifier = Modifier.height(spacing.medium))
         if (post.title.isNotEmpty()) Text(
             text = post.title,
             style = MaterialTheme.typography.titleLarge,
@@ -62,14 +63,14 @@ private fun PostRow(post: RootPost, onUpdate: OnUpdate) {
             maxLines = 4,
             overflow = TextOverflow.Ellipsis
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(spacing.large))
         Text(
             text = post.content,
             style = MaterialTheme.typography.titleMedium,
             maxLines = 8,
             overflow = TextOverflow.Ellipsis
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(spacing.large))
         Actions(
             post = post,
             onUpdate = onUpdate,
@@ -121,6 +122,8 @@ private fun Actions(
                 tint = if (post.myVote is Downvote) Color.Blue else Color.Unspecified
             )
         }
-        Text(text = "${post.commentCount} Comments")
+        CommentButton(
+            commentCount = post.commentCount,
+            onClick = { onUpdate(ClickComment(postId = post.id)) })
     }
 }
