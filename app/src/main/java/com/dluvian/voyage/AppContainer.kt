@@ -4,14 +4,15 @@ import android.content.Context
 import androidx.room.Room
 import com.dluvian.nostr_kt.NostrClient
 import com.dluvian.nostr_kt.SubId
-import com.dluvian.voyage.data.FeedProvider
-import com.dluvian.voyage.data.NostrService
 import com.dluvian.voyage.data.event.EventMaker
 import com.dluvian.voyage.data.event.EventProcessor
 import com.dluvian.voyage.data.event.EventQueue
 import com.dluvian.voyage.data.event.EventValidator
 import com.dluvian.voyage.data.keys.AccountKeyManager
 import com.dluvian.voyage.data.keys.MnemonicManager
+import com.dluvian.voyage.data.nostr.NostrService
+import com.dluvian.voyage.data.provider.FeedProvider
+import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.AppDatabase
 import okhttp3.OkHttpClient
 import rust.nostr.protocol.Filter
@@ -57,17 +58,9 @@ class AppContainer(context: Context) {
         filterCache = filterCache
     )
     val feedProvider = FeedProvider()
+    val relayProvider = RelayProvider()
 
     init {
-        // TODO: Use nip65
-        nostrService.initialize(
-            initRelayUrls = listOf(
-                "wss://nos.lol",
-                "wss://nostr.fmt.wiz.biz",
-                "wss://nostr.oxtr.dev",
-                "wss://nostr.sethforprivacy.com",
-                "wss://relay.nostr.wirednet.jp",
-            )
-        )
+        nostrService.initialize(initRelayUrls = relayProvider.getReadRelays())
     }
 }

@@ -9,7 +9,7 @@ import com.dluvian.voyage.core.navigation.Navigator
 import com.dluvian.voyage.core.navigation.SettingsNavView
 import com.dluvian.voyage.core.navigation.TopicsNavView
 import com.dluvian.voyage.core.viewModel.HomeViewModel
-import com.dluvian.voyage.data.NostrService
+import com.dluvian.voyage.data.nostr.NostrService
 
 class Core(
     private val nostrService: NostrService,

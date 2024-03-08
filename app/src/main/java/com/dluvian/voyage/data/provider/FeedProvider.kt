@@ -1,14 +1,15 @@
-package com.dluvian.voyage.data
+package com.dluvian.voyage.data.provider
 
 import com.dluvian.voyage.core.model.RootPost
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.onEach
 
-private const val PAGE_SIZE = 25
-
 class FeedProvider {
-    fun getFeedFlow(page: Int): Flow<List<RootPost>> {
+    fun getFeedFlow(until: Long, size: Int): Flow<List<RootPost>> {
+        // TODO: Subscribe feed
+        // TODO: Subscribe votes
+        // TODO: Subscribe replies
         return emptyFlow<List<RootPost>>().onEach { }
     }
 }

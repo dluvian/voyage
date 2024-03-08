@@ -1,4 +1,4 @@
-package com.dluvian.voyage.data
+package com.dluvian.voyage.data.nostr
 
 import android.util.Log
 import com.dluvian.nostr_kt.INostrListener
