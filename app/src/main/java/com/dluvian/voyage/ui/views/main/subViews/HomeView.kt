@@ -85,7 +85,11 @@ private fun Actions(
     post: RootPost,
     onUpdate: OnUpdate
 ) {
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         VoteBox(
             postId = post.id,
             authorPubkey = post.pubkey,
