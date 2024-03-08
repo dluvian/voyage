@@ -17,7 +17,6 @@ import com.dluvian.voyage.data.room.dao.PostInsertDao
 import com.dluvian.voyage.data.room.dao.TopicUpsertDao
 import com.dluvian.voyage.data.room.dao.VoteUpsertDao
 import com.dluvian.voyage.data.room.dao.WebOfTrustUpsertDao
-import com.dluvian.voyage.data.room.entity.PostEntity
 import com.dluvian.voyage.data.room.entity.VoteEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -76,12 +75,8 @@ class EventProcessor(
     private fun processRootPosts(relayedRootPosts: Collection<RelayedItem<ValidatedRootPost>>) {
         if (relayedRootPosts.isEmpty()) return
 
-        val relayedEntities = relayedRootPosts.map { relayedItem ->
-            RelayedItem(item = PostEntity.from(relayedItem.item), relayUrl = relayedItem.relayUrl)
-        }
-
         scope.launch {
-            postInsertDao.insertPosts(relayedPosts = relayedEntities)
+            postInsertDao.insertRootPosts(relayedPosts = relayedRootPosts)
         }.invokeOnCompletion { exception ->
             if (exception != null) Log.w(TAG, "Failed to process root posts", exception)
         }
@@ -90,17 +85,8 @@ class EventProcessor(
     private fun processReplyPosts(relayedReplyPosts: Collection<RelayedItem<ValidatedReplyPost>>) {
         if (relayedReplyPosts.isEmpty()) return
 
-        val relayedEntities = relayedReplyPosts
-            .sortedBy { it.item.createdAt }
-            .map { relayedItem ->
-                RelayedItem(
-                    item = PostEntity.from(relayedItem.item),
-                    relayUrl = relayedItem.relayUrl
-                )
-            }
-
         scope.launch {
-            postInsertDao.insertPosts(relayedPosts = relayedEntities)
+            postInsertDao.insertReplyPosts(relayedPosts = relayedReplyPosts)
         }.invokeOnCompletion { exception ->
             if (exception != null) Log.w(TAG, "Failed to process reply posts", exception)
         }

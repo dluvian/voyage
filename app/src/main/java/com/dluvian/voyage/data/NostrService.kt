@@ -12,7 +12,6 @@ import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
 import rust.nostr.protocol.PublicKey
-import java.util.Collections
 
 class NostrService(
     private val nostrClient: NostrClient,
@@ -21,7 +20,6 @@ class NostrService(
     private val filterCache: MutableMap<SubId, List<Filter>>,
 ) {
     private val tag = "NostrService"
-    private val unsubOnEOSECache = Collections.synchronizedSet(mutableSetOf<SubId>())
 
     private val listener = object : INostrListener {
         override fun onOpen(relayUrl: RelayUrl, msg: String) {
@@ -38,15 +36,11 @@ class NostrService(
 
         override fun onEOSE(relayUrl: RelayUrl, subId: SubId) {
             Log.d(tag, "OnEOSE($relayUrl): $subId")
-            if (unsubOnEOSECache.remove(subId)) {
-                Log.d(tag, "Unsubscribe onEOSE($relayUrl) $subId")
-                nostrClient.unsubscribe(subId)
-            }
+            nostrClient.unsubscribe(subId)
         }
 
         override fun onClosed(relayUrl: RelayUrl, subId: SubId, reason: String) {
             Log.d(tag, "OnClosed($relayUrl): $subId, reason: $reason")
-            unsubOnEOSECache.remove(subId)
         }
 
         override fun onClose(relayUrl: RelayUrl, reason: String) {
@@ -118,7 +112,7 @@ class NostrService(
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
-    fun subscribe(filters: List<Filter>, relayUrl: RelayUrl, unsubOnEOSE: Boolean = true): SubId? {
+    fun subscribe(filters: List<Filter>, relayUrl: RelayUrl): SubId? {
         if (filters.isEmpty()) return null
 
         val subId = nostrClient.subscribe(filters = filters, relayUrl = relayUrl)
@@ -127,7 +121,6 @@ class NostrService(
             return null
         }
         filterCache[subId] = filters
-        if (unsubOnEOSE) unsubOnEOSECache.add(subId)
 
         return subId
     }
@@ -140,7 +133,6 @@ class NostrService(
     }
 
     fun close() {
-        unsubOnEOSECache.clear()
         filterCache.clear()
         nostrClient.close()
     }

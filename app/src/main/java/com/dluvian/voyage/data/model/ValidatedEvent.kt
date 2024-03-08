@@ -6,22 +6,22 @@ import rust.nostr.protocol.PublicKey
 
 sealed class ValidatedEvent
 
-sealed class ValidatedPost : ValidatedEvent()
+sealed class ValidatedPost(open val id: EventId, open val topics: List<String>) : ValidatedEvent()
 data class ValidatedRootPost(
-    val id: EventId,
+    override val id: EventId,
     val pubkey: PublicKey,
-    val topic: String,
+    override val topics: List<String>,
     val title: String?,
     val content: String,
     val createdAt: Long
-) : ValidatedPost()
+) : ValidatedPost(id = id, topics = topics)
 data class ValidatedReplyPost(
-    val id: EventId,
+    override val id: EventId,
     val pubkey: PublicKey,
     val replyToId: EventIdHex,
     val content: String,
     val createdAt: Long
-) : ValidatedPost()
+) : ValidatedPost(id = id, topics = emptyList())
 
 data class ValidatedVote(
     val id: EventId,

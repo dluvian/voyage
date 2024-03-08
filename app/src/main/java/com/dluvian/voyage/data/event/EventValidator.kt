@@ -13,6 +13,7 @@ import com.dluvian.nostr_kt.isRootPost
 import com.dluvian.nostr_kt.isTopicList
 import com.dluvian.nostr_kt.isVote
 import com.dluvian.nostr_kt.matches
+import com.dluvian.voyage.core.MAX_TOPIC_LENGTH
 import com.dluvian.voyage.data.keys.IPubkeyProvider
 import com.dluvian.voyage.data.model.RelayedItem
 import com.dluvian.voyage.data.model.ValidatedContactList
@@ -102,11 +103,11 @@ class EventValidator(
         if (!event.verify()) return null
 
         if (event.isRootPost()) {
-            val topic = event.getHashtags().firstOrNull() ?: return null
+            val topics = event.getHashtags().map { it.take(MAX_TOPIC_LENGTH) }.distinct()
             return ValidatedRootPost(
                 id = event.id(),
                 pubkey = event.author(),
-                topic = topic,
+                topics = topics,
                 title = event.getTitle(),
                 content = event.content(),
                 createdAt = event.createdAt().asSecs().toLong()

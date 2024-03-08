@@ -10,6 +10,7 @@ import com.dluvian.voyage.data.room.dao.VoteUpsertDao
 import com.dluvian.voyage.data.room.dao.WebOfTrustUpsertDao
 import com.dluvian.voyage.data.room.entity.AccountEntity
 import com.dluvian.voyage.data.room.entity.FriendEntity
+import com.dluvian.voyage.data.room.entity.HashtagEntity
 import com.dluvian.voyage.data.room.entity.PostEntity
 import com.dluvian.voyage.data.room.entity.PostRelayEntity
 import com.dluvian.voyage.data.room.entity.TopicEntity
@@ -30,7 +31,8 @@ import com.dluvian.voyage.data.room.entity.WebOfTrustEntity
         AccountEntity::class,
         FriendEntity::class,
         WebOfTrustEntity::class,
-        TopicEntity::class
+        TopicEntity::class,
+        HashtagEntity::class,
     ],
 )
 abstract class AppDatabase : RoomDatabase() {
