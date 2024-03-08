@@ -6,7 +6,7 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.navigation.CreatePostNavView
 import com.dluvian.voyage.core.navigation.NonMainNavView
 import com.dluvian.voyage.core.navigation.SettingsNavView
-import com.dluvian.voyage.ui.views.nonMain.components.NonMainScaffold
+import com.dluvian.voyage.ui.components.scaffold.NonMainScaffold
 import com.dluvian.voyage.ui.views.nonMain.subViews.CreatePostView
 import com.dluvian.voyage.ui.views.nonMain.subViews.SettingsView
 

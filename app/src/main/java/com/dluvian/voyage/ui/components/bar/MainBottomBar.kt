@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.views.main.components
+package com.dluvian.voyage.ui.components.bar
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

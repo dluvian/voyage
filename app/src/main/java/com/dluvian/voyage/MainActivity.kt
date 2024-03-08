@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.dluvian.voyage.core.Core
+import com.dluvian.voyage.core.viewModel.HomeViewModel
 import com.dluvian.voyage.ui.VoyageApp
 
 class MainActivity : ComponentActivity() {
@@ -12,7 +13,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val appContainer = AppContainer(this.applicationContext)
         setContent {
-            val core = viewModel { Core(appContainer.nostrService) }
+            val homeViewModel = viewModel {
+                HomeViewModel(feedProvider = appContainer.feedProvider)
+            }
+            val core = viewModel {
+                Core(
+                    nostrService = appContainer.nostrService,
+                    homeViewModel = homeViewModel
+                )
+            }
             VoyageApp(core)
         }
     }

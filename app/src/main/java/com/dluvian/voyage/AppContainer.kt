@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.dluvian.nostr_kt.NostrClient
 import com.dluvian.nostr_kt.SubId
+import com.dluvian.voyage.data.FeedProvider
 import com.dluvian.voyage.data.NostrService
 import com.dluvian.voyage.data.event.EventMaker
 import com.dluvian.voyage.data.event.EventProcessor
@@ -55,6 +56,7 @@ class AppContainer(context: Context) {
         eventMaker = eventMaker,
         filterCache = filterCache
     )
+    val feedProvider = FeedProvider()
 
     init {
         // TODO: Use nip65

@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.components
+package com.dluvian.voyage.ui.components.chip
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.height

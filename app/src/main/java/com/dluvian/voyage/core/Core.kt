@@ -8,10 +8,12 @@ import com.dluvian.voyage.core.navigation.InboxNavView
 import com.dluvian.voyage.core.navigation.Navigator
 import com.dluvian.voyage.core.navigation.SettingsNavView
 import com.dluvian.voyage.core.navigation.TopicsNavView
+import com.dluvian.voyage.core.viewModel.HomeViewModel
 import com.dluvian.voyage.data.NostrService
 
 class Core(
-    private val nostrService: NostrService
+    private val nostrService: NostrService,
+    val homeViewModel: HomeViewModel,
 ) : ViewModel() {
     val navigator = Navigator()
     val snackbarHostState = SnackbarHostState()
@@ -24,8 +26,8 @@ class Core(
             ClickInbox -> navigator.push(view = InboxNavView)
             ClickSettings -> navigator.push(view = SettingsNavView)
             ClickTopics -> navigator.push(view = TopicsNavView)
+            RefreshHomeView -> homeViewModel.refresh()
             // TODO: Implement Updates
-            RefreshHomeView -> {}
             is ClickDownvote -> {}
             is ClickNeutralizeVote -> {}
             is ClickUpvote -> {}

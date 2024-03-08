@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.components
+package com.dluvian.voyage.ui.components.chip
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.AssistChip
@@ -14,7 +14,7 @@ import com.dluvian.voyage.ui.theme.CommentIcon
 import com.dluvian.voyage.ui.theme.RoundedChip
 
 @Composable
-fun CommentButton(commentCount: Int, onClick: Lambda) {
+fun CommentChip(commentCount: Int, onClick: Lambda) {
     AssistChip(
         modifier = Modifier.height(AssistChipDefaults.Height.times(0.8f)),
         onClick = onClick,

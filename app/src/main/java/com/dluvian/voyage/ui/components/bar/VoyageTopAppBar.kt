@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.components
+package com.dluvian.voyage.ui.components.bar
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
