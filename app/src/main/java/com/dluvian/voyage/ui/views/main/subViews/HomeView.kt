@@ -2,7 +2,6 @@ package com.dluvian.voyage.ui.views.main.subViews
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,8 +17,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.dluvian.voyage.core.ClickDownvote
@@ -29,7 +30,10 @@ import com.dluvian.voyage.core.RefreshHomeView
 import com.dluvian.voyage.core.model.Downvote
 import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.model.Upvote
+import com.dluvian.voyage.ui.components.EdgeToEdgeColWithDivider
 import com.dluvian.voyage.ui.components.PullRefreshBox
+import com.dluvian.voyage.ui.components.TopicChip
+import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
 fun HomeView(posts: List<RootPost>, isRefreshing: Boolean, onUpdate: OnUpdate) {
@@ -44,23 +48,24 @@ fun HomeView(posts: List<RootPost>, isRefreshing: Boolean, onUpdate: OnUpdate) {
 
 @Composable
 private fun PostRow(post: RootPost, onUpdate: OnUpdate) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+    EdgeToEdgeColWithDivider(verticalPadding = spacing.screenEdge) {
         Header(
             topic = post.topic,
             timeStr = post.timeStr
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(spacing.small))
         if (post.title.isNotEmpty()) Text(
             text = post.title,
-            style = MaterialTheme.typography.titleMedium,
-            maxLines = 3,
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            maxLines = 4,
             overflow = TextOverflow.Ellipsis
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = post.content,
             style = MaterialTheme.typography.titleMedium,
-            maxLines = 6,
+            maxLines = 8,
             overflow = TextOverflow.Ellipsis
         )
         Spacer(modifier = Modifier.height(8.dp))
@@ -73,8 +78,8 @@ private fun PostRow(post: RootPost, onUpdate: OnUpdate) {
 
 @Composable
 private fun Header(topic: String, timeStr: String) {
-    Row(modifier = Modifier.fillMaxWidth()) {
-        Text(text = "#$topic")
+    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        TopicChip(topic = topic)
         Spacer(modifier = Modifier.width(6.dp)) // TODO: Define spacing in different file
         Text(text = timeStr)
     }

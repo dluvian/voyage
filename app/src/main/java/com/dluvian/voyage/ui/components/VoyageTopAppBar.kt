@@ -10,7 +10,7 @@ import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.ui.BackIcon
+import com.dluvian.voyage.ui.theme.BackIcon
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -24,11 +24,11 @@ import com.dluvian.voyage.core.navigation.HomeNavView
 import com.dluvian.voyage.core.navigation.InboxNavView
 import com.dluvian.voyage.core.navigation.MainNavView
 import com.dluvian.voyage.core.navigation.TopicsNavView
-import com.dluvian.voyage.ui.AddIcon
-import com.dluvian.voyage.ui.HomeIcon
-import com.dluvian.voyage.ui.InboxIcon
-import com.dluvian.voyage.ui.SettingsIcon
-import com.dluvian.voyage.ui.TopicIcon
+import com.dluvian.voyage.ui.theme.AddIcon
+import com.dluvian.voyage.ui.theme.HomeIcon
+import com.dluvian.voyage.ui.theme.InboxIcon
+import com.dluvian.voyage.ui.theme.SettingsIcon
+import com.dluvian.voyage.ui.theme.TopicIcon
 
 @Composable
 fun MainBottomBar(currentView: MainNavView, onUpdate: (UIEvent) -> Unit) {
