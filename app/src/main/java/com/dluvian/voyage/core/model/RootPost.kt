@@ -7,7 +7,7 @@ data class RootPost(
     val id: EventIdHex,
     val pubkey: PubkeyHex,
     val topic: String,
-    val timeStr: String,
+    val time: Long,
     val title: String,
     val content: String,
     val myVote: Vote,

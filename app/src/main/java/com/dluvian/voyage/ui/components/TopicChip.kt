@@ -12,11 +12,11 @@ import androidx.compose.ui.unit.dp
 import com.dluvian.voyage.ui.theme.HashtagChipGradient
 
 @Composable
-fun TopicChip(topic: String) {
+fun TopicChip(topic: String, modifier: Modifier = Modifier) {
     AssistChip(
-        modifier = Modifier.height(AssistChipDefaults.Height.times(0.7f)),
+        modifier = modifier.height(AssistChipDefaults.Height.times(0.7f)),
         onClick = { },
         label = { Text(text = "#$topic") },
-        border = BorderStroke(width = 1.dp, brush = Brush.linearGradient(HashtagChipGradient))
+        border = BorderStroke(width = 1.dp, brush = Brush.linearGradient(HashtagChipGradient)),
     )
 }

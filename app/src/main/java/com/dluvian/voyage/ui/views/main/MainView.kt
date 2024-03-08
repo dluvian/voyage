@@ -28,7 +28,7 @@ fun MainView(currentView: MainNavView, snackbarHostState: SnackbarHostState, onU
                         "38ce9e0bfd0f4752d84f859d571154479de828d1f5ea201cab96a2a16f9815c5",
                         "38ce9e0bfd0f4752d84f859d571154479de828d1f5ea201cab96a2a16f9815c5",
                         "austronesian",
-                        "time",
+                        System.currentTimeMillis() / 1000,
                         "Austronesians were the first humans with seafaring vessels that could cross large distances on the open ocean, which allowed them to colonize a large part of the Indo-Pacific region",
                         "Languages from the family are today spoken by about 386 million people (4.9% of the global population), making it the fifth-largest language family by number of speakers. Major Austronesian languages are Malay (around 250–270 million in Indonesia alone in its own literary standard, named Indonesian), Javanese, and Filipino (Tagalog). The family contains 1,257 languages, the second most of any language family.[89]\n" +
                                 "\n" +
@@ -43,7 +43,7 @@ fun MainView(currentView: MainNavView, snackbarHostState: SnackbarHostState, onU
                         "38ce9e0bfd0f4752d84f859d571154479de828d1f5ea201cab96a2a16f9815c5",
                         "38ce9e0bfd0f4752d84f859d571154479de828d1f5ea201cab96a2a16f9815c5",
                         "austronesian",
-                        "time",
+                        System.currentTimeMillis() / 1000 - (60 * 60 * 24),
                         "Austronesians were the first humans with seafaring vessels that could cross large distances on the open ocean, which allowed them to colonize a large part of the Indo-Pacific region",
                         "Languages from the family are today spoken by about 386 million people (4.9% of the global population), making it the fifth-largest language family by number of speakers. Major Austronesian languages are Malay (around 250–270 million in Indonesia alone in its own literary standard, named Indonesian), Javanese, and Filipino (Tagalog). The family contains 1,257 languages, the second most of any language family.[89]\n" +
                                 "\n" +
@@ -58,7 +58,7 @@ fun MainView(currentView: MainNavView, snackbarHostState: SnackbarHostState, onU
                         "38ce9e0bfd0f4752d84f859d571154479de828d1f5ea201cab96a2a16f9815c5",
                         "38ce9e0bfd0f4752d84f859d571154479de828d1f5ea201cab96a2a16f9815c5",
                         "austronesian",
-                        "time",
+                        System.currentTimeMillis() / 1000 - (60 * 60 * 24 * 3),
                         "Austronesians were the first humans with seafaring vessels that could cross large distances on the open ocean, which allowed them to colonize a large part of the Indo-Pacific region",
                         "Languages from the family are today spoken by about 386 million people (4.9% of the global population), making it the fifth-largest language family by number of speakers. Major Austronesian languages are Malay (around 250–270 million in Indonesia alone in its own literary standard, named Indonesian), Javanese, and Filipino (Tagalog). The family contains 1,257 languages, the second most of any language family.[89]\n" +
                                 "\n" +
@@ -73,7 +73,7 @@ fun MainView(currentView: MainNavView, snackbarHostState: SnackbarHostState, onU
                         "38ce9e0bfd0f4752d84f859d571154479de828d1f5ea201cab96a2a16f9815c5",
                         "38ce9e0bfd0f4752d84f859d571154479de828d1f5ea201cab96a2a16f9815c5",
                         "austronesian",
-                        "time",
+                        System.currentTimeMillis() / 1000 - (60 * 60 * 24 * 9),
                         "Austronesians were the first humans with seafaring vessels that could cross large distances on the open ocean, which allowed them to colonize a large part of the Indo-Pacific region",
                         "Languages from the family are today spoken by about 386 million people (4.9% of the global population), making it the fifth-largest language family by number of speakers. Major Austronesian languages are Malay (around 250–270 million in Indonesia alone in its own literary standard, named Indonesian), Javanese, and Filipino (Tagalog). The family contains 1,257 languages, the second most of any language family.[89]\n" +
                                 "\n" +
@@ -88,7 +88,7 @@ fun MainView(currentView: MainNavView, snackbarHostState: SnackbarHostState, onU
                         "38ce9e0bfd0f4752d84f859d571154479de828d1f5ea201cab96a2a16f9815c5",
                         "38ce9e0bfd0f4752d84f859d571154479de828d1f5ea201cab96a2a16f9815c5",
                         "austronesian",
-                        "time",
+                        System.currentTimeMillis() / 1000 - (60 * 60 * 24 * 50),
                         "Austronesians were the first humans with seafaring vessels that could cross large distances on the open ocean, which allowed them to colonize a large part of the Indo-Pacific region",
                         "Languages from the family are today spoken by about 386 million people (4.9% of the global population), making it the fifth-largest language family by number of speakers. Major Austronesian languages are Malay (around 250–270 million in Indonesia alone in its own literary standard, named Indonesian), Javanese, and Filipino (Tagalog). The family contains 1,257 languages, the second most of any language family.[89]\n" +
                                 "\n" +
@@ -103,7 +103,7 @@ fun MainView(currentView: MainNavView, snackbarHostState: SnackbarHostState, onU
                         "38ce9e0bfd0f4752d84f859d571154479de828d1f5ea201cab96a2a16f9815c5",
                         "38ce9e0bfd0f4752d84f859d571154479de828d1f5ea201cab96a2a16f9815c5",
                         "austronesian",
-                        "time",
+                        System.currentTimeMillis() / 1000 - (60 * 60 * 24 * 500),
                         "Austronesians were the first humans with seafaring vessels that could cross large distances on the open ocean, which allowed them to colonize a large part of the Indo-Pacific region",
                         "Languages from the family are today spoken by about 386 million people (4.9% of the global population), making it the fifth-largest language family by number of speakers. Major Austronesian languages are Malay (around 250–270 million in Indonesia alone in its own literary standard, named Indonesian), Javanese, and Filipino (Tagalog). The family contains 1,257 languages, the second most of any language family.[89]\n" +
                                 "\n" +

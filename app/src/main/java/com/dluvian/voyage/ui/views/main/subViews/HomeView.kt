@@ -32,6 +32,7 @@ import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.model.Upvote
 import com.dluvian.voyage.ui.components.EdgeToEdgeColWithDivider
 import com.dluvian.voyage.ui.components.PullRefreshBox
+import com.dluvian.voyage.ui.components.RelativeTime
 import com.dluvian.voyage.ui.components.TopicChip
 import com.dluvian.voyage.ui.theme.spacing
 
@@ -51,7 +52,7 @@ private fun PostRow(post: RootPost, onUpdate: OnUpdate) {
     EdgeToEdgeColWithDivider(verticalPadding = spacing.screenEdge) {
         Header(
             topic = post.topic,
-            timeStr = post.timeStr
+            time = post.time
         )
         Spacer(modifier = Modifier.height(spacing.small))
         if (post.title.isNotEmpty()) Text(
@@ -77,11 +78,11 @@ private fun PostRow(post: RootPost, onUpdate: OnUpdate) {
 }
 
 @Composable
-private fun Header(topic: String, timeStr: String) {
+private fun Header(topic: String, time: Long) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        TopicChip(topic = topic)
-        Spacer(modifier = Modifier.width(6.dp)) // TODO: Define spacing in different file
-        Text(text = timeStr)
+        TopicChip(modifier = Modifier.weight(weight = 1f, fill = false), topic = topic)
+        Spacer(modifier = Modifier.width(spacing.large))
+        RelativeTime(from = time)
     }
 }
 
