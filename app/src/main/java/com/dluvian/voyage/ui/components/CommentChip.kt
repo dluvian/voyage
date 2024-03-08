@@ -1,7 +1,6 @@
 package com.dluvian.voyage.ui.components
 
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Icon
@@ -12,7 +11,7 @@ import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Lambda
 import com.dluvian.voyage.ui.theme.CommentIcon
-import com.dluvian.voyage.ui.theme.spacing
+import com.dluvian.voyage.ui.theme.RoundedChip
 
 @Composable
 fun CommentButton(commentCount: Int, onClick: Lambda) {
@@ -26,7 +25,7 @@ fun CommentButton(commentCount: Int, onClick: Lambda) {
                 contentDescription = stringResource(id = R.string.comment)
             )
         },
-        shape = RoundedCornerShape(spacing.xl),
+        shape = RoundedChip,
         label = { Text(text = "$commentCount ${stringResource(id = R.string.comments)}") },
     )
 }

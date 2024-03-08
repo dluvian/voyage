@@ -9,4 +9,6 @@
     <string name="options">Options</string>
     <string name="comment">Comment</string>
     <string name="comments">Comments</string>
+    <string name="upvote">Upvote</string>
+    <string name="downvote">Downvote</string>
 </resources>

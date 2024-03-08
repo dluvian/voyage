@@ -7,9 +7,8 @@ import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
-import com.dluvian.voyage.ui.theme.HashtagChipGradient
+import com.dluvian.voyage.ui.theme.FancyBrush
 
 @Composable
 fun TopicChip(topic: String, modifier: Modifier = Modifier) {
@@ -17,6 +16,6 @@ fun TopicChip(topic: String, modifier: Modifier = Modifier) {
         modifier = modifier.height(AssistChipDefaults.Height.times(0.7f)),
         onClick = { },
         label = { Text(text = "#$topic") },
-        border = BorderStroke(width = 1.dp, brush = Brush.linearGradient(HashtagChipGradient)),
+        border = BorderStroke(width = 1.dp, brush = FancyBrush),
     )
 }

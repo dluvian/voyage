@@ -1,6 +1,5 @@
 package com.dluvian.voyage.ui.views.main.subViews
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,31 +9,23 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.dluvian.voyage.core.ClickComment
-import com.dluvian.voyage.core.ClickDownvote
-import com.dluvian.voyage.core.ClickUpvote
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.RefreshHomeView
-import com.dluvian.voyage.core.model.Downvote
 import com.dluvian.voyage.core.model.RootPost
-import com.dluvian.voyage.core.model.Upvote
 import com.dluvian.voyage.ui.components.CommentButton
 import com.dluvian.voyage.ui.components.EdgeToEdgeColWithDivider
 import com.dluvian.voyage.ui.components.PullRefreshBox
 import com.dluvian.voyage.ui.components.RelativeTime
 import com.dluvian.voyage.ui.components.TopicChip
+import com.dluvian.voyage.ui.components.VoteBox
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
@@ -56,14 +47,16 @@ private fun PostRow(post: RootPost, onUpdate: OnUpdate) {
             time = post.time
         )
         Spacer(modifier = Modifier.height(spacing.medium))
-        if (post.title.isNotEmpty()) Text(
-            text = post.title,
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            maxLines = 4,
-            overflow = TextOverflow.Ellipsis
-        )
-        Spacer(modifier = Modifier.height(spacing.large))
+        if (post.title.isNotEmpty()) {
+            Text(
+                text = post.title,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                maxLines = 4,
+                overflow = TextOverflow.Ellipsis
+            )
+            Spacer(modifier = Modifier.height(spacing.large))
+        }
         Text(
             text = post.content,
             style = MaterialTheme.typography.titleMedium,
@@ -93,35 +86,14 @@ private fun Actions(
     onUpdate: OnUpdate
 ) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Row {
-            Icon(
-                modifier = Modifier.clickable {
-                    onUpdate(
-                        ClickUpvote(
-                            postId = post.id,
-                            pubkey = post.pubkey
-                        )
-                    )
-                },
-                imageVector = Icons.Default.KeyboardArrowUp,
-                contentDescription = null,
-                tint = if (post.myVote is Upvote) Color.Red else Color.Unspecified
-            )
-            Text(text = "${post.tally} (${post.ratioInPercent}%)")
-            Icon(
-                modifier = Modifier.clickable {
-                    onUpdate(
-                        ClickDownvote(
-                            postId = post.id,
-                            pubkey = post.pubkey
-                        )
-                    )
-                },
-                imageVector = Icons.Default.KeyboardArrowDown,
-                contentDescription = null,
-                tint = if (post.myVote is Downvote) Color.Blue else Color.Unspecified
-            )
-        }
+        VoteBox(
+            postId = post.id,
+            authorPubkey = post.pubkey,
+            myVote = post.myVote,
+            tally = post.tally,
+            ratioInPercent = post.ratioInPercent,
+            onUpdate = onUpdate
+        )
         CommentButton(
             commentCount = post.commentCount,
             onClick = { onUpdate(ClickComment(postId = post.id)) })
