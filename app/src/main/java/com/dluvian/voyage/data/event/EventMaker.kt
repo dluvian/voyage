@@ -6,6 +6,7 @@ import com.dluvian.nostr_kt.createKindTag
 import com.dluvian.nostr_kt.createLabelTag
 import com.dluvian.nostr_kt.createReplyTag
 import com.dluvian.nostr_kt.createTitleTag
+import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.data.keys.AccountKeyManager
 import com.dluvian.voyage.data.keys.MnemonicManager
 import com.dluvian.voyage.data.model.EventIdAndPubkey
@@ -32,7 +33,7 @@ class EventMaker(
         )
         return EventBuilder.textNote(content, tags)
             .customCreatedAt(timestamp)
-            .toEvent(keys = singleUseKeyManager.getPostingKeys(timestamp))
+            .toEvent(keys = singleUseKeyManager.getPostingKeys(timestamp.secs()))
     }
 
     fun buildReply(

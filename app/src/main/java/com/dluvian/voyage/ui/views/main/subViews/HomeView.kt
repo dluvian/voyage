@@ -10,18 +10,22 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.dluvian.voyage.core.ClickComment
+import com.dluvian.voyage.core.ExpandHomeView
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.RefreshHomeView
 import com.dluvian.voyage.core.model.RootPost
@@ -36,13 +40,20 @@ import com.dluvian.voyage.ui.theme.spacing
 @Composable
 fun HomeView(vm: HomeViewModel, onUpdate: OnUpdate) {
     val isRefreshing by vm.isRefreshing
+    val isAppending by vm.isAppending
+    val coldPosts by vm.coldPosts
     val posts by vm.posts.collectAsState()
+    val indexToExpand by remember {
+        derivedStateOf { coldPosts.size + posts.size - vm.pageSize.times(0.25).toInt() }
+    }
 
     PullRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(RefreshHomeView) }) {
+        if (isAppending) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(posts) { post ->
+            itemsIndexed(coldPosts + posts) { i, post ->
                 PostRow(post = post, onUpdate = onUpdate)
                 HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = spacing.tiny)
+                if (i >= indexToExpand) onUpdate(ExpandHomeView)
             }
         }
     }

@@ -7,6 +7,7 @@ import rust.nostr.protocol.RelayMessage
 import rust.nostr.protocol.Tag
 import rust.nostr.protocol.TagEnum
 import rust.nostr.protocol.TagKind
+import rust.nostr.protocol.Timestamp
 
 // File for functions that should have been exposed in the kotlin bindings
 // TODO: Remove functions once they're exposed in the bindings
@@ -101,6 +102,12 @@ fun Event.isPostOrReply(): Boolean {
 fun Event.isRootPost(): Boolean {
     return this.isPostOrReply() && !this.isReplyPost()
 }
+
+fun Timestamp.secs(): Long {
+    return this.asSecs().toLong()
+}
+
+fun getCurrentSecs() = System.currentTimeMillis() / 1000
 
 fun Event.getReplyToId(): String? {
     if (this.isRootPost()) return null

@@ -16,3 +16,4 @@ data class ClickNeutralizeVote(val postId: EventIdHex) : UIEvent()
 data class ClickComment(val postId: EventIdHex) : UIEvent()
 
 data object RefreshHomeView : UIEvent()
+data object ExpandHomeView : UIEvent()

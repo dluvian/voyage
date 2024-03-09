@@ -27,6 +27,7 @@ class Core(
             ClickSettings -> navigator.push(view = SettingsNavView)
             ClickTopics -> navigator.push(view = TopicsNavView)
             RefreshHomeView -> homeViewModel.refresh()
+            ExpandHomeView -> homeViewModel.append()
             // TODO: Implement Updates
             is ClickDownvote -> {}
             is ClickNeutralizeVote -> {}

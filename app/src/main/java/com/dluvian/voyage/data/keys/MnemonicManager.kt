@@ -6,7 +6,6 @@ import androidx.security.crypto.MasterKey
 import com.dluvian.nostr_kt.generateMnemonic
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Keys
-import rust.nostr.protocol.Timestamp
 
 
 typealias Mnemonic = String
@@ -39,7 +38,7 @@ class MnemonicManager(context: Context) {
         }
     }
 
-    fun getPostingKeys(timestamp: Timestamp): Keys {
+    fun getPostingKeys(time: Long): Keys {
         return deriveKeysFromMnemonic(account = POSTING_ACCOUNT)
     }
 

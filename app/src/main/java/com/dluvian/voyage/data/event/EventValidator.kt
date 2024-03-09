@@ -3,6 +3,7 @@ package com.dluvian.voyage.data.event
 import android.util.Log
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
+import com.dluvian.nostr_kt.getCurrentSecs
 import com.dluvian.nostr_kt.getHashtags
 import com.dluvian.nostr_kt.getReplyToId
 import com.dluvian.nostr_kt.getTitle
@@ -25,7 +26,6 @@ import com.dluvian.voyage.data.model.ValidatedVote
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
-import rust.nostr.protocol.Timestamp
 import java.util.Collections
 
 
@@ -81,7 +81,7 @@ class EventValidator(
     }
 
     private var upperTimeBoundary = getUpperTimeBoundary()
-    private fun getUpperTimeBoundary() = Timestamp.now().asSecs().toLong() + 60
+    private fun getUpperTimeBoundary() = getCurrentSecs() + 60
     private fun isFromFuture(event: Event): Boolean {
         val createdAt = event.createdAt().asSecs().toLong()
         if (createdAt > upperTimeBoundary) {
