@@ -4,7 +4,6 @@ import rust.nostr.protocol.PublicKey
 
 class FriendProvider {
     init {
-        // TODO: insert defaultFriends with createdAt=0
         // TODO: subscribe my contactlist
     }
 

@@ -187,6 +187,10 @@ class NostrClient(private val httpClient: OkHttpClient) {
         }
     }
 
+    fun getAllConnectedUrls(): List<RelayUrl> {
+        return sockets.keys.toList()
+    }
+
     private fun filterSocketsByRelays(relays: Collection<RelayUrl>): List<Map.Entry<RelayUrl, WebSocket>> {
         val snapshot = sockets.entries.toList()
         return snapshot.filter { relays.contains(it.key) }

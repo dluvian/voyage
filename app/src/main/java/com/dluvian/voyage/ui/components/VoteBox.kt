@@ -15,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ClickDownvote
+import com.dluvian.voyage.core.ClickNeutralizeVote
 import com.dluvian.voyage.core.ClickUpvote
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.Lambda
@@ -45,7 +46,13 @@ fun VoteBox(
             isUpvote = true,
             tint = if (myVote is Upvote) TallPoppyRed else MaterialTheme.colorScheme.onSurfaceVariant,
             description = stringResource(id = R.string.upvote),
-            onClick = { onUpdate(ClickUpvote(postId = postId, pubkey = authorPubkey)) })
+            onClick = {
+                if (myVote is Upvote)
+                    onUpdate(ClickNeutralizeVote(postId = postId, pubkey = authorPubkey))
+                else
+                    onUpdate(ClickUpvote(postId = postId, pubkey = authorPubkey))
+            }
+        )
         Text(
             modifier = Modifier.padding(horizontal = spacing.small),
             text = "$tally ($ratioInPercent%)",
@@ -55,7 +62,12 @@ fun VoteBox(
             isUpvote = false,
             tint = if (myVote is Downvote) DenimBlue else MaterialTheme.colorScheme.onSurfaceVariant,
             description = stringResource(id = R.string.downvote),
-            onClick = { onUpdate(ClickDownvote(postId = postId, pubkey = authorPubkey)) })
+            onClick = {
+                if (myVote is Downvote)
+                    onUpdate(ClickNeutralizeVote(postId = postId, pubkey = authorPubkey))
+                else
+                    onUpdate(ClickDownvote(postId = postId, pubkey = authorPubkey))
+            })
     }
 }
 

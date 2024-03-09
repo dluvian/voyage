@@ -5,6 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dluvian.nostr_kt.getCurrentSecs
 import com.dluvian.voyage.core.DELAY
+import com.dluvian.voyage.core.HomeViewAction
+import com.dluvian.voyage.core.HomeViewAppend
+import com.dluvian.voyage.core.HomeViewRefresh
 import com.dluvian.voyage.core.SHORT_DELAY
 import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.data.provider.FeedProvider
@@ -25,7 +28,14 @@ class HomeViewModel(private val feedProvider: FeedProvider) : ViewModel() {
         feedProvider.getFeedFlow(until = getCurrentSecs(), size = pageSize)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
-    fun refresh() {
+    fun handle(homeViewAction: HomeViewAction) {
+        when (homeViewAction) {
+            is HomeViewRefresh -> refresh()
+            is HomeViewAppend -> append()
+        }
+    }
+
+    private fun refresh() {
         if (isRefreshing.value) return
 
         isRefreshing.value = true
@@ -38,7 +48,7 @@ class HomeViewModel(private val feedProvider: FeedProvider) : ViewModel() {
         }
     }
 
-    fun append() {
+    private fun append() {
         if (posts.value.size < pageSize) return
         if (isAppending.value) return
 

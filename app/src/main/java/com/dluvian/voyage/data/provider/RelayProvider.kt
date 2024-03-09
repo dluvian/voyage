@@ -5,6 +5,11 @@ import com.dluvian.nostr_kt.RelayUrl
 class RelayProvider {
 
     fun getReadRelays(): List<RelayUrl> {
+        // TODO: Nip65
+        return defaultRelays
+    }
+
+    fun getWriteRelays(): List<RelayUrl> {
         return defaultRelays
     }
 }

@@ -18,8 +18,9 @@ class MainActivity : ComponentActivity() {
             }
             val core = viewModel {
                 Core(
-                    nostrService = appContainer.nostrService,
-                    homeViewModel = homeViewModel
+                    homeViewModel = homeViewModel,
+                    postVoter = appContainer.postVoter,
+                    nostrService = appContainer.nostrService
                 )
             }
             VoyageApp(core)

@@ -2,7 +2,6 @@ package com.dluvian.voyage.data.event
 
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.createHashtagTag
-import com.dluvian.nostr_kt.createKindTag
 import com.dluvian.nostr_kt.createLabelTag
 import com.dluvian.nostr_kt.createReplyTag
 import com.dluvian.nostr_kt.createTitleTag
@@ -67,11 +66,16 @@ class EventMaker(
         eventId: EventId,
         pubkey: PublicKey,
         isPositive: Boolean,
-        kind: Int
     ): Result<Event> {
-        val tags = listOf(createKindTag(kind)) // TODO: Set kind tags
         val content = if (isPositive) "+" else "-"
         val unsignedEvent = EventBuilder.reaction(eventId, pubkey, content)
+            .toUnsignedEvent(accountKeyManager.getPubkey())
+
+        return accountKeyManager.sign(unsignedEvent)
+    }
+
+    fun buildDelete(eventIds: List<EventId>): Result<Event> {
+        val unsignedEvent = EventBuilder.delete(ids = eventIds, reason = null)
             .toUnsignedEvent(accountKeyManager.getPubkey())
 
         return accountKeyManager.sign(unsignedEvent)

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.dluvian.nostr_kt.NostrClient
 import com.dluvian.nostr_kt.SubId
+import com.dluvian.voyage.core.interactor.PostVoter
 import com.dluvian.voyage.data.event.EventMaker
 import com.dluvian.voyage.data.event.EventProcessor
 import com.dluvian.voyage.data.event.EventQueue
@@ -15,6 +16,7 @@ import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
+import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import com.dluvian.voyage.data.room.AppDatabase
 import okhttp3.OkHttpClient
@@ -65,14 +67,19 @@ class AppContainer(context: Context) {
     private val relayProvider = RelayProvider()
     private val friendProvider = FriendProvider()
     private val webOfTrustProvider = WebOfTrustProvider(friendProvider = friendProvider)
+    private val topicProvider = TopicProvider()
+    val postVoter = PostVoter(nostrService, relayProvider, roomDb.voteDao(), roomDb.voteUpsertDao())
     private val nostrSubscriber = NostrSubscriber(
-        nostrService,
-        relayProvider,
-        webOfTrustProvider
+        nostrService = nostrService,
+        relayProvider = relayProvider,
+        webOfTrustProvider = webOfTrustProvider,
+        topicProvider = topicProvider,
+        friendProvider = friendProvider
     )
     val feedProvider = FeedProvider(
         nostrSubscriber = nostrSubscriber,
-        rootPostDao = roomDb.rootPostDao()
+        rootPostDao = roomDb.rootPostDao(),
+        postVoter = postVoter
     )
 
     init {

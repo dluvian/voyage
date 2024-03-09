@@ -5,7 +5,9 @@ import com.dluvian.nostr_kt.Kind
 import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
+import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
+import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -21,14 +23,22 @@ class NostrSubscriber(
     private val nostrService: NostrService,
     private val relayProvider: RelayProvider,
     private val webOfTrustProvider: WebOfTrustProvider,
+    private val topicProvider: TopicProvider,
+    private val friendProvider: FriendProvider,
 ) {
     private val tag = "NostrSubscriber"
     private val scope = CoroutineScope(Dispatchers.IO)
     fun subFeed(until: Long, size: Int) {
-        val filter = Filter().kind(Kind.TEXT_NOTE.toULong()) // TODO: Support reposts
-            .until(Timestamp.fromSecs(until.toULong()))
-            .limit(size.toULong())
-        val filters = listOf(filter)
+        val adjustedSize = (5 * size).toULong() // We don't know if we receive enough root posts
+        val friendFilter = Filter().kind(kind = Kind.TEXT_NOTE.toULong()) // TODO: Support reposts
+            .authors(authors = friendProvider.getFriendPubkeys())
+            .until(timestamp = Timestamp.fromSecs(until.toULong()))
+            .limit(limit = adjustedSize)
+        val topicFilter = Filter().kind(kind = Kind.TEXT_NOTE.toULong())
+            .hashtags(hashtags = topicProvider.getTopics())
+            .until(timestamp = Timestamp.fromSecs(until.toULong()))
+            .limit(limit = adjustedSize)
+        val filters = listOf(friendFilter, topicFilter)
 
         relayProvider.getReadRelays().forEach { relay ->
             nostrService.subscribe(filters = filters, relayUrl = relay)

@@ -1,11 +1,32 @@
 package com.dluvian.voyage.core.navigation
 
 import androidx.compose.runtime.mutableStateOf
+import com.dluvian.voyage.core.ClickCreate
+import com.dluvian.voyage.core.ClickHome
+import com.dluvian.voyage.core.ClickInbox
+import com.dluvian.voyage.core.ClickSettings
+import com.dluvian.voyage.core.ClickThread
+import com.dluvian.voyage.core.ClickTopics
+import com.dluvian.voyage.core.GoBack
+import com.dluvian.voyage.core.NavEvent
+import com.dluvian.voyage.core.SystemBackPress
 
-class Navigator : INavigator {
-    override val stack = mutableStateOf<List<NavView>>(listOf(HomeNavView))
+class Navigator {
+    val stack = mutableStateOf<List<NavView>>(listOf(HomeNavView))
 
-    override fun push(view: NavView) {
+    fun handle(navEvent: NavEvent) {
+        when (navEvent) {
+            SystemBackPress, GoBack -> pop()
+            ClickCreate -> push(view = CreatePostNavView)
+            ClickHome -> push(view = HomeNavView)
+            ClickInbox -> push(view = InboxNavView)
+            ClickSettings -> push(view = SettingsNavView)
+            ClickTopics -> push(view = TopicsNavView)
+            is ClickThread -> {} // TODO: Thread view
+        }
+    }
+
+    private fun push(view: NavView) {
         synchronized(stack) {
             val current = stack.value
             if (current.last() == view) return
@@ -14,7 +35,7 @@ class Navigator : INavigator {
         }
     }
 
-    override fun pop() {
+    private fun pop() {
         synchronized(stack) {
             val current = stack.value
             if (current.size <= 1) return

@@ -24,10 +24,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import com.dluvian.voyage.core.ClickComment
-import com.dluvian.voyage.core.ExpandHomeView
+import com.dluvian.voyage.core.ClickThread
+import com.dluvian.voyage.core.HomeViewAppend
+import com.dluvian.voyage.core.HomeViewRefresh
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.RefreshHomeView
 import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.viewModel.HomeViewModel
 import com.dluvian.voyage.ui.components.PullRefreshBox
@@ -47,13 +47,13 @@ fun HomeView(vm: HomeViewModel, onUpdate: OnUpdate) {
         derivedStateOf { coldPosts.size + posts.size - vm.pageSize.times(0.25).toInt() }
     }
 
-    PullRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(RefreshHomeView) }) {
+    PullRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(HomeViewRefresh) }) {
         if (isAppending) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             itemsIndexed(coldPosts + posts) { i, post ->
                 PostRow(post = post, onUpdate = onUpdate)
                 HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = spacing.tiny)
-                if (i >= indexToExpand) onUpdate(ExpandHomeView)
+                if (i >= indexToExpand) onUpdate(HomeViewAppend)
             }
         }
     }
@@ -121,6 +121,6 @@ private fun Actions(
         )
         CommentChip(
             commentCount = post.commentCount,
-            onClick = { onUpdate(ClickComment(postId = post.id)) })
+            onClick = { onUpdate(ClickThread(postId = post.id)) })
     }
 }
