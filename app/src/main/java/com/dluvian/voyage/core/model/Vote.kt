@@ -7,6 +7,16 @@ sealed class Vote {
     fun isNeutral(): Boolean {
         return this is NoVote
     }
+
+    companion object {
+        fun from(vote: Boolean?): Vote {
+            return when (vote) {
+                null -> NoVote
+                true -> Upvote
+                false -> Downvote
+            }
+        }
+    }
 }
 data object Upvote : Vote()
 data object Downvote : Vote()

@@ -22,7 +22,7 @@ class HomeViewModel(private val feedProvider: FeedProvider) : ViewModel() {
     val isAppending = mutableStateOf(false)
     val coldPosts = mutableStateOf(emptyList<RootPost>())
     var posts: StateFlow<List<RootPost>> =
-        feedProvider.getFeedFlow(until = getCurrentSecs(), size = pageSize, isRefresh = false)
+        feedProvider.getFeedFlow(until = getCurrentSecs(), size = pageSize)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
     fun refresh() {
@@ -30,11 +30,8 @@ class HomeViewModel(private val feedProvider: FeedProvider) : ViewModel() {
 
         isRefreshing.value = true
         viewModelScope.launch(Dispatchers.IO) {
-            posts = feedProvider.getFeedFlow(
-                until = getCurrentSecs(),
-                size = pageSize,
-                isRefresh = true
-            ).stateIn(viewModelScope, SharingStarted.WhileSubscribed(), posts.value)
+            posts = feedProvider.getFeedFlow(until = getCurrentSecs(), size = pageSize)
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), posts.value)
             delay(DELAY)
         }.invokeOnCompletion {
             isRefreshing.value = false
@@ -48,11 +45,8 @@ class HomeViewModel(private val feedProvider: FeedProvider) : ViewModel() {
         isAppending.value = true
         viewModelScope.launch(Dispatchers.IO) {
             coldPosts.value += posts.value
-            posts = feedProvider.getFeedFlow(
-                until = getCurrentSecs(),
-                size = pageSize,
-                isRefresh = false
-            ).stateIn(viewModelScope, SharingStarted.WhileSubscribed(), posts.value)
+            posts = feedProvider.getFeedFlow(until = getCurrentSecs(), size = pageSize)
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), posts.value)
             delay(SHORT_DELAY)
         }.invokeOnCompletion {
             isAppending.value = false

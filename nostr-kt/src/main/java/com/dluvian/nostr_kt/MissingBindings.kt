@@ -1,5 +1,6 @@
 package com.dluvian.nostr_kt
 
+import org.bitcoinj.crypto.MnemonicCode
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
@@ -8,6 +9,7 @@ import rust.nostr.protocol.Tag
 import rust.nostr.protocol.TagEnum
 import rust.nostr.protocol.TagKind
 import rust.nostr.protocol.Timestamp
+import java.security.SecureRandom
 
 // File for functions that should have been exposed in the kotlin bindings
 // TODO: Remove functions once they're exposed in the bindings
@@ -92,8 +94,15 @@ fun createReplyTag(parentEventId: EventId, relayHint: RelayUrl, parentIsRoot: Bo
         )
     )
 
-fun generateMnemonic() =
-    "leader monkey parrot ring guide accident before fence cannon height naive bean"
+fun generateMnemonic(): String {
+    val random = SecureRandom()
+    val bytes = ByteArray(16)
+    random.nextBytes(bytes)
+
+    return MnemonicCode()
+        .toMnemonic(bytes)
+        .joinToString(separator = " ")
+}
 
 fun Event.isPostOrReply(): Boolean {
     return this.kind().toInt() == Kind.TEXT_NOTE
@@ -118,7 +127,6 @@ fun Event.getReplyToId(): String? {
     return if (replyTags.size == 1) replyTags.first()[1]
     else replyTags.find { it[3] == "reply" }?.get(1)
 }
-
 
 fun Event.isReplyPost(): Boolean {
     return this.isPostOrReply() &&

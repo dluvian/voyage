@@ -1,10 +1,12 @@
 package com.dluvian.voyage.data.room
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.dluvian.voyage.data.room.dao.AccountDao
 import com.dluvian.voyage.data.room.dao.FriendUpsertDao
 import com.dluvian.voyage.data.room.dao.PostInsertDao
+import com.dluvian.voyage.data.room.dao.RootPostDao
 import com.dluvian.voyage.data.room.dao.TopicUpsertDao
 import com.dluvian.voyage.data.room.dao.VoteUpsertDao
 import com.dluvian.voyage.data.room.dao.WebOfTrustUpsertDao
@@ -16,13 +18,14 @@ import com.dluvian.voyage.data.room.entity.PostRelayEntity
 import com.dluvian.voyage.data.room.entity.TopicEntity
 import com.dluvian.voyage.data.room.entity.VoteEntity
 import com.dluvian.voyage.data.room.entity.WebOfTrustEntity
+import com.dluvian.voyage.data.room.view.RootPostView
 
 // TODO: Reset to v=1 when first releasing app, and delete migration files
 @Database(
-    version = 1,
+    version = 2,
     exportSchema = true,
     autoMigrations = [
-//        AutoMigration(from = 1, to = 2)
+        AutoMigration(from = 1, to = 2)
     ],
     entities = [
         PostEntity::class,
@@ -34,6 +37,7 @@ import com.dluvian.voyage.data.room.entity.WebOfTrustEntity
         TopicEntity::class,
         HashtagEntity::class,
     ],
+    views = [RootPostView::class]
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun accountDao(): AccountDao
@@ -42,4 +46,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun friendUpsertDao(): FriendUpsertDao
     abstract fun webOfTrustUpsertDao(): WebOfTrustUpsertDao
     abstract fun topicUpsertDao(): TopicUpsertDao
+    abstract fun rootPostDao(): RootPostDao
 }

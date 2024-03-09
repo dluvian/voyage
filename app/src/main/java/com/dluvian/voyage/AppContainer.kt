@@ -11,8 +11,11 @@ import com.dluvian.voyage.data.event.EventValidator
 import com.dluvian.voyage.data.keys.AccountKeyManager
 import com.dluvian.voyage.data.keys.MnemonicManager
 import com.dluvian.voyage.data.nostr.NostrService
+import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.provider.FeedProvider
+import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
+import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import com.dluvian.voyage.data.room.AppDatabase
 import okhttp3.OkHttpClient
 import rust.nostr.protocol.Filter
@@ -33,8 +36,10 @@ class AppContainer(context: Context) {
     private val client = OkHttpClient()
     private val nostrClient = NostrClient(httpClient = client)
     private val filterCache = Collections.synchronizedMap(mutableMapOf<SubId, List<Filter>>())
-    private val eventValidator =
-        EventValidator(filterCache = filterCache, pubkeyProvider = accountKeyManager)
+    private val eventValidator = EventValidator(
+        filterCache = filterCache,
+        pubkeyProvider = accountKeyManager
+    )
     private val eventProcessor = EventProcessor(
         postInsertDao = roomDb.postInsertDao(),
         voteUpsertDao = roomDb.voteUpsertDao(),
@@ -57,8 +62,18 @@ class AppContainer(context: Context) {
         eventMaker = eventMaker,
         filterCache = filterCache
     )
-    val feedProvider = FeedProvider()
-    val relayProvider = RelayProvider()
+    private val relayProvider = RelayProvider()
+    private val friendProvider = FriendProvider()
+    private val webOfTrustProvider = WebOfTrustProvider(friendProvider = friendProvider)
+    private val nostrSubscriber = NostrSubscriber(
+        nostrService,
+        relayProvider,
+        webOfTrustProvider
+    )
+    val feedProvider = FeedProvider(
+        nostrSubscriber = nostrSubscriber,
+        rootPostDao = roomDb.rootPostDao()
+    )
 
     init {
         nostrService.initialize(initRelayUrls = relayProvider.getReadRelays())

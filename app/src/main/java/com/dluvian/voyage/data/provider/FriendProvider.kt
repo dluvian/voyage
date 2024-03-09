@@ -1,6 +1,6 @@
 package com.dluvian.voyage.data.provider
 
-import com.dluvian.voyage.core.PubkeyHex
+import rust.nostr.protocol.PublicKey
 
 class FriendProvider {
     init {
@@ -8,9 +8,9 @@ class FriendProvider {
         // TODO: subscribe my contactlist
     }
 
-    fun getFriendPubkeys(): List<PubkeyHex> {
+    fun getFriendPubkeys(): List<PublicKey> {
         // TODO: get from dao
-        return defaultFriends
+        return defaultFriends.map { PublicKey.fromHex(it) }
     }
 }
 

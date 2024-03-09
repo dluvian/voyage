@@ -68,7 +68,7 @@ private fun PostRow(post: RootPost, onUpdate: OnUpdate) {
     ) {
         Header(
             topic = post.topic,
-            time = post.time
+            time = post.createdAt
         )
         Spacer(modifier = Modifier.height(spacing.medium))
         if (post.title.isNotEmpty()) {

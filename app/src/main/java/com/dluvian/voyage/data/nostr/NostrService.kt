@@ -114,6 +114,7 @@ class NostrService(
 
     fun subscribe(filters: List<Filter>, relayUrl: RelayUrl): SubId? {
         if (filters.isEmpty()) return null
+        Log.d(tag, "Subscribe ${filters.size} in $relayUrl")
 
         val subId = nostrClient.subscribe(filters = filters, relayUrl = relayUrl)
         if (subId == null) {
