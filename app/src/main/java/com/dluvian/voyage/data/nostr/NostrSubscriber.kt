@@ -4,6 +4,7 @@ import android.util.Log
 import com.dluvian.nostr_kt.Kind
 import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import kotlinx.coroutines.CancellationException
@@ -14,6 +15,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
+import rust.nostr.protocol.Timestamp
 
 class NostrSubscriber(
     private val nostrService: NostrService,
@@ -23,7 +25,14 @@ class NostrSubscriber(
     private val tag = "NostrSubscriber"
     private val scope = CoroutineScope(Dispatchers.IO)
     fun subFeed(until: Long, size: Int) {
-        TODO()
+        val filter = Filter().kind(Kind.TEXT_NOTE.toULong()) // TODO: Support reposts
+            .until(Timestamp.fromSecs(until.toULong()))
+            .limit(size.toULong())
+        val filters = listOf(filter)
+
+        relayProvider.getReadRelays().forEach { relay ->
+            nostrService.subscribe(filters = filters, relayUrl = relay)
+        }
     }
 
     // TODO: remove ids after x seconds to enable resubbing
@@ -38,12 +47,17 @@ class NostrSubscriber(
         votesAndRepliesJob?.cancel(CancellationException("Debounce"))
         votesAndRepliesJob = scope.launch {
             delay(DEBOUNCE)
+            val currentTimestamp = Timestamp.now()
             val ids = newIds.map { EventId.fromHex(it) }
             val voteFilter = Filter().events(ids)
                 .kind(Kind.REACTION.toULong())
-                .authors(webOfTrustProvider.getWebOfTrustPubkeys())
+                .authors(webOfTrustProvider.getWebOfTrustPubkeys()) // TODO: split into multiple subscriptions if size > 1000
+                .until(currentTimestamp)
+                .limit(MAX_EVENTS_TO_SUB.toULong())
             val replyFilter = Filter().events(ids)
                 .kind(Kind.TEXT_NOTE.toULong())
+                .until(currentTimestamp)
+                .limit(MAX_EVENTS_TO_SUB.toULong())
             val filters = listOf(voteFilter, replyFilter)
 
             relayProvider.getReadRelays().forEach { relay ->

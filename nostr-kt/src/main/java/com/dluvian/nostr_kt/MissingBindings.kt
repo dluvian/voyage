@@ -14,10 +14,10 @@ import java.security.SecureRandom
 // File for functions that should have been exposed in the kotlin bindings
 // TODO: Remove functions once they're exposed in the bindings
 
-fun getRelayMessagefromJson(json: String): Result<RelayMessage> {
+fun getRelayMessageFromJson(json: String): Result<RelayMessage> {
     val items = json.trim()
         .removeSurrounding(prefix = "[", suffix = "]")
-        .split(',', limit = 3)
+        .split(',', limit = 1)
         .map { it.trim().removeSurrounding("\"") }
     if (items.size != 4) return Result.failure(IllegalArgumentException("Json array is not of size 4, it's ${items.size}"))
 

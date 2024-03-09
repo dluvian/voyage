@@ -43,7 +43,7 @@ class NostrClient(private val httpClient: OkHttpClient) {
 
         override fun onMessage(webSocket: WebSocket, text: String) {
             val relayUrl = getRelayUrl(webSocket).orEmpty()
-            val relayMessage = getRelayMessagefromJson(text)
+            val relayMessage = getRelayMessageFromJson(text)
             relayMessage
                 .onFailure {
                     nostrListener?.onError(

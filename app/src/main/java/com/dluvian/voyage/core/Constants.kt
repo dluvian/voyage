@@ -8,3 +8,5 @@ const val DELAY = 1000L
 const val SHORT_DELAY = 500L
 
 const val DEBOUNCE = 600L
+
+const val MAX_EVENTS_TO_SUB = 1000

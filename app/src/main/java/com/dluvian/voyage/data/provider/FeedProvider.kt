@@ -18,6 +18,6 @@ class FeedProvider(
         nostrSubscriber.subFeed(until = until, size = size)
         return rootPostDao.getRootPostFlow(until = until, size = size)
             .map { list -> list.map { RootPost.from(it) } }
-            .onEach { nostrSubscriber.subVotesAndReplies(it.map { it.id }) }
+            .onEach { posts -> nostrSubscriber.subVotesAndReplies(postIds = posts.map { it.id }) }
     }
 }
