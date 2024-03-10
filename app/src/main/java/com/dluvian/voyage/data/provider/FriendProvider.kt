@@ -1,5 +1,6 @@
 package com.dluvian.voyage.data.provider
 
+import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.room.dao.FriendDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -12,8 +13,12 @@ class FriendProvider(friendDao: FriendDao) {
     private val friends = friendDao.getFriendsFlow()
         .stateIn(scope, SharingStarted.WhileSubscribed(), emptyList())
 
+    fun getFriendPubkeys(): List<PubkeyHex> {
+        return friends.value.ifEmpty { defaultFriends }
+    }
+
     fun getFriendPublicKeys(): List<PublicKey> {
-        return friends.value.ifEmpty { defaultFriends }.map { PublicKey.fromHex(it) }
+        return getFriendPubkeys().map { PublicKey.fromHex(it) }
     }
 }
 

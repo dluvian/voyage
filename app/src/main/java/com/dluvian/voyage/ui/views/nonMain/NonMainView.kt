@@ -22,7 +22,7 @@ fun NonMainView(
         onUpdate = onUpdate
     ) {
         when (currentView) {
-            is CreatePostNavView -> CreatePostView()
+            CreatePostNavView -> CreatePostView()
             SettingsNavView -> SettingsView()
         }
     }

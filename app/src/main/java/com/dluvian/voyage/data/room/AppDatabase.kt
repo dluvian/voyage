@@ -8,6 +8,7 @@ import com.dluvian.voyage.data.room.dao.FriendDao
 import com.dluvian.voyage.data.room.dao.RootPostDao
 import com.dluvian.voyage.data.room.dao.TopicDao
 import com.dluvian.voyage.data.room.dao.VoteDao
+import com.dluvian.voyage.data.room.dao.WebOfTrustDao
 import com.dluvian.voyage.data.room.dao.tx.FriendUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.PostInsertDao
 import com.dluvian.voyage.data.room.dao.tx.TopicUpsertDao
@@ -53,4 +54,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun rootPostDao(): RootPostDao
     abstract fun topicDao(): TopicDao
     abstract fun friendDao(): FriendDao
+    abstract fun webOfTrustDao(): WebOfTrustDao
 }

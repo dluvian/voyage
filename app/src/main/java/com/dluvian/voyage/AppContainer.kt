@@ -67,7 +67,7 @@ class AppContainer(context: Context) {
     private val relayProvider = RelayProvider()
     private val topicProvider = TopicProvider(topicDao = roomDb.topicDao())
     private val friendProvider = FriendProvider(friendDao = roomDb.friendDao())
-    private val webOfTrustProvider = WebOfTrustProvider(friendProvider = friendProvider)
+    private val webOfTrustProvider = WebOfTrustProvider(webOfTrustDao = roomDb.webOfTrustDao())
     val postVoter = PostVoter(nostrService, relayProvider, roomDb.voteDao(), roomDb.voteUpsertDao())
     private val nostrSubscriber = NostrSubscriber(
         nostrService = nostrService,

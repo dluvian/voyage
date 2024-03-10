@@ -26,8 +26,7 @@ fun MainView(
         onUpdate = onUpdate
     ) {
         when (currentView) {
-            is HomeNavView -> HomeView(vm = homeViewModel, onUpdate = onUpdate)
-
+            HomeNavView -> HomeView(vm = homeViewModel, onUpdate = onUpdate)
             InboxNavView -> InboxView()
             DiscoverNavView -> DiscoverView()
         }
