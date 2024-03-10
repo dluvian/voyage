@@ -105,9 +105,15 @@ class NostrService(
         eventId: EventId,
         pubkey: PublicKey,
         isPositive: Boolean,
+        kind: Int,
         relayUrls: Collection<RelayUrl>,
     ): Result<Event> {
-        return eventMaker.buildVote(eventId, pubkey, isPositive)
+        return eventMaker.buildVote(
+            eventId = eventId,
+            pubkey = pubkey,
+            isPositive = isPositive,
+            kind = kind
+        )
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 

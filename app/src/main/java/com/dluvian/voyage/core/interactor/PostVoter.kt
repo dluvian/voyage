@@ -33,8 +33,8 @@ class PostVoter(
     private val voteDao: VoteDao,
     private val voteUpsertDao: VoteUpsertDao
 ) {
-    private val scope = CoroutineScope(Dispatchers.IO)
     private val tag = "PostVoter"
+    private val scope = CoroutineScope(Dispatchers.IO)
     private val _forcedVotes = MutableStateFlow(mapOf<EventIdHex, Vote>())
 
     val forcedVotes = _forcedVotes
@@ -47,8 +47,12 @@ class PostVoter(
             is ClickNeutralizeVote -> NoVote
         }
         updateForcedVote(voteEvent, newVote)
-        // TODO: Set kind tag
-        vote(postId = voteEvent.postId, pubkey = voteEvent.pubkey, vote = newVote)
+        vote(
+            postId = voteEvent.postId,
+            pubkey = voteEvent.pubkey,
+            vote = newVote,
+            kind = 1
+        ) // TODO: Set real kind. Important once reposts are supported
     }
 
     private fun updateForcedVote(voteEvent: VoteEvent, newVote: Vote) {
@@ -60,24 +64,18 @@ class PostVoter(
     }
 
     private val jobs: MutableMap<EventIdHex, Job?> = mutableMapOf()
-    fun vote(postId: EventIdHex, pubkey: PubkeyHex, vote: Vote) {
+    fun vote(postId: EventIdHex, pubkey: PubkeyHex, vote: Vote, kind: Int) {
         jobs[postId]?.cancel(CancellationException("User clicks fast"))
         jobs[postId] = scope.launch {
             delay(LONG_DELAY)
             val currentVote = voteDao.getMyVote(postId = postId)
             when (vote) {
-                Upvote -> handleVote(
+                Upvote, Downvote -> handleVote(
                     currentVote = currentVote,
                     postId = postId,
                     pubkey = pubkey,
-                    isPositive = true
-                )
-
-                Downvote -> handleVote(
-                    currentVote = currentVote,
-                    postId = postId,
-                    pubkey = pubkey,
-                    isPositive = false
+                    isPositive = vote.isPositive(),
+                    kind = kind
                 )
 
                 NoVote -> {
@@ -100,7 +98,8 @@ class PostVoter(
         currentVote: VoteEntity?,
         postId: EventIdHex,
         pubkey: PubkeyHex,
-        isPositive: Boolean
+        isPositive: Boolean,
+        kind: Int
     ) {
         if (currentVote?.isPositive == isPositive) return
         if (currentVote != null) {
@@ -113,6 +112,7 @@ class PostVoter(
             eventId = EventId.fromHex(postId),
             pubkey = PublicKey.fromHex(pubkey),
             isPositive = isPositive,
+            kind = kind,
             relayUrls = relayProvider.getWriteRelays() // TODO: + read relays of pubkey
         )
             .onSuccess { event ->

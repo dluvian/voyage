@@ -23,6 +23,4 @@ fun VoyageAppContent(core: Core) {
             onUpdate = core.onUpdate
         )
     }
-
-
 }

@@ -8,6 +8,11 @@ sealed class Vote {
         return this is NoVote
     }
 
+    @Stable
+    fun isPositive(): Boolean {
+        return this is Upvote
+    }
+
     companion object {
         fun from(vote: Boolean?): Vote {
             return when (vote) {

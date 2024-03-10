@@ -66,9 +66,15 @@ class EventMaker(
         eventId: EventId,
         pubkey: PublicKey,
         isPositive: Boolean,
+        kind: Int,
     ): Result<Event> {
+        // TODO: set kind tag
         val content = if (isPositive) "+" else "-"
-        val unsignedEvent = EventBuilder.reaction(eventId, pubkey, content)
+        val unsignedEvent = EventBuilder.reaction(
+            eventId = eventId,
+            publicKey = pubkey,
+            content = content
+        )
             .toUnsignedEvent(accountKeyManager.getPublicKey())
 
         return accountKeyManager.sign(unsignedEvent)
