@@ -5,7 +5,6 @@ import com.dluvian.voyage.core.ClickCreate
 import com.dluvian.voyage.core.ClickHome
 import com.dluvian.voyage.core.ClickInbox
 import com.dluvian.voyage.core.ClickSettings
-import com.dluvian.voyage.core.ClickThread
 import com.dluvian.voyage.core.ClickTopics
 import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.NavEvent
@@ -22,7 +21,6 @@ class Navigator {
             ClickInbox -> push(view = InboxNavView)
             ClickSettings -> push(view = SettingsNavView)
             ClickTopics -> push(view = TopicsNavView)
-            is ClickThread -> {} // TODO: Thread view
         }
     }
 

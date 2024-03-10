@@ -9,4 +9,11 @@ import com.dluvian.voyage.data.room.entity.VoteEntity
 interface VoteDao {
     @Query("SELECT * FROM vote WHERE postId = :postId AND pubkey = (SELECT pubkey FROM account LIMIT 1)")
     suspend fun getMyVote(postId: EventIdHex): VoteEntity?
+
+    @Query(
+        "DELETE FROM vote " +
+                "WHERE postId = :postId " +
+                "AND pubkey = (SELECT pubkey FROM account LIMIT 1)"
+    )
+    suspend fun deleteMyVote(postId: EventIdHex)
 }

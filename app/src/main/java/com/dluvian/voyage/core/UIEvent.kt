@@ -10,7 +10,7 @@ data object ClickTopics : NavEvent()
 data object ClickInbox : NavEvent()
 data object ClickCreate : NavEvent()
 data object ClickSettings : NavEvent()
-data class ClickThread(val postId: EventIdHex) : NavEvent()
+data class ClickThread(val postId: EventIdHex) : UIEvent()
 
 
 sealed class VoteEvent(open val postId: EventIdHex, open val pubkey: PubkeyHex) : UIEvent()

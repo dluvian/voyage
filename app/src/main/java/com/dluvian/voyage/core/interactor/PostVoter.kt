@@ -90,6 +90,7 @@ class PostVoter(
                         eventIds = listOf(EventId.fromHex(currentVote.id)),
                         relayUrls = relayProvider.getWriteRelays()
                     )
+                    scope.launch { voteDao.deleteMyVote(postId = postId) }
                 }
             }
         }
