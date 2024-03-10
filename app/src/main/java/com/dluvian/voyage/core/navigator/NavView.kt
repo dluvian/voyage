@@ -1,4 +1,4 @@
-package com.dluvian.voyage.core.navigation
+package com.dluvian.voyage.core.navigator
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable

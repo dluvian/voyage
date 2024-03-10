@@ -1,4 +1,4 @@
-package com.dluvian.voyage.core.model
+package com.dluvian.voyage.core.interactor
 
 import androidx.compose.runtime.Stable
 

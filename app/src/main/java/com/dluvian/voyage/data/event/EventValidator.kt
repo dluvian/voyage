@@ -14,7 +14,7 @@ import com.dluvian.nostr_kt.isRootPost
 import com.dluvian.nostr_kt.isTopicList
 import com.dluvian.nostr_kt.isVote
 import com.dluvian.nostr_kt.matches
-import com.dluvian.voyage.core.MAX_TOPIC_LENGTH
+import com.dluvian.voyage.core.MAX_TOPIC_LEN
 import com.dluvian.voyage.data.keys.IPubkeyProvider
 import com.dluvian.voyage.data.model.RelayedItem
 import com.dluvian.voyage.data.model.ValidatedContactList
@@ -52,12 +52,11 @@ class EventValidator(
             return null
         }
         val validatedEvent = validate(event = event)
+        cache(event = event, relayUrl = relayUrl)
         if (validatedEvent == null) {
             Log.w(TAG, "Discard invalid event, ${event.id().toHex()} from $relayUrl")
             return null
         }
-
-        cache(event = event, relayUrl = relayUrl)
 
         return RelayedItem(item = validatedEvent, relayUrl = relayUrl)
     }
@@ -100,11 +99,9 @@ class EventValidator(
     }
 
     private fun validate(event: Event): ValidatedEvent? {
-        if (!event.verify()) return null
-
-        if (event.isRootPost()) {
-            val topics = event.getHashtags().map { it.take(MAX_TOPIC_LENGTH) }.distinct()
-            return ValidatedRootPost(
+        val validatedEvent = if (event.isRootPost()) {
+            val topics = event.getHashtags().map { it.take(MAX_TOPIC_LEN) }.distinct()
+            ValidatedRootPost(
                 id = event.id(),
                 pubkey = event.author(),
                 topics = topics,
@@ -112,43 +109,44 @@ class EventValidator(
                 content = event.content(),
                 createdAt = event.createdAt().asSecs().toLong()
             )
-        }
-        if (event.isReplyPost()) {
-            val replyToId = event.getReplyToId() ?: return null
-            if (replyToId == event.id().toHex()) return null
-            return ValidatedReplyPost(
+        } else if (event.isReplyPost()) {
+            val replyToId = event.getReplyToId()
+            if (replyToId == null || replyToId == event.id().toHex()) null
+            else ValidatedReplyPost(
                 id = event.id(),
                 pubkey = event.author(),
                 replyToId = replyToId,
                 content = event.content(),
                 createdAt = event.createdAt().asSecs().toLong()
             )
-        }
-        if (event.isVote()) {
-            val postId = event.eventIds().firstOrNull() ?: return null
-            return ValidatedVote(
+        } else if (event.isVote()) {
+            val postId = event.eventIds().firstOrNull()
+            if (postId == null) null
+            else ValidatedVote(
                 id = event.id(),
                 postId = postId,
                 pubkey = event.author(),
                 isPositive = event.content() != "-",
                 createdAt = event.createdAt().asSecs().toLong()
             )
-        }
-        if (event.isContactList()) {
-            return ValidatedContactList(
+        } else if (event.isContactList()) {
+            ValidatedContactList(
                 pubkey = event.author(),
                 friendPubkeys = event.publicKeys().toSet(),
                 createdAt = event.createdAt().asSecs().toLong()
             )
-        }
-        if (event.isTopicList()) {
-            if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) return null
-            return ValidatedTopicList(
+        } else if (event.isTopicList()) {
+            if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) null
+            else ValidatedTopicList(
                 myPubkey = event.author(),
                 topics = event.getHashtags().toSet(),
                 createdAt = event.createdAt().asSecs().toLong()
             )
-        }
-        return null
+        } else null
+
+        if (validatedEvent == null) return null
+        if (!event.verify()) return null
+
+        return validatedEvent
     }
 }

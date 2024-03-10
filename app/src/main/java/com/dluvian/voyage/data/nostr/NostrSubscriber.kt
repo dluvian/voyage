@@ -43,6 +43,7 @@ class NostrSubscriber(
         relayProvider.getReadRelays().forEach { relay ->
             nostrService.subscribe(filters = filters, relayUrl = relay)
         }
+        // TODO: sub friend filter in autopilot relays
     }
 
     // TODO: remove ids after x seconds to enable resubbing

@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.navigation.NonMainNavView
+import com.dluvian.voyage.core.navigator.NonMainNavView
 import com.dluvian.voyage.ui.components.bar.VoyageTopAppBar
 
 @Composable

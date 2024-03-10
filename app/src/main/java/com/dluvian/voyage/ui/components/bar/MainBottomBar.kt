@@ -20,10 +20,10 @@ import com.dluvian.voyage.core.ClickSettings
 import com.dluvian.voyage.core.ClickTopics
 import com.dluvian.voyage.core.Lambda
 import com.dluvian.voyage.core.UIEvent
-import com.dluvian.voyage.core.navigation.HomeNavView
-import com.dluvian.voyage.core.navigation.InboxNavView
-import com.dluvian.voyage.core.navigation.MainNavView
-import com.dluvian.voyage.core.navigation.TopicsNavView
+import com.dluvian.voyage.core.navigator.HomeNavView
+import com.dluvian.voyage.core.navigator.InboxNavView
+import com.dluvian.voyage.core.navigator.MainNavView
+import com.dluvian.voyage.core.navigator.TopicsNavView
 import com.dluvian.voyage.ui.theme.AddIcon
 import com.dluvian.voyage.ui.theme.HomeIcon
 import com.dluvian.voyage.ui.theme.InboxIcon

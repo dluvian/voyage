@@ -9,10 +9,6 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.LONG_DELAY
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.VoteEvent
-import com.dluvian.voyage.core.model.Downvote
-import com.dluvian.voyage.core.model.NoVote
-import com.dluvian.voyage.core.model.Upvote
-import com.dluvian.voyage.core.model.Vote
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.VoteDao

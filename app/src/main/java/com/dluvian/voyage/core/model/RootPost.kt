@@ -3,6 +3,7 @@ package com.dluvian.voyage.core.model
 import androidx.compose.runtime.Immutable
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.core.interactor.Vote
 import com.dluvian.voyage.data.room.view.RootPostView
 
 @Immutable

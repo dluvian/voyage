@@ -21,9 +21,9 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.Lambda
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.model.Downvote
-import com.dluvian.voyage.core.model.Upvote
-import com.dluvian.voyage.core.model.Vote
+import com.dluvian.voyage.core.interactor.Downvote
+import com.dluvian.voyage.core.interactor.Upvote
+import com.dluvian.voyage.core.interactor.Vote
 import com.dluvian.voyage.ui.theme.DenimBlue
 import com.dluvian.voyage.ui.theme.DownvoteIcon
 import com.dluvian.voyage.ui.theme.LeftRoundedChip
