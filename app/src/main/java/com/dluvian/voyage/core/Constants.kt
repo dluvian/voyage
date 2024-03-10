@@ -11,3 +11,5 @@ const val LONG_DELAY = 2000L
 const val DEBOUNCE = 600L
 
 const val MAX_EVENTS_TO_SUB = 1000
+
+const val MAX_RELAYS = 5

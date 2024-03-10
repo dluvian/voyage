@@ -21,7 +21,7 @@ class Core(
             is NavEvent -> navigator.handle(navEvent = uiEvent)
             is VoteEvent -> postVoter.handle(voteEvent = uiEvent)
             is HomeViewAction -> homeViewModel.handle(homeViewAction = uiEvent)
-            is ClickThread -> TODO()
+            is ClickThread -> {} // TODO: Click thread
         }
     }
 

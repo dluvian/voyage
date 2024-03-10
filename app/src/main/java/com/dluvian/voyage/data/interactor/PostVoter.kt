@@ -113,7 +113,7 @@ class PostVoter(
             pubkey = PublicKey.fromHex(pubkey),
             isPositive = isPositive,
             kind = kind,
-            relayUrls = relayProvider.getWriteRelays() // TODO: + read relays of pubkey
+            relayUrls = relayProvider.getPublishRelays(publishTo = pubkey)
         )
             .onSuccess { event ->
                 val entity = VoteEntity(

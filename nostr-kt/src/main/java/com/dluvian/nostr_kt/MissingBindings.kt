@@ -4,6 +4,7 @@ import org.bitcoinj.crypto.MnemonicCode
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
+import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.RelayMessage
 import rust.nostr.protocol.Tag
 import rust.nostr.protocol.TagEnum
@@ -158,6 +159,13 @@ fun Event.isTopicList(): Boolean {
 
 fun Event.isVote(): Boolean {
     return this.kind().toInt() == Kind.REACTION
+}
+
+fun createFriendFilter(pubkeys: List<PublicKey>, until: ULong, limit: ULong): Filter {
+    return Filter().kind(kind = Kind.TEXT_NOTE.toULong()) // TODO: Support reposts
+        .authors(authors = pubkeys)
+        .until(timestamp = Timestamp.fromSecs(until))
+        .limit(limit = limit)
 }
 
 object Kind {

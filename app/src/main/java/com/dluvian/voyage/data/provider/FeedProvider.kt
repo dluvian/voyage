@@ -17,7 +17,7 @@ class FeedProvider(
         until: Long,
         size: Int,
     ): Flow<List<RootPost>> {
-        nostrSubscriber.subFeed(until = until, size = size)
+        nostrSubscriber.subFeed(until = until, limit = size)
         return rootPostDao.getRootPostFlow(until = until, size = size)
             .combine(postVoter.forcedVotes) { posts, votes ->
                 posts.map { RootPost.from(it) }

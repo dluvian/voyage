@@ -2,6 +2,7 @@ package com.dluvian.voyage.data.nostr
 
 import android.util.Log
 import com.dluvian.nostr_kt.Kind
+import com.dluvian.nostr_kt.createFriendFilter
 import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.LONG_DELAY
@@ -19,6 +20,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
+import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Timestamp
 
 class NostrSubscriber(
@@ -39,22 +41,28 @@ class NostrSubscriber(
         }
     }
 
-    fun subFeed(until: Long, size: Int) {
-        val adjustedSize = (5 * size).toULong() // We don't know if we receive enough root posts
-        val friendFilter = Filter().kind(kind = Kind.TEXT_NOTE.toULong()) // TODO: Support reposts
-            .authors(authors = friendProvider.getFriendPublicKeys())
-            .until(timestamp = Timestamp.fromSecs(until.toULong()))
-            .limit(limit = adjustedSize)
+    fun subFeed(until: Long, limit: Int) {
+        val adjustedLimit = (5 * limit).toULong() // We don't know if we receive enough root posts
         val topicFilter = Filter().kind(kind = Kind.TEXT_NOTE.toULong())
             .hashtags(hashtags = topicProvider.getTopics())
             .until(timestamp = Timestamp.fromSecs(until.toULong()))
-            .limit(limit = adjustedSize)
-        val filters = listOf(friendFilter, topicFilter)
-
+            .limit(limit = adjustedLimit)
+        val topicFilters = listOf(topicFilter)
         relayProvider.getReadRelays().forEach { relay ->
-            nostrService.subscribe(filters = filters, relayUrl = relay)
+            nostrService.subscribe(filters = topicFilters, relayUrl = relay)
         }
-        // TODO: sub friend filter in autopilot relays
+
+        relayProvider
+            .getAutopilotRelays(pubkeys = friendProvider.getFriendPubkeys())
+            .forEach { (relayUrl, pubkeys) ->
+                val publicKeys = pubkeys.map { PublicKey.fromHex(it) }
+                val friendFilter = createFriendFilter(
+                    pubkeys = publicKeys,
+                    until = until.toULong(),
+                    limit = adjustedLimit,
+                )
+                nostrService.subscribe(filters = listOf(friendFilter), relayUrl = relayUrl)
+            }
     }
 
     // TODO: remove ids after x seconds to enable resubbing
