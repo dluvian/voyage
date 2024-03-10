@@ -8,11 +8,11 @@ import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.RocketLaunch
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Tag
 
 val HomeIcon = Icons.Default.Home
-val TopicIcon = Icons.Default.Tag
+val DiscoverIcon = Icons.Default.RocketLaunch
 val AddIcon = Icons.Default.Add
 val InboxIcon = Icons.Default.Notifications
 val SettingsIcon = Icons.Default.Settings

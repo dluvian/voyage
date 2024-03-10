@@ -20,15 +20,15 @@ import com.dluvian.voyage.core.ClickSettings
 import com.dluvian.voyage.core.ClickTopics
 import com.dluvian.voyage.core.Lambda
 import com.dluvian.voyage.core.UIEvent
+import com.dluvian.voyage.core.navigator.DiscoverNavView
 import com.dluvian.voyage.core.navigator.HomeNavView
 import com.dluvian.voyage.core.navigator.InboxNavView
 import com.dluvian.voyage.core.navigator.MainNavView
-import com.dluvian.voyage.core.navigator.TopicsNavView
 import com.dluvian.voyage.ui.theme.AddIcon
+import com.dluvian.voyage.ui.theme.DiscoverIcon
 import com.dluvian.voyage.ui.theme.HomeIcon
 import com.dluvian.voyage.ui.theme.InboxIcon
 import com.dluvian.voyage.ui.theme.SettingsIcon
-import com.dluvian.voyage.ui.theme.TopicIcon
 
 @Composable
 fun MainBottomBar(currentView: MainNavView, onUpdate: (UIEvent) -> Unit) {
@@ -40,9 +40,9 @@ fun MainBottomBar(currentView: MainNavView, onUpdate: (UIEvent) -> Unit) {
                 icon = HomeIcon,
                 onClick = { onUpdate(ClickHome) })
             MainBottomBarItem(
-                selected = currentView is TopicsNavView,
-                label = stringResource(id = R.string.topics),
-                icon = TopicIcon,
+                selected = currentView is DiscoverNavView,
+                label = stringResource(id = R.string.discover),
+                icon = DiscoverIcon,
                 onClick = { onUpdate(ClickTopics) })
             MainBottomBarItem(
                 selected = false,

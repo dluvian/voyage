@@ -20,7 +20,7 @@ class Navigator {
             ClickHome -> push(view = HomeNavView)
             ClickInbox -> push(view = InboxNavView)
             ClickSettings -> push(view = SettingsNavView)
-            ClickTopics -> push(view = TopicsNavView)
+            ClickTopics -> push(view = DiscoverNavView)
         }
     }
 

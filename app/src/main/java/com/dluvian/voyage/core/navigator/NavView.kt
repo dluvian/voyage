@@ -15,13 +15,13 @@ sealed class MainNavView : NavView() {
         return when (this) {
             is HomeNavView -> stringResource(id = R.string.home)
             is InboxNavView -> stringResource(id = R.string.inbox)
-            is TopicsNavView -> stringResource(id = R.string.topics)
+            is DiscoverNavView -> stringResource(id = R.string.discover)
         }
     }
 }
 
 data object HomeNavView : MainNavView()
-data object TopicsNavView : MainNavView()
+data object DiscoverNavView : MainNavView()
 data object InboxNavView : MainNavView()
 
 

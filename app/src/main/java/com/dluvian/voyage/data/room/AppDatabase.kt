@@ -4,7 +4,9 @@ import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.dluvian.voyage.data.room.dao.AccountDao
+import com.dluvian.voyage.data.room.dao.FriendDao
 import com.dluvian.voyage.data.room.dao.RootPostDao
+import com.dluvian.voyage.data.room.dao.TopicDao
 import com.dluvian.voyage.data.room.dao.VoteDao
 import com.dluvian.voyage.data.room.dao.tx.FriendUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.PostInsertDao
@@ -49,4 +51,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun webOfTrustUpsertDao(): WebOfTrustUpsertDao
     abstract fun topicUpsertDao(): TopicUpsertDao
     abstract fun rootPostDao(): RootPostDao
+    abstract fun topicDao(): TopicDao
+    abstract fun friendDao(): FriendDao
 }

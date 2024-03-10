@@ -4,6 +4,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 
 @Composable
-fun TopicsView() {
-    Text(text = "Topics")
+fun DiscoverView() {
+    Text(text = "Discover")
 }

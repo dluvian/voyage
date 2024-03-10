@@ -65,16 +65,17 @@ class AppContainer(context: Context) {
         filterCache = filterCache
     )
     private val relayProvider = RelayProvider()
-    private val friendProvider = FriendProvider()
+    private val topicProvider = TopicProvider(topicDao = roomDb.topicDao())
+    private val friendProvider = FriendProvider(friendDao = roomDb.friendDao())
     private val webOfTrustProvider = WebOfTrustProvider(friendProvider = friendProvider)
-    private val topicProvider = TopicProvider()
     val postVoter = PostVoter(nostrService, relayProvider, roomDb.voteDao(), roomDb.voteUpsertDao())
     private val nostrSubscriber = NostrSubscriber(
         nostrService = nostrService,
         relayProvider = relayProvider,
         webOfTrustProvider = webOfTrustProvider,
         topicProvider = topicProvider,
-        friendProvider = friendProvider
+        friendProvider = friendProvider,
+        pubkeyProvider = accountKeyManager,
     )
     val feedProvider = FeedProvider(
         nostrSubscriber = nostrSubscriber,
