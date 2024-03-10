@@ -13,6 +13,7 @@ import java.util.Collections
 import java.util.UUID
 
 private const val TAG = "Client"
+
 class NostrClient(private val httpClient: OkHttpClient) {
     private val sockets: MutableMap<RelayUrl, WebSocket> =
         Collections.synchronizedMap(mutableMapOf())
@@ -157,9 +158,8 @@ class NostrClient(private val httpClient: OkHttpClient) {
 
     fun close() {
         Log.i(TAG, "Close connections")
-        synchronized(sockets) {
-            sockets.keys.forEach { removeRelay(it) }
-        }
+        val sockets = sockets.keys.toSet()
+        sockets.forEach { removeRelay(it) }
         httpClient.dispatcher.executorService.shutdown()
     }
 

@@ -11,8 +11,9 @@ class Core(
     val homeViewModel: HomeViewModel,
     private val postVoter: PostVoter,
     private val nostrService: NostrService,
+    closeApp: Lambda,
 ) : ViewModel() {
-    val navigator = Navigator()
+    val navigator = Navigator(closeApp = closeApp)
     val snackbarHostState = SnackbarHostState()
 
     val onUpdate: (UIEvent) -> Unit = { uiEvent ->

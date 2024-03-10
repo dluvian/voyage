@@ -7,10 +7,11 @@ import com.dluvian.voyage.core.ClickInbox
 import com.dluvian.voyage.core.ClickSettings
 import com.dluvian.voyage.core.ClickTopics
 import com.dluvian.voyage.core.GoBack
+import com.dluvian.voyage.core.Lambda
 import com.dluvian.voyage.core.NavEvent
 import com.dluvian.voyage.core.SystemBackPress
 
-class Navigator {
+class Navigator(private val closeApp: Lambda) {
     val stack = mutableStateOf<List<NavView>>(listOf(HomeNavView))
 
     fun handle(navEvent: NavEvent) {
@@ -36,8 +37,8 @@ class Navigator {
     private fun pop() {
         synchronized(stack) {
             val current = stack.value
-            if (current.size <= 1) return
-            stack.value = current.dropLast(1)
+            if (current.size <= 1) closeApp()
+            else stack.value = current.dropLast(1)
         }
     }
 }
