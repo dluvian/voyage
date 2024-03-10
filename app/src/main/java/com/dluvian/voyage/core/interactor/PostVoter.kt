@@ -87,10 +87,10 @@ class PostVoter(
                 NoVote -> {
                     if (currentVote == null) return@launch
                     nostrService.publishDelete(
-                        eventIds = listOf(EventId.fromHex(currentVote.id)),
+                        eventId = EventId.fromHex(currentVote.id),
                         relayUrls = relayProvider.getWriteRelays()
                     )
-                    scope.launch { voteDao.deleteMyVote(postId = postId) }
+                    voteDao.deleteMyVote(postId = postId)
                 }
             }
         }
@@ -109,7 +109,7 @@ class PostVoter(
         if (currentVote?.isPositive == isPositive) return
         if (currentVote != null) {
             nostrService.publishDelete(
-                eventIds = listOf(EventId.fromHex(currentVote.id)),
+                eventId = EventId.fromHex(currentVote.id),
                 relayUrls = relayProvider.getWriteRelays()
             )
         }
@@ -119,18 +119,18 @@ class PostVoter(
             isPositive = isPositive,
             relayUrls = relayProvider.getWriteRelays() // TODO: + read relays of pubkey
         )
-            .onSuccess {
+            .onSuccess { event ->
                 val entity = VoteEntity(
-                    id = it.id().toHex(),
+                    id = event.id().toHex(),
                     postId = postId,
-                    pubkey = it.author().toHex(),
+                    pubkey = event.author().toHex(),
                     isPositive = isPositive,
-                    createdAt = it.createdAt().secs(),
+                    createdAt = event.createdAt().secs(),
                 )
                 voteUpsertDao.upsertVote(voteEntity = entity)
             }
             .onFailure {
-                Log.w(tag, "Failed to create delete vote event: ${it.message}")
+                Log.w(tag, "Failed to create delete event: ${it.message}")
             }
     }
 }

@@ -74,8 +74,8 @@ class EventMaker(
         return accountKeyManager.sign(unsignedEvent)
     }
 
-    fun buildDelete(eventIds: List<EventId>): Result<Event> {
-        val unsignedEvent = EventBuilder.delete(ids = eventIds, reason = null)
+    fun buildDelete(eventId: EventId): Result<Event> {
+        val unsignedEvent = EventBuilder.delete(ids = listOf(eventId), reason = null)
             .toUnsignedEvent(accountKeyManager.getPubkey())
 
         return accountKeyManager.sign(unsignedEvent)
