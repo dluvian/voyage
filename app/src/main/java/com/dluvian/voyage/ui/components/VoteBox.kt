@@ -18,7 +18,7 @@ import com.dluvian.voyage.core.ClickDownvote
 import com.dluvian.voyage.core.ClickNeutralizeVote
 import com.dluvian.voyage.core.ClickUpvote
 import com.dluvian.voyage.core.EventIdHex
-import com.dluvian.voyage.core.Lambda
+import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.interactor.Downvote
@@ -76,7 +76,7 @@ private fun VoteButton(
     isUpvote: Boolean,
     tint: Color,
     description: String,
-    onClick: Lambda
+    onClick: Fn
 ) {
     Icon(
         modifier = Modifier

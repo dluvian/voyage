@@ -11,7 +11,7 @@ class Core(
     val homeViewModel: HomeViewModel,
     private val postVoter: PostVoter,
     private val nostrService: NostrService,
-    closeApp: Lambda,
+    closeApp: Fn,
 ) : ViewModel() {
     val navigator = Navigator(closeApp = closeApp)
     val snackbarHostState = SnackbarHostState()

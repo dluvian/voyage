@@ -9,12 +9,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.Lambda
+import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.ui.theme.CommentIcon
 import com.dluvian.voyage.ui.theme.RoundedChip
 
 @Composable
-fun CommentChip(commentCount: Int, onClick: Lambda) {
+fun CommentChip(commentCount: Int, onClick: Fn) {
     AssistChip(
         modifier = Modifier.height(AssistChipDefaults.Height.times(0.8f)),
         onClick = onClick,

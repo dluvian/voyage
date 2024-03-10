@@ -18,7 +18,7 @@ import com.dluvian.voyage.core.ClickHome
 import com.dluvian.voyage.core.ClickInbox
 import com.dluvian.voyage.core.ClickSettings
 import com.dluvian.voyage.core.ClickTopics
-import com.dluvian.voyage.core.Lambda
+import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.UIEvent
 import com.dluvian.voyage.core.navigator.DiscoverNavView
 import com.dluvian.voyage.core.navigator.HomeNavView
@@ -68,7 +68,7 @@ private fun RowScope.MainBottomBarItem(
     selected: Boolean,
     label: String,
     icon: ImageVector,
-    onClick: Lambda
+    onClick: Fn
 ) {
     NavigationBarItem(
         selected = selected,

@@ -6,12 +6,12 @@ import com.dluvian.voyage.core.ClickHome
 import com.dluvian.voyage.core.ClickInbox
 import com.dluvian.voyage.core.ClickSettings
 import com.dluvian.voyage.core.ClickTopics
+import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.GoBack
-import com.dluvian.voyage.core.Lambda
 import com.dluvian.voyage.core.NavEvent
 import com.dluvian.voyage.core.SystemBackPress
 
-class Navigator(private val closeApp: Lambda) {
+class Navigator(private val closeApp: Fn) {
     val stack = mutableStateOf<List<NavView>>(listOf(HomeNavView))
 
     fun handle(navEvent: NavEvent) {
