@@ -4,6 +4,7 @@ import android.util.Log
 import com.dluvian.nostr_kt.Kind
 import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.core.LONG_DELAY
 import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
 import com.dluvian.voyage.data.keys.IPubkeyProvider
 import com.dluvian.voyage.data.provider.FriendProvider
@@ -30,6 +31,14 @@ class NostrSubscriber(
 ) {
     private val tag = "NostrSubscriber"
     private val scope = CoroutineScope(Dispatchers.IO)
+
+    init {
+        scope.launch {
+            delay(LONG_DELAY)
+            subStartUp()
+        }
+    }
+
     fun subFeed(until: Long, size: Int) {
         val adjustedSize = (5 * size).toULong() // We don't know if we receive enough root posts
         val friendFilter = Filter().kind(kind = Kind.TEXT_NOTE.toULong()) // TODO: Support reposts
@@ -83,24 +92,21 @@ class NostrSubscriber(
         }
     }
 
-    fun subMyContacts() {
+    private fun subStartUp() {
         val contactFilter = Filter().kind(kind = Kind.CONTACT_LIST.toULong())
             .author(pubkeyProvider.getPublicKey())
             .until(timestamp = Timestamp.now())
             .limit(1u)
-        val filters = listOf(contactFilter)
-
-        relayProvider.getReadRelays().forEach { relay ->
-            nostrService.subscribe(filters = filters, relayUrl = relay)
-        }
-    }
-
-    fun subMyTopics() {
         val topicFilter = Filter().kind(kind = Kind.TOPIC_LIST.toULong())
             .author(pubkeyProvider.getPublicKey())
             .until(timestamp = Timestamp.now())
             .limit(1u)
-        val filters = listOf(topicFilter)
+        val filters = listOf(contactFilter, topicFilter)
+        // TODO: sub my nip65
+        // TODO: sub missing contact lists of friends
+        // TODO: sub 10% but max 25 contact lists of friends for update purpose
+        // TODO: sub missing nip65s of friends
+        // TODO: sub 10% but max 25 nip65s of friends for update purpose
 
         relayProvider.getReadRelays().forEach { relay ->
             nostrService.subscribe(filters = filters, relayUrl = relay)

@@ -1,4 +1,4 @@
-package com.dluvian.voyage.core.interactor
+package com.dluvian.voyage.data.interactor
 
 import android.util.Log
 import com.dluvian.nostr_kt.secs

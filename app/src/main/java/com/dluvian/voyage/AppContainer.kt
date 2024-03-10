@@ -4,11 +4,11 @@ import android.content.Context
 import androidx.room.Room
 import com.dluvian.nostr_kt.NostrClient
 import com.dluvian.nostr_kt.SubId
-import com.dluvian.voyage.core.interactor.PostVoter
 import com.dluvian.voyage.data.event.EventMaker
 import com.dluvian.voyage.data.event.EventProcessor
 import com.dluvian.voyage.data.event.EventQueue
 import com.dluvian.voyage.data.event.EventValidator
+import com.dluvian.voyage.data.interactor.PostVoter
 import com.dluvian.voyage.data.keys.AccountKeyManager
 import com.dluvian.voyage.data.keys.MnemonicManager
 import com.dluvian.voyage.data.nostr.NostrService
@@ -65,6 +65,11 @@ class AppContainer(context: Context) {
         filterCache = filterCache
     )
     private val relayProvider = RelayProvider()
+
+    init {
+        nostrService.initialize(initRelayUrls = relayProvider.getReadRelays())
+    }
+
     private val topicProvider = TopicProvider(topicDao = roomDb.topicDao())
     private val friendProvider = FriendProvider(friendDao = roomDb.friendDao())
     private val webOfTrustProvider = WebOfTrustProvider(webOfTrustDao = roomDb.webOfTrustDao())
@@ -82,8 +87,4 @@ class AppContainer(context: Context) {
         rootPostDao = roomDb.rootPostDao(),
         postVoter = postVoter
     )
-
-    init {
-        nostrService.initialize(initRelayUrls = relayProvider.getReadRelays())
-    }
 }

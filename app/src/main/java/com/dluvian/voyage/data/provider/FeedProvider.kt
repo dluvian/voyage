@@ -1,7 +1,7 @@
 package com.dluvian.voyage.data.provider
 
-import com.dluvian.voyage.core.interactor.PostVoter
 import com.dluvian.voyage.core.model.RootPost
+import com.dluvian.voyage.data.interactor.PostVoter
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.room.dao.RootPostDao
 import kotlinx.coroutines.flow.Flow

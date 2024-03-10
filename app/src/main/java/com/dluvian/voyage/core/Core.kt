@@ -2,9 +2,9 @@ package com.dluvian.voyage.core
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.lifecycle.ViewModel
-import com.dluvian.voyage.core.interactor.PostVoter
 import com.dluvian.voyage.core.navigator.Navigator
 import com.dluvian.voyage.core.viewModel.HomeViewModel
+import com.dluvian.voyage.data.interactor.PostVoter
 import com.dluvian.voyage.data.nostr.NostrService
 
 class Core(
