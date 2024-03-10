@@ -69,14 +69,14 @@ class EventMaker(
     ): Result<Event> {
         val content = if (isPositive) "+" else "-"
         val unsignedEvent = EventBuilder.reaction(eventId, pubkey, content)
-            .toUnsignedEvent(accountKeyManager.getPubkey())
+            .toUnsignedEvent(accountKeyManager.getPublicKey())
 
         return accountKeyManager.sign(unsignedEvent)
     }
 
     fun buildDelete(eventId: EventId): Result<Event> {
         val unsignedEvent = EventBuilder.delete(ids = listOf(eventId), reason = null)
-            .toUnsignedEvent(accountKeyManager.getPubkey())
+            .toUnsignedEvent(accountKeyManager.getPublicKey())
 
         return accountKeyManager.sign(unsignedEvent)
     }

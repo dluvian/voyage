@@ -5,6 +5,7 @@ import com.dluvian.nostr_kt.Kind
 import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
+import com.dluvian.voyage.data.keys.IPubkeyProvider
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
@@ -25,13 +26,14 @@ class NostrSubscriber(
     private val webOfTrustProvider: WebOfTrustProvider,
     private val topicProvider: TopicProvider,
     private val friendProvider: FriendProvider,
+    private val pubkeyProvider: IPubkeyProvider,
 ) {
     private val tag = "NostrSubscriber"
     private val scope = CoroutineScope(Dispatchers.IO)
     fun subFeed(until: Long, size: Int) {
         val adjustedSize = (5 * size).toULong() // We don't know if we receive enough root posts
         val friendFilter = Filter().kind(kind = Kind.TEXT_NOTE.toULong()) // TODO: Support reposts
-            .authors(authors = friendProvider.getFriendPubkeys())
+            .authors(authors = friendProvider.getFriendPublicKeys())
             .until(timestamp = Timestamp.fromSecs(until.toULong()))
             .limit(limit = adjustedSize)
         val topicFilter = Filter().kind(kind = Kind.TEXT_NOTE.toULong())
@@ -78,6 +80,17 @@ class NostrSubscriber(
         votesAndRepliesJob?.invokeOnCompletion { ex ->
             if (ex == null) votesAndRepliesCache.addAll(newIds)
             else Log.d(tag, "Subbing votes and replies failed: ${ex.message}")
+        }
+    }
+
+    fun subMyContacts() {
+        val contactFilter = Filter().kind(kind = Kind.CONTACT_LIST.toULong())
+            .author(pubkeyProvider.getPublicKey())
+            .until(timestamp = Timestamp.now())
+        val filters = listOf(contactFilter)
+
+        relayProvider.getReadRelays().forEach { relay ->
+            nostrService.subscribe(filters = filters, relayUrl = relay)
         }
     }
 }

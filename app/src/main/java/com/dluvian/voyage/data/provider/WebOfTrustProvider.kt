@@ -9,6 +9,6 @@ class WebOfTrustProvider(private val friendProvider: FriendProvider) {
 
     fun getWebOfTrustPubkeys(): List<PublicKey> {
         // TODO: get from dao + friends
-        return friendProvider.getFriendPubkeys()
+        return friendProvider.getFriendPublicKeys()
     }
 }

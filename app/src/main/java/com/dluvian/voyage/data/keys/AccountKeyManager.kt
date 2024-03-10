@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import rust.nostr.protocol.Event
-import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.UnsignedEvent
 
 private const val TAG = "AccountKeyManager"
@@ -34,10 +33,6 @@ class AccountKeyManager(
 
     override fun getPubkeyHex(): PubkeyHex {
         return myPubkeyFlow.value ?: throw IllegalStateException("No pubkey set")
-    }
-
-    fun getPubkey(): PublicKey {
-        return PublicKey.fromHex(getPubkeyHex())
     }
 
     fun sign(unsignedEvent: UnsignedEvent): Result<Event> {
