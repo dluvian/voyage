@@ -12,7 +12,7 @@ import com.dluvian.voyage.core.VoteEvent
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.VoteDao
-import com.dluvian.voyage.data.room.dao.VoteUpsertDao
+import com.dluvian.voyage.data.room.dao.tx.VoteUpsertDao
 import com.dluvian.voyage.data.room.entity.VoteEntity
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope

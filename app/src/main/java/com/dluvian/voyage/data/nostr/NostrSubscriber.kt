@@ -87,7 +87,20 @@ class NostrSubscriber(
         val contactFilter = Filter().kind(kind = Kind.CONTACT_LIST.toULong())
             .author(pubkeyProvider.getPublicKey())
             .until(timestamp = Timestamp.now())
+            .limit(1u)
         val filters = listOf(contactFilter)
+
+        relayProvider.getReadRelays().forEach { relay ->
+            nostrService.subscribe(filters = filters, relayUrl = relay)
+        }
+    }
+
+    fun subMyTopics() {
+        val topicFilter = Filter().kind(kind = Kind.TOPIC_LIST.toULong())
+            .author(pubkeyProvider.getPublicKey())
+            .until(timestamp = Timestamp.now())
+            .limit(1u)
+        val filters = listOf(topicFilter)
 
         relayProvider.getReadRelays().forEach { relay ->
             nostrService.subscribe(filters = filters, relayUrl = relay)

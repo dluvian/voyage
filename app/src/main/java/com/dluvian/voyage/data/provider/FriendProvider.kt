@@ -10,8 +10,8 @@ import rust.nostr.protocol.PublicKey
 
 class FriendProvider(nostrSubscriber: NostrSubscriber, friendDao: FriendDao) {
     private val scope = CoroutineScope(Dispatchers.IO)
-    private val friends =
-        friendDao.getFriendFlow().stateIn(scope, SharingStarted.WhileSubscribed(), emptyList())
+    private val friends = friendDao.getFriendsFlow()
+        .stateIn(scope, SharingStarted.WhileSubscribed(), emptyList())
 
     init {
         nostrSubscriber.subMyContacts()

@@ -12,11 +12,11 @@ import com.dluvian.voyage.data.model.ValidatedReplyPost
 import com.dluvian.voyage.data.model.ValidatedRootPost
 import com.dluvian.voyage.data.model.ValidatedTopicList
 import com.dluvian.voyage.data.model.ValidatedVote
-import com.dluvian.voyage.data.room.dao.FriendUpsertDao
-import com.dluvian.voyage.data.room.dao.PostInsertDao
-import com.dluvian.voyage.data.room.dao.TopicUpsertDao
-import com.dluvian.voyage.data.room.dao.VoteUpsertDao
-import com.dluvian.voyage.data.room.dao.WebOfTrustUpsertDao
+import com.dluvian.voyage.data.room.dao.tx.FriendUpsertDao
+import com.dluvian.voyage.data.room.dao.tx.PostInsertDao
+import com.dluvian.voyage.data.room.dao.tx.TopicUpsertDao
+import com.dluvian.voyage.data.room.dao.tx.VoteUpsertDao
+import com.dluvian.voyage.data.room.dao.tx.WebOfTrustUpsertDao
 import com.dluvian.voyage.data.room.entity.VoteEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
