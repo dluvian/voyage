@@ -83,8 +83,6 @@ fun createHashtagTag(hashtag: String) = Tag.fromEnum(TagEnum.Hashtag(hashtag))
 
 fun createLabelTag(label: String) = Tag.parse(listOf("l", label))
 
-fun createKindTag(kind: Int) = Tag.parse(listOf("k", "$kind"))
-
 fun createReplyTag(parentEventId: EventId, relayHint: RelayUrl, parentIsRoot: Boolean) =
     Tag.parse(
         listOf(
@@ -144,6 +142,25 @@ fun Event.getHashtags(): List<String> {
         .distinct()
 }
 
+fun String.removeTrailingSlashes(): String {
+    return this.removeSuffix("/")
+}
+
+fun Event.getNip65s(): List<Nip65Relay> {
+    return this.tags().asSequence().filter { it.kind() == TagKind.R }
+        .map { it.asVec() }
+        .filter { it.size >= 2 && it[1].startsWith(WEBSOCKET_PREFIX) && it[1].trim().length >= 10 }
+        .map {
+            val restriction = it.getOrNull(2)
+            Nip65Relay(
+                url = it[1].trim().removeTrailingSlashes(),
+                isRead = restriction == null || restriction == "read",
+                isWrite = restriction == null || restriction == "write",
+            )
+        }
+        .distinctBy { it.url }.toList()
+}
+
 fun Event.getTitle(): String? {
     return this.tags().firstOrNull { it.kind() == TagKind.Title }?.asVec()?.getOrNull(1)
 
@@ -157,6 +174,10 @@ fun Event.isTopicList(): Boolean {
     return this.kind().toInt() == Kind.TOPIC_LIST
 }
 
+fun Event.isNip65(): Boolean {
+    return this.kind().toInt() == Kind.NIP65
+}
+
 fun Event.isVote(): Boolean {
     return this.kind().toInt() == Kind.REACTION
 }
@@ -168,9 +189,11 @@ fun createFriendFilter(pubkeys: List<PublicKey>, until: ULong, limit: ULong): Fi
         .limit(limit = limit)
 }
 
+
 object Kind {
     const val TEXT_NOTE = 1
     const val CONTACT_LIST = 3
     const val REACTION = 7
+    const val NIP65 = 10002
     const val TOPIC_LIST = 10015
 }

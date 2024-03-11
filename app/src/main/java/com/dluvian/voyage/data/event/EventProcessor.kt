@@ -8,11 +8,13 @@ import com.dluvian.voyage.data.keys.IPubkeyProvider
 import com.dluvian.voyage.data.model.RelayedItem
 import com.dluvian.voyage.data.model.ValidatedContactList
 import com.dluvian.voyage.data.model.ValidatedList
+import com.dluvian.voyage.data.model.ValidatedNip65
 import com.dluvian.voyage.data.model.ValidatedReplyPost
 import com.dluvian.voyage.data.model.ValidatedRootPost
 import com.dluvian.voyage.data.model.ValidatedTopicList
 import com.dluvian.voyage.data.model.ValidatedVote
 import com.dluvian.voyage.data.room.dao.tx.FriendUpsertDao
+import com.dluvian.voyage.data.room.dao.tx.Nip65UpsertDao
 import com.dluvian.voyage.data.room.dao.tx.PostInsertDao
 import com.dluvian.voyage.data.room.dao.tx.TopicUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.VoteUpsertDao
@@ -30,6 +32,7 @@ class EventProcessor(
     private val friendUpsertDao: FriendUpsertDao,
     private val webOfTrustUpsertDao: WebOfTrustUpsertDao,
     private val topicUpsertDao: TopicUpsertDao,
+    private val nip65UpsertDao: Nip65UpsertDao,
     private val pubkeyProvider: IPubkeyProvider,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -42,6 +45,7 @@ class EventProcessor(
         val votes = mutableListOf<ValidatedVote>()
         val contactLists = mutableListOf<ValidatedContactList>()
         val topicLists = mutableListOf<ValidatedTopicList>()
+        val nip65s = mutableListOf<ValidatedNip65>()
 
         events.forEach { relayedItem ->
             when (val item = relayedItem.item) {
@@ -62,6 +66,7 @@ class EventProcessor(
                 is ValidatedVote -> votes.add(item)
                 is ValidatedContactList -> contactLists.add(item)
                 is ValidatedTopicList -> topicLists.add(item)
+                is ValidatedNip65 -> nip65s.add(item)
             }
         }
 
@@ -70,6 +75,7 @@ class EventProcessor(
         processVotes(votes = votes)
         processContactLists(contactLists = contactLists)
         processTopicLists(topicLists = topicLists)
+        processNip65s(nip65s = nip65s)
     }
 
     private fun processRootPosts(relayedRootPosts: Collection<RelayedItem<ValidatedRootPost>>) {
@@ -151,6 +157,20 @@ class EventProcessor(
             topicUpsertDao.upsertTopics(validatedTopicList = myNewestList)
         }.invokeOnCompletion { exception ->
             if (exception != null) Log.w(TAG, "Failed to process topic list", exception)
+        }
+    }
+
+    private fun processNip65s(nip65s: Collection<ValidatedNip65>) {
+        if (nip65s.isEmpty()) return
+
+        val newestNip65s = filterNewestLists(lists = nip65s)
+
+        newestNip65s.forEach { nip65 ->
+            scope.launch {
+                nip65UpsertDao.upsertNip65(validatedNip65 = nip65)
+            }.invokeOnCompletion { exception ->
+                if (exception != null) Log.w(TAG, "Failed to process nip65", exception)
+            }
         }
     }
 

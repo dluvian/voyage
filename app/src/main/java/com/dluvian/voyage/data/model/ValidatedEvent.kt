@@ -1,5 +1,6 @@
 package com.dluvian.voyage.data.model
 
+import com.dluvian.nostr_kt.Nip65Relay
 import com.dluvian.voyage.core.EventIdHex
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.PublicKey
@@ -42,3 +43,9 @@ data class ValidatedTopicList(
     val topics: Set<String>,
     override val createdAt: Long
 ) : ValidatedList(owner = myPubkey, createdAt = createdAt)
+
+data class ValidatedNip65(
+    val pubkey: PublicKey,
+    val relays: List<Nip65Relay>,
+    override val createdAt: Long
+) : ValidatedList(owner = pubkey, createdAt = createdAt)

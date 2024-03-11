@@ -5,20 +5,24 @@ import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
 import com.dluvian.nostr_kt.getCurrentSecs
 import com.dluvian.nostr_kt.getHashtags
+import com.dluvian.nostr_kt.getNip65s
 import com.dluvian.nostr_kt.getReplyToId
 import com.dluvian.nostr_kt.getTitle
 import com.dluvian.nostr_kt.isContactList
+import com.dluvian.nostr_kt.isNip65
 import com.dluvian.nostr_kt.isPostOrReply
 import com.dluvian.nostr_kt.isReplyPost
 import com.dluvian.nostr_kt.isRootPost
 import com.dluvian.nostr_kt.isTopicList
 import com.dluvian.nostr_kt.isVote
 import com.dluvian.nostr_kt.matches
+import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.core.MAX_TOPIC_LEN
 import com.dluvian.voyage.data.keys.IPubkeyProvider
 import com.dluvian.voyage.data.model.RelayedItem
 import com.dluvian.voyage.data.model.ValidatedContactList
 import com.dluvian.voyage.data.model.ValidatedEvent
+import com.dluvian.voyage.data.model.ValidatedNip65
 import com.dluvian.voyage.data.model.ValidatedReplyPost
 import com.dluvian.voyage.data.model.ValidatedRootPost
 import com.dluvian.voyage.data.model.ValidatedTopicList
@@ -29,12 +33,11 @@ import rust.nostr.protocol.Filter
 import java.util.Collections
 
 
-private const val TAG = "EventQueueQualityGate"
-
 class EventValidator(
     private val filterCache: Map<SubId, List<Filter>>,
     private val pubkeyProvider: IPubkeyProvider,
 ) {
+    private val tag = "EventValidator"
 
     fun getValidatedEvent(
         event: Event,
@@ -44,17 +47,17 @@ class EventValidator(
         if (isCached(event = event, relayUrl = relayUrl)) return null
 
         if (isFromFuture(event = event)) {
-            Log.w(TAG, "Discard event from the future, ${event.id().toHex()} from $relayUrl")
+            Log.w(tag, "Discard event from the future, ${event.id().toHex()} from $relayUrl")
             return null
         }
         if (!matchesFilter(subId = subId, event = event)) {
-            Log.w(TAG, "Discard event not matching filter, ${event.id().toHex()} from $relayUrl")
+            Log.w(tag, "Discard event not matching filter, ${event.id().toHex()} from $relayUrl")
             return null
         }
         val validatedEvent = validate(event = event)
         cache(event = event, relayUrl = relayUrl)
         if (validatedEvent == null) {
-            Log.w(TAG, "Discard invalid event, ${event.id().toHex()} from $relayUrl")
+            Log.w(tag, "Discard invalid event, ${event.id().toHex()} from $relayUrl")
             return null
         }
 
@@ -82,7 +85,7 @@ class EventValidator(
     private var upperTimeBoundary = getUpperTimeBoundary()
     private fun getUpperTimeBoundary() = getCurrentSecs() + 60
     private fun isFromFuture(event: Event): Boolean {
-        val createdAt = event.createdAt().asSecs().toLong()
+        val createdAt = event.createdAt().secs()
         if (createdAt > upperTimeBoundary) {
             upperTimeBoundary = getUpperTimeBoundary()
             return createdAt > upperTimeBoundary
@@ -107,7 +110,7 @@ class EventValidator(
                 topics = topics,
                 title = event.getTitle(),
                 content = event.content(),
-                createdAt = event.createdAt().asSecs().toLong()
+                createdAt = event.createdAt().secs()
             )
         } else if (event.isReplyPost()) {
             val replyToId = event.getReplyToId()
@@ -117,7 +120,7 @@ class EventValidator(
                 pubkey = event.author(),
                 replyToId = replyToId,
                 content = event.content(),
-                createdAt = event.createdAt().asSecs().toLong()
+                createdAt = event.createdAt().secs()
             )
         } else if (event.isVote()) {
             val postId = event.eventIds().firstOrNull()
@@ -127,20 +130,26 @@ class EventValidator(
                 postId = postId,
                 pubkey = event.author(),
                 isPositive = event.content() != "-",
-                createdAt = event.createdAt().asSecs().toLong()
+                createdAt = event.createdAt().secs()
             )
         } else if (event.isContactList()) {
             ValidatedContactList(
                 pubkey = event.author(),
                 friendPubkeys = event.publicKeys().toSet(),
-                createdAt = event.createdAt().asSecs().toLong()
+                createdAt = event.createdAt().secs()
             )
         } else if (event.isTopicList()) {
             if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) null
             else ValidatedTopicList(
                 myPubkey = event.author(),
                 topics = event.getHashtags().toSet(),
-                createdAt = event.createdAt().asSecs().toLong()
+                createdAt = event.createdAt().secs()
+            )
+        } else if (event.isNip65()) {
+            ValidatedNip65(
+                pubkey = event.author(),
+                relays = event.getNip65s(),
+                createdAt = event.createdAt().secs()
             )
         } else null
 

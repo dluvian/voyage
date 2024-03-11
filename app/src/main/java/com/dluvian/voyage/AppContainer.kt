@@ -48,6 +48,7 @@ class AppContainer(context: Context) {
         friendUpsertDao = roomDb.friendUpsertDao(),
         webOfTrustUpsertDao = roomDb.webOfTrustUpsertDao(),
         topicUpsertDao = roomDb.topicUpsertDao(),
+        nip65UpsertDao = roomDb.nip65UpsertDao(),
         pubkeyProvider = accountKeyManager
     )
     private val eventQueue = EventQueue(
