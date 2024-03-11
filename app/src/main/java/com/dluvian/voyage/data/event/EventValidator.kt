@@ -146,9 +146,11 @@ class EventValidator(
                 createdAt = event.createdAt().secs()
             )
         } else if (event.isNip65()) {
-            ValidatedNip65(
+            val relays = event.getNip65s()
+            if (relays.isEmpty()) null
+            else ValidatedNip65(
                 pubkey = event.author(),
-                relays = event.getNip65s(),
+                relays = relays,
                 createdAt = event.createdAt().secs()
             )
         } else null

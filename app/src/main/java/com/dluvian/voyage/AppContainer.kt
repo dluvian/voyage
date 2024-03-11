@@ -65,7 +65,7 @@ class AppContainer(context: Context) {
         eventMaker = eventMaker,
         filterCache = filterCache
     )
-    private val relayProvider = RelayProvider()
+    private val relayProvider = RelayProvider(nip65Dao = roomDb.nip65Dao())
 
     init {
         nostrService.initialize(initRelayUrls = relayProvider.getReadRelays())

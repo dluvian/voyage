@@ -38,7 +38,7 @@ class PostVoter(
     private val _forcedVotes = MutableStateFlow(mapOf<EventIdHex, Vote>())
 
     val forcedVotes = _forcedVotes
-        .stateIn(scope, SharingStarted.WhileSubscribed(), _forcedVotes.value)
+        .stateIn(scope, SharingStarted.Eagerly, _forcedVotes.value)
 
     fun handle(voteEvent: VoteEvent) {
         val newVote = when (voteEvent) {
@@ -126,7 +126,7 @@ class PostVoter(
                 voteUpsertDao.upsertVote(voteEntity = entity)
             }
             .onFailure {
-                Log.w(tag, "Failed to create delete event: ${it.message}")
+                Log.w(tag, "Failed to publish vote: ${it.message}")
             }
     }
 }

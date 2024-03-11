@@ -10,7 +10,7 @@ import rust.nostr.protocol.PublicKey
 class WebOfTrustProvider(webOfTrustDao: WebOfTrustDao) {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val webOfTrust = webOfTrustDao.getWebOfTrustFlow()
-        .stateIn(scope, SharingStarted.WhileSubscribed(), emptyList())
+        .stateIn(scope, SharingStarted.Eagerly, emptyList())
 
     fun getWebOfTrustPubkeys(): List<PublicKey> {
         return webOfTrust.value.map { PublicKey.fromHex(it) }

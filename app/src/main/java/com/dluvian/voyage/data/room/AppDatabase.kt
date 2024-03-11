@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.dluvian.voyage.data.room.dao.AccountDao
 import com.dluvian.voyage.data.room.dao.FriendDao
+import com.dluvian.voyage.data.room.dao.Nip65Dao
 import com.dluvian.voyage.data.room.dao.RootPostDao
 import com.dluvian.voyage.data.room.dao.TopicDao
 import com.dluvian.voyage.data.room.dao.VoteDao
@@ -18,6 +19,7 @@ import com.dluvian.voyage.data.room.dao.tx.WebOfTrustUpsertDao
 import com.dluvian.voyage.data.room.entity.AccountEntity
 import com.dluvian.voyage.data.room.entity.FriendEntity
 import com.dluvian.voyage.data.room.entity.HashtagEntity
+import com.dluvian.voyage.data.room.entity.Nip65Entity
 import com.dluvian.voyage.data.room.entity.PostEntity
 import com.dluvian.voyage.data.room.entity.PostRelayEntity
 import com.dluvian.voyage.data.room.entity.TopicEntity
@@ -27,10 +29,11 @@ import com.dluvian.voyage.data.room.view.RootPostView
 
 // TODO: Reset to v=1 when first releasing app, and delete migration files
 @Database(
-    version = 2,
+    version = 3,
     exportSchema = true,
     autoMigrations = [
-        AutoMigration(from = 1, to = 2)
+        AutoMigration(from = 1, to = 2),
+        AutoMigration(from = 2, to = 3),
     ],
     entities = [
         PostEntity::class,
@@ -41,6 +44,7 @@ import com.dluvian.voyage.data.room.view.RootPostView
         WebOfTrustEntity::class,
         TopicEntity::class,
         HashtagEntity::class,
+        Nip65Entity::class,
     ],
     views = [RootPostView::class]
 )
@@ -52,6 +56,9 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun topicDao(): TopicDao
     abstract fun friendDao(): FriendDao
     abstract fun webOfTrustDao(): WebOfTrustDao
+    abstract fun nip65Dao(): Nip65Dao
+
+    // TX
     abstract fun voteUpsertDao(): VoteUpsertDao
     abstract fun friendUpsertDao(): FriendUpsertDao
     abstract fun webOfTrustUpsertDao(): WebOfTrustUpsertDao

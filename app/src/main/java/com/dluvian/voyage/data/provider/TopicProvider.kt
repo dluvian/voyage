@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.stateIn
 class TopicProvider(topicDao: TopicDao) {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val topics = topicDao.getTopicsFlow()
-        .stateIn(scope, SharingStarted.WhileSubscribed(), emptyList())
+        .stateIn(scope, SharingStarted.Eagerly, emptyList())
 
     fun getTopics(): List<Topic> {
         return topics.value.ifEmpty { defaultTopics }

@@ -3,35 +3,54 @@ package com.dluvian.voyage.data.provider
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.core.MAX_RELAYS
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.data.room.dao.Nip65Dao
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 
 
-// TODO: Nip65
-class RelayProvider {
+class RelayProvider(private val nip65Dao: Nip65Dao) {
+    private val scope = CoroutineScope(Dispatchers.IO)
+    private val myNip65 = nip65Dao.getMyNip65().stateIn(scope, SharingStarted.Eagerly, emptyList())
+
     fun getReadRelays(limit: Boolean = true): List<RelayUrl> {
-        return if (limit && defaultRelays.size > MAX_RELAYS)
-            defaultRelays.shuffled().take(MAX_RELAYS)
-        else defaultRelays
+        return myNip65.value
+            .filter { it.nip65Relay.isRead }
+            .map { it.nip65Relay.url }
+            .ifEmpty { defaultRelays }
+            .let { if (limit) it.limit() else it }
     }
 
     fun getWriteRelays(limit: Boolean = true): List<RelayUrl> {
-        return defaultRelays
+        return myNip65.value
+            .filter { it.nip65Relay.isWrite }
+            .map { it.nip65Relay.url }
+            .ifEmpty { defaultRelays }
+            .let { if (limit) it.limit() else it }
     }
 
-    fun getPublishRelays(publishTo: PubkeyHex): List<RelayUrl> {
-        return getWriteRelays() // TODO: write relays + read relays of publishTo
+    suspend fun getPublishRelays(publishTo: PubkeyHex): List<RelayUrl> {
+        val foreignRelays = nip65Dao.getReadRelays(pubkey = publishTo).limit()
+        return (getWriteRelays(limit = true) + foreignRelays).distinct()
     }
 
     fun getAutopilotRelays(pubkeys: Collection<PubkeyHex>): Map<RelayUrl, Set<PubkeyHex>> {
         return getReadRelays().associateWith { pubkeys.toSet() } // TODO: Autopilot implementation
     }
-}
 
-private val defaultRelays = listOf(
-    "wss://nos.lol",
-    "wss://nostr.einundzwanzig.space",
-    "wss://relay.primal.net",
-    "wss://nostr.oxtr.dev",
-    "wss://relay.mutinywallet.com",
-    "wss://nostr.fmt.wiz.biz",
-    "wss://relay.nostr.wirednet.jp",
-)
+    private fun List<RelayUrl>.limit(): List<RelayUrl> {
+        return if (this.size > MAX_RELAYS) this.shuffled().take(MAX_RELAYS)
+        else this
+    }
+
+    private val defaultRelays = listOf(
+        "wss://nos.lol",
+        "wss://nostr.einundzwanzig.space",
+        "wss://relay.primal.net",
+        "wss://nostr.oxtr.dev",
+        "wss://relay.mutinywallet.com",
+        "wss://nostr.fmt.wiz.biz",
+        "wss://relay.nostr.wirednet.jp",
+    )
+}
