@@ -101,16 +101,21 @@ class NostrSubscriber(
     }
 
     private fun subStartUp() {
-        val contactFilter = Filter().kind(kind = Kind.CONTACT_LIST.toULong())
+        val timestamp = Timestamp.now()
+        val myContactFilter = Filter().kind(kind = Kind.CONTACT_LIST.toULong())
             .author(pubkeyProvider.getPublicKey())
-            .until(timestamp = Timestamp.now())
+            .until(timestamp = timestamp)
             .limit(1u)
-        val topicFilter = Filter().kind(kind = Kind.TOPIC_LIST.toULong())
+        val myTopicsFilter = Filter().kind(kind = Kind.TOPIC_LIST.toULong())
             .author(pubkeyProvider.getPublicKey())
-            .until(timestamp = Timestamp.now())
+            .until(timestamp = timestamp)
             .limit(1u)
-        val filters = listOf(contactFilter, topicFilter)
-        // TODO: sub my nip65
+        val myNip65Filter = Filter().kind(kind = Kind.NIP65.toULong())
+            .author(pubkeyProvider.getPublicKey())
+            .until(timestamp = timestamp)
+            .limit(1u)
+        val filters = listOf(myContactFilter, myTopicsFilter, myNip65Filter)
+
         // TODO: sub missing contact lists of friends
         // TODO: sub 10% but max 25 contact lists of friends for update purpose
         // TODO: sub missing nip65s of friends
