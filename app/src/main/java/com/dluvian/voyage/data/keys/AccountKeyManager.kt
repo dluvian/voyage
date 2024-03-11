@@ -9,9 +9,8 @@ import com.dluvian.voyage.data.room.dao.AccountDao
 import com.dluvian.voyage.data.room.entity.AccountEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.UnsignedEvent
 
@@ -24,15 +23,16 @@ class AccountKeyManager(
     private val accountDao: AccountDao,
 ) : IPubkeyProvider {
     private val scope = CoroutineScope(Dispatchers.Default)
-    private val myPubkeyFlow =
-        accountDao.getPubkeyFlow().stateIn(scope, SharingStarted.Eagerly, null)
 
     init {
         ensureDataIntegrity()
     }
 
     override fun getPubkeyHex(): PubkeyHex {
-        return myPubkeyFlow.value ?: throw IllegalStateException("No pubkey set")
+        // TODO: cache pubkey
+        return runBlocking {
+            accountDao.getPubkey() ?: throw IllegalStateException("No pubkey set")
+        }
     }
 
     fun sign(unsignedEvent: UnsignedEvent): Result<Event> {

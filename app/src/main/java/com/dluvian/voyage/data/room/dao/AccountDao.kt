@@ -7,7 +7,6 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.room.entity.AccountEntity
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AccountDao {
@@ -15,7 +14,7 @@ interface AccountDao {
     suspend fun count(): Int
 
     @Query("SELECT pubkey FROM account LIMIT 1")
-    fun getPubkeyFlow(): Flow<PubkeyHex?>
+    suspend fun getPubkey(): PubkeyHex?
 
     @Transaction
     suspend fun updateAccount(account: AccountEntity) {

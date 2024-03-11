@@ -29,11 +29,12 @@ import com.dluvian.voyage.data.room.view.RootPostView
 
 // TODO: Reset to v=1 when first releasing app, and delete migration files
 @Database(
-    version = 3,
+    version = 4,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
+        AutoMigration(from = 3, to = 4),
     ],
     entities = [
         PostEntity::class,

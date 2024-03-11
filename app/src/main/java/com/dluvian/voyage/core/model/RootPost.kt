@@ -10,7 +10,8 @@ import com.dluvian.voyage.data.room.view.RootPostView
 data class RootPost(
     val id: EventIdHex,
     val pubkey: PubkeyHex,
-    val topic: String,
+    val trustType: TrustType,
+    val topic: String?,
     val createdAt: Long,
     val title: String,
     val content: String,
@@ -23,7 +24,11 @@ data class RootPost(
             return RootPost(
                 id = rootPostView.id,
                 pubkey = rootPostView.pubkey,
-                topic = rootPostView.topic.orEmpty(),
+                trustType = TrustType.from(
+                    isFriend = rootPostView.authorIsFriend,
+                    isWebOfTrust = rootPostView.authorIsTrusted
+                ),
+                topic = rootPostView.topic,
                 createdAt = rootPostView.createdAt,
                 title = rootPostView.title.orEmpty(),
                 content = rootPostView.content,

@@ -26,10 +26,12 @@ import com.dluvian.voyage.core.ClickThread
 import com.dluvian.voyage.core.HomeViewAppend
 import com.dluvian.voyage.core.HomeViewRefresh
 import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.core.model.FriendTrust
 import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.viewModel.HomeViewModel
 import com.dluvian.voyage.ui.components.PullRefreshBox
 import com.dluvian.voyage.ui.components.RelativeTime
+import com.dluvian.voyage.ui.components.TrustIndicator
 import com.dluvian.voyage.ui.components.VoteBox
 import com.dluvian.voyage.ui.components.chip.CommentChip
 import com.dluvian.voyage.ui.components.chip.TopicChip
@@ -47,7 +49,11 @@ fun HomeView(vm: HomeViewModel, onUpdate: OnUpdate) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             itemsIndexed(items = posts, key = { _, item -> item.id }) { i, post ->
                 PostRow(
-                    post = post.copy(title = post.title.ifEmpty { "You ate all my beans :(" }),
+                    post = post.copy(
+                        title = post.title.ifEmpty { "You ate all my beans :(" },
+                        topic = "food",
+                        trustType = FriendTrust
+                    ),
                     onUpdate = onUpdate
                 )
                 HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = spacing.tiny)
@@ -57,6 +63,7 @@ fun HomeView(vm: HomeViewModel, onUpdate: OnUpdate) {
     }
 }
 
+// TODO: Make row clickable
 @Composable
 private fun PostRow(post: RootPost, onUpdate: OnUpdate) {
     Column(
@@ -64,11 +71,8 @@ private fun PostRow(post: RootPost, onUpdate: OnUpdate) {
             .fillMaxWidth()
             .padding(spacing.screenEdge)
     ) {
-        Header(
-            topic = post.topic,
-            time = post.createdAt
-        )
-        Spacer(modifier = Modifier.height(spacing.medium))
+        Header(post = post)
+        Spacer(modifier = Modifier.height(spacing.large))
         if (post.title.isNotEmpty()) {
             Text(
                 text = post.title,
@@ -91,11 +95,19 @@ private fun PostRow(post: RootPost, onUpdate: OnUpdate) {
 }
 
 @Composable
-private fun Header(topic: String, time: Long) {
+private fun Header(post: RootPost) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        TopicChip(modifier = Modifier.weight(weight = 1f, fill = false), topic = topic)
+        TrustIndicator(trustType = post.trustType)
+        post.topic?.let { topic ->
+            TopicChip(
+                modifier = Modifier
+                    .weight(weight = 1f, fill = false)
+                    .padding(start = spacing.large),
+                topic = topic
+            )
+        }
         Spacer(modifier = Modifier.width(spacing.large))
-        RelativeTime(from = time)
+        RelativeTime(from = post.createdAt)
     }
 }
 
