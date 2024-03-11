@@ -3,7 +3,6 @@ package com.dluvian.voyage.core.model
 import androidx.compose.runtime.Immutable
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.getRatioInPercent
 import com.dluvian.voyage.data.interactor.Vote
 import com.dluvian.voyage.data.room.view.RootPostView
 
@@ -17,7 +16,6 @@ data class RootPost(
     val content: String,
     val myVote: Vote,
     val tally: Int,
-    val ratioInPercent: Int,
     val commentCount: Int,
 ) {
     companion object {
@@ -31,10 +29,6 @@ data class RootPost(
                 content = rootPostView.content,
                 myVote = Vote.from(vote = rootPostView.myVote),
                 tally = rootPostView.upvoteCount - rootPostView.downvoteCount,
-                ratioInPercent = getRatioInPercent(
-                    countA = rootPostView.upvoteCount,
-                    countB = rootPostView.downvoteCount
-                ),
                 commentCount = rootPostView.commentCount,
             )
         }

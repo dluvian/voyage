@@ -38,10 +38,28 @@ fun VoteBox(
     authorPubkey: PubkeyHex,
     myVote: Vote,
     tally: Int,
-    ratioInPercent: Int,
-    onUpdate: OnUpdate
+    onUpdate: OnUpdate,
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    VoteButtonsAndTally(
+        postId = postId,
+        authorPubkey = authorPubkey,
+        myVote = myVote,
+        tally = tally,
+        onUpdate = onUpdate
+    )
+}
+
+@Composable
+private fun VoteButtonsAndTally(
+    postId: EventIdHex,
+    authorPubkey: PubkeyHex,
+    myVote: Vote,
+    tally: Int,
+    onUpdate: OnUpdate,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         VoteButton(
             isUpvote = true,
             tint = if (myVote is Upvote) TallPoppyRed else MaterialTheme.colorScheme.onSurfaceVariant,
@@ -54,8 +72,8 @@ fun VoteBox(
             }
         )
         Text(
-            modifier = Modifier.padding(horizontal = spacing.small),
-            text = "$tally ($ratioInPercent%)",
+            modifier = Modifier.padding(horizontal = spacing.medium),
+            text = "$tally",
             fontWeight = if (myVote.isNeutral()) FontWeight.Normal else FontWeight.SemiBold
         )
         VoteButton(

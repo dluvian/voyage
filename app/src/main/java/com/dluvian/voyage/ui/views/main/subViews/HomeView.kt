@@ -117,7 +117,6 @@ private fun Actions(
             authorPubkey = post.pubkey,
             myVote = post.myVote,
             tally = post.tally,
-            ratioInPercent = post.ratioInPercent,
             onUpdate = onUpdate
         )
         CommentChip(
