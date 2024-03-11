@@ -49,19 +49,22 @@ class EventProcessor(
 
         events.forEach { relayedItem ->
             when (val item = relayedItem.item) {
-                is ValidatedRootPost -> rootPosts.add(
-                    RelayedItem(
-                        item = item,
-                        relayUrl = relayedItem.relayUrl
+                is ValidatedRootPost ->
+                    rootPosts.add(
+                        RelayedItem(
+                            item = item,
+                            relayUrl = relayedItem.relayUrl
+                        )
                     )
-                )
 
-                is ValidatedReplyPost -> replyPosts.add(
-                    RelayedItem(
-                        item = item,
-                        relayUrl = relayedItem.relayUrl
+                is ValidatedReplyPost ->
+                    replyPosts.add(
+                        RelayedItem(
+                            item = item,
+                            relayUrl = relayedItem.relayUrl
+                        )
                     )
-                )
+
 
                 is ValidatedVote -> votes.add(item)
                 is ValidatedContactList -> contactLists.add(item)
@@ -81,8 +84,9 @@ class EventProcessor(
     private fun processRootPosts(relayedRootPosts: Collection<RelayedItem<ValidatedRootPost>>) {
         if (relayedRootPosts.isEmpty()) return
 
+        val sorted = relayedRootPosts.sortedBy { it.item.createdAt }
         scope.launch {
-            postInsertDao.insertRootPosts(relayedPosts = relayedRootPosts)
+            postInsertDao.insertRootPosts(relayedPosts = sorted)
         }.invokeOnCompletion { exception ->
             if (exception != null) Log.w(TAG, "Failed to process root posts", exception)
         }
@@ -91,8 +95,9 @@ class EventProcessor(
     private fun processReplyPosts(relayedReplyPosts: Collection<RelayedItem<ValidatedReplyPost>>) {
         if (relayedReplyPosts.isEmpty()) return
 
+        val sorted = relayedReplyPosts.sortedBy { it.item.createdAt }
         scope.launch {
-            postInsertDao.insertReplyPosts(relayedPosts = relayedReplyPosts)
+            postInsertDao.insertReplyPosts(relayedPosts = sorted)
         }.invokeOnCompletion { exception ->
             if (exception != null) Log.w(TAG, "Failed to process reply posts", exception)
         }
@@ -107,7 +112,11 @@ class EventProcessor(
             scope.launch {
                 voteUpsertDao.upsertVote(voteEntity = vote)
             }.invokeOnCompletion { exception ->
-                if (exception != null) Log.w(TAG, "Failed to process vote ${vote.id}", exception)
+                if (exception != null) Log.w(
+                    TAG,
+                    "Failed to process vote ${vote.id}",
+                    exception
+                )
             }
         }
     }
@@ -142,7 +151,11 @@ class EventProcessor(
             scope.launch {
                 webOfTrustUpsertDao.upsertWebOfTrust(validatedWebOfTrust = wot)
             }.invokeOnCompletion { exception ->
-                if (exception != null) Log.w(TAG, "Failed to process web of trust list", exception)
+                if (exception != null) Log.w(
+                    TAG,
+                    "Failed to process web of trust list",
+                    exception
+                )
             }
         }
     }

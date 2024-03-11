@@ -1,5 +1,6 @@
 package com.dluvian.voyage.data.room.dao.tx
 
+import android.util.Log
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -8,6 +9,9 @@ import androidx.room.Transaction
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.model.ValidatedContactList
 import com.dluvian.voyage.data.room.entity.FriendEntity
+
+
+private const val TAG = "FriendUpsertDao"
 
 @Dao
 interface FriendUpsertDao {
@@ -24,8 +28,12 @@ interface FriendUpsertDao {
             return
         }
 
-        internalUpsert(friendEntities = list)
-        internalDeleteOutdated(newestCreatedAt = validatedContactList.createdAt)
+        runCatching {
+            internalUpsert(friendEntities = list)
+            internalDeleteOutdated(newestCreatedAt = validatedContactList.createdAt)
+        }.onFailure {
+            Log.w(TAG, "Failed to upsert friends: ${it.message}")
+        }
     }
 
     @Query("SELECT MAX(createdAt) FROM friend WHERE myPubkey = :myPubkey")

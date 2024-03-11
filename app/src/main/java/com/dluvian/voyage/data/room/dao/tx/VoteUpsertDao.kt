@@ -1,5 +1,6 @@
 package com.dluvian.voyage.data.room.dao.tx
 
+import android.util.Log
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -8,6 +9,10 @@ import androidx.room.Transaction
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.room.entity.VoteEntity
+
+
+private const val TAG = "VoteUpsertDao"
+
 
 @Dao
 interface VoteUpsertDao {
@@ -19,7 +24,11 @@ interface VoteUpsertDao {
         ) ?: 0L
         if (voteEntity.createdAt < newestCreatedAt) return
 
-        internalUpsertVote(voteEntity = voteEntity)
+        runCatching {
+            internalUpsertVote(voteEntity = voteEntity)
+        }.onFailure {
+            Log.w(TAG, "Failed to upsert vote: ${it.message}")
+        }
     }
 
 

@@ -14,6 +14,7 @@ import com.dluvian.nostr_kt.isPostOrReply
 import com.dluvian.nostr_kt.isReplyPost
 import com.dluvian.nostr_kt.isRootPost
 import com.dluvian.nostr_kt.isTopicList
+import com.dluvian.nostr_kt.isValidEventId
 import com.dluvian.nostr_kt.isVote
 import com.dluvian.nostr_kt.matches
 import com.dluvian.nostr_kt.secs
@@ -57,7 +58,7 @@ class EventValidator(
         val validatedEvent = validate(event = event)
         cache(event = event, relayUrl = relayUrl)
         if (validatedEvent == null) {
-            Log.w(tag, "Discard invalid event, ${event.id().toHex()} from $relayUrl")
+            Log.w(tag, "Discard invalid event ${event.id().toHex()} from $relayUrl")
             return null
         }
 
@@ -114,7 +115,10 @@ class EventValidator(
             )
         } else if (event.isReplyPost()) {
             val replyToId = event.getReplyToId()
-            if (replyToId == null || replyToId == event.id().toHex()) null
+            if (replyToId == null ||
+                replyToId == event.id().toHex() ||
+                !isValidEventId(replyToId)
+            ) null
             else ValidatedReplyPost(
                 id = event.id(),
                 pubkey = event.author(),

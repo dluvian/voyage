@@ -40,6 +40,7 @@ class HomeViewModel(private val feedProvider: FeedProvider) : ViewModel() {
 
         isRefreshing.value = true
         viewModelScope.launch(Dispatchers.IO) {
+            coldPosts.value = emptyList()
             posts = feedProvider.getFeedFlow(until = getCurrentSecs(), size = pageSize)
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), posts.value)
             delay(DELAY)

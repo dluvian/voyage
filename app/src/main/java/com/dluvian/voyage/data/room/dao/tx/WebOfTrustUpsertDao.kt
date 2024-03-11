@@ -1,5 +1,6 @@
 package com.dluvian.voyage.data.room.dao.tx
 
+import android.util.Log
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -8,6 +9,10 @@ import androidx.room.Transaction
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.model.ValidatedContactList
 import com.dluvian.voyage.data.room.entity.WebOfTrustEntity
+
+
+private const val TAG = "WebOfTrustUpsertDao"
+
 
 @Dao
 interface WebOfTrustUpsertDao {
@@ -24,8 +29,12 @@ interface WebOfTrustUpsertDao {
             return
         }
 
-        internalUpsert(webOfTrustEntities = list)
-        internalDeleteOutdated(newestCreatedAt = validatedWebOfTrust.createdAt)
+        runCatching {
+            internalUpsert(webOfTrustEntities = list)
+            internalDeleteOutdated(newestCreatedAt = validatedWebOfTrust.createdAt)
+        }.onFailure {
+            Log.w(TAG, "Failed to upsert wot: ${it.message}")
+        }
     }
 
     @Query("SELECT MAX(createdAt) FROM weboftrust WHERE friendPubkey = :friendPubkey")

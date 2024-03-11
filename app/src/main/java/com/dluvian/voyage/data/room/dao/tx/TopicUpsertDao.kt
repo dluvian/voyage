@@ -1,5 +1,6 @@
 package com.dluvian.voyage.data.room.dao.tx
 
+import android.util.Log
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -8,6 +9,10 @@ import androidx.room.Transaction
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.model.ValidatedTopicList
 import com.dluvian.voyage.data.room.entity.TopicEntity
+
+
+private const val TAG = "TopicUpsertDao"
+
 
 @Dao
 interface TopicUpsertDao {
@@ -24,8 +29,12 @@ interface TopicUpsertDao {
             return
         }
 
-        internalUpsert(topicEntities = list)
-        internalDeleteOutdated(newestCreatedAt = validatedTopicList.createdAt)
+        runCatching {
+            internalUpsert(topicEntities = list)
+            internalDeleteOutdated(newestCreatedAt = validatedTopicList.createdAt)
+        }.onFailure {
+            Log.w(TAG, "Failed to upsert topics: ${it.message}")
+        }
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

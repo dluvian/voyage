@@ -1,5 +1,7 @@
 package com.dluvian.nostr_kt
 
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonElement
 import org.bitcoinj.crypto.MnemonicCode
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
@@ -15,41 +17,43 @@ import java.security.SecureRandom
 // File for functions that should have been exposed in the kotlin bindings
 // TODO: Remove functions once they're exposed in the bindings
 
+// TODO: Remove after new rust-nostr release
+val gson = GsonBuilder().disableHtmlEscaping().create()
 fun getRelayMessageFromJson(json: String): Result<RelayMessage> {
-    val items = json.trim()
-        .removeSurrounding(prefix = "[", suffix = "]")
-        .split(',', limit = 1)
-        .map { it.trim().removeSurrounding("\"") }
-    if (items.size != 4) return Result.failure(IllegalArgumentException("Json array is not of size 4, it's ${items.size}"))
+    val msg = gson.fromJson(json, JsonElement::class.java).asJsonArray
+    val type = msg[0].asString
 
     return runCatching {
-        when (items.first()) {
-            "EVENT" -> Result.success(
-                RelayMessage.EventMsg(
-                    subscriptionId = items[1],
-                    event = Event.fromJson(items[2])
+        when (type) {
+            "EVENT" -> {
+                val str = msg[2].toString()
+                Result.success(
+                    RelayMessage.EventMsg(
+                        subscriptionId = msg[1].asString,
+                        event = Event.fromJson(str)
+                    )
                 )
-            )
+            }
 
             "OK" -> Result.success(
                 RelayMessage.Ok(
-                    eventId = EventId.fromHex(items[1]),
-                    status = items[2].toBoolean(),
-                    message = items[3]
+                    eventId = EventId.fromHex(msg[1].asString),
+                    status = msg[2].asString.toBoolean(),
+                    message = msg[3].asString
                 )
             )
 
-            "NOTICE" -> Result.success(RelayMessage.Notice(message = items[1]))
-            "EOSE" -> Result.success(RelayMessage.EndOfStoredEvents(subscriptionId = items[1]))
+            "NOTICE" -> Result.success(RelayMessage.Notice(message = msg[1].asString))
+            "EOSE" -> Result.success(RelayMessage.EndOfStoredEvents(subscriptionId = msg[1].asString))
             "CLOSED" -> Result.success(
                 RelayMessage.Closed(
-                    subscriptionId = items[1],
-                    message = items[2]
+                    subscriptionId = msg[1].asString,
+                    message = msg[2].asString
                 )
             )
 
-            "AUTH" -> Result.success(RelayMessage.Auth(challenge = items[1]))
-            else -> Result.failure(IllegalArgumentException("Unknown type ${items.first()}"))
+            "AUTH" -> Result.success(RelayMessage.Auth(challenge = msg[1].asString))
+            else -> Result.failure(IllegalArgumentException("Unknown type $type"))
         }
     }.getOrElse { exception -> Result.failure(exception) }
 
@@ -103,36 +107,37 @@ fun generateMnemonic(): String {
         .joinToString(separator = " ")
 }
 
-fun Event.isPostOrReply(): Boolean {
-    return this.kind().toInt() == Kind.TEXT_NOTE
-}
-
-fun Event.isRootPost(): Boolean {
-    return this.isPostOrReply() && !this.isReplyPost()
-}
-
 fun Timestamp.secs(): Long {
     return this.asSecs().toLong()
 }
 
 fun getCurrentSecs() = System.currentTimeMillis() / 1000
 
-fun Event.getReplyToId(): String? {
-    if (this.isRootPost()) return null
-    val replyTags = this.tags()
-        .filter { it.kind() == TagKind.E }
-        .map { it.asVec() }
-        .filter { it.getOrNull(3).let { marker -> marker == "root" || marker == "reply" } }
-    return if (replyTags.size == 1) replyTags.first()[1]
-    else replyTags.find { it[3] == "reply" }?.get(1)
+fun Event.isPostOrReply(): Boolean {
+    return this.kind().toInt() == Kind.TEXT_NOTE
+}
+
+fun Event.isRootPost(): Boolean {
+    return this.isPostOrReply() && this.getReplyToId() == null
 }
 
 fun Event.isReplyPost(): Boolean {
-    return this.isPostOrReply() &&
-            this.tags()
-                .filter { it.kind() == TagKind.E }
-                .map { it.asVec() }
-                .any { it.getOrNull(3).let { marker -> marker == "root" || marker == "reply" } }
+    return this.isPostOrReply() && this.getReplyToId() != null
+}
+
+// TODO: Write issue to prefer Result over throwing exceptions
+fun isValidEventId(hex: String): Boolean {
+    return runCatching { EventId.fromHex(hex) }.isSuccess
+}
+
+fun Event.getReplyToId(): String? {
+    val replyTags = this.tags()
+        .filter { it.kind() == TagKind.E }
+        .map { it.asVec() }
+        .filter { it.size >= 2 }
+
+    return if (replyTags.size == 1) replyTags.first()[1]
+    else replyTags.find { it.getOrNull(3) == "reply" }?.get(1)
 }
 
 fun Event.getHashtags(): List<String> {

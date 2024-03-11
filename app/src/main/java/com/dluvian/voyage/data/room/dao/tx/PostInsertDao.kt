@@ -1,5 +1,6 @@
 package com.dluvian.voyage.data.room.dao.tx
 
+import android.util.Log
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -11,6 +12,7 @@ import com.dluvian.voyage.data.room.entity.HashtagEntity
 import com.dluvian.voyage.data.room.entity.PostEntity
 import com.dluvian.voyage.data.room.entity.PostRelayEntity
 
+private const val TAG = "PostInsertDao"
 @Dao
 interface PostInsertDao {
 
@@ -40,11 +42,15 @@ interface PostInsertDao {
 
         val entities = relayedPosts.map { relayedItem -> PostEntity.from(relayedItem.item) }
 
-        internalInsertPostOrIgnore(posts = entities)
-        val postRelays = relayedPosts.map {
-            PostRelayEntity(postId = it.item.id.toHex(), relayUrl = it.relayUrl)
+        runCatching {
+            internalInsertPostOrIgnore(posts = entities)
+            val postRelays = relayedPosts.map {
+                PostRelayEntity(postId = it.item.id.toHex(), relayUrl = it.relayUrl)
+            }
+            internalInsertPostRelayOrIgnore(postRelays = postRelays)
+        }.onFailure {
+            Log.w(TAG, "Failed to insert posts: ${it.message}")
         }
-        internalInsertPostRelayOrIgnore(postRelays = postRelays)
     }
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
