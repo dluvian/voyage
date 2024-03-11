@@ -17,9 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -41,20 +39,19 @@ import com.dluvian.voyage.ui.theme.spacing
 fun HomeView(vm: HomeViewModel, onUpdate: OnUpdate) {
     val isRefreshing by vm.isRefreshing
     val isAppending by vm.isAppending
-    val coldPosts by vm.coldPosts
     val postsOuterState by vm.posts
     val posts by postsOuterState.collectAsState()
-    val indexToExpand by remember {
-        derivedStateOf { coldPosts.size + posts.size - vm.pageSize.times(0.25).toInt() }
-    }
 
     PullRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(HomeViewRefresh) }) {
         if (isAppending) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            itemsIndexed(coldPosts + posts) { i, post ->
-                PostRow(post = post, onUpdate = onUpdate)
+            itemsIndexed(items = posts, key = { _, item -> item.id }) { i, post ->
+                PostRow(
+                    post = post.copy(title = post.title.ifEmpty { "You ate all my beans :(" }),
+                    onUpdate = onUpdate
+                )
                 HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = spacing.tiny)
-                if (i >= indexToExpand) onUpdate(HomeViewAppend)
+                if (i >= posts.size - 5) onUpdate(HomeViewAppend)
             }
         }
     }

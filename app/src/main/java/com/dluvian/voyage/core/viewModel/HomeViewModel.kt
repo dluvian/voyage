@@ -21,10 +21,9 @@ import kotlinx.coroutines.launch
 
 
 class HomeViewModel(private val feedProvider: FeedProvider) : ViewModel() {
-    val pageSize = 25
+    private val pageSize = 50
     val isRefreshing = mutableStateOf(false)
     val isAppending = mutableStateOf(false)
-    val coldPosts = mutableStateOf(emptyList<RootPost>())
     val posts: MutableState<StateFlow<List<RootPost>>> = mutableStateOf(
         feedProvider.getFeedFlow(until = getCurrentSecs(), size = pageSize)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
@@ -42,8 +41,7 @@ class HomeViewModel(private val feedProvider: FeedProvider) : ViewModel() {
 
         isRefreshing.value = true
         viewModelScope.launch(Dispatchers.IO) {
-            val initValue = coldPosts.value.ifEmpty { posts.value.value }.take(pageSize)
-            coldPosts.value = emptyList()
+            val initValue = posts.value.value.take(pageSize)
             posts.value = feedProvider.getFeedFlow(until = getCurrentSecs(), size = pageSize)
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), initValue)
             delay(DELAY)
@@ -52,19 +50,28 @@ class HomeViewModel(private val feedProvider: FeedProvider) : ViewModel() {
         }
     }
 
+    private val offset = 15
+    private var oldFirstId = ""
     private fun append() {
-        if (posts.value.value.size < pageSize) return
-        if (isAppending.value) return
-
+        val currentFirstId = posts.value.value.firstOrNull()?.id.orEmpty()
+        if (posts.value.value.size < pageSize ||
+            oldFirstId == currentFirstId ||
+            isAppending.value
+        ) return
         isAppending.value = true
+
         viewModelScope.launch(Dispatchers.IO) {
-            coldPosts.value += posts.value.value
-            val until = posts.value.value.last().createdAt
-            posts.value = feedProvider.getFeedFlow(until = until, size = pageSize)
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+            val newUntil = posts.value.value.takeLast(offset).first().createdAt
+            posts.value = feedProvider.getFeedFlow(until = newUntil, size = pageSize)
+                .stateIn(
+                    viewModelScope,
+                    SharingStarted.WhileSubscribed(),
+                    posts.value.value.takeLast(offset)
+                )
             delay(SHORT_DELAY)
         }.invokeOnCompletion {
             isAppending.value = false
+            oldFirstId = currentFirstId
         }
     }
 }
