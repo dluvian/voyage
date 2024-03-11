@@ -95,8 +95,10 @@ class NostrSubscriber(
             }
         }
         votesAndRepliesJob?.invokeOnCompletion { ex ->
-            if (ex == null) votesAndRepliesCache.addAll(newIds)
-            else Log.d(tag, "Subbing votes and replies failed: ${ex.message}")
+            if (ex != null) return@invokeOnCompletion
+
+            votesAndRepliesCache.addAll(newIds)
+            Log.d(tag, "Finished subscribing votes and replies")
         }
     }
 

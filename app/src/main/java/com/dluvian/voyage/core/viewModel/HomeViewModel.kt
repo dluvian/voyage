@@ -1,5 +1,6 @@
 package com.dluvian.voyage.core.viewModel
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,9 +25,10 @@ class HomeViewModel(private val feedProvider: FeedProvider) : ViewModel() {
     val isRefreshing = mutableStateOf(false)
     val isAppending = mutableStateOf(false)
     val coldPosts = mutableStateOf(emptyList<RootPost>())
-    var posts: StateFlow<List<RootPost>> =
+    val posts: MutableState<StateFlow<List<RootPost>>> = mutableStateOf(
         feedProvider.getFeedFlow(until = getCurrentSecs(), size = pageSize)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+    )
 
     fun handle(homeViewAction: HomeViewAction) {
         when (homeViewAction) {
@@ -40,9 +42,10 @@ class HomeViewModel(private val feedProvider: FeedProvider) : ViewModel() {
 
         isRefreshing.value = true
         viewModelScope.launch(Dispatchers.IO) {
+            val initValue = coldPosts.value.ifEmpty { posts.value.value }.take(pageSize)
             coldPosts.value = emptyList()
-            posts = feedProvider.getFeedFlow(until = getCurrentSecs(), size = pageSize)
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), posts.value)
+            posts.value = feedProvider.getFeedFlow(until = getCurrentSecs(), size = pageSize)
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), initValue)
             delay(DELAY)
         }.invokeOnCompletion {
             isRefreshing.value = false
@@ -50,14 +53,15 @@ class HomeViewModel(private val feedProvider: FeedProvider) : ViewModel() {
     }
 
     private fun append() {
-        if (posts.value.size < pageSize) return
+        if (posts.value.value.size < pageSize) return
         if (isAppending.value) return
 
         isAppending.value = true
         viewModelScope.launch(Dispatchers.IO) {
-            coldPosts.value += posts.value
-            posts = feedProvider.getFeedFlow(until = getCurrentSecs(), size = pageSize)
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), posts.value)
+            coldPosts.value += posts.value.value
+            val until = posts.value.value.last().createdAt
+            posts.value = feedProvider.getFeedFlow(until = until, size = pageSize)
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
             delay(SHORT_DELAY)
         }.invokeOnCompletion {
             isAppending.value = false

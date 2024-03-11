@@ -42,7 +42,8 @@ fun HomeView(vm: HomeViewModel, onUpdate: OnUpdate) {
     val isRefreshing by vm.isRefreshing
     val isAppending by vm.isAppending
     val coldPosts by vm.coldPosts
-    val posts by vm.posts.collectAsState()
+    val postsOuterState by vm.posts
+    val posts by postsOuterState.collectAsState()
     val indexToExpand by remember {
         derivedStateOf { coldPosts.size + posts.size - vm.pageSize.times(0.25).toInt() }
     }
