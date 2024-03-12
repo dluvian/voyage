@@ -32,7 +32,7 @@ class AppContainer(context: Context) {
     ).build()
     private val mnemonicSigner = MnemonicSigner(context = context)
     private val externalSigner = ExternalSigner()
-    private val accountManager = AccountManager(
+    val accountManager = AccountManager(
         mnemonicSigner = mnemonicSigner,
         externalSigner = externalSigner,
         accountDao = roomDb.accountDao(),

@@ -21,7 +21,7 @@ fun NonMainView(
     ) {
         when (currentView) {
             CreatePostNavView -> CreatePostView()
-            SettingsNavView -> SettingsView(vm = core.settingsViewModel)
+            SettingsNavView -> SettingsView(vm = core.settingsViewModel, onUpdate = core.onUpdate)
         }
     }
 }

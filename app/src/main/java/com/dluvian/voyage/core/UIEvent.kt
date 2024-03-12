@@ -1,5 +1,9 @@
 package com.dluvian.voyage.core
 
+import android.content.Intent
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.result.ActivityResult
+
 sealed class UIEvent
 
 sealed class NavEvent : UIEvent()
@@ -33,3 +37,8 @@ data class ClickNeutralizeVote(
 sealed class HomeViewAction : UIEvent()
 data object HomeViewRefresh : HomeViewAction()
 data object HomeViewAppend : HomeViewAction()
+
+sealed class SettingsViewAction : UIEvent()
+data object UseDefaultAccount : SettingsViewAction()
+data class UseExternalAccount(val launcher: ManagedActivityResultLauncher<Intent, ActivityResult>) :
+    SettingsViewAction()

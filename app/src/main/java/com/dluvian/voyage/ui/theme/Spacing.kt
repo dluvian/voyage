@@ -35,6 +35,10 @@ data class Spacing(
      * 8 dp
      */
     val screenEdge: Dp = 8.dp,
+    /**
+     * 12 dp
+     */
+    val bigScreenEdge: Dp = 12.dp,
 )
 
 val LocalSpacing = compositionLocalOf { Spacing() }

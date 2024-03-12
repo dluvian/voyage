@@ -20,4 +20,6 @@
     <string name="app">App</string>
     <string name="external_signer">External signer</string>
     <string name="default_account">Default account</string>
+    <string name="use_default_account">Use default account</string>
+    <string name="use_external_signer">Use external signer</string>
 </resources>

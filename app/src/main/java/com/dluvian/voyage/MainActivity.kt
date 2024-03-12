@@ -22,7 +22,9 @@ class MainActivity : ComponentActivity() {
             val homeViewModel = viewModel {
                 HomeViewModel(feedProvider = appContainer.feedProvider)
             }
-            val settingsViewModel = viewModel { SettingsViewModel() }
+            val settingsViewModel = viewModel {
+                SettingsViewModel(accountSwitcher = appContainer.accountManager)
+            }
             val core = viewModel {
                 Core(
                     homeViewModel = homeViewModel,
