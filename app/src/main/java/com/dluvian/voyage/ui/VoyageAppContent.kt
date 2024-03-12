@@ -11,16 +11,13 @@ import com.dluvian.voyage.ui.views.nonMain.NonMainView
 fun VoyageAppContent(core: Core) {
     when (val currentView = core.navigator.stack.value.last()) {
         is MainNavView -> MainView(
-            homeViewModel = core.homeViewModel,
+            core = core,
             currentView = currentView,
-            snackbarHostState = core.snackbarHostState,
-            onUpdate = core.onUpdate
         )
 
         is NonMainNavView -> NonMainView(
+            core = core,
             currentView = currentView,
-            snackbarHostState = core.snackbarHostState,
-            onUpdate = core.onUpdate
         )
     }
 }

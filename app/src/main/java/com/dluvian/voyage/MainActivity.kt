@@ -9,6 +9,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.dluvian.voyage.core.Core
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.viewModel.HomeViewModel
+import com.dluvian.voyage.core.viewModel.SettingsViewModel
 import com.dluvian.voyage.ui.VoyageApp
 
 class MainActivity : ComponentActivity() {
@@ -21,9 +22,11 @@ class MainActivity : ComponentActivity() {
             val homeViewModel = viewModel {
                 HomeViewModel(feedProvider = appContainer.feedProvider)
             }
+            val settingsViewModel = viewModel { SettingsViewModel() }
             val core = viewModel {
                 Core(
                     homeViewModel = homeViewModel,
+                    settingsViewModel = settingsViewModel,
                     postVoter = appContainer.postVoter,
                     nostrService = appContainer.nostrService,
                     closeApp = closeApp

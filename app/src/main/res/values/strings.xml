@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Voyage</string>
+    <string name="version">Version</string>
+    <string name="version_nr">v0.1.0</string>
     <string name="home">Home</string>
     <string name="inbox">Inbox</string>
     <string name="settings">Settings</string>
@@ -14,4 +16,8 @@
     <string name="friend">Friend</string>
     <string name="trusted">Trusted</string>
     <string name="unknown">Unknown</string>
+    <string name="account">Account</string>
+    <string name="app">App</string>
+    <string name="external_signer">External signer</string>
+    <string name="default_account">Default account</string>
 </resources>

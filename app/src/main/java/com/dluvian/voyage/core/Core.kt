@@ -4,11 +4,13 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.lifecycle.ViewModel
 import com.dluvian.voyage.core.navigator.Navigator
 import com.dluvian.voyage.core.viewModel.HomeViewModel
+import com.dluvian.voyage.core.viewModel.SettingsViewModel
 import com.dluvian.voyage.data.interactor.PostVoter
 import com.dluvian.voyage.data.nostr.NostrService
 
 class Core(
     val homeViewModel: HomeViewModel,
+    val settingsViewModel: SettingsViewModel,
     private val postVoter: PostVoter,
     private val nostrService: NostrService,
     closeApp: Fn,
