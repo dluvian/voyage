@@ -132,12 +132,13 @@ fun Event.getReplyToId(): String? {
     val nip10Tags = this.tags()
         .filter { it.kind() == TagKind.E }
         .map { it.asVec() }
-        .filter { it.size >= 4 }
+        .filter { it.size >= 2 }
 
     if (nip10Tags.isEmpty()) return null
 
-    return nip10Tags.find { it[3] == "reply" }?.get(1)
-        ?: nip10Tags.find { it[3] == "root" }?.get(1)
+    return nip10Tags.find { it.getOrNull(3) == "reply" }?.get(1)
+        ?: nip10Tags.find { it.getOrNull(3) == "root" }?.get(1)
+        ?: nip10Tags.find { it.getOrNull(1) != null }?.get(1)
 }
 
 fun Event.getHashtags(): List<String> {

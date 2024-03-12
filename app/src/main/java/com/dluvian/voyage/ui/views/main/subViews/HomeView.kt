@@ -26,7 +26,6 @@ import com.dluvian.voyage.core.ClickThread
 import com.dluvian.voyage.core.HomeViewAppend
 import com.dluvian.voyage.core.HomeViewRefresh
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.model.FriendTrust
 import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.viewModel.HomeViewModel
 import com.dluvian.voyage.ui.components.PullRefreshBox
@@ -49,11 +48,7 @@ fun HomeView(vm: HomeViewModel, onUpdate: OnUpdate) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             itemsIndexed(items = posts, key = { _, item -> item.id }) { i, post ->
                 PostRow(
-                    post = post.copy(
-                        title = post.title.ifEmpty { "You ate all my beans :(" },
-                        topic = "food",
-                        trustType = FriendTrust
-                    ),
+                    post = post,
                     onUpdate = onUpdate
                 )
                 HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = spacing.tiny)

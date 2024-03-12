@@ -59,6 +59,7 @@ class SettingsViewModel(
         val packageName = result.data?.getStringExtra("package") ?: return
         val publicKey = runCatching { PublicKey.fromBech32(npub) }.getOrNull() ?: return
 
+        // TODO: Sub my stuff
         accountSwitcher.useExternalAccount(publicKey = publicKey, packageName = packageName)
     }
 }
