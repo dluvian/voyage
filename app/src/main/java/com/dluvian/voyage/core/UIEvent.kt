@@ -1,5 +1,6 @@
 package com.dluvian.voyage.core
 
+import android.content.Context
 import android.content.Intent
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
@@ -40,5 +41,9 @@ data object HomeViewAppend : HomeViewAction()
 
 sealed class SettingsViewAction : UIEvent()
 data object UseDefaultAccount : SettingsViewAction()
-data class UseExternalAccount(val launcher: ManagedActivityResultLauncher<Intent, ActivityResult>) :
-    SettingsViewAction()
+data class RequestExternalAccount(
+    val context: Context,
+    val launcher: ManagedActivityResultLauncher<Intent, ActivityResult>
+) : SettingsViewAction()
+
+data class ProcessExternalAccountData(val activityResult: ActivityResult) : SettingsViewAction()

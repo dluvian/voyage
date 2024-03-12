@@ -79,18 +79,12 @@ class AccountManager(
         }
     }
 
-    override fun useExternalAccount(): Boolean {
+    override fun useExternalAccount(publicKey: PublicKey, packageName: String) {
         Log.i(tag, "Use external account ${accountType.value}")
-        if (accountType.value is ExternalAccount) return false
+        if (accountType.value is ExternalAccount) return
 
         if (isSwitchingAccount.compareAndSet(false, true)) {
-            val externalPubkey = externalSigner.tryGetPubkeyHex()
-                .onFailure { Log.w(tag, "Failed to retrieve external pubkey", it) }
-                .getOrNull()
-            if (externalPubkey == null) {
-                isSwitchingAccount.set(false)
-                return false
-            }
+            val externalPubkey = publicKey.toHex()
             scope.launch {
                 accountDao.updateAccount(account = AccountEntity(pubkey = externalPubkey))
             }.invokeOnCompletion {
@@ -102,8 +96,6 @@ class AccountManager(
                 isSwitchingAccount.set(false)
             }
         }
-
-        return true
     }
 
     override fun isExternalSignerInstalled(context: Context): Boolean {

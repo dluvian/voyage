@@ -1,6 +1,5 @@
 package com.dluvian.voyage.ui.views.nonMain.subViews
 
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -30,8 +29,9 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.core.ProcessExternalAccountData
+import com.dluvian.voyage.core.RequestExternalAccount
 import com.dluvian.voyage.core.UseDefaultAccount
-import com.dluvian.voyage.core.UseExternalAccount
 import com.dluvian.voyage.core.model.AccountType
 import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
@@ -81,9 +81,7 @@ private fun AccountRowButton(accountType: AccountType, onUpdate: OnUpdate) {
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { activityResult ->
-        val lol = activityResult.data?.getStringExtra("signature")
-        val lol2 = activityResult.data?.getStringExtra("package")
-        Log.w("LOLOL", "$lol  ------------- $lol2")
+        onUpdate(ProcessExternalAccountData(activityResult = activityResult))
     }
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         when (accountType) {
@@ -91,7 +89,9 @@ private fun AccountRowButton(accountType: AccountType, onUpdate: OnUpdate) {
                 Text(text = stringResource(id = R.string.use_default_account))
             }
 
-            is DefaultAccount -> TextButton(onClick = { onUpdate(UseExternalAccount(launcher)) }) {
+            is DefaultAccount -> TextButton(onClick = {
+                onUpdate(RequestExternalAccount(context = context, launcher = launcher))
+            }) {
                 Text(text = stringResource(id = R.string.use_external_signer))
             }
         }
