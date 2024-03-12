@@ -7,7 +7,6 @@ import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
 import com.dluvian.voyage.data.event.EventMaker
 import com.dluvian.voyage.data.event.EventQueue
-import com.dluvian.voyage.data.model.EventIdAndPubkey
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
@@ -74,32 +73,11 @@ class NostrService(
         content: String,
         topic: String,
         relayUrls: Collection<RelayUrl>
-    ): Event {
-        val event = eventMaker.buildPost(title, content, topic)
-        nostrClient.publishToRelays(event = event, relayUrls = relayUrls)
-
-        return event
+    ): Result<Event> {
+        return eventMaker.buildPost(title, content, topic)
+            .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
-    fun publishReply(
-        rootId: EventId,
-        rootCreatedAt: Long,
-        parentEvent: EventIdAndPubkey,
-        relayHint: RelayUrl,
-        content: String,
-        relayUrls: Collection<RelayUrl>
-    ): Event {
-        val event = eventMaker.buildReply(
-            rootId = rootId,
-            rootCreatedAt = rootCreatedAt,
-            parentEvent = parentEvent,
-            relayHint = relayHint,
-            content = content
-        )
-        nostrClient.publishToRelays(event = event, relayUrls = relayUrls)
-
-        return event
-    }
 
     fun publishVote(
         eventId: EventId,

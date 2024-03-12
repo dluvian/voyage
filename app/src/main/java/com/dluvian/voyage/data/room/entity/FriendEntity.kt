@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.data.model.ValidatedContactList
+import com.dluvian.voyage.data.event.ValidatedContactList
 
 
 @Entity(

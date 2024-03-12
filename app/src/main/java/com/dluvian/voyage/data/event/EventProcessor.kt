@@ -4,15 +4,7 @@ import android.util.Log
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.RelayedValidatedEvent
-import com.dluvian.voyage.data.keys.IPubkeyProvider
 import com.dluvian.voyage.data.model.RelayedItem
-import com.dluvian.voyage.data.model.ValidatedContactList
-import com.dluvian.voyage.data.model.ValidatedList
-import com.dluvian.voyage.data.model.ValidatedNip65
-import com.dluvian.voyage.data.model.ValidatedReplyPost
-import com.dluvian.voyage.data.model.ValidatedRootPost
-import com.dluvian.voyage.data.model.ValidatedTopicList
-import com.dluvian.voyage.data.model.ValidatedVote
 import com.dluvian.voyage.data.room.dao.tx.FriendUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.Nip65UpsertDao
 import com.dluvian.voyage.data.room.dao.tx.PostInsertDao
@@ -20,6 +12,7 @@ import com.dluvian.voyage.data.room.dao.tx.TopicUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.VoteUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.WebOfTrustUpsertDao
 import com.dluvian.voyage.data.room.entity.VoteEntity
+import com.dluvian.voyage.data.signer.IPubkeyProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

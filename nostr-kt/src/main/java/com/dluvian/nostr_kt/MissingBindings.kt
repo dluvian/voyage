@@ -1,8 +1,8 @@
 package com.dluvian.nostr_kt
 
+import cash.z.ecc.android.bip39.Mnemonics
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
-import org.bitcoinj.crypto.MnemonicCode
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
@@ -99,12 +99,10 @@ fun createReplyTag(parentEventId: EventId, relayHint: RelayUrl, parentIsRoot: Bo
 
 fun generateMnemonic(): String {
     val random = SecureRandom()
-    val bytes = ByteArray(16)
-    random.nextBytes(bytes)
+    val entropy = ByteArray(16)
+    random.nextBytes(entropy)
 
-    return MnemonicCode()
-        .toMnemonic(bytes)
-        .joinToString(separator = " ")
+    return Mnemonics.MnemonicCode(entropy).words.joinToString(separator = " ") { String(it) }
 }
 
 fun Timestamp.secs(): Long {

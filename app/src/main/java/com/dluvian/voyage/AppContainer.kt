@@ -9,8 +9,6 @@ import com.dluvian.voyage.data.event.EventProcessor
 import com.dluvian.voyage.data.event.EventQueue
 import com.dluvian.voyage.data.event.EventValidator
 import com.dluvian.voyage.data.interactor.PostVoter
-import com.dluvian.voyage.data.keys.AccountKeyManager
-import com.dluvian.voyage.data.keys.MnemonicManager
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.provider.FeedProvider
@@ -19,6 +17,9 @@ import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import com.dluvian.voyage.data.room.AppDatabase
+import com.dluvian.voyage.data.signer.AccountManager
+import com.dluvian.voyage.data.signer.ExternalSigner
+import com.dluvian.voyage.data.signer.MnemonicSigner
 import okhttp3.OkHttpClient
 import rust.nostr.protocol.Filter
 import java.util.Collections
@@ -29,10 +30,11 @@ class AppContainer(context: Context) {
         klass = AppDatabase::class.java,
         name = "voyage_database",
     ).build()
-    private val mnemonicManager = MnemonicManager(context = context)
-    private val accountKeyManager = AccountKeyManager(
-        context = context,
-        mnemonicManager = mnemonicManager,
+    private val mnemonicSigner = MnemonicSigner(context = context)
+    private val externalSigner = ExternalSigner()
+    private val accountManager = AccountManager(
+        mnemonicSigner = mnemonicSigner,
+        externalSigner = externalSigner,
         accountDao = roomDb.accountDao(),
     )
     private val client = OkHttpClient()
@@ -40,7 +42,7 @@ class AppContainer(context: Context) {
     private val filterCache = Collections.synchronizedMap(mutableMapOf<SubId, List<Filter>>())
     private val eventValidator = EventValidator(
         filterCache = filterCache,
-        pubkeyProvider = accountKeyManager
+        pubkeyProvider = accountManager
     )
     private val eventProcessor = EventProcessor(
         postInsertDao = roomDb.postInsertDao(),
@@ -49,16 +51,13 @@ class AppContainer(context: Context) {
         webOfTrustUpsertDao = roomDb.webOfTrustUpsertDao(),
         topicUpsertDao = roomDb.topicUpsertDao(),
         nip65UpsertDao = roomDb.nip65UpsertDao(),
-        pubkeyProvider = accountKeyManager
+        pubkeyProvider = accountManager
     )
     private val eventQueue = EventQueue(
         eventValidator = eventValidator,
         eventProcessor = eventProcessor
     )
-    private val eventMaker = EventMaker(
-        singleUseKeyManager = mnemonicManager,
-        accountKeyManager = accountKeyManager
-    )
+    private val eventMaker = EventMaker(accountManager = accountManager)
     val nostrService = NostrService(
         nostrClient = nostrClient,
         eventQueue = eventQueue,
@@ -81,7 +80,7 @@ class AppContainer(context: Context) {
         webOfTrustProvider = webOfTrustProvider,
         topicProvider = topicProvider,
         friendProvider = friendProvider,
-        pubkeyProvider = accountKeyManager,
+        pubkeyProvider = accountManager,
     )
     val feedProvider = FeedProvider(
         nostrSubscriber = nostrSubscriber,

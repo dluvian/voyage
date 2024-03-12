@@ -6,7 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.data.model.ValidatedNip65
+import com.dluvian.voyage.data.event.ValidatedNip65
 import com.dluvian.voyage.data.room.entity.Nip65Entity
 
 @Dao

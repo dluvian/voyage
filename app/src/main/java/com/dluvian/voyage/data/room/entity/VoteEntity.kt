@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.data.model.ValidatedVote
+import com.dluvian.voyage.data.event.ValidatedVote
 
 @Entity(
     tableName = "vote",

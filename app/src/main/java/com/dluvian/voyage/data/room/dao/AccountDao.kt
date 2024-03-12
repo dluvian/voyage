@@ -14,7 +14,7 @@ interface AccountDao {
     suspend fun count(): Int
 
     @Query("SELECT pubkey FROM account LIMIT 1")
-    suspend fun getPubkey(): PubkeyHex?
+    suspend fun getMyPubkey(): PubkeyHex?
 
     @Transaction
     suspend fun updateAccount(account: AccountEntity) {

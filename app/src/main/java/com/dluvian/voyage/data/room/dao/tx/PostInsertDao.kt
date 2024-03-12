@@ -5,9 +5,9 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Transaction
+import com.dluvian.voyage.data.event.ValidatedReplyPost
+import com.dluvian.voyage.data.event.ValidatedRootPost
 import com.dluvian.voyage.data.model.RelayedItem
-import com.dluvian.voyage.data.model.ValidatedReplyPost
-import com.dluvian.voyage.data.model.ValidatedRootPost
 import com.dluvian.voyage.data.room.entity.HashtagEntity
 import com.dluvian.voyage.data.room.entity.PostEntity
 import com.dluvian.voyage.data.room.entity.PostRelayEntity

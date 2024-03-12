@@ -126,7 +126,7 @@ class PostVoter(
                 voteUpsertDao.upsertVote(voteEntity = entity)
             }
             .onFailure {
-                Log.w(tag, "Failed to publish vote: ${it.message}")
+                Log.w(tag, "Failed to publish vote: ${it.message}", it)
             }
     }
 }

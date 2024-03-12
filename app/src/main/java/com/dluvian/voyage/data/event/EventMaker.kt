@@ -5,44 +5,38 @@ import com.dluvian.nostr_kt.createHashtagTag
 import com.dluvian.nostr_kt.createLabelTag
 import com.dluvian.nostr_kt.createReplyTag
 import com.dluvian.nostr_kt.createTitleTag
-import com.dluvian.nostr_kt.secs
-import com.dluvian.voyage.data.keys.AccountKeyManager
-import com.dluvian.voyage.data.keys.MnemonicManager
 import com.dluvian.voyage.data.model.EventIdAndPubkey
+import com.dluvian.voyage.data.signer.AccountManager
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventBuilder
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Tag
-import rust.nostr.protocol.Timestamp
 
 private const val POST_LABEL = "post"
 private const val REPLY_LABEL = "reply"
 
 class EventMaker(
-    private val singleUseKeyManager: MnemonicManager,
-    private val accountKeyManager: AccountKeyManager,
+    private val accountManager: AccountManager,
 ) {
-    fun buildPost(title: String, content: String, topic: String): Event {
-        val timestamp = Timestamp.now()
+    fun buildPost(title: String, content: String, topic: String): Result<Event> {
         val tags = listOf(
             createLabelTag(POST_LABEL),
             createTitleTag(title),
             createHashtagTag(topic)
         )
-        return EventBuilder.textNote(content, tags)
-            .customCreatedAt(timestamp)
-            .toEvent(keys = singleUseKeyManager.getPostingKeys(timestamp.secs()))
+        val publicKey = accountManager.getPublicKey()
+        val unsignedEvent = EventBuilder.textNote(content, tags).toUnsignedEvent(publicKey)
+
+        return accountManager.sign(unsignedEvent = unsignedEvent)
     }
 
     fun buildReply(
         rootId: EventId,
-        rootCreatedAt: Long,
         parentEvent: EventIdAndPubkey,
         relayHint: RelayUrl,
         content: String
-    ): Event {
-        val timestamp = Timestamp.now()
+    ): Result<Event> {
         val tags = listOf(
             createLabelTag(label = REPLY_LABEL),
             createReplyTag(
@@ -52,14 +46,11 @@ class EventMaker(
             ),
             Tag.publicKey(publicKey = parentEvent.pubkey)
         )
-        return EventBuilder.textNote(content = content, tags = tags)
-            .customCreatedAt(createdAt = timestamp)
-            .toEvent(
-                keys = singleUseKeyManager.getReplySectionKeys(
-                    rootId = rootId,
-                    rootCreatedAt = rootCreatedAt
-                )
-            )
+
+        val publicKey = accountManager.getPublicKey()
+        val unsignedEvent = EventBuilder.textNote(content, tags).toUnsignedEvent(publicKey)
+
+        return accountManager.sign(unsignedEvent = unsignedEvent)
     }
 
     fun buildVote(
@@ -75,15 +66,15 @@ class EventMaker(
             publicKey = pubkey,
             content = content
         )
-            .toUnsignedEvent(accountKeyManager.getPublicKey())
+            .toUnsignedEvent(accountManager.getPublicKey())
 
-        return accountKeyManager.sign(unsignedEvent)
+        return accountManager.sign(unsignedEvent)
     }
 
     fun buildDelete(eventId: EventId): Result<Event> {
         val unsignedEvent = EventBuilder.delete(ids = listOf(eventId), reason = null)
-            .toUnsignedEvent(accountKeyManager.getPublicKey())
+            .toUnsignedEvent(accountManager.getPublicKey())
 
-        return accountKeyManager.sign(unsignedEvent)
+        return accountManager.sign(unsignedEvent)
     }
 }

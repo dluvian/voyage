@@ -19,15 +19,8 @@ import com.dluvian.nostr_kt.isVote
 import com.dluvian.nostr_kt.matches
 import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.core.MAX_TOPIC_LEN
-import com.dluvian.voyage.data.keys.IPubkeyProvider
 import com.dluvian.voyage.data.model.RelayedItem
-import com.dluvian.voyage.data.model.ValidatedContactList
-import com.dluvian.voyage.data.model.ValidatedEvent
-import com.dluvian.voyage.data.model.ValidatedNip65
-import com.dluvian.voyage.data.model.ValidatedReplyPost
-import com.dluvian.voyage.data.model.ValidatedRootPost
-import com.dluvian.voyage.data.model.ValidatedTopicList
-import com.dluvian.voyage.data.model.ValidatedVote
+import com.dluvian.voyage.data.signer.IPubkeyProvider
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
@@ -143,7 +136,7 @@ class EventValidator(
                 createdAt = event.createdAt().secs()
             )
         } else if (event.isTopicList()) {
-            if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) null
+            if (event.author().toHex() != pubkeyProvider.tryGetPubkeyHex().getOrNull()) null
             else ValidatedTopicList(
                 myPubkey = event.author(),
                 topics = event.getHashtags().toSet(),

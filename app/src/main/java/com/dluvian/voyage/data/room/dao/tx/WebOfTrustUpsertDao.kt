@@ -7,7 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.data.model.ValidatedContactList
+import com.dluvian.voyage.data.event.ValidatedContactList
 import com.dluvian.voyage.data.room.entity.WebOfTrustEntity
 
 

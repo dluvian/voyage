@@ -1,8 +1,8 @@
 package com.dluvian.voyage.core
 
 import androidx.compose.runtime.Composable
+import com.dluvian.voyage.data.event.ValidatedEvent
 import com.dluvian.voyage.data.model.RelayedItem
-import com.dluvian.voyage.data.model.ValidatedEvent
 
 typealias EventIdHex = String
 typealias PubkeyHex = String

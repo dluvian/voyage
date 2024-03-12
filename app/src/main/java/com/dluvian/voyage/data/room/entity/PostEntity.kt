@@ -7,9 +7,9 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_CONTENT_LEN
 import com.dluvian.voyage.core.MAX_TITLE_LEN
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.data.model.ValidatedPost
-import com.dluvian.voyage.data.model.ValidatedReplyPost
-import com.dluvian.voyage.data.model.ValidatedRootPost
+import com.dluvian.voyage.data.event.ValidatedPost
+import com.dluvian.voyage.data.event.ValidatedReplyPost
+import com.dluvian.voyage.data.event.ValidatedRootPost
 
 @Entity(
     tableName = "post",

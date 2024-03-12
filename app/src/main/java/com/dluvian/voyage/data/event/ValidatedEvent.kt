@@ -1,4 +1,4 @@
-package com.dluvian.voyage.data.model
+package com.dluvian.voyage.data.event
 
 import com.dluvian.nostr_kt.Nip65Relay
 import com.dluvian.voyage.core.EventIdHex
