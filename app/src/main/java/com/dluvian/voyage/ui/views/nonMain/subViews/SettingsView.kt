@@ -13,6 +13,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -23,18 +24,20 @@ import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
+import com.dluvian.voyage.core.shortenedBech32
 import com.dluvian.voyage.core.viewModel.SettingsViewModel
 import com.dluvian.voyage.ui.theme.AccountIcon
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
 fun SettingsView(vm: SettingsViewModel) {
+    val shortenedNpub = remember(vm.accountType) { vm.accountType.publicKey.shortenedBech32() }
     LazyColumn {
         item {
             SettingsSection(header = stringResource(id = R.string.account)) {
                 SettingsRow(
                     imageVector = AccountIcon,
-                    header = vm.accountType.publicKey.toBech32(),
+                    header = shortenedNpub,
                     text = when (vm.accountType) {
                         is ExternalAccount -> stringResource(id = R.string.external_signer)
                         is DefaultAccount -> stringResource(id = R.string.default_account)
@@ -88,7 +91,7 @@ private fun SettingsRow(
         Column {
             Text(
                 text = header,
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
