@@ -131,13 +131,15 @@ fun isValidEventId(hex: String): Boolean {
 }
 
 fun Event.getReplyToId(): String? {
-    val replyTags = this.tags()
+    val nip10Tags = this.tags()
         .filter { it.kind() == TagKind.E }
         .map { it.asVec() }
-        .filter { it.size >= 2 }
+        .filter { it.size >= 4 }
 
-    return if (replyTags.size == 1) replyTags.first()[1]
-    else replyTags.find { it.getOrNull(3) == "reply" }?.get(1)
+    if (nip10Tags.isEmpty()) return null
+
+    return nip10Tags.find { it[3] == "reply" }?.get(1)
+        ?: nip10Tags.find { it[3] == "root" }?.get(1)
 }
 
 fun Event.getHashtags(): List<String> {

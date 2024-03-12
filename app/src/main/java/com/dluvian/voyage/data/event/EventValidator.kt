@@ -33,7 +33,7 @@ import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
 import java.util.Collections
 
-
+// TODO: Dont compare EventId/PublicKey -> EventId.fromHex(x) != EventId.fromHex(x)
 class EventValidator(
     private val filterCache: Map<SubId, List<Filter>>,
     private val pubkeyProvider: IPubkeyProvider,
