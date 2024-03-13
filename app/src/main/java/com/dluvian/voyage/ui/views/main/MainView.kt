@@ -18,7 +18,7 @@ fun MainView(
 ) {
     MainScaffold(
         currentView = currentView,
-        snackBarHostState = core.snackbarHostState,
+        snackBarHostState = core.snackbar,
         onUpdate = core.onUpdate
     ) {
         when (currentView) {

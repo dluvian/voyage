@@ -16,7 +16,7 @@ fun NonMainView(
 ) {
     NonMainScaffold(
         currentView = currentView,
-        snackBarHostState = core.snackbarHostState,
+        snackBarHostState = core.snackbar,
         isLoading = core.settingsViewModel.isLoadingAccount.value,
         onUpdate = core.onUpdate
     ) {

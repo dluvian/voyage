@@ -11,7 +11,7 @@ import com.dluvian.voyage.data.nostr.NostrService
 class Core(
     val homeViewModel: HomeViewModel,
     val settingsViewModel: SettingsViewModel,
-    val snackbarHostState: SnackbarHostState,
+    val snackbar: SnackbarHostState,
     private val postVoter: PostVoter,
     private val nostrService: NostrService,
     closeApp: Fn,

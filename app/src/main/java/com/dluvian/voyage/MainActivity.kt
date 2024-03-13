@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
                 Core(
                     homeViewModel = homeViewModel,
                     settingsViewModel = settingsViewModel,
-                    snackbarHostState = appContainer.snackbarHostState,
+                    snackbar = appContainer.snackbarHostState,
                     postVoter = appContainer.postVoter,
                     nostrService = appContainer.nostrService,
                     closeApp = closeApp

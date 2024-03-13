@@ -22,9 +22,10 @@ import rust.nostr.protocol.UnsignedEvent
 
 
 class AccountManager(
-    private val mnemonicSigner: ISigner,
-    private val externalSigner: ISigner,
-    private val accountDao: AccountDao
+    private val mnemonicSigner: MnemonicSigner,
+    private val externalSigner: ExternalSigner,
+    private val accountDao: AccountDao,
+    private val context: Context,
 ) : IPubkeyProvider {
     private val scope = CoroutineScope(Dispatchers.Main)
     private val tag = "AccountManager"
@@ -93,7 +94,7 @@ class AccountManager(
             }
 
             externalSigner.tryGetPubkeyHex().getOrNull() -> {
-                externalSigner.sign(unsignedEvent = unsignedEvent)
+                externalSigner.sign(unsignedEvent = unsignedEvent, context = context)
             }
 
             else -> Result.failure(IllegalStateException("You're not signed in correctly"))

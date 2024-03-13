@@ -5,8 +5,8 @@ import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.core.ClickDownvote
 import com.dluvian.voyage.core.ClickNeutralizeVote
 import com.dluvian.voyage.core.ClickUpvote
+import com.dluvian.voyage.core.DELAY
 import com.dluvian.voyage.core.EventIdHex
-import com.dluvian.voyage.core.LONG_DELAY
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.VoteEvent
 import com.dluvian.voyage.data.nostr.NostrService
@@ -31,7 +31,7 @@ class PostVoter(
     private val nostrService: NostrService,
     private val relayProvider: RelayProvider,
     private val voteDao: VoteDao,
-    private val voteUpsertDao: VoteUpsertDao
+    private val voteUpsertDao: VoteUpsertDao,
 ) {
     private val tag = "PostVoter"
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -67,7 +67,7 @@ class PostVoter(
     fun vote(postId: EventIdHex, pubkey: PubkeyHex, vote: Vote, kind: Int) {
         jobs[postId]?.cancel(CancellationException("User clicks fast"))
         jobs[postId] = scope.launch {
-            delay(LONG_DELAY)
+            delay(DELAY)
             val currentVote = voteDao.getMyVote(postId = postId)
             when (vote) {
                 Upvote, Downvote -> handleVote(

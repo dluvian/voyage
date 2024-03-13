@@ -37,6 +37,7 @@ class AppContainer(context: Context) {
         mnemonicSigner = mnemonicSigner,
         externalSigner = externalSigner,
         accountDao = roomDb.accountDao(),
+        context = context
     )
     private val client = OkHttpClient()
     private val nostrClient = NostrClient(httpClient = client)
