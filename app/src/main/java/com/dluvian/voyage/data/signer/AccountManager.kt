@@ -64,6 +64,7 @@ class AccountManager(
 
         val defaultPubkey = mnemonicSigner.getPubkeyHex()
         accountDao.updateAccount(account = AccountEntity(pubkey = defaultPubkey))
+        accountType.value = DefaultAccount(publicKey = PublicKey.fromHex(hex = defaultPubkey))
     }
 
     suspend fun useExternalAccount(publicKey: PublicKey) {
@@ -72,6 +73,7 @@ class AccountManager(
 
         val externalPubkey = publicKey.toHex()
         accountDao.updateAccount(account = AccountEntity(pubkey = externalPubkey))
+        accountType.value = ExternalAccount(publicKey = publicKey)
     }
 
     fun isExternalSignerInstalled(context: Context): Boolean {
