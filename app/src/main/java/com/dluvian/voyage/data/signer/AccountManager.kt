@@ -19,18 +19,17 @@ import kotlinx.coroutines.runBlocking
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.UnsignedEvent
-import java.util.concurrent.atomic.AtomicBoolean
 
 
 class AccountManager(
     private val mnemonicSigner: ISigner,
     private val externalSigner: ISigner,
     private val accountDao: AccountDao
-) : IPubkeyProvider, IAccountSwitcher {
+) : IPubkeyProvider {
     private val scope = CoroutineScope(Dispatchers.Main)
     private val tag = "AccountManager"
 
-    override val accountType: MutableState<AccountType>
+    val accountType: MutableState<AccountType>
 
     init {
         val dbPubkey = runBlocking { accountDao.getMyPubkey() }
@@ -59,52 +58,29 @@ class AccountManager(
         return Result.success(accountType.value.publicKey.toHex())
     }
 
-    private val isSwitchingAccount = AtomicBoolean(false)
-    override fun useDefaultAccount() {
+    suspend fun useDefaultAccount() {
         Log.i(tag, "Use default account")
         if (accountType.value is DefaultAccount) return
 
-        if (isSwitchingAccount.compareAndSet(false, true)) {
-            val defaultPubkey = mnemonicSigner.getPubkeyHex()
-            scope.launch {
-                accountDao.updateAccount(account = AccountEntity(pubkey = defaultPubkey))
-            }.invokeOnCompletion {
-                if (it != null) Log.w(tag, "Failed to switch to default account")
-                else {
-                    Log.i(tag, "Switched to default account $defaultPubkey")
-                    accountType.value = DefaultAccount(publicKey = PublicKey.fromHex(defaultPubkey))
-                }
-                isSwitchingAccount.set(false)
-            }
-        }
+        val defaultPubkey = mnemonicSigner.getPubkeyHex()
+        accountDao.updateAccount(account = AccountEntity(pubkey = defaultPubkey))
     }
 
-    override fun useExternalAccount(publicKey: PublicKey, packageName: String) {
+    suspend fun useExternalAccount(publicKey: PublicKey) {
         Log.i(tag, "Use external account ${accountType.value}")
         if (accountType.value is ExternalAccount) return
 
-        if (isSwitchingAccount.compareAndSet(false, true)) {
-            val externalPubkey = publicKey.toHex()
-            scope.launch {
-                accountDao.updateAccount(account = AccountEntity(pubkey = externalPubkey))
-            }.invokeOnCompletion {
-                if (it != null) Log.w(tag, "Failed to switch to external account")
-                else {
-                    Log.i(tag, "Switched to external account $externalPubkey")
-                    accountType.value = ExternalAccount(PublicKey.fromHex(externalPubkey))
-                }
-                isSwitchingAccount.set(false)
-            }
-        }
+        val externalPubkey = publicKey.toHex()
+        accountDao.updateAccount(account = AccountEntity(pubkey = externalPubkey))
     }
 
-    override fun isExternalSignerInstalled(context: Context): Boolean {
+    fun isExternalSignerInstalled(context: Context): Boolean {
         val intent = Intent().apply {
             action = Intent.ACTION_VIEW
             data = Uri.parse("nostrsigner:")
         }
-        val infos = context.packageManager.queryIntentActivities(intent, 0)
-        return infos.size > 0
+        val result = runCatching { context.packageManager.queryIntentActivities(intent, 0) }
+        return !result.getOrNull().isNullOrEmpty()
     }
 
     fun sign(unsignedEvent: UnsignedEvent): Result<Event> {

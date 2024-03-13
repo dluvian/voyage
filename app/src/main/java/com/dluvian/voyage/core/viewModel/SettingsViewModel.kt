@@ -3,34 +3,59 @@ package com.dluvian.voyage.core.viewModel
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ProcessExternalAccountData
 import com.dluvian.voyage.core.RequestExternalAccount
 import com.dluvian.voyage.core.SettingsViewAction
 import com.dluvian.voyage.core.UseDefaultAccount
 import com.dluvian.voyage.core.model.AccountType
+import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
-import com.dluvian.voyage.data.signer.IAccountSwitcher
+import com.dluvian.voyage.core.showToast
+import com.dluvian.voyage.data.nostr.NostrSubscriber
+import com.dluvian.voyage.data.signer.AccountManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import rust.nostr.protocol.PublicKey
 
 class SettingsViewModel(
-    private val accountSwitcher: IAccountSwitcher
+    private val accountManager: AccountManager,
+    private val snackbar: SnackbarHostState,
+    private val nostrSubscriber: NostrSubscriber,
 ) : ViewModel() {
-    val accountType: State<AccountType> = accountSwitcher.accountType
+    val accountType: State<AccountType> = accountManager.accountType
+    val isLoadingAccount = mutableStateOf(false)
 
     fun handle(settingsViewAction: SettingsViewAction) {
         when (settingsViewAction) {
-            is UseDefaultAccount -> accountSwitcher.useDefaultAccount()
+            is UseDefaultAccount -> useDefaultAccount()
             is RequestExternalAccount -> requestExternalAccountData(
                 context = settingsViewAction.context,
                 launcher = settingsViewAction.launcher
             )
 
-            is ProcessExternalAccountData -> processExternalAccountData(result = settingsViewAction.activityResult)
+            is ProcessExternalAccountData -> processExternalAccountData(
+                result = settingsViewAction.activityResult,
+                context = settingsViewAction.context
+            )
+        }
+    }
+
+    private fun useDefaultAccount() {
+        if (accountType.value is DefaultAccount || isLoadingAccount.value) return
+        isLoadingAccount.value = true
+
+        viewModelScope.launch(Dispatchers.IO) {
+            accountManager.useDefaultAccount()
+        }.invokeOnCompletion {
+            isLoadingAccount.value = false
         }
     }
 
@@ -38,28 +63,51 @@ class SettingsViewModel(
         context: Context,
         launcher: ManagedActivityResultLauncher<Intent, ActivityResult>
     ) {
-        if (accountType.value is ExternalAccount) return
+        if (accountType.value is ExternalAccount || isLoadingAccount.value) return
+        isLoadingAccount.value = true
 
-        if (accountSwitcher.isExternalSignerInstalled(context = context)) {
-            // TODO: Toast
-            Log.w("LOLOL", "detected")
-        } else {
-            Log.w("LOLOL", "not detected")
+        if (!accountManager.isExternalSignerInstalled(context = context)) {
+            snackbar.showToast(
+                scope = viewModelScope,
+                context = context,
+                resId = R.string.no_external_signer_installed
+            )
+            isLoadingAccount.value = false
+            return
         }
 
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("nostrsigner:"))
-        intent.putExtra("permissions", "[{\"type\":\"get_public_key\"}]")
-        intent.putExtra("type", "get_public_key")
-        launcher.launch(intent)
+        val result = runCatching {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("nostrsigner:"))
+            intent.putExtra("permissions", "[{\"type\":\"get_public_key\"}]")
+            intent.putExtra("type", "get_public_key")
+            launcher.launch(intent)
+        }
+        if (result.isFailure) {
+            isLoadingAccount.value = false
+            snackbar.showToast(
+                scope = viewModelScope,
+                context = context,
+                resId = R.string.failed_to_get_permission
+            )
+        }
+        // Wait for processExternalAccountData
     }
 
-    private fun processExternalAccountData(result: ActivityResult) {
-        // TODO: Toast when null
-        val npub = result.data?.getStringExtra("signature") ?: return
-        val packageName = result.data?.getStringExtra("package") ?: return
-        val publicKey = runCatching { PublicKey.fromBech32(npub) }.getOrNull() ?: return
+    private fun processExternalAccountData(result: ActivityResult, context: Context) {
+        val npub = result.data?.getStringExtra("signature")
+        val publicKey = runCatching { PublicKey.fromBech32(npub.orEmpty()) }.getOrNull()
 
-        // TODO: Sub my stuff
-        accountSwitcher.useExternalAccount(publicKey = publicKey, packageName = packageName)
+        if (npub == null || publicKey == null) {
+            snackbar.showToast(viewModelScope, context, R.string.received_invalid_data)
+            isLoadingAccount.value = false
+            return
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            accountManager.useExternalAccount(publicKey = publicKey)
+        }.invokeOnCompletion {
+            nostrSubscriber.subMyAccount()
+            isLoadingAccount.value = false
+        }
     }
 }

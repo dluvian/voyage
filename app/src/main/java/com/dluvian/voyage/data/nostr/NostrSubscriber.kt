@@ -5,7 +5,6 @@ import com.dluvian.nostr_kt.Kind
 import com.dluvian.nostr_kt.createFriendFilter
 import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.EventIdHex
-import com.dluvian.voyage.core.LONG_DELAY
 import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
@@ -35,10 +34,7 @@ class NostrSubscriber(
     private val scope = CoroutineScope(Dispatchers.IO)
 
     init {
-        scope.launch {
-            delay(LONG_DELAY)
-            subStartUp()
-        }
+        subMyAccount()
     }
 
     fun subFeed(until: Long, limit: Int) {
@@ -102,7 +98,7 @@ class NostrSubscriber(
         }
     }
 
-    private fun subStartUp() {
+    fun subMyAccount() {
         val timestamp = Timestamp.now()
         val myContactFilter = Filter().kind(kind = Kind.CONTACT_LIST.toULong())
             .author(pubkeyProvider.getPublicKey())

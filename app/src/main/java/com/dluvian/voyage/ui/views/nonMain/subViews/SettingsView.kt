@@ -65,11 +65,11 @@ private fun AccountRow(accountType: AccountType, onUpdate: OnUpdate) {
     val shortenedNpub = remember(accountType) { accountType.publicKey.shortenedBech32() }
     SettingsRow(
         imageVector = AccountIcon,
-        header = shortenedNpub,
-        text = when (accountType) {
+        header = when (accountType) {
             is ExternalAccount -> stringResource(id = R.string.external_signer)
             is DefaultAccount -> stringResource(id = R.string.default_account)
-        }
+        },
+        text = shortenedNpub,
     ) {
         AccountRowButton(accountType = accountType, onUpdate = onUpdate)
     }
@@ -81,7 +81,7 @@ private fun AccountRowButton(accountType: AccountType, onUpdate: OnUpdate) {
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { activityResult ->
-        onUpdate(ProcessExternalAccountData(activityResult = activityResult))
+        onUpdate(ProcessExternalAccountData(activityResult = activityResult, context = context))
     }
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         when (accountType) {
@@ -145,8 +145,8 @@ private fun SettingsBaseRow(
     ) {
         if (imageVector != null) {
             Icon(imageVector = imageVector, contentDescription = header)
+            Spacer(modifier = Modifier.width(spacing.xl))
         }
-        Spacer(modifier = Modifier.width(spacing.xl))
         Column {
             Text(
                 text = header,

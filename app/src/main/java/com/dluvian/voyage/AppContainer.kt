@@ -1,6 +1,7 @@
 package com.dluvian.voyage
 
 import android.content.Context
+import androidx.compose.material3.SnackbarHostState
 import androidx.room.Room
 import com.dluvian.nostr_kt.NostrClient
 import com.dluvian.nostr_kt.SubId
@@ -74,7 +75,7 @@ class AppContainer(context: Context) {
     private val friendProvider = FriendProvider(friendDao = roomDb.friendDao())
     private val webOfTrustProvider = WebOfTrustProvider(webOfTrustDao = roomDb.webOfTrustDao())
     val postVoter = PostVoter(nostrService, relayProvider, roomDb.voteDao(), roomDb.voteUpsertDao())
-    private val nostrSubscriber = NostrSubscriber(
+    val nostrSubscriber = NostrSubscriber(
         nostrService = nostrService,
         relayProvider = relayProvider,
         webOfTrustProvider = webOfTrustProvider,
@@ -87,4 +88,5 @@ class AppContainer(context: Context) {
         rootPostDao = roomDb.rootPostDao(),
         postVoter = postVoter
     )
+    val snackbarHostState = SnackbarHostState()
 }

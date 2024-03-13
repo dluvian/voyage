@@ -46,4 +46,5 @@ data class RequestExternalAccount(
     val launcher: ManagedActivityResultLauncher<Intent, ActivityResult>
 ) : SettingsViewAction()
 
-data class ProcessExternalAccountData(val activityResult: ActivityResult) : SettingsViewAction()
+data class ProcessExternalAccountData(val activityResult: ActivityResult, val context: Context) :
+    SettingsViewAction()

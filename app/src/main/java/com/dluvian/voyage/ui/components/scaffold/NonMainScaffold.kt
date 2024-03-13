@@ -16,6 +16,7 @@ import com.dluvian.voyage.ui.components.bar.VoyageTopAppBar
 fun NonMainScaffold(
     currentView: NonMainNavView,
     snackBarHostState: SnackbarHostState,
+    isLoading: Boolean,
     onUpdate: OnUpdate,
     content: ComposableContent
 ) {
@@ -24,6 +25,7 @@ fun NonMainScaffold(
             VoyageTopAppBar(
                 title = currentView.getTitle(),
                 showGoBack = true,
+                isLoading = isLoading,
                 onUpdate = onUpdate
             )
         },

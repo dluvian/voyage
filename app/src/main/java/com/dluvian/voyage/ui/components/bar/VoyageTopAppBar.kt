@@ -10,11 +10,17 @@ import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.ui.components.TopBarCircleProgressIndicator
 import com.dluvian.voyage.ui.theme.BackIcon
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VoyageTopAppBar(title: String? = null, showGoBack: Boolean = false, onUpdate: OnUpdate = {}) {
+fun VoyageTopAppBar(
+    title: String? = null,
+    showGoBack: Boolean = false,
+    isLoading: Boolean = false,
+    onUpdate: OnUpdate = {}
+) {
     TopAppBar(
         title = { title?.let { Text(text = title) } },
         navigationIcon = {
@@ -24,6 +30,9 @@ fun VoyageTopAppBar(title: String? = null, showGoBack: Boolean = false, onUpdate
                     contentDescription = stringResource(id = R.string.go_back)
                 )
             }
+        },
+        actions = {
+            if (isLoading) TopBarCircleProgressIndicator()
         }
     )
 }

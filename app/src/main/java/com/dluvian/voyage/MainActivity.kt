@@ -23,12 +23,17 @@ class MainActivity : ComponentActivity() {
                 HomeViewModel(feedProvider = appContainer.feedProvider)
             }
             val settingsViewModel = viewModel {
-                SettingsViewModel(accountSwitcher = appContainer.accountManager)
+                SettingsViewModel(
+                    accountManager = appContainer.accountManager,
+                    snackbar = appContainer.snackbarHostState,
+                    nostrSubscriber = appContainer.nostrSubscriber
+                )
             }
             val core = viewModel {
                 Core(
                     homeViewModel = homeViewModel,
                     settingsViewModel = settingsViewModel,
+                    snackbarHostState = appContainer.snackbarHostState,
                     postVoter = appContainer.postVoter,
                     nostrService = appContainer.nostrService,
                     closeApp = closeApp
