@@ -36,8 +36,8 @@ data class PostEntity(
         fun from(post: ValidatedPost): PostEntity {
             return when (post) {
                 is ValidatedRootPost -> PostEntity(
-                    id = post.id.toHex(),
-                    pubkey = post.pubkey.toHex(),
+                    id = post.id,
+                    pubkey = post.pubkey,
                     replyToId = null,
                     title = post.title?.trim()?.take(MAX_TITLE_LEN),
                     content = post.content.trim().take(MAX_CONTENT_LEN),
@@ -45,8 +45,8 @@ data class PostEntity(
                 )
 
                 is ValidatedReplyPost -> PostEntity(
-                    id = post.id.toHex(),
-                    pubkey = post.pubkey.toHex(),
+                    id = post.id,
+                    pubkey = post.pubkey,
                     replyToId = post.replyToId,
                     title = null,
                     content = post.content.trim().take(MAX_CONTENT_LEN),

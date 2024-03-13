@@ -120,7 +120,7 @@ class EventProcessor(
         val newestLists = filterNewestLists(lists = contactLists)
 
         val myPubkey = pubkeyProvider.getPubkeyHex()
-        val myList = newestLists.find { it.pubkey.toHex() == myPubkey }
+        val myList = newestLists.find { it.pubkey == myPubkey }
         val otherLists = newestLists.let { if (myList != null) it - myList else it }
 
         processFriendList(myFriendList = myList)
@@ -157,7 +157,7 @@ class EventProcessor(
         if (topicLists.isEmpty()) return
 
         val myNewestList = filterNewestLists(lists = topicLists)
-            .firstOrNull { it.myPubkey.toHex() == pubkeyProvider.getPubkeyHex() } ?: return
+            .firstOrNull { it.myPubkey == pubkeyProvider.getPubkeyHex() } ?: return
 
         scope.launch {
             topicUpsertDao.upsertTopics(validatedTopicList = myNewestList)
@@ -184,7 +184,7 @@ class EventProcessor(
         val cache = mutableMapOf<PubkeyHex, EventIdHex>()
         val newest = mutableListOf<ValidatedVote>()
         for (vote in votes.sortedByDescending { it.createdAt }) {
-            val isNew = cache.putIfAbsent(vote.pubkey.toHex(), vote.postId.toHex()) == null
+            val isNew = cache.putIfAbsent(vote.pubkey, vote.postId) == null
             if (isNew) newest.add(vote)
         }
 
@@ -195,7 +195,7 @@ class EventProcessor(
         val cache = mutableSetOf<PubkeyHex>()
         val newest = mutableListOf<T>()
         for (list in lists.sortedByDescending { it.createdAt }) {
-            val isNew = cache.add(list.owner.toHex())
+            val isNew = cache.add(list.owner)
             if (isNew) newest.add(list)
         }
 

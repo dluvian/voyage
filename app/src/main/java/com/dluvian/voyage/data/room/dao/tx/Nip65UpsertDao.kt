@@ -14,7 +14,7 @@ interface Nip65UpsertDao {
     @Transaction
     suspend fun upsertNip65(validatedNip65: ValidatedNip65) {
         val list = Nip65Entity.from(validatedNip65 = validatedNip65)
-        val pubkey = validatedNip65.pubkey.toHex()
+        val pubkey = validatedNip65.pubkey
 
         val newestCreatedAt = internalGetNewestCreatedAt(pubkey = pubkey) ?: 0L
         if (validatedNip65.createdAt < newestCreatedAt) return

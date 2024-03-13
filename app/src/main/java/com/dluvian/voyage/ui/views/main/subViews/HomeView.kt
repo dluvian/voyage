@@ -52,6 +52,7 @@ fun HomeView(vm: HomeViewModel, onUpdate: OnUpdate) {
                     onUpdate = onUpdate
                 )
                 HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = spacing.tiny)
+                // TODO: Only append when scrolling down
                 if (i >= posts.size - 5) onUpdate(HomeViewAppend)
             }
         }

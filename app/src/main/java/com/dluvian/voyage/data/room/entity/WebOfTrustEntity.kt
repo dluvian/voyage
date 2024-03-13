@@ -25,11 +25,10 @@ data class WebOfTrustEntity(
 ) {
     companion object {
         fun from(validatedContactList: ValidatedContactList): List<WebOfTrustEntity> {
-            val pubkey = validatedContactList.pubkey.toHex()
             return validatedContactList.friendPubkeys.map { webOfTrustPubkey ->
                 WebOfTrustEntity(
-                    friendPubkey = pubkey,
-                    webOfTrustPubkey = webOfTrustPubkey.toHex(),
+                    friendPubkey = validatedContactList.pubkey,
+                    webOfTrustPubkey = webOfTrustPubkey,
                     createdAt = validatedContactList.createdAt
                 )
             }

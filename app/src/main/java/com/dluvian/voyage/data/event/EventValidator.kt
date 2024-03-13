@@ -18,15 +18,14 @@ import com.dluvian.nostr_kt.isValidEventId
 import com.dluvian.nostr_kt.isVote
 import com.dluvian.nostr_kt.matches
 import com.dluvian.nostr_kt.secs
+import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_TOPIC_LEN
 import com.dluvian.voyage.data.model.RelayedItem
 import com.dluvian.voyage.data.signer.IPubkeyProvider
 import rust.nostr.protocol.Event
-import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
 import java.util.Collections
 
-// TODO: Dont compare EventId/PublicKey -> EventId.fromHex(x) != EventId.fromHex(x)
 class EventValidator(
     private val filterCache: Map<SubId, List<Filter>>,
     private val pubkeyProvider: IPubkeyProvider,
@@ -58,22 +57,24 @@ class EventValidator(
         return RelayedItem(item = validatedEvent, relayUrl = relayUrl)
     }
 
-    private val idCache = Collections.synchronizedSet(mutableSetOf<EventId>())
+    private val idCache = Collections.synchronizedSet(mutableSetOf<EventIdHex>())
     private val postRelayCache =
-        Collections.synchronizedSet(mutableSetOf<Pair<EventId, RelayUrl>>())
+        Collections.synchronizedSet(mutableSetOf<Pair<EventIdHex, RelayUrl>>())
 
     private fun isCached(event: Event, relayUrl: RelayUrl): Boolean {
-        val idIsCached = idCache.contains(event.id())
+        val eventIdHex = event.id().toHex()
+        val idIsCached = idCache.contains(eventIdHex)
         if (event.isPostOrReply()) {
-            return idIsCached && postRelayCache.contains(Pair(event.id(), relayUrl))
+            return idIsCached && postRelayCache.contains(Pair(eventIdHex, relayUrl))
         }
 
         return idIsCached
     }
 
     private fun cache(event: Event, relayUrl: RelayUrl) {
-        idCache.add(event.id())
-        if (event.isPostOrReply()) postRelayCache.add(Pair(event.id(), relayUrl))
+        val eventIdHex = event.id().toHex()
+        idCache.add(eventIdHex)
+        if (event.isPostOrReply()) postRelayCache.add(Pair(eventIdHex, relayUrl))
     }
 
     private var upperTimeBoundary = getUpperTimeBoundary()
@@ -99,8 +100,8 @@ class EventValidator(
         val validatedEvent = if (event.isRootPost()) {
             val topics = event.getHashtags().map { it.take(MAX_TOPIC_LEN) }.distinct()
             ValidatedRootPost(
-                id = event.id(),
-                pubkey = event.author(),
+                id = event.id().toHex(),
+                pubkey = event.author().toHex(),
                 topics = topics,
                 title = event.getTitle(),
                 content = event.content(),
@@ -113,8 +114,8 @@ class EventValidator(
                 !isValidEventId(replyToId)
             ) null
             else ValidatedReplyPost(
-                id = event.id(),
-                pubkey = event.author(),
+                id = event.id().toHex(),
+                pubkey = event.author().toHex(),
                 replyToId = replyToId,
                 content = event.content(),
                 createdAt = event.createdAt().secs()
@@ -123,22 +124,22 @@ class EventValidator(
             val postId = event.eventIds().firstOrNull()
             if (postId == null) null
             else ValidatedVote(
-                id = event.id(),
-                postId = postId,
-                pubkey = event.author(),
+                id = event.id().toHex(),
+                postId = postId.toHex(),
+                pubkey = event.author().toHex(),
                 isPositive = event.content() != "-",
                 createdAt = event.createdAt().secs()
             )
         } else if (event.isContactList()) {
             ValidatedContactList(
-                pubkey = event.author(),
-                friendPubkeys = event.publicKeys().toSet(),
+                pubkey = event.author().toHex(),
+                friendPubkeys = event.publicKeys().map { it.toHex() }.toSet(),
                 createdAt = event.createdAt().secs()
             )
         } else if (event.isTopicList()) {
             if (event.author().toHex() != pubkeyProvider.tryGetPubkeyHex().getOrNull()) null
             else ValidatedTopicList(
-                myPubkey = event.author(),
+                myPubkey = event.author().toHex(),
                 topics = event.getHashtags().toSet(),
                 createdAt = event.createdAt().secs()
             )
@@ -146,7 +147,7 @@ class EventValidator(
             val relays = event.getNip65s()
             if (relays.isEmpty()) null
             else ValidatedNip65(
-                pubkey = event.author(),
+                pubkey = event.author().toHex(),
                 relays = relays,
                 createdAt = event.createdAt().secs()
             )

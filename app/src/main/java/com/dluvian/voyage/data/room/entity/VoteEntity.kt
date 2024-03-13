@@ -27,9 +27,9 @@ data class VoteEntity(
     companion object {
         fun from(validatedVote: ValidatedVote): VoteEntity {
             return VoteEntity(
-                id = validatedVote.id.toHex(),
-                postId = validatedVote.postId.toHex(),
-                pubkey = validatedVote.pubkey.toHex(),
+                id = validatedVote.id,
+                postId = validatedVote.postId,
+                pubkey = validatedVote.pubkey,
                 isPositive = validatedVote.isPositive,
                 createdAt = validatedVote.createdAt,
             )

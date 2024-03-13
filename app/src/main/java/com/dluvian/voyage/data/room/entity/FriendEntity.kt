@@ -26,11 +26,10 @@ data class FriendEntity(
 ) {
     companion object {
         fun from(validatedContactList: ValidatedContactList): List<FriendEntity> {
-            val myPubkey = validatedContactList.pubkey.toHex()
             return validatedContactList.friendPubkeys.map { friendPubkey ->
                 FriendEntity(
-                    myPubkey = myPubkey,
-                    friendPubkey = friendPubkey.toHex(),
+                    myPubkey = validatedContactList.pubkey,
+                    friendPubkey = friendPubkey,
                     createdAt = validatedContactList.createdAt
                 )
             }

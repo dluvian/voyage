@@ -19,7 +19,7 @@ interface TopicUpsertDao {
     @Transaction
     suspend fun upsertTopics(validatedTopicList: ValidatedTopicList) {
         val list = TopicEntity.from(validatedTopicList = validatedTopicList)
-        val myPubkey = validatedTopicList.myPubkey.toHex()
+        val myPubkey = validatedTopicList.myPubkey
 
         val newestCreatedAt = internalGetNewestCreatedAt(myPubkey = myPubkey) ?: 0L
         if (validatedTopicList.createdAt < newestCreatedAt) return

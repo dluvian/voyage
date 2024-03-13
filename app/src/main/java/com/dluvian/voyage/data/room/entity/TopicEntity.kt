@@ -26,10 +26,9 @@ data class TopicEntity(
 ) {
     companion object {
         fun from(validatedTopicList: ValidatedTopicList): List<TopicEntity> {
-            val myPubkey = validatedTopicList.myPubkey.toHex()
             return validatedTopicList.topics.map { topic ->
                 TopicEntity(
-                    myPubkey = myPubkey,
+                    myPubkey = validatedTopicList.myPubkey,
                     topic = topic,
                     createdAt = validatedTopicList.createdAt
                 )

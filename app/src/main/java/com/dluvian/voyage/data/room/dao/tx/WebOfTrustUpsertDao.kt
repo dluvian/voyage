@@ -19,7 +19,7 @@ interface WebOfTrustUpsertDao {
     @Transaction
     suspend fun upsertWebOfTrust(validatedWebOfTrust: ValidatedContactList) {
         val list = WebOfTrustEntity.from(validatedContactList = validatedWebOfTrust)
-        val friendPubkey = validatedWebOfTrust.pubkey.toHex()
+        val friendPubkey = validatedWebOfTrust.pubkey
 
         val newestCreatedAt = internalGetNewestCreatedAt(friendPubkey = friendPubkey) ?: 0L
         if (validatedWebOfTrust.createdAt < newestCreatedAt) return

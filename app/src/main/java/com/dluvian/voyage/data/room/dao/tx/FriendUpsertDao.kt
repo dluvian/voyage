@@ -18,7 +18,7 @@ interface FriendUpsertDao {
     @Transaction
     suspend fun upsertFriends(validatedContactList: ValidatedContactList) {
         val list = FriendEntity.from(validatedContactList = validatedContactList)
-        val myPubkey = validatedContactList.pubkey.toHex()
+        val myPubkey = validatedContactList.pubkey
 
         val newestCreatedAt = internalGetNewestCreatedAt(myPubkey = myPubkey) ?: 0L
         if (validatedContactList.createdAt < newestCreatedAt) return

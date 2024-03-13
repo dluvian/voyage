@@ -27,13 +27,13 @@ interface PostInsertDao {
 
         internalInsertPostOrIgnore(posts = entities)
         val postRelays = relayedPosts.map {
-            PostRelayEntity(postId = it.item.id.toHex(), relayUrl = it.relayUrl)
+            PostRelayEntity(postId = it.item.id, relayUrl = it.relayUrl)
         }
         internalInsertPostRelayOrIgnore(postRelays = postRelays)
 
         val hashtags = relayedPosts.flatMap { post ->
             post.item.topics.map { topic ->
-                HashtagEntity(postId = post.item.id.toHex(), hashtag = topic)
+                HashtagEntity(postId = post.item.id, hashtag = topic)
             }
         }
         internalInsertHashtagsOrIgnore(hashtags = hashtags)
@@ -52,7 +52,7 @@ interface PostInsertDao {
         val validEntities = entities.filter { validReplyToIds.contains(it.replyToId) }
         val validPostRelayEntities = relayedPosts
             .filter { validReplyToIds.contains(it.item.replyToId) }
-            .map { PostRelayEntity(postId = it.item.id.toHex(), relayUrl = it.relayUrl) }
+            .map { PostRelayEntity(postId = it.item.id, relayUrl = it.relayUrl) }
 
 
         runCatching {

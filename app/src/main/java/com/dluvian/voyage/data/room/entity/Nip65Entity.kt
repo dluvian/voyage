@@ -14,10 +14,9 @@ data class Nip65Entity(
 ) {
     companion object {
         fun from(validatedNip65: ValidatedNip65): List<Nip65Entity> {
-            val pubkey = validatedNip65.pubkey.toHex()
             return validatedNip65.relays.map { relay ->
                 Nip65Entity(
-                    pubkey = pubkey,
+                    pubkey = validatedNip65.pubkey,
                     nip65Relay = relay,
                     createdAt = validatedNip65.createdAt
                 )
