@@ -47,7 +47,7 @@ interface PostInsertDao {
         val replyToIds = entities.mapNotNull { it.replyToId }.toSet()
         val validReplyToIds = internalFilterExistingRootIds(rootIds = replyToIds).toSet()
         val dif = replyToIds.size - validReplyToIds.size
-        if (dif > 0) Log.w(TAG, "Prefiltered $dif/${replyToIds.size} orphaned replies")
+        if (dif > 0) Log.d(TAG, "Prefiltered $dif/${replyToIds.size} orphaned replies")
 
         val validEntities = entities.filter { validReplyToIds.contains(it.replyToId) }
         val validPostRelayEntities = relayedPosts

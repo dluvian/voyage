@@ -38,7 +38,7 @@ class NostrSubscriber(
     }
 
     fun subFeed(until: Long, limit: Int) {
-        val adjustedLimit = (5 * limit).toULong() // We don't know if we receive enough root posts
+        val adjustedLimit = (3 * limit).toULong() // We don't know if we receive enough root posts
         val topicFilter = Filter().kind(kind = Kind.TEXT_NOTE.toULong())
             .hashtags(hashtags = topicProvider.getTopics())
             .until(timestamp = Timestamp.fromSecs(until.toULong()))

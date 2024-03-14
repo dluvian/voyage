@@ -15,13 +15,13 @@ private const val TAG = "EventQueue"
 private const val EVENT_PROCESSING_DELAY = 500L
 
 class EventQueue(
+    private val syncedQueue: MutableSet<RelayedValidatedEvent>,
     private val eventValidator: EventValidator,
     private val eventProcessor: EventProcessor,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
 
     // Not a synchronized set bc we synchronize with `synchronized()`
-    private val queue = mutableSetOf<RelayedValidatedEvent>()
     private val isProcessingEvents = AtomicBoolean(false)
 
     init {
@@ -39,8 +39,8 @@ class EventQueue(
             relayUrl = relayUrl
         ) ?: return
 
-        synchronized(queue) { queue.add(submittableEvent) }
-        if (!isProcessingEvents.get()) startProcessingJob()
+        syncedQueue.add(submittableEvent)
+        startProcessingJob()
     }
 
     private fun startProcessingJob() {
@@ -50,9 +50,9 @@ class EventQueue(
             while (true) {
                 delay(EVENT_PROCESSING_DELAY)
                 val events = mutableSetOf<RelayedValidatedEvent>()
-                synchronized(queue) {
-                    events.addAll(queue)
-                    queue.clear()
+                synchronized(syncedQueue) {
+                    events.addAll(syncedQueue.toList())
+                    syncedQueue.clear()
                 }
                 eventProcessor.processEvents(events = events)
             }

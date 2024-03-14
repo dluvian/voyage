@@ -9,7 +9,6 @@ import com.dluvian.voyage.core.DELAY
 import com.dluvian.voyage.core.HomeViewAction
 import com.dluvian.voyage.core.HomeViewAppend
 import com.dluvian.voyage.core.HomeViewRefresh
-import com.dluvian.voyage.core.SHORT_DELAY
 import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.data.provider.FeedProvider
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +20,7 @@ import kotlinx.coroutines.launch
 
 
 class HomeViewModel(private val feedProvider: FeedProvider) : ViewModel() {
-    private val pageSize = 50
+    private val pageSize = 40
     val isRefreshing = mutableStateOf(false)
     val isAppending = mutableStateOf(false)
     val posts: MutableState<StateFlow<List<RootPost>>> = mutableStateOf(
@@ -68,7 +67,6 @@ class HomeViewModel(private val feedProvider: FeedProvider) : ViewModel() {
                     SharingStarted.WhileSubscribed(),
                     posts.value.value.takeLast(offset)
                 )
-            delay(SHORT_DELAY)
         }.invokeOnCompletion {
             isAppending.value = false
             oldFirstId = currentFirstId

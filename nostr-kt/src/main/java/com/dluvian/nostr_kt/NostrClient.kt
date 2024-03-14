@@ -130,6 +130,16 @@ class NostrClient(private val httpClient: OkHttpClient) {
         }
     }
 
+    fun unsubscribeAll() {
+        synchronized(subscriptions) {
+            subscriptions.entries.forEach { (subId, socket) ->
+                Log.d(TAG, "Unsubscribe from $subId")
+                socket.send(createCloseRequest(subId))
+            }
+            subscriptions.clear()
+        }
+    }
+
     fun publishToRelays(event: Event, relayUrls: Collection<RelayUrl>) {
         addRelays(relayUrls)
         val filteredRelays = filterSocketsByRelays(relays = relayUrls)
@@ -170,8 +180,8 @@ class NostrClient(private val httpClient: OkHttpClient) {
     }
 
     private fun getRelayUrl(webSocket: WebSocket): RelayUrl? {
-        val snapshot = sockets.entries.toSet()
-        return snapshot.find { it.value == webSocket }?.key
+        val snapshot = sockets.toMap()
+        return snapshot.entries.find { it.value == webSocket }?.key
     }
 
     private fun removeSocket(socket: WebSocket) {

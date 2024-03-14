@@ -24,10 +24,12 @@ import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.model.RelayedItem
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.Filter
-import java.util.Collections
 
 class EventValidator(
-    private val filterCache: Map<SubId, List<Filter>>,
+    private val syncedFilterCache: Map<SubId, List<Filter>>,
+    private val syncedIdCache: MutableSet<EventIdHex>,
+    private val syncedPostRelayCache: MutableSet<Pair<EventIdHex, RelayUrl>>,
+
     private val pubkeyProvider: IPubkeyProvider,
 ) {
     private val tag = "EventValidator"
@@ -57,15 +59,13 @@ class EventValidator(
         return RelayedItem(item = validatedEvent, relayUrl = relayUrl)
     }
 
-    private val idCache = Collections.synchronizedSet(mutableSetOf<EventIdHex>())
-    private val postRelayCache =
-        Collections.synchronizedSet(mutableSetOf<Pair<EventIdHex, RelayUrl>>())
+
 
     private fun isCached(event: Event, relayUrl: RelayUrl): Boolean {
         val eventIdHex = event.id().toHex()
-        val idIsCached = idCache.contains(eventIdHex)
+        val idIsCached = syncedIdCache.contains(eventIdHex)
         if (event.isPostOrReply()) {
-            return idIsCached && postRelayCache.contains(Pair(eventIdHex, relayUrl))
+            return idIsCached && syncedPostRelayCache.contains(Pair(eventIdHex, relayUrl))
         }
 
         return idIsCached
@@ -73,8 +73,8 @@ class EventValidator(
 
     private fun cache(event: Event, relayUrl: RelayUrl) {
         val eventIdHex = event.id().toHex()
-        idCache.add(eventIdHex)
-        if (event.isPostOrReply()) postRelayCache.add(Pair(eventIdHex, relayUrl))
+        syncedIdCache.add(eventIdHex)
+        if (event.isPostOrReply()) syncedPostRelayCache.add(Pair(eventIdHex, relayUrl))
     }
 
     private var upperTimeBoundary = getUpperTimeBoundary()
@@ -89,7 +89,7 @@ class EventValidator(
     }
 
     private fun matchesFilter(subId: SubId, event: Event): Boolean {
-        val filters = filterCache.getOrDefault(subId, emptyList()).toList()
+        val filters = syncedFilterCache.getOrDefault(subId, emptyList()).toList()
         if (filters.isEmpty()) return false
         // TODO: Make sure ReplyEvents match queried e tag. Or we get Foreign Key exceptions
         //TODO: Make sure to not subscribe root posts and replies in a single Subscription. Replies we receive need to be matched against a list of root ids

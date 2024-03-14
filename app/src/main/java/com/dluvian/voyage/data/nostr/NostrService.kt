@@ -115,13 +115,6 @@ class NostrService(
         return subId
     }
 
-    fun unsubscribe(subIds: Collection<SubId>) {
-        subIds.forEach {
-            nostrClient.unsubscribe(it)
-            filterCache.remove(it)
-        }
-    }
-
     fun close() {
         filterCache.clear()
         nostrClient.close()

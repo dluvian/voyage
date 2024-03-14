@@ -4,11 +4,15 @@ import android.content.Context
 import androidx.compose.material3.SnackbarHostState
 import androidx.room.Room
 import com.dluvian.nostr_kt.NostrClient
+import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
+import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.core.RelayedValidatedEvent
 import com.dluvian.voyage.data.account.AccountManager
 import com.dluvian.voyage.data.account.AccountSwitcher
 import com.dluvian.voyage.data.account.ExternalSigner
 import com.dluvian.voyage.data.account.MnemonicSigner
+import com.dluvian.voyage.data.event.EventCacheClearer
 import com.dluvian.voyage.data.event.EventMaker
 import com.dluvian.voyage.data.event.EventProcessor
 import com.dluvian.voyage.data.event.EventQueue
@@ -32,12 +36,32 @@ class AppContainer(context: Context) {
         klass = AppDatabase::class.java,
         name = "voyage_database",
     ).build()
+
+    // Shared collections
+    private val syncedEventQueueSet =
+        Collections.synchronizedSet(mutableSetOf<RelayedValidatedEvent>())
+    private val syncedFilterCache = Collections.synchronizedMap(mutableMapOf<SubId, List<Filter>>())
+    private val syncedIdCache = Collections.synchronizedSet(mutableSetOf<EventIdHex>())
+    private val syncedPostRelayCache = Collections
+        .synchronizedSet(mutableSetOf<Pair<EventIdHex, RelayUrl>>())
+
+
+    private val client = OkHttpClient()
+    private val nostrClient = NostrClient(httpClient = client)
     private val mnemonicSigner = MnemonicSigner(context = context)
     private val externalSigner = ExternalSigner()
+
+    private val eventCacheClearer = EventCacheClearer(
+        nostrClient = nostrClient,
+        syncedEventQueue = syncedEventQueueSet,
+        syncedIdCache = syncedIdCache,
+        syncedPostRelayCache = syncedPostRelayCache
+    )
     private val accountSwitcher = AccountSwitcher(
         mnemonicSigner = mnemonicSigner,
         accountDao = roomDb.accountDao(),
-        resetDao = roomDb.resetDao()
+        resetDao = roomDb.resetDao(),
+        eventCacheClearer = eventCacheClearer,
     )
     val accountManager = AccountManager(
         mnemonicSigner = mnemonicSigner,
@@ -46,11 +70,10 @@ class AppContainer(context: Context) {
         accountDao = roomDb.accountDao(),
         context = context
     )
-    private val client = OkHttpClient()
-    private val nostrClient = NostrClient(httpClient = client)
-    private val filterCache = Collections.synchronizedMap(mutableMapOf<SubId, List<Filter>>())
     private val eventValidator = EventValidator(
-        filterCache = filterCache,
+        syncedFilterCache = syncedFilterCache,
+        syncedIdCache = syncedIdCache,
+        syncedPostRelayCache = syncedPostRelayCache,
         pubkeyProvider = accountManager
     )
     private val eventProcessor = EventProcessor(
@@ -63,6 +86,7 @@ class AppContainer(context: Context) {
         pubkeyProvider = accountManager
     )
     private val eventQueue = EventQueue(
+        syncedQueue = syncedEventQueueSet,
         eventValidator = eventValidator,
         eventProcessor = eventProcessor
     )
@@ -71,7 +95,7 @@ class AppContainer(context: Context) {
         nostrClient = nostrClient,
         eventQueue = eventQueue,
         eventMaker = eventMaker,
-        filterCache = filterCache
+        filterCache = syncedFilterCache
     )
     private val relayProvider = RelayProvider(nip65Dao = roomDb.nip65Dao())
 
