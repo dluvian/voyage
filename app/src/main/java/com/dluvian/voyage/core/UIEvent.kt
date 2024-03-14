@@ -1,8 +1,6 @@
 package com.dluvian.voyage.core
 
 import android.content.Context
-import android.content.Intent
-import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
 
 sealed class UIEvent
@@ -41,10 +39,8 @@ data object HomeViewAppend : HomeViewAction()
 
 sealed class SettingsViewAction : UIEvent()
 data object UseDefaultAccount : SettingsViewAction()
-data class RequestExternalAccount(
-    val context: Context,
-    val launcher: ManagedActivityResultLauncher<Intent, ActivityResult>
-) : SettingsViewAction()
-
-data class ProcessExternalAccountData(val activityResult: ActivityResult, val context: Context) :
+data class RequestExternalAccount(val context: Context) : SettingsViewAction()
+data class ProcessExternalAccount(val activityResult: ActivityResult, val context: Context) :
     SettingsViewAction()
+
+data class ProcessExternalVoteSignature(val activityResult: ActivityResult) : UIEvent()

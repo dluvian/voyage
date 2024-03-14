@@ -1,9 +1,7 @@
 package com.dluvian.voyage.core.viewModel
 
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import androidx.activity.compose.ManagedActivityResultLauncher
+import android.util.Log
 import androidx.activity.result.ActivityResult
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.State
@@ -11,7 +9,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.ProcessExternalAccountData
+import com.dluvian.voyage.core.ExternalSignerHandler
+import com.dluvian.voyage.core.ProcessExternalAccount
 import com.dluvian.voyage.core.RequestExternalAccount
 import com.dluvian.voyage.core.SettingsViewAction
 import com.dluvian.voyage.core.UseDefaultAccount
@@ -32,16 +31,18 @@ class SettingsViewModel(
 ) : ViewModel() {
     val accountType: State<AccountType> = accountManager.accountType
     val isLoadingAccount = mutableStateOf(false)
+    lateinit var externalSignerHandler: ExternalSignerHandler
+    private val tag = "SettingsViewModel"
 
     fun handle(settingsViewAction: SettingsViewAction) {
         when (settingsViewAction) {
             is UseDefaultAccount -> useDefaultAccount()
+
             is RequestExternalAccount -> requestExternalAccountData(
-                context = settingsViewAction.context,
-                launcher = settingsViewAction.launcher
+                context = settingsViewAction.context
             )
 
-            is ProcessExternalAccountData -> processExternalAccountData(
+            is ProcessExternalAccount -> processExternalAccountData(
                 result = settingsViewAction.activityResult,
                 context = settingsViewAction.context
             )
@@ -59,10 +60,7 @@ class SettingsViewModel(
         }
     }
 
-    private fun requestExternalAccountData(
-        context: Context,
-        launcher: ManagedActivityResultLauncher<Intent, ActivityResult>
-    ) {
+    private fun requestExternalAccountData(context: Context) {
         if (accountType.value is ExternalAccount || isLoadingAccount.value) return
         isLoadingAccount.value = true
 
@@ -75,18 +73,14 @@ class SettingsViewModel(
             return
         }
 
-        val result = runCatching {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("nostrsigner:"))
-            intent.putExtra("permissions", "[{\"type\":\"get_public_key\"}]")
-            intent.putExtra("type", "get_public_key")
-            launcher.launch(intent)
-        }
-        if (result.isFailure) {
+        val result = externalSignerHandler.requestExternalAccount()
+        if (result != null) {
             isLoadingAccount.value = false
             snackbar.showToast(
                 scope = viewModelScope,
                 msg = context.getString(R.string.failed_to_get_permission)
             )
+            Log.w(tag, "Failed to request external account", result)
         }
         // Wait for processExternalAccountData
     }

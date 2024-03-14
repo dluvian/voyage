@@ -199,6 +199,7 @@ fun createFriendFilter(pubkeys: List<PublicKey>, until: ULong, limit: ULong): Fi
 object Kind {
     const val TEXT_NOTE = 1
     const val CONTACT_LIST = 3
+    const val DELETE = 5
     const val REACTION = 7
     const val NIP65 = 10002
     const val TOPIC_LIST = 10015

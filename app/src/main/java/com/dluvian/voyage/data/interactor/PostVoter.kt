@@ -57,8 +57,8 @@ class PostVoter(
             postId = voteEvent.postId,
             pubkey = voteEvent.pubkey,
             vote = newVote,
-            kind = 1
-        ) // TODO: Set real kind. Important once reposts are supported
+            kind = 1 // TODO: Set real kind. Important once reposts are supported
+        )
     }
 
     private fun updateForcedVote(voteEvent: VoteEvent, newVote: Vote) {
@@ -70,7 +70,7 @@ class PostVoter(
     }
 
     private val jobs: MutableMap<EventIdHex, Job?> = mutableMapOf()
-    fun vote(postId: EventIdHex, pubkey: PubkeyHex, vote: Vote, kind: Int) {
+    private fun vote(postId: EventIdHex, pubkey: PubkeyHex, vote: Vote, kind: Int) {
         jobs[postId]?.cancel(CancellationException("User clicks fast"))
         jobs[postId] = scope.launch {
             delay(DELAY)

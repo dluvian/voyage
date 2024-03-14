@@ -49,7 +49,7 @@ class AppContainer(context: Context) {
     private val client = OkHttpClient()
     private val nostrClient = NostrClient(httpClient = client)
     private val mnemonicSigner = MnemonicSigner(context = context)
-    private val externalSigner = ExternalSigner()
+    val externalSigner = ExternalSigner()
 
     private val eventCacheClearer = EventCacheClearer(
         nostrClient = nostrClient,
@@ -68,7 +68,6 @@ class AppContainer(context: Context) {
         externalSigner = externalSigner,
         accountSwitcher = accountSwitcher,
         accountDao = roomDb.accountDao(),
-        context = context
     )
     private val eventValidator = EventValidator(
         syncedFilterCache = syncedFilterCache,

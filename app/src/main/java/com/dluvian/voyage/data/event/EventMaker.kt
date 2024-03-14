@@ -68,6 +68,7 @@ class EventMaker(
         )
             .toUnsignedEvent(accountManager.getPublicKey())
 
+
         return accountManager.sign(unsignedEvent)
     }
 

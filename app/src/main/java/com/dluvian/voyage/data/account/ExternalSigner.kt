@@ -1,34 +1,32 @@
 package com.dluvian.voyage.data.account
 
-import android.content.Context
-import android.net.Uri
-import com.dluvian.voyage.core.PubkeyHex
+import android.util.Log
+import com.dluvian.nostr_kt.Kind
+import com.dluvian.voyage.core.ExternalSignerHandler
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.UnsignedEvent
 
-class ExternalSigner : IPubkeyProvider {
-    override fun tryGetPubkeyHex(): Result<PubkeyHex> {
-        return Result.failure(IllegalStateException("External signer is not implemented yet"))
-    }
+class ExternalSigner() {
+    lateinit var externalSignerHandler: ExternalSignerHandler
+    private val tag = "ExternalSigner"
 
-    fun sign(unsignedEvent: UnsignedEvent, packageName: String, context: Context): Result<Event> {
-        val eventJson = unsignedEvent.asJson()
-        val npub = unsignedEvent.author().toBech32()
 
-        val result = context.contentResolver.query(
-            Uri.parse("content://$packageName.SIGN_EVENT"),
-            arrayOf(eventJson, "", npub),
-            "1",
-            null,
-            null
-        ) ?: return Result.failure(IllegalStateException("Signer failed to sign"))
+    fun sign(
+        unsignedEvent: UnsignedEvent,
+        packageName: String
+    ): Result<Event> {
+        return when (val kind = unsignedEvent.kind()) {
+            Kind.REACTION.toULong() -> {
+                externalSignerHandler.signVote(
+                    unsignedEvent = unsignedEvent,
+                    packageName = packageName
+                )
+            }
 
-        return runCatching {
-            result.moveToFirst()
-            val index = result.getColumnIndex("signature")
-            val signature = result.getString(index)
-            result.close()
-            unsignedEvent.addSignature(signature)
-        }
+            else -> {
+                val msg = "External signing of kind $kind is not implemented yet"
+                Result.failure(IllegalArgumentException(msg))
+            }
+        }.onFailure { Log.w(tag, "Failed to sign event", it) }
     }
 }

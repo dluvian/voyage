@@ -26,7 +26,6 @@ class AccountManager(
     private val externalSigner: ExternalSigner,
     private val accountSwitcher: AccountSwitcher,
     private val accountDao: AccountDao,
-    private val context: Context,
 ) : IPubkeyProvider {
     private val scope = CoroutineScope(Dispatchers.Main)
     private val tag = "AccountManager"
@@ -85,21 +84,29 @@ class AccountManager(
     }
 
     suspend fun sign(unsignedEvent: UnsignedEvent): Result<Event> {
-        val author = unsignedEvent.author().toHex()
-        return when (author) {
-            mnemonicSigner.tryGetPubkeyHex().getOrNull() -> {
+        return when (accountType.value) {
+            is DefaultAccount -> {
                 mnemonicSigner.sign(unsignedEvent = unsignedEvent)
             }
 
-            externalSigner.tryGetPubkeyHex().getOrNull() -> {
+            is ExternalAccount -> {
                 externalSigner.sign(
                     unsignedEvent = unsignedEvent,
-                    context = context,
                     packageName = accountDao.getPackageName()
                 )
+                    .onSuccess {
+                        Log.i(
+                            tag,
+                            "Externally signed event of kind ${unsignedEvent.kind()}"
+                        )
+                    }
+                    .onFailure {
+                        Log.w(
+                            tag,
+                            "Failed to externally sign event of kind ${unsignedEvent.kind()}"
+                        )
+                    }
             }
-
-            else -> Result.failure(IllegalStateException("You're not signed in correctly"))
         }
     }
 }

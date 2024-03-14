@@ -2,11 +2,13 @@ package com.dluvian.voyage.core
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.core.navigator.Navigator
 import com.dluvian.voyage.core.viewModel.HomeViewModel
 import com.dluvian.voyage.core.viewModel.SettingsViewModel
 import com.dluvian.voyage.data.interactor.PostVoter
 import com.dluvian.voyage.data.nostr.NostrService
+import kotlinx.coroutines.launch
 
 class Core(
     val homeViewModel: HomeViewModel,
@@ -17,6 +19,7 @@ class Core(
     closeApp: Fn,
 ) : ViewModel() {
     val navigator = Navigator(closeApp = closeApp)
+    lateinit var externalSignerHandler: ExternalSignerHandler
 
     val onUpdate: (UIEvent) -> Unit = { uiEvent ->
         when (uiEvent) {
@@ -25,6 +28,11 @@ class Core(
             is HomeViewAction -> homeViewModel.handle(homeViewAction = uiEvent)
             is SettingsViewAction -> settingsViewModel.handle(settingsViewAction = uiEvent)
             is ClickThread -> {} // TODO: Click thread
+            is ProcessExternalVoteSignature -> viewModelScope.launch {
+                externalSignerHandler.processExternalVoteSignature(
+                    result = uiEvent.activityResult
+                )
+            }
         }
     }
 
