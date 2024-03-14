@@ -20,6 +20,7 @@ import com.dluvian.voyage.data.event.EventValidator
 import com.dluvian.voyage.data.interactor.PostVoter
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.NostrSubscriber
+import com.dluvian.voyage.data.provider.AccountPubkeyProvider
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
@@ -57,11 +58,28 @@ class AppContainer(context: Context) {
         syncedIdCache = syncedIdCache,
         syncedPostRelayCache = syncedPostRelayCache
     )
+
+    private val relayProvider = RelayProvider(nip65Dao = roomDb.nip65Dao())
+    private val topicProvider = TopicProvider(topicDao = roomDb.topicDao())
+    private val friendProvider = FriendProvider(friendDao = roomDb.friendDao())
+    private val webOfTrustProvider = WebOfTrustProvider(webOfTrustDao = roomDb.webOfTrustDao())
+    private val accountPubkeyProvider = AccountPubkeyProvider(accountDao = roomDb.accountDao())
+
+    val nostrSubscriber = NostrSubscriber(
+        relayProvider = relayProvider,
+        webOfTrustProvider = webOfTrustProvider,
+        topicProvider = topicProvider,
+        friendProvider = friendProvider,
+        pubkeyProvider = accountPubkeyProvider,
+        nostrClient = nostrClient,
+        syncedFilterCache = syncedFilterCache,
+    )
     private val accountSwitcher = AccountSwitcher(
         mnemonicSigner = mnemonicSigner,
         accountDao = roomDb.accountDao(),
         resetDao = roomDb.resetDao(),
         eventCacheClearer = eventCacheClearer,
+        nostrSubscriber = nostrSubscriber
     )
     val accountManager = AccountManager(
         mnemonicSigner = mnemonicSigner,
@@ -96,16 +114,13 @@ class AppContainer(context: Context) {
         eventMaker = eventMaker,
         filterCache = syncedFilterCache
     )
-    private val relayProvider = RelayProvider(nip65Dao = roomDb.nip65Dao())
 
     init {
         nostrService.initialize(initRelayUrls = relayProvider.getReadRelays())
     }
 
     val snackbarHostState = SnackbarHostState()
-    private val topicProvider = TopicProvider(topicDao = roomDb.topicDao())
-    private val friendProvider = FriendProvider(friendDao = roomDb.friendDao())
-    private val webOfTrustProvider = WebOfTrustProvider(webOfTrustDao = roomDb.webOfTrustDao())
+
     val postVoter = PostVoter(
         nostrService = nostrService,
         relayProvider = relayProvider,
@@ -113,14 +128,6 @@ class AppContainer(context: Context) {
         context = context,
         voteDao = roomDb.voteDao(),
         voteUpsertDao = roomDb.voteUpsertDao()
-    )
-    val nostrSubscriber = NostrSubscriber(
-        nostrService = nostrService,
-        relayProvider = relayProvider,
-        webOfTrustProvider = webOfTrustProvider,
-        topicProvider = topicProvider,
-        friendProvider = friendProvider,
-        pubkeyProvider = accountManager,
     )
     val feedProvider = FeedProvider(
         nostrSubscriber = nostrSubscriber,

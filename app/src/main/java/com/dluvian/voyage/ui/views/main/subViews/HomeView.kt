@@ -16,6 +16,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -42,6 +43,10 @@ fun HomeView(vm: HomeViewModel, onUpdate: OnUpdate) {
     val isAppending by vm.isAppending
     val postsOuterState by vm.posts
     val posts by postsOuterState.collectAsState()
+
+    LaunchedEffect(key1 = Unit) {
+        vm.subMyAccountAndTrustData()
+    }
 
     PullRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(HomeViewRefresh) }) {
         if (isAppending) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())

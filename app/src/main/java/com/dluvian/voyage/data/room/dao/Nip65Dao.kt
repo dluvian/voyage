@@ -14,4 +14,7 @@ interface Nip65Dao {
 
     @Query("SELECT DISTINCT url FROM nip65 WHERE pubkey = :pubkey AND isRead = 1")
     suspend fun getReadRelays(pubkey: PubkeyHex): List<RelayUrl>
+
+    @Query("SELECT DISTINCT * FROM nip65 WHERE pubkey IN (:pubkeys) AND isWrite = 1")
+    suspend fun getNip65WriteRelays(pubkeys: Collection<PubkeyHex>): List<Nip65Entity>
 }

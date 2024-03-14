@@ -19,7 +19,6 @@ import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.account.AccountManager
-import com.dluvian.voyage.data.nostr.NostrSubscriber
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import rust.nostr.protocol.PublicKey
@@ -27,7 +26,6 @@ import rust.nostr.protocol.PublicKey
 class SettingsViewModel(
     private val accountManager: AccountManager,
     private val snackbar: SnackbarHostState,
-    private val nostrSubscriber: NostrSubscriber,
 ) : ViewModel() {
     val accountType: State<AccountType> = accountManager.accountType
     val isLoadingAccount = mutableStateOf(false)
@@ -102,7 +100,6 @@ class SettingsViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             accountManager.useExternalAccount(publicKey = publicKey, packageName = packageName)
         }.invokeOnCompletion {
-            nostrSubscriber.subMyAccount()
             isLoadingAccount.value = false
         }
     }

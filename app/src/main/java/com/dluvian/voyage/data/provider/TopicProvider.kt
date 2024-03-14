@@ -13,7 +13,7 @@ class TopicProvider(topicDao: TopicDao) {
         .stateIn(scope, SharingStarted.Eagerly, emptyList())
 
     fun getTopics(): List<Topic> {
-        return topics.value.ifEmpty { defaultTopics }
+        return topics.value
     }
 }
 

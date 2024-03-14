@@ -2,10 +2,15 @@ package com.dluvian.voyage.data.nostr
 
 import android.util.Log
 import com.dluvian.nostr_kt.Kind
+import com.dluvian.nostr_kt.NostrClient
+import com.dluvian.nostr_kt.RelayUrl
+import com.dluvian.nostr_kt.SubId
 import com.dluvian.nostr_kt.createFriendFilter
 import com.dluvian.voyage.core.DEBOUNCE
+import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
+import com.dluvian.voyage.core.RND_RESUB_COUNT
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
@@ -23,19 +28,16 @@ import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Timestamp
 
 class NostrSubscriber(
-    private val nostrService: NostrService,
     private val relayProvider: RelayProvider,
     private val webOfTrustProvider: WebOfTrustProvider,
     private val topicProvider: TopicProvider,
     private val friendProvider: FriendProvider,
     private val pubkeyProvider: IPubkeyProvider,
+    private val nostrClient: NostrClient,
+    private val syncedFilterCache: MutableMap<SubId, List<Filter>>,
 ) {
     private val tag = "NostrSubscriber"
     private val scope = CoroutineScope(Dispatchers.IO)
-
-    init {
-        subMyAccount()
-    }
 
     fun subFeed(until: Long, limit: Int) {
         val adjustedLimit = (3 * limit).toULong() // We don't know if we receive enough root posts
@@ -45,7 +47,7 @@ class NostrSubscriber(
             .limit(limit = adjustedLimit)
         val topicFilters = listOf(topicFilter)
         relayProvider.getReadRelays().forEach { relay ->
-            nostrService.subscribe(filters = topicFilters, relayUrl = relay)
+            subscribe(filters = topicFilters, relayUrl = relay)
         }
 
         relayProvider
@@ -57,7 +59,7 @@ class NostrSubscriber(
                     until = until.toULong(),
                     limit = adjustedLimit,
                 )
-                nostrService.subscribe(filters = listOf(friendFilter), relayUrl = relayUrl)
+                subscribe(filters = listOf(friendFilter), relayUrl = relayUrl)
             }
     }
 
@@ -87,7 +89,7 @@ class NostrSubscriber(
             val filters = listOf(voteFilter, replyFilter)
 
             relayProvider.getReadRelays().forEach { relay ->
-                nostrService.subscribe(filters = filters, relayUrl = relay)
+                subscribe(filters = filters, relayUrl = relay)
             }
         }
         votesAndRepliesJob?.invokeOnCompletion { ex ->
@@ -98,7 +100,15 @@ class NostrSubscriber(
         }
     }
 
-    fun subMyAccount() {
+    suspend fun subMyAccountAndTrustData() {
+        subMyAccount()
+        delay(DELAY_1SEC)
+        lazySubFriendsNip65()
+        delay(DELAY_1SEC)
+        lazySubWebOfTrust()
+    }
+
+    private fun subMyAccount() {
         val timestamp = Timestamp.now()
         val myContactFilter = Filter().kind(kind = Kind.CONTACT_LIST.toULong())
             .author(pubkeyProvider.getPublicKey())
@@ -114,13 +124,48 @@ class NostrSubscriber(
             .limit(1u)
         val filters = listOf(myContactFilter, myTopicsFilter, myNip65Filter)
 
-        // TODO: sub missing contact lists of friends
-        // TODO: sub 10% but max 25 contact lists of friends for update purpose
-        // TODO: sub missing nip65s of friends
-        // TODO: sub 10% but max 25 nip65s of friends for update purpose
-
         relayProvider.getReadRelays().forEach { relay ->
-            nostrService.subscribe(filters = filters, relayUrl = relay)
+            subscribe(filters = filters, relayUrl = relay)
         }
+    }
+
+    private suspend fun lazySubFriendsNip65() {
+        val timestamp = Timestamp.now()
+        val friends = friendProvider.getFriendPubkeys()
+//
+//        // TODO: Sub nip65s
+//
+    }
+
+    private suspend fun lazySubWebOfTrust() {
+        val timestamp = Timestamp.now()
+        val friendsWithMissingContactList = friendProvider.getFriendsWithMissingContactList()
+        val randomResub = friendProvider.getFriendPubkeys().shuffled().take(RND_RESUB_COUNT)
+        val webOfTrustResub = (friendsWithMissingContactList + randomResub).distinct()
+        if (webOfTrustResub.isEmpty()) return
+
+        relayProvider
+            .getObserveRelays(observeFrom = webOfTrustResub)
+            .forEach { (relay, pubkeys) ->
+                val webOfTrustFilter = Filter().kind(kind = Kind.CONTACT_LIST.toULong())
+                    .authors(authors = pubkeys.map { PublicKey.fromHex(it) })
+                    .until(timestamp = timestamp)
+                val filters = listOf(webOfTrustFilter)
+                subscribe(filters = filters, relayUrl = relay)
+            }
+    }
+
+    private fun subscribe(filters: List<Filter>, relayUrl: RelayUrl): SubId? {
+        if (filters.isEmpty()) return null
+        Log.d(tag, "Subscribe ${filters.size} in $relayUrl")
+
+        val subId = nostrClient.subscribe(filters = filters, relayUrl = relayUrl)
+        if (subId == null) {
+            Log.w(tag, "Failed to create subscription ID")
+            return null
+        }
+        syncedFilterCache[subId] = filters
+
+        return subId
     }
 }

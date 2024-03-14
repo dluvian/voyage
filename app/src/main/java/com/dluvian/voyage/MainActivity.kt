@@ -25,13 +25,15 @@ class MainActivity : ComponentActivity() {
             val activity = (LocalContext.current as? Activity)
             val closeApp: Fn = { activity?.finish() }
             val homeViewModel = viewModel {
-                HomeViewModel(feedProvider = appContainer.feedProvider)
+                HomeViewModel(
+                    feedProvider = appContainer.feedProvider,
+                    nostrSubscriber = appContainer.nostrSubscriber
+                )
             }
             val settingsViewModel = viewModel {
                 SettingsViewModel(
                     accountManager = appContainer.accountManager,
                     snackbar = appContainer.snackbarHostState,
-                    nostrSubscriber = appContainer.nostrSubscriber
                 )
             }
             val core = viewModel {

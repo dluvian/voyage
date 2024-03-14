@@ -101,20 +101,6 @@ class NostrService(
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = allRelays) }
     }
 
-    fun subscribe(filters: List<Filter>, relayUrl: RelayUrl): SubId? {
-        if (filters.isEmpty()) return null
-        Log.d(tag, "Subscribe ${filters.size} in $relayUrl")
-
-        val subId = nostrClient.subscribe(filters = filters, relayUrl = relayUrl)
-        if (subId == null) {
-            Log.w(tag, "Failed to create subscription ID")
-            return null
-        }
-        filterCache[subId] = filters
-
-        return subId
-    }
-
     fun close() {
         filterCache.clear()
         nostrClient.close()

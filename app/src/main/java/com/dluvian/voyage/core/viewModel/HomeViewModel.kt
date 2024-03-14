@@ -5,13 +5,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dluvian.nostr_kt.getCurrentSecs
-import com.dluvian.voyage.core.DELAY
+import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.HomeViewAction
 import com.dluvian.voyage.core.HomeViewAppend
 import com.dluvian.voyage.core.HomeViewRefresh
 import com.dluvian.voyage.core.model.RootPost
+import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.provider.FeedProvider
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +21,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 
-class HomeViewModel(private val feedProvider: FeedProvider) : ViewModel() {
+class HomeViewModel(
+    private val feedProvider: FeedProvider,
+    private val nostrSubscriber: NostrSubscriber
+) : ViewModel() {
     private val pageSize = 40
     val isRefreshing = mutableStateOf(false)
     val isAppending = mutableStateOf(false)
@@ -41,9 +46,10 @@ class HomeViewModel(private val feedProvider: FeedProvider) : ViewModel() {
         isRefreshing.value = true
         viewModelScope.launch(Dispatchers.IO) {
             val initValue = posts.value.value.take(pageSize)
+            subMyAccountAndTrustData()
+            delay(DELAY_1SEC)
             posts.value = feedProvider.getFeedFlow(until = getCurrentSecs(), size = pageSize)
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), initValue)
-            delay(DELAY)
         }.invokeOnCompletion {
             isRefreshing.value = false
         }
@@ -70,6 +76,14 @@ class HomeViewModel(private val feedProvider: FeedProvider) : ViewModel() {
         }.invokeOnCompletion {
             isAppending.value = false
             oldFirstId = currentFirstId
+        }
+    }
+
+    private var job: Job? = null
+    fun subMyAccountAndTrustData() {
+        job?.cancel()
+        job = viewModelScope.launch(Dispatchers.IO) {
+            nostrSubscriber.subMyAccountAndTrustData()
         }
     }
 }

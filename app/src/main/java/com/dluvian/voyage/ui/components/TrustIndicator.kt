@@ -17,7 +17,7 @@ import com.dluvian.voyage.ui.theme.TrustedIcon
 import com.dluvian.voyage.ui.theme.sizing
 
 
-// TODO: Info box when clicked to explain 3 different icons
+// TODO: Info box when clicked to explain 2 different icons
 @Composable
 fun TrustIndicator(trustType: TrustType) {
     val (icon, color, description) = when (trustType) {

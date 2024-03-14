@@ -7,6 +7,9 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FriendDao {
-    @Query("SELECT DISTINCT friendPubkey FROM friend")
+    @Query("SELECT friendPubkey FROM friend")
     fun getFriendsFlow(): Flow<List<PubkeyHex>>
+
+    @Query("SELECT friendPubkey FROM friend WHERE friendPubkey NOT IN (SELECT friendPubkey FROM weboftrust)")
+    suspend fun getFriendsWithMissingContactList(): List<PubkeyHex>
 }

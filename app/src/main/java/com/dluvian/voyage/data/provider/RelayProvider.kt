@@ -35,6 +35,41 @@ class RelayProvider(private val nip65Dao: Nip65Dao) {
         return (getWriteRelays(limit = true) + foreignRelays).distinct()
     }
 
+    suspend fun getObserveRelays(observeFrom: Collection<PubkeyHex>): Map<RelayUrl, Set<PubkeyHex>> {
+        if (observeFrom.isEmpty()) return emptyMap()
+
+        val myReadRelays = getReadRelays(limit = false)
+        val foreignRelays = nip65Dao
+            .getNip65WriteRelays(pubkeys = observeFrom)
+            .groupBy { it.nip65Relay.url }
+            .toList()
+            .shuffled()
+            .sortedByDescending { (relay, _) -> myReadRelays.contains(relay) }
+
+        val pubkeyCache = mutableSetOf<PubkeyHex>()
+        val result = mutableMapOf<RelayUrl, MutableSet<PubkeyHex>>()
+
+        foreignRelays.forEach { (relay, nip65Entities) ->
+            val pubkeys = nip65Entities.map { it.pubkey }.toSet()
+            val newPubkeys = pubkeys - pubkeyCache
+            if (newPubkeys.isNotEmpty()) {
+                result[relay] = newPubkeys.toMutableSet()
+                pubkeyCache.addAll(newPubkeys)
+            }
+        }
+
+        val pubkeysWithNoRelay = observeFrom.toSet() - pubkeyCache
+        if (pubkeysWithNoRelay.isNotEmpty()) {
+            getReadRelays().forEach { relay ->
+                val alreadyPresent = result.putIfAbsent(relay, pubkeysWithNoRelay.toMutableSet())
+                alreadyPresent?.addAll(pubkeysWithNoRelay)
+            }
+
+        }
+
+        return result
+    }
+
     fun getAutopilotRelays(pubkeys: Collection<PubkeyHex>): Map<RelayUrl, Set<PubkeyHex>> {
         return getReadRelays().associateWith { pubkeys.toSet() } // TODO: Autopilot implementation
     }

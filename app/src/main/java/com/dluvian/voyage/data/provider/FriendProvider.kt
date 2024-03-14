@@ -7,14 +7,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 
-class FriendProvider(friendDao: FriendDao) {
+class FriendProvider(private val friendDao: FriendDao) {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val friends = friendDao.getFriendsFlow()
         .stateIn(scope, SharingStarted.Eagerly, emptyList())
 
-    fun getFriendPubkeys(): List<PubkeyHex> {
-        return friends.value.ifEmpty { defaultFriends }
-    }
+    fun getFriendPubkeys(): List<PubkeyHex> = friends.value
+
+    suspend fun getFriendsWithMissingContactList() = friendDao.getFriendsWithMissingContactList()
 
     private val defaultFriends = listOf(
         // dluvian

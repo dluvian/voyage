@@ -3,6 +3,7 @@ package com.dluvian.voyage.data.account
 import android.util.Log
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.event.EventCacheClearer
+import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.room.dao.AccountDao
 import com.dluvian.voyage.data.room.dao.ResetDao
 import com.dluvian.voyage.data.room.entity.AccountEntity
@@ -13,6 +14,7 @@ class AccountSwitcher(
     private val accountDao: AccountDao,
     private val resetDao: ResetDao,
     private val eventCacheClearer: EventCacheClearer,
+    private val nostrSubscriber: NostrSubscriber,
 ) {
     private val tag = "AccountSwitcher"
 
@@ -34,5 +36,6 @@ class AccountSwitcher(
         eventCacheClearer.clear()
         accountDao.updateAccount(account = account)
         resetDao.resetAfterAccountChange()
+        nostrSubscriber.subMyAccountAndTrustData()
     }
 }
