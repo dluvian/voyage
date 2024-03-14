@@ -1,9 +1,9 @@
 package com.dluvian.voyage.ui.views.main.subViews
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import com.dluvian.voyage.ui.components.ComingSoon
 
 @Composable
 fun DiscoverView() {
-    Text(text = "Discover")
+    ComingSoon()
 }
