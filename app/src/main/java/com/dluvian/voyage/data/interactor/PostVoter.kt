@@ -86,10 +86,7 @@ class PostVoter(
 
                 NoVote -> {
                     if (currentVote == null) return@launch
-                    nostrService.publishDelete(
-                        eventId = EventId.fromHex(currentVote.id),
-                        relayUrls = relayProvider.getWriteRelays()
-                    )
+                    deleteVote(voteId = currentVote.id)
                     voteDao.deleteMyVote(postId = postId)
                 }
             }
@@ -108,12 +105,7 @@ class PostVoter(
         kind: Int
     ) {
         if (currentVote?.isPositive == isPositive) return
-        if (currentVote != null) {
-            nostrService.publishDelete(
-                eventId = EventId.fromHex(currentVote.id),
-                relayUrls = relayProvider.getWriteRelays()
-            )
-        }
+        if (currentVote != null) deleteVote(voteId = currentVote.id)
         nostrService.publishVote(
             eventId = EventId.fromHex(postId),
             pubkey = PublicKey.fromHex(pubkey),
@@ -138,5 +130,18 @@ class PostVoter(
                     msg = context.getString(R.string.failed_to_sign_vote)
                 )
             }
+    }
+
+    private suspend fun deleteVote(voteId: EventIdHex) {
+        nostrService.publishDelete(
+            eventId = EventId.fromHex(voteId),
+            relayUrls = relayProvider.getWriteRelays()
+        ).onFailure {
+            Log.w(tag, "Failed to delete vote: ${it.message}", it)
+            snackbar.showToast(
+                scope = scope,
+                msg = context.getString(R.string.failed_to_sign_vote_deletion)
+            )
+        }
     }
 }

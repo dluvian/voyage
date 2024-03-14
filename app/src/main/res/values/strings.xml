@@ -26,4 +26,5 @@
     <string name="failed_to_get_permission">Failed to get permission</string>
     <string name="received_invalid_data">Received invalid data</string>
     <string name="failed_to_sign_vote">Failed to sign vote</string>
+    <string name="failed_to_sign_vote_deletion">Failed to sign vote deletion</string>
 </resources>

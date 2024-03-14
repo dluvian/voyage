@@ -43,4 +43,4 @@ data class RequestExternalAccount(val context: Context) : SettingsViewAction()
 data class ProcessExternalAccount(val activityResult: ActivityResult, val context: Context) :
     SettingsViewAction()
 
-data class ProcessExternalVoteSignature(val activityResult: ActivityResult) : UIEvent()
+data class ProcessExternalSignature(val activityResult: ActivityResult) : UIEvent()

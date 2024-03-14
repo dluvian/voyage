@@ -28,8 +28,8 @@ class Core(
             is HomeViewAction -> homeViewModel.handle(homeViewAction = uiEvent)
             is SettingsViewAction -> settingsViewModel.handle(settingsViewAction = uiEvent)
             is ClickThread -> {} // TODO: Click thread
-            is ProcessExternalVoteSignature -> viewModelScope.launch {
-                externalSignerHandler.processExternalVoteSignature(
+            is ProcessExternalSignature -> viewModelScope.launch {
+                externalSignerHandler.processExternalSignature(
                     result = uiEvent.activityResult
                 )
             }

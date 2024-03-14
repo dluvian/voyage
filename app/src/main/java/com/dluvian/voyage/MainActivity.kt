@@ -12,7 +12,7 @@ import com.dluvian.voyage.core.Core
 import com.dluvian.voyage.core.ExternalSignerHandler
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.ProcessExternalAccount
-import com.dluvian.voyage.core.ProcessExternalVoteSignature
+import com.dluvian.voyage.core.ProcessExternalSignature
 import com.dluvian.voyage.core.viewModel.HomeViewModel
 import com.dluvian.voyage.core.viewModel.SettingsViewModel
 import com.dluvian.voyage.ui.VoyageApp
@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
                 )
             }
             val externalSignerHandler = ExternalSignerHandler(
-                requestExternalAccountLauncher = rememberLauncherForActivityResult(
+                requestAccountLauncher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.StartActivityForResult()
                 ) { activityResult ->
                     core.onUpdate(
@@ -55,12 +55,10 @@ class MainActivity : ComponentActivity() {
                         )
                     )
                 },
-                requestVoteSignatureLauncher = rememberLauncherForActivityResult(
+                requestSignatureLauncher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.StartActivityForResult()
                 ) { activityResult ->
-                    core.onUpdate(
-                        ProcessExternalVoteSignature(activityResult = activityResult)
-                    )
+                    core.onUpdate(ProcessExternalSignature(activityResult = activityResult))
                 },
             )
             appContainer.externalSigner.externalSignerHandler = externalSignerHandler
