@@ -5,6 +5,7 @@ import androidx.room.RoomDatabase
 import com.dluvian.voyage.data.room.dao.AccountDao
 import com.dluvian.voyage.data.room.dao.FriendDao
 import com.dluvian.voyage.data.room.dao.Nip65Dao
+import com.dluvian.voyage.data.room.dao.ResetDao
 import com.dluvian.voyage.data.room.dao.RootPostDao
 import com.dluvian.voyage.data.room.dao.TopicDao
 import com.dluvian.voyage.data.room.dao.VoteDao
@@ -55,6 +56,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun friendDao(): FriendDao
     abstract fun webOfTrustDao(): WebOfTrustDao
     abstract fun nip65Dao(): Nip65Dao
+    abstract fun resetDao(): ResetDao
 
     // TX
     abstract fun voteUpsertDao(): VoteUpsertDao

@@ -5,13 +5,12 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.room.entity.AccountEntity
 
 @Dao
 interface AccountDao {
-    @Query("SELECT pubkey FROM account LIMIT 1")
-    suspend fun getMyPubkey(): PubkeyHex?
+    @Query("SELECT * FROM account LIMIT 1")
+    suspend fun getAccount(): AccountEntity?
 
     @Query("SELECT packageName FROM account LIMIT 1")
     suspend fun getPackageName(): String

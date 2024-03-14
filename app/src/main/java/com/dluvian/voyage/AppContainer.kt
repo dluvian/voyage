@@ -5,6 +5,10 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.room.Room
 import com.dluvian.nostr_kt.NostrClient
 import com.dluvian.nostr_kt.SubId
+import com.dluvian.voyage.data.account.AccountManager
+import com.dluvian.voyage.data.account.AccountSwitcher
+import com.dluvian.voyage.data.account.ExternalSigner
+import com.dluvian.voyage.data.account.MnemonicSigner
 import com.dluvian.voyage.data.event.EventMaker
 import com.dluvian.voyage.data.event.EventProcessor
 import com.dluvian.voyage.data.event.EventQueue
@@ -18,9 +22,6 @@ import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import com.dluvian.voyage.data.room.AppDatabase
-import com.dluvian.voyage.data.signer.AccountManager
-import com.dluvian.voyage.data.signer.ExternalSigner
-import com.dluvian.voyage.data.signer.MnemonicSigner
 import okhttp3.OkHttpClient
 import rust.nostr.protocol.Filter
 import java.util.Collections
@@ -33,9 +34,15 @@ class AppContainer(context: Context) {
     ).build()
     private val mnemonicSigner = MnemonicSigner(context = context)
     private val externalSigner = ExternalSigner()
+    private val accountSwitcher = AccountSwitcher(
+        mnemonicSigner = mnemonicSigner,
+        accountDao = roomDb.accountDao(),
+        resetDao = roomDb.resetDao()
+    )
     val accountManager = AccountManager(
         mnemonicSigner = mnemonicSigner,
         externalSigner = externalSigner,
+        accountSwitcher = accountSwitcher,
         accountDao = roomDb.accountDao(),
         context = context
     )

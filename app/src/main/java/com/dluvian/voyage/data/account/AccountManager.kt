@@ -1,4 +1,4 @@
-package com.dluvian.voyage.data.signer
+package com.dluvian.voyage.data.account
 
 import android.content.Context
 import android.content.Intent
@@ -24,6 +24,7 @@ import rust.nostr.protocol.UnsignedEvent
 class AccountManager(
     private val mnemonicSigner: MnemonicSigner,
     private val externalSigner: ExternalSigner,
+    private val accountSwitcher: AccountSwitcher,
     private val accountDao: AccountDao,
     private val context: Context,
 ) : IPubkeyProvider {
@@ -33,8 +34,8 @@ class AccountManager(
     val accountType: MutableState<AccountType>
 
     init {
-        val dbPubkey = runBlocking { accountDao.getMyPubkey() }
-        if (dbPubkey == null) {
+        val dbAccount = runBlocking { accountDao.getAccount() }
+        if (dbAccount == null) {
             Log.i(tag, "No acc pubkey found in database. Initialize new.")
             val pubkeyHex = mnemonicSigner.tryGetPubkeyHex().getOrNull()
                 ?: throw IllegalStateException("No signers initialized")
@@ -47,10 +48,9 @@ class AccountManager(
                 else Log.i(tag, "Successfully saved new acc pubkey $pubkeyHex in database")
             }
         } else {
-            val publicKey = PublicKey.fromHex(dbPubkey)
-            val account =
-                if (dbPubkey == mnemonicSigner.getPubkeyHex()) DefaultAccount(publicKey = publicKey)
-                else ExternalAccount(publicKey = publicKey)
+            val publicKey = PublicKey.fromHex(dbAccount.pubkey)
+            val account = if (dbAccount.packageName == null) DefaultAccount(publicKey = publicKey)
+            else ExternalAccount(publicKey = publicKey)
             accountType = mutableStateOf(account)
         }
     }
@@ -60,25 +60,18 @@ class AccountManager(
     }
 
     suspend fun useDefaultAccount() {
-        Log.i(tag, "Use default account")
         if (accountType.value is DefaultAccount) return
+        Log.i(tag, "Use default account")
 
-        val defaultPubkey = mnemonicSigner.getPubkeyHex()
-        accountDao.updateAccount(account = AccountEntity(pubkey = defaultPubkey))
+        val defaultPubkey = accountSwitcher.useDefaultAccount()
         accountType.value = DefaultAccount(publicKey = PublicKey.fromHex(hex = defaultPubkey))
     }
 
     suspend fun useExternalAccount(publicKey: PublicKey, packageName: String) {
-        Log.i(tag, "Use external account ${accountType.value}")
         if (accountType.value is ExternalAccount) return
+        Log.i(tag, "Use external account")
 
-        val externalPubkey = publicKey.toHex()
-        accountDao.updateAccount(
-            account = AccountEntity(
-                pubkey = externalPubkey,
-                packageName = packageName
-            )
-        )
+        accountSwitcher.useExternalAccount(publicKey, packageName)
         accountType.value = ExternalAccount(publicKey = publicKey)
     }
 

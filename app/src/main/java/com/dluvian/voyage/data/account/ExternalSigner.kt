@@ -1,4 +1,4 @@
-package com.dluvian.voyage.data.signer
+package com.dluvian.voyage.data.account
 
 import android.content.Context
 import android.net.Uri

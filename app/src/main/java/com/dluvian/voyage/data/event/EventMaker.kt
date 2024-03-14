@@ -5,8 +5,8 @@ import com.dluvian.nostr_kt.createHashtagTag
 import com.dluvian.nostr_kt.createLabelTag
 import com.dluvian.nostr_kt.createReplyTag
 import com.dluvian.nostr_kt.createTitleTag
+import com.dluvian.voyage.data.account.AccountManager
 import com.dluvian.voyage.data.model.EventIdAndPubkey
-import com.dluvian.voyage.data.signer.AccountManager
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventBuilder
 import rust.nostr.protocol.EventId

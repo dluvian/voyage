@@ -20,8 +20,8 @@ import com.dluvian.nostr_kt.matches
 import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_TOPIC_LEN
+import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.model.RelayedItem
-import com.dluvian.voyage.data.signer.IPubkeyProvider
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.Filter
 import java.util.Collections

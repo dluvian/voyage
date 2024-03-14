@@ -19,8 +19,8 @@ import com.dluvian.voyage.core.model.AccountType
 import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
 import com.dluvian.voyage.core.showToast
+import com.dluvian.voyage.data.account.AccountManager
 import com.dluvian.voyage.data.nostr.NostrSubscriber
-import com.dluvian.voyage.data.signer.AccountManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import rust.nostr.protocol.PublicKey
