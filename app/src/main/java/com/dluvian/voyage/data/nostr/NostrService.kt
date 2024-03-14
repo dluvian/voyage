@@ -68,7 +68,7 @@ class NostrService(
         nostrClient.addRelays(initRelayUrls)
     }
 
-    fun publishPost(
+    suspend fun publishPost(
         title: String,
         content: String,
         topic: String,
@@ -79,7 +79,7 @@ class NostrService(
     }
 
 
-    fun publishVote(
+    suspend fun publishVote(
         eventId: EventId,
         pubkey: PublicKey,
         isPositive: Boolean,
@@ -95,7 +95,7 @@ class NostrService(
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
-    fun publishDelete(eventId: EventId, relayUrls: Collection<RelayUrl>): Result<Event> {
+    suspend fun publishDelete(eventId: EventId, relayUrls: Collection<RelayUrl>): Result<Event> {
         val allRelays = nostrClient.getAllConnectedUrls() + relayUrls
         return eventMaker.buildDelete(eventId = eventId)
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = allRelays) }

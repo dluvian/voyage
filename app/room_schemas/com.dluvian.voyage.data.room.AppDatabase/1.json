@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "2f15e390492eb4c8d26d1c9f925139b4",
+    "identityHash": "73e54dae954d3291c5d6f30035f12e88",
     "entities": [
       {
         "tableName": "post",
@@ -174,13 +174,19 @@
       },
       {
         "tableName": "account",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`pubkey` TEXT NOT NULL, PRIMARY KEY(`pubkey`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`pubkey` TEXT NOT NULL, `packageName` TEXT, PRIMARY KEY(`pubkey`))",
         "fields": [
           {
             "fieldPath": "pubkey",
             "columnName": "pubkey",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "packageName",
+            "columnName": "packageName",
+            "affinity": "TEXT",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -392,12 +398,62 @@
             ]
           }
         ]
+      },
+      {
+        "tableName": "nip65",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`pubkey` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `url` TEXT NOT NULL, `isRead` INTEGER NOT NULL, `isWrite` INTEGER NOT NULL, PRIMARY KEY(`pubkey`, `url`))",
+        "fields": [
+          {
+            "fieldPath": "pubkey",
+            "columnName": "pubkey",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nip65Relay.url",
+            "columnName": "url",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nip65Relay.isRead",
+            "columnName": "isRead",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nip65Relay.isWrite",
+            "columnName": "isWrite",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "pubkey",
+            "url"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
-    "views": [],
+    "views": [
+      {
+        "viewName": "RootPostView",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT post.id, post.pubkey, (SELECT hashtag FROM hashtag WHERE hashtag.postId = post.id AND hashtag IN (SELECT topic FROM topic WHERE myPubkey = (SELECT pubkey FROM account LIMIT 1)) LIMIT 1) AS topic, post.title, post.content, post.createdAt, (SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.pubkey)) AS authorIsFriend, (SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = post.pubkey)) AS authorIsTrusted, (SELECT isPositive FROM vote WHERE vote.postId = post.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)) AS myVote, (SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 1) AS upvoteCount, (SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 0) AS downvoteCount, (SELECT COUNT(*) FROM post AS post2 WHERE post2.replyToId = post.id) AS commentCount FROM post WHERE post.replyToId IS NULL"
+      }
+    ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2f15e390492eb4c8d26d1c9f925139b4')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '73e54dae954d3291c5d6f30035f12e88')"
     ]
   }
 }

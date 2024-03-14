@@ -9,5 +9,6 @@ import com.dluvian.voyage.core.PubkeyHex
     primaryKeys = ["pubkey"],
 )
 data class AccountEntity(
-    val pubkey: PubkeyHex
+    val pubkey: PubkeyHex,
+    val packageName: String? = null,
 )

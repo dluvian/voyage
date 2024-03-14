@@ -1,6 +1,5 @@
 package com.dluvian.voyage.data.room
 
-import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.dluvian.voyage.data.room.dao.AccountDao
@@ -29,12 +28,10 @@ import com.dluvian.voyage.data.room.view.RootPostView
 
 // TODO: Reset to v=1 when first releasing app, and delete migration files
 @Database(
-    version = 4,
+    version = 1,
     exportSchema = true,
     autoMigrations = [
-        AutoMigration(from = 1, to = 2),
-        AutoMigration(from = 2, to = 3),
-        AutoMigration(from = 3, to = 4),
+//        AutoMigration(from = 1, to = 2),
     ],
     entities = [
         PostEntity::class,

@@ -68,12 +68,17 @@ class AccountManager(
         accountType.value = DefaultAccount(publicKey = PublicKey.fromHex(hex = defaultPubkey))
     }
 
-    suspend fun useExternalAccount(publicKey: PublicKey) {
+    suspend fun useExternalAccount(publicKey: PublicKey, packageName: String) {
         Log.i(tag, "Use external account ${accountType.value}")
         if (accountType.value is ExternalAccount) return
 
         val externalPubkey = publicKey.toHex()
-        accountDao.updateAccount(account = AccountEntity(pubkey = externalPubkey))
+        accountDao.updateAccount(
+            account = AccountEntity(
+                pubkey = externalPubkey,
+                packageName = packageName
+            )
+        )
         accountType.value = ExternalAccount(publicKey = publicKey)
     }
 
@@ -86,7 +91,7 @@ class AccountManager(
         return !result.getOrNull().isNullOrEmpty()
     }
 
-    fun sign(unsignedEvent: UnsignedEvent): Result<Event> {
+    suspend fun sign(unsignedEvent: UnsignedEvent): Result<Event> {
         val author = unsignedEvent.author().toHex()
         return when (author) {
             mnemonicSigner.tryGetPubkeyHex().getOrNull() -> {
@@ -94,7 +99,11 @@ class AccountManager(
             }
 
             externalSigner.tryGetPubkeyHex().getOrNull() -> {
-                externalSigner.sign(unsignedEvent = unsignedEvent, context = context)
+                externalSigner.sign(
+                    unsignedEvent = unsignedEvent,
+                    context = context,
+                    packageName = accountDao.getPackageName()
+                )
             }
 
             else -> Result.failure(IllegalStateException("You're not signed in correctly"))

@@ -69,8 +69,7 @@ class SettingsViewModel(
         if (!accountManager.isExternalSignerInstalled(context = context)) {
             snackbar.showToast(
                 scope = viewModelScope,
-                context = context,
-                resId = R.string.no_external_signer_installed
+                msg = context.getString(R.string.no_external_signer_installed)
             )
             isLoadingAccount.value = false
             return
@@ -86,8 +85,7 @@ class SettingsViewModel(
             isLoadingAccount.value = false
             snackbar.showToast(
                 scope = viewModelScope,
-                context = context,
-                resId = R.string.failed_to_get_permission
+                msg = context.getString(R.string.failed_to_get_permission)
             )
         }
         // Wait for processExternalAccountData
@@ -95,16 +93,20 @@ class SettingsViewModel(
 
     private fun processExternalAccountData(result: ActivityResult, context: Context) {
         val npub = result.data?.getStringExtra("signature")
+        val packageName = result.data?.getStringExtra("package")
         val publicKey = runCatching { PublicKey.fromBech32(npub.orEmpty()) }.getOrNull()
 
-        if (npub == null || publicKey == null) {
-            snackbar.showToast(viewModelScope, context, R.string.received_invalid_data)
+        if (npub == null || publicKey == null || packageName == null) {
+            snackbar.showToast(
+                scope = viewModelScope,
+                msg = context.getString(R.string.received_invalid_data),
+            )
             isLoadingAccount.value = false
             return
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            accountManager.useExternalAccount(publicKey = publicKey)
+            accountManager.useExternalAccount(publicKey = publicKey, packageName = packageName)
         }.invokeOnCompletion {
             nostrSubscriber.subMyAccount()
             isLoadingAccount.value = false

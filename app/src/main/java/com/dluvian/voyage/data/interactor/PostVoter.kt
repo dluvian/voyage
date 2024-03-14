@@ -1,7 +1,10 @@
 package com.dluvian.voyage.data.interactor
 
+import android.content.Context
 import android.util.Log
+import androidx.compose.material3.SnackbarHostState
 import com.dluvian.nostr_kt.secs
+import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ClickDownvote
 import com.dluvian.voyage.core.ClickNeutralizeVote
 import com.dluvian.voyage.core.ClickUpvote
@@ -9,6 +12,7 @@ import com.dluvian.voyage.core.DELAY
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.VoteEvent
+import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.VoteDao
@@ -30,6 +34,8 @@ import rust.nostr.protocol.PublicKey
 class PostVoter(
     private val nostrService: NostrService,
     private val relayProvider: RelayProvider,
+    private val snackbar: SnackbarHostState,
+    private val context: Context,
     private val voteDao: VoteDao,
     private val voteUpsertDao: VoteUpsertDao,
 ) {
@@ -127,6 +133,10 @@ class PostVoter(
             }
             .onFailure {
                 Log.w(tag, "Failed to publish vote: ${it.message}", it)
+                snackbar.showToast(
+                    scope = scope,
+                    msg = context.getString(R.string.failed_to_sign_vote)
+                )
             }
     }
 }

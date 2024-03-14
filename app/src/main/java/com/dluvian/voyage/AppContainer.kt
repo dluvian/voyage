@@ -72,10 +72,18 @@ class AppContainer(context: Context) {
         nostrService.initialize(initRelayUrls = relayProvider.getReadRelays())
     }
 
+    val snackbarHostState = SnackbarHostState()
     private val topicProvider = TopicProvider(topicDao = roomDb.topicDao())
     private val friendProvider = FriendProvider(friendDao = roomDb.friendDao())
     private val webOfTrustProvider = WebOfTrustProvider(webOfTrustDao = roomDb.webOfTrustDao())
-    val postVoter = PostVoter(nostrService, relayProvider, roomDb.voteDao(), roomDb.voteUpsertDao())
+    val postVoter = PostVoter(
+        nostrService = nostrService,
+        relayProvider = relayProvider,
+        snackbar = snackbarHostState,
+        context = context,
+        voteDao = roomDb.voteDao(),
+        voteUpsertDao = roomDb.voteUpsertDao()
+    )
     val nostrSubscriber = NostrSubscriber(
         nostrService = nostrService,
         relayProvider = relayProvider,
@@ -89,5 +97,4 @@ class AppContainer(context: Context) {
         rootPostDao = roomDb.rootPostDao(),
         postVoter = postVoter
     )
-    val snackbarHostState = SnackbarHostState()
 }

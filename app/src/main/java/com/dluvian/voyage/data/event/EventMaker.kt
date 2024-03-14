@@ -19,7 +19,7 @@ private const val REPLY_LABEL = "reply"
 class EventMaker(
     private val accountManager: AccountManager,
 ) {
-    fun buildPost(title: String, content: String, topic: String): Result<Event> {
+    suspend fun buildPost(title: String, content: String, topic: String): Result<Event> {
         val tags = listOf(
             createLabelTag(POST_LABEL),
             createTitleTag(title),
@@ -31,7 +31,7 @@ class EventMaker(
         return accountManager.sign(unsignedEvent = unsignedEvent)
     }
 
-    fun buildReply(
+    suspend fun buildReply(
         rootId: EventId,
         parentEvent: EventIdAndPubkey,
         relayHint: RelayUrl,
@@ -53,7 +53,7 @@ class EventMaker(
         return accountManager.sign(unsignedEvent = unsignedEvent)
     }
 
-    fun buildVote(
+    suspend fun buildVote(
         eventId: EventId,
         pubkey: PublicKey,
         isPositive: Boolean,
@@ -71,7 +71,7 @@ class EventMaker(
         return accountManager.sign(unsignedEvent)
     }
 
-    fun buildDelete(eventId: EventId): Result<Event> {
+    suspend fun buildDelete(eventId: EventId): Result<Event> {
         val unsignedEvent = EventBuilder.delete(ids = listOf(eventId), reason = null)
             .toUnsignedEvent(accountManager.getPublicKey())
 

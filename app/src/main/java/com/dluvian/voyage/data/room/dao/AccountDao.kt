@@ -10,11 +10,11 @@ import com.dluvian.voyage.data.room.entity.AccountEntity
 
 @Dao
 interface AccountDao {
-    @Query("SELECT COUNT(*) FROM account")
-    suspend fun count(): Int
-
     @Query("SELECT pubkey FROM account LIMIT 1")
     suspend fun getMyPubkey(): PubkeyHex?
+
+    @Query("SELECT packageName FROM account LIMIT 1")
+    suspend fun getPackageName(): String
 
     @Transaction
     suspend fun updateAccount(account: AccountEntity) {

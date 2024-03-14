@@ -11,13 +11,12 @@ class ExternalSigner : IPubkeyProvider {
         return Result.failure(IllegalStateException("External signer is not implemented yet"))
     }
 
-    fun sign(unsignedEvent: UnsignedEvent, context: Context): Result<Event> {
+    fun sign(unsignedEvent: UnsignedEvent, packageName: String, context: Context): Result<Event> {
         val eventJson = unsignedEvent.asJson()
         val npub = unsignedEvent.author().toBech32()
 
-        // TODO: get package name
         val result = context.contentResolver.query(
-            Uri.parse("content://com.greenart7c3.nostrsigner.SIGN_EVENT"),
+            Uri.parse("content://$packageName.SIGN_EVENT"),
             arrayOf(eventJson, "", npub),
             "1",
             null,
