@@ -71,6 +71,8 @@ class RelayProvider(private val nip65Dao: Nip65Dao) {
     }
 
     fun getAutopilotRelays(pubkeys: Collection<PubkeyHex>): Map<RelayUrl, Set<PubkeyHex>> {
+        if (pubkeys.isEmpty()) return emptyMap()
+
         return getReadRelays().associateWith { pubkeys.toSet() } // TODO: Autopilot implementation
     }
 
