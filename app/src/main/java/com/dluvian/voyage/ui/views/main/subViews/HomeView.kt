@@ -1,5 +1,6 @@
 package com.dluvian.voyage.ui.views.main.subViews
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -57,19 +58,19 @@ fun HomeView(vm: HomeViewModel, onUpdate: OnUpdate) {
                     onUpdate = onUpdate
                 )
                 HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = spacing.tiny)
-                // TODO: Only append when scrolling down
+                // TODO: Only append when clicking "load more"
                 if (i >= posts.size - 5) onUpdate(HomeViewAppend)
             }
         }
     }
 }
 
-// TODO: Make row clickable
 @Composable
 private fun PostRow(post: RootPost, onUpdate: OnUpdate) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable(onClick = { onUpdate(ClickThread(postId = post.id)) })
             .padding(spacing.screenEdge)
     ) {
         Header(post = post)
