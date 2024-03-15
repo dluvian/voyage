@@ -9,7 +9,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -26,10 +25,10 @@ import com.dluvian.voyage.data.interactor.Upvote
 import com.dluvian.voyage.data.interactor.Vote
 import com.dluvian.voyage.ui.theme.DenimBlue
 import com.dluvian.voyage.ui.theme.DownvoteIcon
-import com.dluvian.voyage.ui.theme.LeftRoundedChip
-import com.dluvian.voyage.ui.theme.RightRoundedChip
+import com.dluvian.voyage.ui.theme.DownvoteOffIcon
 import com.dluvian.voyage.ui.theme.TallPoppyRed
 import com.dluvian.voyage.ui.theme.UpvoteIcon
+import com.dluvian.voyage.ui.theme.UpvoteOffIcon
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
@@ -62,6 +61,7 @@ private fun VoteButtonsAndTally(
     ) {
         VoteButton(
             isUpvote = true,
+            isActive = myVote is Upvote,
             tint = if (myVote is Upvote) TallPoppyRed else MaterialTheme.colorScheme.onSurfaceVariant,
             description = stringResource(id = R.string.upvote),
             onClick = {
@@ -72,12 +72,13 @@ private fun VoteButtonsAndTally(
             }
         )
         Text(
-            modifier = Modifier.padding(horizontal = spacing.medium),
+            modifier = Modifier.padding(horizontal = spacing.large),
             text = "$tally",
             fontWeight = if (myVote.isNeutral()) FontWeight.Normal else FontWeight.SemiBold
         )
         VoteButton(
             isUpvote = false,
+            isActive = myVote is Downvote,
             tint = if (myVote is Downvote) DenimBlue else MaterialTheme.colorScheme.onSurfaceVariant,
             description = stringResource(id = R.string.downvote),
             onClick = {
@@ -92,15 +93,18 @@ private fun VoteButtonsAndTally(
 @Composable
 private fun VoteButton(
     isUpvote: Boolean,
+    isActive: Boolean,
     tint: Color,
     description: String,
     onClick: Fn
 ) {
     Icon(
-        modifier = Modifier
-            .clip(if (isUpvote) LeftRoundedChip else RightRoundedChip)
-            .clickable(onClick = onClick),
-        imageVector = if (isUpvote) UpvoteIcon else DownvoteIcon,
+        modifier = Modifier.clickable(onClick = onClick),
+        imageVector = if (isUpvote) {
+            if (isActive) UpvoteIcon else UpvoteOffIcon
+        } else {
+            if (isActive) DownvoteIcon else DownvoteOffIcon
+        },
         contentDescription = description,
         tint = tint
     )
