@@ -22,6 +22,7 @@ import com.dluvian.voyage.data.room.entity.HashtagEntity
 import com.dluvian.voyage.data.room.entity.Nip65Entity
 import com.dluvian.voyage.data.room.entity.PostEntity
 import com.dluvian.voyage.data.room.entity.PostRelayEntity
+import com.dluvian.voyage.data.room.entity.ProfileEntity
 import com.dluvian.voyage.data.room.entity.TopicEntity
 import com.dluvian.voyage.data.room.entity.VoteEntity
 import com.dluvian.voyage.data.room.entity.WebOfTrustEntity
@@ -43,6 +44,7 @@ import com.dluvian.voyage.data.room.view.RootPostView
         TopicEntity::class,
         HashtagEntity::class,
         Nip65Entity::class,
+        ProfileEntity::class,
     ],
     views = [RootPostView::class]
 )
