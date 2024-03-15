@@ -11,8 +11,14 @@ class TopicProvider(topicDao: TopicDao) {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val topics = topicDao.getTopicsFlow()
         .stateIn(scope, SharingStarted.Eagerly, emptyList())
+    private val allTopics = topicDao.getAllTopicsFlow()
+        .stateIn(scope, SharingStarted.WhileSubscribed(), emptyList())
 
     fun getTopics(): List<Topic> {
         return topics.value
+    }
+
+    fun getAllTopics(): List<Topic> {
+        return allTopics.value
     }
 }

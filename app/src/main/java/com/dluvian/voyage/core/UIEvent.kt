@@ -41,7 +41,13 @@ data object HomeViewAppend : HomeViewAction()
 sealed class SettingsViewAction : UIEvent()
 data object UseDefaultAccount : SettingsViewAction()
 data class RequestExternalAccount(val context: Context) : SettingsViewAction()
-data class ProcessExternalAccount(val activityResult: ActivityResult, val context: Context) :
-    SettingsViewAction()
+data class ProcessExternalAccount(
+    val activityResult: ActivityResult,
+    val context: Context
+) : SettingsViewAction()
+
+sealed class SearchViewAction : UIEvent()
+data class UpdateSearchText(val text: String) : SearchViewAction()
+
 
 data class ProcessExternalSignature(val activityResult: ActivityResult) : UIEvent()

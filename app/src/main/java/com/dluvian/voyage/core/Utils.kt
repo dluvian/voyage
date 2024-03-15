@@ -6,8 +6,11 @@ import kotlinx.coroutines.launch
 import rust.nostr.protocol.PublicKey
 
 fun PublicKey.shortenedBech32(): String {
-    val bech32 = this.toBech32()
-    return "${bech32.take(10)}:${bech32.takeLast(5)}"
+    return this.toBech32().shortenBech32()
+}
+
+fun PubkeyHex.shortenBech32(): String {
+    return "${this.take(10)}:${this.takeLast(5)}"
 }
 
 fun SnackbarHostState.showToast(scope: CoroutineScope, msg: String) {

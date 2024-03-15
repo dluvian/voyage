@@ -18,11 +18,11 @@ fun MainView(
 ) {
     MainScaffold(
         currentView = currentView,
-        snackBarHostState = core.snackbar,
+        snackBarHostState = core.appContainer.snackbarHostState,
         onUpdate = core.onUpdate
     ) {
         when (currentView) {
-            HomeNavView -> HomeView(vm = core.homeViewModel, onUpdate = core.onUpdate)
+            HomeNavView -> HomeView(vm = core.vmContainer.homeVM, onUpdate = core.onUpdate)
             InboxNavView -> InboxView()
             DiscoverNavView -> DiscoverView()
         }

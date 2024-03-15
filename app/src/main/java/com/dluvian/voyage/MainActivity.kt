@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.dluvian.voyage.core.Core
@@ -14,6 +15,7 @@ import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.ProcessExternalAccount
 import com.dluvian.voyage.core.ProcessExternalSignature
 import com.dluvian.voyage.core.viewModel.HomeViewModel
+import com.dluvian.voyage.core.viewModel.SearchViewModel
 import com.dluvian.voyage.core.viewModel.SettingsViewModel
 import com.dluvian.voyage.ui.VoyageApp
 
@@ -24,25 +26,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             val activity = (LocalContext.current as? Activity)
             val closeApp: Fn = { activity?.finish() }
-            val homeViewModel = viewModel {
-                HomeViewModel(
-                    feedProvider = appContainer.feedProvider,
-                    nostrSubscriber = appContainer.nostrSubscriber
-                )
-            }
-            val settingsViewModel = viewModel {
-                SettingsViewModel(
-                    accountManager = appContainer.accountManager,
-                    snackbar = appContainer.snackbarHostState,
-                )
-            }
+            val vmContainer = createVMContainer(appContainer = appContainer)
             val core = viewModel {
                 Core(
-                    homeViewModel = homeViewModel,
-                    settingsViewModel = settingsViewModel,
-                    snackbar = appContainer.snackbarHostState,
-                    postVoter = appContainer.postVoter,
-                    nostrService = appContainer.nostrService,
+                    vmContainer = vmContainer,
+                    appContainer = appContainer,
                     closeApp = closeApp
                 )
             }
@@ -64,10 +52,33 @@ class MainActivity : ComponentActivity() {
                 },
             )
             appContainer.externalSigner.externalSignerHandler = externalSignerHandler
-            settingsViewModel.externalSignerHandler = externalSignerHandler
+            vmContainer.settingsVM.externalSignerHandler = externalSignerHandler
             core.externalSignerHandler = externalSignerHandler
 
             VoyageApp(core)
         }
     }
+}
+
+@Composable
+private fun createVMContainer(appContainer: AppContainer): VMContainer {
+    return VMContainer(
+        homeVM = viewModel {
+            HomeViewModel(
+                feedProvider = appContainer.feedProvider,
+                nostrSubscriber = appContainer.nostrSubscriber
+            )
+        },
+        settingsVM = viewModel {
+            SettingsViewModel(
+                accountManager = appContainer.accountManager,
+                snackbar = appContainer.snackbarHostState,
+            )
+        },
+        searchVM = viewModel {
+            SearchViewModel(
+                topicProvider = appContainer.topicProvider
+            )
+        }
+    )
 }

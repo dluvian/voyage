@@ -60,10 +60,10 @@ class AppContainer(context: Context) {
     )
 
     private val relayProvider = RelayProvider(nip65Dao = roomDb.nip65Dao())
-    private val topicProvider = TopicProvider(topicDao = roomDb.topicDao())
     private val friendProvider = FriendProvider(friendDao = roomDb.friendDao())
     private val webOfTrustProvider = WebOfTrustProvider(webOfTrustDao = roomDb.webOfTrustDao())
     private val accountPubkeyProvider = AccountPubkeyProvider(accountDao = roomDb.accountDao())
+    val topicProvider = TopicProvider(topicDao = roomDb.topicDao())
 
     val nostrSubscriber = NostrSubscriber(
         relayProvider = relayProvider,

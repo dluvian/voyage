@@ -18,14 +18,18 @@ fun NonMainView(
 ) {
     NonMainScaffold(
         currentView = currentView,
-        snackBarHostState = core.snackbar,
-        isLoading = core.settingsViewModel.isLoadingAccount.value,
+        snackBarHostState = core.appContainer.snackbarHostState,
+        isLoading = core.vmContainer.settingsVM.isLoadingAccount.value,
         onUpdate = core.onUpdate
     ) {
         when (currentView) {
             CreatePostNavView -> CreatePostView()
-            SettingsNavView -> SettingsView(vm = core.settingsViewModel, onUpdate = core.onUpdate)
-            SearchNavView -> SearchView()
+            SettingsNavView -> SettingsView(
+                vm = core.vmContainer.settingsVM,
+                onUpdate = core.onUpdate
+            )
+
+            SearchNavView -> SearchView(vm = core.vmContainer.searchVM, onUpdate = core.onUpdate)
         }
     }
 }

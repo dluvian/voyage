@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.core.UpdateSearchText
 import com.dluvian.voyage.ui.components.GoBackIconButton
 import com.dluvian.voyage.ui.theme.RoundedChip
 
@@ -28,7 +29,10 @@ fun SearchTopAppBar(onUpdate: OnUpdate) {
                     .fillMaxWidth()
                     .clip(RoundedChip),
                 value = text.value,
-                onValueChange = { newText -> text.value = newText },
+                onValueChange = { newText ->
+                    onUpdate(UpdateSearchText(text = newText))
+                    text.value = newText
+                },
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
                     focusedIndicatorColor = Color.Transparent,
