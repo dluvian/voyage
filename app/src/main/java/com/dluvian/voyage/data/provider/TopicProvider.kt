@@ -16,6 +16,3 @@ class TopicProvider(topicDao: TopicDao) {
         return topics.value
     }
 }
-
-// TODO: Remove default topics
-private val defaultTopics = listOf("asknostr", "nostr", "bitcoin")

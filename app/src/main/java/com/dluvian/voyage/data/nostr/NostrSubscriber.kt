@@ -5,7 +5,6 @@ import com.dluvian.nostr_kt.Kind
 import com.dluvian.nostr_kt.NostrClient
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
-import com.dluvian.nostr_kt.createFriendFilter
 import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.EventIdHex
@@ -40,27 +39,32 @@ class NostrSubscriber(
     private val scope = CoroutineScope(Dispatchers.IO)
 
     fun subFeed(until: Long, limit: Int) {
-        val adjustedLimit = (3 * limit).toULong() // We don't know if we receive enough root posts
-        val topicFilter = Filter().kind(kind = Kind.TEXT_NOTE.toULong())
-            .hashtags(hashtags = topicProvider.getTopics())
-            .until(timestamp = Timestamp.fromSecs(until.toULong()))
-            .limit(limit = adjustedLimit)
-        val topicFilters = listOf(topicFilter)
-        relayProvider.getReadRelays().forEach { relay ->
-            subscribe(filters = topicFilters, relayUrl = relay)
-        }
+        val adjustedLimit = 3L * limit // We don't know if we receive enough root posts
+        val untilTimestamp = Timestamp.fromSecs(until.toULong())
 
         relayProvider
             .getAutopilotRelays(pubkeys = friendProvider.getFriendPubkeys())
             .forEach { (relayUrl, pubkeys) ->
                 val publicKeys = pubkeys.map { PublicKey.fromHex(it) }
-                val friendFilter = createFriendFilter(
-                    pubkeys = publicKeys,
-                    until = until.toULong(),
-                    limit = adjustedLimit,
-                )
+                val friendFilter =
+                    Filter().kind(kind = Kind.TEXT_NOTE.toULong()) // TODO: Support reposts
+                        .authors(authors = publicKeys)
+                        .until(timestamp = untilTimestamp)
+                        .limit(limit = limit.toULong())
                 subscribe(filters = listOf(friendFilter), relayUrl = relayUrl)
             }
+
+        val topics = topicProvider.getTopics()
+        if (topics.isEmpty()) return
+
+        val topicFilter = Filter().kind(kind = Kind.TEXT_NOTE.toULong())
+            .hashtags(hashtags = topicProvider.getTopics())
+            .until(timestamp = untilTimestamp)
+            .limit(limit = adjustedLimit.toULong())
+        val topicFilters = listOf(topicFilter)
+        relayProvider.getReadRelays().forEach { relay ->
+            subscribe(filters = topicFilters, relayUrl = relay)
+        }
     }
 
     // TODO: remove ids after x seconds to enable resubbing
@@ -79,7 +83,7 @@ class NostrSubscriber(
             val ids = newIds.map { EventId.fromHex(it) }
             val voteFilter = Filter().events(ids)
                 .kind(Kind.REACTION.toULong())
-                .authors(webOfTrustProvider.getWebOfTrustPubkeys()) // TODO: split into multiple subscriptions if size > 1000
+                .authors(webOfTrustProvider.getWebOfTrustPubkeys())
                 .until(currentTimestamp)
                 .limit(MAX_EVENTS_TO_SUB.toULong())
             val replyFilter = Filter().events(ids)

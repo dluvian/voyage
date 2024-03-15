@@ -59,8 +59,6 @@ class EventValidator(
         return RelayedItem(item = validatedEvent, relayUrl = relayUrl)
     }
 
-
-
     private fun isCached(event: Event, relayUrl: RelayUrl): Boolean {
         val eventIdHex = event.id().toHex()
         val idIsCached = syncedIdCache.contains(eventIdHex)
