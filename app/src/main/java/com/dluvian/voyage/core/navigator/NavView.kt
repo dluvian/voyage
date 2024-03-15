@@ -32,9 +32,11 @@ sealed class NonMainNavView : NavView() {
         return when (this) {
             is CreatePostNavView -> null
             SettingsNavView -> stringResource(id = R.string.settings)
+            SearchNavView -> null
         }
     }
 }
 
 data object CreatePostNavView : NonMainNavView()
 data object SettingsNavView : NonMainNavView()
+data object SearchNavView : NonMainNavView()

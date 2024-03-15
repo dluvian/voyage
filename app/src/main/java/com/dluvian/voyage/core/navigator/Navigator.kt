@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import com.dluvian.voyage.core.ClickCreate
 import com.dluvian.voyage.core.ClickHome
 import com.dluvian.voyage.core.ClickInbox
+import com.dluvian.voyage.core.ClickSearch
 import com.dluvian.voyage.core.ClickSettings
 import com.dluvian.voyage.core.ClickTopics
 import com.dluvian.voyage.core.Fn
@@ -22,6 +23,7 @@ class Navigator(private val closeApp: Fn) {
             ClickInbox -> push(view = InboxNavView)
             ClickSettings -> push(view = SettingsNavView)
             ClickTopics -> push(view = DiscoverNavView)
+            ClickSearch -> push(view = SearchNavView)
         }
     }
 

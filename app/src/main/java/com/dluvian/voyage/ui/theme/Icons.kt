@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ThumbDownAlt
 import androidx.compose.material.icons.filled.ThumbDownOffAlt
@@ -29,3 +30,4 @@ val UpvoteOffIcon = Icons.Default.ThumbUpOffAlt
 val DownvoteOffIcon = Icons.Default.ThumbDownOffAlt
 val UpvoteIcon = Icons.Default.ThumbUpAlt
 val DownvoteIcon = Icons.Default.ThumbDownAlt
+val SearchIcon = Icons.Default.Search

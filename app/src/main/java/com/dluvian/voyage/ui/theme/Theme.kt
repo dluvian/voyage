@@ -121,6 +121,5 @@ private fun ColorScheme.toBlack(): ColorScheme {
     return this.copy(
         background = Color.Black,
         surface = Color.Black,
-        surfaceVariant = Color.Black,
     )
 }

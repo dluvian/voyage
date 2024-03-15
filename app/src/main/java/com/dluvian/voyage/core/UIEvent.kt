@@ -13,6 +13,7 @@ data object ClickTopics : NavEvent()
 data object ClickInbox : NavEvent()
 data object ClickCreate : NavEvent()
 data object ClickSettings : NavEvent()
+data object ClickSearch : NavEvent()
 data class ClickThread(val postId: EventIdHex) : UIEvent()
 
 

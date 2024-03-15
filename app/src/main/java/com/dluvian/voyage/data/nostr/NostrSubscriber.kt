@@ -105,6 +105,7 @@ class NostrSubscriber(
     }
 
     suspend fun subMyAccountAndTrustData() {
+        Log.d(tag, "subMyAccountAndTrustData")
         subMyAccount()
         delay(DELAY_1SEC)
         lazySubFriendsNip65()

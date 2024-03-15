@@ -21,7 +21,13 @@ fun MainScaffold(
     content: ComposableContent
 ) {
     Scaffold(
-        topBar = { VoyageTopAppBar(title = currentView.getTitle()) },
+        topBar = {
+            VoyageTopAppBar(
+                title = currentView.getTitle(),
+                hasSearch = true,
+                onUpdate = onUpdate
+            )
+        },
         bottomBar = {
             MainBottomBar(
                 currentView = currentView,

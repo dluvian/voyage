@@ -10,6 +10,8 @@ import androidx.compose.ui.Modifier
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.navigator.NonMainNavView
+import com.dluvian.voyage.core.navigator.SearchNavView
+import com.dluvian.voyage.ui.components.bar.SearchTopAppBar
 import com.dluvian.voyage.ui.components.bar.VoyageTopAppBar
 
 @Composable
@@ -22,7 +24,8 @@ fun NonMainScaffold(
 ) {
     Scaffold(
         topBar = {
-            VoyageTopAppBar(
+            if (currentView is SearchNavView) SearchTopAppBar(onUpdate = onUpdate)
+            else VoyageTopAppBar(
                 title = currentView.getTitle(),
                 showGoBack = true,
                 isLoading = isLoading,
