@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "73e54dae954d3291c5d6f30035f12e88",
+    "identityHash": "31ca01f24769153489e809b12b64ed1b",
     "entities": [
       {
         "tableName": "post",
@@ -443,6 +443,50 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "profile",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`pubkey` TEXT NOT NULL, `name` TEXT NOT NULL, `picture` TEXT, `lud16` TEXT, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`pubkey`))",
+        "fields": [
+          {
+            "fieldPath": "pubkey",
+            "columnName": "pubkey",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "picture",
+            "columnName": "picture",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lud16",
+            "columnName": "lud16",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "pubkey"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [
@@ -453,7 +497,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '73e54dae954d3291c5d6f30035f12e88')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '31ca01f24769153489e809b12b64ed1b')"
     ]
   }
 }
