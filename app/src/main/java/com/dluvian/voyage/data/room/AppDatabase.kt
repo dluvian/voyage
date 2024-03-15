@@ -27,7 +27,6 @@ import com.dluvian.voyage.data.room.entity.VoteEntity
 import com.dluvian.voyage.data.room.entity.WebOfTrustEntity
 import com.dluvian.voyage.data.room.view.RootPostView
 
-// TODO: Reset to v=1 when first releasing app, and delete migration files
 @Database(
     version = 1,
     exportSchema = true,

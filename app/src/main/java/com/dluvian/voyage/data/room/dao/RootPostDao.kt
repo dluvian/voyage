@@ -7,6 +7,12 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface RootPostDao {
-    @Query("SELECT * FROM RootPostView WHERE createdAt <= :until ORDER BY createdAt DESC LIMIT :size")
+    @Query(
+        "SELECT * " +
+                "FROM RootPostView " +
+                "WHERE createdAt <= :until AND (authorIsFriend OR topic IS NOT NULL)" +
+                "ORDER BY createdAt DESC " +
+                "LIMIT :size"
+    )
     fun getRootPostFlow(until: Long, size: Int): Flow<List<RootPostView>>
 }
