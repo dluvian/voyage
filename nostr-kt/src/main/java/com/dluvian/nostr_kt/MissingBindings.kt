@@ -2,12 +2,16 @@ package com.dluvian.nostr_kt
 
 import cash.z.ecc.android.bip39.Mnemonics
 import rust.nostr.protocol.Event
+import rust.nostr.protocol.EventBuilder
 import rust.nostr.protocol.EventId
+import rust.nostr.protocol.Kind
 import rust.nostr.protocol.KindEnum
+import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Tag
 import rust.nostr.protocol.TagEnum
 import rust.nostr.protocol.TagKind
 import rust.nostr.protocol.Timestamp
+import rust.nostr.protocol.UnsignedEvent
 import java.security.SecureRandom
 
 
@@ -120,4 +124,23 @@ fun Event.isNip65(): Boolean {
 
 fun Event.isVote(): Boolean {
     return this.kind().matchEnum(KindEnum.Reaction)
+}
+
+fun createReaction(
+    eventId: EventId,
+    pubkey: PublicKey,
+    content: String,
+    kind: Int,
+): UnsignedEvent {
+    val tags = listOf(
+        Tag.event(eventId),
+        Tag.publicKey(pubkey),
+        Tag.parse(listOf("k", "$kind"))
+    )
+
+    return EventBuilder(
+        kind = Kind.fromEnum(KindEnum.Reaction),
+        content = content,
+        tags = tags
+    ).toUnsignedEvent(publicKey = pubkey)
 }

@@ -3,12 +3,11 @@ package com.dluvian.voyage.data.event
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.createHashtagTag
 import com.dluvian.nostr_kt.createLabelTag
+import com.dluvian.nostr_kt.createReaction
 import com.dluvian.nostr_kt.createReplyTag
 import com.dluvian.nostr_kt.createTitleTag
-import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.data.account.AccountManager
 import com.dluvian.voyage.data.model.EventIdAndPubkey
-import kotlinx.coroutines.delay
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventBuilder
 import rust.nostr.protocol.EventId
@@ -61,14 +60,13 @@ class EventMaker(
         isPositive: Boolean,
         kind: Int,
     ): Result<Event> {
-        val content = if (isPositive) "+" else "-"
-        // TODO: hope for nostr v0.30.0
-//        val unsignedEvent = EventBuilder.reaction(...)
-//            .toUnsignedEvent(accountManager.getPublicKey())
-//        return accountManager.sign(unsignedEvent)
-
-        delay(DELAY_1SEC)
-        return Result.failure(IllegalStateException("Custom reactions are not implemented in rust-nostr"))
+        val unsignedEvent = createReaction(
+            eventId = eventId,
+            pubkey = pubkey,
+            content = if (isPositive) "+" else "-",
+            kind = kind
+        )
+        return accountManager.sign(unsignedEvent)
     }
 
     suspend fun buildDelete(eventId: EventId): Result<Event> {
