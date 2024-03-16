@@ -16,20 +16,18 @@ import com.dluvian.nostr_kt.isRootPost
 import com.dluvian.nostr_kt.isTopicList
 import com.dluvian.nostr_kt.isValidEventId
 import com.dluvian.nostr_kt.isVote
-import com.dluvian.nostr_kt.matches
 import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_TOPIC_LEN
 import com.dluvian.voyage.data.account.IPubkeyProvider
+import com.dluvian.voyage.data.model.FilterWrapper
 import com.dluvian.voyage.data.model.RelayedItem
 import rust.nostr.protocol.Event
-import rust.nostr.protocol.Filter
 
 class EventValidator(
-    private val syncedFilterCache: Map<SubId, List<Filter>>,
+    private val syncedFilterCache: Map<SubId, List<FilterWrapper>>,
     private val syncedIdCache: MutableSet<EventIdHex>,
     private val syncedPostRelayCache: MutableSet<Pair<EventIdHex, RelayUrl>>,
-
     private val pubkeyProvider: IPubkeyProvider,
 ) {
     private val tag = "EventValidator"
@@ -89,9 +87,13 @@ class EventValidator(
     private fun matchesFilter(subId: SubId, event: Event): Boolean {
         val filters = syncedFilterCache.getOrDefault(subId, emptyList()).toList()
         if (filters.isEmpty()) return false
-        // TODO: Make sure ReplyEvents match queried e tag. Or we get Foreign Key exceptions
-        //TODO: Make sure to not subscribe root posts and replies in a single Subscription. Replies we receive need to be matched against a list of root ids
-        return filters.any { it.matches(event) }
+
+        val matches = filters.any { it.filter.matchEvent(event = event) }
+        if (!matches) return false
+
+        val replyToId = event.getReplyToId() ?: return true
+
+        return filters.any { it.filter.matchEvent(event = event) && it.e.contains(replyToId) }
     }
 
     private fun validate(event: Event): ValidatedEvent? {

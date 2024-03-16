@@ -7,16 +7,16 @@ import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
 import com.dluvian.voyage.data.event.EventMaker
 import com.dluvian.voyage.data.event.EventQueue
+import com.dluvian.voyage.data.model.FilterWrapper
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
-import rust.nostr.protocol.Filter
 import rust.nostr.protocol.PublicKey
 
 class NostrService(
     private val nostrClient: NostrClient,
     private val eventQueue: EventQueue,
     private val eventMaker: EventMaker,
-    private val filterCache: MutableMap<SubId, List<Filter>>,
+    private val filterCache: MutableMap<SubId, List<FilterWrapper>>,
 ) {
     private val tag = "NostrService"
 

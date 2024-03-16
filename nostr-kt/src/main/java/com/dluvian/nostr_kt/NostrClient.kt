@@ -6,9 +6,11 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
+import rust.nostr.protocol.ClientMessage
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.Filter
 import rust.nostr.protocol.RelayMessage
+import rust.nostr.protocol.RelayMessageEnum
 import java.util.Collections
 import java.util.UUID
 
@@ -44,7 +46,7 @@ class NostrClient(private val httpClient: OkHttpClient) {
 
         override fun onMessage(webSocket: WebSocket, text: String) {
             val relayUrl = getRelayUrl(webSocket).orEmpty()
-            val relayMessage = getRelayMessageFromJson(text)
+            val relayMessage = runCatching { RelayMessage.fromJson(json = text) }
             relayMessage
                 .onFailure {
                     nostrListener?.onError(
@@ -53,47 +55,47 @@ class NostrClient(private val httpClient: OkHttpClient) {
                         throwable = it
                     )
                 }
-                .onSuccess {
-                    when (it) {
-                        is RelayMessage.EventMsg -> {
+                .onSuccess { relayMsg ->
+                    when (val enum = relayMsg.asEnum()) {
+                        is RelayMessageEnum.EventMsg -> {
                             nostrListener?.onEvent(
-                                subId = it.subscriptionId,
-                                event = it.event,
+                                subId = enum.subscriptionId,
+                                event = enum.event,
                                 relayUrl = relayUrl
                             )
                         }
 
-                        is RelayMessage.Ok -> nostrListener?.onOk(
+                        is RelayMessageEnum.Ok -> nostrListener?.onOk(
                             relayUrl = relayUrl,
-                            eventId = it.eventId,
-                            accepted = it.status,
-                            msg = it.message
+                            eventId = enum.eventId,
+                            accepted = enum.status,
+                            msg = enum.message
                         )
 
-                        is RelayMessage.Notice -> nostrListener?.onError(
+                        is RelayMessageEnum.Notice -> nostrListener?.onError(
                             relayUrl = relayUrl,
-                            msg = "onNotice: $it.message"
+                            msg = "onNotice: ${enum.message}"
                         )
 
-                        is RelayMessage.EndOfStoredEvents -> nostrListener?.onEOSE(
+                        is RelayMessageEnum.EndOfStoredEvents -> nostrListener?.onEOSE(
                             relayUrl = relayUrl,
-                            subId = it.subscriptionId
+                            subId = enum.subscriptionId
                         )
 
-                        is RelayMessage.Closed -> nostrListener?.onClosed(
+                        is RelayMessageEnum.Closed -> nostrListener?.onClosed(
                             relayUrl = relayUrl,
-                            subId = it.subscriptionId,
-                            reason = it.message
+                            subId = enum.subscriptionId,
+                            reason = enum.message
                         )
 
-                        is RelayMessage.Auth -> nostrListener?.onAuth(
+                        is RelayMessageEnum.Auth -> nostrListener?.onAuth(
                             relayUrl = relayUrl,
-                            challengeString = it.challenge,
+                            challengeString = enum.challenge,
                         )
 
                         else -> nostrListener?.onError(
                             relayUrl = relayUrl,
-                            msg = "Unknown type ${it}. Msg was $text"
+                            msg = "Unknown type ${enum}. Msg was $text"
                         )
                     }
                 }
@@ -115,7 +117,7 @@ class NostrClient(private val httpClient: OkHttpClient) {
         }
         val subId = UUID.randomUUID().toString()
         subscriptions[subId] = socket
-        val request = createSubscriptionRequest(subId = subId, filters = filters)
+        val request = ClientMessage.req(subscriptionId = subId, filters = filters).asJson()
         Log.d(TAG, "Subscribe in $relayUrl: $request")
         socket.send(request)
 
@@ -125,7 +127,8 @@ class NostrClient(private val httpClient: OkHttpClient) {
     fun unsubscribe(subId: SubId) {
         subscriptions[subId]?.let { socket ->
             Log.d(TAG, "Unsubscribe from $subId")
-            socket.send(createCloseRequest(subId))
+            val closeRequest = ClientMessage.close(subscriptionId = subId).asJson()
+            socket.send(closeRequest)
             subscriptions.remove(subId)
         }
     }
@@ -134,7 +137,8 @@ class NostrClient(private val httpClient: OkHttpClient) {
         synchronized(subscriptions) {
             subscriptions.entries.forEach { (subId, socket) ->
                 Log.d(TAG, "Unsubscribe from $subId")
-                socket.send(createCloseRequest(subId))
+                val closeRequest = ClientMessage.close(subscriptionId = subId).asJson()
+                socket.send(closeRequest)
             }
             subscriptions.clear()
         }
@@ -143,9 +147,9 @@ class NostrClient(private val httpClient: OkHttpClient) {
     fun publishToRelays(event: Event, relayUrls: Collection<RelayUrl>) {
         addRelays(relayUrls)
         val filteredRelays = filterSocketsByRelays(relays = relayUrls)
-        val request = createEventRequest(event)
-        Log.i(TAG, "Publish to ${filteredRelays.size} relays: $request")
-        filteredRelays.forEach { it.value.send(request) }
+        val eventMessage = ClientMessage.event(event = event).asJson()
+        Log.i(TAG, "Publish to ${filteredRelays.size} relays: $eventMessage")
+        filteredRelays.forEach { it.value.send(eventMessage) }
     }
 
     fun addRelays(relayUrls: Collection<RelayUrl>) {

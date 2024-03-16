@@ -18,6 +18,7 @@ import com.dluvian.voyage.data.event.EventProcessor
 import com.dluvian.voyage.data.event.EventQueue
 import com.dluvian.voyage.data.event.EventValidator
 import com.dluvian.voyage.data.interactor.PostVoter
+import com.dluvian.voyage.data.model.FilterWrapper
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.provider.AccountPubkeyProvider
@@ -28,7 +29,6 @@ import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import com.dluvian.voyage.data.room.AppDatabase
 import okhttp3.OkHttpClient
-import rust.nostr.protocol.Filter
 import java.util.Collections
 
 class AppContainer(context: Context) {
@@ -39,9 +39,10 @@ class AppContainer(context: Context) {
     ).build()
 
     // Shared collections
-    private val syncedEventQueueSet =
-        Collections.synchronizedSet(mutableSetOf<RelayedValidatedEvent>())
-    private val syncedFilterCache = Collections.synchronizedMap(mutableMapOf<SubId, List<Filter>>())
+    private val syncedEventQueueSet = Collections
+        .synchronizedSet(mutableSetOf<RelayedValidatedEvent>())
+    private val syncedFilterCache = Collections
+        .synchronizedMap(mutableMapOf<SubId, List<FilterWrapper>>())
     private val syncedIdCache = Collections.synchronizedSet(mutableSetOf<EventIdHex>())
     private val syncedPostRelayCache = Collections
         .synchronizedSet(mutableSetOf<Pair<EventIdHex, RelayUrl>>())

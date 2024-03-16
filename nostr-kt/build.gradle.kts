@@ -42,9 +42,6 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("io.github.rust-nostr:nostr:0.9.0")
+    implementation("io.github.rust-nostr:nostr:0.10.0")
     implementation("cash.z.ecc.android:kotlin-bip39:1.0.7")
-
-    // TODO: Remove after rust-nostr v0.29 release
-    implementation("com.google.code.gson:gson:2.10.1")
 }

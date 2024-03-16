@@ -1,84 +1,15 @@
 package com.dluvian.nostr_kt
 
 import cash.z.ecc.android.bip39.Mnemonics
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonElement
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
-import rust.nostr.protocol.Filter
-import rust.nostr.protocol.RelayMessage
+import rust.nostr.protocol.KindEnum
 import rust.nostr.protocol.Tag
 import rust.nostr.protocol.TagEnum
 import rust.nostr.protocol.TagKind
 import rust.nostr.protocol.Timestamp
 import java.security.SecureRandom
 
-// File for functions that should have been exposed in the kotlin bindings
-// TODO: Remove functions once they're exposed in the bindings
-
-// TODO: Remove after new rust-nostr release
-val gson = GsonBuilder().disableHtmlEscaping().create()
-fun getRelayMessageFromJson(json: String): Result<RelayMessage> {
-    val msg = gson.fromJson(json, JsonElement::class.java).asJsonArray
-    val type = msg[0].asString
-
-    return runCatching {
-        when (type) {
-            "EVENT" -> {
-                val str = msg[2].toString()
-                Result.success(
-                    RelayMessage.EventMsg(
-                        subscriptionId = msg[1].asString,
-                        event = Event.fromJson(str)
-                    )
-                )
-            }
-
-            "OK" -> Result.success(
-                RelayMessage.Ok(
-                    eventId = EventId.fromHex(msg[1].asString),
-                    status = msg[2].asString.toBoolean(),
-                    message = msg[3].asString
-                )
-            )
-
-            "NOTICE" -> Result.success(RelayMessage.Notice(message = msg[1].asString))
-            "EOSE" -> Result.success(RelayMessage.EndOfStoredEvents(subscriptionId = msg[1].asString))
-            "CLOSED" -> Result.success(
-                RelayMessage.Closed(
-                    subscriptionId = msg[1].asString,
-                    message = msg[2].asString
-                )
-            )
-
-            "AUTH" -> Result.success(RelayMessage.Auth(challenge = msg[1].asString))
-            else -> Result.failure(IllegalArgumentException("Unknown type $type"))
-        }
-    }.getOrElse { exception -> Result.failure(exception) }
-
-
-}
-
-fun createSubscriptionRequest(
-    subId: SubId,
-    filters: List<Filter>
-): String {
-    // TODO: ClientMessage.Req(subId, filters).asJson()
-    return """["REQ","$subId",${filters.joinToString(",") { it.asJson() }}]"""
-}
-
-fun createCloseRequest(subId: SubId): String {
-    return """["CLOSE","$subId"]"""
-}
-
-fun createEventRequest(event: Event): String {
-    return """["EVENT",${event.asJson()}]"""
-}
-
-fun Filter.matches(event: Event): Boolean {
-    // TODO: This is not complete
-    return true
-}
 
 fun createTitleTag(title: String) = Tag.fromEnum(TagEnum.Title(title))
 
@@ -111,7 +42,7 @@ fun Timestamp.secs(): Long {
 fun getCurrentSecs() = System.currentTimeMillis() / 1000
 
 fun Event.isPostOrReply(): Boolean {
-    return this.kind().toInt() == Kind.TEXT_NOTE
+    return this.kind().matchEnum(KindEnum.TextNote)
 }
 
 fun Event.isRootPost(): Boolean {
@@ -122,16 +53,14 @@ fun Event.isReplyPost(): Boolean {
     return this.isPostOrReply() && this.getReplyToId() != null
 }
 
-// TODO: Write issue to prefer Result over throwing exceptions
 fun isValidEventId(hex: String): Boolean {
     return runCatching { EventId.fromHex(hex) }.isSuccess
 }
 
 fun Event.getReplyToId(): String? {
     val nip10Tags = this.tags()
-        .filter { it.kind() == TagKind.E }
         .map { it.asVec() }
-        .filter { it.size >= 2 }
+        .filter { it.size >= 2 && it[0] == "e" }
 
     if (nip10Tags.isEmpty()) return null
 
@@ -142,8 +71,9 @@ fun Event.getReplyToId(): String? {
 
 fun Event.getHashtags(): List<String> {
     return this.tags()
-        .filter { it.kind() == TagKind.T }
-        .mapNotNull { it.asVec().getOrNull(1) }
+        .map { it.asVec() }
+        .filter { it.firstOrNull() == "t" }
+        .mapNotNull { it.getOrNull(1) }
         .distinct()
 }
 
@@ -152,46 +82,42 @@ fun String.removeTrailingSlashes(): String {
 }
 
 fun Event.getNip65s(): List<Nip65Relay> {
-    return this.tags().asSequence().filter { it.kind() == TagKind.R }
+    return this.tags().asSequence()
         .map { it.asVec() }
-        .filter { it.size >= 2 && it[1].startsWith(WEBSOCKET_PREFIX) && it[1].trim().length >= 10 }
+        .filter { it.firstOrNull() == "r" }
+        .filter { it.size >= 2 }
+        .filter { it[1].startsWith(WEBSOCKET_PREFIX) }
+        .filter { it[1].trim().length >= 10 }
         .map {
             val restriction = it.getOrNull(2)
             Nip65Relay(
                 url = it[1].trim().removeTrailingSlashes(),
-                isRead = restriction == null || restriction == "read",
-                isWrite = restriction == null || restriction == "write",
+                isRead = restriction.isNullOrEmpty() || restriction == "read",
+                isWrite = restriction.isNullOrEmpty() || restriction == "write",
             )
         }
         .distinctBy { it.url }.toList()
 }
 
 fun Event.getTitle(): String? {
-    return this.tags().firstOrNull { it.kind() == TagKind.Title }?.asVec()?.getOrNull(1)
-
+    return this.tags()
+        .firstOrNull { it.kind() == TagKind.Title }
+        ?.asVec()
+        ?.getOrNull(1)
 }
 
 fun Event.isContactList(): Boolean {
-    return this.kind().toInt() == Kind.CONTACT_LIST
+    return this.kind().matchEnum(KindEnum.ContactList)
 }
 
 fun Event.isTopicList(): Boolean {
-    return this.kind().toInt() == Kind.TOPIC_LIST
+    return this.kind().matchEnum(KindEnum.Interests)
 }
 
 fun Event.isNip65(): Boolean {
-    return this.kind().toInt() == Kind.NIP65
+    return this.kind().matchEnum(KindEnum.RelayList)
 }
 
 fun Event.isVote(): Boolean {
-    return this.kind().toInt() == Kind.REACTION
-}
-
-object Kind {
-    const val TEXT_NOTE = 1
-    const val CONTACT_LIST = 3
-    const val DELETE = 5
-    const val REACTION = 7
-    const val NIP65 = 10002
-    const val TOPIC_LIST = 10015
+    return this.kind().matchEnum(KindEnum.Reaction)
 }

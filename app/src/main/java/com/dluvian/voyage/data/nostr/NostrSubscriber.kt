@@ -1,7 +1,6 @@
 package com.dluvian.voyage.data.nostr
 
 import android.util.Log
-import com.dluvian.nostr_kt.Kind
 import com.dluvian.nostr_kt.NostrClient
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
@@ -11,6 +10,7 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
 import com.dluvian.voyage.core.RND_RESUB_COUNT
 import com.dluvian.voyage.data.account.IPubkeyProvider
+import com.dluvian.voyage.data.model.FilterWrapper
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
@@ -23,6 +23,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
+import rust.nostr.protocol.Kind
+import rust.nostr.protocol.KindEnum
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Timestamp
 
@@ -33,7 +35,7 @@ class NostrSubscriber(
     private val friendProvider: FriendProvider,
     private val pubkeyProvider: IPubkeyProvider,
     private val nostrClient: NostrClient,
-    private val syncedFilterCache: MutableMap<SubId, List<Filter>>,
+    private val syncedFilterCache: MutableMap<SubId, List<FilterWrapper>>,
 ) {
     private val tag = "NostrSubscriber"
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -46,24 +48,25 @@ class NostrSubscriber(
             .getAutopilotRelays(pubkeys = friendProvider.getFriendPubkeys())
             .forEach { (relayUrl, pubkeys) ->
                 val publicKeys = pubkeys.map { PublicKey.fromHex(it) }
-                val friendFilter =
-                    Filter().kind(kind = Kind.TEXT_NOTE.toULong()) // TODO: Support reposts
-                        .authors(authors = publicKeys)
-                        .until(timestamp = untilTimestamp)
-                        .limit(limit = limit.toULong())
-                subscribe(filters = listOf(friendFilter), relayUrl = relayUrl)
+                val friendsNoteFilter = Filter()
+                    .kind(kind = Kind.fromEnum(KindEnum.TextNote)) // TODO: Support reposts
+                    .authors(authors = publicKeys)
+                    .until(timestamp = untilTimestamp)
+                    .limit(limit = limit.toULong())
+                val friendsNoteFilters = listOf(FilterWrapper(friendsNoteFilter))
+                subscribe(filters = friendsNoteFilters, relayUrl = relayUrl)
             }
 
         val topics = topicProvider.getTopics()
         if (topics.isEmpty()) return
 
-        val topicFilter = Filter().kind(kind = Kind.TEXT_NOTE.toULong())
+        val topicedNoteFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.TextNote))
             .hashtags(hashtags = topicProvider.getTopics())
             .until(timestamp = untilTimestamp)
             .limit(limit = adjustedLimit.toULong())
-        val topicFilters = listOf(topicFilter)
+        val topicedNoteFilters = listOf(FilterWrapper(topicedNoteFilter))
         relayProvider.getReadRelays().forEach { relay ->
-            subscribe(filters = topicFilters, relayUrl = relay)
+            subscribe(filters = topicedNoteFilters, relayUrl = relay)
         }
     }
 
@@ -82,15 +85,18 @@ class NostrSubscriber(
             val currentTimestamp = Timestamp.now()
             val ids = newIds.map { EventId.fromHex(it) }
             val voteFilter = Filter().events(ids)
-                .kind(Kind.REACTION.toULong())
+                .kind(Kind.fromEnum(KindEnum.Reaction))
                 .authors(webOfTrustProvider.getWebOfTrustPubkeys())
                 .until(currentTimestamp)
                 .limit(MAX_EVENTS_TO_SUB.toULong())
             val replyFilter = Filter().events(ids)
-                .kind(Kind.TEXT_NOTE.toULong())
+                .kind(Kind.fromEnum(KindEnum.TextNote))
                 .until(currentTimestamp)
                 .limit(MAX_EVENTS_TO_SUB.toULong())
-            val filters = listOf(voteFilter, replyFilter)
+            val filters = listOf(
+                FilterWrapper(filter = voteFilter),
+                FilterWrapper(filter = replyFilter, e = ids.map { it.toHex() })
+            )
 
             relayProvider.getReadRelays().forEach { relay ->
                 subscribe(filters = filters, relayUrl = relay)
@@ -115,19 +121,20 @@ class NostrSubscriber(
 
     private fun subMyAccount() {
         val timestamp = Timestamp.now()
-        val myContactFilter = Filter().kind(kind = Kind.CONTACT_LIST.toULong())
+        val myContactFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.ContactList))
             .author(pubkeyProvider.getPublicKey())
             .until(timestamp = timestamp)
             .limit(1u)
-        val myTopicsFilter = Filter().kind(kind = Kind.TOPIC_LIST.toULong())
+        val myTopicsFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Interests))
             .author(pubkeyProvider.getPublicKey())
             .until(timestamp = timestamp)
             .limit(1u)
-        val myNip65Filter = Filter().kind(kind = Kind.NIP65.toULong())
+        val myNip65Filter = Filter().kind(kind = Kind.fromEnum(KindEnum.RelayList))
             .author(pubkeyProvider.getPublicKey())
             .until(timestamp = timestamp)
             .limit(1u)
         val filters = listOf(myContactFilter, myTopicsFilter, myNip65Filter)
+            .map { FilterWrapper(it) }
 
         relayProvider.getReadRelays().forEach { relay ->
             subscribe(filters = filters, relayUrl = relay)
@@ -152,19 +159,19 @@ class NostrSubscriber(
         relayProvider
             .getObserveRelays(observeFrom = webOfTrustResub)
             .forEach { (relay, pubkeys) ->
-                val webOfTrustFilter = Filter().kind(kind = Kind.CONTACT_LIST.toULong())
+                val webOfTrustFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.ContactList))
                     .authors(authors = pubkeys.map { PublicKey.fromHex(it) })
                     .until(timestamp = timestamp)
-                val filters = listOf(webOfTrustFilter)
+                val filters = listOf(FilterWrapper(webOfTrustFilter))
                 subscribe(filters = filters, relayUrl = relay)
             }
     }
 
-    private fun subscribe(filters: List<Filter>, relayUrl: RelayUrl): SubId? {
+    private fun subscribe(filters: List<FilterWrapper>, relayUrl: RelayUrl): SubId? {
         if (filters.isEmpty()) return null
         Log.d(tag, "Subscribe ${filters.size} in $relayUrl")
 
-        val subId = nostrClient.subscribe(filters = filters, relayUrl = relayUrl)
+        val subId = nostrClient.subscribe(filters = filters.map { it.filter }, relayUrl = relayUrl)
         if (subId == null) {
             Log.w(tag, "Failed to create subscription ID")
             return null

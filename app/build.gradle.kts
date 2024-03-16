@@ -80,6 +80,6 @@ dependencies {
     implementation("androidx.room:room-ktx:$roomVersion")
 
     // TODO: Figure out how to use this from :nostr-kt
-    implementation("io.github.rust-nostr:nostr:0.9.0")
+    implementation("io.github.rust-nostr:nostr:0.10.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }
