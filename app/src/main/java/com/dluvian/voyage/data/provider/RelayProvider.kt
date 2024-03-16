@@ -38,34 +38,27 @@ class RelayProvider(private val nip65Dao: Nip65Dao) {
     suspend fun getObserveRelays(observeFrom: Collection<PubkeyHex>): Map<RelayUrl, Set<PubkeyHex>> {
         if (observeFrom.isEmpty()) return emptyMap()
 
-        val myReadRelays = getReadRelays(limit = false)
-        val foreignRelays = nip65Dao
+        val result = mutableMapOf<RelayUrl, MutableSet<PubkeyHex>>()
+
+        // Cover all pubkeys with my (limited) read relays
+        getReadRelays().forEach { relay -> result[relay] = observeFrom.toMutableSet() }
+
+        // Cover pubkey-write-relay pairing if not already covered by my read relays
+        // TODO: Filter bad relays / blacklisted relays
+        val pubkeyCache = mutableSetOf<PubkeyHex>()
+        nip65Dao
             .getNip65WriteRelays(pubkeys = observeFrom)
             .groupBy { it.nip65Relay.url }
             .toList()
             .shuffled()
-            .sortedByDescending { (relay, _) -> myReadRelays.contains(relay) }
-
-        val pubkeyCache = mutableSetOf<PubkeyHex>()
-        val result = mutableMapOf<RelayUrl, MutableSet<PubkeyHex>>()
-
-        foreignRelays.forEach { (relay, nip65Entities) ->
-            val pubkeys = nip65Entities.map { it.pubkey }.toSet()
-            val newPubkeys = pubkeys - pubkeyCache
-            if (newPubkeys.isNotEmpty()) {
-                result[relay] = newPubkeys.toMutableSet()
-                pubkeyCache.addAll(newPubkeys)
+            .sortedByDescending { (_, pubkeys) -> pubkeys.size }
+            .forEach { (relay, nip65Entities) ->
+                val newPubkeys = nip65Entities.map { it.pubkey }.toSet() - pubkeyCache
+                if (newPubkeys.isNotEmpty()) {
+                    result.putIfAbsent(relay, newPubkeys.toMutableSet())
+                    pubkeyCache.addAll(newPubkeys)
+                }
             }
-        }
-
-        val pubkeysWithNoRelay = observeFrom.toSet() - pubkeyCache
-        if (pubkeysWithNoRelay.isNotEmpty()) {
-            getReadRelays().forEach { relay ->
-                val alreadyPresent = result.putIfAbsent(relay, pubkeysWithNoRelay.toMutableSet())
-                alreadyPresent?.addAll(pubkeysWithNoRelay)
-            }
-
-        }
 
         return result
     }

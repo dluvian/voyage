@@ -16,6 +16,8 @@ class FriendProvider(private val friendDao: FriendDao) {
 
     suspend fun getFriendsWithMissingContactList() = friendDao.getFriendsWithMissingContactList()
 
+    suspend fun getFriendsWithMissingNip65() = friendDao.getFriendsWithMissingNip65()
+
     private val defaultFriends = listOf(
         // dluvian
         "e4336cd525df79fa4d3af364fd9600d4b10dce4215aa4c33ed77ea0842344b10",

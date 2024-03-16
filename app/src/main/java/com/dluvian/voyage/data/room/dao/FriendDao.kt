@@ -12,4 +12,7 @@ interface FriendDao {
 
     @Query("SELECT friendPubkey FROM friend WHERE friendPubkey NOT IN (SELECT friendPubkey FROM weboftrust)")
     suspend fun getFriendsWithMissingContactList(): List<PubkeyHex>
+
+    @Query("SELECT friendPubkey FROM friend WHERE friendPubkey NOT IN (SELECT pubkey FROM nip65)")
+    suspend fun getFriendsWithMissingNip65(): List<PubkeyHex>
 }
