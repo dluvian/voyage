@@ -113,7 +113,7 @@ class NostrSubscriber(
     suspend fun subMyAccountAndTrustData() {
         Log.d(tag, "subMyAccountAndTrustData")
         subMyAccount()
-        delay(DELAY_1SEC)
+        delay(DELAY_1SEC) // TODO: Channel wait instead of delay
         lazySubFriendsNip65()
         delay(DELAY_1SEC)
         lazySubWebOfTrust()
