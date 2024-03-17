@@ -20,5 +20,5 @@ fun SnackbarHostState.showToast(scope: CoroutineScope, msg: String) {
     }
 }
 
-private val topicRegex = Regex("^#\\S+")
+private val topicRegex = Regex("^#[^#\\s]+\$")
 fun String.isTopicStr(): Boolean = topicRegex.matches(this)

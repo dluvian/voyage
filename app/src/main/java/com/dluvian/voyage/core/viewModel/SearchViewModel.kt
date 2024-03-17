@@ -9,6 +9,7 @@ import com.dluvian.nostr_kt.removeMentionChar
 import com.dluvian.nostr_kt.removeNostrUri
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.DELAY_10SEC
+import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.SearchText
 import com.dluvian.voyage.core.SearchViewAction
 import com.dluvian.voyage.core.Topic
@@ -56,11 +57,30 @@ class SearchViewModel(
         }
     }
 
+    private var updateJob: Job? = null
     private fun updateSearchText(text: String) {
-        topics.value = topicProvider.getAllTopics()
-            .filter { it.startsWith(prefix = text, ignoreCase = true) }
+        updateJob?.cancel()
+        updateJob = viewModelScope.launch(Dispatchers.IO) {
+            delay(SHORT_DEBOUNCE)
+            val trimmed = text.trim().dropWhile { it == '#' }.trim()
+            topics.value = getTopicSuggestions(text = trimmed)
+        }
+    }
+
+    private fun getTopicSuggestions(text: String): List<Topic> {
+        val suggestions = topicProvider.getAllTopics()
+            .asSequence()
+            .filter { it.contains(other = text, ignoreCase = true) }
             .sortedBy { it.length }
+            .distinct()
             .take(maxSearchResult)
+            .toList()
+
+        val hashtagged = "#$text"
+        val result = if (suggestions.contains(text) || !hashtagged.isTopicStr()) suggestions
+        else mutableListOf(text) + suggestions
+
+        return result
     }
 
     private fun searchText(
