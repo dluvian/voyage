@@ -5,12 +5,14 @@ import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
 import com.dluvian.nostr_kt.getCurrentSecs
 import com.dluvian.nostr_kt.getHashtags
+import com.dluvian.nostr_kt.getMetadata
 import com.dluvian.nostr_kt.getNip65s
 import com.dluvian.nostr_kt.getReplyToId
 import com.dluvian.nostr_kt.getTitle
 import com.dluvian.nostr_kt.isContactList
 import com.dluvian.nostr_kt.isNip65
 import com.dluvian.nostr_kt.isPostOrReply
+import com.dluvian.nostr_kt.isProfile
 import com.dluvian.nostr_kt.isReplyPost
 import com.dluvian.nostr_kt.isRootPost
 import com.dluvian.nostr_kt.isTopicList
@@ -149,6 +151,15 @@ class EventValidator(
             else ValidatedNip65(
                 pubkey = event.author().toHex(),
                 relays = relays,
+                createdAt = event.createdAt().secs()
+            )
+        } else if (event.isProfile()) {
+            val metadata = event.getMetadata()
+            if (metadata == null) null
+            else ValidatedProfile(
+                id = event.id().toHex(),
+                pubkey = event.author().toHex(),
+                metadata = metadata,
                 createdAt = event.createdAt().secs()
             )
         } else null

@@ -118,27 +118,51 @@ class NostrSubscriber(
         delay(DELAY_1SEC) // TODO: Channel wait instead of delay
         lazySubFriendsNip65()
         delay(DELAY_1SEC)
-        lazySubWebOfTrust()
+        lazySubWebOfTrustPubkeys()
+    }
+
+    suspend fun lazySubWebOfTrustProfiles() {
+        val webOfTrustWithMissingProfiles = webOfTrustProvider.getWotWithMissingProfiles()
+        val randomResub = webOfTrustProvider.getWebOfTrustPubkeys().shuffled().take(RND_RESUB_COUNT)
+        val webOfTrustResub = (webOfTrustWithMissingProfiles + randomResub).distinct()
+        if (webOfTrustResub.isEmpty()) return
+
+        val timestamp = Timestamp.now()
+        relayProvider
+            .getObserveRelays(observeFrom = webOfTrustWithMissingProfiles)
+            .forEach { (relay, pubkeys) ->
+                val profileFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Metadata))
+                    .authors(authors = pubkeys.map { PublicKey.fromHex(it) })
+                    .until(timestamp = timestamp)
+                val filters = listOf(FilterWrapper(profileFilter))
+                subscribe(filters = filters, relayUrl = relay)
+            }
     }
 
     private fun subMyAccount() {
         val timestamp = Timestamp.now()
+        val myPubkey = pubkeyProvider.getPublicKey()
         val myContactFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.ContactList))
-            .author(pubkeyProvider.getPublicKey())
+            .author(author = myPubkey)
             .until(timestamp = timestamp)
             .limit(1u)
         val myTopicsFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Interests))
-            .author(pubkeyProvider.getPublicKey())
+            .author(author = myPubkey)
             .until(timestamp = timestamp)
             .limit(1u)
         val myNip65Filter = Filter().kind(kind = Kind.fromEnum(KindEnum.RelayList))
-            .author(pubkeyProvider.getPublicKey())
+            .author(author = myPubkey)
+            .until(timestamp = timestamp)
+            .limit(1u)
+        val myProfileFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Metadata))
+            .author(author = myPubkey)
             .until(timestamp = timestamp)
             .limit(1u)
         val filters = listOf(
             FilterWrapper(myContactFilter),
             FilterWrapper(myTopicsFilter),
-            FilterWrapper(myNip65Filter)
+            FilterWrapper(myNip65Filter),
+            FilterWrapper(myProfileFilter),
         )
 
         relayProvider.getReadRelays().forEach { relay ->
@@ -147,12 +171,12 @@ class NostrSubscriber(
     }
 
     private suspend fun lazySubFriendsNip65() {
-        val timestamp = Timestamp.now()
         val friendsWithMissingNip65 = friendProvider.getFriendsWithMissingNip65()
         val randomResub = friendProvider.getFriendPubkeys().shuffled().take(RND_RESUB_COUNT)
         val nip65Resub = (friendsWithMissingNip65 + randomResub).distinct()
         if (nip65Resub.isEmpty()) return
 
+        val timestamp = Timestamp.now()
         relayProvider
             .getObserveRelays(observeFrom = nip65Resub)
             .forEach { (relay, pubkeys) ->
@@ -164,13 +188,13 @@ class NostrSubscriber(
             }
     }
 
-    private suspend fun lazySubWebOfTrust() {
-        val timestamp = Timestamp.now()
+    private suspend fun lazySubWebOfTrustPubkeys() {
         val friendsWithMissingContactList = friendProvider.getFriendsWithMissingContactList()
         val randomResub = friendProvider.getFriendPubkeys().shuffled().take(RND_RESUB_COUNT)
         val webOfTrustResub = (friendsWithMissingContactList + randomResub).distinct()
         if (webOfTrustResub.isEmpty()) return
 
+        val timestamp = Timestamp.now()
         relayProvider
             .getObserveRelays(observeFrom = webOfTrustResub)
             .forEach { (relay, pubkeys) ->

@@ -95,12 +95,7 @@ class AppContainer(context: Context) {
         pubkeyProvider = accountManager
     )
     private val eventProcessor = EventProcessor(
-        postInsertDao = roomDb.postInsertDao(),
-        voteUpsertDao = roomDb.voteUpsertDao(),
-        friendUpsertDao = roomDb.friendUpsertDao(),
-        webOfTrustUpsertDao = roomDb.webOfTrustUpsertDao(),
-        topicUpsertDao = roomDb.topicUpsertDao(),
-        nip65UpsertDao = roomDb.nip65UpsertDao(),
+        room = roomDb,
         pubkeyProvider = accountManager
     )
     private val eventQueue = EventQueue(

@@ -6,6 +6,7 @@ import rust.nostr.protocol.EventBuilder
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Kind
 import rust.nostr.protocol.KindEnum
+import rust.nostr.protocol.Metadata
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Tag
 import rust.nostr.protocol.TagEnum
@@ -110,6 +111,12 @@ fun Event.getTitle(): String? {
         ?.getOrNull(1)
 }
 
+fun Event.getMetadata(): Metadata? {
+    if (!this.isProfile()) return null
+
+    return runCatching { Metadata.fromJson(json = this.content()) }.getOrNull()
+}
+
 fun Event.isContactList(): Boolean {
     return this.kind().matchEnum(KindEnum.ContactList)
 }
@@ -124,6 +131,10 @@ fun Event.isNip65(): Boolean {
 
 fun Event.isVote(): Boolean {
     return this.kind().matchEnum(KindEnum.Reaction)
+}
+
+fun Event.isProfile(): Boolean {
+    return this.kind().matchEnum(KindEnum.Metadata)
 }
 
 fun createReaction(

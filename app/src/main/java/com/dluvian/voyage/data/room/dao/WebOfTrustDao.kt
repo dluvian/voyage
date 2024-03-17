@@ -12,4 +12,12 @@ interface WebOfTrustDao {
                 "UNION SELECT DISTINCT friendPubkey FROM friend"
     )
     fun getWebOfTrustFlow(): Flow<List<PubkeyHex>>
+
+    @Query(
+        "SELECT DISTINCT webOfTrustPubkey FROM weboftrust " +
+                "WHERE webOfTrustPubkey NOT IN (SELECT pubkey FROM profile) " +
+                "UNION SELECT DISTINCT friendPubkey FROM friend " +
+                "WHERE friendPubkey NOT IN (SELECT pubkey FROM profile)"
+    )
+    suspend fun getWotWithMissingProfiles(): List<PubkeyHex>
 }

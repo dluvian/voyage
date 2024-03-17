@@ -77,7 +77,8 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         },
         searchVM = viewModel {
             SearchViewModel(
-                topicProvider = appContainer.topicProvider
+                topicProvider = appContainer.topicProvider,
+                nostrSubscriber = appContainer.nostrSubscriber
             )
         }
     )

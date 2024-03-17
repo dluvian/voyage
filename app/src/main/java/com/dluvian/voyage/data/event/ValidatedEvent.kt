@@ -3,6 +3,8 @@ package com.dluvian.voyage.data.event
 import com.dluvian.nostr_kt.Nip65Relay
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.core.Topic
+import rust.nostr.protocol.Metadata
 
 sealed class ValidatedEvent
 
@@ -32,6 +34,13 @@ data class ValidatedVote(
     val createdAt: Long
 ) : ValidatedEvent()
 
+data class ValidatedProfile(
+    val id: EventIdHex,
+    val pubkey: PubkeyHex,
+    val metadata: Metadata,
+    val createdAt: Long
+) : ValidatedEvent()
+
 sealed class ValidatedList(val owner: PubkeyHex, open val createdAt: Long) : ValidatedEvent()
 data class ValidatedContactList(
     val pubkey: PubkeyHex,
@@ -40,7 +49,7 @@ data class ValidatedContactList(
 ) : ValidatedList(owner = pubkey, createdAt = createdAt)
 data class ValidatedTopicList(
     val myPubkey: PubkeyHex,
-    val topics: Set<String>,
+    val topics: Set<Topic>,
     override val createdAt: Long
 ) : ValidatedList(owner = myPubkey, createdAt = createdAt)
 

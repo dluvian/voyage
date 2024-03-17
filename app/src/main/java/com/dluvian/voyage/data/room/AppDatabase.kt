@@ -13,6 +13,7 @@ import com.dluvian.voyage.data.room.dao.WebOfTrustDao
 import com.dluvian.voyage.data.room.dao.tx.FriendUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.Nip65UpsertDao
 import com.dluvian.voyage.data.room.dao.tx.PostInsertDao
+import com.dluvian.voyage.data.room.dao.tx.ProfileUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.TopicUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.VoteUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.WebOfTrustUpsertDao
@@ -65,4 +66,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun webOfTrustUpsertDao(): WebOfTrustUpsertDao
     abstract fun topicUpsertDao(): TopicUpsertDao
     abstract fun nip65UpsertDao(): Nip65UpsertDao
+    abstract fun profileUpsertDao(): ProfileUpsertDao
 }
