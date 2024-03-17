@@ -12,7 +12,7 @@ class Core(
     val appContainer: AppContainer,
     closeApp: Fn,
 ) : ViewModel() {
-    val navigator = Navigator(closeApp = closeApp)
+    val navigator = Navigator(vmContainer = vmContainer, closeApp = closeApp)
     lateinit var externalSignerHandler: ExternalSignerHandler
 
     val onUpdate: (UIEvent) -> Unit = { uiEvent ->
@@ -22,12 +22,12 @@ class Core(
             is HomeViewAction -> vmContainer.homeVM.handle(homeViewAction = uiEvent)
             is SettingsViewAction -> vmContainer.settingsVM.handle(settingsViewAction = uiEvent)
             is SearchViewAction -> vmContainer.searchVM.handle(searchViewAction = uiEvent)
-            is ClickThread -> {} // TODO: Click thread
             is ProcessExternalSignature -> viewModelScope.launch {
                 externalSignerHandler.processExternalSignature(
                     result = uiEvent.activityResult
                 )
             }
+
 
         }
     }

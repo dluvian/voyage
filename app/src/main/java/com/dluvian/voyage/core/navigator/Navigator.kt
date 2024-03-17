@@ -1,29 +1,19 @@
 package com.dluvian.voyage.core.navigator
 
 import androidx.compose.runtime.mutableStateOf
-import com.dluvian.voyage.core.ClickCreate
-import com.dluvian.voyage.core.ClickHome
-import com.dluvian.voyage.core.ClickInbox
-import com.dluvian.voyage.core.ClickSearch
-import com.dluvian.voyage.core.ClickSettings
-import com.dluvian.voyage.core.ClickTopics
+import com.dluvian.voyage.VMContainer
 import com.dluvian.voyage.core.Fn
-import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.NavEvent
-import com.dluvian.voyage.core.SystemBackPress
+import com.dluvian.voyage.core.PopNavEvent
+import com.dluvian.voyage.core.PushNavEvent
 
-class Navigator(private val closeApp: Fn) {
+class Navigator(private val vmContainer: VMContainer, private val closeApp: Fn) {
     val stack = mutableStateOf<List<NavView>>(listOf(HomeNavView))
 
     fun handle(navEvent: NavEvent) {
         when (navEvent) {
-            SystemBackPress, GoBack -> pop()
-            ClickCreate -> push(view = CreatePostNavView)
-            ClickHome -> push(view = HomeNavView)
-            ClickInbox -> push(view = InboxNavView)
-            ClickSettings -> push(view = SettingsNavView)
-            ClickTopics -> push(view = DiscoverNavView)
-            ClickSearch -> push(view = SearchNavView)
+            is PopNavEvent -> pop()
+            is PushNavEvent -> push(view = navEvent.getNavView())
         }
     }
 
@@ -33,6 +23,7 @@ class Navigator(private val closeApp: Fn) {
             if (current.last() == view) return
 
             stack.value = current + view
+            handleNavView(navView = view)
         }
     }
 
@@ -40,7 +31,28 @@ class Navigator(private val closeApp: Fn) {
         synchronized(stack) {
             val current = stack.value
             if (current.size <= 1) closeApp()
-            else stack.value = current.dropLast(1)
+            else {
+                stack.value = current.dropLast(1)
+                handleNavView(navView = stack.value.last())
+            }
+        }
+    }
+
+    private fun handleNavView(navView: NavView) {
+        when (navView) {
+            is AdvancedNonMainNavView -> {
+                when (navView) {
+                    is ThreadNavView -> vmContainer.threadVM.openThread(threadNavView = navView)
+                    is ProfileNavView -> vmContainer.profileVM.openProfile(profileNavView = navView)
+                    is TopicNavView -> vmContainer.topicVM.openTopic(topicNavView = navView)
+                }
+            }
+
+            is MainNavView -> { /* Do nothing */
+            }
+
+            is SimpleNonMainNavView -> { /* Do nothing */
+            }
         }
     }
 }

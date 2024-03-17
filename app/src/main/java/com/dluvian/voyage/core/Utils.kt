@@ -19,3 +19,6 @@ fun SnackbarHostState.showToast(scope: CoroutineScope, msg: String) {
         this@showToast.showSnackbar(message = msg, withDismissAction = true)
     }
 }
+
+private val topicRegex = Regex("^#\\S+")
+fun String.isTopicStr(): Boolean = topicRegex.matches(this)

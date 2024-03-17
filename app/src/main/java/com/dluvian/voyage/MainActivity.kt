@@ -15,8 +15,11 @@ import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.ProcessExternalAccount
 import com.dluvian.voyage.core.ProcessExternalSignature
 import com.dluvian.voyage.core.viewModel.HomeViewModel
+import com.dluvian.voyage.core.viewModel.ProfileViewModel
 import com.dluvian.voyage.core.viewModel.SearchViewModel
 import com.dluvian.voyage.core.viewModel.SettingsViewModel
+import com.dluvian.voyage.core.viewModel.ThreadViewModel
+import com.dluvian.voyage.core.viewModel.TopicViewModel
 import com.dluvian.voyage.ui.VoyageApp
 
 class MainActivity : ComponentActivity() {
@@ -78,8 +81,18 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         searchVM = viewModel {
             SearchViewModel(
                 topicProvider = appContainer.topicProvider,
-                nostrSubscriber = appContainer.nostrSubscriber
+                nostrSubscriber = appContainer.nostrSubscriber,
+                snackbar = appContainer.snackbarHostState,
             )
+        },
+        profileVM = viewModel {
+            ProfileViewModel()
+        },
+        threadVM = viewModel {
+            ThreadViewModel()
+        },
+        topicVM = viewModel {
+            TopicViewModel()
         }
     )
 }

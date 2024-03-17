@@ -86,6 +86,14 @@ fun String.removeTrailingSlashes(): String {
     return this.removeSuffix("/")
 }
 
+fun String.removeNostrUri(): String {
+    return this.removePrefix(NOSTR_URI)
+}
+
+fun String.removeMentionChar(): String {
+    return this.removePrefix(MENTION_CHAR)
+}
+
 fun Event.getNip65s(): List<Nip65Relay> {
     return this.tags().asSequence()
         .map { it.asVec() }

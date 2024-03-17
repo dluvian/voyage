@@ -14,10 +14,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ClickCreate
+import com.dluvian.voyage.core.ClickDiscover
 import com.dluvian.voyage.core.ClickHome
 import com.dluvian.voyage.core.ClickInbox
 import com.dluvian.voyage.core.ClickSettings
-import com.dluvian.voyage.core.ClickTopics
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.UIEvent
 import com.dluvian.voyage.core.navigator.DiscoverNavView
@@ -43,7 +43,7 @@ fun MainBottomBar(currentView: MainNavView, onUpdate: (UIEvent) -> Unit) {
                 selected = currentView is DiscoverNavView,
                 label = stringResource(id = R.string.discover),
                 icon = DiscoverIcon,
-                onClick = { onUpdate(ClickTopics) })
+                onClick = { onUpdate(ClickDiscover) })
             MainBottomBarItem(
                 selected = false,
                 label = stringResource(id = R.string.create),

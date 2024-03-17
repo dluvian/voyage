@@ -2,19 +2,64 @@ package com.dluvian.voyage.core
 
 import android.content.Context
 import androidx.activity.result.ActivityResult
+import com.dluvian.voyage.core.navigator.CreatePostNavView
+import com.dluvian.voyage.core.navigator.DiscoverNavView
+import com.dluvian.voyage.core.navigator.HomeNavView
+import com.dluvian.voyage.core.navigator.InboxNavView
+import com.dluvian.voyage.core.navigator.NavView
+import com.dluvian.voyage.core.navigator.ProfileNavView
+import com.dluvian.voyage.core.navigator.SearchNavView
+import com.dluvian.voyage.core.navigator.SettingsNavView
+import com.dluvian.voyage.core.navigator.ThreadNavView
+import com.dluvian.voyage.core.navigator.TopicNavView
+import rust.nostr.protocol.EventId
+import rust.nostr.protocol.Nip19Event
+import rust.nostr.protocol.Nip19Profile
 
 sealed class UIEvent
 
 sealed class NavEvent : UIEvent()
-data object SystemBackPress : NavEvent()
-data object GoBack : NavEvent()
-data object ClickHome : NavEvent()
-data object ClickTopics : NavEvent()
-data object ClickInbox : NavEvent()
-data object ClickCreate : NavEvent()
-data object ClickSettings : NavEvent()
-data object ClickSearch : NavEvent()
-data class ClickThread(val postId: EventIdHex) : UIEvent()
+
+
+sealed class PopNavEvent : NavEvent()
+data object SystemBackPress : PopNavEvent()
+data object GoBack : PopNavEvent()
+
+
+sealed class PushNavEvent : NavEvent() {
+    fun getNavView(): NavView {
+        return when (this) {
+            is ClickHome -> HomeNavView
+            is ClickDiscover -> DiscoverNavView
+            is ClickCreate -> CreatePostNavView
+            is ClickInbox -> InboxNavView
+            is ClickSettings -> SettingsNavView
+            is ClickSearch -> SearchNavView
+            is ClickThread -> ThreadNavView(
+                nip19Event = Nip19Event(
+                    eventId = EventId.fromHex(this.postId),
+                    author = null,
+                    relays = emptyList()
+                )
+            )
+
+            is OpenProfile -> ProfileNavView(nip19Profile = this.nip19)
+            is OpenTopic -> TopicNavView(topic = this.topic)
+        }
+    }
+}
+
+data object ClickHome : PushNavEvent()
+data object ClickDiscover : PushNavEvent()
+data object ClickInbox : PushNavEvent()
+data object ClickCreate : PushNavEvent()
+data object ClickSettings : PushNavEvent()
+data object ClickSearch : PushNavEvent()
+
+sealed class AdvancedPushNavEvent : PushNavEvent()
+data class ClickThread(val postId: EventIdHex) : AdvancedPushNavEvent()
+data class OpenProfile(val nip19: Nip19Profile) : AdvancedPushNavEvent()
+data class OpenTopic(val topic: Topic) : AdvancedPushNavEvent()
 
 
 sealed class VoteEvent(open val postId: EventIdHex, open val pubkey: PubkeyHex) : UIEvent()
@@ -48,6 +93,12 @@ data class ProcessExternalAccount(
 
 sealed class SearchViewAction : UIEvent()
 data class UpdateSearchText(val text: String) : SearchViewAction()
+data class SearchText(
+    val text: String,
+    val context: Context,
+    val onOpenTopic: (Topic) -> Unit,
+    val onOpenProfile: (Nip19Profile) -> Unit
+) : SearchViewAction()
 
 
 data class ProcessExternalSignature(val activityResult: ActivityResult) : UIEvent()
