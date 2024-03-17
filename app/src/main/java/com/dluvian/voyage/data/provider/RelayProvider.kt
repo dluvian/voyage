@@ -40,7 +40,7 @@ class RelayProvider(private val nip65Dao: Nip65Dao) {
 
         val result = mutableMapOf<RelayUrl, MutableSet<PubkeyHex>>()
 
-        // Cover all pubkeys with my (limited) read relays
+        // Cover all pubkeys with my read relays
         getReadRelays().forEach { relay -> result[relay] = observeFrom.toMutableSet() }
 
         // Cover pubkey-write-relay pairing if not already covered by my read relays
@@ -62,12 +62,6 @@ class RelayProvider(private val nip65Dao: Nip65Dao) {
             }
 
         return result
-    }
-
-    fun getAutopilotRelays(pubkeys: Collection<PubkeyHex>): Map<RelayUrl, Set<PubkeyHex>> {
-        if (pubkeys.isEmpty()) return emptyMap()
-
-        return getReadRelays().associateWith { pubkeys.toSet() } // TODO: Autopilot implementation
     }
 
     private fun List<RelayUrl>.limit(): List<RelayUrl> {

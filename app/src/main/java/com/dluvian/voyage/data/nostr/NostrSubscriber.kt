@@ -41,21 +41,23 @@ class NostrSubscriber(
     private val scope = CoroutineScope(Dispatchers.IO)
 
     fun subFeed(until: Long, limit: Int) {
-        val adjustedLimit = 3L * limit // We don't know if we receive enough root posts
+        val adjustedLimit = 5L * limit // We don't know if we receive enough root posts
         val untilTimestamp = Timestamp.fromSecs(until.toULong())
 
-        relayProvider
-            .getAutopilotRelays(pubkeys = friendProvider.getFriendPubkeys())
-            .forEach { (relayUrl, pubkeys) ->
-                val publicKeys = pubkeys.map { PublicKey.fromHex(it) }
-                val friendsNoteFilter = Filter()
-                    .kind(kind = Kind.fromEnum(KindEnum.TextNote)) // TODO: Support reposts
-                    .authors(authors = publicKeys)
-                    .until(timestamp = untilTimestamp)
-                    .limit(limit = limit.toULong())
-                val friendsNoteFilters = listOf(FilterWrapper(friendsNoteFilter))
-                subscribe(filters = friendsNoteFilters, relayUrl = relayUrl)
-            }
+        scope.launch {
+            relayProvider
+                .getObserveRelays(observeFrom = friendProvider.getFriendPubkeys())
+                .forEach { (relayUrl, pubkeys) ->
+                    val publicKeys = pubkeys.map { PublicKey.fromHex(it) }
+                    val friendsNoteFilter = Filter()
+                        .kind(kind = Kind.fromEnum(KindEnum.TextNote)) // TODO: Support reposts
+                        .authors(authors = publicKeys)
+                        .until(timestamp = untilTimestamp)
+                        .limit(limit = limit.toULong())
+                    val friendsNoteFilters = listOf(FilterWrapper(friendsNoteFilter))
+                    subscribe(filters = friendsNoteFilters, relayUrl = relayUrl)
+                }
+        }
 
         val topics = topicProvider.getTopics()
         if (topics.isEmpty()) return
