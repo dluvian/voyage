@@ -6,6 +6,8 @@ import com.dluvian.voyage.core.MAX_NAME_LEN
 import com.dluvian.voyage.core.MAX_PICTURE_URL_LEN
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.event.ValidatedProfile
+import rust.nostr.protocol.Nip19Profile
+import rust.nostr.protocol.PublicKey
 
 @Entity(tableName = "profile")
 data class ProfileEntity(
@@ -23,5 +25,9 @@ data class ProfileEntity(
                 createdAt = validatedProfile.createdAt
             )
         }
+    }
+
+    fun toNip19(): Nip19Profile {
+        return Nip19Profile(publicKey = PublicKey.fromHex(pubkey), relays = emptyList())
     }
 }

@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material.icons.filled.ThumbDownAlt
 import androidx.compose.material.icons.filled.ThumbDownOffAlt
 import androidx.compose.material.icons.filled.ThumbUpAlt
@@ -26,6 +27,7 @@ val CommentIcon = Icons.AutoMirrored.Filled.Comment
 val FriendIcon = Icons.Default.VerifiedUser
 val TrustedIcon = FriendIcon
 val AccountIcon = Icons.Default.AccountCircle
+val HashtagIcon = Icons.Default.Tag
 val UpvoteOffIcon = Icons.Default.ThumbUpOffAlt
 val DownvoteOffIcon = Icons.Default.ThumbDownOffAlt
 val UpvoteIcon = Icons.Default.ThumbUpAlt

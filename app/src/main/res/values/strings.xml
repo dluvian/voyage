@@ -30,4 +30,6 @@
     <string name="search">Search</string>
     <string name="search_">Search…</string>
     <string name="invalid_npub_nprofile">Invalid npub/nprofile</string>
+    <string name="topics">Topics</string>
+    <string name="profiles">Profiles</string>
 </resources>

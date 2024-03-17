@@ -15,10 +15,10 @@ import com.dluvian.voyage.core.SearchViewAction
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.UpdateSearchText
 import com.dluvian.voyage.core.isTopicStr
-import com.dluvian.voyage.core.model.Profile
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.provider.TopicProvider
+import com.dluvian.voyage.data.room.entity.ProfileEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -33,7 +33,7 @@ class SearchViewModel(
 ) : ViewModel() {
     private val maxSearchResult = 5
     val topics = mutableStateOf<List<String>>(emptyList())
-    val profiles = mutableStateOf<List<Profile>>(emptyList())
+    val profiles = mutableStateOf<List<ProfileEntity>>(emptyList())
 
     fun handle(searchViewAction: SearchViewAction) {
         when (searchViewAction) {
@@ -77,10 +77,8 @@ class SearchViewModel(
             .toList()
 
         val hashtagged = "#$text"
-        val result = if (suggestions.contains(text) || !hashtagged.isTopicStr()) suggestions
+        return if (suggestions.contains(text) || !hashtagged.isTopicStr()) suggestions
         else mutableListOf(text) + suggestions
-
-        return result
     }
 
     private fun searchText(
