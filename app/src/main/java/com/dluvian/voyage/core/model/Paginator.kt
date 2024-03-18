@@ -8,7 +8,7 @@ import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.FEED_OFFSET
 import com.dluvian.voyage.core.FEED_PAGE_SIZE
 import com.dluvian.voyage.core.Fn
-import com.dluvian.voyage.data.model.FeedSettings
+import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.provider.FeedProvider
@@ -33,25 +33,25 @@ class Paginator(
     override val page: MutableState<StateFlow<List<RootPost>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
 
-    private lateinit var feedSettings: FeedSettings
+    private lateinit var feedSetting: FeedSetting
 
-    fun init(settings: FeedSettings) {
-        val isSame = when (settings) {
+    fun init(setting: FeedSetting) {
+        val isSame = when (setting) {
             is HomeFeedSetting -> page.value.value.isNotEmpty()
-            is TopicFeedSetting -> page.value.value.isNotEmpty() && feedSettings == settings
+            is TopicFeedSetting -> page.value.value.isNotEmpty() && feedSetting == setting
         }
         if (isSame) {
             Log.i(tag, "Skip init. Settings are the same")
             return
         }
 
-        feedSettings = settings
+        feedSetting = setting
 
         scope.launch {
             page.value = feedProvider.getFeedFlow(
                 until = getCurrentSecs(),
                 size = FEED_PAGE_SIZE,
-                settings = settings
+                setting = setting
             )
                 .stateIn(scope, SharingStarted.WhileSubscribed(), emptyList())
         }
@@ -93,7 +93,7 @@ class Paginator(
         return feedProvider.getFeedFlow(
             until = until,
             size = FEED_PAGE_SIZE,
-            settings = feedSettings
+            setting = feedSetting
         )
     }
 }

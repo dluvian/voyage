@@ -3,11 +3,12 @@ package com.dluvian.voyage.data.room.view
 import androidx.room.DatabaseView
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.core.Topic
 
 @DatabaseView(
     "SELECT post.id, " +
             "post.pubkey, " +
-            "(SELECT hashtag FROM hashtag WHERE hashtag.postId = post.id AND hashtag IN (SELECT topic FROM topic WHERE myPubkey = (SELECT pubkey FROM account LIMIT 1)) LIMIT 1) AS topic, " +
+            "(SELECT hashtag FROM hashtag WHERE hashtag.postId = post.id AND hashtag IN (SELECT topic FROM topic WHERE myPubkey = (SELECT pubkey FROM account LIMIT 1)) LIMIT 1) AS myTopic, " +
             "post.title, " +
             "post.content, " +
             "post.createdAt, " +
@@ -25,7 +26,7 @@ data class RootPostView(
     val pubkey: PubkeyHex,
     val authorIsFriend: Boolean,
     val authorIsTrusted: Boolean,
-    val topic: String?,
+    val myTopic: Topic?,
     val title: String?,
     val content: String,
     val createdAt: Long,

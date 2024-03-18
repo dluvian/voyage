@@ -14,7 +14,8 @@ class TopicViewModel(feedProvider: FeedProvider) : ViewModel() {
     val paginator = Paginator(feedProvider = feedProvider, scope = viewModelScope)
 
     fun openTopic(topicNavView: TopicNavView) {
-        paginator.init(settings = TopicFeedSetting(topic = topicNavView.topic))
+        val stripped = topicNavView.topic.removePrefix("#")
+        paginator.init(setting = TopicFeedSetting(topic = stripped))
     }
 
     fun handle(topicViewAction: TopicViewAction) {

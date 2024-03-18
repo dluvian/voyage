@@ -11,7 +11,7 @@ data class RootPost(
     val id: EventIdHex,
     val pubkey: PubkeyHex,
     val trustType: TrustType,
-    val topic: String?,
+    val myTopic: String?,
     val createdAt: Long,
     val title: String,
     val content: String,
@@ -28,7 +28,7 @@ data class RootPost(
                     isFriend = rootPostView.authorIsFriend,
                     isWebOfTrust = rootPostView.authorIsTrusted
                 ),
-                topic = rootPostView.topic,
+                myTopic = rootPostView.myTopic,
                 createdAt = rootPostView.createdAt,
                 title = rootPostView.title.orEmpty(),
                 content = rootPostView.content,

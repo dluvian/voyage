@@ -2,6 +2,7 @@ package com.dluvian.voyage.data.room.dao
 
 import androidx.room.Dao
 import androidx.room.Query
+import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.room.view.RootPostView
 import kotlinx.coroutines.flow.Flow
 
@@ -10,9 +11,19 @@ interface RootPostDao {
     @Query(
         "SELECT * " +
                 "FROM RootPostView " +
-                "WHERE createdAt <= :until AND (authorIsFriend OR topic IS NOT NULL)" +
+                "WHERE createdAt <= :until AND (authorIsFriend OR myTopic IS NOT NULL)" +
                 "ORDER BY createdAt DESC " +
                 "LIMIT :size"
     )
-    fun getRootPostFlow(until: Long, size: Int): Flow<List<RootPostView>>
+    fun getHomeRootPostFlow(until: Long, size: Int): Flow<List<RootPostView>>
+
+    @Query(
+        "SELECT * " +
+                "FROM RootPostView " +
+                "WHERE createdAt <= :until " +
+                "AND id IN (SELECT postId FROM hashtag WHERE hashtag = :topic) " +
+                "ORDER BY createdAt DESC " +
+                "LIMIT :size"
+    )
+    fun getTopicRootPostFlow(topic: Topic, until: Long, size: Int): Flow<List<RootPostView>>
 }

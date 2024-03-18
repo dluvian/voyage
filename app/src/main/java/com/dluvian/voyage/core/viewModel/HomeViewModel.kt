@@ -21,7 +21,7 @@ class HomeViewModel(
     val paginator = Paginator(feedProvider = feedProvider, scope = viewModelScope)
 
     init {
-        paginator.init(settings = HomeFeedSetting)
+        paginator.init(setting = HomeFeedSetting)
     }
 
     fun handle(homeViewAction: HomeViewAction) {

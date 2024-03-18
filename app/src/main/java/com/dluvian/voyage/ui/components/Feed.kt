@@ -101,7 +101,7 @@ private fun PostRow(post: RootPost, onUpdate: OnUpdate) {
 private fun Header(post: RootPost) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         TrustIndicator(trustType = post.trustType)
-        post.topic?.let { topic ->
+        post.myTopic?.let { topic ->
             TopicChip(
                 modifier = Modifier
                     .weight(weight = 1f, fill = false)

@@ -10,7 +10,7 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
 import com.dluvian.voyage.core.RND_RESUB_COUNT
 import com.dluvian.voyage.data.account.IPubkeyProvider
-import com.dluvian.voyage.data.model.FeedSettings
+import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.FilterWrapper
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.TopicFeedSetting
@@ -49,18 +49,18 @@ class NostrSubscriber(
         friendProvider = friendProvider
     )
 
-    suspend fun subFeed(until: Long, limit: Int, settings: FeedSettings) {
+    suspend fun subFeed(until: Long, limit: Int, setting: FeedSetting) {
         val untilTimestamp = Timestamp.fromSecs(until.toULong())
         val adjustedLimit = (5L * limit).toULong() // We don't know if we receive enough root posts
 
-        val subscriptions = when (settings) {
+        val subscriptions = when (setting) {
             is HomeFeedSetting -> feedSubscriber.getHomeFeedSubscriptions(
                 until = untilTimestamp,
                 limit = adjustedLimit
             )
 
             is TopicFeedSetting -> feedSubscriber.getTopicFeedSubscription(
-                topic = settings.topic,
+                topic = setting.topic,
                 until = untilTimestamp,
                 limit = adjustedLimit
             )
