@@ -83,6 +83,11 @@ sealed class HomeViewAction : UIEvent()
 data object HomeViewRefresh : HomeViewAction()
 data object HomeViewAppend : HomeViewAction()
 
+
+sealed class TopicViewAction : UIEvent()
+data object TopicViewRefresh : TopicViewAction()
+data object TopicViewAppend : TopicViewAction()
+
 sealed class SettingsViewAction : UIEvent()
 data object UseDefaultAccount : SettingsViewAction()
 data class RequestExternalAccount(val context: Context) : SettingsViewAction()

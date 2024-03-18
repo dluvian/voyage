@@ -92,7 +92,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             ThreadViewModel()
         },
         topicVM = viewModel {
-            TopicViewModel()
+            TopicViewModel(feedProvider = appContainer.feedProvider)
         }
     )
 }

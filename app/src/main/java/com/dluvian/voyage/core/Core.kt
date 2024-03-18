@@ -20,6 +20,7 @@ class Core(
             is NavEvent -> navigator.handle(navEvent = uiEvent)
             is VoteEvent -> appContainer.postVoter.handle(voteEvent = uiEvent)
             is HomeViewAction -> vmContainer.homeVM.handle(homeViewAction = uiEvent)
+            is TopicViewAction -> vmContainer.topicVM.handle(topicViewAction = uiEvent)
             is SettingsViewAction -> vmContainer.settingsVM.handle(settingsViewAction = uiEvent)
             is SearchViewAction -> vmContainer.searchVM.handle(searchViewAction = uiEvent)
             is ProcessExternalSignature -> viewModelScope.launch {
