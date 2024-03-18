@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -24,7 +23,6 @@ class Paginator(private val feedProvider: FeedProvider, private val scope: Corou
     IPaginator {
     override val isRefreshing = mutableStateOf(false)
     override val isAppending = mutableStateOf(false)
-    override val isAppendable = mutableStateOf(false)
     override val page: MutableState<StateFlow<List<RootPost>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
 
@@ -51,7 +49,7 @@ class Paginator(private val feedProvider: FeedProvider, private val scope: Corou
 
 
     fun append() {
-        if (!isAppendable.value || isAppending.value || isRefreshing.value) return
+        if (isAppending.value || isRefreshing.value || page.value.value.isEmpty()) return
 
         isAppending.value = true
 
@@ -67,6 +65,5 @@ class Paginator(private val feedProvider: FeedProvider, private val scope: Corou
 
     private fun getFlow(until: Long): Flow<List<RootPost>> {
         return feedProvider.getFeedFlow(until = until, size = FEED_PAGE_SIZE)
-            .onEach { isAppendable.value = it.size >= FEED_PAGE_SIZE }
     }
 }

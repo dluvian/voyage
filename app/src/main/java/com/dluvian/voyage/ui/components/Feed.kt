@@ -42,7 +42,6 @@ fun Feed(
 ) {
     val isRefreshing by paginator.isRefreshing
     val isAppending by paginator.isAppending
-    val isAppendable by paginator.isAppendable
     val postsOuterState by paginator.page
     val posts by postsOuterState.collectAsState()
 
@@ -56,7 +55,7 @@ fun Feed(
                 )
                 HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = spacing.tiny)
             }
-            if (isAppendable) {
+            if (posts.isNotEmpty()) {
                 item {
                     Button(onClick = onAppend) {
                         Text(text = "Next Page") // TODO: Make it look good
