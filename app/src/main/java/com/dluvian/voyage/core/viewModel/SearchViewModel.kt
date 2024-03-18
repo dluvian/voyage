@@ -63,7 +63,7 @@ class SearchViewModel(
         updateJob?.cancel()
         updateJob = viewModelScope.launch(Dispatchers.IO) {
             delay(SHORT_DEBOUNCE)
-            val trimmed = text.trim().dropWhile { it == '#' }.trim().lowercase()
+            val trimmed = text.trim().dropWhile { it == '#' || it == ' ' }.trim().lowercase()
             topics.value = getTopicSuggestions(text = trimmed)
         }
     }
@@ -117,7 +117,7 @@ class SearchViewModel(
         }
         snackbar.showToast(
             scope = viewModelScope,
-            msg = context.getString(R.string.invalid_npub_nprofile)
+            msg = context.getString(R.string.invalid_search)
         )
     }
 }

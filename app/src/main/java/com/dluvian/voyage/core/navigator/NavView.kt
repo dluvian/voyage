@@ -37,7 +37,7 @@ sealed class NonMainNavView : NavView() {
             SearchNavView -> null
             is ProfileNavView -> this.nip19Profile.toBech32()
             is ThreadNavView -> this.nip19Event.eventId().toHex()
-            is TopicNavView -> this.topic
+            is TopicNavView -> "#${this.topic}"
         }
     }
 }
