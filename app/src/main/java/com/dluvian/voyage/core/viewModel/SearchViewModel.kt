@@ -9,12 +9,13 @@ import com.dluvian.nostr_kt.removeMentionChar
 import com.dluvian.nostr_kt.removeNostrUri
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.DELAY_10SEC
+import com.dluvian.voyage.core.MAX_TOPIC_LEN
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.SearchText
 import com.dluvian.voyage.core.SearchViewAction
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.UpdateSearchText
-import com.dluvian.voyage.core.isTopicStr
+import com.dluvian.voyage.core.isBareTopicStr
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.provider.TopicProvider
@@ -31,7 +32,7 @@ class SearchViewModel(
     private val nostrSubscriber: NostrSubscriber,
     private val snackbar: SnackbarHostState
 ) : ViewModel() {
-    private val maxSearchResult = 5
+    private val maxSearchResult = 7
     val topics = mutableStateOf<List<String>>(emptyList())
     val profiles = mutableStateOf<List<ProfileEntity>>(emptyList())
 
@@ -62,7 +63,7 @@ class SearchViewModel(
         updateJob?.cancel()
         updateJob = viewModelScope.launch(Dispatchers.IO) {
             delay(SHORT_DEBOUNCE)
-            val trimmed = text.trim().dropWhile { it == '#' }.trim()
+            val trimmed = text.trim().dropWhile { it == '#' }.trim().lowercase()
             topics.value = getTopicSuggestions(text = trimmed)
         }
     }
@@ -72,12 +73,14 @@ class SearchViewModel(
             .asSequence()
             .filter { it.contains(other = text, ignoreCase = true) }
             .sortedBy { it.length }
-            .distinct()
+            .distinctBy { it.lowercase() }
             .take(maxSearchResult)
             .toList()
 
-        val hashtagged = "#$text"
-        return if (suggestions.contains(text) || !hashtagged.isTopicStr()) suggestions
+        return if (text.length > MAX_TOPIC_LEN ||
+            !text.isBareTopicStr() ||
+            suggestions.contains(text)
+        ) suggestions
         else mutableListOf(text) + suggestions
     }
 
@@ -87,9 +90,16 @@ class SearchViewModel(
         onOpenTopic: (Topic) -> Unit,
         onOpenProfile: (Nip19Profile) -> Unit
     ) {
-        val trimmed = text.trim()
-        if (trimmed.isTopicStr()) {
-            onOpenTopic(trimmed)
+        if (topics.value.isNotEmpty()) {
+            onOpenTopic(topics.value.first())
+            return
+        }
+        if (profiles.value.isNotEmpty()) {
+            onOpenProfile(profiles.value.first().toNip19())
+            return
+        }
+        if (text.isBareTopicStr()) {
+            onOpenTopic(text.lowercase())
             return
         }
 

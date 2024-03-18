@@ -12,7 +12,7 @@ class TopicProvider(topicDao: TopicDao) {
     private val topics = topicDao.getTopicsFlow()
         .stateIn(scope, SharingStarted.Eagerly, emptyList())
     private val allTopics = topicDao.getAllTopicsFlow()
-        .stateIn(scope, SharingStarted.WhileSubscribed(), emptyList())
+        .stateIn(scope, SharingStarted.Eagerly, emptyList())
 
     fun getTopics(): List<Topic> {
         return topics.value

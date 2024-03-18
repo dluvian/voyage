@@ -43,7 +43,7 @@ fun SearchView(vm: SearchViewModel, onUpdate: OnUpdate) {
             ClickableRow(
                 header = topic,
                 imageVector = HashtagIcon,
-                onClick = { onUpdate(OpenTopic(topic = "#$topic")) })
+                onClick = { onUpdate(OpenTopic(topic = topic)) })
         }
         if (profiles.isNotEmpty()) {
             item {
