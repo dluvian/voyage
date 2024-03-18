@@ -1,6 +1,9 @@
 package com.dluvian.voyage.ui.views.nonMain.subViews
 
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
@@ -18,6 +21,7 @@ import com.dluvian.voyage.core.OpenTopic
 import com.dluvian.voyage.core.viewModel.SearchViewModel
 import com.dluvian.voyage.ui.components.ClickableRow
 import com.dluvian.voyage.ui.theme.HashtagIcon
+import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
 fun SearchView(vm: SearchViewModel, onUpdate: OnUpdate) {
@@ -29,6 +33,7 @@ fun SearchView(vm: SearchViewModel, onUpdate: OnUpdate) {
     }
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
+        item { Spacer(modifier = Modifier.height(spacing.large)) }
         if (topics.isNotEmpty()) {
             item {
                 SectionHeader(header = stringResource(id = R.string.topics))
@@ -56,8 +61,12 @@ fun SearchView(vm: SearchViewModel, onUpdate: OnUpdate) {
 @Composable
 private fun SectionHeader(header: String) {
     Text(
+        modifier = Modifier.padding(
+            horizontal = spacing.bigScreenEdge,
+            vertical = spacing.large
+        ),
         text = header,
-        style = MaterialTheme.typography.headlineMedium,
+        style = MaterialTheme.typography.headlineSmall,
         fontWeight = FontWeight.SemiBold
     )
 }
