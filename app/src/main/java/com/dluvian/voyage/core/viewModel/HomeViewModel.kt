@@ -6,6 +6,7 @@ import com.dluvian.voyage.core.HomeViewAction
 import com.dluvian.voyage.core.HomeViewAppend
 import com.dluvian.voyage.core.HomeViewRefresh
 import com.dluvian.voyage.core.model.Paginator
+import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.provider.FeedProvider
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +21,7 @@ class HomeViewModel(
     val paginator = Paginator(feedProvider = feedProvider, scope = viewModelScope)
 
     init {
-        paginator.init()
+        paginator.init(settings = HomeFeedSetting)
     }
 
     fun handle(homeViewAction: HomeViewAction) {

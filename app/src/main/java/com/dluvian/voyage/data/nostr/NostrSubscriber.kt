@@ -10,7 +10,10 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
 import com.dluvian.voyage.core.RND_RESUB_COUNT
 import com.dluvian.voyage.data.account.IPubkeyProvider
+import com.dluvian.voyage.data.model.FeedSettings
 import com.dluvian.voyage.data.model.FilterWrapper
+import com.dluvian.voyage.data.model.HomeFeedSetting
+import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
@@ -29,9 +32,9 @@ import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Timestamp
 
 class NostrSubscriber(
+    topicProvider: TopicProvider,
     private val relayProvider: RelayProvider,
     private val webOfTrustProvider: WebOfTrustProvider,
-    private val topicProvider: TopicProvider,
     private val friendProvider: FriendProvider,
     private val pubkeyProvider: IPubkeyProvider,
     private val nostrClient: NostrClient,
@@ -39,36 +42,32 @@ class NostrSubscriber(
 ) {
     private val tag = "NostrSubscriber"
     private val scope = CoroutineScope(Dispatchers.IO)
+    private val feedSubscriber = NostrFeedSubscriber(
+        scope = scope,
+        relayProvider = relayProvider,
+        topicProvider = topicProvider,
+        friendProvider = friendProvider
+    )
 
-    fun subFeed(until: Long, limit: Int) {
-        val adjustedLimit = 5L * limit // We don't know if we receive enough root posts
+    suspend fun subFeed(until: Long, limit: Int, settings: FeedSettings) {
         val untilTimestamp = Timestamp.fromSecs(until.toULong())
+        val adjustedLimit = (5L * limit).toULong() // We don't know if we receive enough root posts
 
-        scope.launch {
-            relayProvider
-                .getObserveRelays(observeFrom = friendProvider.getFriendPubkeys())
-                .forEach { (relayUrl, pubkeys) ->
-                    val publicKeys = pubkeys.map { PublicKey.fromHex(it) }
-                    val friendsNoteFilter = Filter()
-                        .kind(kind = Kind.fromEnum(KindEnum.TextNote)) // TODO: Support reposts
-                        .authors(authors = publicKeys)
-                        .until(timestamp = untilTimestamp)
-                        .limit(limit = limit.toULong())
-                    val friendsNoteFilters = listOf(FilterWrapper(friendsNoteFilter))
-                    subscribe(filters = friendsNoteFilters, relayUrl = relayUrl)
-                }
+        val subscriptions = when (settings) {
+            is HomeFeedSetting -> feedSubscriber.getHomeFeedSubscriptions(
+                until = untilTimestamp,
+                limit = adjustedLimit
+            )
+
+            is TopicFeedSetting -> feedSubscriber.getTopicFeedSubscription(
+                topic = settings.topic,
+                until = untilTimestamp,
+                limit = adjustedLimit
+            )
         }
 
-        val topics = topicProvider.getTopics()
-        if (topics.isEmpty()) return
-
-        val topicedNoteFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.TextNote))
-            .hashtags(hashtags = topicProvider.getTopics())
-            .until(timestamp = untilTimestamp)
-            .limit(limit = adjustedLimit.toULong())
-        val topicedNoteFilters = listOf(FilterWrapper(topicedNoteFilter))
-        relayProvider.getReadRelays().forEach { relay ->
-            subscribe(filters = topicedNoteFilters, relayUrl = relay)
+        subscriptions.forEach { (relay, filters) ->
+            subscribe(relayUrl = relay, filters = filters)
         }
     }
 
@@ -101,7 +100,7 @@ class NostrSubscriber(
             )
 
             relayProvider.getReadRelays().forEach { relay ->
-                subscribe(filters = filters, relayUrl = relay)
+                subscribe(relayUrl = relay, filters = filters)
             }
         }
         votesAndRepliesJob?.invokeOnCompletion { ex ->
@@ -135,7 +134,7 @@ class NostrSubscriber(
                     .authors(authors = pubkeys.map { PublicKey.fromHex(it) })
                     .until(timestamp = timestamp)
                 val filters = listOf(FilterWrapper(profileFilter))
-                subscribe(filters = filters, relayUrl = relay)
+                subscribe(relayUrl = relay, filters = filters)
             }
     }
 
@@ -166,7 +165,7 @@ class NostrSubscriber(
         )
 
         relayProvider.getReadRelays().forEach { relay ->
-            subscribe(filters = filters, relayUrl = relay)
+            subscribe(relayUrl = relay, filters = filters)
         }
     }
 
@@ -184,7 +183,7 @@ class NostrSubscriber(
                     .authors(authors = pubkeys.map { PublicKey.fromHex(it) })
                     .until(timestamp = timestamp)
                 val filters = listOf(FilterWrapper(nip65Filter))
-                subscribe(filters = filters, relayUrl = relay)
+                subscribe(relayUrl = relay, filters = filters)
             }
     }
 
@@ -202,11 +201,11 @@ class NostrSubscriber(
                     .authors(authors = pubkeys.map { PublicKey.fromHex(it) })
                     .until(timestamp = timestamp)
                 val filters = listOf(FilterWrapper(webOfTrustFilter))
-                subscribe(filters = filters, relayUrl = relay)
+                subscribe(relayUrl = relay, filters = filters)
             }
     }
 
-    private fun subscribe(filters: List<FilterWrapper>, relayUrl: RelayUrl): SubId? {
+    private fun subscribe(relayUrl: RelayUrl, filters: List<FilterWrapper>): SubId? {
         if (filters.isEmpty()) return null
         Log.d(tag, "Subscribe ${filters.size} in $relayUrl")
 

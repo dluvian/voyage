@@ -1,5 +1,6 @@
 package com.dluvian.voyage.core.model
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.dluvian.nostr_kt.getCurrentSecs
@@ -7,6 +8,9 @@ import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.FEED_OFFSET
 import com.dluvian.voyage.core.FEED_PAGE_SIZE
 import com.dluvian.voyage.core.Fn
+import com.dluvian.voyage.data.model.FeedSettings
+import com.dluvian.voyage.data.model.HomeFeedSetting
+import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.provider.FeedProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,16 +23,38 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 
-class Paginator(private val feedProvider: FeedProvider, private val scope: CoroutineScope) :
-    IPaginator {
+class Paginator(
+    private val feedProvider: FeedProvider,
+    private val scope: CoroutineScope
+) : IPaginator {
+    private val tag = "Paginator"
     override val isRefreshing = mutableStateOf(false)
     override val isAppending = mutableStateOf(false)
     override val page: MutableState<StateFlow<List<RootPost>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
 
-    fun init() {
-        page.value = feedProvider.getFeedFlow(until = getCurrentSecs(), size = FEED_PAGE_SIZE)
-            .stateIn(scope, SharingStarted.WhileSubscribed(), emptyList())
+    private lateinit var feedSettings: FeedSettings
+
+    fun init(settings: FeedSettings) {
+        val isSame = when (settings) {
+            is HomeFeedSetting -> page.value.value.isNotEmpty()
+            is TopicFeedSetting -> page.value.value.isNotEmpty() && feedSettings == settings
+        }
+        if (isSame) {
+            Log.i(tag, "Skip init. Settings are the same")
+            return
+        }
+
+        feedSettings = settings
+
+        scope.launch {
+            page.value = feedProvider.getFeedFlow(
+                until = getCurrentSecs(),
+                size = FEED_PAGE_SIZE,
+                settings = settings
+            )
+                .stateIn(scope, SharingStarted.WhileSubscribed(), emptyList())
+        }
     }
 
     fun refresh(onSub: Fn = {}) {
@@ -63,7 +89,11 @@ class Paginator(private val feedProvider: FeedProvider, private val scope: Corou
         }
     }
 
-    private fun getFlow(until: Long): Flow<List<RootPost>> {
-        return feedProvider.getFeedFlow(until = until, size = FEED_PAGE_SIZE)
+    private suspend fun getFlow(until: Long): Flow<List<RootPost>> {
+        return feedProvider.getFeedFlow(
+            until = until,
+            size = FEED_PAGE_SIZE,
+            settings = feedSettings
+        )
     }
 }

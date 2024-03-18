@@ -67,9 +67,9 @@ class AppContainer(context: Context) {
     val topicProvider = TopicProvider(topicDao = roomDb.topicDao())
 
     val nostrSubscriber = NostrSubscriber(
+        topicProvider = topicProvider,
         relayProvider = relayProvider,
         webOfTrustProvider = webOfTrustProvider,
-        topicProvider = topicProvider,
         friendProvider = friendProvider,
         pubkeyProvider = accountPubkeyProvider,
         nostrClient = nostrClient,
