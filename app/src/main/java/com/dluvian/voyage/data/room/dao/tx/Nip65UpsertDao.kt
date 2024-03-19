@@ -25,7 +25,7 @@ interface Nip65UpsertDao {
         }
 
         internalUpsert(nip65Entities = list)
-        internalDeleteOutdated(newestCreatedAt = validatedNip65.createdAt)
+        internalDeleteOutdated(newestCreatedAt = validatedNip65.createdAt, pubkey = pubkey)
     }
 
     @Query("SELECT MAX(createdAt) FROM nip65 WHERE pubkey = :pubkey")
@@ -37,6 +37,6 @@ interface Nip65UpsertDao {
     @Query("DELETE FROM nip65 WHERE pubkey = :pubkey")
     suspend fun internalDeleteList(pubkey: PubkeyHex)
 
-    @Query("DELETE FROM nip65 WHERE createdAt < :newestCreatedAt")
-    suspend fun internalDeleteOutdated(newestCreatedAt: Long)
+    @Query("DELETE FROM nip65 WHERE createdAt < :newestCreatedAt AND pubkey = :pubkey")
+    suspend fun internalDeleteOutdated(newestCreatedAt: Long, pubkey: PubkeyHex)
 }

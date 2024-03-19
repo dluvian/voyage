@@ -31,7 +31,10 @@ interface WebOfTrustUpsertDao {
 
         runCatching {
             internalUpsert(webOfTrustEntities = list)
-            internalDeleteOutdated(newestCreatedAt = validatedWebOfTrust.createdAt)
+            internalDeleteOutdated(
+                newestCreatedAt = validatedWebOfTrust.createdAt,
+                friendPubkey = friendPubkey
+            )
         }.onFailure {
             Log.w(TAG, "Failed to upsert wot: ${it.message}")
         }
@@ -46,6 +49,10 @@ interface WebOfTrustUpsertDao {
     @Query("DELETE FROM weboftrust WHERE friendPubkey = :friendPubkey")
     suspend fun internalDeleteList(friendPubkey: PubkeyHex)
 
-    @Query("DELETE FROM weboftrust WHERE createdAt < :newestCreatedAt")
-    suspend fun internalDeleteOutdated(newestCreatedAt: Long)
+    @Query(
+        "DELETE FROM weboftrust " +
+                "WHERE createdAt < :newestCreatedAt " +
+                "AND friendPubkey = :friendPubkey"
+    )
+    suspend fun internalDeleteOutdated(newestCreatedAt: Long, friendPubkey: PubkeyHex)
 }
