@@ -32,17 +32,17 @@ class TopicViewModel(
             ?: topicProvider.isFollowed(topic = stripped)
     }
 
-    fun handle(topicViewAction: TopicViewAction) {
-        when (topicViewAction) {
+    fun handle(action: TopicViewAction) {
+        when (action) {
             is TopicViewRefresh -> paginator.refresh()
             is TopicViewAppend -> paginator.append()
             is TopicViewFollowTopic -> {
-                topicFollower.follow(topic = topicViewAction.topic)
+                topicFollower.follow(topic = action.topic)
                 isFollowed.value = true
             }
 
             is TopicViewUnfollowTopic -> {
-                topicFollower.unfollow(topic = topicViewAction.topic)
+                topicFollower.unfollow(topic = action.topic)
                 isFollowed.value = false
             }
         }

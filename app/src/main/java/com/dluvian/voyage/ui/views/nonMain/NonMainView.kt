@@ -37,6 +37,7 @@ fun NonMainView(
 
         is ProfileNavView -> ProfileView(
             vm = core.vmContainer.profileVM,
+            snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate
         )
 

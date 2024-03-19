@@ -1,6 +1,7 @@
 package com.dluvian.voyage.data.nostr
 
 import com.dluvian.nostr_kt.RelayUrl
+import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.putOrAdd
 import com.dluvian.voyage.data.model.FilterWrapper
@@ -78,6 +79,29 @@ class NostrFeedSubscriber(
 
         relayProvider.getReadRelays().forEach { relay ->
             result.putOrAdd(relay, topicedNoteFilters)
+        }
+
+        return result
+    }
+
+
+    fun getProfileFeedSubscription(
+        pubkey: PubkeyHex,
+        until: Timestamp,
+        limit: ULong
+    ): Map<RelayUrl, List<FilterWrapper>> {
+        if (limit <= 0u || pubkey.isBlank()) return emptyMap()
+
+        val result = mutableMapOf<RelayUrl, MutableList<FilterWrapper>>()
+
+        val pubkeyNoteFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.TextNote))
+            .author(PublicKey.fromHex(hex = pubkey))
+            .until(timestamp = until)
+            .limit(limit = limit)
+        val pubkeyNoteFilters = mutableListOf(FilterWrapper(pubkeyNoteFilter))
+
+        relayProvider.getReadRelays().forEach { relay ->
+            result.putOrAdd(relay, pubkeyNoteFilters)
         }
 
         return result

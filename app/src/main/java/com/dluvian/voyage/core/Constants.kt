@@ -4,7 +4,6 @@ const val MAX_CONTENT_LEN = 8_192
 const val MAX_TITLE_LEN = 256
 const val MAX_TOPIC_LEN = 32
 const val MAX_NAME_LEN = 32
-const val MAX_PICTURE_URL_LEN = MAX_TITLE_LEN
 
 const val DELAY_1SEC = 1000L
 const val DELAY_10SEC = 10 * DELAY_1SEC

@@ -24,8 +24,8 @@ class HomeViewModel(
         paginator.init(setting = HomeFeedSetting)
     }
 
-    fun handle(homeViewAction: HomeViewAction) {
-        when (homeViewAction) {
+    fun handle(action: HomeViewAction) {
+        when (action) {
             is HomeViewRefresh -> refresh()
             is HomeViewAppend -> paginator.append()
         }

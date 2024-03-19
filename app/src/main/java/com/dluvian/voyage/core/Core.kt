@@ -19,10 +19,11 @@ class Core(
         when (uiEvent) {
             is NavEvent -> navigator.handle(navEvent = uiEvent)
             is VoteEvent -> appContainer.postVoter.handle(voteEvent = uiEvent)
-            is HomeViewAction -> vmContainer.homeVM.handle(homeViewAction = uiEvent)
-            is TopicViewAction -> vmContainer.topicVM.handle(topicViewAction = uiEvent)
-            is SettingsViewAction -> vmContainer.settingsVM.handle(settingsViewAction = uiEvent)
-            is SearchViewAction -> vmContainer.searchVM.handle(searchViewAction = uiEvent)
+            is HomeViewAction -> vmContainer.homeVM.handle(action = uiEvent)
+            is TopicViewAction -> vmContainer.topicVM.handle(action = uiEvent)
+            is ProfileViewAction -> vmContainer.profileVM.handle(action = uiEvent)
+            is SettingsViewAction -> vmContainer.settingsVM.handle(action = uiEvent)
+            is SearchViewAction -> vmContainer.searchVM.handle(action = uiEvent)
             is ProcessExternalSignature -> viewModelScope.launch {
                 externalSignerHandler.processExternalSignature(
                     result = uiEvent.activityResult

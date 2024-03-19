@@ -86,7 +86,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             )
         },
         profileVM = viewModel {
-            ProfileViewModel()
+            ProfileViewModel(feedProvider = appContainer.feedProvider)
         },
         threadVM = viewModel {
             ThreadViewModel()

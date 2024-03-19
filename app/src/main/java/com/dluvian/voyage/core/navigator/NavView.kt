@@ -27,20 +27,7 @@ data object DiscoverNavView : MainNavView()
 data object InboxNavView : MainNavView()
 
 
-sealed class NonMainNavView : NavView() {
-    @Composable
-    @Stable
-    fun getTitle(): String? {
-        return when (this) {
-            is CreatePostNavView -> null
-            SettingsNavView -> stringResource(id = R.string.settings)
-            SearchNavView -> null
-            is ProfileNavView -> this.nip19Profile.toBech32()
-            is ThreadNavView -> this.nip19Event.eventId().toHex()
-            is TopicNavView -> "#${this.topic}"
-        }
-    }
-}
+sealed class NonMainNavView : NavView()
 
 
 sealed class SimpleNonMainNavView : NonMainNavView()

@@ -10,6 +10,7 @@ import com.dluvian.voyage.core.FEED_PAGE_SIZE
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
+import com.dluvian.voyage.data.model.ProfileFeedSetting
 import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.provider.FeedProvider
 import kotlinx.coroutines.CoroutineScope
@@ -39,6 +40,7 @@ class Paginator(
         val isSame = when (setting) {
             is HomeFeedSetting -> page.value.value.isNotEmpty()
             is TopicFeedSetting -> page.value.value.isNotEmpty() && feedSetting == setting
+            is ProfileFeedSetting -> page.value.value.isNotEmpty() && feedSetting == setting
         }
         if (isSame) {
             Log.i(tag, "Skip init. Settings are the same")

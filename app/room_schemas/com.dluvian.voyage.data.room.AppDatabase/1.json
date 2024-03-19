@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "c62e1151c88f5b9dfb25309dbc3d5865",
+    "identityHash": "8f59fd7b8872f22b28f1f1ff8693c909",
     "entities": [
       {
         "tableName": "post",
@@ -446,7 +446,7 @@
       },
       {
         "tableName": "profile",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`pubkey` TEXT NOT NULL, `name` TEXT, `picture` TEXT, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`pubkey`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`pubkey` TEXT NOT NULL, `name` TEXT, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`pubkey`))",
         "fields": [
           {
             "fieldPath": "pubkey",
@@ -457,12 +457,6 @@
           {
             "fieldPath": "name",
             "columnName": "name",
-            "affinity": "TEXT",
-            "notNull": false
-          },
-          {
-            "fieldPath": "picture",
-            "columnName": "picture",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -491,7 +485,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c62e1151c88f5b9dfb25309dbc3d5865')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8f59fd7b8872f22b28f1f1ff8693c909')"
     ]
   }
 }

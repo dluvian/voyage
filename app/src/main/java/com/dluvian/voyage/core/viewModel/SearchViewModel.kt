@@ -36,14 +36,14 @@ class SearchViewModel(
     val topics = mutableStateOf<List<Topic>>(emptyList())
     val profiles = mutableStateOf<List<ProfileEntity>>(emptyList())
 
-    fun handle(searchViewAction: SearchViewAction) {
-        when (searchViewAction) {
-            is UpdateSearchText -> updateSearchText(text = searchViewAction.text)
+    fun handle(action: SearchViewAction) {
+        when (action) {
+            is UpdateSearchText -> updateSearchText(text = action.text)
             is SearchText -> searchText(
-                text = searchViewAction.text,
-                context = searchViewAction.context,
-                onOpenTopic = searchViewAction.onOpenTopic,
-                onOpenProfile = searchViewAction.onOpenProfile
+                text = action.text,
+                context = action.context,
+                onOpenTopic = action.onOpenTopic,
+                onOpenProfile = action.onOpenProfile
             )
         }
     }
@@ -96,10 +96,6 @@ class SearchViewModel(
         }
         if (profiles.value.isNotEmpty()) {
             onOpenProfile(profiles.value.first().toNip19())
-            return
-        }
-        if (text.isBareTopicStr()) {
-            onOpenTopic(text.lowercase())
             return
         }
 

@@ -32,17 +32,17 @@ class SettingsViewModel(
     lateinit var externalSignerHandler: ExternalSignerHandler
     private val tag = "SettingsViewModel"
 
-    fun handle(settingsViewAction: SettingsViewAction) {
-        when (settingsViewAction) {
+    fun handle(action: SettingsViewAction) {
+        when (action) {
             is UseDefaultAccount -> useDefaultAccount()
 
             is RequestExternalAccount -> requestExternalAccountData(
-                context = settingsViewAction.context
+                context = action.context
             )
 
             is ProcessExternalAccount -> processExternalAccountData(
-                result = settingsViewAction.activityResult,
-                context = settingsViewAction.context
+                result = action.activityResult,
+                context = action.context
             )
         }
     }

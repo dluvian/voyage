@@ -6,6 +6,7 @@ import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.data.interactor.PostVoter
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
+import com.dluvian.voyage.data.model.ProfileFeedSetting
 import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.room.dao.RootPostDao
@@ -33,6 +34,12 @@ class FeedProvider(
             is HomeFeedSetting -> rootPostDao.getHomeRootPostFlow(until = until, size = size)
             is TopicFeedSetting -> rootPostDao.getTopicRootPostFlow(
                 topic = setting.topic,
+                until = until,
+                size = size
+            )
+
+            is ProfileFeedSetting -> rootPostDao.getProfileRootPostFlow(
+                pubkey = setting.pubkey,
                 until = until,
                 size = size
             )

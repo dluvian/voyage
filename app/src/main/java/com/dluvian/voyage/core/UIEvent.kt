@@ -90,6 +90,14 @@ data object TopicViewAppend : TopicViewAction()
 data class TopicViewFollowTopic(val topic: Topic) : TopicViewAction()
 data class TopicViewUnfollowTopic(val topic: Topic) : TopicViewAction()
 
+
+sealed class ProfileViewAction : UIEvent()
+data object ProfileViewRefresh : ProfileViewAction()
+data object ProfileViewAppend : ProfileViewAction()
+data class ProfileViewFollowProfile(val pubkey: PubkeyHex) : ProfileViewAction()
+data class ProfileViewUnfollowProfile(val pubkey: PubkeyHex) : ProfileViewAction()
+
+
 sealed class SettingsViewAction : UIEvent()
 data object UseDefaultAccount : SettingsViewAction()
 data class RequestExternalAccount(val context: Context) : SettingsViewAction()

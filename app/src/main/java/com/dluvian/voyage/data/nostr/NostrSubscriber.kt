@@ -13,6 +13,7 @@ import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.FilterWrapper
 import com.dluvian.voyage.data.model.HomeFeedSetting
+import com.dluvian.voyage.data.model.ProfileFeedSetting
 import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
@@ -61,6 +62,12 @@ class NostrSubscriber(
 
             is TopicFeedSetting -> feedSubscriber.getTopicFeedSubscription(
                 topic = setting.topic,
+                until = untilTimestamp,
+                limit = adjustedLimit
+            )
+
+            is ProfileFeedSetting -> feedSubscriber.getProfileFeedSubscription(
+                pubkey = setting.pubkey,
                 until = untilTimestamp,
                 limit = adjustedLimit
             )
