@@ -75,14 +75,14 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         settingsVM = viewModel {
             SettingsViewModel(
                 accountManager = appContainer.accountManager,
-                snackbar = appContainer.snackbarHostState,
+                snackbar = appContainer.snackbar,
             )
         },
         searchVM = viewModel {
             SearchViewModel(
                 topicProvider = appContainer.topicProvider,
                 nostrSubscriber = appContainer.nostrSubscriber,
-                snackbar = appContainer.snackbarHostState,
+                snackbar = appContainer.snackbar,
             )
         },
         profileVM = viewModel {
@@ -92,7 +92,11 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             ThreadViewModel()
         },
         topicVM = viewModel {
-            TopicViewModel(feedProvider = appContainer.feedProvider)
+            TopicViewModel(
+                feedProvider = appContainer.feedProvider,
+                topicProvider = appContainer.topicProvider,
+                topicFollower = appContainer.topicFollower,
+            )
         }
     )
 }

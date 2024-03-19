@@ -184,8 +184,11 @@ class NostrClient(private val httpClient: OkHttpClient) {
     }
 
     private fun getRelayUrl(webSocket: WebSocket): RelayUrl? {
-        val snapshot = sockets.toMap()
-        return snapshot.entries.find { it.value == webSocket }?.key
+        val snapshot: List<Pair<RelayUrl, WebSocket>>
+        synchronized(sockets) {
+            snapshot = sockets.entries.map { Pair(it.key, it.value) }
+        }
+        return snapshot.find { it.second == webSocket }?.first
     }
 
     private fun removeSocket(socket: WebSocket) {

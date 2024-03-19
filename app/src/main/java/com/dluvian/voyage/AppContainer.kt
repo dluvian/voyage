@@ -18,6 +18,7 @@ import com.dluvian.voyage.data.event.EventProcessor
 import com.dluvian.voyage.data.event.EventQueue
 import com.dluvian.voyage.data.event.EventValidator
 import com.dluvian.voyage.data.interactor.PostVoter
+import com.dluvian.voyage.data.interactor.TopicFollower
 import com.dluvian.voyage.data.model.FilterWrapper
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.NostrSubscriber
@@ -115,12 +116,12 @@ class AppContainer(context: Context) {
         nostrService.initialize(initRelayUrls = relayProvider.getReadRelays())
     }
 
-    val snackbarHostState = SnackbarHostState()
+    val snackbar = SnackbarHostState()
 
     val postVoter = PostVoter(
         nostrService = nostrService,
         relayProvider = relayProvider,
-        snackbar = snackbarHostState,
+        snackbar = snackbar,
         context = context,
         voteDao = roomDb.voteDao(),
         voteUpsertDao = roomDb.voteUpsertDao()
@@ -129,5 +130,13 @@ class AppContainer(context: Context) {
         nostrSubscriber = nostrSubscriber,
         rootPostDao = roomDb.rootPostDao(),
         postVoter = postVoter
+    )
+    val topicFollower = TopicFollower(
+        nostrService = nostrService,
+        topicProvider = topicProvider,
+        relayProvider = relayProvider,
+        topicUpsertDao = roomDb.topicUpsertDao(),
+        snackbar = snackbar,
+        context = context,
     )
 }

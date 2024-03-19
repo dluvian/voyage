@@ -28,8 +28,6 @@ class Core(
                     result = uiEvent.activityResult
                 )
             }
-
-
         }
     }
 

@@ -1,6 +1,5 @@
 package com.dluvian.voyage.ui.components.bar
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -8,10 +7,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.style.TextOverflow
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.ui.components.ClickableSearchIcon
-import com.dluvian.voyage.ui.components.GoBackIconButton
 import com.dluvian.voyage.ui.components.TopBarCircleProgressIndicator
+import com.dluvian.voyage.ui.components.button.GoBackIconButton
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VoyageTopAppBar(
     title: String? = null,

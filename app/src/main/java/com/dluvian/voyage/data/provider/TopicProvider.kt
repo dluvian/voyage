@@ -9,16 +9,20 @@ import kotlinx.coroutines.flow.stateIn
 
 class TopicProvider(topicDao: TopicDao) {
     private val scope = CoroutineScope(Dispatchers.IO)
-    private val topics = topicDao.getTopicsFlow()
+    private val myTopics = topicDao.getTopicsFlow()
         .stateIn(scope, SharingStarted.Eagerly, emptyList())
     private val allTopics = topicDao.getAllTopicsFlow()
         .stateIn(scope, SharingStarted.Eagerly, emptyList())
 
-    fun getTopics(): List<Topic> {
-        return topics.value
+    fun getMyTopics(): List<Topic> {
+        return myTopics.value
     }
 
     fun getAllTopics(): List<Topic> {
         return allTopics.value
+    }
+
+    fun isFollowed(topic: Topic): Boolean {
+        return getMyTopics().contains(topic)
     }
 }

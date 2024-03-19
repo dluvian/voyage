@@ -5,6 +5,7 @@ import com.dluvian.nostr_kt.INostrListener
 import com.dluvian.nostr_kt.NostrClient
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
+import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.event.EventMaker
 import com.dluvian.voyage.data.event.EventQueue
 import com.dluvian.voyage.data.model.FilterWrapper
@@ -99,6 +100,14 @@ class NostrService(
         val allRelays = nostrClient.getAllConnectedUrls() + relayUrls
         return eventMaker.buildDelete(eventId = eventId)
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = allRelays) }
+    }
+
+    suspend fun publishTopicList(
+        topics: List<Topic>,
+        relayUrls: Collection<RelayUrl>
+    ): Result<Event> {
+        return eventMaker.buildTopicList(topics = topics)
+            .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
     fun close() {

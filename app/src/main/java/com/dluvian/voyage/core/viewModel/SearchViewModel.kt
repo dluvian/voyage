@@ -33,7 +33,7 @@ class SearchViewModel(
     private val snackbar: SnackbarHostState
 ) : ViewModel() {
     private val maxSearchResult = 7
-    val topics = mutableStateOf<List<String>>(emptyList())
+    val topics = mutableStateOf<List<Topic>>(emptyList())
     val profiles = mutableStateOf<List<ProfileEntity>>(emptyList())
 
     fun handle(searchViewAction: SearchViewAction) {

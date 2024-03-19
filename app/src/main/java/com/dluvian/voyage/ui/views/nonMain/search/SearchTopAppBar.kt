@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.components.bar
+package com.dluvian.voyage.ui.views.nonMain.search
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
@@ -24,7 +24,7 @@ import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenTopic
 import com.dluvian.voyage.core.SearchText
 import com.dluvian.voyage.core.UpdateSearchText
-import com.dluvian.voyage.ui.components.GoBackIconButton
+import com.dluvian.voyage.ui.components.button.GoBackIconButton
 import com.dluvian.voyage.ui.theme.RoundedChip
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -147,7 +147,7 @@ class EventValidator(
             if (event.author().toHex() != pubkeyProvider.tryGetPubkeyHex().getOrNull()) null
             else ValidatedTopicList(
                 myPubkey = event.author().toHex(),
-                topics = event.getHashtags().toSet(),
+                topics = event.getHashtags().map { it.lowercase() }.toSet(),
                 createdAt = event.createdAt().secs()
             )
         } else if (event.isNip65()) {

@@ -32,4 +32,7 @@
     <string name="invalid_search">Invalid topic/npub/nprofile</string>
     <string name="topics">Topics</string>
     <string name="profiles">Profiles</string>
+    <string name="followed">Followed</string>
+    <string name="follow">Follow</string>
+    <string name="failed_to_sign_topic_list">Failed to sign topic list</string>
 </resources>

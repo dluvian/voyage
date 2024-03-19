@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.views.nonMain.subViews
+package com.dluvian.voyage.ui.views.nonMain.profile
 
 import androidx.compose.runtime.Composable
 import com.dluvian.voyage.core.OnUpdate

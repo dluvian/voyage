@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.components
+package com.dluvian.voyage.ui.components.button
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton

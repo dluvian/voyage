@@ -6,11 +6,13 @@ import com.dluvian.nostr_kt.createLabelTag
 import com.dluvian.nostr_kt.createReaction
 import com.dluvian.nostr_kt.createReplyTag
 import com.dluvian.nostr_kt.createTitleTag
+import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.account.AccountManager
 import com.dluvian.voyage.data.model.EventIdAndPubkey
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventBuilder
 import rust.nostr.protocol.EventId
+import rust.nostr.protocol.Interests
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Tag
 
@@ -71,6 +73,14 @@ class EventMaker(
 
     suspend fun buildDelete(eventId: EventId): Result<Event> {
         val unsignedEvent = EventBuilder.delete(ids = listOf(eventId), reason = null)
+            .toUnsignedEvent(accountManager.getPublicKey())
+
+        return accountManager.sign(unsignedEvent)
+    }
+
+    suspend fun buildTopicList(topics: List<Topic>): Result<Event> {
+        val interests = Interests(hashtags = topics, coordinate = emptyList())
+        val unsignedEvent = EventBuilder.interests(list = interests)
             .toUnsignedEvent(accountManager.getPublicKey())
 
         return accountManager.sign(unsignedEvent)

@@ -87,6 +87,8 @@ data object HomeViewAppend : HomeViewAction()
 sealed class TopicViewAction : UIEvent()
 data object TopicViewRefresh : TopicViewAction()
 data object TopicViewAppend : TopicViewAction()
+data class TopicViewFollowTopic(val topic: Topic) : TopicViewAction()
+data class TopicViewUnfollowTopic(val topic: Topic) : TopicViewAction()
 
 sealed class SettingsViewAction : UIEvent()
 data object UseDefaultAccount : SettingsViewAction()
