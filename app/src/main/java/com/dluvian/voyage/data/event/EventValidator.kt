@@ -34,6 +34,7 @@ class EventValidator(
     private val pubkeyProvider: IPubkeyProvider,
 ) {
     private val tag = "EventValidator"
+    private val acceptedReactions = arrayOf("", "+", "-")
 
     fun getValidatedEvent(
         event: Event,
@@ -128,9 +129,9 @@ class EventValidator(
                 createdAt = event.createdAt().secs()
             )
         } else if (event.isVote()) {
-            val postId = event.eventIds().firstOrNull()
-            if (postId == null) null
-            else ValidatedVote(
+            if (!acceptedReactions.contains(event.content())) return null
+            val postId = event.eventIds().firstOrNull() ?: return null
+            ValidatedVote(
                 id = event.id().toHex(),
                 postId = postId.toHex(),
                 pubkey = event.author().toHex(),
