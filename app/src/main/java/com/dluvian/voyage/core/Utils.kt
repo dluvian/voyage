@@ -1,18 +1,23 @@
 package com.dluvian.voyage.core
 
 import androidx.compose.material3.SnackbarHostState
+import com.dluvian.voyage.data.model.RelevantMetadata
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import rust.nostr.protocol.Metadata
 import rust.nostr.protocol.PublicKey
 
-fun PublicKey.shortenedBech32(): String {
+fun PublicKey.shortenBech32(): String {
     return this.toBech32().shortenBech32()
 }
 
 fun PubkeyHex.shortenBech32(): String {
-    return "${this.take(10)}:${this.takeLast(5)}"
+    return if (this.isEmpty()) "" else "${this.take(10)}:${this.takeLast(5)}"
 }
 
+fun Metadata.toRelevantMetadata(createdAt: Long): RelevantMetadata {
+    return RelevantMetadata(about = this.getAbout(), createdAt = createdAt)
+}
 fun SnackbarHostState.showToast(scope: CoroutineScope, msg: String) {
     this.currentSnackbarData?.dismiss()
     scope.launch {

@@ -6,9 +6,11 @@ import com.dluvian.nostr_kt.createLabelTag
 import com.dluvian.nostr_kt.createReaction
 import com.dluvian.nostr_kt.createReplyTag
 import com.dluvian.nostr_kt.createTitleTag
+import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.account.AccountManager
 import com.dluvian.voyage.data.model.EventIdAndPubkey
+import rust.nostr.protocol.Contact
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventBuilder
 import rust.nostr.protocol.EventId
@@ -81,6 +83,15 @@ class EventMaker(
     suspend fun buildTopicList(topics: List<Topic>): Result<Event> {
         val interests = Interests(hashtags = topics, coordinate = emptyList())
         val unsignedEvent = EventBuilder.interests(list = interests)
+            .toUnsignedEvent(accountManager.getPublicKey())
+
+        return accountManager.sign(unsignedEvent)
+    }
+
+    suspend fun buildContactList(pubkeys: List<PubkeyHex>): Result<Event> {
+        val contacts = pubkeys
+            .map { Contact(pk = PublicKey.fromHex(it), relayUrl = null, alias = null) }
+        val unsignedEvent = EventBuilder.contactList(list = contacts)
             .toUnsignedEvent(accountManager.getPublicKey())
 
         return accountManager.sign(unsignedEvent)

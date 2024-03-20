@@ -5,6 +5,7 @@ import com.dluvian.nostr_kt.INostrListener
 import com.dluvian.nostr_kt.NostrClient
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
+import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.event.EventMaker
 import com.dluvian.voyage.data.event.EventQueue
@@ -107,6 +108,14 @@ class NostrService(
         relayUrls: Collection<RelayUrl>
     ): Result<Event> {
         return eventMaker.buildTopicList(topics = topics)
+            .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
+    }
+
+    suspend fun publishContactList(
+        pubkeys: List<PubkeyHex>,
+        relayUrls: Collection<RelayUrl>
+    ): Result<Event> {
+        return eventMaker.buildContactList(pubkeys = pubkeys)
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 

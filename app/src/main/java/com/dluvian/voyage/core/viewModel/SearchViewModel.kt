@@ -63,9 +63,12 @@ class SearchViewModel(
         updateJob?.cancel()
         updateJob = viewModelScope.launch(Dispatchers.IO) {
             delay(SHORT_DEBOUNCE)
-            val trimmed = text.trim().dropWhile { it == '#' || it == ' ' }.trim().lowercase()
-            topics.value = getTopicSuggestions(text = trimmed)
+            topics.value = getTopicSuggestions(text = text.stripSearchText())
         }
+    }
+
+    private fun String.stripSearchText(): String {
+        return this.trim().dropWhile { it == '#' || it == ' ' }.trim().lowercase()
     }
 
     private fun getTopicSuggestions(text: String): List<Topic> {
@@ -90,12 +93,9 @@ class SearchViewModel(
         onOpenTopic: (Topic) -> Unit,
         onOpenProfile: (Nip19Profile) -> Unit
     ) {
-        if (topics.value.isNotEmpty()) {
-            onOpenTopic(topics.value.first())
-            return
-        }
-        if (profiles.value.isNotEmpty()) {
-            onOpenProfile(profiles.value.first().toNip19())
+        val strippedTopic = text.stripSearchText()
+        if (strippedTopic.length <= MAX_TOPIC_LEN && topics.value.isNotEmpty()) {
+            onOpenTopic(strippedTopic)
             return
         }
 

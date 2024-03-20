@@ -29,6 +29,7 @@ import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
 import rust.nostr.protocol.Kind
 import rust.nostr.protocol.KindEnum
+import rust.nostr.protocol.Nip19Profile
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Timestamp
 
@@ -92,13 +93,13 @@ class NostrSubscriber(
             delay(DEBOUNCE)
             val currentTimestamp = Timestamp.now()
             val ids = newIds.map { EventId.fromHex(it) }
-            val voteFilter = Filter().events(ids)
-                .kind(Kind.fromEnum(KindEnum.Reaction))
+            val voteFilter = Filter().kind(Kind.fromEnum(KindEnum.Reaction))
+                .events(ids)
                 .authors(webOfTrustProvider.getWebOfTrustPubkeys())
                 .until(currentTimestamp)
                 .limit(MAX_EVENTS_TO_SUB.toULong())
-            val replyFilter = Filter().events(ids)
-                .kind(Kind.fromEnum(KindEnum.TextNote))
+            val replyFilter = Filter().kind(Kind.fromEnum(KindEnum.TextNote))
+                .events(ids)
                 .until(currentTimestamp)
                 .limit(MAX_EVENTS_TO_SUB.toULong())
             val filters = listOf(
@@ -115,6 +116,18 @@ class NostrSubscriber(
 
             votesAndRepliesCache.addAll(newIds)
             Log.d(tag, "Finished subscribing votes and replies")
+        }
+    }
+
+    fun subProfile(nip19Profile: Nip19Profile) {
+        val profileFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Metadata))
+            .author(author = nip19Profile.publicKey())
+            .until(timestamp = Timestamp.now())
+            .limit(1u)
+        val filters = listOf(FilterWrapper(profileFilter))
+
+        relayProvider.getObserveRelays(nip19Profile = nip19Profile).forEach { relay ->
+            subscribe(relayUrl = relay, filters = filters)
         }
     }
 

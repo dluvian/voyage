@@ -17,7 +17,9 @@ import com.dluvian.voyage.data.event.EventMaker
 import com.dluvian.voyage.data.event.EventProcessor
 import com.dluvian.voyage.data.event.EventQueue
 import com.dluvian.voyage.data.event.EventValidator
+import com.dluvian.voyage.data.inMemory.MetadataInMemory
 import com.dluvian.voyage.data.interactor.PostVoter
+import com.dluvian.voyage.data.interactor.ProfileFollower
 import com.dluvian.voyage.data.interactor.TopicFollower
 import com.dluvian.voyage.data.model.FilterWrapper
 import com.dluvian.voyage.data.nostr.NostrService
@@ -25,6 +27,7 @@ import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.provider.AccountPubkeyProvider
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.FriendProvider
+import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
@@ -47,7 +50,6 @@ class AppContainer(context: Context) {
     private val syncedIdCache = Collections.synchronizedSet(mutableSetOf<EventIdHex>())
     private val syncedPostRelayCache = Collections
         .synchronizedSet(mutableSetOf<Pair<EventIdHex, RelayUrl>>())
-
 
     private val client = OkHttpClient()
     private val nostrClient = NostrClient(httpClient = client)
@@ -89,6 +91,7 @@ class AppContainer(context: Context) {
         accountSwitcher = accountSwitcher,
         accountDao = roomDb.accountDao(),
     )
+    private val metadataInMemory = MetadataInMemory()
     private val eventValidator = EventValidator(
         syncedFilterCache = syncedFilterCache,
         syncedIdCache = syncedIdCache,
@@ -97,6 +100,7 @@ class AppContainer(context: Context) {
     )
     private val eventProcessor = EventProcessor(
         room = roomDb,
+        metadataInMemory = metadataInMemory,
         pubkeyProvider = accountManager
     )
     private val eventQueue = EventQueue(
@@ -138,5 +142,19 @@ class AppContainer(context: Context) {
         topicUpsertDao = roomDb.topicUpsertDao(),
         snackbar = snackbar,
         context = context,
+    )
+    val profileFollower = ProfileFollower(
+        nostrService = nostrService,
+        relayProvider = relayProvider,
+        snackbar = snackbar,
+        context = context,
+        friendProvider = friendProvider,
+        friendUpsertDao = roomDb.friendUpsertDao(),
+    )
+    val profileProvider = ProfileProvider(
+        profileFollower = profileFollower,
+        pubkeyProvider = accountManager,
+        metadataInMemory = metadataInMemory,
+        profileDao = roomDb.profileDao(),
     )
 }

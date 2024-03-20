@@ -1,6 +1,8 @@
 package com.dluvian.voyage.data.provider
 
 import com.dluvian.nostr_kt.RelayUrl
+import com.dluvian.nostr_kt.WEBSOCKET_PREFIX
+import com.dluvian.nostr_kt.removeTrailingSlashes
 import com.dluvian.voyage.core.MAX_RELAYS
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.room.dao.Nip65Dao
@@ -8,6 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
+import rust.nostr.protocol.Nip19Profile
 
 
 class RelayProvider(private val nip65Dao: Nip65Dao) {
@@ -33,6 +36,16 @@ class RelayProvider(private val nip65Dao: Nip65Dao) {
     suspend fun getPublishRelays(publishTo: PubkeyHex): List<RelayUrl> {
         val foreignRelays = nip65Dao.getReadRelays(pubkey = publishTo).limit()
         return (getWriteRelays(limit = true) + foreignRelays).distinct()
+    }
+
+    fun getObserveRelays(nip19Profile: Nip19Profile): List<RelayUrl> {
+        val encodedRelays = nip19Profile.relays()
+            .filter { it.startsWith(WEBSOCKET_PREFIX) }
+            .map { it.removeTrailingSlashes() }
+            .distinct()
+            .shuffled()
+            .take(MAX_RELAYS)
+        return (encodedRelays + getReadRelays()).distinct()
     }
 
     suspend fun getObserveRelays(observeFrom: Collection<PubkeyHex>): Map<RelayUrl, Set<PubkeyHex>> {

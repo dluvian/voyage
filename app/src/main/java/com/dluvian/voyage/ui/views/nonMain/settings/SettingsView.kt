@@ -25,7 +25,7 @@ import com.dluvian.voyage.core.UseDefaultAccount
 import com.dluvian.voyage.core.model.AccountType
 import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
-import com.dluvian.voyage.core.shortenedBech32
+import com.dluvian.voyage.core.shortenBech32
 import com.dluvian.voyage.core.viewModel.SettingsViewModel
 import com.dluvian.voyage.ui.components.ClickableRow
 import com.dluvian.voyage.ui.theme.AccountIcon
@@ -53,7 +53,7 @@ fun SettingsView(vm: SettingsViewModel, onUpdate: OnUpdate) {
 
 @Composable
 private fun AccountRow(accountType: AccountType, onUpdate: OnUpdate) {
-    val shortenedNpub = remember(accountType) { accountType.publicKey.shortenedBech32() }
+    val shortenedNpub = remember(accountType) { accountType.publicKey.shortenBech32() }
     ClickableRow(
         header = when (accountType) {
             is ExternalAccount -> stringResource(id = R.string.external_signer)

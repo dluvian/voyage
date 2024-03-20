@@ -1,5 +1,6 @@
 package com.dluvian.voyage.core.viewModel
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,41 +11,49 @@ import com.dluvian.voyage.core.ProfileViewRefresh
 import com.dluvian.voyage.core.ProfileViewUnfollowProfile
 import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.core.navigator.ProfileNavView
+import com.dluvian.voyage.data.interactor.ProfileFollower
+import com.dluvian.voyage.data.model.FullProfile
 import com.dluvian.voyage.data.model.ProfileFeedSetting
+import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.provider.FeedProvider
-import kotlin.random.Random
+import com.dluvian.voyage.data.provider.ProfileProvider
+import com.dluvian.voyage.data.room.view.AdvancedProfileView
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 
-class ProfileViewModel(feedProvider: FeedProvider) : ViewModel() {
-    val name = mutableStateOf("")
-    val pubkey = mutableStateOf("")
-    val isFollowed = mutableStateOf(false)
-
+class ProfileViewModel(
+    feedProvider: FeedProvider,
+    private val nostrSubscriber: NostrSubscriber,
+    private val profileFollower: ProfileFollower,
+    private val profileProvider: ProfileProvider,
+) : ViewModel() {
     val paginator = Paginator(feedProvider = feedProvider, scope = viewModelScope)
+    val profile: MutableState<StateFlow<FullProfile>> =
+        mutableStateOf(MutableStateFlow(FullProfile()))
 
     fun openProfile(profileNavView: ProfileNavView) {
-        // TODO: sub profile
         val pubkeyHex = profileNavView.nip19Profile.publicKey().toHex()
+        if (profile.value.value.advancedProfile.pubkey == pubkeyHex) return
+
         paginator.init(setting = ProfileFeedSetting(pubkey = pubkeyHex))
+        nostrSubscriber.subProfile(nip19Profile = profileNavView.nip19Profile)
 
-        name.value = "name:$pubkeyHex"
-        pubkey.value = pubkeyHex
-        isFollowed.value = Random.nextBoolean()
+        profile.value = profileProvider.getProfileFlow(pubkey = pubkeyHex)
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(),
+                FullProfile(advancedProfile = AdvancedProfileView(pubkey = pubkeyHex))
+            )
     }
-
 
     fun handle(action: ProfileViewAction) {
         when (action) {
             is ProfileViewRefresh -> paginator.refresh()
             is ProfileViewAppend -> paginator.append()
-            is ProfileViewFollowProfile -> {
-                // TODO: Profile follower
-                isFollowed.value = true
-            }
-
-            is ProfileViewUnfollowProfile -> {
-                // TODO: Profile follower
-                isFollowed.value = false
-            }
+            is ProfileViewFollowProfile -> profileFollower.follow(pubkey = action.pubkey)
+            is ProfileViewUnfollowProfile -> profileFollower.unfollow(pubkey = action.pubkey)
         }
     }
 }

@@ -5,6 +5,7 @@ import androidx.room.RoomDatabase
 import com.dluvian.voyage.data.room.dao.AccountDao
 import com.dluvian.voyage.data.room.dao.FriendDao
 import com.dluvian.voyage.data.room.dao.Nip65Dao
+import com.dluvian.voyage.data.room.dao.ProfileDao
 import com.dluvian.voyage.data.room.dao.ResetDao
 import com.dluvian.voyage.data.room.dao.RootPostDao
 import com.dluvian.voyage.data.room.dao.TopicDao
@@ -27,6 +28,7 @@ import com.dluvian.voyage.data.room.entity.ProfileEntity
 import com.dluvian.voyage.data.room.entity.TopicEntity
 import com.dluvian.voyage.data.room.entity.VoteEntity
 import com.dluvian.voyage.data.room.entity.WebOfTrustEntity
+import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.data.room.view.RootPostView
 
 @Database(
@@ -47,7 +49,10 @@ import com.dluvian.voyage.data.room.view.RootPostView
         Nip65Entity::class,
         ProfileEntity::class,
     ],
-    views = [RootPostView::class]
+    views = [
+        RootPostView::class,
+        AdvancedProfileView::class
+    ]
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun accountDao(): AccountDao
@@ -59,6 +64,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun webOfTrustDao(): WebOfTrustDao
     abstract fun nip65Dao(): Nip65Dao
     abstract fun resetDao(): ResetDao
+    abstract fun profileDao(): ProfileDao
 
     // TX
     abstract fun voteUpsertDao(): VoteUpsertDao

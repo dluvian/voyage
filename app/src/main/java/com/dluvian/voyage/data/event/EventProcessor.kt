@@ -4,7 +4,9 @@ import android.util.Log
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.RelayedValidatedEvent
+import com.dluvian.voyage.core.toRelevantMetadata
 import com.dluvian.voyage.data.account.IPubkeyProvider
+import com.dluvian.voyage.data.inMemory.MetadataInMemory
 import com.dluvian.voyage.data.model.RelayedItem
 import com.dluvian.voyage.data.room.AppDatabase
 import com.dluvian.voyage.data.room.entity.ProfileEntity
@@ -16,6 +18,7 @@ import kotlinx.coroutines.launch
 
 class EventProcessor(
     private val room: AppDatabase,
+    private val metadataInMemory: MetadataInMemory,
     private val pubkeyProvider: IPubkeyProvider,
 ) {
     private val tag = "EventProcessor"
@@ -177,6 +180,10 @@ class EventProcessor(
             .sortedByDescending { it.createdAt }
             .distinctBy { it.pubkey }
             .forEach { profile ->
+                metadataInMemory.submit(
+                    pubkey = profile.pubkey,
+                    metadata = profile.metadata.toRelevantMetadata(createdAt = profile.createdAt)
+                )
                 scope.launch {
                     val entity = ProfileEntity.from(validatedProfile = profile)
                     room.profileUpsertDao().upsertProfile(profile = entity)

@@ -8,7 +8,7 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ClickDownvote
 import com.dluvian.voyage.core.ClickNeutralizeVote
 import com.dluvian.voyage.core.ClickUpvote
-import com.dluvian.voyage.core.DELAY_1SEC
+import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.VoteEvent
@@ -73,7 +73,7 @@ class PostVoter(
     private fun vote(postId: EventIdHex, pubkey: PubkeyHex, vote: Vote, kind: Int) {
         jobs[postId]?.cancel(CancellationException("User clicks fast"))
         jobs[postId] = scope.launch {
-            delay(DELAY_1SEC)
+            delay(DEBOUNCE)
             val currentVote = voteDao.getMyVote(postId = postId)
             when (vote) {
                 Upvote, Downvote -> handleVote(

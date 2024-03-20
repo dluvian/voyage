@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import com.dluvian.nostr_kt.getHashtags
 import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.DELAY_1SEC
+import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.event.ValidatedTopicList
@@ -42,14 +42,13 @@ class TopicFollower(
         handleAction(topic = topic, isFollowed = false)
     }
 
-
     private val jobs: MutableMap<Topic, Job?> = mutableMapOf()
     private fun handleAction(topic: Topic, isFollowed: Boolean) {
         updateForcedState(topic = topic, isFollowed = isFollowed)
 
         jobs[topic]?.cancel(CancellationException("User clicks fast"))
         jobs[topic] = scope.launch {
-            delay(DELAY_1SEC)
+            delay(DEBOUNCE)
 
             val allTopics = topicProvider.getMyTopics().toMutableSet()
             if (isFollowed) allTopics.add(topic) else allTopics.remove(topic)
