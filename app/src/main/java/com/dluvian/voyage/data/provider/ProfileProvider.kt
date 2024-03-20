@@ -1,7 +1,7 @@
 package com.dluvian.voyage.data.provider
 
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.shortenBech32
+import com.dluvian.voyage.core.toShortenedBech32
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
 import com.dluvian.voyage.data.interactor.ProfileFollower
@@ -41,7 +41,7 @@ class ProfileProvider(
     ): FullProfile {
         val advancedProfile = AdvancedProfileView(
             pubkey = pubkey,
-            name = dbProfile?.name.orEmpty().ifEmpty { pubkey.shortenBech32() },
+            name = dbProfile?.name.orEmpty().ifEmpty { pubkey.toShortenedBech32() },
             isFriend = forcedFollowState ?: dbProfile?.isFriend ?: false,
             isWebOfTrust = dbProfile?.isWebOfTrust ?: false,
             isMe = dbProfile?.isMe ?: (pubkeyProvider.getPubkeyHex() == pubkey)

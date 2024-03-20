@@ -8,16 +8,20 @@ import rust.nostr.protocol.Metadata
 import rust.nostr.protocol.PublicKey
 
 fun PublicKey.shortenBech32(): String {
-    return this.toBech32().shortenBech32()
+    val bech32 = this.toBech32()
+    return "${bech32.take(10)}:${bech32.takeLast(5)}"
 }
 
-fun PubkeyHex.shortenBech32(): String {
-    return if (this.isEmpty()) "" else "${this.take(10)}:${this.takeLast(5)}"
+fun PubkeyHex.toShortenedBech32(): String {
+    if (this.isEmpty()) return ""
+    val pubkey = runCatching { PublicKey.fromHex(this) }.getOrNull() ?: return ""
+    return pubkey.shortenBech32()
 }
 
 fun Metadata.toRelevantMetadata(createdAt: Long): RelevantMetadata {
     return RelevantMetadata(about = this.getAbout(), createdAt = createdAt)
 }
+
 fun SnackbarHostState.showToast(scope: CoroutineScope, msg: String) {
     this.currentSnackbarData?.dismiss()
     scope.launch {
