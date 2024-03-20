@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.dluvian.voyage.core.ClickThread
+import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.model.IPaginator
@@ -38,7 +39,8 @@ fun Feed(
     paginator: IPaginator,
     onRefresh: Fn,
     onAppend: Fn,
-    onUpdate: OnUpdate
+    onUpdate: OnUpdate,
+    header: ComposableContent = {},
 ) {
     val isRefreshing by paginator.isRefreshing
     val isAppending by paginator.isAppending
@@ -48,6 +50,7 @@ fun Feed(
     PullRefreshBox(isRefreshing = isRefreshing, onRefresh = onRefresh) {
         if (isAppending) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         LazyColumn(modifier = Modifier.fillMaxSize()) {
+            item { header() }
             items(items = posts, key = { item -> item.id }) { post ->
                 PostRow(
                     post = post,
