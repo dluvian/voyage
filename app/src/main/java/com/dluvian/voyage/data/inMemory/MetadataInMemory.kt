@@ -1,6 +1,5 @@
 package com.dluvian.voyage.data.inMemory
 
-import android.util.Log
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.model.RelevantMetadata
@@ -13,7 +12,6 @@ class MetadataInMemory {
     private val map = Collections.synchronizedMap(mutableMapOf<PubkeyHex, RelevantMetadata>())
 
     fun submit(pubkey: PubkeyHex, metadata: RelevantMetadata) {
-        Log.i("LOLOL", "New profile $pubkey")
         val alreadyPresent = map.putIfAbsent(pubkey, metadata)
         if (alreadyPresent != null && metadata.createdAt > alreadyPresent.createdAt) {
             map[pubkey] = metadata

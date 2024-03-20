@@ -28,7 +28,14 @@ fun SnackbarHostState.showToast(scope: CoroutineScope, msg: String) {
 private val bareTopicRegex = Regex("[^#\\s]+\$")
 fun String.isBareTopicStr(): Boolean = bareTopicRegex.matches(this)
 
-fun <K, V> MutableMap<K, MutableList<V>>.putOrAdd(key: K, value: MutableList<V>) {
-    val alreadyPresent = this.putIfAbsent(key, value)
-    alreadyPresent?.addAll(value)
+fun <K, V> MutableMap<K, MutableList<V>>.syncedPutOrAdd(key: K, value: MutableList<V>) {
+    val alreadyPresent: MutableList<V>?
+    synchronized(this) {
+        alreadyPresent = this.putIfAbsent(key, value)
+    }
+    if (alreadyPresent != null) {
+        synchronized(alreadyPresent) {
+            alreadyPresent.addAll(value)
+        }
+    }
 }

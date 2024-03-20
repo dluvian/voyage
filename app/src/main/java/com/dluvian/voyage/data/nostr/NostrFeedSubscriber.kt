@@ -3,7 +3,7 @@ package com.dluvian.voyage.data.nostr
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.putOrAdd
+import com.dluvian.voyage.core.syncedPutOrAdd
 import com.dluvian.voyage.data.model.FilterWrapper
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
@@ -30,7 +30,7 @@ class NostrFeedSubscriber(
 
         val result = mutableMapOf<RelayUrl, MutableList<FilterWrapper>>()
 
-        scope.launch {
+        val friendJob = scope.launch {
             relayProvider
                 .getObserveRelays(observeFrom = friendProvider.getFriendPubkeys())
                 .forEach { (relayUrl, pubkeys) ->
@@ -41,10 +41,9 @@ class NostrFeedSubscriber(
                         .until(timestamp = until)
                         .limit(limit = limit)
                     val friendsNoteFilters = mutableListOf(FilterWrapper(friendsNoteFilter))
-                    result.putOrAdd(relayUrl, friendsNoteFilters)
+                    result.syncedPutOrAdd(relayUrl, friendsNoteFilters)
                 }
         }
-
 
         val topics = topicProvider.getMyTopics()
         if (topics.isEmpty()) return result
@@ -56,8 +55,9 @@ class NostrFeedSubscriber(
         val topicedNoteFilters = mutableListOf(FilterWrapper(topicedNoteFilter))
 
         relayProvider.getReadRelays().forEach { relay ->
-            result.putOrAdd(relay, topicedNoteFilters)
+            result.syncedPutOrAdd(relay, topicedNoteFilters)
         }
+        friendJob.join()
 
         return result
     }
@@ -78,7 +78,7 @@ class NostrFeedSubscriber(
         val topicedNoteFilters = mutableListOf(FilterWrapper(topicedNoteFilter))
 
         relayProvider.getReadRelays().forEach { relay ->
-            result.putOrAdd(relay, topicedNoteFilters)
+            result.syncedPutOrAdd(relay, topicedNoteFilters)
         }
 
         return result
@@ -101,7 +101,7 @@ class NostrFeedSubscriber(
         val pubkeyNoteFilters = mutableListOf(FilterWrapper(pubkeyNoteFilter))
 
         relayProvider.getReadRelays().forEach { relay ->
-            result.putOrAdd(relay, pubkeyNoteFilters)
+            result.syncedPutOrAdd(relay, pubkeyNoteFilters)
         }
 
         return result

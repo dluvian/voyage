@@ -1,6 +1,5 @@
 package com.dluvian.voyage.data.provider
 
-import android.util.Log
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.data.interactor.PostVoter
@@ -29,7 +28,6 @@ class FeedProvider(
     ): Flow<List<RootPost>> {
         nostrSubscriber.subFeed(until = until, limit = size, setting = setting)
 
-        if (setting is TopicFeedSetting) Log.i("LOLOL", setting.topic)
         val flow = when (setting) {
             is HomeFeedSetting -> rootPostDao.getHomeRootPostFlow(until = until, size = size)
             is TopicFeedSetting -> rootPostDao.getTopicRootPostFlow(
