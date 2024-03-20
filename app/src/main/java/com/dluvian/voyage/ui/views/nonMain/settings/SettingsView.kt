@@ -72,13 +72,13 @@ private fun AccountRowButton(accountType: AccountType, onUpdate: OnUpdate) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         when (accountType) {
             is ExternalAccount -> TextButton(onClick = { onUpdate(UseDefaultAccount) }) {
-                Text(text = stringResource(id = R.string.use_default_account))
+                Text(text = stringResource(id = R.string.logout))
             }
 
             is DefaultAccount -> TextButton(onClick = {
                 onUpdate(RequestExternalAccount(context = context))
             }) {
-                Text(text = stringResource(id = R.string.use_external_signer))
+                Text(text = stringResource(id = R.string.login_with_external_signer))
             }
         }
     }

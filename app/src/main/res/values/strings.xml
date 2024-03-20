@@ -20,8 +20,8 @@
     <string name="app">App</string>
     <string name="external_signer">External signer</string>
     <string name="default_account">Default account</string>
-    <string name="use_default_account">Use default account</string>
-    <string name="use_external_signer">Use external signer</string>
+    <string name="logout">Logout</string>
+    <string name="login_with_external_signer">Login with external signer</string>
     <string name="no_external_signer_installed">You don\'t have an external signer installed</string>
     <string name="failed_to_get_permission">Failed to get permission</string>
     <string name="received_invalid_data">Received invalid data</string>
