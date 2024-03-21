@@ -1,8 +1,6 @@
 package com.dluvian.voyage.ui.views.nonMain.search
 
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,6 +21,7 @@ import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.viewModel.SearchViewModel
 import com.dluvian.voyage.data.room.entity.ProfileEntity
 import com.dluvian.voyage.ui.components.ClickableRow
+import com.dluvian.voyage.ui.theme.AccountIcon
 import com.dluvian.voyage.ui.theme.HashtagIcon
 import com.dluvian.voyage.ui.theme.spacing
 
@@ -42,32 +41,30 @@ fun SearchView(vm: SearchViewModel, snackbar: SnackbarHostState, onUpdate: OnUpd
 
 @Composable
 private fun SearchViewContent(
-    topics: List<Topic>,
-    profiles: List<ProfileEntity>,
-    onUpdate: OnUpdate
+    topics: List<Topic>, profiles: List<ProfileEntity>, onUpdate: OnUpdate
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
-        item { Spacer(modifier = Modifier.height(spacing.large)) }
         if (topics.isNotEmpty()) {
             item {
                 SectionHeader(header = stringResource(id = R.string.topics))
             }
+            items(topics) { topic ->
+                ClickableRow(header = topic,
+                    imageVector = HashtagIcon,
+                    onClick = { onUpdate(OpenTopic(topic = topic)) })
+            }
         }
-        items(topics) { topic ->
-            ClickableRow(
-                header = topic,
-                imageVector = HashtagIcon,
-                onClick = { onUpdate(OpenTopic(topic = topic)) })
-        }
+
         if (profiles.isNotEmpty()) {
             item {
                 SectionHeader(header = stringResource(id = R.string.profiles))
             }
-        }
-        items(profiles) { profile ->
-            ClickableRow(
-                header = profile.name ?: profile.pubkey,
-                onClick = { onUpdate(OpenProfile(nip19 = profile.toNip19())) })
+            items(profiles) { profile ->
+                ClickableRow(
+                    header = profile.name ?: profile.pubkey,
+                    imageVector = AccountIcon,
+                    onClick = { onUpdate(OpenProfile(nip19 = profile.toNip19())) })
+            }
         }
     }
 }
@@ -75,10 +72,9 @@ private fun SearchViewContent(
 @Composable
 private fun SectionHeader(header: String) {
     Text(
-        modifier = Modifier.padding(
-            horizontal = spacing.bigScreenEdge,
-            vertical = spacing.large
-        ),
+        modifier = Modifier
+            .padding(top = spacing.bigScreenEdge)
+            .padding(horizontal = spacing.bigScreenEdge, vertical = spacing.large),
         text = header,
         style = MaterialTheme.typography.headlineSmall,
         fontWeight = FontWeight.SemiBold

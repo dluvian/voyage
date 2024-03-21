@@ -29,6 +29,7 @@ import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.provider.RelayProvider
+import com.dluvian.voyage.data.provider.SuggestionProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import com.dluvian.voyage.data.room.AppDatabase
@@ -130,11 +131,13 @@ class AppContainer(context: Context) {
         voteDao = roomDb.voteDao(),
         voteUpsertDao = roomDb.voteUpsertDao()
     )
+
     val feedProvider = FeedProvider(
         nostrSubscriber = nostrSubscriber,
         rootPostDao = roomDb.rootPostDao(),
         postVoter = postVoter
     )
+
     val topicFollower = TopicFollower(
         nostrService = nostrService,
         topicProvider = topicProvider,
@@ -143,6 +146,7 @@ class AppContainer(context: Context) {
         snackbar = snackbar,
         context = context,
     )
+
     val profileFollower = ProfileFollower(
         nostrService = nostrService,
         relayProvider = relayProvider,
@@ -151,10 +155,16 @@ class AppContainer(context: Context) {
         friendProvider = friendProvider,
         friendUpsertDao = roomDb.friendUpsertDao(),
     )
+
     val profileProvider = ProfileProvider(
         profileFollower = profileFollower,
         pubkeyProvider = accountManager,
         metadataInMemory = metadataInMemory,
         profileDao = roomDb.profileDao(),
+    )
+
+    val suggestionProvider = SuggestionProvider(
+        topicProvider = topicProvider,
+        profileProvider = profileProvider
     )
 }

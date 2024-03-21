@@ -18,7 +18,7 @@ import com.dluvian.voyage.core.UpdateSearchText
 import com.dluvian.voyage.core.isBareTopicStr
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.nostr.NostrSubscriber
-import com.dluvian.voyage.data.provider.TopicProvider
+import com.dluvian.voyage.data.provider.SuggestionProvider
 import com.dluvian.voyage.data.room.entity.ProfileEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -28,11 +28,10 @@ import rust.nostr.protocol.Nip19Profile
 import rust.nostr.protocol.PublicKey
 
 class SearchViewModel(
-    private val topicProvider: TopicProvider,
+    private val suggestionProvider: SuggestionProvider,
     private val nostrSubscriber: NostrSubscriber,
     private val snackbar: SnackbarHostState
 ) : ViewModel() {
-    private val maxSearchResult = 7
     val topics = mutableStateOf<List<Topic>>(emptyList())
     val profiles = mutableStateOf<List<ProfileEntity>>(emptyList())
 
@@ -58,33 +57,27 @@ class SearchViewModel(
         }
     }
 
-    private var updateJob: Job? = null
     private fun updateSearchText(text: String) {
-        updateJob?.cancel()
-        updateJob = viewModelScope.launch(Dispatchers.IO) {
+        updateTopicSuggestions(text = text)
+        updateProfileSuggestions(text = text)
+    }
+
+    private var updateJobTopic: Job? = null
+    private fun updateTopicSuggestions(text: String) {
+        updateJobTopic?.cancel()
+        updateJobTopic = viewModelScope.launch(Dispatchers.IO) {
             delay(SHORT_DEBOUNCE)
-            topics.value = getTopicSuggestions(text = text.stripSearchText())
+            topics.value = suggestionProvider.getTopicSuggestions(text = text)
         }
     }
 
-    private fun String.stripSearchText(): String {
-        return this.trim().dropWhile { it == '#' || it == ' ' }.trim().lowercase()
-    }
-
-    private fun getTopicSuggestions(text: String): List<Topic> {
-        val suggestions = topicProvider.getAllTopics()
-            .asSequence()
-            .filter { it.contains(other = text, ignoreCase = true) }
-            .sortedBy { it.length }
-            .distinctBy { it.lowercase() }
-            .take(maxSearchResult)
-            .toList()
-
-        return if (text.length > MAX_TOPIC_LEN ||
-            !text.isBareTopicStr() ||
-            suggestions.contains(text)
-        ) suggestions
-        else mutableListOf(text) + suggestions
+    private var updateJobProfile: Job? = null
+    private fun updateProfileSuggestions(text: String) {
+        updateJobProfile?.cancel()
+        updateJobProfile = viewModelScope.launch(Dispatchers.IO) {
+            delay(SHORT_DEBOUNCE)
+            profiles.value = suggestionProvider.getProfileSuggestions(text = text)
+        }
     }
 
     private fun searchText(
@@ -93,8 +86,8 @@ class SearchViewModel(
         onOpenTopic: (Topic) -> Unit,
         onOpenProfile: (Nip19Profile) -> Unit
     ) {
-        val strippedTopic = text.stripSearchText()
-        if (strippedTopic.length <= MAX_TOPIC_LEN && topics.value.isNotEmpty()) {
+        val strippedTopic = suggestionProvider.getStrippedSearchText(text = text)
+        if (strippedTopic.length <= MAX_TOPIC_LEN && strippedTopic.isBareTopicStr()) {
             onOpenTopic(strippedTopic)
             return
         }
@@ -106,11 +99,13 @@ class SearchViewModel(
             onOpenProfile(Nip19Profile(publicKey = pubkey, relays = emptyList()))
             return
         }
+
         val nprofile = runCatching { Nip19Profile.fromBech32(bech32 = stripped) }.getOrNull()
         if (nprofile != null) {
             onOpenProfile(nprofile)
             return
         }
+
         snackbar.showToast(
             scope = viewModelScope,
             msg = context.getString(R.string.invalid_search)

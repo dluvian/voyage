@@ -8,6 +8,7 @@ import com.dluvian.voyage.data.interactor.ProfileFollower
 import com.dluvian.voyage.data.model.FullProfile
 import com.dluvian.voyage.data.model.RelevantMetadata
 import com.dluvian.voyage.data.room.dao.ProfileDao
+import com.dluvian.voyage.data.room.entity.ProfileEntity
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -31,6 +32,10 @@ class ProfileProvider(
                 metadata = metadata
             )
         }
+    }
+
+    suspend fun getProfileByName(name: String, limit: Int): List<ProfileEntity> {
+        return profileDao.getProfilesByName(name = name, limit = limit)
     }
 
     private fun createFullProfile(
