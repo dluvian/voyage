@@ -18,16 +18,17 @@ import com.dluvian.voyage.core.model.AccountType
 import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
 import com.dluvian.voyage.core.showToast
-import com.dluvian.voyage.data.account.AccountManager
+import com.dluvian.voyage.data.account.AccountSwitcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import rust.nostr.protocol.PublicKey
 
 class SettingsViewModel(
-    private val accountManager: AccountManager,
+    private val accountSwitcher: AccountSwitcher,
     private val snackbar: SnackbarHostState,
 ) : ViewModel() {
-    val accountType: State<AccountType> = accountManager.accountType
+    val accountType: State<AccountType> = accountSwitcher.accountType
+
     val isLoadingAccount = mutableStateOf(false)
     lateinit var externalSignerHandler: ExternalSignerHandler
     private val tag = "SettingsViewModel"
@@ -52,7 +53,7 @@ class SettingsViewModel(
         isLoadingAccount.value = true
 
         viewModelScope.launch(Dispatchers.IO) {
-            accountManager.useDefaultAccount()
+            accountSwitcher.useDefaultAccount()
         }.invokeOnCompletion {
             isLoadingAccount.value = false
         }
@@ -62,7 +63,7 @@ class SettingsViewModel(
         if (accountType.value is ExternalAccount || isLoadingAccount.value) return
         isLoadingAccount.value = true
 
-        if (!accountManager.isExternalSignerInstalled(context = context)) {
+        if (!accountSwitcher.isExternalSignerInstalled(context = context)) {
             snackbar.showToast(
                 scope = viewModelScope,
                 msg = context.getString(R.string.no_external_signer_installed)
@@ -98,7 +99,7 @@ class SettingsViewModel(
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            accountManager.useExternalAccount(publicKey = publicKey, packageName = packageName)
+            accountSwitcher.useExternalAccount(publicKey = publicKey, packageName = packageName)
         }.invokeOnCompletion {
             isLoadingAccount.value = false
         }

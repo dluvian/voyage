@@ -4,9 +4,9 @@ import android.content.Context
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.dluvian.nostr_kt.generateMnemonic
-import com.dluvian.voyage.core.PubkeyHex
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.Keys
+import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.UnsignedEvent
 
 
@@ -38,9 +38,9 @@ class MnemonicSigner(context: Context) : IPubkeyProvider {
         }
     }
 
-    override fun tryGetPubkeyHex(): Result<PubkeyHex> {
+    override fun getPublicKey(): PublicKey {
         // TODO: Implement anonymous signing when rust-nostr new release published
-        return runCatching { deriveMainAccount().publicKey().toHex() }
+        return deriveMainAccount().publicKey()
     }
 
     fun sign(unsignedEvent: UnsignedEvent): Result<Event> {

@@ -24,7 +24,6 @@ import com.dluvian.voyage.data.interactor.TopicFollower
 import com.dluvian.voyage.data.model.FilterWrapper
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.NostrSubscriber
-import com.dluvian.voyage.data.provider.AccountPubkeyProvider
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
@@ -64,35 +63,36 @@ class AppContainer(context: Context) {
         syncedPostRelayCache = syncedPostRelayCache
     )
 
-    private val relayProvider =
-        RelayProvider(nip65Dao = roomDb.nip65Dao(), eventRelayDao = roomDb.eventRelayDao())
+    private val relayProvider = RelayProvider(
+        nip65Dao = roomDb.nip65Dao(),
+        eventRelayDao = roomDb.eventRelayDao()
+    )
     private val friendProvider = FriendProvider(friendDao = roomDb.friendDao())
     private val webOfTrustProvider = WebOfTrustProvider(webOfTrustDao = roomDb.webOfTrustDao())
-    private val accountPubkeyProvider = AccountPubkeyProvider(accountDao = roomDb.accountDao())
     val topicProvider = TopicProvider(topicDao = roomDb.topicDao())
 
+    private val accountManager = AccountManager(
+        mnemonicSigner = mnemonicSigner,
+        externalSigner = externalSigner,
+        accountDao = roomDb.accountDao(),
+    )
     val nostrSubscriber = NostrSubscriber(
         topicProvider = topicProvider,
         relayProvider = relayProvider,
         webOfTrustProvider = webOfTrustProvider,
         friendProvider = friendProvider,
-        pubkeyProvider = accountPubkeyProvider,
+        pubkeyProvider = accountManager,
         nostrClient = nostrClient,
         syncedFilterCache = syncedFilterCache,
     )
-    private val accountSwitcher = AccountSwitcher(
-        mnemonicSigner = mnemonicSigner,
+    val accountSwitcher = AccountSwitcher(
+        accountManager = accountManager,
         accountDao = roomDb.accountDao(),
         resetDao = roomDb.resetDao(),
         eventCacheClearer = eventCacheClearer,
         nostrSubscriber = nostrSubscriber
     )
-    val accountManager = AccountManager(
-        mnemonicSigner = mnemonicSigner,
-        externalSigner = externalSigner,
-        accountSwitcher = accountSwitcher,
-        accountDao = roomDb.accountDao(),
-    )
+
     private val metadataInMemory = MetadataInMemory()
     private val eventValidator = EventValidator(
         syncedFilterCache = syncedFilterCache,

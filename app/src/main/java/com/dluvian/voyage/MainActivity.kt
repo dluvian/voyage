@@ -81,7 +81,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         },
         settingsVM = viewModel {
             SettingsViewModel(
-                accountManager = appContainer.accountManager,
+                accountSwitcher = appContainer.accountSwitcher,
                 snackbar = appContainer.snackbar,
             )
         },

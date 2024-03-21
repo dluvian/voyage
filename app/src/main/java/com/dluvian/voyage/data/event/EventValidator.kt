@@ -145,7 +145,7 @@ class EventValidator(
                 createdAt = event.createdAt().secs()
             )
         } else if (event.isTopicList()) {
-            if (event.author().toHex() != pubkeyProvider.tryGetPubkeyHex().getOrNull()) null
+            if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) null
             else ValidatedTopicList(
                 myPubkey = event.author().toHex(),
                 topics = event.getHashtags().map { it.lowercase() }.toSet(),
