@@ -63,6 +63,8 @@ fun isValidEventId(hex: String): Boolean {
 }
 
 fun Event.getReplyToId(): String? {
+    if (!this.isPostOrReply()) return null
+
     val nip10Tags = this.tags()
         .map { it.asVec() }
         .filter { it.size >= 2 && it[0] == "e" }

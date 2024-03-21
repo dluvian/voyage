@@ -96,7 +96,6 @@ class EventValidator(
         if (!matches) return false
 
         val replyToId = event.getReplyToId() ?: return true
-
         return filters.any { it.filter.matchEvent(event = event) && it.e.contains(replyToId) }
     }
 
