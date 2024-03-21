@@ -13,6 +13,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -29,7 +31,7 @@ import com.dluvian.voyage.ui.theme.RoundedChip
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchTopAppBar(onUpdate: OnUpdate) {
+fun SearchTopAppBar(focusRequester: FocusRequester, onUpdate: OnUpdate) {
     val text = remember {
         mutableStateOf("")
     }
@@ -39,7 +41,8 @@ fun SearchTopAppBar(onUpdate: OnUpdate) {
             TextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedChip),
+                    .clip(RoundedChip)
+                    .focusRequester(focusRequester),
                 value = text.value,
                 onValueChange = { newText ->
                     onUpdate(UpdateSearchText(text = newText))
