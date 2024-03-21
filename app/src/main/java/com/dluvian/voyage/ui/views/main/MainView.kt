@@ -23,8 +23,11 @@ fun MainView(
     ) {
         when (currentView) {
             HomeNavView -> HomeView(vm = core.vmContainer.homeVM, onUpdate = core.onUpdate)
+            DiscoverNavView -> DiscoverView(
+                vm = core.vmContainer.discoverVM,
+                onUpdate = core.onUpdate
+            )
             InboxNavView -> InboxView()
-            DiscoverNavView -> DiscoverView()
         }
     }
 }

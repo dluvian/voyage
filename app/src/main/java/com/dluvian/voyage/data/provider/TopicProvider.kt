@@ -22,6 +22,10 @@ class TopicProvider(topicDao: TopicDao) {
         return allTopics.value
     }
 
+    suspend fun getPopularUnfollowedTopics(limit: Int): List<Topic> {
+        TODO()
+    }
+
     fun isFollowed(topic: Topic): Boolean {
         return getMyTopics().contains(topic)
     }

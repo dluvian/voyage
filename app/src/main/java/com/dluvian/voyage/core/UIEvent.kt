@@ -82,6 +82,11 @@ data class ClickNeutralizeVote(
 sealed class HomeViewAction : UIEvent()
 data object HomeViewRefresh : HomeViewAction()
 data object HomeViewAppend : HomeViewAction()
+data object HomeViewSubAccountAndTrustData : HomeViewAction()
+
+
+sealed class DiscoverViewAction : UIEvent()
+data object DiscoverViewRefresh : DiscoverViewAction()
 
 
 sealed class TopicViewAction : UIEvent()

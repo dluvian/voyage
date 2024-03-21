@@ -38,6 +38,10 @@ class ProfileProvider(
         return profileDao.getProfilesByName(name = name, limit = limit)
     }
 
+    suspend fun getPopularUnfollowedProfiles(limit: Int): List<FullProfile> {
+        TODO()
+    }
+
     private fun createFullProfile(
         pubkey: PubkeyHex,
         dbProfile: AdvancedProfileView?,

@@ -14,6 +14,7 @@ import com.dluvian.voyage.core.ExternalSignerHandler
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.ProcessExternalAccount
 import com.dluvian.voyage.core.ProcessExternalSignature
+import com.dluvian.voyage.core.viewModel.DiscoverViewModel
 import com.dluvian.voyage.core.viewModel.HomeViewModel
 import com.dluvian.voyage.core.viewModel.ProfileViewModel
 import com.dluvian.voyage.core.viewModel.SearchViewModel
@@ -70,6 +71,12 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             HomeViewModel(
                 feedProvider = appContainer.feedProvider,
                 nostrSubscriber = appContainer.nostrSubscriber
+            )
+        },
+        discoverVM = viewModel {
+            DiscoverViewModel(
+                topicProvider = appContainer.topicProvider,
+                profileProvider = appContainer.profileProvider,
             )
         },
         settingsVM = viewModel {

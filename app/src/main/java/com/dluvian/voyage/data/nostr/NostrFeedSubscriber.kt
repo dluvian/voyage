@@ -49,7 +49,7 @@ class NostrFeedSubscriber(
         if (topics.isEmpty()) return result
 
         val topicedNoteFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.TextNote))
-            .hashtags(hashtags = topicProvider.getMyTopics())
+            .hashtags(hashtags = topics)
             .until(timestamp = until)
             .limit(limit = limit)
         val topicedNoteFilters = mutableListOf(FilterWrapper(topicedNoteFilter))
