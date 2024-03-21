@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "86e8d4871280d79347272cc8367072b3",
+    "identityHash": "af1e48423ccf3af0a1fc194e335aa931",
     "entities": [
       {
         "tableName": "post",
@@ -473,7 +473,17 @@
             "pubkey"
           ]
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_profile_name",
+            "unique": false,
+            "columnNames": [
+              "name"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_profile_name` ON `${TABLE_NAME}` (`name`)"
+          }
+        ],
         "foreignKeys": []
       }
     ],
@@ -489,7 +499,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '86e8d4871280d79347272cc8367072b3')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'af1e48423ccf3af0a1fc194e335aa931')"
     ]
   }
 }
