@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 1,
-    "identityHash": "60d9127faaf3d4bce730751599b77b06",
+    "version": 2,
+    "identityHash": "5ec9c6de95bbed809c18b10e44072f25",
     "entities": [
       {
         "tableName": "post",
@@ -498,12 +498,12 @@
       },
       {
         "viewName": "EventRelayAuthorView",
-        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT post.pubkey, postRelay.relayUrl AS relay, COUNT(*) AS relayCount FROM postRelay LEFT JOIN post ON post.id = postRelay.postId GROUP BY post.pubkey, postRelay.relayUrl"
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT post.pubkey, postRelay.relayUrl AS relay, COUNT(*) AS relayCount FROM postRelay LEFT JOIN post ON post.id = postRelay.postId GROUP BY post.pubkey, relay"
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '60d9127faaf3d4bce730751599b77b06')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5ec9c6de95bbed809c18b10e44072f25')"
     ]
   }
 }

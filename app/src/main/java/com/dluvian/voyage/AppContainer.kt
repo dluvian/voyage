@@ -64,7 +64,8 @@ class AppContainer(context: Context) {
         syncedPostRelayCache = syncedPostRelayCache
     )
 
-    private val relayProvider = RelayProvider(nip65Dao = roomDb.nip65Dao())
+    private val relayProvider =
+        RelayProvider(nip65Dao = roomDb.nip65Dao(), eventRelayDao = roomDb.eventRelayDao())
     private val friendProvider = FriendProvider(friendDao = roomDb.friendDao())
     private val webOfTrustProvider = WebOfTrustProvider(webOfTrustDao = roomDb.webOfTrustDao())
     private val accountPubkeyProvider = AccountPubkeyProvider(accountDao = roomDb.accountDao())

@@ -12,7 +12,8 @@ interface RootPostDao {
     @Query(
         "SELECT * " +
                 "FROM RootPostView " +
-                "WHERE createdAt <= :until AND (authorIsFriend OR myTopic IS NOT NULL)" +
+                "WHERE createdAt <= :until " +
+                "AND (authorIsFriend OR myTopic IS NOT NULL) " +
                 "ORDER BY createdAt DESC " +
                 "LIMIT :size"
     )

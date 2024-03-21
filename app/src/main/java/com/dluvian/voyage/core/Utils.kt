@@ -43,3 +43,8 @@ fun <K, V> MutableMap<K, MutableList<V>>.syncedPutOrAdd(key: K, value: MutableLi
         }
     }
 }
+
+fun <K, V> MutableMap<K, MutableSet<V>>.putOrAdd(key: K, value: Collection<V>) {
+    val alreadyPresent = this.putIfAbsent(key, value.toMutableSet())
+    alreadyPresent?.addAll(value)
+}

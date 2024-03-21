@@ -14,9 +14,8 @@ class AccountPubkeyProvider(accountDao: AccountDao) : IPubkeyProvider {
 
     override fun tryGetPubkeyHex(): Result<PubkeyHex> {
         val pubkey = myPubkeyFlow.value
+        // TODO: This will throw sometimes
         return if (pubkey == null) Result.failure(IllegalStateException("Flow is not active yet"))
         else Result.success(pubkey)
     }
-
-
 }
