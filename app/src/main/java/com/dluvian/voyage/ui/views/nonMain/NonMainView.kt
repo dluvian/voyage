@@ -26,6 +26,7 @@ fun NonMainView(
 
         SettingsNavView -> SettingsView(
             vm = core.vmContainer.settingsVM,
+            snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate
         )
 

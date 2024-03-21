@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -32,7 +33,14 @@ import com.dluvian.voyage.ui.theme.AccountIcon
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
-fun SettingsView(vm: SettingsViewModel, onUpdate: OnUpdate) {
+fun SettingsView(vm: SettingsViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
+    SettingsScaffold(snackbar = snackbar, onUpdate = onUpdate) {
+        SettingsViewContent(vm = vm, onUpdate = onUpdate)
+    }
+}
+
+@Composable
+private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: OnUpdate) {
     val accountType by vm.accountType
     LazyColumn {
         item {
@@ -49,6 +57,7 @@ fun SettingsView(vm: SettingsViewModel, onUpdate: OnUpdate) {
             }
         }
     }
+
 }
 
 @Composable
