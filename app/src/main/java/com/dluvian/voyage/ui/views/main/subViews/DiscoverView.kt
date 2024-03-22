@@ -38,6 +38,7 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenTopic
 import com.dluvian.voyage.core.viewModel.DiscoverViewModel
+import com.dluvian.voyage.ui.components.BaseHint
 import com.dluvian.voyage.ui.components.PullRefreshBox
 import com.dluvian.voyage.ui.components.SectionHeader
 import com.dluvian.voyage.ui.components.button.FollowButton
@@ -88,14 +89,16 @@ fun DiscoverView(vm: DiscoverViewModel, onUpdate: OnUpdate) {
             item {
                 DiscoverContainer(
                     modifier = Modifier.fillParentMaxHeight(0.3f),
-                    items = followableTopics
+                    items = followableTopics,
+                    hintIfEmpty = stringResource(id = R.string.no_topics_found)
                 )
             }
             item { SectionHeader(header = stringResource(id = R.string.popular_profiles)) }
             item {
                 DiscoverContainer(
                     modifier = Modifier.fillParentMaxHeight(0.3f),
-                    items = followableProfiles
+                    items = followableProfiles,
+                    hintIfEmpty = stringResource(id = R.string.no_profiles_found)
                 )
             }
         }
@@ -112,9 +115,14 @@ private data class Followable(
 )
 
 @Composable
-private fun DiscoverContainer(modifier: Modifier = Modifier, items: List<Followable>) {
+private fun DiscoverContainer(
+    modifier: Modifier = Modifier,
+    items: List<Followable>,
+    hintIfEmpty: String
+) {
     Box(modifier = modifier) {
-        LazyHorizontalStaggeredGrid(
+        if (items.isEmpty()) BaseHint(text = hintIfEmpty)
+        else LazyHorizontalStaggeredGrid(
             modifier = Modifier.fillMaxSize(),
             rows = StaggeredGridCells.Adaptive(minSize = ButtonDefaults.MinHeight),
             verticalArrangement = Arrangement.Center

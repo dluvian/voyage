@@ -11,6 +11,7 @@ data class Sizing(
      * 18 dp
      */
     val smallIndicator: Dp = 18.dp,
+    val baseHint: Dp = 48.dp,
 )
 
 val LocalSizing = compositionLocalOf { Sizing() }

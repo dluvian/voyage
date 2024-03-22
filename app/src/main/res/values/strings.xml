@@ -39,4 +39,6 @@
     <string name="about">About</string>
     <string name="popular_topics">Popular topics</string>
     <string name="popular_profiles">Popular profiles</string>
+    <string name="no_profiles_found">No profiles found</string>
+    <string name="no_topics_found">No topics found</string>
 </resources>
