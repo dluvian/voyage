@@ -5,7 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.core.DiscoverViewAction
+import com.dluvian.voyage.core.DiscoverViewFollowProfile
+import com.dluvian.voyage.core.DiscoverViewFollowTopic
 import com.dluvian.voyage.core.DiscoverViewRefresh
+import com.dluvian.voyage.core.DiscoverViewUnfollowProfile
+import com.dluvian.voyage.core.DiscoverViewUnfollowTopic
 import com.dluvian.voyage.core.model.TopicFollowState
 import com.dluvian.voyage.data.model.FullProfile
 import com.dluvian.voyage.data.provider.ProfileProvider
@@ -26,6 +30,10 @@ class DiscoverViewModel(
     fun handle(action: DiscoverViewAction) {
         when (action) {
             is DiscoverViewRefresh -> refresh()
+            is DiscoverViewFollowTopic -> TODO()
+            is DiscoverViewUnfollowTopic -> TODO()
+            is DiscoverViewFollowProfile -> TODO()
+            is DiscoverViewUnfollowProfile -> TODO()
         }
     }
 

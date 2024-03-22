@@ -23,7 +23,7 @@ class TopicProvider(topicDao: TopicDao) {
     }
 
     suspend fun getPopularUnfollowedTopics(limit: Int): List<Topic> {
-        TODO()
+        return (0..100).mapIndexed { i, o -> "Lol$i" }
     }
 
     fun isFollowed(topic: Topic): Boolean {

@@ -39,7 +39,7 @@ class ProfileProvider(
     }
 
     suspend fun getPopularUnfollowedProfiles(limit: Int): List<FullProfile> {
-        TODO()
+        return emptyList()
     }
 
     private fun createFullProfile(

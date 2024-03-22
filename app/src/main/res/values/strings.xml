@@ -37,4 +37,6 @@
     <string name="failed_to_sign_topic_list">Failed to sign topic list</string>
     <string name="failed_to_sign_contact_list">Failed to sign contact list</string>
     <string name="about">About</string>
+    <string name="popular_topics">Popular topics</string>
+    <string name="popular_profiles">Popular profiles</string>
 </resources>

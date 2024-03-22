@@ -87,6 +87,10 @@ data object HomeViewSubAccountAndTrustData : HomeViewAction()
 
 sealed class DiscoverViewAction : UIEvent()
 data object DiscoverViewRefresh : DiscoverViewAction()
+data class DiscoverViewFollowTopic(val topic: Topic) : DiscoverViewAction()
+data class DiscoverViewUnfollowTopic(val topic: Topic) : DiscoverViewAction()
+data class DiscoverViewFollowProfile(val pubkey: PubkeyHex) : DiscoverViewAction()
+data class DiscoverViewUnfollowProfile(val pubkey: PubkeyHex) : DiscoverViewAction()
 
 
 sealed class TopicViewAction : UIEvent()
