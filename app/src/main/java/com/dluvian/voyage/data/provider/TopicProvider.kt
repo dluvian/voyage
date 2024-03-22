@@ -24,7 +24,7 @@ class TopicProvider(private val topicDao: TopicDao) {
 
     suspend fun getPopularUnfollowedTopics(limit: Int): List<Topic> {
         return topicDao.getUnfollowedTopics(limit = limit)
-            .ifEmpty { defaultTopics - myTopics.value.toSet() }
+            .ifEmpty { (defaultTopics - myTopics.value.toSet()).shuffled() }
     }
 
     fun isFollowed(topic: Topic): Boolean {
@@ -47,5 +47,12 @@ class TopicProvider(private val topicDao: TopicDao) {
         "news",
         "bitcoin",
         "fitness",
+        "japan",
+        "spain",
+        "travel",
+        "farmstr",
+        "running",
+        "surfing",
+        "cycling",
     )
 }
