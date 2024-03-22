@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "60d9127faaf3d4bce730751599b77b06",
+    "identityHash": "20c21ea4005061939f577dc53a45261d",
     "entities": [
       {
         "tableName": "post",
@@ -446,7 +446,7 @@
       },
       {
         "tableName": "profile",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`pubkey` TEXT NOT NULL, `name` TEXT, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`pubkey`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`pubkey` TEXT NOT NULL, `name` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`pubkey`))",
         "fields": [
           {
             "fieldPath": "pubkey",
@@ -458,7 +458,7 @@
             "fieldPath": "name",
             "columnName": "name",
             "affinity": "TEXT",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "createdAt",
@@ -503,7 +503,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '60d9127faaf3d4bce730751599b77b06')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '20c21ea4005061939f577dc53a45261d')"
     ]
   }
 }

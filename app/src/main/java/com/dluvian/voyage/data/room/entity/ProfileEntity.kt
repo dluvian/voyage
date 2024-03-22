@@ -17,14 +17,14 @@ import rust.nostr.protocol.PublicKey
 )
 data class ProfileEntity(
     @PrimaryKey val pubkey: PubkeyHex,
-    val name: String?,
+    val name: String,
     val createdAt: Long,
 ) {
     companion object {
         fun from(validatedProfile: ValidatedProfile): ProfileEntity {
             return ProfileEntity(
                 pubkey = validatedProfile.pubkey,
-                name = validatedProfile.metadata.getName()?.take(MAX_NAME_LEN),
+                name = validatedProfile.metadata.getName()?.take(MAX_NAME_LEN).orEmpty(),
                 createdAt = validatedProfile.createdAt
             )
         }
