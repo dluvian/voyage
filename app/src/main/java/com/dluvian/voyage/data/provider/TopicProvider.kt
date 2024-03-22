@@ -4,9 +4,7 @@ import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.room.dao.TopicDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
 class TopicProvider(private val topicDao: TopicDao) {
@@ -24,13 +22,9 @@ class TopicProvider(private val topicDao: TopicDao) {
         return allTopics.value
     }
 
-    fun getPopularUnfollowedTopics(limit: Int): Flow<List<Topic>> {
-        return combine(
-            topicDao.getUnfollowedTopicsFlow(limit = limit),
-            myTopics,
-        ) { unfollowed, myTopics ->
-            unfollowed.ifEmpty { defaultTopics - myTopics.toSet() }
-        }
+    suspend fun getPopularUnfollowedTopics(limit: Int): List<Topic> {
+        return topicDao.getUnfollowedTopics(limit = limit)
+            .ifEmpty { defaultTopics - myTopics.value.toSet() }
     }
 
     fun isFollowed(topic: Topic): Boolean {
@@ -41,6 +35,7 @@ class TopicProvider(private val topicDao: TopicDao) {
         "voyage",
         "nostr",
         "asknostr",
+        "introductions",
         "foodstr",
         "food",
         "grownostr",
@@ -49,6 +44,8 @@ class TopicProvider(private val topicDao: TopicDao) {
         "love",
         "nature",
         "photography",
-        "news"
+        "news",
+        "bitcoin",
+        "fitness",
     )
 }

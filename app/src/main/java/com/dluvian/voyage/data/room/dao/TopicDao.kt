@@ -21,5 +21,5 @@ interface TopicDao {
                 "ORDER BY COUNT(hashtag) DESC " +
                 "LIMIT :limit"
     )
-    fun getUnfollowedTopicsFlow(limit: Int): Flow<List<Topic>>
+    suspend fun getUnfollowedTopics(limit: Int): List<Topic>
 }

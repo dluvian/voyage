@@ -26,7 +26,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.joinAll
@@ -38,7 +37,7 @@ class DiscoverViewModel(
     private val topicFollower: TopicFollower,
     private val profileFollower: ProfileFollower,
 ) : ViewModel() {
-    private val maxDisplayCount = 100
+    private val maxDisplayCount = 150
     val isRefreshing = mutableStateOf(false)
     val popularTopics: MutableState<StateFlow<List<TopicFollowState>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
@@ -101,13 +100,15 @@ class DiscoverViewModel(
         }
     }
 
-    private fun getTopicFlow(): StateFlow<List<TopicFollowState>> {
-        return topicProvider
-            .getPopularUnfollowedTopics(limit = maxDisplayCount)
-            .map { list -> list.map { TopicFollowState(topic = it, isFollowed = false) } }
-            .combine(topicFollower.forcedStatesFlow) { unfollowed, forcedStates ->
-                unfollowed.map { it.copy(isFollowed = forcedStates[it.topic] ?: false) }
-            }
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), popularTopics.value.value)
+    private suspend fun getTopicFlow(): StateFlow<List<TopicFollowState>> {
+        val result = topicProvider.getPopularUnfollowedTopics(limit = maxDisplayCount)
+        return topicFollower.forcedStatesFlow.map { forcedStates ->
+            result.map { TopicFollowState(topic = it, isFollowed = forcedStates[it] ?: false) }
+        }
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(),
+                popularTopics.value.value
+            )
     }
 }
