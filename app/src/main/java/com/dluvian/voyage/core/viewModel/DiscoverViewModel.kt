@@ -4,7 +4,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.voyage.core.DELAY_10SEC
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.DiscoverViewAction
 import com.dluvian.voyage.core.DiscoverViewFollowProfile
@@ -20,7 +19,6 @@ import com.dluvian.voyage.data.model.FullProfile
 import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,6 +27,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicBoolean
 
 class DiscoverViewModel(
     private val topicProvider: TopicProvider,
@@ -36,7 +35,8 @@ class DiscoverViewModel(
     private val topicFollower: TopicFollower,
     private val profileFollower: ProfileFollower,
 ) : ViewModel() {
-    private val maxDisplayCount = 150
+    private val maxTopicCount = 100
+    private val maxProfileCount = 50
     val isRefreshing = mutableStateOf(false)
     val popularTopics: MutableState<StateFlow<List<TopicFollowState>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
@@ -54,12 +54,10 @@ class DiscoverViewModel(
         }
     }
 
-    private var initJob: Job? = null
+    private val isInitialized = AtomicBoolean(false)
     private fun init() {
-        if (initJob?.isActive == true) return
-        initJob = viewModelScope.launch(Dispatchers.IO) {
+        if (isInitialized.compareAndSet(false, true)) {
             refresh()
-            delay(DELAY_10SEC)
         }
     }
 
@@ -82,7 +80,7 @@ class DiscoverViewModel(
     }
 
     private suspend fun getTopicFlow(): StateFlow<List<TopicFollowState>> {
-        val result = topicProvider.getPopularUnfollowedTopics(limit = maxDisplayCount)
+        val result = topicProvider.getPopularUnfollowedTopics(limit = maxTopicCount)
         return topicFollower.forcedStatesFlow.map { forcedStates ->
             result.map { TopicFollowState(topic = it, isFollowed = forcedStates[it] ?: false) }
         }
@@ -94,7 +92,7 @@ class DiscoverViewModel(
     }
 
     private suspend fun getProfileFlow(): StateFlow<List<FullProfile>> {
-        return profileProvider.getPopularUnfollowedProfiles(limit = maxDisplayCount)
+        return profileProvider.getPopularUnfollowedProfiles(limit = maxProfileCount)
             .stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(),
