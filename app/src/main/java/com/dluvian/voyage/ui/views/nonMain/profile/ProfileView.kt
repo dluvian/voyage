@@ -22,8 +22,7 @@ import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
 fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
-    val outerProfile by vm.profile
-    val profile by outerProfile.collectAsState()
+    val profile by vm.profile.value.collectAsState()
 
     ProfileScaffold(profile = profile, snackbar = snackbar, onUpdate = onUpdate) {
         Feed(

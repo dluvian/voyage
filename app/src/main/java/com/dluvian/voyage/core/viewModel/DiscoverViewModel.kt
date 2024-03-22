@@ -13,7 +13,6 @@ import com.dluvian.voyage.core.DiscoverViewInit
 import com.dluvian.voyage.core.DiscoverViewRefresh
 import com.dluvian.voyage.core.DiscoverViewUnfollowProfile
 import com.dluvian.voyage.core.DiscoverViewUnfollowTopic
-import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.model.TopicFollowState
 import com.dluvian.voyage.data.interactor.ProfileFollower
 import com.dluvian.voyage.data.interactor.TopicFollower
@@ -41,7 +40,8 @@ class DiscoverViewModel(
     val isRefreshing = mutableStateOf(false)
     val popularTopics: MutableState<StateFlow<List<TopicFollowState>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
-    val popularProfiles: MutableState<List<FullProfile>> = mutableStateOf(emptyList())
+    val popularProfiles: MutableState<StateFlow<List<FullProfile>>> =
+        mutableStateOf(MutableStateFlow(emptyList()))
 
     fun handle(action: DiscoverViewAction) {
         when (action) {
@@ -49,16 +49,8 @@ class DiscoverViewModel(
             is DiscoverViewRefresh -> refresh()
             is DiscoverViewFollowTopic -> topicFollower.follow(action.topic)
             is DiscoverViewUnfollowTopic -> topicFollower.unfollow(action.topic)
-
-            is DiscoverViewFollowProfile -> updateProfileFollowState(
-                pubkey = action.pubkey,
-                isFollowed = true
-            )
-
-            is DiscoverViewUnfollowProfile -> updateProfileFollowState(
-                pubkey = action.pubkey,
-                isFollowed = false
-            )
+            is DiscoverViewFollowProfile -> profileFollower.follow(action.pubkey)
+            is DiscoverViewUnfollowProfile -> profileFollower.unfollow(action.pubkey)
         }
     }
 
@@ -76,27 +68,16 @@ class DiscoverViewModel(
         isRefreshing.value = true
 
         viewModelScope.launch {
+            val profileJob = viewModelScope.launch(Dispatchers.IO) {
+                popularProfiles.value = getProfileFlow()
+            }
             val topicJob = viewModelScope.launch(Dispatchers.IO) {
                 popularTopics.value = getTopicFlow()
-            }
-            val profileJob = viewModelScope.launch(Dispatchers.IO) {
-                popularProfiles.value = profileProvider
-                    .getPopularUnfollowedProfiles(limit = maxDisplayCount)
             }
             delay(DELAY_1SEC)
             joinAll(topicJob, profileJob)
         }.invokeOnCompletion {
             isRefreshing.value = false
-        }
-    }
-
-    private fun updateProfileFollowState(pubkey: PubkeyHex, isFollowed: Boolean) {
-        if (isFollowed) profileFollower.follow(pubkey) else profileFollower.unfollow(pubkey)
-        popularProfiles.value = popularProfiles.value.map {
-            val advanced = it.advancedProfile.copy(
-                isFriend = profileFollower.forcedFollows.value[pubkey] ?: false
-            )
-            it.copy(advancedProfile = advanced)
         }
     }
 
@@ -109,6 +90,15 @@ class DiscoverViewModel(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(),
                 popularTopics.value.value
+            )
+    }
+
+    private suspend fun getProfileFlow(): StateFlow<List<FullProfile>> {
+        return profileProvider.getPopularUnfollowedProfiles(limit = maxDisplayCount)
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(),
+                popularProfiles.value.value
             )
     }
 }

@@ -16,16 +16,16 @@ fun ProfileTopAppBar(profile: FullProfile, onUpdate: OnUpdate) {
     GoBackTopAppBar(
         title = {
             Text(
-                text = profile.advancedProfile.name,
+                text = profile.inner.name,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         },
         actions = {
             FollowButton(
-                isFollowed = profile.advancedProfile.isFriend,
-                onFollow = { onUpdate(ProfileViewFollowProfile(profile.advancedProfile.pubkey)) },
-                onUnfollow = { onUpdate(ProfileViewUnfollowProfile(profile.advancedProfile.pubkey)) })
+                isFollowed = profile.inner.isFriend,
+                onFollow = { onUpdate(ProfileViewFollowProfile(profile.inner.pubkey)) },
+                onUnfollow = { onUpdate(ProfileViewUnfollowProfile(profile.inner.pubkey)) })
         },
         onUpdate = onUpdate
     )

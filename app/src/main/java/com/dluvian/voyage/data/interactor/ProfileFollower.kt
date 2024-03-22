@@ -34,7 +34,11 @@ class ProfileFollower(
     private val tag = "ProfileFollower"
     private val scope = CoroutineScope(Dispatchers.IO)
     private val _forcedFollows = MutableStateFlow(mapOf<PubkeyHex, Boolean>())
-    val forcedFollows = _forcedFollows.stateIn(scope, SharingStarted.Eagerly, _forcedFollows.value)
+    val forcedFollowsFlow = _forcedFollows.stateIn(
+        scope,
+        SharingStarted.Eagerly,
+        _forcedFollows.value
+    )
 
 
     fun follow(pubkey: PubkeyHex) {

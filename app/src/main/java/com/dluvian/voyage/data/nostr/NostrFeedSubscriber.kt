@@ -32,7 +32,7 @@ class NostrFeedSubscriber(
 
         val friendJob = scope.launch {
             relayProvider
-                .getObserveRelays(observeFrom = friendProvider.getFriendPubkeys())
+                .getAutopilotRelays(pubkeys = friendProvider.getFriendPubkeys())
                 .forEach { (relayUrl, pubkeys) ->
                     val publicKeys = pubkeys.map { PublicKey.fromHex(it) }
                     val friendsNoteFilter = Filter()

@@ -2,8 +2,6 @@ package com.dluvian.voyage.data.provider
 
 import android.util.Log
 import com.dluvian.nostr_kt.RelayUrl
-import com.dluvian.nostr_kt.WEBSOCKET_PREFIX
-import com.dluvian.nostr_kt.removeTrailingSlashes
 import com.dluvian.voyage.core.MAX_RELAYS
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.putOrAdd
@@ -45,20 +43,29 @@ class RelayProvider(
         return (getWriteRelays(limit = true) + foreignRelays).distinct()
     }
 
-    fun getObserveRelays(nip19Profile: Nip19Profile): List<RelayUrl> {
-        val encodedRelays = nip19Profile.relays()
-            .filter { it.startsWith(WEBSOCKET_PREFIX) }
-            .map { it.removeTrailingSlashes() }
-            .distinct()
-            .shuffled()
-            .take(MAX_RELAYS)
-        return (encodedRelays + getReadRelays()).distinct()
+    private suspend fun getObserveRelays(pubkey: PubkeyHex, limit: Boolean = true): List<RelayUrl> {
+        val relays = nip65Dao.getNip65WriteRelays(pubkeys = listOf(pubkey))
+            .map { it.nip65Relay.url }
+            .let { if (limit) it.limit() else it }
+            .toMutableSet()
+        relays.addAll(getReadRelays(limit = limit))
+
+        return relays.toList()
     }
 
+    suspend fun getObserveRelays(
+        nip19Profile: Nip19Profile,
+        limit: Boolean = true
+    ): List<RelayUrl> {
+        val foreignRelays = nip19Profile.relays().let { if (limit) it.limit() else it }
+        val nip65 = getObserveRelays(pubkey = nip19Profile.publicKey().toHex(), limit = limit)
+
+        return (foreignRelays + nip65).distinct()
+    }
 
     // TODO: Cache result and use it when applicable
-    suspend fun getObserveRelays(observeFrom: Collection<PubkeyHex>): Map<RelayUrl, Set<PubkeyHex>> {
-        if (observeFrom.isEmpty()) return emptyMap()
+    suspend fun getAutopilotRelays(pubkeys: Collection<PubkeyHex>): Map<RelayUrl, Set<PubkeyHex>> {
+        if (pubkeys.isEmpty()) return emptyMap()
 
         val result = mutableMapOf<RelayUrl, MutableSet<PubkeyHex>>()
 
@@ -66,7 +73,7 @@ class RelayProvider(
         // TODO: Filter bad relays / blacklisted relays
         val pubkeyCache = mutableSetOf<PubkeyHex>()
         nip65Dao
-            .getNip65WriteRelays(pubkeys = observeFrom)
+            .getNip65WriteRelays(pubkeys = pubkeys)
             .groupBy { it.nip65Relay.url }
             .toList()
             .shuffled()
@@ -81,7 +88,7 @@ class RelayProvider(
             }
 
         // Cover most useful relays
-        eventRelayDao.getEventRelays(authors = observeFrom)
+        eventRelayDao.getEventRelays(authors = pubkeys)
             .sortedByDescending { it.relayCount }
             .distinctBy { it.pubkey }
             .groupBy(keySelector = { it.relay }, valueTransform = { it.pubkey })
@@ -92,7 +99,7 @@ class RelayProvider(
             }
 
         // Cover rest with my read relays
-        val restPubkeys = observeFrom - pubkeyCache
+        val restPubkeys = pubkeys - pubkeyCache
         if (restPubkeys.isNotEmpty()) {
             Log.i(tag, "Default to read relays for ${restPubkeys.size} pubkeys")
             getReadRelays().forEach { relay -> result.putOrAdd(relay, restPubkeys) }
@@ -109,9 +116,7 @@ class RelayProvider(
     }
 
     private val defaultRelays = listOf(
-        "wss://nos.lol",
         "wss://nostr.einundzwanzig.space",
-        "wss://relay.primal.net",
         "wss://nostr.oxtr.dev",
         "wss://relay.mutinywallet.com",
         "wss://nostr.fmt.wiz.biz",
@@ -121,6 +126,7 @@ class RelayProvider(
     // Avoid big relays. Don't be reliable on central hubs
     private val avoidRelays = listOf(
         "wss://nos.lol",
-        "wss://relay.damus.io"
+        "wss://relay.damus.io",
+        "wss://relay.primal.net",
     )
 }

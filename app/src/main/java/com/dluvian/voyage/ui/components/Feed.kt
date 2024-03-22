@@ -44,8 +44,7 @@ fun Feed(
 ) {
     val isRefreshing by paginator.isRefreshing
     val isAppending by paginator.isAppending
-    val postsOuterState by paginator.page
-    val posts by postsOuterState.collectAsState()
+    val posts by paginator.page.value.collectAsState()
 
     PullRefreshBox(isRefreshing = isRefreshing, onRefresh = onRefresh) {
         if (isAppending) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())

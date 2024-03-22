@@ -18,10 +18,12 @@ import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class ProfileViewModel(
     feedProvider: FeedProvider,
@@ -35,16 +37,18 @@ class ProfileViewModel(
 
     fun openProfile(profileNavView: ProfileNavView) {
         val pubkeyHex = profileNavView.nip19Profile.publicKey().toHex()
-        if (profile.value.value.advancedProfile.pubkey == pubkeyHex) return
+        if (profile.value.value.inner.pubkey == pubkeyHex) return
 
         paginator.init(setting = ProfileFeedSetting(pubkey = pubkeyHex))
-        nostrSubscriber.subProfile(nip19Profile = profileNavView.nip19Profile)
+        viewModelScope.launch(Dispatchers.IO) {
+            nostrSubscriber.subProfile(nip19Profile = profileNavView.nip19Profile)
+        }
 
         profile.value = profileProvider.getProfileFlow(pubkey = pubkeyHex)
             .stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(),
-                FullProfile(advancedProfile = AdvancedProfileView(pubkey = pubkeyHex))
+                FullProfile(inner = AdvancedProfileView(pubkey = pubkeyHex))
             )
     }
 

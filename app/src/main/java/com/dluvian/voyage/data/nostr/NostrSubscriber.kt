@@ -8,6 +8,7 @@ import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
+import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.RND_RESUB_COUNT
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.model.FeedSetting
@@ -19,6 +20,7 @@ import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
+import com.dluvian.voyage.data.room.dao.ProfileDao
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -39,6 +41,7 @@ class NostrSubscriber(
     private val webOfTrustProvider: WebOfTrustProvider,
     private val friendProvider: FriendProvider,
     private val pubkeyProvider: IPubkeyProvider,
+    private val profileDao: ProfileDao,
     private val nostrClient: NostrClient,
     private val syncedFilterCache: MutableMap<SubId, List<FilterWrapper>>,
 ) {
@@ -119,7 +122,7 @@ class NostrSubscriber(
         }
     }
 
-    fun subProfile(nip19Profile: Nip19Profile) {
+    suspend fun subProfile(nip19Profile: Nip19Profile) {
         val profileFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Metadata))
             .author(author = nip19Profile.publicKey())
             .until(timestamp = Timestamp.now())
@@ -127,6 +130,22 @@ class NostrSubscriber(
         val filters = listOf(FilterWrapper(profileFilter))
 
         relayProvider.getObserveRelays(nip19Profile = nip19Profile).forEach { relay ->
+            subscribe(relayUrl = relay, filters = filters)
+        }
+    }
+
+    suspend fun lazySubProfiles(pubkeys: Collection<PubkeyHex>) {
+        if (pubkeys.isEmpty()) return
+        val unknownPubkeys = pubkeys - profileDao.filterKnownProfiles(pubkeys = pubkeys).toSet()
+        if (unknownPubkeys.isEmpty()) return
+
+        val timestamp = Timestamp.now()
+
+        relayProvider.getAutopilotRelays(pubkeys = unknownPubkeys).forEach { (relay, pubkeyBatch) ->
+            val profileFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Metadata))
+                .authors(authors = pubkeyBatch.map { PublicKey.fromHex(it) })
+                .until(timestamp = timestamp)
+            val filters = listOf(FilterWrapper(profileFilter))
             subscribe(relayUrl = relay, filters = filters)
         }
     }
@@ -148,7 +167,7 @@ class NostrSubscriber(
 
         val timestamp = Timestamp.now()
         relayProvider
-            .getObserveRelays(observeFrom = webOfTrustWithMissingProfiles)
+            .getAutopilotRelays(pubkeys = webOfTrustWithMissingProfiles)
             .forEach { (relay, pubkeys) ->
                 val profileFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Metadata))
                     .authors(authors = pubkeys.map { PublicKey.fromHex(it) })
@@ -197,7 +216,7 @@ class NostrSubscriber(
 
         val timestamp = Timestamp.now()
         relayProvider
-            .getObserveRelays(observeFrom = nip65Resub)
+            .getAutopilotRelays(pubkeys = nip65Resub)
             .forEach { (relay, pubkeys) ->
                 val nip65Filter = Filter().kind(kind = Kind.fromEnum(KindEnum.RelayList))
                     .authors(authors = pubkeys.map { PublicKey.fromHex(it) })
@@ -215,7 +234,7 @@ class NostrSubscriber(
 
         val timestamp = Timestamp.now()
         relayProvider
-            .getObserveRelays(observeFrom = webOfTrustResub)
+            .getAutopilotRelays(pubkeys = webOfTrustResub)
             .forEach { (relay, pubkeys) ->
                 val webOfTrustFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.ContactList))
                     .authors(authors = pubkeys.map { PublicKey.fromHex(it) })

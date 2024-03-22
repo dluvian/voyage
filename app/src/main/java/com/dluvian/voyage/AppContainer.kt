@@ -82,6 +82,7 @@ class AppContainer(context: Context) {
         webOfTrustProvider = webOfTrustProvider,
         friendProvider = friendProvider,
         pubkeyProvider = accountManager,
+        profileDao = roomDb.profileDao(),
         nostrClient = nostrClient,
         syncedFilterCache = syncedFilterCache,
     )
@@ -164,6 +165,8 @@ class AppContainer(context: Context) {
         pubkeyProvider = accountManager,
         metadataInMemory = metadataInMemory,
         profileDao = roomDb.profileDao(),
+        friendProvider = friendProvider,
+        nostrSubscriber = nostrSubscriber
     )
 
     val suggestionProvider = SuggestionProvider(

@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.staggeredgrid.LazyHorizontalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -49,12 +51,20 @@ import com.dluvian.voyage.ui.theme.spacing
 @Composable
 fun DiscoverView(vm: DiscoverViewModel, onUpdate: OnUpdate) {
     val isRefreshing by vm.isRefreshing
-    val outerTopics by vm.popularTopics
-    val topics by outerTopics.collectAsState()
-    val profiles by vm.popularProfiles
+    val topics by vm.popularTopics.value.collectAsState()
+    val profiles by vm.popularProfiles.value.collectAsState()
+
+    val topicState = rememberLazyStaggeredGridState()
+    val profileState = rememberLazyStaggeredGridState()
 
     LaunchedEffect(key1 = Unit) {
         onUpdate(DiscoverViewInit)
+    }
+    LaunchedEffect(key1 = isRefreshing) {
+        if (isRefreshing) {
+            topicState.scrollToItem(0)
+            profileState.scrollToItem(0)
+        }
     }
 
     val followableTopics = remember(topics) {
@@ -74,11 +84,11 @@ fun DiscoverView(vm: DiscoverViewModel, onUpdate: OnUpdate) {
         profiles.map {
             Followable(
                 imageVector = AccountIcon,
-                label = it.advancedProfile.name,
-                isFollowed = it.advancedProfile.isFriend,
-                onFollow = { onUpdate(DiscoverViewFollowProfile(pubkey = it.advancedProfile.pubkey)) },
-                onUnfollow = { onUpdate(DiscoverViewUnfollowProfile(pubkey = it.advancedProfile.pubkey)) },
-                onOpen = { onUpdate(OpenProfile(nip19 = it.advancedProfile.toNip19())) }
+                label = it.inner.name,
+                isFollowed = it.inner.isFriend,
+                onFollow = { onUpdate(DiscoverViewFollowProfile(pubkey = it.inner.pubkey)) },
+                onUnfollow = { onUpdate(DiscoverViewUnfollowProfile(pubkey = it.inner.pubkey)) },
+                onOpen = { onUpdate(OpenProfile(nip19 = it.inner.toNip19())) }
             )
         }
     }
@@ -90,7 +100,8 @@ fun DiscoverView(vm: DiscoverViewModel, onUpdate: OnUpdate) {
                 DiscoverContainer(
                     modifier = Modifier.fillParentMaxHeight(0.3f),
                     items = followableTopics,
-                    hintIfEmpty = stringResource(id = R.string.no_topics_found)
+                    hintIfEmpty = stringResource(id = R.string.no_topics_found),
+                    state = topicState
                 )
             }
             item { SectionHeader(header = stringResource(id = R.string.popular_profiles)) }
@@ -98,7 +109,8 @@ fun DiscoverView(vm: DiscoverViewModel, onUpdate: OnUpdate) {
                 DiscoverContainer(
                     modifier = Modifier.fillParentMaxHeight(0.3f),
                     items = followableProfiles,
-                    hintIfEmpty = stringResource(id = R.string.no_profiles_found)
+                    hintIfEmpty = stringResource(id = R.string.no_profiles_found),
+                    state = profileState
                 )
             }
         }
@@ -118,12 +130,14 @@ private data class Followable(
 private fun DiscoverContainer(
     modifier: Modifier = Modifier,
     items: List<Followable>,
-    hintIfEmpty: String
+    hintIfEmpty: String,
+    state: LazyStaggeredGridState,
 ) {
     Box(modifier = modifier) {
         if (items.isEmpty()) BaseHint(text = hintIfEmpty)
         else LazyHorizontalStaggeredGrid(
             modifier = Modifier.fillMaxSize(),
+            state = state,
             rows = StaggeredGridCells.Adaptive(minSize = ButtonDefaults.MinHeight),
             verticalArrangement = Arrangement.Center
         ) {
