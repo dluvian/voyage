@@ -12,4 +12,14 @@ interface TopicDao {
 
     @Query("SELECT topic FROM topic UNION SELECT DISTINCT hashtag from hashtag")
     fun getAllTopicsFlow(): Flow<List<Topic>>
+
+    @Query(
+        "SELECT DISTINCT hashtag " +
+                "FROM hashtag " +
+                "WHERE hashtag NOT IN (SELECT topic FROM topic) " +
+                "GROUP BY hashtag " +
+                "ORDER BY COUNT(hashtag) DESC " +
+                "LIMIT :limit"
+    )
+    fun getUnfollowedTopicsFlow(limit: Int): Flow<List<Topic>>
 }

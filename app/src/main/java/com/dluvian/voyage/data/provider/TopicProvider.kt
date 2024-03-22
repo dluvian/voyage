@@ -4,10 +4,12 @@ import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.room.dao.TopicDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
-class TopicProvider(topicDao: TopicDao) {
+class TopicProvider(private val topicDao: TopicDao) {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val myTopics = topicDao.getTopicsFlow()
         .stateIn(scope, SharingStarted.Eagerly, emptyList())
@@ -22,11 +24,31 @@ class TopicProvider(topicDao: TopicDao) {
         return allTopics.value
     }
 
-    suspend fun getPopularUnfollowedTopics(limit: Int): List<Topic> {
-        return (0..100).mapIndexed { i, o -> "Lol$i" }
+    fun getPopularUnfollowedTopics(limit: Int): Flow<List<Topic>> {
+        return combine(
+            topicDao.getUnfollowedTopicsFlow(limit = limit),
+            myTopics,
+        ) { unfollowed, myTopics ->
+            unfollowed.ifEmpty { defaultTopics - myTopics.toSet() }
+        }
     }
 
     fun isFollowed(topic: Topic): Boolean {
         return getMyTopics().contains(topic)
     }
+
+    val defaultTopics = listOf(
+        "voyage",
+        "nostr",
+        "asknostr",
+        "foodstr",
+        "food",
+        "grownostr",
+        "artstr",
+        "art",
+        "love",
+        "nature",
+        "photography",
+        "news"
+    )
 }

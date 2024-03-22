@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -47,7 +48,8 @@ import com.dluvian.voyage.ui.theme.spacing
 @Composable
 fun DiscoverView(vm: DiscoverViewModel, onUpdate: OnUpdate) {
     val isRefreshing by vm.isRefreshing
-    val topics by vm.popularTopics
+    val outerTopics by vm.popularTopics
+    val topics by outerTopics.collectAsState()
     val profiles by vm.popularProfiles
 
     LaunchedEffect(key1 = Unit) {

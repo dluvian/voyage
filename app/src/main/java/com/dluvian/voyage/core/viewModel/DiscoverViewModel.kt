@@ -14,7 +14,6 @@ import com.dluvian.voyage.core.DiscoverViewRefresh
 import com.dluvian.voyage.core.DiscoverViewUnfollowProfile
 import com.dluvian.voyage.core.DiscoverViewUnfollowTopic
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.TopicFollowState
 import com.dluvian.voyage.data.interactor.ProfileFollower
 import com.dluvian.voyage.data.interactor.TopicFollower
@@ -24,6 +23,12 @@ import com.dluvian.voyage.data.provider.TopicProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 
@@ -35,22 +40,16 @@ class DiscoverViewModel(
 ) : ViewModel() {
     private val maxDisplayCount = 100
     val isRefreshing = mutableStateOf(false)
-    val popularTopics: MutableState<List<TopicFollowState>> = mutableStateOf(emptyList())
+    val popularTopics: MutableState<StateFlow<List<TopicFollowState>>> =
+        mutableStateOf(MutableStateFlow(emptyList()))
     val popularProfiles: MutableState<List<FullProfile>> = mutableStateOf(emptyList())
 
     fun handle(action: DiscoverViewAction) {
         when (action) {
             is DiscoverViewInit -> init()
             is DiscoverViewRefresh -> refresh()
-            is DiscoverViewFollowTopic -> updateTopicFollowState(
-                topic = action.topic,
-                isFollowed = true
-            )
-
-            is DiscoverViewUnfollowTopic -> updateTopicFollowState(
-                topic = action.topic,
-                isFollowed = false
-            )
+            is DiscoverViewFollowTopic -> topicFollower.follow(action.topic)
+            is DiscoverViewUnfollowTopic -> topicFollower.unfollow(action.topic)
 
             is DiscoverViewFollowProfile -> updateProfileFollowState(
                 pubkey = action.pubkey,
@@ -79,9 +78,7 @@ class DiscoverViewModel(
 
         viewModelScope.launch {
             val topicJob = viewModelScope.launch(Dispatchers.IO) {
-                popularTopics.value = topicProvider
-                    .getPopularUnfollowedTopics(limit = maxDisplayCount)
-                    .map { TopicFollowState(topic = it, isFollowed = false) }
+                popularTopics.value = getTopicFlow()
             }
             val profileJob = viewModelScope.launch(Dispatchers.IO) {
                 popularProfiles.value = profileProvider
@@ -94,13 +91,6 @@ class DiscoverViewModel(
         }
     }
 
-    private fun updateTopicFollowState(topic: Topic, isFollowed: Boolean) {
-        if (isFollowed) topicFollower.follow(topic) else topicFollower.unfollow(topic)
-        popularTopics.value = popularTopics.value.map {
-            it.copy(isFollowed = topicFollower.forcedStates.value[topic] ?: false)
-        }
-    }
-
     private fun updateProfileFollowState(pubkey: PubkeyHex, isFollowed: Boolean) {
         if (isFollowed) profileFollower.follow(pubkey) else profileFollower.unfollow(pubkey)
         popularProfiles.value = popularProfiles.value.map {
@@ -109,5 +99,15 @@ class DiscoverViewModel(
             )
             it.copy(advancedProfile = advanced)
         }
+    }
+
+    private fun getTopicFlow(): StateFlow<List<TopicFollowState>> {
+        return topicProvider
+            .getPopularUnfollowedTopics(limit = maxDisplayCount)
+            .map { list -> list.map { TopicFollowState(topic = it, isFollowed = false) } }
+            .combine(topicFollower.forcedStatesFlow) { unfollowed, forcedStates ->
+                unfollowed.map { it.copy(isFollowed = forcedStates[it.topic] ?: false) }
+            }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), popularTopics.value.value)
     }
 }

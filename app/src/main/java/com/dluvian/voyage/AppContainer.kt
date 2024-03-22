@@ -139,6 +139,7 @@ class AppContainer(context: Context) {
         postVoter = postVoter
     )
 
+
     val topicFollower = TopicFollower(
         nostrService = nostrService,
         topicProvider = topicProvider,
@@ -147,6 +148,7 @@ class AppContainer(context: Context) {
         snackbar = snackbar,
         context = context,
     )
+
 
     val profileFollower = ProfileFollower(
         nostrService = nostrService,

@@ -3,7 +3,6 @@ package com.dluvian.voyage.data.interactor
 import android.content.Context
 import android.util.Log
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.runtime.mutableStateOf
 import com.dluvian.nostr_kt.getHashtags
 import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.R
@@ -19,6 +18,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -32,7 +34,8 @@ class TopicFollower(
 ) {
     private val tag = "TopicFollower"
     private val scope = CoroutineScope(Dispatchers.IO)
-    val forcedStates = mutableStateOf(mapOf<Topic, Boolean>())
+    val forcedStates = MutableStateFlow(mapOf<Topic, Boolean>())
+    val forcedStatesFlow = forcedStates.stateIn(scope, SharingStarted.Eagerly, forcedStates.value)
 
     fun follow(topic: Topic) {
         handleAction(topic = topic, isFollowed = true)

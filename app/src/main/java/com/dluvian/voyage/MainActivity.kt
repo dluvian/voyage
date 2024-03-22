@@ -77,6 +77,8 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             DiscoverViewModel(
                 topicProvider = appContainer.topicProvider,
                 profileProvider = appContainer.profileProvider,
+                topicFollower = appContainer.topicFollower,
+                profileFollower = appContainer.profileFollower,
             )
         },
         settingsVM = viewModel {
