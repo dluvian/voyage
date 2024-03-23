@@ -14,6 +14,7 @@ import com.dluvian.voyage.core.ExternalSignerHandler
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.ProcessExternalAccount
 import com.dluvian.voyage.core.ProcessExternalSignature
+import com.dluvian.voyage.core.viewModel.CreatePostViewModel
 import com.dluvian.voyage.core.viewModel.DiscoverViewModel
 import com.dluvian.voyage.core.viewModel.HomeViewModel
 import com.dluvian.voyage.core.viewModel.ProfileViewModel
@@ -111,6 +112,9 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 topicProvider = appContainer.topicProvider,
                 topicFollower = appContainer.topicFollower,
             )
+        },
+        createPostVM = viewModel {
+            CreatePostViewModel()
         }
     )
 }

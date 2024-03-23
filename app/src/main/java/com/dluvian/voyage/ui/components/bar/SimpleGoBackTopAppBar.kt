@@ -6,9 +6,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.dluvian.voyage.core.OnUpdate
 
 @Composable
-fun SimpleGoBackTopAppBar(title: String, onUpdate: OnUpdate) {
+fun SimpleGoBackTopAppBar(title: String? = null, onUpdate: OnUpdate) {
     GoBackTopAppBar(
-        title = { Text(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+        title = { title?.let { Text(text = it, maxLines = 1, overflow = TextOverflow.Ellipsis) } },
         onUpdate = onUpdate
     )
 }

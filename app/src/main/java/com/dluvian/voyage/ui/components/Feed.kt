@@ -82,17 +82,16 @@ private fun PostRow(post: RootPost, onUpdate: OnUpdate) {
             Text(
                 text = post.title,
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                maxLines = 4,
-                overflow = TextOverflow.Ellipsis
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
             )
             Spacer(modifier = Modifier.height(spacing.large))
         }
         Text(
             text = post.content,
-            style = MaterialTheme.typography.titleMedium,
-            maxLines = 8,
-            overflow = TextOverflow.Ellipsis
+            maxLines = 12,
+            overflow = TextOverflow.Ellipsis,
         )
         Spacer(modifier = Modifier.height(spacing.large))
         Actions(post = post, onUpdate = onUpdate)

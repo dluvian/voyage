@@ -22,7 +22,11 @@ fun NonMainView(
     currentView: NonMainNavView,
 ) {
     when (currentView) {
-        CreatePostNavView -> CreatePostView()
+        CreatePostNavView -> CreatePostView(
+            vm = core.vmContainer.createPostVM,
+            snackbar = core.appContainer.snackbar,
+            onUpdate = core.onUpdate
+        )
 
         SettingsNavView -> SettingsView(
             vm = core.vmContainer.settingsVM,
