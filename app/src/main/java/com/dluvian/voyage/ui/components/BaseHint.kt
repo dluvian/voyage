@@ -20,6 +20,7 @@ import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
 fun BaseHint(text: String) {
+    val color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -31,13 +32,13 @@ fun BaseHint(text: String) {
                 .aspectRatio(1f),
             imageVector = SearchIcon,
             contentDescription = text,
-            tint = MaterialTheme.colorScheme.surfaceVariant
+            tint = color
         )
         Spacer(modifier = Modifier.height(spacing.small))
         Text(
             text = text,
             textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.surfaceVariant
+            color = color
         )
     }
 }
