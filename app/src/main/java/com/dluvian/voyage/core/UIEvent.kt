@@ -108,6 +108,10 @@ data class ProfileViewFollowProfile(val pubkey: PubkeyHex) : ProfileViewAction()
 data class ProfileViewUnfollowProfile(val pubkey: PubkeyHex) : ProfileViewAction()
 
 
+sealed class CreatePostViewAction : UIEvent()
+data class CreatePostViewSendPost(val header: String, val body: String) : CreatePostViewAction()
+
+
 sealed class SettingsViewAction : UIEvent()
 data object UseDefaultAccount : SettingsViewAction()
 data class RequestExternalAccount(val context: Context) : SettingsViewAction()

@@ -18,6 +18,7 @@ import com.dluvian.voyage.data.event.EventProcessor
 import com.dluvian.voyage.data.event.EventQueue
 import com.dluvian.voyage.data.event.EventValidator
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
+import com.dluvian.voyage.data.interactor.PostSender
 import com.dluvian.voyage.data.interactor.PostVoter
 import com.dluvian.voyage.data.interactor.ProfileFollower
 import com.dluvian.voyage.data.interactor.TopicFollower
@@ -140,7 +141,6 @@ class AppContainer(context: Context) {
         postVoter = postVoter
     )
 
-
     val topicFollower = TopicFollower(
         nostrService = nostrService,
         topicProvider = topicProvider,
@@ -173,4 +173,7 @@ class AppContainer(context: Context) {
         topicProvider = topicProvider,
         profileProvider = profileProvider
     )
+
+    val postSender = PostSender()
+
 }

@@ -8,6 +8,8 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -25,15 +27,15 @@ import com.dluvian.voyage.core.viewModel.CreatePostViewModel
 
 @Composable
 fun CreatePostView(vm: CreatePostViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
-    CreatePostScaffold(snackbar = snackbar, onUpdate = onUpdate) {
-        CreatePostContent()
+    val header = remember { mutableStateOf("") }
+    val body = remember { mutableStateOf("") }
+    CreatePostScaffold(header = header, body = body, snackbar = snackbar, onUpdate = onUpdate) {
+        CreatePostContent(header = header, body = body)
     }
 }
 
 @Composable
-fun CreatePostContent() {
-    val header = remember { mutableStateOf("") }
-    val body = remember { mutableStateOf("") }
+private fun CreatePostContent(header: MutableState<String>, body: MutableState<String>) {
     Column {
         CreationField(
             value = header.value,
@@ -45,7 +47,9 @@ fun CreatePostContent() {
         CreationField(
             modifier = Modifier.fillMaxSize(),
             value = body.value,
-            onValueChange = { str -> body.value = str },
+            onValueChange = { str ->
+                body.value = str
+            },
             placeholder = stringResource(id = R.string.body_text),
         )
     }

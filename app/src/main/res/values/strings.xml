@@ -43,4 +43,5 @@
     <string name="no_topics_found">No topics found</string>
     <string name="title_optional">Title (optional)</string>
     <string name="body_text">Body text</string>
+    <string name="send">Send</string>
 </resources>

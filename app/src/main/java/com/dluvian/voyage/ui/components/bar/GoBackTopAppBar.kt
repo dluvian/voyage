@@ -11,7 +11,7 @@ import com.dluvian.voyage.ui.components.button.GoBackIconButton
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GoBackTopAppBar(
-    title: ComposableContent,
+    title: ComposableContent = {},
     actions: ComposableRowContent = {},
     onUpdate: OnUpdate
 ) {
