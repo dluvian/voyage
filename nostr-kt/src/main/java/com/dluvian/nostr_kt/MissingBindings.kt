@@ -7,6 +7,7 @@ import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Kind
 import rust.nostr.protocol.KindEnum
 import rust.nostr.protocol.Metadata
+import rust.nostr.protocol.Nip19Profile
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Tag
 import rust.nostr.protocol.TagEnum
@@ -21,6 +22,23 @@ fun createTitleTag(title: String) = Tag.fromEnum(TagEnum.Title(title))
 fun createHashtagTag(hashtag: String) = Tag.fromEnum(TagEnum.Hashtag(hashtag))
 
 fun createLabelTag(label: String) = Tag.parse(listOf("l", label))
+
+fun createMentionTag(pubkeys: Collection<String>): Tag {
+    val tag = mutableListOf("p")
+    tag.addAll(pubkeys)
+
+    return Tag.parse(data = tag)
+}
+
+private val nostrMentionPattern = Regex("(nostr:|@)(npub1|nprofile1)[a-zA-Z0-9]+")
+fun extractMentions(content: String) = nostrMentionPattern.findAll(content)
+    .map { it.value.removePrefix("@").removePrefix("nostr:") }
+    .distinct()
+    .filter {
+        runCatching { PublicKey.fromBech32(it) }.isSuccess ||
+                runCatching { Nip19Profile.fromBech32(it) }.isSuccess
+    }
+    .toList()
 
 fun createReplyTag(parentEventId: EventId, relayHint: RelayUrl, parentIsRoot: Boolean) =
     Tag.parse(

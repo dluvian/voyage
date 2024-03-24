@@ -18,6 +18,15 @@ fun PubkeyHex.toShortenedBech32(): String {
     return pubkey.shortenBech32()
 }
 
+private val hashtagRegex = Regex("""#\w+""")
+fun extractHashtags(content: String): List<Topic> {
+    return hashtagRegex.findAll(content)
+        .distinct()
+        .map { it.value.removePrefix("#") }
+        .toList()
+}
+
+
 fun Metadata.toRelevantMetadata(createdAt: Long): RelevantMetadata {
     return RelevantMetadata(about = this.getAbout()?.trim(), createdAt = createdAt)
 }

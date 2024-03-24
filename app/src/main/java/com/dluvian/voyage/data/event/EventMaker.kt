@@ -3,6 +3,7 @@ package com.dluvian.voyage.data.event
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.createHashtagTag
 import com.dluvian.nostr_kt.createLabelTag
+import com.dluvian.nostr_kt.createMentionTag
 import com.dluvian.nostr_kt.createReaction
 import com.dluvian.nostr_kt.createReplyTag
 import com.dluvian.nostr_kt.createTitleTag
@@ -18,18 +19,23 @@ import rust.nostr.protocol.Interests
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Tag
 
-private const val POST_LABEL = "post"
+private const val ROOT_LABEL = "root"
 private const val REPLY_LABEL = "reply"
 
 class EventMaker(
     private val accountManager: AccountManager,
 ) {
-    suspend fun buildPost(title: String, content: String, topic: String): Result<Event> {
-        val tags = listOf(
-            createLabelTag(POST_LABEL),
-            createTitleTag(title),
-            createHashtagTag(topic)
-        )
+    suspend fun buildPost(
+        title: String,
+        content: String,
+        topics: List<Topic>,
+        mentions: List<PubkeyHex>
+    ): Result<Event> {
+        val tags = mutableListOf(createLabelTag(ROOT_LABEL))
+        topics.forEach { tags.add(createHashtagTag(it)) }
+        if (title.isNotEmpty()) tags.add(createTitleTag(title = title))
+        if (mentions.isNotEmpty()) tags.add(createMentionTag(pubkeys = mentions))
+
         val publicKey = accountManager.getPublicKey()
         val unsignedEvent = EventBuilder.textNote(content, tags).toUnsignedEvent(publicKey)
 

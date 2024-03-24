@@ -150,7 +150,6 @@ class AppContainer(context: Context) {
         context = context,
     )
 
-
     val profileFollower = ProfileFollower(
         nostrService = nostrService,
         relayProvider = relayProvider,
@@ -174,6 +173,6 @@ class AppContainer(context: Context) {
         profileProvider = profileProvider
     )
 
-    val postSender = PostSender()
+    val postSender = PostSender(nostrService = nostrService, relayProvider = relayProvider)
 
 }
