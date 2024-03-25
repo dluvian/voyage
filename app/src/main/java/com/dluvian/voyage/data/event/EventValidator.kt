@@ -20,6 +20,7 @@ import com.dluvian.nostr_kt.isValidEventId
 import com.dluvian.nostr_kt.isVote
 import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.MAX_TOPIC_LEN
 import com.dluvian.voyage.core.isBareTopicStr
 import com.dluvian.voyage.data.account.IPubkeyProvider
@@ -104,8 +105,8 @@ class EventValidator(
             val topics = event.getHashtags()
                 .map { it.removePrefix("#").trim().take(MAX_TOPIC_LEN).lowercase() }
                 .filter { it.isBareTopicStr() }
-                .sortedBy { it.length }
-                .toList()
+                .distinct()
+                .take(MAX_TOPICS)
             ValidatedRootPost(
                 id = event.id().toHex(),
                 pubkey = event.author().toHex(),
