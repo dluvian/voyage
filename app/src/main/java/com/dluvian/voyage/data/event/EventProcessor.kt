@@ -75,7 +75,7 @@ class EventProcessor(
 
         val sorted = relayedRootPosts.sortedBy { it.item.createdAt }
         scope.launch {
-            room.postInsertDao().insertRootPosts(relayedPosts = sorted)
+            room.postInsertDao().insertRelayedRootPosts(relayedPosts = sorted)
         }.invokeOnCompletion { exception ->
             if (exception != null) Log.w(tag, "Failed to process root posts", exception)
         }

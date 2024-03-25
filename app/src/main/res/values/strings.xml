@@ -44,4 +44,6 @@
     <string name="title_optional">Title (optional)</string>
     <string name="body_text">Body text</string>
     <string name="send">Send</string>
+    <string name="post_sent">Post sent</string>
+    <string name="failed_to_create_post">Failed to create post</string>
 </resources>

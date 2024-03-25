@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "20c21ea4005061939f577dc53a45261d",
+    "identityHash": "43d3f00b68c567452282320224a65d69",
     "entities": [
       {
         "tableName": "post",
@@ -490,7 +490,7 @@
     "views": [
       {
         "viewName": "RootPostView",
-        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT post.id, post.pubkey, (SELECT hashtag FROM hashtag WHERE hashtag.postId = post.id AND hashtag IN (SELECT topic FROM topic WHERE myPubkey = (SELECT pubkey FROM account LIMIT 1)) LIMIT 1) AS myTopic, post.title, post.content, post.createdAt, (SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.pubkey)) AS authorIsFriend, (SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = post.pubkey)) AS authorIsTrusted, (SELECT isPositive FROM vote WHERE vote.postId = post.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)) AS myVote, (SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 1) AS upvoteCount, (SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 0) AS downvoteCount, (SELECT COUNT(*) FROM post AS post2 WHERE post2.replyToId = post.id) AS commentCount FROM post WHERE post.replyToId IS NULL"
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT post.id, post.pubkey, (SELECT hashtag FROM hashtag WHERE hashtag.postId = post.id AND hashtag IN (SELECT topic FROM topic WHERE myPubkey = (SELECT pubkey FROM account LIMIT 1)) LIMIT 1) AS myTopic, post.title, post.content, post.createdAt, (SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.pubkey)) AS authorIsMe, (SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.pubkey)) AS authorIsFriend, (SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = post.pubkey)) AS authorIsTrusted, (SELECT isPositive FROM vote WHERE vote.postId = post.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)) AS myVote, (SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 1) AS upvoteCount, (SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 0) AS downvoteCount, (SELECT COUNT(*) FROM post AS post2 WHERE post2.replyToId = post.id) AS commentCount FROM post WHERE post.replyToId IS NULL"
       },
       {
         "viewName": "AdvancedProfileView",
@@ -503,7 +503,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '20c21ea4005061939f577dc53a45261d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '43d3f00b68c567452282320224a65d69')"
     ]
   }
 }

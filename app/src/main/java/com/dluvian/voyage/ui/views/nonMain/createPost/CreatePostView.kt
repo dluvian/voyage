@@ -8,11 +8,11 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -29,7 +29,15 @@ import com.dluvian.voyage.core.viewModel.CreatePostViewModel
 fun CreatePostView(vm: CreatePostViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
     val header = remember { mutableStateOf("") }
     val body = remember { mutableStateOf("") }
-    CreatePostScaffold(header = header, body = body, snackbar = snackbar, onUpdate = onUpdate) {
+    val isSendingPost by vm.isSendingPost
+
+    CreatePostScaffold(
+        header = header,
+        body = body,
+        snackbar = snackbar,
+        isSendingPost = isSendingPost,
+        onUpdate = onUpdate
+    ) {
         CreatePostContent(header = header, body = body)
     }
 }

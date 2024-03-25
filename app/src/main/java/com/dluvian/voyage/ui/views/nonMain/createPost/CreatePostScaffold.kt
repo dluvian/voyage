@@ -12,6 +12,7 @@ import com.dluvian.voyage.ui.components.scaffold.VoyageScaffold
 fun CreatePostScaffold(
     header: State<String>,
     body: State<String>,
+    isSendingPost: Boolean,
     snackbar: SnackbarHostState,
     onUpdate: OnUpdate,
     content: ComposableContent
@@ -22,6 +23,7 @@ fun CreatePostScaffold(
             CreatePostTopAppBar(
                 body = body,
                 header = header,
+                isSendingPost = isSendingPost,
                 onUpdate = onUpdate
             )
         }

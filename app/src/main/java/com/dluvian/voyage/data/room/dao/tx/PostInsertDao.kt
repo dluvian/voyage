@@ -18,7 +18,7 @@ private const val TAG = "PostInsertDao"
 interface PostInsertDao {
 
     @Transaction
-    suspend fun insertRootPosts(relayedPosts: Collection<RelayedItem<ValidatedRootPost>>) {
+    suspend fun insertRelayedRootPosts(relayedPosts: Collection<RelayedItem<ValidatedRootPost>>) {
         if (relayedPosts.isEmpty()) return
 
         val entities = relayedPosts.map { relayedItem -> PostEntity.from(relayedItem.item) }
@@ -34,7 +34,18 @@ interface PostInsertDao {
                 HashtagEntity(postId = post.item.id, hashtag = topic)
             }
         }
-        internalInsertHashtagsOrIgnore(hashtags = hashtags)
+        if (hashtags.isNotEmpty()) internalInsertHashtagsOrIgnore(hashtags = hashtags)
+    }
+
+    @Transaction
+    suspend fun insertRootPost(rootPost: ValidatedRootPost) {
+        val entity = PostEntity.from(rootPost)
+        internalInsertPostOrIgnore(posts = listOf(entity))
+
+        val hashtags = rootPost.topics.map { topic ->
+            HashtagEntity(postId = rootPost.id, hashtag = topic)
+        }
+        if (hashtags.isNotEmpty()) internalInsertHashtagsOrIgnore(hashtags = hashtags)
     }
 
     @Transaction

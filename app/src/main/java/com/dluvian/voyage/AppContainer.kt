@@ -173,6 +173,9 @@ class AppContainer(context: Context) {
         profileProvider = profileProvider
     )
 
-    val postSender = PostSender(nostrService = nostrService, relayProvider = relayProvider)
-
+    val postSender = PostSender(
+        nostrService = nostrService,
+        relayProvider = relayProvider,
+        postInsertDao = roomDb.postInsertDao()
+    )
 }

@@ -14,6 +14,7 @@ interface RootPostDao {
                 "FROM RootPostView " +
                 "WHERE createdAt <= :until " +
                 "AND (authorIsFriend OR myTopic IS NOT NULL) " +
+                "AND authorIsMe = 0 " +
                 "ORDER BY createdAt DESC " +
                 "LIMIT :size"
     )

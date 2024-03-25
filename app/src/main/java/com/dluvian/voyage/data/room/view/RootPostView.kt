@@ -12,6 +12,7 @@ import com.dluvian.voyage.core.Topic
             "post.title, " +
             "post.content, " +
             "post.createdAt, " +
+            "(SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.pubkey)) AS authorIsMe, " +
             "(SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.pubkey)) AS authorIsFriend, " +
             "(SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = post.pubkey)) AS authorIsTrusted, " +
             "(SELECT isPositive FROM vote WHERE vote.postId = post.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)) AS myVote, " +
@@ -24,6 +25,7 @@ import com.dluvian.voyage.core.Topic
 data class RootPostView(
     val id: EventIdHex,
     val pubkey: PubkeyHex,
+    val authorIsMe: Boolean,
     val authorIsFriend: Boolean,
     val authorIsTrusted: Boolean,
     val myTopic: Topic?,
