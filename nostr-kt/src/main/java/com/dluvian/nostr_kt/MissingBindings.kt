@@ -50,6 +50,8 @@ fun createReplyTag(parentEventId: EventId, relayHint: RelayUrl, parentIsRoot: Bo
         )
     )
 
+fun createEmptyNip19(pubkey: PublicKey) = Nip19Profile(publicKey = pubkey, relays = emptyList())
+
 fun generateMnemonic(): String {
     val random = SecureRandom()
     val entropy = ByteArray(16)

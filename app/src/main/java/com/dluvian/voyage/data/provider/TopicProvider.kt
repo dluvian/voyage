@@ -45,6 +45,7 @@ class TopicProvider(private val topicDao: TopicDao) {
         "nature",
         "photography",
         "news",
+        "newstr",
         "bitcoin",
         "fitness",
         "japan",

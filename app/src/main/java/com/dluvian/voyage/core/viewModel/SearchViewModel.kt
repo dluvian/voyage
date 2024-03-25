@@ -5,6 +5,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dluvian.nostr_kt.createEmptyNip19
 import com.dluvian.nostr_kt.removeMentionChar
 import com.dluvian.nostr_kt.removeNostrUri
 import com.dluvian.voyage.R
@@ -96,7 +97,7 @@ class SearchViewModel(
 
         val pubkey = runCatching { PublicKey.fromBech32(bech32 = stripped) }.getOrNull()
         if (pubkey != null) {
-            onOpenProfile(Nip19Profile(publicKey = pubkey, relays = emptyList()))
+            onOpenProfile(createEmptyNip19(pubkey = pubkey))
             return
         }
 

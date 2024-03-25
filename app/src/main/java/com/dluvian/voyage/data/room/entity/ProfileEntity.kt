@@ -3,6 +3,7 @@ package com.dluvian.voyage.data.room.entity
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.dluvian.nostr_kt.createEmptyNip19
 import com.dluvian.voyage.core.MAX_NAME_LEN
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.event.ValidatedProfile
@@ -31,6 +32,6 @@ data class ProfileEntity(
     }
 
     fun toNip19(): Nip19Profile {
-        return Nip19Profile(publicKey = PublicKey.fromHex(pubkey), relays = emptyList())
+        return createEmptyNip19(pubkey = PublicKey.fromHex(pubkey))
     }
 }
