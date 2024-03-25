@@ -25,6 +25,7 @@ interface RootPostDao {
                 "FROM RootPostView " +
                 "WHERE createdAt <= :until " +
                 "AND id IN (SELECT postId FROM hashtag WHERE hashtag = :topic) " +
+                "AND authorIsMe = 0 " +
                 "ORDER BY createdAt DESC " +
                 "LIMIT :size"
     )
