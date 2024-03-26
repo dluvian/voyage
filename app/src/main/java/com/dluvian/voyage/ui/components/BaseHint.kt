@@ -15,12 +15,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.dluvian.voyage.ui.theme.SearchIcon
+import com.dluvian.voyage.ui.theme.light
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
 fun BaseHint(text: String) {
-    val color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+    val color = MaterialTheme.colorScheme.onBackground.light()
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,

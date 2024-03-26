@@ -83,9 +83,9 @@ class ProfileProvider(
         val advancedProfile = AdvancedProfileView(
             pubkey = pubkey,
             name = dbProfile?.name.orEmpty().ifEmpty { pubkey.toShortenedBech32() },
+            isMe = dbProfile?.isMe ?: (pubkeyProvider.getPubkeyHex() == pubkey),
             isFriend = forcedFollowState ?: dbProfile?.isFriend ?: false,
-            isWebOfTrust = dbProfile?.isWebOfTrust ?: false,
-            isMe = dbProfile?.isMe ?: (pubkeyProvider.getPubkeyHex() == pubkey)
+            isWebOfTrust = dbProfile?.isWebOfTrust ?: false
         )
         return FullProfile(
             inner = advancedProfile,

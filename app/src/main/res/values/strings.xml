@@ -47,4 +47,5 @@
     <string name="post_sent">Post sent</string>
     <string name="failed_to_create_post">Failed to create post</string>
     <string name="edit">Edit</string>
+    <string name="no_comments_found">No comments found</string>
 </resources>

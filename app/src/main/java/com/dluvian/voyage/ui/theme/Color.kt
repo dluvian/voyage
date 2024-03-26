@@ -66,3 +66,6 @@ val md_theme_dark_inversePrimary = Color(0xFF3B4DD8)
 val md_theme_dark_surfaceTint = Color(0xFFBCC2FF)
 val md_theme_dark_outlineVariant = Color(0xFF46464F)
 val md_theme_dark_scrim = Color(0xFF000000)
+
+fun Color.light() = this.copy(alpha = 0.5f)
+fun Color.superLight() = this.copy(alpha = 0.2f)

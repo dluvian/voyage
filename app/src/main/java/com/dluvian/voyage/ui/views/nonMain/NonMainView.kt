@@ -46,7 +46,11 @@ fun NonMainView(
             onUpdate = core.onUpdate
         )
 
-        is ThreadNavView -> ThreadView(vm = core.vmContainer.threadVM, onUpdate = core.onUpdate)
+        is ThreadNavView -> ThreadView(
+            vm = core.vmContainer.threadVM,
+            snackbar = core.appContainer.snackbar,
+            onUpdate = core.onUpdate
+        )
 
         is TopicNavView -> TopicView(
             vm = core.vmContainer.topicVM,

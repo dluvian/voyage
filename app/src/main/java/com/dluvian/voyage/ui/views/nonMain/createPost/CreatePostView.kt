@@ -24,6 +24,7 @@ import androidx.compose.ui.text.input.ImeAction
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.viewModel.CreatePostViewModel
+import com.dluvian.voyage.ui.theme.light
 
 @Composable
 fun CreatePostView(vm: CreatePostViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
@@ -90,7 +91,7 @@ private fun CreationField(
                 text = placeholder,
                 style = style,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                color = MaterialTheme.colorScheme.onBackground.light()
             )
         })
 }

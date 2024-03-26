@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "06f51961319f2c609f426770ab4d062f",
+    "identityHash": "6f4bccb1c3638f3b03464bb0f443c3f9",
     "entities": [
       {
         "tableName": "post",
@@ -494,7 +494,7 @@
       },
       {
         "viewName": "AdvancedProfileView",
-        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT *, (SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = profile.pubkey)) AS isFriend, (SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = profile.pubkey)) AS isWebOfTrust, (SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = profile.pubkey)) AS isMe FROM profile"
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT profile.pubkey, profile.name,  (SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = profile.pubkey)) AS isFriend, (SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = profile.pubkey)) AS isWebOfTrust, (SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = profile.pubkey)) AS isMe FROM profile"
       },
       {
         "viewName": "EventRelayAuthorView",
@@ -507,7 +507,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '06f51961319f2c609f426770ab4d062f')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6f4bccb1c3638f3b03464bb0f443c3f9')"
     ]
   }
 }
