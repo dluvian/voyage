@@ -138,7 +138,7 @@ class AppContainer(context: Context) {
     val feedProvider = FeedProvider(
         nostrSubscriber = nostrSubscriber,
         rootPostDao = roomDb.rootPostDao(),
-        postVoter = postVoter
+        forcedVotes = postVoter.forcedVotes
     )
 
     val topicFollower = TopicFollower(
@@ -160,7 +160,7 @@ class AppContainer(context: Context) {
     )
 
     val profileProvider = ProfileProvider(
-        profileFollower = profileFollower,
+        profileFollower = profileFollower, // TODO: Only inject flow
         pubkeyProvider = accountManager,
         metadataInMemory = metadataInMemory,
         profileDao = roomDb.profileDao(),

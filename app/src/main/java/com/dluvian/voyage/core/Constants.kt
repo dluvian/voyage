@@ -12,7 +12,7 @@ const val DELAY_10SEC = 10 * DELAY_1SEC
 const val SHORT_DEBOUNCE = 300L
 const val DEBOUNCE = 600L
 
-const val MAX_EVENTS_TO_SUB = 1000
+const val MAX_EVENTS_TO_SUB = 1000uL
 
 const val MAX_RELAYS = 5
 

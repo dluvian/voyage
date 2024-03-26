@@ -2,6 +2,7 @@ package com.dluvian.voyage.data.room.dao
 
 import androidx.room.Dao
 import androidx.room.Query
+import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.room.view.RootPostView
@@ -9,6 +10,10 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface RootPostDao {
+
+    @Query("SELECT * FROM RootPostView WHERE id = :id")
+    fun getRootPost(id: EventIdHex): Flow<RootPostView?>
+
     @Query(
         "SELECT * " +
                 "FROM RootPostView " +

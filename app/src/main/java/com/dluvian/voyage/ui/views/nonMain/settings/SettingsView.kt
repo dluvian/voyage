@@ -19,7 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import com.dluvian.nostr_kt.createEmptyNip19
+import com.dluvian.nostr_kt.createEmptyNip19Profile
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.OnUpdate
@@ -75,7 +75,7 @@ private fun AccountRow(accountType: AccountType, onUpdate: OnUpdate) {
         },
         text = shortenedNpub,
         imageVector = AccountIcon,
-        onClick = { onUpdate(OpenProfile(createEmptyNip19(pubkey = accountType.publicKey))) }
+        onClick = { onUpdate(OpenProfile(createEmptyNip19Profile(pubkey = accountType.publicKey))) }
     ) {
         AccountRowButton(accountType = accountType, onUpdate = onUpdate)
     }

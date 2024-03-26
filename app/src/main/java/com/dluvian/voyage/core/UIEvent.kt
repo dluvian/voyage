@@ -85,6 +85,10 @@ data object HomeViewAppend : HomeViewAction()
 data object HomeViewSubAccountAndTrustData : HomeViewAction()
 
 
+sealed class ThreadViewAction : UIEvent()
+data object ThreadViewRefresh : ThreadViewAction()
+
+
 sealed class DiscoverViewAction : UIEvent()
 data object DiscoverViewInit : DiscoverViewAction()
 data object DiscoverViewRefresh : DiscoverViewAction()

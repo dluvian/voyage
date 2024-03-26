@@ -4,6 +4,7 @@ import android.util.Log
 import com.dluvian.nostr_kt.NostrClient
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
+import com.dluvian.nostr_kt.removeTrailingSlashes
 import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.EventIdHex
@@ -31,6 +32,7 @@ import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
 import rust.nostr.protocol.Kind
 import rust.nostr.protocol.KindEnum
+import rust.nostr.protocol.Nip19Event
 import rust.nostr.protocol.Nip19Profile
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Timestamp
@@ -94,22 +96,8 @@ class NostrSubscriber(
         votesAndRepliesJob?.cancel(CancellationException("Debounce"))
         votesAndRepliesJob = scope.launch {
             delay(DEBOUNCE)
-            val currentTimestamp = Timestamp.now()
             val ids = newIds.map { EventId.fromHex(it) }
-            val voteFilter = Filter().kind(Kind.fromEnum(KindEnum.Reaction))
-                .events(ids)
-                .authors(webOfTrustProvider.getWebOfTrustPubkeys())
-                .until(currentTimestamp)
-                .limit(MAX_EVENTS_TO_SUB.toULong())
-            val replyFilter = Filter().kind(Kind.fromEnum(KindEnum.TextNote))
-                .events(ids)
-                .until(currentTimestamp)
-                .limit(MAX_EVENTS_TO_SUB.toULong())
-            val filters = listOf(
-                FilterWrapper(filter = voteFilter),
-                FilterWrapper(filter = replyFilter, e = ids.map { it.toHex() })
-            )
-
+            val filters = createReplyAndVoteFilters(ids = ids)
             relayProvider.getReadRelays().forEach { relay ->
                 subscribe(relayUrl = relay, filters = filters)
             }
@@ -120,6 +108,17 @@ class NostrSubscriber(
             votesAndRepliesCache.addAll(newIds)
             Log.d(tag, "Finished subscribing votes and replies")
         }
+    }
+
+    fun subVotesAndReplies(nip19Event: Nip19Event) {
+        val filters = createReplyAndVoteFilters(ids = listOf(nip19Event.eventId()))
+
+        nip19Event.relays()
+            .map { it.removeTrailingSlashes() }
+            .toSet() + relayProvider.getReadRelays()
+            .forEach { relay ->
+                subscribe(relayUrl = relay, filters = filters)
+            }
     }
 
     suspend fun subProfile(nip19Profile: Nip19Profile) {
@@ -256,5 +255,23 @@ class NostrSubscriber(
         syncedFilterCache[subId] = filters
 
         return subId
+    }
+
+    private fun createReplyAndVoteFilters(ids: List<EventId>): List<FilterWrapper> {
+        val now = Timestamp.now()
+        val voteFilter = Filter().kind(Kind.fromEnum(KindEnum.Reaction))
+            .events(ids = ids)
+            .authors(authors = webOfTrustProvider.getWebOfTrustPubkeys())
+            .until(timestamp = now)
+            .limit(limit = MAX_EVENTS_TO_SUB)
+        val replyFilter = Filter().kind(Kind.fromEnum(KindEnum.TextNote))
+            .events(ids = ids)
+            .until(timestamp = now)
+            .limit(limit = MAX_EVENTS_TO_SUB)
+
+        return listOf(
+            FilterWrapper(filter = voteFilter),
+            FilterWrapper(filter = replyFilter, e = ids.map { it.toHex() })
+        )
     }
 }

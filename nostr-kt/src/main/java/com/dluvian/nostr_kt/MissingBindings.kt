@@ -7,6 +7,7 @@ import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Kind
 import rust.nostr.protocol.KindEnum
 import rust.nostr.protocol.Metadata
+import rust.nostr.protocol.Nip19Event
 import rust.nostr.protocol.Nip19Profile
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Tag
@@ -50,7 +51,16 @@ fun createReplyTag(parentEventId: EventId, relayHint: RelayUrl, parentIsRoot: Bo
         )
     )
 
-fun createEmptyNip19(pubkey: PublicKey) = Nip19Profile(publicKey = pubkey, relays = emptyList())
+fun createEmptyNip19Profile(pubkey: PublicKey) = Nip19Profile(
+    publicKey = pubkey,
+    relays = emptyList()
+)
+
+fun createEmptyNip19Event(eventId: EventId) = Nip19Event(
+    eventId = eventId,
+    author = null,
+    relays = emptyList()
+)
 
 fun generateMnemonic(): String {
     val random = SecureRandom()
@@ -105,7 +115,7 @@ fun Event.getHashtags(): List<String> {
 }
 
 fun String.removeTrailingSlashes(): String {
-    return this.removeSuffix("/")
+    return this.dropLastWhile { it == '/' }
 }
 
 fun String.removeNostrUri(): String {
