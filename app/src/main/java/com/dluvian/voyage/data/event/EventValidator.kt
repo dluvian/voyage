@@ -18,6 +18,7 @@ import com.dluvian.nostr_kt.isRootPost
 import com.dluvian.nostr_kt.isTopicList
 import com.dluvian.nostr_kt.isValidEventId
 import com.dluvian.nostr_kt.isVote
+import com.dluvian.nostr_kt.removeTrailingSlashes
 import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_TOPICS
@@ -49,7 +50,7 @@ class EventValidator(
             return null
         }
         if (!matchesFilter(subId = subId, event = event)) {
-            Log.w(tag, "Discard event not matching filter, ${event.id().toHex()} from $relayUrl")
+            Log.d(tag, "Discard event not matching filter, ${event.id().toHex()} from $relayUrl")
             return null
         }
         val validatedEvent = validate(event = event)
@@ -91,10 +92,16 @@ class EventValidator(
 
     private fun matchesFilter(subId: SubId, event: Event): Boolean {
         val filters = syncedFilterCache.getOrDefault(subId, emptyList()).toList()
-        if (filters.isEmpty()) return false
+        if (filters.isEmpty()) {
+            Log.w(tag, "Filter is empty")
+            return false
+        }
 
         val matches = filters.any { it.filter.matchEvent(event = event) }
-        if (!matches) return false
+        if (!matches) {
+            Log.w(tag, "Event does not match filter")
+            return false
+        }
 
         val replyToId = event.getReplyToId() ?: return true
         return filters.any { it.filter.matchEvent(event = event) && it.e.contains(replyToId) }
@@ -107,25 +114,30 @@ class EventValidator(
                 .filter { it.isBareTopicStr() }
                 .distinct()
                 .take(MAX_TOPICS)
+            val title = event.getTitle()?.trim()
+            val content = event.content().trim()
+            if (title.isNullOrEmpty() && content.isEmpty()) return null
             ValidatedRootPost(
                 id = event.id().toHex(),
                 pubkey = event.author().toHex(),
                 topics = topics,
-                title = event.getTitle(),
-                content = event.content(),
+                title = title,
+                content = content,
                 createdAt = event.createdAt().secs()
             )
         } else if (event.isReplyPost()) {
-            val replyToId = event.getReplyToId()
-            if (replyToId == null ||
-                replyToId == event.id().toHex() ||
-                !isValidEventId(replyToId)
-            ) null
-            else ValidatedComment(
+            val replyToId = event.getReplyToId() ?: return null
+            val content = event.content().trim()
+            if (content.isEmpty() || replyToId == event.id()
+                    .toHex() || !isValidEventId(replyToId)
+            ) {
+                return null
+            }
+            ValidatedComment(
                 id = event.id().toHex(),
                 pubkey = event.author().toHex(),
                 parentId = replyToId,
-                content = event.content(),
+                content = content,
                 createdAt = event.createdAt().secs()
             )
         } else if (event.isVote()) {
@@ -145,24 +157,28 @@ class EventValidator(
                 createdAt = event.createdAt().secs()
             )
         } else if (event.isTopicList()) {
-            if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) null
-            else ValidatedTopicList(
+            if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) return null
+            ValidatedTopicList(
                 myPubkey = event.author().toHex(),
-                topics = event.getHashtags().map { it.lowercase() }.toSet(),
+                topics = event.getHashtags()
+                    .map { it.trim().lowercase() }
+                    .filter { it.isBareTopicStr() }
+                    .toSet(),
                 createdAt = event.createdAt().secs()
             )
         } else if (event.isNip65()) {
             val relays = event.getNip65s()
-            if (relays.isEmpty()) null
-            else ValidatedNip65(
+                .map { it.copy(url = it.url.removeTrailingSlashes()) }
+                .distinct()
+            if (relays.isEmpty()) return null
+            ValidatedNip65(
                 pubkey = event.author().toHex(),
                 relays = relays,
                 createdAt = event.createdAt().secs()
             )
         } else if (event.isProfile()) {
-            val metadata = event.getMetadata()
-            if (metadata == null) null
-            else ValidatedProfile(
+            val metadata = event.getMetadata() ?: return null
+            ValidatedProfile(
                 id = event.id().toHex(),
                 pubkey = event.author().toHex(),
                 metadata = metadata,
