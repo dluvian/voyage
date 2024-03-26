@@ -7,7 +7,7 @@ import com.dluvian.voyage.data.interactor.Vote
 import com.dluvian.voyage.data.room.view.RootPostView
 
 @Immutable
-data class RootPost(
+data class RootPostUI(
     val id: EventIdHex,
     val pubkey: PubkeyHex,
     val trustType: TrustType,
@@ -20,8 +20,8 @@ data class RootPost(
     val commentCount: Int,
 ) {
     companion object {
-        fun from(rootPostView: RootPostView): RootPost {
-            return RootPost(
+        fun from(rootPostView: RootPostView): RootPostUI {
+            return RootPostUI(
                 id = rootPostView.id,
                 pubkey = rootPostView.pubkey,
                 trustType = TrustType.from(

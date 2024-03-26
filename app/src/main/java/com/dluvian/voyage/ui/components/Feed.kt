@@ -29,7 +29,7 @@ import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.model.IPaginator
-import com.dluvian.voyage.core.model.RootPost
+import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.ui.components.chip.CommentChip
 import com.dluvian.voyage.ui.components.chip.TopicChip
 import com.dluvian.voyage.ui.theme.spacing
@@ -69,7 +69,7 @@ fun Feed(
 }
 
 @Composable
-private fun PostRow(post: RootPost, onUpdate: OnUpdate) {
+private fun PostRow(post: RootPostUI, onUpdate: OnUpdate) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -99,7 +99,7 @@ private fun PostRow(post: RootPost, onUpdate: OnUpdate) {
 }
 
 @Composable
-private fun Header(post: RootPost) {
+private fun Header(post: RootPostUI) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         TrustIndicator(trustType = post.trustType)
         post.myTopic?.let { topic ->
@@ -117,7 +117,7 @@ private fun Header(post: RootPost) {
 
 @Composable
 private fun Actions(
-    post: RootPost,
+    post: RootPostUI,
     onUpdate: OnUpdate
 ) {
     Row(

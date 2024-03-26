@@ -5,7 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Transaction
-import com.dluvian.voyage.data.event.ValidatedReplyPost
+import com.dluvian.voyage.data.event.ValidatedComment
 import com.dluvian.voyage.data.event.ValidatedRootPost
 import com.dluvian.voyage.data.model.RelayedItem
 import com.dluvian.voyage.data.room.entity.HashtagEntity
@@ -49,18 +49,18 @@ interface PostInsertDao {
     }
 
     @Transaction
-    suspend fun insertReplyPosts(relayedPosts: Collection<RelayedItem<ValidatedReplyPost>>) {
-        if (relayedPosts.isEmpty()) return
+    suspend fun insertComments(relayedComments: Collection<RelayedItem<ValidatedComment>>) {
+        if (relayedComments.isEmpty()) return
 
-        val entities = relayedPosts.map { relayedItem -> PostEntity.from(relayedItem.item) }
-        val postRelayEntities = relayedPosts
+        val entities = relayedComments.map { relayedItem -> PostEntity.from(relayedItem.item) }
+        val postRelayEntities = relayedComments
             .map { PostRelayEntity(postId = it.item.id, relayUrl = it.relayUrl) }
 
         runCatching {
             internalInsertPostOrIgnore(posts = entities)
             internalInsertPostRelayOrIgnore(postRelays = postRelayEntities)
         }.onFailure {
-            Log.w(TAG, "Failed to insert ${relayedPosts.size} replies: ${it.message}")
+            Log.w(TAG, "Failed to insert ${relayedComments.size} comments: ${it.message}")
         }
     }
 

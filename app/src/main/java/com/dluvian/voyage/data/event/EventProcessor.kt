@@ -28,7 +28,7 @@ class EventProcessor(
         if (events.isEmpty()) return
 
         val rootPosts = mutableListOf<RelayedItem<ValidatedRootPost>>()
-        val replyPosts = mutableListOf<RelayedItem<ValidatedReplyPost>>()
+        val comments = mutableListOf<RelayedItem<ValidatedComment>>()
         val votes = mutableListOf<ValidatedVote>()
         val contactLists = mutableListOf<ValidatedContactList>()
         val topicLists = mutableListOf<ValidatedTopicList>()
@@ -45,8 +45,8 @@ class EventProcessor(
                         )
                     )
 
-                is ValidatedReplyPost ->
-                    replyPosts.add(
+                is ValidatedComment ->
+                    comments.add(
                         RelayedItem(
                             item = item,
                             relayUrl = relayedItem.relayUrl
@@ -62,7 +62,7 @@ class EventProcessor(
         }
 
         processRootPosts(relayedRootPosts = rootPosts)
-        processReplyPosts(relayedReplyPosts = replyPosts)
+        processComments(relayedComments = comments)
         processVotes(votes = votes)
         processContactLists(contactLists = contactLists)
         processTopicLists(topicLists = topicLists)
@@ -81,14 +81,14 @@ class EventProcessor(
         }
     }
 
-    private fun processReplyPosts(relayedReplyPosts: Collection<RelayedItem<ValidatedReplyPost>>) {
-        if (relayedReplyPosts.isEmpty()) return
+    private fun processComments(relayedComments: Collection<RelayedItem<ValidatedComment>>) {
+        if (relayedComments.isEmpty()) return
 
-        val sorted = relayedReplyPosts.sortedBy { it.item.createdAt }
+        val sorted = relayedComments.sortedBy { it.item.createdAt }
         scope.launch {
-            room.postInsertDao().insertReplyPosts(relayedPosts = sorted)
+            room.postInsertDao().insertComments(relayedComments = sorted)
         }.invokeOnCompletion { exception ->
-            if (exception != null) Log.w(tag, "Failed to process reply posts", exception)
+            if (exception != null) Log.w(tag, "Failed to process comments", exception)
         }
     }
 

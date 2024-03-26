@@ -1,7 +1,7 @@
 package com.dluvian.voyage.data.provider
 
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
-import com.dluvian.voyage.core.model.RootPost
+import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.data.interactor.PostVoter
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
@@ -25,7 +25,7 @@ class FeedProvider(
         until: Long,
         size: Int,
         setting: FeedSetting,
-    ): Flow<List<RootPost>> {
+    ): Flow<List<RootPostUI>> {
         nostrSubscriber.subFeed(until = until, limit = size, setting = setting)
 
         val flow = when (setting) {
@@ -45,7 +45,7 @@ class FeedProvider(
 
         return flow
             .combine(postVoter.forcedVotes) { posts, votes ->
-                posts.map { RootPost.from(it) }
+                posts.map { RootPostUI.from(it) }
                     .map {
                         val vote = votes.getOrDefault(it.id, null)
                         if (vote != null) it.copy(myVote = vote) else it

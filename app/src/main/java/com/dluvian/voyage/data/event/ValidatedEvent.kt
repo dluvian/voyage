@@ -18,10 +18,11 @@ data class ValidatedRootPost(
     val content: String,
     val createdAt: Long
 ) : ValidatedPost(id = id, topics = topics)
-data class ValidatedReplyPost(
+
+data class ValidatedComment(
     override val id: EventIdHex,
     val pubkey: PubkeyHex,
-    val replyToId: EventIdHex,
+    val parentId: EventIdHex,
     val content: String,
     val createdAt: Long
 ) : ValidatedPost(id = id, topics = emptyList())

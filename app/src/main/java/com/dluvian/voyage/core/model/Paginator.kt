@@ -31,7 +31,7 @@ class Paginator(
     private val tag = "Paginator"
     override val isRefreshing = mutableStateOf(false)
     override val isAppending = mutableStateOf(false)
-    override val page: MutableState<StateFlow<List<RootPost>>> =
+    override val page: MutableState<StateFlow<List<RootPostUI>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
 
     private lateinit var feedSetting: FeedSetting
@@ -91,7 +91,7 @@ class Paginator(
         }
     }
 
-    private suspend fun getFlow(until: Long): Flow<List<RootPost>> {
+    private suspend fun getFlow(until: Long): Flow<List<RootPostUI>> {
         return feedProvider.getFeedFlow(
             until = until,
             size = FEED_PAGE_SIZE,

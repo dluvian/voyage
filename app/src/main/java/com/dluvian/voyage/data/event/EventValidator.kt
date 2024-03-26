@@ -121,10 +121,10 @@ class EventValidator(
                 replyToId == event.id().toHex() ||
                 !isValidEventId(replyToId)
             ) null
-            else ValidatedReplyPost(
+            else ValidatedComment(
                 id = event.id().toHex(),
                 pubkey = event.author().toHex(),
-                replyToId = replyToId,
+                parentId = replyToId,
                 content = event.content(),
                 createdAt = event.createdAt().secs()
             )

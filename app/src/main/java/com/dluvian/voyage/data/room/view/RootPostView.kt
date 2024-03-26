@@ -18,9 +18,9 @@ import com.dluvian.voyage.core.Topic
             "(SELECT isPositive FROM vote WHERE vote.postId = post.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)) AS myVote, " +
             "(SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 1) AS upvoteCount, " +
             "(SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 0) AS downvoteCount, " +
-            "(SELECT COUNT(*) FROM post AS post2 WHERE post2.replyToId = post.id) AS commentCount " +
+            "(SELECT COUNT(*) FROM post AS post2 WHERE post2.parentId = post.id) AS commentCount " +
             "FROM post " +
-            "WHERE post.replyToId IS NULL"
+            "WHERE post.parentId IS NULL"
 )
 data class RootPostView(
     val id: EventIdHex,
