@@ -45,11 +45,7 @@ class FeedProvider(
         }
 
         return flow.combine(forcedVotes) { posts, votes ->
-            posts.map { RootPostUI.from(it) }
-                .map {
-                    val vote = votes.getOrDefault(it.id, null)
-                    if (vote != null) it.copy(myVote = vote) else it
-                }
+            posts.map { it.mapToRootPostUI(forcedVotes = votes) }
         }
             .debounce(SHORT_DEBOUNCE)
             .onEach { posts -> nostrSubscriber.subVotesAndReplies(postIds = posts.map { it.id }) }

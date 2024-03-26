@@ -30,6 +30,7 @@ import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.SuggestionProvider
+import com.dluvian.voyage.data.provider.ThreadProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import com.dluvian.voyage.data.room.AppDatabase
@@ -138,6 +139,13 @@ class AppContainer(context: Context) {
     val feedProvider = FeedProvider(
         nostrSubscriber = nostrSubscriber,
         rootPostDao = roomDb.rootPostDao(),
+        forcedVotes = postVoter.forcedVotes
+    )
+
+    val threadProvider = ThreadProvider(
+        nostrSubscriber = nostrSubscriber,
+        rootPostDao = roomDb.rootPostDao(),
+        commentDao = roomDb.commentDao(),
         forcedVotes = postVoter.forcedVotes
     )
 

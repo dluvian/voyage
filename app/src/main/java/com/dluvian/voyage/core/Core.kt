@@ -20,6 +20,7 @@ class Core(
             is NavEvent -> navigator.handle(navEvent = uiEvent)
             is VoteEvent -> appContainer.postVoter.handle(voteEvent = uiEvent)
             is HomeViewAction -> vmContainer.homeVM.handle(action = uiEvent)
+            is ThreadViewAction -> vmContainer.threadVM.handle(action = uiEvent)
             is DiscoverViewAction -> vmContainer.discoverVM.handle(action = uiEvent)
             is TopicViewAction -> vmContainer.topicVM.handle(action = uiEvent)
             is ProfileViewAction -> vmContainer.profileVM.handle(action = uiEvent)

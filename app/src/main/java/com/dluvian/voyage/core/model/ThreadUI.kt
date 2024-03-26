@@ -4,6 +4,6 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 data class ThreadUI(
-    val rootPost: RootPostUI,
+    val rootPost: RootPostUI?,
     val comments: List<CommentUI>
 )

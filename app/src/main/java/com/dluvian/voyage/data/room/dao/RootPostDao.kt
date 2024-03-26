@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 interface RootPostDao {
 
     @Query("SELECT * FROM RootPostView WHERE id = :id")
-    fun getRootPost(id: EventIdHex): Flow<RootPostView?>
+    fun getRootPostFlow(id: EventIdHex): Flow<RootPostView?>
 
     @Query(
         "SELECT * " +
