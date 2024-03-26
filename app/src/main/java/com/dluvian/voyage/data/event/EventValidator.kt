@@ -3,7 +3,6 @@ package com.dluvian.voyage.data.event
 import android.util.Log
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
-import com.dluvian.nostr_kt.getCurrentSecs
 import com.dluvian.nostr_kt.getHashtags
 import com.dluvian.nostr_kt.getMetadata
 import com.dluvian.nostr_kt.getNip65s
@@ -45,10 +44,6 @@ class EventValidator(
     ): RelayedItem<ValidatedEvent>? {
         if (isCached(event = event, relayUrl = relayUrl)) return null
 
-        if (isFromFuture(event = event)) {
-            Log.w(tag, "Discard event from the future, ${event.id().toHex()} from $relayUrl")
-            return null
-        }
         if (!matchesFilter(subId = subId, event = event)) {
             Log.d(tag, "Discard event not matching filter, ${event.id().toHex()} from $relayUrl")
             return null
@@ -77,17 +72,6 @@ class EventValidator(
         val eventIdHex = event.id().toHex()
         syncedIdCache.add(eventIdHex)
         if (event.isPostOrReply()) syncedPostRelayCache.add(Pair(eventIdHex, relayUrl))
-    }
-
-    private var upperTimeBoundary = getUpperTimeBoundary()
-    private fun getUpperTimeBoundary() = getCurrentSecs() + 60
-    private fun isFromFuture(event: Event): Boolean {
-        val createdAt = event.createdAt().secs()
-        if (createdAt > upperTimeBoundary) {
-            upperTimeBoundary = getUpperTimeBoundary()
-            return createdAt > upperTimeBoundary
-        }
-        return false
     }
 
     private fun matchesFilter(subId: SubId, event: Event): Boolean {
