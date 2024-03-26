@@ -46,17 +46,18 @@ class NostrFeedSubscriber(
         }
 
         val topics = topicProvider.getMyTopics()
-        if (topics.isEmpty()) return result
+        if (topics.isNotEmpty()) {
+            val topicedNoteFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.TextNote))
+                .hashtags(hashtags = topics)
+                .until(timestamp = until)
+                .limit(limit = limit)
+            val topicedNoteFilters = mutableListOf(FilterWrapper(topicedNoteFilter))
 
-        val topicedNoteFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.TextNote))
-            .hashtags(hashtags = topics)
-            .until(timestamp = until)
-            .limit(limit = limit)
-        val topicedNoteFilters = mutableListOf(FilterWrapper(topicedNoteFilter))
-
-        relayProvider.getReadRelays().forEach { relay ->
-            result.syncedPutOrAdd(relay, topicedNoteFilters)
+            relayProvider.getReadRelays().forEach { relay ->
+                result.syncedPutOrAdd(relay, topicedNoteFilters)
+            }
         }
+
         friendJob.join()
 
         return result
