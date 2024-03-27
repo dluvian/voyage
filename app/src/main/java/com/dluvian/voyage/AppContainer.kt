@@ -21,6 +21,7 @@ import com.dluvian.voyage.data.inMemory.MetadataInMemory
 import com.dluvian.voyage.data.interactor.PostSender
 import com.dluvian.voyage.data.interactor.PostVoter
 import com.dluvian.voyage.data.interactor.ProfileFollower
+import com.dluvian.voyage.data.interactor.ThreadCollapser
 import com.dluvian.voyage.data.interactor.TopicFollower
 import com.dluvian.voyage.data.model.FilterWrapper
 import com.dluvian.voyage.data.nostr.NostrService
@@ -136,6 +137,8 @@ class AppContainer(context: Context) {
         voteUpsertDao = roomDb.voteUpsertDao()
     )
 
+    val threadCollapser = ThreadCollapser()
+
     val feedProvider = FeedProvider(
         nostrSubscriber = nostrSubscriber,
         rootPostDao = roomDb.rootPostDao(),
@@ -146,7 +149,8 @@ class AppContainer(context: Context) {
         nostrSubscriber = nostrSubscriber,
         rootPostDao = roomDb.rootPostDao(),
         commentDao = roomDb.commentDao(),
-        forcedVotes = postVoter.forcedVotes
+        forcedVotes = postVoter.forcedVotes,
+        collapsedIds = threadCollapser.collapsedIds
     )
 
     val topicFollower = TopicFollower(

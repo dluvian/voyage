@@ -41,7 +41,6 @@ class TopicProvider(private val topicDao: TopicDao) {
         "grownostr",
         "artstr",
         "art",
-        "love",
         "nature",
         "photography",
         "news",
@@ -53,7 +52,5 @@ class TopicProvider(private val topicDao: TopicDao) {
         "travel",
         "farmstr",
         "running",
-        "surfing",
-        "cycling",
     )
 }

@@ -13,6 +13,7 @@ import com.dluvian.voyage.data.interactor.Vote
             "post.pubkey, " +
             "post.content, " +
             "post.createdAt, " +
+            "(SELECT name FROM profile WHERE profile.pubkey = post.pubkey) AS authorName, " +
             "(SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.pubkey)) AS authorIsMe, " +
             "(SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.pubkey)) AS authorIsFriend, " +
             "(SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = post.pubkey)) AS authorIsTrusted, " +
@@ -26,6 +27,7 @@ import com.dluvian.voyage.data.interactor.Vote
 data class CommentView(
     val id: EventIdHex,
     val parentId: EventIdHex,
+    val authorName: String?,
     val pubkey: PubkeyHex,
     val content: String,
     val createdAt: Long,
@@ -37,8 +39,14 @@ data class CommentView(
     val downvoteCount: Int,
     val commentCount: Int,
 ) {
-    fun mapToCommentUI(forcedVotes: Map<EventIdHex, Vote>): CommentUI {
-        val commentUI = CommentUI.from(this)
+    fun mapToCommentUI(
+        forcedVotes: Map<EventIdHex, Vote>,
+        collapsedIds: Set<EventIdHex>
+    ): CommentUI {
+        val commentUI = CommentUI.from(
+            commentView = this,
+            isCollapsed = collapsedIds.contains(this.id)
+        )
         val vote = forcedVotes.getOrDefault(this.id, null)
         return if (vote != null) commentUI.copy(myVote = vote) else commentUI
     }

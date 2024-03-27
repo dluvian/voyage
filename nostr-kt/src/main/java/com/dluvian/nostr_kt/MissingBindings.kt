@@ -56,6 +56,11 @@ fun createEmptyNip19Profile(pubkey: PublicKey) = Nip19Profile(
     relays = emptyList()
 )
 
+fun createEmptyNip19Profile(hex: String) = Nip19Profile(
+    publicKey = PublicKey.fromHex(hex = hex),
+    relays = emptyList()
+)
+
 fun createEmptyNip19Event(eventId: EventId) = Nip19Event(
     eventId = eventId,
     author = null,

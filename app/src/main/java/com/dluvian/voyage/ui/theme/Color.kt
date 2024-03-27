@@ -1,6 +1,10 @@
 package com.dluvian.voyage.ui.theme
 
 import androidx.compose.ui.graphics.Color
+import com.dluvian.voyage.core.model.FriendTrust
+import com.dluvian.voyage.core.model.NoTrust
+import com.dluvian.voyage.core.model.TrustType
+import com.dluvian.voyage.core.model.WebTrust
 
 val TallPoppyRed = Color(0xFFB92B27)
 val DenimBlue = Color(0xFF1565c0)
@@ -68,4 +72,12 @@ val md_theme_dark_outlineVariant = Color(0xFF46464F)
 val md_theme_dark_scrim = Color(0xFF000000)
 
 fun Color.light() = this.copy(alpha = 0.5f)
-fun Color.superLight() = this.copy(alpha = 0.2f)
+fun Color.superLight() = this.copy(alpha = 0.10f)
+
+fun getTrustColor(trustType: TrustType): Color {
+    return when (trustType) {
+        FriendTrust -> Color.Green
+        WebTrust -> Orange
+        NoTrust -> Color.LightGray
+    }
+}

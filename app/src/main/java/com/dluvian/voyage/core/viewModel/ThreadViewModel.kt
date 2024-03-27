@@ -7,8 +7,10 @@ import com.dluvian.nostr_kt.createEmptyNip19Event
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.ThreadViewAction
 import com.dluvian.voyage.core.ThreadViewRefresh
+import com.dluvian.voyage.core.ThreadViewToggleCollapse
 import com.dluvian.voyage.core.model.ThreadUI
 import com.dluvian.voyage.core.navigator.ThreadNavView
+import com.dluvian.voyage.data.interactor.ThreadCollapser
 import com.dluvian.voyage.data.provider.ThreadProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -20,10 +22,12 @@ import kotlinx.coroutines.launch
 import rust.nostr.protocol.EventId
 
 class ThreadViewModel(
-    private val threadProvider: ThreadProvider
+    private val threadProvider: ThreadProvider,
+    private val threadCollapser: ThreadCollapser,
 ) : ViewModel() {
     var thread: StateFlow<ThreadUI?> = MutableStateFlow(null)
     val isRefreshing = mutableStateOf(false)
+
 
     fun openThread(threadNavView: ThreadNavView) {
         val isSame = threadNavView.nip19Event.eventId().toHex() == thread.value?.rootPost?.id
@@ -35,6 +39,7 @@ class ThreadViewModel(
     fun handle(action: ThreadViewAction) {
         when (action) {
             is ThreadViewRefresh -> refresh(initVal = thread.value)
+            is ThreadViewToggleCollapse -> threadCollapser.toggleCollapse(id = action.id)
         }
     }
 

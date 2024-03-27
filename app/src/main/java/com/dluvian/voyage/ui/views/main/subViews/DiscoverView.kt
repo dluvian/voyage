@@ -40,10 +40,10 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenTopic
 import com.dluvian.voyage.core.viewModel.DiscoverViewModel
-import com.dluvian.voyage.ui.components.BaseHint
 import com.dluvian.voyage.ui.components.PullRefreshBox
-import com.dluvian.voyage.ui.components.SectionHeader
 import com.dluvian.voyage.ui.components.button.FollowButton
+import com.dluvian.voyage.ui.components.indicator.BaseHint
+import com.dluvian.voyage.ui.components.text.SectionHeader
 import com.dluvian.voyage.ui.theme.AccountIcon
 import com.dluvian.voyage.ui.theme.HashtagIcon
 import com.dluvian.voyage.ui.theme.spacing

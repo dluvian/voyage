@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.components
+package com.dluvian.voyage.ui.components.text
 
 import android.text.format.DateUtils
 import androidx.compose.material3.MaterialTheme

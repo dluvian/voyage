@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.components
+package com.dluvian.voyage.ui.components.indicator
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

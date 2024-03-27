@@ -105,7 +105,8 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         },
         threadVM = viewModel {
             ThreadViewModel(
-                threadProvider = appContainer.threadProvider
+                threadProvider = appContainer.threadProvider,
+                threadCollapser = appContainer.threadCollapser
             )
         },
         topicVM = viewModel {

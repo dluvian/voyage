@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.components
+package com.dluvian.voyage.ui.components.indicator
 
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.RepeatMode

@@ -6,9 +6,9 @@ import androidx.compose.ui.platform.LocalContext
 import com.dluvian.voyage.core.CreatePostViewSendPost
 import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.ui.components.TopBarCircleProgressIndicator
 import com.dluvian.voyage.ui.components.bar.GoBackTopAppBar
 import com.dluvian.voyage.ui.components.iconButton.SendIconButton
+import com.dluvian.voyage.ui.components.indicator.TopBarCircleProgressIndicator
 
 @Composable
 fun CreatePostTopAppBar(

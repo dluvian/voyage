@@ -20,6 +20,7 @@ class ThreadProvider(
     private val rootPostDao: RootPostDao,
     private val commentDao: CommentDao,
     private val forcedVotes: Flow<Map<EventIdHex, Vote>>,
+    private val collapsedIds: Flow<Set<EventIdHex>>
 ) {
     @OptIn(FlowPreview::class)
     fun getThread(nip19Event: Nip19Event): Flow<ThreadUI> {
@@ -28,10 +29,20 @@ class ThreadProvider(
         val postFlow = rootPostDao.getRootPostFlow(id = rootId)
         val commentsFlow = commentDao.getCommentsFlow(parentId = rootId)
 
-        return combine(postFlow, commentsFlow, forcedVotes) { post, comments, votes ->
+        return combine(
+            postFlow,
+            commentsFlow,
+            forcedVotes,
+            collapsedIds
+        ) { post, comments, votes, ids ->
             ThreadUI(
                 rootPost = post?.mapToRootPostUI(forcedVotes = votes),
-                comments = comments.map { it.mapToCommentUI(forcedVotes = votes) }
+                comments = comments.map {
+                    it.mapToCommentUI(
+                        forcedVotes = votes,
+                        collapsedIds = ids
+                    )
+                }
             )
         }
             .debounce(SHORT_DEBOUNCE)
