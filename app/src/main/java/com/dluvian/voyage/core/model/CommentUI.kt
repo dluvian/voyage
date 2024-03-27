@@ -1,11 +1,14 @@
 package com.dluvian.voyage.core.model
 
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.toShortenedBech32
 import com.dluvian.voyage.data.interactor.Vote
 import com.dluvian.voyage.data.room.view.CommentView
 
+@Immutable
 data class CommentUI(
     val id: EventIdHex,
     val parentId: EventIdHex,
@@ -18,9 +21,17 @@ data class CommentUI(
     val tally: Int,
     val commentCount: Int,
     val isCollapsed: Boolean,
+    val replies: List<CommentUI>
 ) {
+    @Stable
+    fun showReplies() = commentCount > 0 && !isCollapsed
+
     companion object {
-        fun from(commentView: CommentView, isCollapsed: Boolean): CommentUI {
+        fun from(
+            commentView: CommentView,
+            isCollapsed: Boolean,
+            replies: List<CommentUI>
+        ): CommentUI {
             return CommentUI(
                 id = commentView.id,
                 parentId = commentView.parentId,
@@ -37,6 +48,7 @@ data class CommentUI(
                 tally = commentView.upvoteCount - commentView.downvoteCount,
                 commentCount = commentView.commentCount,
                 isCollapsed = isCollapsed,
+                replies = replies
             )
         }
     }

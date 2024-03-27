@@ -7,6 +7,7 @@ import com.dluvian.nostr_kt.createEmptyNip19Event
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.ThreadViewAction
 import com.dluvian.voyage.core.ThreadViewRefresh
+import com.dluvian.voyage.core.ThreadViewShowReplies
 import com.dluvian.voyage.core.ThreadViewToggleCollapse
 import com.dluvian.voyage.core.model.ThreadUI
 import com.dluvian.voyage.core.navigator.ThreadNavView
@@ -40,6 +41,8 @@ class ThreadViewModel(
         when (action) {
             is ThreadViewRefresh -> refresh(initVal = thread.value)
             is ThreadViewToggleCollapse -> threadCollapser.toggleCollapse(id = action.id)
+            // TODO: Give reply Map to UI, call loadReplies with all expanded parentIds
+            is ThreadViewShowReplies -> threadProvider.loadReplies(parentId = action.id)
         }
     }
 

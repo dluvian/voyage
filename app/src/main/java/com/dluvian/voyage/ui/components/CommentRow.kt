@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -48,7 +49,9 @@ fun CommentRow(comment: CommentUI, onUpdate: OnUpdate) {
                 tally = comment.tally,
                 onUpdate = onUpdate,
                 additionalAction = {
-                    TextButton(onClick = { /*TODO*/ }) {
+                    TextButton(
+                        modifier = Modifier.height(ButtonDefaults.MinHeight),
+                        onClick = { /*TODO*/ }) {
                         Icon(
                             imageVector = ReplyIcon,
                             contentDescription = stringResource(id = R.string.reply)

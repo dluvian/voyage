@@ -88,6 +88,7 @@ data object HomeViewSubAccountAndTrustData : HomeViewAction()
 sealed class ThreadViewAction : UIEvent()
 data object ThreadViewRefresh : ThreadViewAction()
 data class ThreadViewToggleCollapse(val id: EventIdHex) : ThreadViewAction()
+data class ThreadViewShowReplies(val id: EventIdHex) : ThreadViewAction()
 
 
 sealed class DiscoverViewAction : UIEvent()

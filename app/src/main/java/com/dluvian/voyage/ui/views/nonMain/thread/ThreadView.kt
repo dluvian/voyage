@@ -22,11 +22,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
+import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.ThreadViewRefresh
+import com.dluvian.voyage.core.ThreadViewShowReplies
 import com.dluvian.voyage.core.ThreadViewToggleCollapse
 import com.dluvian.voyage.core.model.CommentUI
-import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.model.ThreadUI
 import com.dluvian.voyage.core.viewModel.ThreadViewModel
 import com.dluvian.voyage.ui.components.CommentRow
@@ -61,7 +62,7 @@ private fun ThreadViewContent(
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             if (thread.rootPost != null) {
                 item {
-                    RootPost(rootPost = thread.rootPost, onUpdate = onUpdate)
+                    PostRow(post = thread.rootPost, isDetailed = true, onUpdate = onUpdate)
                     HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = spacing.tiny)
                 }
             }
@@ -81,33 +82,34 @@ private fun ThreadViewContent(
 }
 
 @Composable
-private fun RootPost(rootPost: RootPostUI, onUpdate: OnUpdate) {
-    PostRow(post = rootPost, isDetailed = true, onUpdate = onUpdate)
-}
-
-@Composable
 private fun Comment(comment: CommentUI, onUpdate: OnUpdate) {
+    // TODO: Collapse immediately
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onUpdate(ThreadViewToggleCollapse(id = comment.id)) }) {
         CommentRow(comment = comment, onUpdate = onUpdate)
-        if (comment.commentCount > 0 && !comment.isCollapsed) {
+        if (comment.showReplies()) {
             Row(modifier = Modifier.height(IntrinsicSize.Min)) {
                 VerticalDivider(
                     modifier = Modifier
                         .fillMaxHeight()
                         .padding(start = spacing.xl, bottom = spacing.medium, end = spacing.medium)
                 )
-                MoreRepliesTextButton(commentCount = comment.commentCount)
+                if (comment.replies.isEmpty()) MoreRepliesTextButton(
+                    commentCount = comment.commentCount,
+                    onShowReplies = { onUpdate(ThreadViewShowReplies(id = comment.id)) })
+                else Column {
+                    comment.replies.forEach { Comment(comment = it, onUpdate = onUpdate) }
+                }
             }
         }
     }
 }
 
 @Composable
-fun MoreRepliesTextButton(commentCount: Int) {
-    TextButton(onClick = { /*TODO*/ }) {
+fun MoreRepliesTextButton(commentCount: Int, onShowReplies: Fn) {
+    TextButton(onClick = onShowReplies) {
         if (commentCount == 1) Text(text = stringResource(id = R.string.one_reply))
         else Text(text = "$commentCount ${stringResource(id = R.string.replies)}")
     }

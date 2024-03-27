@@ -2,12 +2,10 @@ package com.dluvian.voyage.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -53,7 +51,7 @@ fun PostRow(post: RootPostUI, isDetailed: Boolean = false, onUpdate: OnUpdate) {
             maxLines = if (isDetailed) Int.MAX_VALUE else 12,
             overflow = TextOverflow.Ellipsis,
         )
-        Spacer(modifier = Modifier.height(spacing.xl))
+        Spacer(modifier = Modifier.height(spacing.large))
         PostRowActions(
             id = post.id,
             pubkey = post.pubkey,
@@ -61,12 +59,9 @@ fun PostRow(post: RootPostUI, isDetailed: Boolean = false, onUpdate: OnUpdate) {
             tally = post.tally,
             onUpdate = onUpdate,
             additionalAction = {
-                Row {
-                    CommentChip(
-                        commentCount = post.commentCount,
-                        onClick = { onUpdate(ClickThread(postId = post.id)) })
-                    Spacer(modifier = Modifier.width(spacing.xl))
-                }
+                CommentChip(
+                    commentCount = post.commentCount,
+                    onClick = { onUpdate(ClickThread(postId = post.id)) })
             })
     }
 }

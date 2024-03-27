@@ -37,7 +37,9 @@ fun SearchView(vm: SearchViewModel, snackbar: SnackbarHostState, onUpdate: OnUpd
 
 @Composable
 private fun SearchViewContent(
-    topics: List<Topic>, profiles: List<ProfileEntity>, onUpdate: OnUpdate
+    topics: List<Topic>,
+    profiles: List<ProfileEntity>,
+    onUpdate: OnUpdate
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         if (topics.isNotEmpty()) {
