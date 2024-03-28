@@ -10,4 +10,7 @@ import kotlinx.coroutines.flow.Flow
 interface CommentDao {
     @Query("SELECT * from CommentView WHERE parentId = :parentId")
     fun getCommentsFlow(parentId: EventIdHex): Flow<List<CommentView>>
+
+    @Query("SELECT * FROM CommentView WHERE parentId IN (:parentIds)")
+    fun getCommentsFlow(parentIds: Collection<EventIdHex>): Flow<List<CommentView>>
 }

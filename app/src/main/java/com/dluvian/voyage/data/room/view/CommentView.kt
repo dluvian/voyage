@@ -39,16 +39,8 @@ data class CommentView(
     val downvoteCount: Int,
     val commentCount: Int,
 ) {
-    fun mapToCommentUI(
-        forcedVotes: Map<EventIdHex, Vote>,
-        collapsedIds: Set<EventIdHex>,
-        replies: List<CommentUI>
-    ): CommentUI {
-        val commentUI = CommentUI.from(
-            commentView = this,
-            isCollapsed = collapsedIds.contains(this.id),
-            replies = replies
-        )
+    fun mapToCommentUI(forcedVotes: Map<EventIdHex, Vote>): CommentUI {
+        val commentUI = CommentUI.from(commentView = this)
         val vote = forcedVotes.getOrDefault(this.id, null)
         return if (vote != null) commentUI.copy(myVote = vote) else commentUI
     }

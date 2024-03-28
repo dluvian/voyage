@@ -19,7 +19,7 @@ import com.dluvian.voyage.ui.theme.ReplyIcon
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
-fun CommentRow(comment: CommentUI, onUpdate: OnUpdate) {
+fun CommentRow(comment: CommentUI, isCollapsed: Boolean, onUpdate: OnUpdate) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -32,10 +32,10 @@ fun CommentRow(comment: CommentUI, onUpdate: OnUpdate) {
             isDetailed = true,
             createdAt = comment.createdAt,
             myTopic = null,
-            collapsedText = if (comment.isCollapsed) comment.content else null,
+            collapsedText = if (isCollapsed) comment.content else null,
             onUpdate = onUpdate
         )
-        if (!comment.isCollapsed) {
+        if (!isCollapsed) {
             Spacer(modifier = Modifier.height(spacing.large))
             Text(
                 text = comment.content,

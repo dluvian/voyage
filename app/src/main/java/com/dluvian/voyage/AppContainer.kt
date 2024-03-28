@@ -150,7 +150,6 @@ class AppContainer(context: Context) {
         rootPostDao = roomDb.rootPostDao(),
         commentDao = roomDb.commentDao(),
         forcedVotes = postVoter.forcedVotes,
-        collapsedIds = threadCollapser.collapsedIds
     )
 
     val topicFollower = TopicFollower(

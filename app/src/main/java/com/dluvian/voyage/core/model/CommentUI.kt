@@ -1,7 +1,6 @@
 package com.dluvian.voyage.core.model
 
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.Stable
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.toShortenedBech32
@@ -20,18 +19,9 @@ data class CommentUI(
     val myVote: Vote,
     val tally: Int,
     val commentCount: Int,
-    val isCollapsed: Boolean,
-    val replies: List<CommentUI>
 ) {
-    @Stable
-    fun showReplies() = commentCount > 0 && !isCollapsed
-
     companion object {
-        fun from(
-            commentView: CommentView,
-            isCollapsed: Boolean,
-            replies: List<CommentUI>
-        ): CommentUI {
+        fun from(commentView: CommentView): CommentUI {
             return CommentUI(
                 id = commentView.id,
                 parentId = commentView.parentId,
@@ -47,8 +37,6 @@ data class CommentUI(
                 myVote = Vote.from(vote = commentView.myVote),
                 tally = commentView.upvoteCount - commentView.downvoteCount,
                 commentCount = commentView.commentCount,
-                isCollapsed = isCollapsed,
-                replies = replies
             )
         }
     }

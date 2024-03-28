@@ -78,7 +78,6 @@ class RelayProvider(
             .toList()
             .shuffled()
             .sortedByDescending { (_, pubkeys) -> pubkeys.size }
-            .sortedBy { (relay, _) -> avoidRelays.contains(relay) } // Avoid centralizing relays
             .forEach { (relay, nip65Entities) ->
                 val newPubkeys = nip65Entities.map { it.pubkey }.toSet() - pubkeyCache
                 if (newPubkeys.isNotEmpty()) {
@@ -116,17 +115,11 @@ class RelayProvider(
     }
 
     private val defaultRelays = listOf(
+        "wss://nos.lol",
         "wss://nostr.einundzwanzig.space",
         "wss://nostr.oxtr.dev",
         "wss://relay.mutinywallet.com",
         "wss://nostr.fmt.wiz.biz",
         "wss://relay.nostr.wirednet.jp",
-    )
-
-    // Avoid big relays. Don't be reliable on central hubs
-    private val avoidRelays = listOf(
-        "wss://nos.lol",
-        "wss://relay.damus.io",
-        "wss://relay.primal.net",
     )
 }

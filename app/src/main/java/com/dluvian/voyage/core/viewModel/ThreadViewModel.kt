@@ -1,15 +1,18 @@
 package com.dluvian.voyage.core.viewModel
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dluvian.nostr_kt.createEmptyNip19Event
 import com.dluvian.voyage.core.DELAY_1SEC
+import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.ThreadViewAction
 import com.dluvian.voyage.core.ThreadViewRefresh
 import com.dluvian.voyage.core.ThreadViewShowReplies
 import com.dluvian.voyage.core.ThreadViewToggleCollapse
-import com.dluvian.voyage.core.model.ThreadUI
+import com.dluvian.voyage.core.model.CommentUI
+import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.navigator.ThreadNavView
 import com.dluvian.voyage.data.interactor.ThreadCollapser
 import com.dluvian.voyage.data.provider.ThreadProvider
@@ -26,37 +29,59 @@ class ThreadViewModel(
     private val threadProvider: ThreadProvider,
     private val threadCollapser: ThreadCollapser,
 ) : ViewModel() {
-    var thread: StateFlow<ThreadUI?> = MutableStateFlow(null)
+    val collapsedIds = threadCollapser.collapsedIds
+    var root: StateFlow<RootPostUI?> = MutableStateFlow(null)
     val isRefreshing = mutableStateOf(false)
+    var allReplies: MutableState<StateFlow<Map<EventIdHex, List<CommentUI>>>> =
+        mutableStateOf(MutableStateFlow(emptyMap()))
+    private val parentIds = mutableStateOf(emptySet<EventIdHex>())
 
 
     fun openThread(threadNavView: ThreadNavView) {
-        val isSame = threadNavView.nip19Event.eventId().toHex() == thread.value?.rootPost?.id
-        val initVal = if (isSame) thread.value else null
-        thread = threadProvider.getThread(nip19Event = threadNavView.nip19Event)
+        val id = threadNavView.nip19Event.eventId().toHex()
+        val isSame = id == root.value?.id
+        if (!isSame) parentIds.value = setOf()
+        val initVal = if (isSame) root.value else null
+
+        root = threadProvider.getRoot(nip19Event = threadNavView.nip19Event)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), initVal)
+        loadReplies(parentId = id, isInit = true)
     }
 
     fun handle(action: ThreadViewAction) {
         when (action) {
-            is ThreadViewRefresh -> refresh(initVal = thread.value)
+            is ThreadViewRefresh -> refresh()
             is ThreadViewToggleCollapse -> threadCollapser.toggleCollapse(id = action.id)
             // TODO: Give reply Map to UI, call loadReplies with all expanded parentIds
-            is ThreadViewShowReplies -> threadProvider.loadReplies(parentId = action.id)
+            is ThreadViewShowReplies -> loadReplies(parentId = action.id, isInit = false)
         }
     }
 
-    private fun refresh(initVal: ThreadUI?) {
+    private fun refresh() {
         if (isRefreshing.value) return
-        val id = initVal?.rootPost?.id ?: return
+        val currentRoot = root.value ?: return
 
         isRefreshing.value = true
 
         viewModelScope.launch(Dispatchers.IO) {
-            val nip19 = createEmptyNip19Event(eventId = EventId.fromHex(id))
-            thread = threadProvider.getThread(nip19Event = nip19)
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), initVal)
+            val nip19 = createEmptyNip19Event(eventId = EventId.fromHex(currentRoot.id))
+            root = threadProvider.getRoot(nip19Event = nip19)
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), currentRoot)
+            allReplies.value = threadProvider.getReplies(parentIds = parentIds.value)
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), allReplies.value.value)
             delay(DELAY_1SEC)
         }.invokeOnCompletion { isRefreshing.value = false }
+    }
+
+    private fun loadReplies(parentId: EventIdHex, isInit: Boolean) {
+        if (parentIds.value.contains(parentId)) return
+
+        val init = if (isInit) {
+            emptyMap()
+        } else allReplies.value.value
+
+        parentIds.value += parentId
+        allReplies.value = threadProvider.getReplies(parentIds = parentIds.value)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, init)
     }
 }
