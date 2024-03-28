@@ -10,10 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
+import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.model.SimpleNip19Profile
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.ui.components.chip.TopicChip
 import com.dluvian.voyage.ui.components.chip.TrustChip
@@ -36,7 +36,7 @@ fun PostRowHeader(
         if (isDetailed) TrustChip(
             trustType = trustType,
             name = authorName,
-            onOpenProfile = { onUpdate(OpenProfile(nip19 = SimpleNip19Profile(pubkey = pubkey))) }
+            onOpenProfile = { onUpdate(OpenProfile(nprofile = createNprofile(hex = pubkey))) }
         ) else TrustIcon(trustType = trustType)
         myTopic?.let { topic ->
             TopicChip(

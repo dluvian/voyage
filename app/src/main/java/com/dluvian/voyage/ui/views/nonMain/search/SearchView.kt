@@ -61,7 +61,7 @@ private fun SearchViewContent(
                 ClickableRow(
                     header = profile.name,
                     imageVector = AccountIcon,
-                    onClick = { onUpdate(OpenProfile(nip19 = profile.toNip19())) })
+                    onClick = { onUpdate(OpenProfile(nprofile = profile.toNip19())) })
             }
         }
     }

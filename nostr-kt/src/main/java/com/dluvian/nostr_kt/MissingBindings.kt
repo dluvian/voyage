@@ -7,6 +7,7 @@ import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Kind
 import rust.nostr.protocol.KindEnum
 import rust.nostr.protocol.Metadata
+import rust.nostr.protocol.Nip19Event
 import rust.nostr.protocol.Nip19Profile
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Tag
@@ -163,6 +164,34 @@ fun Event.isVote(): Boolean {
 
 fun Event.isProfile(): Boolean {
     return this.kind().matchEnum(KindEnum.Metadata)
+}
+
+fun createNprofile(hex: String, relays: List<String> = emptyList()): Nip19Profile {
+    return createNprofile(pubkey = PublicKey.fromHex(hex), relays = relays)
+}
+
+fun createNprofile(pubkey: PublicKey, relays: List<String> = emptyList()): Nip19Profile {
+    return Nip19Profile(publicKey = pubkey, relays = relays)
+}
+
+fun createNevent(
+    hex: String,
+    author: String? = null,
+    relays: List<String> = emptyList()
+): Nip19Event {
+    return createNevent(
+        eventId = EventId.fromHex(hex),
+        author = author?.let { PublicKey.fromHex(it) },
+        relays = relays
+    )
+}
+
+fun createNevent(
+    eventId: EventId,
+    author: PublicKey? = null,
+    relays: List<String> = emptyList()
+): Nip19Event {
+    return Nip19Event(eventId = eventId, author = author, relays = relays)
 }
 
 fun createReaction(

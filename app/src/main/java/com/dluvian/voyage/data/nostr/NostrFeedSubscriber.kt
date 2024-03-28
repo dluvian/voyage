@@ -85,7 +85,6 @@ class NostrFeedSubscriber(
         return result
     }
 
-
     fun getProfileFeedSubscription(
         pubkey: PubkeyHex,
         until: Timestamp,

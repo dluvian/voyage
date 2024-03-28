@@ -12,8 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import com.dluvian.voyage.core.ClickThread
+import com.dluvian.nostr_kt.createNevent
 import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.core.OpenThread
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.ui.components.chip.CommentChip
 import com.dluvian.voyage.ui.theme.spacing
@@ -23,7 +24,7 @@ fun PostRow(post: RootPostUI, isDetailed: Boolean = false, onUpdate: OnUpdate) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = { onUpdate(ClickThread(postId = post.id)) })
+            .clickable(onClick = { onUpdate(OpenThread(nevent = createNevent(hex = post.id))) })
             .padding(spacing.screenEdge)
     ) {
         PostRowHeader(
@@ -61,7 +62,7 @@ fun PostRow(post: RootPostUI, isDetailed: Boolean = false, onUpdate: OnUpdate) {
             additionalAction = {
                 CommentChip(
                     commentCount = post.commentCount,
-                    onClick = { onUpdate(ClickThread(postId = post.id)) })
+                    onClick = { onUpdate(OpenThread(nevent = createNevent(hex = post.id))) })
             })
     }
 }

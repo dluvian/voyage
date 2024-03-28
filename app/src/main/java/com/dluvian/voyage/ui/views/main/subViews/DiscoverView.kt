@@ -88,7 +88,7 @@ fun DiscoverView(vm: DiscoverViewModel, onUpdate: OnUpdate) {
                 isFollowed = it.inner.isFriend,
                 onFollow = { onUpdate(DiscoverViewFollowProfile(pubkey = it.inner.pubkey)) },
                 onUnfollow = { onUpdate(DiscoverViewUnfollowProfile(pubkey = it.inner.pubkey)) },
-                onOpen = { onUpdate(OpenProfile(nip19 = it.inner.toNip19())) }
+                onOpen = { onUpdate(OpenProfile(nprofile = it.inner.toNip19())) }
             )
         }
     }

@@ -66,7 +66,7 @@ fun SearchTopAppBar(focusRequester: FocusRequester, onUpdate: OnUpdate) {
                                 text = text.value,
                                 context = context,
                                 onOpenTopic = { topic -> onUpdate(OpenTopic(topic = topic)) },
-                                onOpenProfile = { nip19 -> onUpdate(OpenProfile(nip19 = nip19)) }
+                                onOpenProfile = { nip19 -> onUpdate(OpenProfile(nprofile = nip19)) }
                             )
                         )
                     },

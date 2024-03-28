@@ -1,5 +1,6 @@
 package com.dluvian.voyage.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,31 +36,33 @@ fun CommentRow(comment: CommentUI, isCollapsed: Boolean, onUpdate: OnUpdate) {
             collapsedText = if (isCollapsed) comment.content else null,
             onUpdate = onUpdate
         )
-        if (!isCollapsed) {
-            Spacer(modifier = Modifier.height(spacing.large))
-            Text(
-                text = comment.content,
-                maxLines = Int.MAX_VALUE,
-            )
-            Spacer(modifier = Modifier.height(spacing.large))
-            PostRowActions(
-                id = comment.id,
-                pubkey = comment.pubkey,
-                myVote = comment.myVote,
-                tally = comment.tally,
-                onUpdate = onUpdate,
-                additionalAction = {
-                    TextButton(
-                        modifier = Modifier.height(ButtonDefaults.MinHeight),
-                        onClick = { /*TODO*/ }) {
-                        Icon(
-                            imageVector = ReplyIcon,
-                            contentDescription = stringResource(id = R.string.reply)
-                        )
-                        Text(text = stringResource(id = R.string.reply))
+        AnimatedVisibility(visible = !isCollapsed) {
+            Column {
+                Spacer(modifier = Modifier.height(spacing.large))
+                Text(
+                    text = comment.content,
+                    maxLines = Int.MAX_VALUE,
+                )
+                Spacer(modifier = Modifier.height(spacing.large))
+                PostRowActions(
+                    id = comment.id,
+                    pubkey = comment.pubkey,
+                    myVote = comment.myVote,
+                    tally = comment.tally,
+                    onUpdate = onUpdate,
+                    additionalAction = {
+                        TextButton(
+                            modifier = Modifier.height(ButtonDefaults.MinHeight),
+                            onClick = { /*TODO*/ }) {
+                            Icon(
+                                imageVector = ReplyIcon,
+                                contentDescription = stringResource(id = R.string.reply)
+                            )
+                            Text(text = stringResource(id = R.string.reply))
+                        }
                     }
-                }
-            )
+                )
+            }
         }
     }
 }

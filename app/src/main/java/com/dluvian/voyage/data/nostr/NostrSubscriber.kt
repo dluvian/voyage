@@ -11,8 +11,6 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.RND_RESUB_COUNT
-import com.dluvian.voyage.core.model.SimpleNip19Event
-import com.dluvian.voyage.core.model.SimpleNip19Profile
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.FilterWrapper
@@ -34,6 +32,8 @@ import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
 import rust.nostr.protocol.Kind
 import rust.nostr.protocol.KindEnum
+import rust.nostr.protocol.Nip19Event
+import rust.nostr.protocol.Nip19Profile
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Timestamp
 
@@ -110,10 +110,10 @@ class NostrSubscriber(
         }
     }
 
-    fun subVotesAndReplies(nip19Event: SimpleNip19Event) {
-        val filters = createReplyAndVoteFilters(ids = listOf(EventId.fromHex(nip19Event.eventId)))
+    fun subVotesAndReplies(nevent: Nip19Event) {
+        val filters = createReplyAndVoteFilters(ids = listOf(nevent.eventId()))
 
-        nip19Event.relays
+        nevent.relays()
             .map { it.removeTrailingSlashes() }
             .toSet() + relayProvider.getReadRelays()
             .forEach { relay ->
@@ -121,14 +121,14 @@ class NostrSubscriber(
             }
     }
 
-    suspend fun subProfile(nip19Profile: SimpleNip19Profile) {
+    suspend fun subProfile(nprofile: Nip19Profile) {
         val profileFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Metadata))
-            .author(author = PublicKey.fromHex(hex = nip19Profile.pubkey))
+            .author(author = nprofile.publicKey())
             .until(timestamp = Timestamp.now())
             .limit(1u)
         val filters = listOf(FilterWrapper(profileFilter))
 
-        relayProvider.getObserveRelays(nip19Profile = nip19Profile).forEach { relay ->
+        relayProvider.getObserveRelays(nprofile = nprofile).forEach { relay ->
             subscribe(relayUrl = relay, filters = filters)
         }
     }
