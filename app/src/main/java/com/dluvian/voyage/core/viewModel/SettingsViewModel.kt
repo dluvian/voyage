@@ -14,13 +14,12 @@ import com.dluvian.voyage.core.ProcessExternalAccount
 import com.dluvian.voyage.core.RequestExternalAccount
 import com.dluvian.voyage.core.SettingsViewAction
 import com.dluvian.voyage.core.UseDefaultAccount
+import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.AccountType
 import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.account.AccountSwitcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import rust.nostr.protocol.PublicKey
 
 class SettingsViewModel(
@@ -52,7 +51,7 @@ class SettingsViewModel(
         if (accountType.value is DefaultAccount || isLoadingAccount.value) return
         isLoadingAccount.value = true
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launchIO {
             accountSwitcher.useDefaultAccount()
         }.invokeOnCompletion {
             isLoadingAccount.value = false
@@ -98,7 +97,7 @@ class SettingsViewModel(
             return
         }
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launchIO {
             accountSwitcher.useExternalAccount(publicKey = publicKey, packageName = packageName)
         }.invokeOnCompletion {
             isLoadingAccount.value = false

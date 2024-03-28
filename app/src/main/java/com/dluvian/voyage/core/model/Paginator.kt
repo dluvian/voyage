@@ -8,13 +8,13 @@ import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.FEED_OFFSET
 import com.dluvian.voyage.core.FEED_PAGE_SIZE
 import com.dluvian.voyage.core.Fn
+import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.ProfileFeedSetting
 import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.provider.FeedProvider
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -64,7 +64,7 @@ class Paginator(
 
         isRefreshing.value = true
 
-        scope.launch(Dispatchers.IO) {
+        scope.launchIO {
             onSub()
             delay(DELAY_1SEC)
             val initValue = page.value.value.take(FEED_PAGE_SIZE)
@@ -81,7 +81,7 @@ class Paginator(
 
         isAppending.value = true
 
-        scope.launch(Dispatchers.IO) {
+        scope.launchIO {
             val newUntil = page.value.value.takeLast(FEED_OFFSET).first().createdAt
             val initValue = page.value.value.takeLast(FEED_OFFSET)
             page.value = getFlow(until = newUntil)

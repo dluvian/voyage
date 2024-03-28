@@ -4,6 +4,7 @@ import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.firstThenDistinctDebounce
+import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.LeveledCommentUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.model.SimpleNip19Event
@@ -12,13 +13,11 @@ import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.room.dao.CommentDao
 import com.dluvian.voyage.data.room.dao.RootPostDao
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import java.util.LinkedList
 
 class ThreadProvider(
@@ -31,7 +30,7 @@ class ThreadProvider(
 
     @OptIn(FlowPreview::class)
     fun getRoot(scope: CoroutineScope, nip19Event: SimpleNip19Event): Flow<RootPostUI?> {
-        scope.launch(Dispatchers.IO) { nostrSubscriber.subVotesAndReplies(nip19Event = nip19Event) }
+        scope.launchIO { nostrSubscriber.subVotesAndReplies(nip19Event = nip19Event) }
 
         return combine(
             rootPostDao.getRootPostFlow(id = nip19Event.eventId),

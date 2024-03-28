@@ -102,11 +102,12 @@ private fun Comment(
                 isCollapsed = leveledComment.isCollapsed,
                 onUpdate = onUpdate
             )
-            if (leveledComment.comment.commentCount > 0 && !leveledComment.isCollapsed) {
-                if (!leveledComment.hasLoadedReplies) MoreRepliesTextButton(
-                    commentCount = leveledComment.comment.commentCount,
-                    onShowReplies = { onUpdate(ThreadViewShowReplies(id = leveledComment.comment.id)) })
-            }
+            if (leveledComment.comment.commentCount > 0 &&
+                !leveledComment.isCollapsed &&
+                !leveledComment.hasLoadedReplies
+            ) MoreRepliesTextButton(
+                commentCount = leveledComment.comment.commentCount,
+                onShowReplies = { onUpdate(ThreadViewShowReplies(id = leveledComment.comment.id)) })
         }
     }
 }

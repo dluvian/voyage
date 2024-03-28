@@ -16,15 +16,14 @@ import com.dluvian.voyage.core.SearchViewAction
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.UpdateSearchText
 import com.dluvian.voyage.core.isBareTopicStr
+import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.SimpleNip19Profile
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.provider.SuggestionProvider
 import com.dluvian.voyage.data.room.entity.ProfileEntity
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import rust.nostr.protocol.Nip19Profile
 import rust.nostr.protocol.PublicKey
 
@@ -52,7 +51,7 @@ class SearchViewModel(
     fun subProfiles() {
         if (profileJob?.isActive == true) return
 
-        profileJob = viewModelScope.launch(Dispatchers.IO) {
+        profileJob = viewModelScope.launchIO {
             nostrSubscriber.lazySubWebOfTrustProfiles()
             delay(DELAY_10SEC)
         }
@@ -66,7 +65,7 @@ class SearchViewModel(
     private var updateJobTopic: Job? = null
     private fun updateTopicSuggestions(text: String) {
         updateJobTopic?.cancel()
-        updateJobTopic = viewModelScope.launch(Dispatchers.IO) {
+        updateJobTopic = viewModelScope.launchIO {
             delay(SHORT_DEBOUNCE)
             topics.value = suggestionProvider.getTopicSuggestions(text = text)
         }
@@ -75,7 +74,7 @@ class SearchViewModel(
     private var updateJobProfile: Job? = null
     private fun updateProfileSuggestions(text: String) {
         updateJobProfile?.cancel()
-        updateJobProfile = viewModelScope.launch(Dispatchers.IO) {
+        updateJobProfile = viewModelScope.launchIO {
             delay(SHORT_DEBOUNCE)
             profiles.value = suggestionProvider.getProfileSuggestions(text = text)
         }

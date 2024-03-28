@@ -10,19 +10,18 @@ import com.dluvian.voyage.core.ThreadViewAction
 import com.dluvian.voyage.core.ThreadViewRefresh
 import com.dluvian.voyage.core.ThreadViewShowReplies
 import com.dluvian.voyage.core.ThreadViewToggleCollapse
+import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.LeveledCommentUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.model.SimpleNip19Event
 import com.dluvian.voyage.core.navigator.ThreadNavView
 import com.dluvian.voyage.data.interactor.ThreadCollapser
 import com.dluvian.voyage.data.provider.ThreadProvider
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 
 class ThreadViewModel(
     private val threadProvider: ThreadProvider,
@@ -64,7 +63,7 @@ class ThreadViewModel(
 
         isRefreshing.value = true
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launchIO {
             val nip19 = SimpleNip19Event(eventId = currentRoot.id)
 
             root = threadProvider.getRoot(scope = viewModelScope, nip19Event = nip19)

@@ -12,13 +12,13 @@ import com.dluvian.voyage.core.DiscoverViewInit
 import com.dluvian.voyage.core.DiscoverViewRefresh
 import com.dluvian.voyage.core.DiscoverViewUnfollowProfile
 import com.dluvian.voyage.core.DiscoverViewUnfollowTopic
+import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.TopicFollowState
 import com.dluvian.voyage.data.interactor.ProfileFollower
 import com.dluvian.voyage.data.interactor.TopicFollower
 import com.dluvian.voyage.data.model.FullProfile
 import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.provider.TopicProvider
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -65,10 +65,10 @@ class DiscoverViewModel(
         isRefreshing.value = true
 
         viewModelScope.launch {
-            val profileJob = viewModelScope.launch(Dispatchers.IO) {
+            val profileJob = viewModelScope.launchIO {
                 popularProfiles.value = getProfileFlow()
             }
-            val topicJob = viewModelScope.launch(Dispatchers.IO) {
+            val topicJob = viewModelScope.launchIO {
                 popularTopics.value = getTopicFlow()
             }
             delay(DELAY_1SEC)

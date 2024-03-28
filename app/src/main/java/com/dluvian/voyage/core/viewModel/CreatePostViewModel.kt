@@ -10,11 +10,10 @@ import com.dluvian.voyage.core.CreatePostViewAction
 import com.dluvian.voyage.core.CreatePostViewSendPost
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.Fn
+import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.interactor.PostSender
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 
 class CreatePostViewModel(
@@ -37,7 +36,7 @@ class CreatePostViewModel(
         if (isSendingPost.value) return
 
         isSendingPost.value = true
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launchIO {
             val result = postSender.sendPost(header = header, body = body)
             delay(DELAY_1SEC)
             onGoBack()

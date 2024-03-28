@@ -9,6 +9,7 @@ import com.dluvian.voyage.core.ProfileViewAppend
 import com.dluvian.voyage.core.ProfileViewFollowProfile
 import com.dluvian.voyage.core.ProfileViewRefresh
 import com.dluvian.voyage.core.ProfileViewUnfollowProfile
+import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.core.navigator.ProfileNavView
 import com.dluvian.voyage.data.interactor.ProfileFollower
@@ -18,12 +19,10 @@ import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 
 class ProfileViewModel(
     feedProvider: FeedProvider,
@@ -40,7 +39,7 @@ class ProfileViewModel(
         if (profile.value.value.inner.pubkey == pubkeyHex) return
 
         paginator.init(setting = ProfileFeedSetting(pubkey = pubkeyHex))
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launchIO {
             nostrSubscriber.subProfile(nip19Profile = profileNavView.nip19Profile)
         }
 

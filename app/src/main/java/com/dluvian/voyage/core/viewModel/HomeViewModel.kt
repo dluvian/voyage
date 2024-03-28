@@ -6,13 +6,12 @@ import com.dluvian.voyage.core.HomeViewAction
 import com.dluvian.voyage.core.HomeViewAppend
 import com.dluvian.voyage.core.HomeViewRefresh
 import com.dluvian.voyage.core.HomeViewSubAccountAndTrustData
+import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.provider.FeedProvider
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 
 class HomeViewModel(
@@ -37,7 +36,7 @@ class HomeViewModel(
 
     private fun subMyAccountAndTrustData() {
         job?.cancel()
-        job = viewModelScope.launch(Dispatchers.IO) {
+        job = viewModelScope.launchIO {
             nostrSubscriber.subMyAccountAndTrustData()
         }
     }
