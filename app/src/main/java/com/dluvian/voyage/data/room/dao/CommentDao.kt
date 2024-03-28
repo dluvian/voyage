@@ -8,9 +8,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CommentDao {
-    @Query("SELECT * from CommentView WHERE parentId = :parentId")
-    fun getCommentsFlow(parentId: EventIdHex): Flow<List<CommentView>>
-
-    @Query("SELECT * FROM CommentView WHERE parentId IN (:parentIds)")
+    @Query("SELECT * FROM CommentView WHERE parentId IN (:parentIds) ORDER BY createdAt ASC")
     fun getCommentsFlow(parentIds: Collection<EventIdHex>): Flow<List<CommentView>>
 }

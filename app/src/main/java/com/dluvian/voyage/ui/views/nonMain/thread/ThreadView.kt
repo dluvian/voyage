@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -19,17 +19,16 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.ThreadViewRefresh
 import com.dluvian.voyage.core.ThreadViewShowReplies
 import com.dluvian.voyage.core.ThreadViewToggleCollapse
-import com.dluvian.voyage.core.model.CommentUI
+import com.dluvian.voyage.core.model.LeveledCommentUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.viewModel.ThreadViewModel
 import com.dluvian.voyage.ui.components.CommentRow
@@ -42,15 +41,13 @@ import com.dluvian.voyage.ui.theme.spacing
 fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
     val isRefreshing by vm.isRefreshing
     val root by vm.root.collectAsState()
-    val allReplies by vm.allReplies.value.collectAsState()
-    val collapsedIds by vm.collapsedIds.collectAsState()
+    val leveledComments by vm.leveledComments.value.collectAsState()
 
     ThreadScaffold(snackbar = snackbar, onUpdate = onUpdate) {
         root?.let {
             ThreadViewContent(
                 root = it,
-                allReplies = allReplies,
-                collapsedIds = collapsedIds,
+                leveledComments = leveledComments,
                 isRefreshing = isRefreshing,
                 onUpdate = onUpdate
             )
@@ -61,29 +58,27 @@ fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpd
 @Composable
 private fun ThreadViewContent(
     root: RootPostUI,
-    allReplies: Map<EventIdHex, List<CommentUI>>,
-    collapsedIds: Set<EventIdHex>,
+    leveledComments: List<LeveledCommentUI>,
     isRefreshing: Boolean,
     onUpdate: OnUpdate
 ) {
-    val comments = remember(root.id, allReplies) { allReplies[root.id].orEmpty() }
-
     PullRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(ThreadViewRefresh) }) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             item {
                 PostRow(post = root, isDetailed = true, onUpdate = onUpdate)
                 HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = spacing.tiny)
             }
-            items(comments) { comment ->
+            itemsIndexed(leveledComments) { i, comment ->
                 Comment(
-                    comment = comment,
-                    allReplies = allReplies,
-                    collapsedIds = collapsedIds,
+                    leveledComment = comment,
                     onUpdate = onUpdate
                 )
-                HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = spacing.tiny)
+                if (comment.level == 0) HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth(),
+                    thickness = spacing.tiny
+                )
             }
-            if (comments.isEmpty()) {
+            if (leveledComments.isEmpty()) {
                 item {
                     Column(modifier = Modifier.fillParentMaxHeight(0.5f)) {
                         BaseHint(text = stringResource(id = R.string.no_comments_found))
@@ -96,41 +91,39 @@ private fun ThreadViewContent(
 
 @Composable
 private fun Comment(
-    comment: CommentUI,
-    allReplies: Map<EventIdHex, List<CommentUI>>,
-    collapsedIds: Set<EventIdHex>,
+    leveledComment: LeveledCommentUI,
     onUpdate: OnUpdate
 ) {
-    val isCollapsed = remember(comment.id, collapsedIds) { collapsedIds.contains(comment.id) }
-    val replies = remember(comment.id, allReplies) { allReplies[comment.id].orEmpty() }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onUpdate(ThreadViewToggleCollapse(id = comment.id)) }) {
-        CommentRow(comment = comment, isCollapsed = isCollapsed, onUpdate = onUpdate)
-        if (comment.commentCount > 0 && !isCollapsed) {
-            Row(modifier = Modifier.height(IntrinsicSize.Min)) {
-                VerticalDivider(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .padding(start = spacing.xl, bottom = spacing.medium, end = spacing.medium)
-                )
-                if (replies.isEmpty()) MoreRepliesTextButton(
-                    commentCount = comment.commentCount,
-                    onShowReplies = { onUpdate(ThreadViewShowReplies(id = comment.id)) })
-                else Column {
-                    replies.forEach {
-                        Comment(
-                            comment = it,
-                            allReplies = allReplies,
-                            collapsedIds = collapsedIds,
-                            onUpdate = onUpdate
-                        )
-                    }
-                }
+    RowWithDivider(level = leveledComment.level) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onUpdate(ThreadViewToggleCollapse(id = leveledComment.comment.id)) }) {
+            CommentRow(
+                comment = leveledComment.comment,
+                isCollapsed = leveledComment.isCollapsed,
+                onUpdate = onUpdate
+            )
+            if (leveledComment.comment.commentCount > 0 && !leveledComment.isCollapsed) {
+                if (!leveledComment.hasLoadedReplies) MoreRepliesTextButton(
+                    commentCount = leveledComment.comment.commentCount,
+                    onShowReplies = { onUpdate(ThreadViewShowReplies(id = leveledComment.comment.id)) })
             }
         }
+    }
+}
+
+@Composable
+fun RowWithDivider(level: Int, content: ComposableContent) {
+    Row(modifier = Modifier.height(IntrinsicSize.Min)) {
+        repeat(times = level) {
+            VerticalDivider(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(start = spacing.xl, end = spacing.medium)
+            )
+        }
+        content()
     }
 }
 

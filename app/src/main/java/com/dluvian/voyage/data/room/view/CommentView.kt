@@ -4,6 +4,7 @@ import androidx.room.DatabaseView
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.model.CommentUI
+import com.dluvian.voyage.core.model.LeveledCommentUI
 import com.dluvian.voyage.data.interactor.Vote
 
 
@@ -43,5 +44,19 @@ data class CommentView(
         val commentUI = CommentUI.from(commentView = this)
         val vote = forcedVotes.getOrDefault(this.id, null)
         return if (vote != null) commentUI.copy(myVote = vote) else commentUI
+    }
+
+    fun mapToLeveledCommentUI(
+        level: Int,
+        forcedVotes: Map<EventIdHex, Vote>,
+        collapsedIds: Set<EventIdHex>,
+        parentIds: Set<EventIdHex>
+    ): LeveledCommentUI {
+        return LeveledCommentUI(
+            level = level,
+            comment = this.mapToCommentUI(forcedVotes = forcedVotes),
+            isCollapsed = collapsedIds.contains(this.id),
+            hasLoadedReplies = parentIds.contains(this.id)
+        )
     }
 }

@@ -1,8 +1,9 @@
 package com.dluvian.voyage.data.provider
 
+import android.util.Log
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
-import com.dluvian.voyage.core.model.CommentUI
+import com.dluvian.voyage.core.model.LeveledCommentUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.data.interactor.Vote
 import com.dluvian.voyage.data.nostr.NostrSubscriber
@@ -12,8 +13,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import rust.nostr.protocol.Nip19Event
 
 class ThreadProvider(
@@ -21,7 +21,9 @@ class ThreadProvider(
     private val rootPostDao: RootPostDao,
     private val commentDao: CommentDao,
     private val forcedVotes: Flow<Map<EventIdHex, Vote>>,
+    private val collapsedIds: Flow<Set<EventIdHex>>
 ) {
+    private val tag = "ThreadProvider"
 
     @OptIn(FlowPreview::class)
     fun getRoot(nip19Event: Nip19Event): Flow<RootPostUI?> {
@@ -35,14 +37,40 @@ class ThreadProvider(
     }
 
     @OptIn(FlowPreview::class)
-    fun getReplies(parentIds: Collection<EventIdHex>): Flow<Map<EventIdHex, List<CommentUI>>> {
-        if (parentIds.isEmpty()) return flowOf(emptyMap())
+    fun getLeveledComments(
+        rootId: EventIdHex,
+        parentIds: Set<EventIdHex>
+    ): Flow<List<LeveledCommentUI>> {
         return combine(
-            commentDao.getCommentsFlow(parentIds = parentIds),
-            forcedVotes
-        ) { comments, votes ->
-            comments.map { it.mapToCommentUI(forcedVotes = votes) }
-        }.debounce(SHORT_DEBOUNCE)
-            .map { commentUIs -> commentUIs.groupBy { it.parentId } }
+            commentDao.getCommentsFlow(parentIds = parentIds + rootId),
+            forcedVotes,
+            collapsedIds,
+        ) { comments, votes, collapsed ->
+            val result = mutableListOf<LeveledCommentUI>()
+
+            for (comment in comments) {
+                val parent = result.find { it.comment.id == comment.parentId }
+
+                val leveledComment = comment.mapToLeveledCommentUI(
+                    level = parent?.level?.plus(1) ?: 0,
+                    forcedVotes = votes,
+                    collapsedIds = collapsed,
+                    parentIds = parentIds
+                )
+                if (parent == null) {
+                    if (comment.parentId == rootId) result.add(leveledComment)
+                    else Log.w(tag, "Comment ${comment.id} is out of order and discarded")
+                    continue
+                }
+
+                result.add(result.indexOf(parent) + 1, leveledComment)
+            }
+
+            result
+        }
+            .debounce(SHORT_DEBOUNCE)
+            .onEach {
+                nostrSubscriber.subVotesAndReplies(postIds = it.map { comment -> comment.comment.id })
+            }
     }
 }
