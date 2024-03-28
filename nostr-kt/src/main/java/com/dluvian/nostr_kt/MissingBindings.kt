@@ -7,7 +7,6 @@ import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Kind
 import rust.nostr.protocol.KindEnum
 import rust.nostr.protocol.Metadata
-import rust.nostr.protocol.Nip19Event
 import rust.nostr.protocol.Nip19Profile
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Tag
@@ -51,22 +50,6 @@ fun createReplyTag(parentEventId: EventId, relayHint: RelayUrl, parentIsRoot: Bo
         )
     )
 
-fun createEmptyNip19Profile(pubkey: PublicKey) = Nip19Profile(
-    publicKey = pubkey,
-    relays = emptyList()
-)
-
-fun createEmptyNip19Profile(hex: String) = Nip19Profile(
-    publicKey = PublicKey.fromHex(hex = hex),
-    relays = emptyList()
-)
-
-fun createEmptyNip19Event(eventId: EventId) = Nip19Event(
-    eventId = eventId,
-    author = null,
-    relays = emptyList()
-)
-
 fun generateMnemonic(): String {
     val random = SecureRandom()
     val entropy = ByteArray(16)
@@ -94,7 +77,7 @@ fun Event.isReplyPost(): Boolean {
 }
 
 fun isValidEventId(hex: String): Boolean {
-    return runCatching { EventId.fromHex(hex) }.isSuccess
+    return hex.length == 64 && hex.all { it.isDigit() || it in ('a'..'f') || it in ('A'..'F') }
 }
 
 fun Event.getReplyToId(): String? {

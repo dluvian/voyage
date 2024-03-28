@@ -4,7 +4,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.nostr_kt.createEmptyNip19Event
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.ThreadViewAction
@@ -13,6 +12,7 @@ import com.dluvian.voyage.core.ThreadViewShowReplies
 import com.dluvian.voyage.core.ThreadViewToggleCollapse
 import com.dluvian.voyage.core.model.LeveledCommentUI
 import com.dluvian.voyage.core.model.RootPostUI
+import com.dluvian.voyage.core.model.SimpleNip19Event
 import com.dluvian.voyage.core.navigator.ThreadNavView
 import com.dluvian.voyage.data.interactor.ThreadCollapser
 import com.dluvian.voyage.data.provider.ThreadProvider
@@ -23,7 +23,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import rust.nostr.protocol.EventId
 
 class ThreadViewModel(
     private val threadProvider: ThreadProvider,
@@ -37,12 +36,12 @@ class ThreadViewModel(
 
 
     fun openThread(threadNavView: ThreadNavView) {
-        val id = threadNavView.nip19Event.eventId().toHex()
+        val id = threadNavView.nip19Event.eventId
         val isSame = id == root.value?.id
         if (!isSame) parentIds.value = setOf()
         val initVal = if (isSame) root.value else null
 
-        root = threadProvider.getRoot(nip19Event = threadNavView.nip19Event)
+        root = threadProvider.getRoot(scope = viewModelScope, nip19Event = threadNavView.nip19Event)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), initVal)
         loadReplies(rootId = id, parentId = id, isInit = true)
     }
@@ -66,8 +65,9 @@ class ThreadViewModel(
         isRefreshing.value = true
 
         viewModelScope.launch(Dispatchers.IO) {
-            val nip19 = createEmptyNip19Event(eventId = EventId.fromHex(currentRoot.id))
-            root = threadProvider.getRoot(nip19Event = nip19)
+            val nip19 = SimpleNip19Event(eventId = currentRoot.id)
+
+            root = threadProvider.getRoot(scope = viewModelScope, nip19Event = nip19)
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), currentRoot)
             leveledComments.value = threadProvider.getLeveledComments(
                 rootId = currentRoot.id,
@@ -90,6 +90,6 @@ class ThreadViewModel(
         parentIds.value += parentId
         leveledComments.value =
             threadProvider.getLeveledComments(rootId = rootId, parentIds = parentIds.value)
-            .stateIn(viewModelScope, SharingStarted.Eagerly, init)
+                .stateIn(viewModelScope, SharingStarted.Eagerly, init)
     }
 }

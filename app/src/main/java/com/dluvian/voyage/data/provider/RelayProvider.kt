@@ -4,6 +4,7 @@ import android.util.Log
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.core.MAX_RELAYS
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.core.model.SimpleNip19Profile
 import com.dluvian.voyage.core.putOrAdd
 import com.dluvian.voyage.data.room.dao.EventRelayDao
 import com.dluvian.voyage.data.room.dao.Nip65Dao
@@ -11,7 +12,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
-import rust.nostr.protocol.Nip19Profile
 
 
 class RelayProvider(
@@ -54,11 +54,11 @@ class RelayProvider(
     }
 
     suspend fun getObserveRelays(
-        nip19Profile: Nip19Profile,
+        nip19Profile: SimpleNip19Profile,
         limit: Boolean = true
     ): List<RelayUrl> {
-        val foreignRelays = nip19Profile.relays().let { if (limit) it.limit() else it }
-        val nip65 = getObserveRelays(pubkey = nip19Profile.publicKey().toHex(), limit = limit)
+        val foreignRelays = nip19Profile.relays.let { if (limit) it.limit() else it }
+        val nip65 = getObserveRelays(pubkey = nip19Profile.pubkey, limit = limit)
 
         return (foreignRelays + nip65).distinct()
     }

@@ -2,6 +2,8 @@ package com.dluvian.voyage.core
 
 import android.content.Context
 import androidx.activity.result.ActivityResult
+import com.dluvian.voyage.core.model.SimpleNip19Event
+import com.dluvian.voyage.core.model.SimpleNip19Profile
 import com.dluvian.voyage.core.navigator.CreatePostNavView
 import com.dluvian.voyage.core.navigator.DiscoverNavView
 import com.dluvian.voyage.core.navigator.HomeNavView
@@ -12,9 +14,6 @@ import com.dluvian.voyage.core.navigator.SearchNavView
 import com.dluvian.voyage.core.navigator.SettingsNavView
 import com.dluvian.voyage.core.navigator.ThreadNavView
 import com.dluvian.voyage.core.navigator.TopicNavView
-import rust.nostr.protocol.EventId
-import rust.nostr.protocol.Nip19Event
-import rust.nostr.protocol.Nip19Profile
 
 sealed class UIEvent
 
@@ -35,14 +34,7 @@ sealed class PushNavEvent : NavEvent() {
             is ClickInbox -> InboxNavView
             is ClickSettings -> SettingsNavView
             is ClickSearch -> SearchNavView
-            is ClickThread -> ThreadNavView(
-                nip19Event = Nip19Event(
-                    eventId = EventId.fromHex(this.postId),
-                    author = null,
-                    relays = emptyList()
-                )
-            )
-
+            is ClickThread -> ThreadNavView(nip19Event = SimpleNip19Event(eventId = this.postId))
             is OpenProfile -> ProfileNavView(nip19Profile = this.nip19)
             is OpenTopic -> TopicNavView(topic = this.topic)
         }
@@ -58,7 +50,7 @@ data object ClickSearch : PushNavEvent()
 
 sealed class AdvancedPushNavEvent : PushNavEvent()
 data class ClickThread(val postId: EventIdHex) : AdvancedPushNavEvent()
-data class OpenProfile(val nip19: Nip19Profile) : AdvancedPushNavEvent()
+data class OpenProfile(val nip19: SimpleNip19Profile) : AdvancedPushNavEvent()
 data class OpenTopic(val topic: Topic) : AdvancedPushNavEvent()
 
 
@@ -137,7 +129,7 @@ data class SearchText(
     val text: String,
     val context: Context,
     val onOpenTopic: (Topic) -> Unit,
-    val onOpenProfile: (Nip19Profile) -> Unit
+    val onOpenProfile: (SimpleNip19Profile) -> Unit
 ) : SearchViewAction()
 
 

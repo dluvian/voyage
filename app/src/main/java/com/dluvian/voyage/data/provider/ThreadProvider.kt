@@ -6,16 +6,19 @@ import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.firstThenDistinctDebounce
 import com.dluvian.voyage.core.model.LeveledCommentUI
 import com.dluvian.voyage.core.model.RootPostUI
+import com.dluvian.voyage.core.model.SimpleNip19Event
 import com.dluvian.voyage.data.interactor.Vote
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.room.dao.CommentDao
 import com.dluvian.voyage.data.room.dao.RootPostDao
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.onEach
-import rust.nostr.protocol.Nip19Event
+import kotlinx.coroutines.launch
 import java.util.LinkedList
 
 class ThreadProvider(
@@ -27,12 +30,13 @@ class ThreadProvider(
 ) {
 
     @OptIn(FlowPreview::class)
-    fun getRoot(nip19Event: Nip19Event): Flow<RootPostUI?> {
-        nostrSubscriber.subVotesAndReplies(nip19Event = nip19Event)
-        val rootId = nip19Event.eventId().toHex()
-        val postFlow = rootPostDao.getRootPostFlow(id = rootId)
+    fun getRoot(scope: CoroutineScope, nip19Event: SimpleNip19Event): Flow<RootPostUI?> {
+        scope.launch(Dispatchers.IO) { nostrSubscriber.subVotesAndReplies(nip19Event = nip19Event) }
 
-        return combine(postFlow, forcedVotes) { post, votes ->
+        return combine(
+            rootPostDao.getRootPostFlow(id = nip19Event.eventId),
+            forcedVotes
+        ) { post, votes ->
             post?.mapToRootPostUI(forcedVotes = votes)
         }.debounce(SHORT_DEBOUNCE)
     }

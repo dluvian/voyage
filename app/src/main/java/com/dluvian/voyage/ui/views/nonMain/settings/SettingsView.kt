@@ -19,7 +19,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import com.dluvian.nostr_kt.createEmptyNip19Profile
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.OnUpdate
@@ -29,6 +28,7 @@ import com.dluvian.voyage.core.UseDefaultAccount
 import com.dluvian.voyage.core.model.AccountType
 import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
+import com.dluvian.voyage.core.model.SimpleNip19Profile
 import com.dluvian.voyage.core.shortenBech32
 import com.dluvian.voyage.core.viewModel.SettingsViewModel
 import com.dluvian.voyage.ui.components.ClickableRow
@@ -75,7 +75,7 @@ private fun AccountRow(accountType: AccountType, onUpdate: OnUpdate) {
         },
         text = shortenedNpub,
         imageVector = AccountIcon,
-        onClick = { onUpdate(OpenProfile(createEmptyNip19Profile(pubkey = accountType.publicKey))) }
+        onClick = { onUpdate(OpenProfile(SimpleNip19Profile(pubkey = accountType.publicKey.toHex()))) }
     ) {
         AccountRowButton(accountType = accountType, onUpdate = onUpdate)
     }

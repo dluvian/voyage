@@ -1,11 +1,9 @@
 package com.dluvian.voyage.data.room.view
 
 import androidx.room.DatabaseView
-import com.dluvian.nostr_kt.createEmptyNip19Profile
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.core.model.SimpleNip19Profile
 import com.dluvian.voyage.core.toShortenedBech32
-import rust.nostr.protocol.Nip19Profile
-import rust.nostr.protocol.PublicKey
 
 
 @DatabaseView(
@@ -22,7 +20,7 @@ data class AdvancedProfileView(
     val isFriend: Boolean = false,
     val isWebOfTrust: Boolean = false,
 ) {
-    fun toNip19(): Nip19Profile {
-        return createEmptyNip19Profile(pubkey = PublicKey.fromHex(pubkey))
+    fun toNip19(): SimpleNip19Profile {
+        return SimpleNip19Profile(pubkey = pubkey)
     }
 }

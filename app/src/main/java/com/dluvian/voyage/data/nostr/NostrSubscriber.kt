@@ -11,6 +11,8 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.RND_RESUB_COUNT
+import com.dluvian.voyage.core.model.SimpleNip19Event
+import com.dluvian.voyage.core.model.SimpleNip19Profile
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.FilterWrapper
@@ -32,8 +34,6 @@ import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
 import rust.nostr.protocol.Kind
 import rust.nostr.protocol.KindEnum
-import rust.nostr.protocol.Nip19Event
-import rust.nostr.protocol.Nip19Profile
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Timestamp
 
@@ -110,10 +110,10 @@ class NostrSubscriber(
         }
     }
 
-    fun subVotesAndReplies(nip19Event: Nip19Event) {
-        val filters = createReplyAndVoteFilters(ids = listOf(nip19Event.eventId()))
+    fun subVotesAndReplies(nip19Event: SimpleNip19Event) {
+        val filters = createReplyAndVoteFilters(ids = listOf(EventId.fromHex(nip19Event.eventId)))
 
-        nip19Event.relays()
+        nip19Event.relays
             .map { it.removeTrailingSlashes() }
             .toSet() + relayProvider.getReadRelays()
             .forEach { relay ->
@@ -121,9 +121,9 @@ class NostrSubscriber(
             }
     }
 
-    suspend fun subProfile(nip19Profile: Nip19Profile) {
+    suspend fun subProfile(nip19Profile: SimpleNip19Profile) {
         val profileFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Metadata))
-            .author(author = nip19Profile.publicKey())
+            .author(author = PublicKey.fromHex(hex = nip19Profile.pubkey))
             .until(timestamp = Timestamp.now())
             .limit(1u)
         val filters = listOf(FilterWrapper(profileFilter))

@@ -36,7 +36,7 @@ class ProfileViewModel(
         mutableStateOf(MutableStateFlow(FullProfile()))
 
     fun openProfile(profileNavView: ProfileNavView) {
-        val pubkeyHex = profileNavView.nip19Profile.publicKey().toHex()
+        val pubkeyHex = profileNavView.nip19Profile.pubkey
         if (profile.value.value.inner.pubkey == pubkeyHex) return
 
         paginator.init(setting = ProfileFeedSetting(pubkey = pubkeyHex))

@@ -5,7 +5,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.nostr_kt.createEmptyNip19Profile
 import com.dluvian.nostr_kt.removeMentionChar
 import com.dluvian.nostr_kt.removeNostrUri
 import com.dluvian.voyage.R
@@ -17,6 +16,7 @@ import com.dluvian.voyage.core.SearchViewAction
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.UpdateSearchText
 import com.dluvian.voyage.core.isBareTopicStr
+import com.dluvian.voyage.core.model.SimpleNip19Profile
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.provider.SuggestionProvider
@@ -85,7 +85,7 @@ class SearchViewModel(
         text: String,
         context: Context,
         onOpenTopic: (Topic) -> Unit,
-        onOpenProfile: (Nip19Profile) -> Unit
+        onOpenProfile: (SimpleNip19Profile) -> Unit
     ) {
         val strippedTopic = suggestionProvider.getStrippedSearchText(text = text)
         if (strippedTopic.length <= MAX_TOPIC_LEN && strippedTopic.isBareTopicStr()) {
@@ -97,13 +97,13 @@ class SearchViewModel(
 
         val pubkey = runCatching { PublicKey.fromBech32(bech32 = stripped) }.getOrNull()
         if (pubkey != null) {
-            onOpenProfile(createEmptyNip19Profile(pubkey = pubkey))
+            onOpenProfile(SimpleNip19Profile(pubkey = stripped))
             return
         }
 
         val nprofile = runCatching { Nip19Profile.fromBech32(bech32 = stripped) }.getOrNull()
         if (nprofile != null) {
-            onOpenProfile(nprofile)
+            onOpenProfile(SimpleNip19Profile(pubkey = stripped, relays = nprofile.relays()))
             return
         }
 

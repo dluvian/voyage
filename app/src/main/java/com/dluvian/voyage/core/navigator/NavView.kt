@@ -5,8 +5,8 @@ import androidx.compose.runtime.Stable
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Topic
-import rust.nostr.protocol.Nip19Event
-import rust.nostr.protocol.Nip19Profile
+import com.dluvian.voyage.core.model.SimpleNip19Event
+import com.dluvian.voyage.core.model.SimpleNip19Profile
 
 sealed class NavView
 
@@ -37,6 +37,6 @@ data object SearchNavView : SimpleNonMainNavView()
 
 
 sealed class AdvancedNonMainNavView : NonMainNavView()
-data class ThreadNavView(val nip19Event: Nip19Event) : AdvancedNonMainNavView()
-data class ProfileNavView(val nip19Profile: Nip19Profile) : AdvancedNonMainNavView()
+data class ThreadNavView(val nip19Event: SimpleNip19Event) : AdvancedNonMainNavView()
+data class ProfileNavView(val nip19Profile: SimpleNip19Profile) : AdvancedNonMainNavView()
 data class TopicNavView(val topic: Topic) : AdvancedNonMainNavView()
