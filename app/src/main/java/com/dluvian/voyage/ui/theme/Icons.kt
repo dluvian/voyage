@@ -3,6 +3,7 @@ package com.dluvian.voyage.ui.theme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Comment
+import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.automirrored.filled.Reply
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.AccountCircle
@@ -28,6 +29,7 @@ val BackIcon = Icons.AutoMirrored.Filled.ArrowBack
 val CommentIcon = Icons.AutoMirrored.Filled.Comment
 val FriendIcon = Icons.Default.VerifiedUser
 val TrustedIcon = FriendIcon
+val UnknownIcon = Icons.AutoMirrored.Filled.HelpOutline
 val AccountIcon = Icons.Default.AccountCircle
 val HashtagIcon = Icons.Default.Tag
 val UpvoteOffIcon = Icons.Default.ThumbUpOffAlt

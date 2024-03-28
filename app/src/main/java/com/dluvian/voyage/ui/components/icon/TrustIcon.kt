@@ -12,6 +12,7 @@ import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.core.model.WebTrust
 import com.dluvian.voyage.ui.theme.FriendIcon
 import com.dluvian.voyage.ui.theme.TrustedIcon
+import com.dluvian.voyage.ui.theme.UnknownIcon
 import com.dluvian.voyage.ui.theme.getTrustColor
 import com.dluvian.voyage.ui.theme.sizing
 
@@ -32,7 +33,11 @@ fun TrustIcon(trustType: TrustType) {
             stringResource(id = R.string.trusted)
         )
 
-        NoTrust -> return
+        NoTrust -> Triple(
+            UnknownIcon,
+            getTrustColor(trustType = trustType),
+            stringResource(id = R.string.unknown)
+        )
     }
     Icon(
         modifier = Modifier.size(sizing.smallIndicator),

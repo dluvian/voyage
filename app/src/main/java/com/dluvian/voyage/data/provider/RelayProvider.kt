@@ -115,7 +115,6 @@ class RelayProvider(
     }
 
     private val defaultRelays = listOf(
-        "wss://nos.lol",
         "wss://nostr.einundzwanzig.space",
         "wss://nostr.oxtr.dev",
         "wss://relay.mutinywallet.com",

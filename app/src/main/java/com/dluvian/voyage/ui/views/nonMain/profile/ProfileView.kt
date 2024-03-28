@@ -3,7 +3,6 @@ package com.dluvian.voyage.ui.views.nonMain.profile
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -18,6 +17,7 @@ import com.dluvian.voyage.core.ProfileViewAppend
 import com.dluvian.voyage.core.ProfileViewRefresh
 import com.dluvian.voyage.core.viewModel.ProfileViewModel
 import com.dluvian.voyage.ui.components.Feed
+import com.dluvian.voyage.ui.components.FullHorizontalDivider
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
@@ -49,6 +49,6 @@ private fun About(about: String) {
             )
             Text(text = about)
         }
-        HorizontalDivider(modifier = Modifier.fillMaxWidth())
+        FullHorizontalDivider()
     }
 }

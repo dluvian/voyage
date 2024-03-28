@@ -1,5 +1,7 @@
 package com.dluvian.voyage.ui.theme
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.dluvian.voyage.core.model.FriendTrust
 import com.dluvian.voyage.core.model.NoTrust
@@ -72,12 +74,12 @@ val md_theme_dark_outlineVariant = Color(0xFF46464F)
 val md_theme_dark_scrim = Color(0xFF000000)
 
 fun Color.light() = this.copy(alpha = 0.5f)
-fun Color.superLight() = this.copy(alpha = 0.10f)
 
+@Composable
 fun getTrustColor(trustType: TrustType): Color {
     return when (trustType) {
         FriendTrust -> Color.Green
         WebTrust -> Orange
-        NoTrust -> Color.LightGray
+        NoTrust -> MaterialTheme.colorScheme.onBackground.light()
     }
 }

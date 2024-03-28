@@ -3,6 +3,14 @@ package com.dluvian.voyage.core
 import androidx.compose.material3.SnackbarHostState
 import com.dluvian.voyage.data.model.RelevantMetadata
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import rust.nostr.protocol.Metadata
 import rust.nostr.protocol.PublicKey
@@ -58,3 +66,14 @@ fun <K, V> MutableMap<K, MutableSet<V>>.putOrAdd(key: K, value: Collection<V>) {
     alreadyPresent?.addAll(value)
 }
 
+@OptIn(FlowPreview::class)
+fun <T> Flow<T>.firstThenDistinctDebounce(millis: Long): Flow<T> {
+    return flow {
+        emitAll(this@firstThenDistinctDebounce.take(1))
+        emitAll(
+            this@firstThenDistinctDebounce.drop(1)
+                .distinctUntilChanged()
+                .debounce(millis)
+        )
+    }
+}

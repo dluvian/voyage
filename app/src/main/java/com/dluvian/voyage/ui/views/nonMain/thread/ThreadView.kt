@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -32,6 +31,7 @@ import com.dluvian.voyage.core.model.LeveledCommentUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.viewModel.ThreadViewModel
 import com.dluvian.voyage.ui.components.CommentRow
+import com.dluvian.voyage.ui.components.FullHorizontalDivider
 import com.dluvian.voyage.ui.components.PostRow
 import com.dluvian.voyage.ui.components.PullRefreshBox
 import com.dluvian.voyage.ui.components.indicator.BaseHint
@@ -66,17 +66,15 @@ private fun ThreadViewContent(
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             item {
                 PostRow(post = root, isDetailed = true, onUpdate = onUpdate)
-                HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = spacing.tiny)
+                FullHorizontalDivider()
             }
             itemsIndexed(leveledComments) { i, comment ->
+                if (comment.level == 0) FullHorizontalDivider()
                 Comment(
                     leveledComment = comment,
                     onUpdate = onUpdate
                 )
-                if (comment.level == 0) HorizontalDivider(
-                    modifier = Modifier.fillMaxWidth(),
-                    thickness = spacing.tiny
-                )
+                if (i == leveledComments.size - 1) FullHorizontalDivider()
             }
             if (leveledComments.isEmpty()) {
                 item {

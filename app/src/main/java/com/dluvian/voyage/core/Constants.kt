@@ -14,7 +14,7 @@ const val DEBOUNCE = 600L
 
 const val MAX_EVENTS_TO_SUB = 1000uL
 
-const val MAX_RELAYS = 5
+const val MAX_RELAYS = 6
 
 const val RND_RESUB_COUNT = 20
 
