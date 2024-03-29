@@ -37,32 +37,30 @@ fun CommentRow(comment: CommentUI, isCollapsed: Boolean, onUpdate: OnUpdate) {
             onUpdate = onUpdate
         )
         AnimatedVisibility(visible = !isCollapsed) {
-            Column {
-                Spacer(modifier = Modifier.height(spacing.large))
-                Text(
-                    text = comment.content,
-                    maxLines = Int.MAX_VALUE,
-                )
-                Spacer(modifier = Modifier.height(spacing.large))
-                PostRowActions(
-                    id = comment.id,
-                    pubkey = comment.pubkey,
-                    myVote = comment.myVote,
-                    tally = comment.tally,
-                    onUpdate = onUpdate,
-                    additionalAction = {
-                        TextButton(
-                            modifier = Modifier.height(ButtonDefaults.MinHeight),
-                            onClick = { /*TODO*/ }) {
-                            Icon(
-                                imageVector = ReplyIcon,
-                                contentDescription = stringResource(id = R.string.reply)
-                            )
-                            Text(text = stringResource(id = R.string.reply))
-                        }
-                    }
-                )
-            }
+            Spacer(modifier = Modifier.height(spacing.large))
+            Text(
+                text = comment.content,
+                maxLines = Int.MAX_VALUE,
+            )
+            Spacer(modifier = Modifier.height(spacing.large))
         }
+        if (!isCollapsed) PostRowActions(
+            id = comment.id,
+            pubkey = comment.pubkey,
+            myVote = comment.myVote,
+            tally = comment.tally,
+            onUpdate = onUpdate,
+            additionalAction = {
+                TextButton(
+                    modifier = Modifier.height(ButtonDefaults.MinHeight),
+                    onClick = { /*TODO*/ }) {
+                    Icon(
+                        imageVector = ReplyIcon,
+                        contentDescription = stringResource(id = R.string.reply)
+                    )
+                    Text(text = stringResource(id = R.string.reply))
+                }
+            }
+        )
     }
 }
