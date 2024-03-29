@@ -45,6 +45,8 @@ class Navigator(private val vmContainer: VMContainer, private val closeApp: Fn) 
                     is ThreadNavView -> vmContainer.threadVM.openThread(threadNavView = navView)
                     is ProfileNavView -> vmContainer.profileVM.openProfile(profileNavView = navView)
                     is TopicNavView -> vmContainer.topicVM.openTopic(topicNavView = navView)
+                    is CommentCreationNavView -> vmContainer.createResponseVM.openParent(parent = navView.rootPost)
+                    is ReplyCreationNavView -> vmContainer.createResponseVM.openParent(parent = navView.comment)
                 }
             }
 

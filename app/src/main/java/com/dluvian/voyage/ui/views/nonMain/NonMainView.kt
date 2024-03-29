@@ -2,14 +2,17 @@ package com.dluvian.voyage.ui.views.nonMain
 
 import androidx.compose.runtime.Composable
 import com.dluvian.voyage.core.Core
+import com.dluvian.voyage.core.navigator.CommentCreationNavView
 import com.dluvian.voyage.core.navigator.CreatePostNavView
 import com.dluvian.voyage.core.navigator.NonMainNavView
 import com.dluvian.voyage.core.navigator.ProfileNavView
+import com.dluvian.voyage.core.navigator.ReplyCreationNavView
 import com.dluvian.voyage.core.navigator.SearchNavView
 import com.dluvian.voyage.core.navigator.SettingsNavView
 import com.dluvian.voyage.core.navigator.ThreadNavView
 import com.dluvian.voyage.core.navigator.TopicNavView
 import com.dluvian.voyage.ui.views.nonMain.createPost.CreatePostView
+import com.dluvian.voyage.ui.views.nonMain.createResponse.CreateResponseView
 import com.dluvian.voyage.ui.views.nonMain.profile.ProfileView
 import com.dluvian.voyage.ui.views.nonMain.search.SearchView
 import com.dluvian.voyage.ui.views.nonMain.settings.SettingsView
@@ -57,5 +60,8 @@ fun NonMainView(
             snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate
         )
+
+        is CommentCreationNavView,
+        is ReplyCreationNavView -> CreateResponseView()
     }
 }

@@ -1,6 +1,7 @@
 package com.dluvian.voyage
 
 import com.dluvian.voyage.core.viewModel.CreatePostViewModel
+import com.dluvian.voyage.core.viewModel.CreateResponseViewModel
 import com.dluvian.voyage.core.viewModel.DiscoverViewModel
 import com.dluvian.voyage.core.viewModel.HomeViewModel
 import com.dluvian.voyage.core.viewModel.ProfileViewModel
@@ -17,5 +18,6 @@ data class VMContainer(
     val profileVM: ProfileViewModel,
     val threadVM: ThreadViewModel,
     val topicVM: TopicViewModel,
-    val createPostVM: CreatePostViewModel
+    val createPostVM: CreatePostViewModel,
+    val createResponseVM: CreateResponseViewModel,
 )

@@ -15,6 +15,7 @@ import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.ProcessExternalAccount
 import com.dluvian.voyage.core.ProcessExternalSignature
 import com.dluvian.voyage.core.viewModel.CreatePostViewModel
+import com.dluvian.voyage.core.viewModel.CreateResponseViewModel
 import com.dluvian.voyage.core.viewModel.DiscoverViewModel
 import com.dluvian.voyage.core.viewModel.HomeViewModel
 import com.dluvian.voyage.core.viewModel.ProfileViewModel
@@ -121,6 +122,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 postSender = appContainer.postSender,
                 snackbar = appContainer.snackbar
             )
-        }
+        },
+        createResponseVM = viewModel { CreateResponseViewModel() }
     )
 }

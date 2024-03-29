@@ -5,6 +5,8 @@ import androidx.compose.runtime.Stable
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.core.model.CommentUI
+import com.dluvian.voyage.core.model.RootPostUI
 import rust.nostr.protocol.Nip19Event
 import rust.nostr.protocol.Nip19Profile
 
@@ -40,3 +42,5 @@ sealed class AdvancedNonMainNavView : NonMainNavView()
 data class ThreadNavView(val nevent: Nip19Event) : AdvancedNonMainNavView()
 data class ProfileNavView(val nprofile: Nip19Profile) : AdvancedNonMainNavView()
 data class TopicNavView(val topic: Topic) : AdvancedNonMainNavView()
+data class ReplyCreationNavView(val comment: CommentUI) : AdvancedNonMainNavView()
+data class CommentCreationNavView(val rootPost: RootPostUI) : AdvancedNonMainNavView()

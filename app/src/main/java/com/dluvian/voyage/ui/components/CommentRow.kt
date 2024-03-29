@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.core.OpenReplyCreation
 import com.dluvian.voyage.core.model.CommentUI
 import com.dluvian.voyage.ui.theme.ReplyIcon
 import com.dluvian.voyage.ui.theme.spacing
@@ -53,7 +54,7 @@ fun CommentRow(comment: CommentUI, isCollapsed: Boolean, onUpdate: OnUpdate) {
             additionalAction = {
                 TextButton(
                     modifier = Modifier.height(ButtonDefaults.MinHeight),
-                    onClick = { /*TODO*/ }) {
+                    onClick = { onUpdate(OpenReplyCreation(comment = comment)) }) {
                     Icon(
                         imageVector = ReplyIcon,
                         contentDescription = stringResource(id = R.string.reply)

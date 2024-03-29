@@ -2,12 +2,16 @@ package com.dluvian.voyage.core
 
 import android.content.Context
 import androidx.activity.result.ActivityResult
+import com.dluvian.voyage.core.model.CommentUI
+import com.dluvian.voyage.core.model.RootPostUI
+import com.dluvian.voyage.core.navigator.CommentCreationNavView
 import com.dluvian.voyage.core.navigator.CreatePostNavView
 import com.dluvian.voyage.core.navigator.DiscoverNavView
 import com.dluvian.voyage.core.navigator.HomeNavView
 import com.dluvian.voyage.core.navigator.InboxNavView
 import com.dluvian.voyage.core.navigator.NavView
 import com.dluvian.voyage.core.navigator.ProfileNavView
+import com.dluvian.voyage.core.navigator.ReplyCreationNavView
 import com.dluvian.voyage.core.navigator.SearchNavView
 import com.dluvian.voyage.core.navigator.SettingsNavView
 import com.dluvian.voyage.core.navigator.ThreadNavView
@@ -37,6 +41,8 @@ sealed class PushNavEvent : NavEvent() {
             is OpenThread -> ThreadNavView(nevent = this.nevent)
             is OpenProfile -> ProfileNavView(nprofile = this.nprofile)
             is OpenTopic -> TopicNavView(topic = this.topic)
+            is OpenCommentCreation -> CommentCreationNavView(rootPost = this.rootPost)
+            is OpenReplyCreation -> ReplyCreationNavView(comment = this.comment)
         }
     }
 }
@@ -52,6 +58,8 @@ sealed class AdvancedPushNavEvent : PushNavEvent()
 data class OpenThread(val nevent: Nip19Event) : AdvancedPushNavEvent()
 data class OpenProfile(val nprofile: Nip19Profile) : AdvancedPushNavEvent()
 data class OpenTopic(val topic: Topic) : AdvancedPushNavEvent()
+data class OpenReplyCreation(val comment: CommentUI) : AdvancedPushNavEvent()
+data class OpenCommentCreation(val rootPost: RootPostUI) : AdvancedPushNavEvent()
 
 
 sealed class VoteEvent(open val postId: EventIdHex, open val pubkey: PubkeyHex) : UIEvent()
