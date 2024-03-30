@@ -8,6 +8,7 @@ import androidx.compose.ui.unit.dp
 
 data class Sizing(
     val smallIndicator: Dp = 18.dp,
+    val smallIndicatorStrokeWidth: Dp = 3.dp,
     val baseHint: Dp = 48.dp,
     val bigDivider: Dp = 8.dp
 )

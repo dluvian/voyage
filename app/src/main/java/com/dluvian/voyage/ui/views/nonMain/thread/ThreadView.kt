@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -18,6 +20,9 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
@@ -36,6 +41,7 @@ import com.dluvian.voyage.ui.components.PostRow
 import com.dluvian.voyage.ui.components.PullRefreshBox
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
+import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
@@ -81,7 +87,7 @@ private fun ThreadViewContent(
                 )
                 if (i == leveledComments.size - 1) FullHorizontalDivider()
             }
-            if (leveledComments.isEmpty()) item {
+            if (root.commentCount == 0 && leveledComments.isEmpty()) item {
                 Column(modifier = Modifier.fillParentMaxHeight(0.5f)) {
                     BaseHint(text = stringResource(id = R.string.no_comments_found))
                 }
@@ -108,9 +114,11 @@ private fun Comment(
             if (leveledComment.comment.commentCount > 0 &&
                 !leveledComment.isCollapsed &&
                 !leveledComment.hasLoadedReplies
-            ) MoreRepliesTextButton(
-                commentCount = leveledComment.comment.commentCount,
-                onShowReplies = { onUpdate(ThreadViewShowReplies(id = leveledComment.comment.id)) })
+            ) {
+                MoreRepliesTextButton(
+                    commentCount = leveledComment.comment.commentCount,
+                    onShowReplies = { onUpdate(ThreadViewShowReplies(id = leveledComment.comment.id)) })
+            }
         }
     }
 }
@@ -131,8 +139,21 @@ fun RowWithDivider(level: Int, content: ComposableContent) {
 
 @Composable
 fun MoreRepliesTextButton(commentCount: Int, onShowReplies: Fn) {
-    TextButton(onClick = onShowReplies) {
-        if (commentCount == 1) Text(text = stringResource(id = R.string.one_reply))
-        else Text(text = "$commentCount ${stringResource(id = R.string.replies)}")
+    val isLoading = remember { mutableStateOf(false) }
+    Row(
+        modifier = Modifier.height(IntrinsicSize.Min),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        TextButton(onClick = {
+            onShowReplies()
+            isLoading.value = true
+        }) {
+            if (commentCount == 1) Text(text = stringResource(id = R.string.one_reply))
+            else Text(text = "$commentCount ${stringResource(id = R.string.replies)}")
+        }
+        if (isLoading.value) CircularProgressIndicator(
+            modifier = Modifier.size(sizing.smallIndicator),
+            strokeWidth = sizing.smallIndicatorStrokeWidth
+        )
     }
 }
