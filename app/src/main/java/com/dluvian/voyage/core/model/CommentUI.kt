@@ -9,10 +9,10 @@ import com.dluvian.voyage.data.room.view.CommentView
 
 @Immutable
 data class CommentUI(
-    val id: EventIdHex,
+    override val id: EventIdHex,
     val parentId: EventIdHex,
     val authorName: String,
-    val pubkey: PubkeyHex,
+    override val pubkey: PubkeyHex,
     val trustType: TrustType,
     val createdAt: Long,
     override val content: String,

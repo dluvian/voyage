@@ -56,6 +56,8 @@ class NostrSubscriber(
         friendProvider = friendProvider
     )
 
+    // TODO: Split lazySub methods to new class
+
     suspend fun subFeed(until: Long, limit: Int, setting: FeedSetting) {
         val untilTimestamp = Timestamp.fromSecs(until.toULong())
         val adjustedLimit = (5L * limit).toULong() // We don't know if we receive enough root posts
@@ -156,6 +158,17 @@ class NostrSubscriber(
         lazySubFriendsNip65()
         delay(DELAY_1SEC)
         lazySubWebOfTrustPubkeys()
+    }
+
+    suspend fun subNip65(pubkey: PubkeyHex) {
+        val nip65Filter = Filter().kind(kind = Kind.fromEnum(KindEnum.RelayList))
+            .author(author = PublicKey.fromHex(pubkey))
+            .until(timestamp = Timestamp.now())
+            .limit(1u)
+        val filters = listOf(FilterWrapper(nip65Filter))
+        relayProvider.getAllRelays(pubkey = pubkey).forEach { relay ->
+            subscribe(relayUrl = relay, filters = filters)
+        }
     }
 
     suspend fun lazySubWebOfTrustProfiles() {

@@ -109,6 +109,10 @@ class RelayProvider(
         return result
     }
 
+    suspend fun getAllRelays(pubkey: PubkeyHex): List<RelayUrl> {
+        return getObserveRelays(pubkey = pubkey, limit = false) // TODO: add all connected relays
+    }
+
     private fun List<RelayUrl>.limit(): List<RelayUrl> {
         return if (this.size > MAX_RELAYS) this.shuffled().take(MAX_RELAYS)
         else this

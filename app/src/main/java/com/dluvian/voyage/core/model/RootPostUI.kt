@@ -9,8 +9,8 @@ import com.dluvian.voyage.data.room.view.RootPostView
 
 @Immutable
 data class RootPostUI(
-    val id: EventIdHex,
-    val pubkey: PubkeyHex,
+    override val id: EventIdHex,
+    override val pubkey: PubkeyHex,
     val authorName: String,
     val trustType: TrustType,
     val myTopic: String?,

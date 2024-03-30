@@ -121,7 +121,9 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             )
         },
         createResponseVM = viewModel {
-            CreateResponseViewModel()
+            CreateResponseViewModel(
+                nostrSubscriber = appContainer.nostrSubscriber
+            )
         },
         editProfileVM = viewModel {
             EditProfileViewModel()
