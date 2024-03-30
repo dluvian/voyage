@@ -14,7 +14,6 @@ import com.dluvian.voyage.core.ThreadViewToggleCollapse
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.LeveledCommentUI
 import com.dluvian.voyage.core.model.RootPostUI
-import com.dluvian.voyage.core.navigator.ThreadNavView
 import com.dluvian.voyage.data.interactor.ThreadCollapser
 import com.dluvian.voyage.data.provider.ThreadProvider
 import kotlinx.coroutines.delay
@@ -33,16 +32,15 @@ class ThreadViewModel(
         mutableStateOf(MutableStateFlow(emptyList()))
     private val parentIds = mutableStateOf(emptySet<EventIdHex>())
 
+    fun openThread(rootPost: RootPostUI) {
+        if (rootPost.id == root.value?.id) return
 
-    fun openThread(threadNavView: ThreadNavView) {
-        val eventId = threadNavView.nevent.eventId().toHex()
-        val isSame = eventId == root.value?.id
-        if (!isSame) parentIds.value = setOf()
-        val initVal = if (isSame) root.value else null
-
-        root = threadProvider.getRoot(scope = viewModelScope, nevent = threadNavView.nevent)
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), initVal)
-        loadReplies(rootId = eventId, parentId = eventId, isInit = true)
+        leveledComments.value = MutableStateFlow(emptyList())
+        parentIds.value = setOf()
+        root =
+            threadProvider.getRoot(scope = viewModelScope, nevent = createNevent(hex = rootPost.id))
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), rootPost)
+        loadReplies(rootId = rootPost.id, parentId = rootPost.id, isInit = true)
     }
 
     fun handle(action: ThreadViewAction) {
@@ -85,7 +83,6 @@ class ThreadViewModel(
         if (rootId == null || parentIds.value.contains(parentId)) return
 
         val init = if (isInit) emptyList() else leveledComments.value.value
-
         parentIds.value += parentId
         leveledComments.value =
             threadProvider.getLeveledComments(rootId = rootId, parentIds = parentIds.value)

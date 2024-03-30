@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import com.dluvian.nostr_kt.createNevent
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenCommentCreation
 import com.dluvian.voyage.core.OpenThread
@@ -25,7 +24,7 @@ fun PostRow(post: RootPostUI, isDetailed: Boolean = false, onUpdate: OnUpdate) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = { onUpdate(OpenThread(nevent = createNevent(hex = post.id))) })
+            .clickable(onClick = { onUpdate(OpenThread(rootPost = post)) })
             .padding(spacing.screenEdge)
     ) {
         PostRowHeader(

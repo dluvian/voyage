@@ -7,7 +7,6 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.CommentUI
 import com.dluvian.voyage.core.model.RootPostUI
-import rust.nostr.protocol.Nip19Event
 import rust.nostr.protocol.Nip19Profile
 
 sealed class NavView
@@ -39,7 +38,7 @@ data object SearchNavView : SimpleNonMainNavView()
 
 
 sealed class AdvancedNonMainNavView : NonMainNavView()
-data class ThreadNavView(val nevent: Nip19Event) : AdvancedNonMainNavView()
+data class ThreadNavView(val rootPost: RootPostUI) : AdvancedNonMainNavView()
 data class ProfileNavView(val nprofile: Nip19Profile) : AdvancedNonMainNavView()
 data class TopicNavView(val topic: Topic) : AdvancedNonMainNavView()
 data class ReplyCreationNavView(val comment: CommentUI) : AdvancedNonMainNavView()

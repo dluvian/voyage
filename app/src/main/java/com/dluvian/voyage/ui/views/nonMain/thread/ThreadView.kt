@@ -70,6 +70,9 @@ private fun ThreadViewContent(
                 PostRow(post = root, isDetailed = true, onUpdate = onUpdate)
                 FullHorizontalDivider()
             }
+            if (root.commentCount > leveledComments.size) item {
+                FullLinearProgressIndicator()
+            }
             itemsIndexed(leveledComments) { i, comment ->
                 if (comment.level == 0) FullHorizontalDivider()
                 Comment(
@@ -78,11 +81,9 @@ private fun ThreadViewContent(
                 )
                 if (i == leveledComments.size - 1) FullHorizontalDivider()
             }
-            if (leveledComments.isEmpty()) {
-                item {
-                    Column(modifier = Modifier.fillParentMaxHeight(0.5f)) {
-                        BaseHint(text = stringResource(id = R.string.no_comments_found))
-                    }
+            if (leveledComments.isEmpty()) item {
+                Column(modifier = Modifier.fillParentMaxHeight(0.5f)) {
+                    BaseHint(text = stringResource(id = R.string.no_comments_found))
                 }
             }
         }

@@ -16,7 +16,6 @@ import com.dluvian.voyage.core.navigator.SearchNavView
 import com.dluvian.voyage.core.navigator.SettingsNavView
 import com.dluvian.voyage.core.navigator.ThreadNavView
 import com.dluvian.voyage.core.navigator.TopicNavView
-import rust.nostr.protocol.Nip19Event
 import rust.nostr.protocol.Nip19Profile
 
 sealed class UIEvent
@@ -38,7 +37,7 @@ sealed class PushNavEvent : NavEvent() {
             is ClickInbox -> InboxNavView
             is ClickSettings -> SettingsNavView
             is ClickSearch -> SearchNavView
-            is OpenThread -> ThreadNavView(nevent = this.nevent)
+            is OpenThread -> ThreadNavView(rootPost = this.rootPost)
             is OpenProfile -> ProfileNavView(nprofile = this.nprofile)
             is OpenTopic -> TopicNavView(topic = this.topic)
             is OpenCommentCreation -> CommentCreationNavView(rootPost = this.rootPost)
@@ -56,7 +55,7 @@ data object ClickSearch : PushNavEvent()
 
 
 sealed class AdvancedPushNavEvent : PushNavEvent()
-data class OpenThread(val nevent: Nip19Event) : AdvancedPushNavEvent()
+data class OpenThread(val rootPost: RootPostUI) : AdvancedPushNavEvent()
 data class OpenProfile(val nprofile: Nip19Profile) : AdvancedPushNavEvent()
 data class OpenTopic(val topic: Topic) : AdvancedPushNavEvent()
 data class OpenReplyCreation(val comment: CommentUI) : AdvancedPushNavEvent()
