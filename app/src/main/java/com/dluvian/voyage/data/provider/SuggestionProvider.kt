@@ -9,7 +9,7 @@ class SuggestionProvider(
 ) {
     private val maxSearchResult = 5
 
-    fun getTopicSuggestions(text: String): List<Topic> {
+    suspend fun getTopicSuggestions(text: String): List<Topic> {
         val stripped = text.stripSearchText()
         return topicProvider.getAllTopics()
             .asSequence()

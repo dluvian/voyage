@@ -6,7 +6,10 @@ import androidx.compose.material3.SnackbarHostState
 import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.DEBOUNCE
+import com.dluvian.voyage.core.FollowProfile
+import com.dluvian.voyage.core.ProfileEvent
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.core.UnfollowProfile
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.event.ValidatedContactList
 import com.dluvian.voyage.data.nostr.NostrService
@@ -40,14 +43,13 @@ class ProfileFollower(
         _forcedFollows.value
     )
 
-
-    fun follow(pubkey: PubkeyHex) {
-        handleAction(pubkey = pubkey, isFollowed = true)
+    fun handle(action: ProfileEvent) {
+        when (action) {
+            is FollowProfile -> handleAction(pubkey = action.pubkey, isFollowed = true)
+            is UnfollowProfile -> handleAction(pubkey = action.pubkey, isFollowed = false)
+        }
     }
 
-    fun unfollow(pubkey: PubkeyHex) {
-        handleAction(pubkey = pubkey, isFollowed = false)
-    }
 
     private val jobs: MutableMap<PubkeyHex, Job?> = mutableMapOf()
     private fun handleAction(pubkey: PubkeyHex, isFollowed: Boolean) {

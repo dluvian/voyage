@@ -17,22 +17,27 @@ class Core(
 
     val onUpdate: (UIEvent) -> Unit = { uiEvent ->
         when (uiEvent) {
-            is NavEvent -> navigator.handle(navEvent = uiEvent)
-            is VoteEvent -> appContainer.postVoter.handle(voteEvent = uiEvent)
+            is NavEvent -> navigator.handle(action = uiEvent)
+
+            is VoteEvent -> appContainer.postVoter.handle(action = uiEvent)
+            is ProfileEvent -> appContainer.profileFollower.handle(action = uiEvent)
+            is TopicEvent -> appContainer.topicFollower.handle(action = uiEvent)
+
             is HomeViewAction -> vmContainer.homeVM.handle(action = uiEvent)
-            is ThreadViewAction -> vmContainer.threadVM.handle(action = uiEvent)
             is DiscoverViewAction -> vmContainer.discoverVM.handle(action = uiEvent)
+            is CreatePostViewAction -> vmContainer.createPostVM.handle(action = uiEvent)
+            is ThreadViewAction -> vmContainer.threadVM.handle(action = uiEvent)
             is TopicViewAction -> vmContainer.topicVM.handle(action = uiEvent)
             is ProfileViewAction -> vmContainer.profileVM.handle(action = uiEvent)
             is SettingsViewAction -> vmContainer.settingsVM.handle(action = uiEvent)
-            is CreatePostViewAction -> vmContainer.createPostVM.handle(action = uiEvent)
+            is CreateResponseViewAction -> vmContainer.createResponseVM.handle(action = uiEvent)
             is SearchViewAction -> vmContainer.searchVM.handle(action = uiEvent)
+
             is ProcessExternalSignature -> viewModelScope.launch {
                 externalSignerHandler.processExternalSignature(
                     result = uiEvent.activityResult
                 )
             }
-
         }
     }
 

@@ -15,11 +15,11 @@ data class CommentUI(
     val pubkey: PubkeyHex,
     val trustType: TrustType,
     val createdAt: Long,
-    val content: String,
+    override val content: String,
     val myVote: Vote,
     val tally: Int,
     val commentCount: Int,
-) {
+) : IParentUI {
     companion object {
         fun from(commentView: CommentView): CommentUI {
             return CommentUI(

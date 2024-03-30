@@ -46,16 +46,16 @@ class PostVoter(
     val forcedVotes = _forcedVotes
         .stateIn(scope, SharingStarted.Eagerly, _forcedVotes.value)
 
-    fun handle(voteEvent: VoteEvent) {
-        val newVote = when (voteEvent) {
+    fun handle(action: VoteEvent) {
+        val newVote = when (action) {
             is ClickUpvote -> Upvote
             is ClickDownvote -> Downvote
             is ClickNeutralizeVote -> NoVote
         }
-        updateForcedVote(voteEvent, newVote)
+        updateForcedVote(action, newVote)
         vote(
-            postId = voteEvent.postId,
-            pubkey = voteEvent.pubkey,
+            postId = action.postId,
+            pubkey = action.pubkey,
             vote = newVote,
             kind = 1 // TODO: Set real kind. Important once reposts are supported
         )

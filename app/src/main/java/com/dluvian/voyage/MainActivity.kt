@@ -79,8 +79,6 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             DiscoverViewModel(
                 topicProvider = appContainer.topicProvider,
                 profileProvider = appContainer.profileProvider,
-                topicFollower = appContainer.topicFollower,
-                profileFollower = appContainer.profileFollower,
             )
         },
         settingsVM = viewModel {
@@ -100,7 +98,6 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             ProfileViewModel(
                 feedProvider = appContainer.feedProvider,
                 nostrSubscriber = appContainer.nostrSubscriber,
-                profileFollower = appContainer.profileFollower,
                 profileProvider = appContainer.profileProvider,
             )
         },
@@ -114,7 +111,6 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             TopicViewModel(
                 feedProvider = appContainer.feedProvider,
                 topicProvider = appContainer.topicProvider,
-                topicFollower = appContainer.topicFollower,
             )
         },
         createPostVM = viewModel {
@@ -123,6 +119,8 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 snackbar = appContainer.snackbar
             )
         },
-        createResponseVM = viewModel { CreateResponseViewModel() }
+        createResponseVM = viewModel {
+            CreateResponseViewModel()
+        }
     )
 }

@@ -29,16 +29,16 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.DiscoverViewFollowProfile
-import com.dluvian.voyage.core.DiscoverViewFollowTopic
 import com.dluvian.voyage.core.DiscoverViewInit
 import com.dluvian.voyage.core.DiscoverViewRefresh
-import com.dluvian.voyage.core.DiscoverViewUnfollowProfile
-import com.dluvian.voyage.core.DiscoverViewUnfollowTopic
 import com.dluvian.voyage.core.Fn
+import com.dluvian.voyage.core.FollowProfile
+import com.dluvian.voyage.core.FollowTopic
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenTopic
+import com.dluvian.voyage.core.UnfollowProfile
+import com.dluvian.voyage.core.UnfollowTopic
 import com.dluvian.voyage.core.viewModel.DiscoverViewModel
 import com.dluvian.voyage.ui.components.PullRefreshBox
 import com.dluvian.voyage.ui.components.button.FollowButton
@@ -73,8 +73,8 @@ fun DiscoverView(vm: DiscoverViewModel, onUpdate: OnUpdate) {
                 imageVector = HashtagIcon,
                 label = it.topic,
                 isFollowed = it.isFollowed,
-                onFollow = { onUpdate(DiscoverViewFollowTopic(topic = it.topic)) },
-                onUnfollow = { onUpdate(DiscoverViewUnfollowTopic(topic = it.topic)) },
+                onFollow = { onUpdate(FollowTopic(topic = it.topic)) },
+                onUnfollow = { onUpdate(UnfollowTopic(topic = it.topic)) },
                 onOpen = { onUpdate(OpenTopic(topic = it.topic)) }
             )
         }
@@ -86,8 +86,8 @@ fun DiscoverView(vm: DiscoverViewModel, onUpdate: OnUpdate) {
                 imageVector = AccountIcon,
                 label = it.inner.name,
                 isFollowed = it.inner.isFriend,
-                onFollow = { onUpdate(DiscoverViewFollowProfile(pubkey = it.inner.pubkey)) },
-                onUnfollow = { onUpdate(DiscoverViewUnfollowProfile(pubkey = it.inner.pubkey)) },
+                onFollow = { onUpdate(FollowProfile(pubkey = it.inner.pubkey)) },
+                onUnfollow = { onUpdate(UnfollowProfile(pubkey = it.inner.pubkey)) },
                 onOpen = { onUpdate(OpenProfile(nprofile = it.inner.toNip19())) }
             )
         }

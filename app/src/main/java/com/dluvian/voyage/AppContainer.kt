@@ -8,6 +8,7 @@ import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.RelayedValidatedEvent
+import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.account.AccountManager
 import com.dluvian.voyage.data.account.AccountSwitcher
 import com.dluvian.voyage.data.account.ExternalSigner
@@ -35,6 +36,7 @@ import com.dluvian.voyage.data.provider.ThreadProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import com.dluvian.voyage.data.room.AppDatabase
+import kotlinx.coroutines.flow.MutableStateFlow
 import okhttp3.OkHttpClient
 import java.util.Collections
 
@@ -54,6 +56,7 @@ class AppContainer(context: Context) {
     private val syncedPostRelayCache = Collections
         .synchronizedSet(mutableSetOf<Pair<EventIdHex, RelayUrl>>())
 
+    val snackbar = SnackbarHostState()
     private val client = OkHttpClient()
     private val nostrClient = NostrClient(httpClient = client)
     private val mnemonicSigner = MnemonicSigner(context = context)
@@ -72,7 +75,11 @@ class AppContainer(context: Context) {
     )
     private val friendProvider = FriendProvider(friendDao = roomDb.friendDao())
     private val webOfTrustProvider = WebOfTrustProvider(webOfTrustDao = roomDb.webOfTrustDao())
-    val topicProvider = TopicProvider(topicDao = roomDb.topicDao())
+
+    private val forcedFollowStates = MutableStateFlow(emptyMap<Topic, Boolean>())
+
+    val topicProvider =
+        TopicProvider(topicDao = roomDb.topicDao(), forcedFollowStates = forcedFollowStates)
 
     private val accountManager = AccountManager(
         mnemonicSigner = mnemonicSigner,
@@ -126,8 +133,6 @@ class AppContainer(context: Context) {
         nostrService.initialize(initRelayUrls = relayProvider.getReadRelays())
     }
 
-    val snackbar = SnackbarHostState()
-
     val postVoter = PostVoter(
         nostrService = nostrService,
         relayProvider = relayProvider,
@@ -138,6 +143,16 @@ class AppContainer(context: Context) {
     )
 
     val threadCollapser = ThreadCollapser()
+
+    val topicFollower = TopicFollower(
+        nostrService = nostrService,
+        relayProvider = relayProvider,
+        topicUpsertDao = roomDb.topicUpsertDao(),
+        topicDao = roomDb.topicDao(),
+        snackbar = snackbar,
+        context = context,
+        forcedFollowStates = forcedFollowStates
+    )
 
     val feedProvider = FeedProvider(
         nostrSubscriber = nostrSubscriber,
@@ -151,15 +166,6 @@ class AppContainer(context: Context) {
         commentDao = roomDb.commentDao(),
         forcedVotes = postVoter.forcedVotes,
         collapsedIds = threadCollapser.collapsedIds
-    )
-
-    val topicFollower = TopicFollower(
-        nostrService = nostrService,
-        topicProvider = topicProvider,
-        relayProvider = relayProvider,
-        topicUpsertDao = roomDb.topicUpsertDao(),
-        snackbar = snackbar,
-        context = context,
     )
 
     val profileFollower = ProfileFollower(

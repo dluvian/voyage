@@ -6,16 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.DiscoverViewAction
-import com.dluvian.voyage.core.DiscoverViewFollowProfile
-import com.dluvian.voyage.core.DiscoverViewFollowTopic
 import com.dluvian.voyage.core.DiscoverViewInit
 import com.dluvian.voyage.core.DiscoverViewRefresh
-import com.dluvian.voyage.core.DiscoverViewUnfollowProfile
-import com.dluvian.voyage.core.DiscoverViewUnfollowTopic
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.TopicFollowState
-import com.dluvian.voyage.data.interactor.ProfileFollower
-import com.dluvian.voyage.data.interactor.TopicFollower
 import com.dluvian.voyage.data.model.FullProfile
 import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.provider.TopicProvider
@@ -32,8 +26,6 @@ import java.util.concurrent.atomic.AtomicBoolean
 class DiscoverViewModel(
     private val topicProvider: TopicProvider,
     private val profileProvider: ProfileProvider,
-    private val topicFollower: TopicFollower,
-    private val profileFollower: ProfileFollower,
 ) : ViewModel() {
     private val maxCount = 75
     val isRefreshing = mutableStateOf(false)
@@ -46,10 +38,6 @@ class DiscoverViewModel(
         when (action) {
             is DiscoverViewInit -> init()
             is DiscoverViewRefresh -> refresh()
-            is DiscoverViewFollowTopic -> topicFollower.follow(action.topic)
-            is DiscoverViewUnfollowTopic -> topicFollower.unfollow(action.topic)
-            is DiscoverViewFollowProfile -> profileFollower.follow(action.pubkey)
-            is DiscoverViewUnfollowProfile -> profileFollower.unfollow(action.pubkey)
         }
     }
 
@@ -80,7 +68,7 @@ class DiscoverViewModel(
 
     private suspend fun getTopicFlow(): StateFlow<List<TopicFollowState>> {
         val result = topicProvider.getPopularUnfollowedTopics(limit = maxCount)
-        return topicFollower.forcedStatesFlow.map { forcedStates ->
+        return topicProvider.forcedFollowStates.map { forcedStates ->
             result.map { TopicFollowState(topic = it, isFollowed = forcedStates[it] ?: false) }
         }
             .stateIn(

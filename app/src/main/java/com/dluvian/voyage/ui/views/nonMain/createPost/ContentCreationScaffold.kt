@@ -2,28 +2,28 @@ package com.dluvian.voyage.ui.views.nonMain.createPost
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import com.dluvian.voyage.core.ComposableContent
+import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.ui.components.scaffold.VoyageScaffold
 
 
 @Composable
-fun CreatePostScaffold(
-    header: State<String>,
-    body: State<String>,
-    isSendingPost: Boolean,
+fun ContentCreationScaffold(
+    showSendButton: Boolean,
+    isSendingContent: Boolean,
     snackbar: SnackbarHostState,
+    onSend: Fn,
     onUpdate: OnUpdate,
     content: ComposableContent
 ) {
     VoyageScaffold(
         snackbar = snackbar,
         topBar = {
-            CreatePostTopAppBar(
-                body = body,
-                header = header,
-                isSendingPost = isSendingPost,
+            ContentCreationTopAppBar(
+                showSendButton = showSendButton,
+                isSendingContent = isSendingContent,
+                onSend = onSend,
                 onUpdate = onUpdate
             )
         }

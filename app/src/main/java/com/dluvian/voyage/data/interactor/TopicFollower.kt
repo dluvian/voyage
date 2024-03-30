@@ -7,42 +7,41 @@ import com.dluvian.nostr_kt.getHashtags
 import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.DEBOUNCE
+import com.dluvian.voyage.core.FollowTopic
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.core.TopicEvent
+import com.dluvian.voyage.core.UnfollowTopic
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.event.ValidatedTopicList
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.provider.RelayProvider
-import com.dluvian.voyage.data.provider.TopicProvider
+import com.dluvian.voyage.data.room.dao.TopicDao
 import com.dluvian.voyage.data.room.dao.tx.TopicUpsertDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.coroutines.cancellation.CancellationException
 
 class TopicFollower(
     private val nostrService: NostrService,
-    private val topicProvider: TopicProvider,
     private val relayProvider: RelayProvider,
     private val topicUpsertDao: TopicUpsertDao,
+    private val topicDao: TopicDao,
     private val snackbar: SnackbarHostState,
     private val context: Context,
+    private val forcedFollowStates: MutableStateFlow<Map<Topic /* = String */, Boolean>>
 ) {
     private val tag = "TopicFollower"
     private val scope = CoroutineScope(Dispatchers.IO)
-    val forcedStates = MutableStateFlow(mapOf<Topic, Boolean>())
-    val forcedStatesFlow = forcedStates.stateIn(scope, SharingStarted.Eagerly, forcedStates.value)
 
-    fun follow(topic: Topic) {
-        handleAction(topic = topic, isFollowed = true)
-    }
-
-    fun unfollow(topic: Topic) {
-        handleAction(topic = topic, isFollowed = false)
+    fun handle(action: TopicEvent) {
+        when (action) {
+            is FollowTopic -> handleAction(topic = action.topic, isFollowed = true)
+            is UnfollowTopic -> handleAction(topic = action.topic, isFollowed = false)
+        }
     }
 
     private val jobs: MutableMap<Topic, Job?> = mutableMapOf()
@@ -53,7 +52,7 @@ class TopicFollower(
         jobs[topic] = scope.launch {
             delay(DEBOUNCE)
 
-            val allTopics = topicProvider.getMyTopics().toMutableSet()
+            val allTopics = topicDao.getMyTopics().toMutableSet()
             if (isFollowed) allTopics.add(topic) else allTopics.remove(topic)
 
             nostrService.publishTopicList(
@@ -78,10 +77,10 @@ class TopicFollower(
     }
 
     private fun updateForcedState(topic: Topic, isFollowed: Boolean) {
-        synchronized(forcedStates) {
-            val mutable = forcedStates.value.toMutableMap()
+        synchronized(forcedFollowStates) {
+            val mutable = forcedFollowStates.value.toMutableMap()
             mutable[topic] = isFollowed
-            forcedStates.value = mutable
+            forcedFollowStates.value = mutable
         }
     }
 }

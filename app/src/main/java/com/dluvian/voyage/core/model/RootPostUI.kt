@@ -16,11 +16,11 @@ data class RootPostUI(
     val myTopic: String?,
     val createdAt: Long,
     val title: String,
-    val content: String,
+    override val content: String,
     val myVote: Vote,
     val tally: Int,
     val commentCount: Int,
-) {
+) : IParentUI {
     companion object {
         fun from(rootPostView: RootPostView): RootPostUI {
             return RootPostUI(

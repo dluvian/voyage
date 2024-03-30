@@ -10,10 +10,10 @@ import com.dluvian.voyage.core.PushNavEvent
 class Navigator(private val vmContainer: VMContainer, private val closeApp: Fn) {
     val stack = mutableStateOf<List<NavView>>(listOf(HomeNavView))
 
-    fun handle(navEvent: NavEvent) {
-        when (navEvent) {
+    fun handle(action: NavEvent) {
+        when (action) {
             is PopNavEvent -> pop()
-            is PushNavEvent -> push(view = navEvent.getNavView())
+            is PushNavEvent -> push(view = action.getNavView())
         }
     }
 

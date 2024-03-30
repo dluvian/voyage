@@ -17,12 +17,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import com.dluvian.voyage.R
+import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.core.SendPost
 import com.dluvian.voyage.core.viewModel.CreatePostViewModel
 import com.dluvian.voyage.ui.theme.light
 
@@ -31,12 +34,21 @@ fun CreatePostView(vm: CreatePostViewModel, snackbar: SnackbarHostState, onUpdat
     val header = remember { mutableStateOf("") }
     val body = remember { mutableStateOf("") }
     val isSendingPost by vm.isSendingPost
+    val context = LocalContext.current
 
-    CreatePostScaffold(
-        header = header,
-        body = body,
+    ContentCreationScaffold(
+        showSendButton = body.value.isNotBlank(),
+        isSendingContent = isSendingPost,
         snackbar = snackbar,
-        isSendingPost = isSendingPost,
+        onSend = {
+            onUpdate(
+                SendPost(
+                    header = header.value,
+                    body = body.value,
+                    context = context,
+                    onGoBack = { onUpdate(GoBack) })
+            )
+        },
         onUpdate = onUpdate
     ) {
         CreatePostContent(header = header, body = body)

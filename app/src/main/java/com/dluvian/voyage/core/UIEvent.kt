@@ -54,6 +54,7 @@ data object ClickCreate : PushNavEvent()
 data object ClickSettings : PushNavEvent()
 data object ClickSearch : PushNavEvent()
 
+
 sealed class AdvancedPushNavEvent : PushNavEvent()
 data class OpenThread(val nevent: Nip19Event) : AdvancedPushNavEvent()
 data class OpenProfile(val nprofile: Nip19Profile) : AdvancedPushNavEvent()
@@ -79,6 +80,16 @@ data class ClickNeutralizeVote(
 ) : VoteEvent(postId = postId, pubkey = pubkey)
 
 
+sealed class TopicEvent(open val topic: Topic) : UIEvent()
+data class FollowTopic(override val topic: Topic) : TopicEvent(topic = topic)
+data class UnfollowTopic(override val topic: Topic) : TopicEvent(topic = topic)
+
+
+sealed class ProfileEvent(open val pubkey: PubkeyHex) : UIEvent()
+data class FollowProfile(override val pubkey: PubkeyHex) : ProfileEvent(pubkey = pubkey)
+data class UnfollowProfile(override val pubkey: PubkeyHex) : ProfileEvent(pubkey = pubkey)
+
+
 sealed class HomeViewAction : UIEvent()
 data object HomeViewRefresh : HomeViewAction()
 data object HomeViewAppend : HomeViewAction()
@@ -94,33 +105,33 @@ data class ThreadViewShowReplies(val id: EventIdHex) : ThreadViewAction()
 sealed class DiscoverViewAction : UIEvent()
 data object DiscoverViewInit : DiscoverViewAction()
 data object DiscoverViewRefresh : DiscoverViewAction()
-data class DiscoverViewFollowTopic(val topic: Topic) : DiscoverViewAction()
-data class DiscoverViewUnfollowTopic(val topic: Topic) : DiscoverViewAction()
-data class DiscoverViewFollowProfile(val pubkey: PubkeyHex) : DiscoverViewAction()
-data class DiscoverViewUnfollowProfile(val pubkey: PubkeyHex) : DiscoverViewAction()
 
 
 sealed class TopicViewAction : UIEvent()
 data object TopicViewRefresh : TopicViewAction()
 data object TopicViewAppend : TopicViewAction()
-data class TopicViewFollowTopic(val topic: Topic) : TopicViewAction()
-data class TopicViewUnfollowTopic(val topic: Topic) : TopicViewAction()
 
 
 sealed class ProfileViewAction : UIEvent()
 data object ProfileViewRefresh : ProfileViewAction()
 data object ProfileViewAppend : ProfileViewAction()
-data class ProfileViewFollowProfile(val pubkey: PubkeyHex) : ProfileViewAction()
-data class ProfileViewUnfollowProfile(val pubkey: PubkeyHex) : ProfileViewAction()
 
 
 sealed class CreatePostViewAction : UIEvent()
-data class CreatePostViewSendPost(
+data class SendPost(
     val header: String,
     val body: String,
     val context: Context,
     val onGoBack: Fn
 ) : CreatePostViewAction()
+
+
+sealed class CreateResponseViewAction : UIEvent()
+data class SendResponse(
+    val body: String,
+    val context: Context,
+    val onGoBack: Fn
+) : CreateResponseViewAction()
 
 
 sealed class SettingsViewAction : UIEvent()
@@ -130,6 +141,7 @@ data class ProcessExternalAccount(
     val activityResult: ActivityResult,
     val context: Context
 ) : SettingsViewAction()
+
 
 sealed class SearchViewAction : UIEvent()
 data class UpdateSearchText(val text: String) : SearchViewAction()

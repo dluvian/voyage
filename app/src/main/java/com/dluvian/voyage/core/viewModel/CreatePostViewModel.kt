@@ -7,9 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.CreatePostViewAction
-import com.dluvian.voyage.core.CreatePostViewSendPost
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.Fn
+import com.dluvian.voyage.core.SendPost
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.interactor.PostSender
@@ -21,9 +21,10 @@ class CreatePostViewModel(
     private val snackbar: SnackbarHostState,
 ) : ViewModel() {
     val isSendingPost = mutableStateOf(false)
+
     fun handle(action: CreatePostViewAction) {
         when (action) {
-            is CreatePostViewSendPost -> sendPost(
+            is SendPost -> sendPost(
                 header = action.header,
                 body = action.body,
                 context = action.context,

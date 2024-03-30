@@ -35,6 +35,7 @@ import com.dluvian.voyage.ui.components.FullHorizontalDivider
 import com.dluvian.voyage.ui.components.PostRow
 import com.dluvian.voyage.ui.components.PullRefreshBox
 import com.dluvian.voyage.ui.components.indicator.BaseHint
+import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
@@ -44,6 +45,7 @@ fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpd
     val leveledComments by vm.leveledComments.value.collectAsState()
 
     ThreadScaffold(snackbar = snackbar, onUpdate = onUpdate) {
+        if (root == null) FullLinearProgressIndicator()
         root?.let {
             ThreadViewContent(
                 root = it,

@@ -7,11 +7,14 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TopicDao {
-    @Query("SELECT topic FROM topic")
-    fun getTopicsFlow(): Flow<List<Topic>>
+    @Query("SELECT EXISTS (SELECT topic FROM topic WHERE topic = :topic)")
+    fun getIsFollowedFlow(topic: Topic): Flow<Boolean>
 
-    @Query("SELECT topic FROM topic UNION SELECT DISTINCT hashtag from hashtag")
-    fun getAllTopicsFlow(): Flow<List<Topic>>
+    @Query("SELECT DISTINCT topic FROM topic")
+    suspend fun getMyTopics(): List<Topic>
+
+    @Query("SELECT DISTINCT topic FROM topic UNION SELECT DISTINCT hashtag from hashtag")
+    suspend fun getAllTopics(): List<Topic>
 
     @Query(
         "SELECT DISTINCT hashtag " +

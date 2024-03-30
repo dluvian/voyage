@@ -62,6 +62,10 @@ fun NonMainView(
         )
 
         is CommentCreationNavView,
-        is ReplyCreationNavView -> CreateResponseView()
+        is ReplyCreationNavView -> CreateResponseView(
+            vm = core.vmContainer.createResponseVM,
+            snackbar = core.appContainer.snackbar,
+            onUpdate = core.onUpdate
+        )
     }
 }
