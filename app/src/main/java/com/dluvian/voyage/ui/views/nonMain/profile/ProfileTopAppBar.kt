@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import com.dluvian.voyage.R
+import com.dluvian.voyage.core.ClickEditProfile
 import com.dluvian.voyage.core.FollowProfile
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.UnfollowProfile
@@ -29,7 +30,7 @@ fun ProfileTopAppBar(profile: FullProfile, onUpdate: OnUpdate) {
                 isFollowed = profile.inner.isFriend,
                 onFollow = { onUpdate(FollowProfile(profile.inner.pubkey)) },
                 onUnfollow = { onUpdate(UnfollowProfile(profile.inner.pubkey)) })
-            else Button(onClick = { /*TODO*/ }, enabled = false) {
+            else Button(onClick = { onUpdate(ClickEditProfile) }) {
                 Text(text = stringResource(id = R.string.edit))
             }
         },

@@ -7,6 +7,7 @@ import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.navigator.CommentCreationNavView
 import com.dluvian.voyage.core.navigator.CreatePostNavView
 import com.dluvian.voyage.core.navigator.DiscoverNavView
+import com.dluvian.voyage.core.navigator.EditProfileNavView
 import com.dluvian.voyage.core.navigator.HomeNavView
 import com.dluvian.voyage.core.navigator.InboxNavView
 import com.dluvian.voyage.core.navigator.NavView
@@ -37,6 +38,7 @@ sealed class PushNavEvent : NavEvent() {
             is ClickInbox -> InboxNavView
             is ClickSettings -> SettingsNavView
             is ClickSearch -> SearchNavView
+            is ClickEditProfile -> EditProfileNavView
             is OpenThread -> ThreadNavView(rootPost = this.rootPost)
             is OpenProfile -> ProfileNavView(nprofile = this.nprofile)
             is OpenTopic -> TopicNavView(topic = this.topic)
@@ -52,6 +54,7 @@ data object ClickInbox : PushNavEvent()
 data object ClickCreate : PushNavEvent()
 data object ClickSettings : PushNavEvent()
 data object ClickSearch : PushNavEvent()
+data object ClickEditProfile : PushNavEvent()
 
 
 sealed class AdvancedPushNavEvent : PushNavEvent()

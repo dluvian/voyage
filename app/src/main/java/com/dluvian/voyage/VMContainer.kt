@@ -3,6 +3,7 @@ package com.dluvian.voyage
 import com.dluvian.voyage.core.viewModel.CreatePostViewModel
 import com.dluvian.voyage.core.viewModel.CreateResponseViewModel
 import com.dluvian.voyage.core.viewModel.DiscoverViewModel
+import com.dluvian.voyage.core.viewModel.EditProfileViewModel
 import com.dluvian.voyage.core.viewModel.HomeViewModel
 import com.dluvian.voyage.core.viewModel.ProfileViewModel
 import com.dluvian.voyage.core.viewModel.SearchViewModel
@@ -20,4 +21,5 @@ data class VMContainer(
     val topicVM: TopicViewModel,
     val createPostVM: CreatePostViewModel,
     val createResponseVM: CreateResponseViewModel,
+    val editProfileVM: EditProfileViewModel,
 )
