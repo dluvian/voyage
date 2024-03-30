@@ -36,7 +36,6 @@ fun extractHashtags(content: String): List<Topic> {
         .toList()
 }
 
-
 fun Metadata.toRelevantMetadata(createdAt: Long): RelevantMetadata {
     return RelevantMetadata(about = this.getAbout()?.trim(), createdAt = createdAt)
 }
@@ -82,4 +81,8 @@ fun <T> Flow<T>.firstThenDistinctDebounce(millis: Long): Flow<T> {
 
 fun CoroutineScope.launchIO(block: suspend CoroutineScope.() -> Unit): Job {
     return this.launch(Dispatchers.IO) { block() }
+}
+
+fun <T> Collection<T>.takeRandom(n: Int): List<T> {
+    return if (this.size <= n) return this.toList() else this.shuffled().take(n)
 }

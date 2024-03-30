@@ -44,7 +44,7 @@ class EventValidator(
         if (isCached(event = event, relayUrl = relayUrl)) return null
 
         if (!matchesFilter(subId = subId, event = event)) {
-            Log.d(tag, "Discard event not matching filter, ${event.id().toHex()} from $relayUrl")
+            Log.v(tag, "Discard event not matching filter, ${event.id().toHex()} from $relayUrl")
             return null
         }
         val validatedEvent = validate(event = event)
@@ -81,12 +81,10 @@ class EventValidator(
         }
 
         val matches = filters.any { it.filter.matchEvent(event = event) }
-        if (!matches) {
-            Log.w(tag, "Event does not match filter")
-            return false
-        }
+        if (!matches) return false
 
         val replyToId = event.getReplyToId() ?: return true
+
         return filters.any { it.filter.matchEvent(event = event) && it.e.contains(replyToId) }
     }
 

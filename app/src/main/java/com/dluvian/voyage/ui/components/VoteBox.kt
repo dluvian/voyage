@@ -1,14 +1,17 @@
 package com.dluvian.voyage.ui.components
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -26,6 +29,9 @@ import com.dluvian.voyage.data.interactor.Vote
 import com.dluvian.voyage.ui.theme.DenimBlue
 import com.dluvian.voyage.ui.theme.DownvoteIcon
 import com.dluvian.voyage.ui.theme.DownvoteOffIcon
+import com.dluvian.voyage.ui.theme.LeftRoundedChip
+import com.dluvian.voyage.ui.theme.RightRoundedChip
+import com.dluvian.voyage.ui.theme.RoundedChip
 import com.dluvian.voyage.ui.theme.TallPoppyRed
 import com.dluvian.voyage.ui.theme.UpvoteIcon
 import com.dluvian.voyage.ui.theme.UpvoteOffIcon
@@ -57,6 +63,12 @@ private fun VoteButtonsAndTally(
     onUpdate: OnUpdate,
 ) {
     Row(
+        modifier = Modifier
+            .padding(horizontal = spacing.medium)
+            .border(
+                border = AssistChipDefaults.assistChipBorder(enabled = true),
+                shape = RoundedChip
+            ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         VoteButton(
@@ -72,7 +84,6 @@ private fun VoteButtonsAndTally(
             }
         )
         Text(
-            modifier = Modifier.padding(horizontal = spacing.large),
             text = "$tally",
             fontWeight = if (myVote.isNeutral()) FontWeight.Normal else FontWeight.SemiBold
         )
@@ -99,7 +110,10 @@ private fun VoteButton(
     onClick: Fn
 ) {
     Icon(
-        modifier = Modifier.clickable(onClick = onClick),
+        modifier = Modifier
+            .clip(if (isUpvote) LeftRoundedChip else RightRoundedChip)
+            .clickable(onClick = onClick)
+            .padding(horizontal = spacing.xl),
         imageVector = if (isUpvote) {
             if (isActive) UpvoteIcon else UpvoteOffIcon
         } else {

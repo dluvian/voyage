@@ -173,7 +173,7 @@ class NostrSubscriber(
 
     suspend fun lazySubWebOfTrustProfiles() {
         val webOfTrustWithMissingProfiles = webOfTrustProvider.getWotWithMissingProfiles()
-        val randomResub = webOfTrustProvider.getWebOfTrustPubkeys().shuffled().take(RND_RESUB_COUNT)
+        val randomResub = webOfTrustProvider.getWebOfTrustPubkeys(max = RND_RESUB_COUNT)
         val webOfTrustResub = (webOfTrustWithMissingProfiles + randomResub).distinct()
         if (webOfTrustResub.isEmpty()) return
 
@@ -222,7 +222,7 @@ class NostrSubscriber(
 
     private suspend fun lazySubFriendsNip65() {
         val friendsWithMissingNip65 = friendProvider.getFriendsWithMissingNip65()
-        val randomResub = friendProvider.getFriendPubkeys().shuffled().take(RND_RESUB_COUNT)
+        val randomResub = friendProvider.getFriendPubkeys(limited = true, max = RND_RESUB_COUNT)
         val nip65Resub = (friendsWithMissingNip65 + randomResub).distinct()
         if (nip65Resub.isEmpty()) return
 
@@ -240,7 +240,7 @@ class NostrSubscriber(
 
     private suspend fun lazySubWebOfTrustPubkeys() {
         val friendsWithMissingContactList = friendProvider.getFriendsWithMissingContactList()
-        val randomResub = friendProvider.getFriendPubkeys().shuffled().take(RND_RESUB_COUNT)
+        val randomResub = friendProvider.getFriendPubkeys(limited = true, max = RND_RESUB_COUNT)
         val webOfTrustResub = (friendsWithMissingContactList + randomResub).distinct()
         if (webOfTrustResub.isEmpty()) return
 

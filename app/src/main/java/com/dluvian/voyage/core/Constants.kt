@@ -16,6 +16,8 @@ const val MAX_EVENTS_TO_SUB = 1000uL
 
 const val MAX_RELAYS = 6
 
+const val MAX_PUBKEYS = 750
+
 const val RND_RESUB_COUNT = 20
 
 const val FEED_PAGE_SIZE = 40

@@ -109,6 +109,7 @@ private fun Comment(
             CommentRow(
                 comment = leveledComment.comment,
                 isCollapsed = leveledComment.isCollapsed,
+                showDetailedReply = leveledComment.level == 0,
                 onUpdate = onUpdate
             )
             if (leveledComment.comment.commentCount > 0 &&

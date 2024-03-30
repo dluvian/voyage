@@ -6,6 +6,7 @@ import com.dluvian.nostr_kt.removeTrailingSlashes
 import com.dluvian.voyage.core.MAX_RELAYS
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.putOrAdd
+import com.dluvian.voyage.core.takeRandom
 import com.dluvian.voyage.data.room.dao.EventRelayDao
 import com.dluvian.voyage.data.room.dao.Nip65Dao
 import kotlinx.coroutines.CoroutineScope
@@ -28,7 +29,7 @@ class RelayProvider(
             .filter { it.nip65Relay.isRead }
             .map { it.nip65Relay.url }
             .ifEmpty { defaultRelays }
-            .let { if (limit) it.limit() else it }
+            .let { if (limit) it.takeRandom(MAX_RELAYS) else it }
     }
 
     fun getWriteRelays(limit: Boolean = true): List<RelayUrl> {
@@ -36,18 +37,18 @@ class RelayProvider(
             .filter { it.nip65Relay.isWrite }
             .map { it.nip65Relay.url }
             .ifEmpty { defaultRelays }
-            .let { if (limit) it.limit() else it }
+            .let { if (limit) it.takeRandom(MAX_RELAYS) else it }
     }
 
     suspend fun getPublishRelays(publishTo: PubkeyHex): List<RelayUrl> {
-        val foreignRelays = nip65Dao.getReadRelays(pubkey = publishTo).limit()
+        val foreignRelays = nip65Dao.getReadRelays(pubkey = publishTo).takeRandom(MAX_RELAYS)
         return (getWriteRelays(limit = true) + foreignRelays).distinct()
     }
 
     private suspend fun getObserveRelays(pubkey: PubkeyHex, limit: Boolean = true): List<RelayUrl> {
         val relays = nip65Dao.getNip65WriteRelays(pubkeys = listOf(pubkey))
             .map { it.nip65Relay.url }
-            .let { if (limit) it.limit() else it }
+            .let { if (limit) it.takeRandom(MAX_RELAYS) else it }
             .toMutableSet()
         relays.addAll(getReadRelays(limit = limit))
 
@@ -56,7 +57,7 @@ class RelayProvider(
 
     suspend fun getObserveRelays(nprofile: Nip19Profile, limit: Boolean = true): List<RelayUrl> {
         val foreignRelays = nprofile.relays()
-            .let { if (limit) it.limit() else it }
+            .let { if (limit) it.takeRandom(MAX_RELAYS) else it }
             .map { it.removeTrailingSlashes() }
         val nip65 = getObserveRelays(pubkey = nprofile.publicKey().toHex(), limit = limit)
 
@@ -100,11 +101,11 @@ class RelayProvider(
         // Cover rest with my read relays
         val restPubkeys = pubkeys - pubkeyCache
         if (restPubkeys.isNotEmpty()) {
-            Log.i(tag, "Default to read relays for ${restPubkeys.size} pubkeys")
+            Log.w(tag, "Default to read relays for ${restPubkeys.size}/${pubkeys.size} pubkeys")
             getReadRelays().forEach { relay -> result.putOrAdd(relay, restPubkeys) }
         }
 
-        Log.i(tag, "Selected ${result.size} observe relays")
+        Log.i(tag, "Selected ${result.size} autopilot relays")
 
         return result
     }
@@ -113,12 +114,8 @@ class RelayProvider(
         return getObserveRelays(pubkey = pubkey, limit = false) // TODO: add all connected relays
     }
 
-    private fun List<RelayUrl>.limit(): List<RelayUrl> {
-        return if (this.size > MAX_RELAYS) this.shuffled().take(MAX_RELAYS)
-        else this
-    }
-
     private val defaultRelays = listOf(
+        "wss://nos.lol",
         "wss://nostr.einundzwanzig.space",
         "wss://nostr.oxtr.dev",
         "wss://relay.mutinywallet.com",

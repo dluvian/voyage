@@ -47,7 +47,7 @@ class ProfileProvider(
         val unfollowedPubkeys = profileDao.getPopularUnfollowedPubkeys(limit = limit)
             .ifEmpty {
                 val default = defaultPubkeys.toMutableSet()
-                default.removeAll(friendProvider.getFriendPubkeys().toSet())
+                default.removeAll(friendProvider.getFriendPubkeys(limited = false).toSet())
                 default.remove(pubkeyProvider.getPubkeyHex())
                 default
             }

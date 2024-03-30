@@ -21,7 +21,12 @@ import com.dluvian.voyage.ui.theme.ReplyIcon
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
-fun CommentRow(comment: CommentUI, isCollapsed: Boolean, onUpdate: OnUpdate) {
+fun CommentRow(
+    comment: CommentUI,
+    isCollapsed: Boolean,
+    showDetailedReply: Boolean,
+    onUpdate: OnUpdate
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -59,7 +64,7 @@ fun CommentRow(comment: CommentUI, isCollapsed: Boolean, onUpdate: OnUpdate) {
                         imageVector = ReplyIcon,
                         contentDescription = stringResource(id = R.string.reply)
                     )
-                    Text(text = stringResource(id = R.string.reply))
+                    if (showDetailedReply) Text(text = stringResource(id = R.string.reply))
                 }
             }
         )

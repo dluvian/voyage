@@ -23,9 +23,10 @@ fun PostRowActions(
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        additionalAction()
         VoteBox(
             postId = id,
             authorPubkey = pubkey,
@@ -33,6 +34,5 @@ fun PostRowActions(
             tally = tally,
             onUpdate = onUpdate
         )
-        additionalAction()
     }
 }
