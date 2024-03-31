@@ -1,12 +1,15 @@
 package com.dluvian.voyage.data.interactor
 
 import android.util.Log
+import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.extractMentions
 import com.dluvian.nostr_kt.getHashtags
 import com.dluvian.nostr_kt.getTitle
 import com.dluvian.nostr_kt.secs
+import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.extractHashtags
+import com.dluvian.voyage.data.event.ValidatedReply
 import com.dluvian.voyage.data.event.ValidatedRootPost
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.provider.RelayProvider
@@ -32,7 +35,7 @@ class PostSender(
             content = trimmedBody,
             topics = extractHashtags(content = concat),
             mentions = extractMentionPubkeys(content = concat),
-            relayUrls = relayProvider.getReadRelays()
+            relayUrls = relayProvider.getReadRelays() // TODO: publish to mentions inbox relays too
         ).onSuccess { event ->
             val validatedPost = ValidatedRootPost(
                 id = event.id().toHex(),
@@ -45,6 +48,34 @@ class PostSender(
             postInsertDao.insertRootPost(rootPost = validatedPost)
         }.onFailure {
             Log.w(tag, "Failed to create post event", it)
+        }
+    }
+
+    suspend fun sendReply(
+        parentId: EventIdHex,
+        recipient: PubkeyHex,
+        body: String,
+        relayHint: RelayUrl,
+    ): Result<Event> {
+        val trimmedBody = body.trim()
+
+        return nostrService.publishReply(
+            content = trimmedBody,
+            parentId = parentId,
+            mentions = (extractMentionPubkeys(content = trimmedBody) + recipient).distinct(),
+            relayHint = relayHint,
+            relayUrls = relayProvider.getReadRelays() // TODO: publish to mentions inbox relays too
+        ).onSuccess { event ->
+            val validatedReply = ValidatedReply(
+                id = event.id().toHex(),
+                pubkey = event.author().toHex(),
+                parentId = parentId,
+                content = event.content(),
+                createdAt = event.createdAt().secs()
+            )
+            postInsertDao.insertReply(reply = validatedReply)
+        }.onFailure {
+            Log.w(tag, "Failed to create reply event", it)
         }
     }
 

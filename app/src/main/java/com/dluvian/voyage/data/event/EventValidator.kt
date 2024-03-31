@@ -31,7 +31,7 @@ import rust.nostr.protocol.Event
 class EventValidator(
     private val syncedFilterCache: Map<SubId, List<FilterWrapper>>,
     private val syncedIdCache: MutableSet<EventIdHex>,
-    private val syncedPostRelayCache: MutableSet<Pair<EventIdHex, RelayUrl>>,
+    private val syncedEventRelayCache: MutableSet<Pair<EventIdHex, RelayUrl>>,
     private val pubkeyProvider: IPubkeyProvider,
 ) {
     private val tag = "EventValidator"
@@ -61,7 +61,7 @@ class EventValidator(
         val eventIdHex = event.id().toHex()
         val idIsCached = syncedIdCache.contains(eventIdHex)
         if (event.isPostOrReply()) {
-            return idIsCached && syncedPostRelayCache.contains(Pair(eventIdHex, relayUrl))
+            return idIsCached && syncedEventRelayCache.contains(Pair(eventIdHex, relayUrl))
         }
 
         return idIsCached
@@ -70,7 +70,7 @@ class EventValidator(
     private fun cache(event: Event, relayUrl: RelayUrl) {
         val eventIdHex = event.id().toHex()
         syncedIdCache.add(eventIdHex)
-        if (event.isPostOrReply()) syncedPostRelayCache.add(Pair(eventIdHex, relayUrl))
+        if (event.isPostOrReply()) syncedEventRelayCache.add(Pair(eventIdHex, relayUrl))
     }
 
     private fun matchesFilter(subId: SubId, event: Event): Boolean {
@@ -114,7 +114,7 @@ class EventValidator(
             ) {
                 return null
             }
-            ValidatedComment(
+            ValidatedReply(
                 id = event.id().toHex(),
                 pubkey = event.author().toHex(),
                 parentId = replyToId,

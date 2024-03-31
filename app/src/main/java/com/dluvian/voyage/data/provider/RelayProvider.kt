@@ -88,7 +88,7 @@ class RelayProvider(
             }
 
         // Cover most useful relays
-        eventRelayDao.getEventRelays(authors = pubkeys)
+        eventRelayDao.getEventRelayAuthorView(authors = pubkeys)
             .sortedByDescending { it.relayCount }
             .distinctBy { it.pubkey }
             .groupBy(keySelector = { it.relay }, valueTransform = { it.pubkey })

@@ -19,7 +19,7 @@ data class RootPostUI(
     override val content: String,
     val myVote: Vote,
     val tally: Int,
-    val commentCount: Int,
+    val replyCount: Int,
 ) : IParentUI {
     companion object {
         fun from(rootPostView: RootPostView): RootPostUI {
@@ -38,7 +38,7 @@ data class RootPostUI(
                 content = rootPostView.content,
                 myVote = Vote.from(vote = rootPostView.myVote),
                 tally = rootPostView.upvoteCount - rootPostView.downvoteCount,
-                commentCount = rootPostView.commentCount,
+                replyCount = rootPostView.replyCount,
             )
         }
     }

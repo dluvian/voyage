@@ -28,7 +28,7 @@ class EventProcessor(
         if (events.isEmpty()) return
 
         val rootPosts = mutableListOf<RelayedItem<ValidatedRootPost>>()
-        val comments = mutableListOf<RelayedItem<ValidatedComment>>()
+        val replies = mutableListOf<RelayedItem<ValidatedReply>>()
         val votes = mutableListOf<ValidatedVote>()
         val contactLists = mutableListOf<ValidatedContactList>()
         val topicLists = mutableListOf<ValidatedTopicList>()
@@ -38,20 +38,10 @@ class EventProcessor(
         events.forEach { relayedItem ->
             when (val item = relayedItem.item) {
                 is ValidatedRootPost ->
-                    rootPosts.add(
-                        RelayedItem(
-                            item = item,
-                            relayUrl = relayedItem.relayUrl
-                        )
-                    )
+                    rootPosts.add(RelayedItem(item = item, relayUrl = relayedItem.relayUrl))
 
-                is ValidatedComment ->
-                    comments.add(
-                        RelayedItem(
-                            item = item,
-                            relayUrl = relayedItem.relayUrl
-                        )
-                    )
+                is ValidatedReply ->
+                    replies.add(RelayedItem(item = item, relayUrl = relayedItem.relayUrl))
 
                 is ValidatedVote -> votes.add(item)
                 is ValidatedContactList -> contactLists.add(item)
@@ -62,7 +52,7 @@ class EventProcessor(
         }
 
         processRootPosts(relayedRootPosts = rootPosts)
-        processComments(relayedComments = comments)
+        processReplies(relayedReplies = replies)
         processVotes(votes = votes)
         processContactLists(contactLists = contactLists)
         processTopicLists(topicLists = topicLists)
@@ -81,14 +71,14 @@ class EventProcessor(
         }
     }
 
-    private fun processComments(relayedComments: Collection<RelayedItem<ValidatedComment>>) {
-        if (relayedComments.isEmpty()) return
+    private fun processReplies(relayedReplies: Collection<RelayedItem<ValidatedReply>>) {
+        if (relayedReplies.isEmpty()) return
 
-        val sorted = relayedComments.sortedBy { it.item.createdAt }
+        val sorted = relayedReplies.sortedBy { it.item.createdAt }
         scope.launch {
-            room.postInsertDao().insertComments(relayedComments = sorted)
+            room.postInsertDao().insertReplies(relayedReplies = sorted)
         }.invokeOnCompletion { exception ->
-            if (exception != null) Log.w(tag, "Failed to process comments", exception)
+            if (exception != null) Log.w(tag, "Failed to process replies", exception)
         }
     }
 

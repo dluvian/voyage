@@ -3,8 +3,8 @@ package com.dluvian.voyage.data.room.view
 import androidx.room.DatabaseView
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.model.CommentUI
-import com.dluvian.voyage.core.model.LeveledCommentUI
+import com.dluvian.voyage.core.model.LeveledReplyUI
+import com.dluvian.voyage.core.model.ReplyUI
 import com.dluvian.voyage.data.interactor.Vote
 
 
@@ -21,11 +21,11 @@ import com.dluvian.voyage.data.interactor.Vote
             "(SELECT isPositive FROM vote WHERE vote.postId = post.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)) AS myVote, " +
             "(SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 1) AS upvoteCount, " +
             "(SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 0) AS downvoteCount, " +
-            "(SELECT COUNT(*) FROM post AS post2 WHERE post2.parentId = post.id) AS commentCount " +
+            "(SELECT COUNT(*) FROM post AS post2 WHERE post2.parentId = post.id) AS replyCount " +
             "FROM post " +
             "WHERE post.parentId IS NOT NULL"
 )
-data class CommentView(
+data class ReplyView(
     val id: EventIdHex,
     val parentId: EventIdHex,
     val authorName: String?,
@@ -38,23 +38,23 @@ data class CommentView(
     val myVote: Boolean?,
     val upvoteCount: Int,
     val downvoteCount: Int,
-    val commentCount: Int,
+    val replyCount: Int,
 ) {
-    fun mapToCommentUI(forcedVotes: Map<EventIdHex, Vote>): CommentUI {
-        val commentUI = CommentUI.from(commentView = this)
+    fun mapToReplyUI(forcedVotes: Map<EventIdHex, Vote>): ReplyUI {
+        val reply = ReplyUI.from(replyView = this)
         val vote = forcedVotes.getOrDefault(this.id, null)
-        return if (vote != null) commentUI.copy(myVote = vote) else commentUI
+        return if (vote != null) reply.copy(myVote = vote) else reply
     }
 
-    fun mapToLeveledCommentUI(
+    fun mapToLeveledReplyUI(
         level: Int,
         forcedVotes: Map<EventIdHex, Vote>,
         collapsedIds: Set<EventIdHex>,
         parentIds: Set<EventIdHex>
-    ): LeveledCommentUI {
-        return LeveledCommentUI(
+    ): LeveledReplyUI {
+        return LeveledReplyUI(
             level = level,
-            comment = this.mapToCommentUI(forcedVotes = forcedVotes),
+            reply = this.mapToReplyUI(forcedVotes = forcedVotes),
             isCollapsed = collapsedIds.contains(this.id),
             hasLoadedReplies = parentIds.contains(this.id)
         )

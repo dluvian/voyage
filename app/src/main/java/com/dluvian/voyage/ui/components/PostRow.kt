@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.OpenCommentCreation
+import com.dluvian.voyage.core.OpenReplyCreation
 import com.dluvian.voyage.core.OpenThread
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.ui.components.chip.CommentChip
@@ -61,8 +61,8 @@ fun PostRow(post: RootPostUI, isDetailed: Boolean = false, onUpdate: OnUpdate) {
             onUpdate = onUpdate,
             additionalAction = {
                 CommentChip(
-                    commentCount = post.commentCount,
-                    onClick = { onUpdate(OpenCommentCreation(rootPost = post)) })
+                    commentCount = post.replyCount,
+                    onClick = { onUpdate(OpenReplyCreation(parent = post)) })
             })
     }
 }

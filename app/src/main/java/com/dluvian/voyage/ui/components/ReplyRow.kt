@@ -16,13 +16,13 @@ import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenReplyCreation
-import com.dluvian.voyage.core.model.CommentUI
+import com.dluvian.voyage.core.model.ReplyUI
 import com.dluvian.voyage.ui.theme.ReplyIcon
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
-fun CommentRow(
-    comment: CommentUI,
+fun ReplyRow(
+    reply: ReplyUI,
     isCollapsed: Boolean,
     showDetailedReply: Boolean,
     onUpdate: OnUpdate
@@ -33,33 +33,33 @@ fun CommentRow(
             .padding(spacing.screenEdge)
     ) {
         PostRowHeader(
-            trustType = comment.trustType,
-            authorName = comment.authorName,
-            pubkey = comment.pubkey,
+            trustType = reply.trustType,
+            authorName = reply.authorName,
+            pubkey = reply.pubkey,
             isDetailed = true,
-            createdAt = comment.createdAt,
+            createdAt = reply.createdAt,
             myTopic = null,
-            collapsedText = if (isCollapsed) comment.content else null,
+            collapsedText = if (isCollapsed) reply.content else null,
             onUpdate = onUpdate
         )
         AnimatedVisibility(visible = !isCollapsed) {
             Spacer(modifier = Modifier.height(spacing.large))
             Text(
-                text = comment.content,
+                text = reply.content,
                 maxLines = Int.MAX_VALUE,
             )
             Spacer(modifier = Modifier.height(spacing.large))
         }
         if (!isCollapsed) PostRowActions(
-            id = comment.id,
-            pubkey = comment.pubkey,
-            myVote = comment.myVote,
-            tally = comment.tally,
+            id = reply.id,
+            pubkey = reply.pubkey,
+            myVote = reply.myVote,
+            tally = reply.tally,
             onUpdate = onUpdate,
             additionalAction = {
                 TextButton(
                     modifier = Modifier.height(ButtonDefaults.MinHeight),
-                    onClick = { onUpdate(OpenReplyCreation(comment = comment)) }) {
+                    onClick = { onUpdate(OpenReplyCreation(parent = reply)) }) {
                     Icon(
                         imageVector = ReplyIcon,
                         contentDescription = stringResource(id = R.string.reply)

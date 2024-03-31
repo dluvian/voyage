@@ -5,11 +5,11 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.firstThenDistinctDebounce
 import com.dluvian.voyage.core.launchIO
-import com.dluvian.voyage.core.model.LeveledCommentUI
+import com.dluvian.voyage.core.model.LeveledReplyUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.data.interactor.Vote
 import com.dluvian.voyage.data.nostr.NostrSubscriber
-import com.dluvian.voyage.data.room.dao.CommentDao
+import com.dluvian.voyage.data.room.dao.ReplyDao
 import com.dluvian.voyage.data.room.dao.RootPostDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
@@ -23,7 +23,7 @@ import java.util.LinkedList
 class ThreadProvider(
     private val nostrSubscriber: NostrSubscriber,
     private val rootPostDao: RootPostDao,
-    private val commentDao: CommentDao,
+    private val replyDao: ReplyDao,
     private val forcedVotes: Flow<Map<EventIdHex, Vote>>,
     private val collapsedIds: Flow<Set<EventIdHex>>
 ) {
@@ -40,41 +40,41 @@ class ThreadProvider(
         }.debounce(SHORT_DEBOUNCE)
     }
 
-    fun getLeveledComments(
+    fun getLeveledReplies(
         rootId: EventIdHex,
         parentIds: Set<EventIdHex>
-    ): Flow<List<LeveledCommentUI>> {
-        val commentFlow = commentDao.getCommentsFlow(parentIds = parentIds + rootId)
+    ): Flow<List<LeveledReplyUI>> {
+        val replyFlow = replyDao.getReplyFlow(parentIds = parentIds + rootId)
             .firstThenDistinctDebounce(DEBOUNCE)
             .onEach {
-                nostrSubscriber.subVotesAndReplies(postIds = it.map { comment -> comment.id })
+                nostrSubscriber.subVotesAndReplies(postIds = it.map { reply -> reply.id })
             }
 
         return combine(
-            commentFlow,
+            replyFlow,
             forcedVotes,
             collapsedIds,
-        ) { comments, votes, collapsed ->
-            val result = LinkedList<LeveledCommentUI>()
+        ) { replies, votes, collapsed ->
+            val result = LinkedList<LeveledReplyUI>()
 
-            for (comment in comments) {
-                val parent = result.find { it.comment.id == comment.parentId }
+            for (reply in replies) {
+                val parent = result.find { it.reply.id == reply.parentId }
 
                 if (parent?.isCollapsed == true) continue
-                if (parent == null && comment.parentId != rootId) continue
+                if (parent == null && reply.parentId != rootId) continue
 
-                val leveledComment = comment.mapToLeveledCommentUI(
+                val leveledReply = reply.mapToLeveledReplyUI(
                     level = parent?.level?.plus(1) ?: 0,
                     forcedVotes = votes,
                     collapsedIds = collapsed,
                     parentIds = parentIds
                 )
 
-                if (comment.parentId == rootId) {
-                    result.add(leveledComment)
+                if (reply.parentId == rootId) {
+                    result.add(leveledReply)
                     continue
                 }
-                result.add(result.indexOf(parent) + 1, leveledComment)
+                result.add(result.indexOf(parent) + 1, leveledReply)
             }
 
             result

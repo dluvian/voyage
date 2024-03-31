@@ -15,7 +15,7 @@ import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.ProcessExternalAccount
 import com.dluvian.voyage.core.ProcessExternalSignature
 import com.dluvian.voyage.core.viewModel.CreatePostViewModel
-import com.dluvian.voyage.core.viewModel.CreateResponseViewModel
+import com.dluvian.voyage.core.viewModel.CreateReplyViewModel
 import com.dluvian.voyage.core.viewModel.DiscoverViewModel
 import com.dluvian.voyage.core.viewModel.EditProfileViewModel
 import com.dluvian.voyage.core.viewModel.HomeViewModel
@@ -120,9 +120,12 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 snackbar = appContainer.snackbar
             )
         },
-        createResponseVM = viewModel {
-            CreateResponseViewModel(
-                nostrSubscriber = appContainer.nostrSubscriber
+        createReplyVM = viewModel {
+            CreateReplyViewModel(
+                nostrSubscriber = appContainer.nostrSubscriber,
+                postSender = appContainer.postSender,
+                snackbar = appContainer.snackbar,
+                eventRelayDao = appContainer.roomDb.eventRelayDao()
             )
         },
         editProfileVM = viewModel {

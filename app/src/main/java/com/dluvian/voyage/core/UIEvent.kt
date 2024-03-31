@@ -2,9 +2,8 @@ package com.dluvian.voyage.core
 
 import android.content.Context
 import androidx.activity.result.ActivityResult
-import com.dluvian.voyage.core.model.CommentUI
+import com.dluvian.voyage.core.model.IParentUI
 import com.dluvian.voyage.core.model.RootPostUI
-import com.dluvian.voyage.core.navigator.CommentCreationNavView
 import com.dluvian.voyage.core.navigator.CreatePostNavView
 import com.dluvian.voyage.core.navigator.DiscoverNavView
 import com.dluvian.voyage.core.navigator.EditProfileNavView
@@ -42,8 +41,7 @@ sealed class PushNavEvent : NavEvent() {
             is OpenThread -> ThreadNavView(rootPost = this.rootPost)
             is OpenProfile -> ProfileNavView(nprofile = this.nprofile)
             is OpenTopic -> TopicNavView(topic = this.topic)
-            is OpenCommentCreation -> CommentCreationNavView(rootPost = this.rootPost)
-            is OpenReplyCreation -> ReplyCreationNavView(comment = this.comment)
+            is OpenReplyCreation -> ReplyCreationNavView(parent = this.parent)
         }
     }
 }
@@ -61,8 +59,7 @@ sealed class AdvancedPushNavEvent : PushNavEvent()
 data class OpenThread(val rootPost: RootPostUI) : AdvancedPushNavEvent()
 data class OpenProfile(val nprofile: Nip19Profile) : AdvancedPushNavEvent()
 data class OpenTopic(val topic: Topic) : AdvancedPushNavEvent()
-data class OpenReplyCreation(val comment: CommentUI) : AdvancedPushNavEvent()
-data class OpenCommentCreation(val rootPost: RootPostUI) : AdvancedPushNavEvent()
+data class OpenReplyCreation(val parent: IParentUI) : AdvancedPushNavEvent()
 
 
 sealed class VoteEvent(open val postId: EventIdHex, open val pubkey: PubkeyHex) : UIEvent()
@@ -128,12 +125,13 @@ data class SendPost(
 ) : CreatePostViewAction()
 
 
-sealed class CreateResponseViewAction : UIEvent()
-data class SendResponse(
+sealed class CreateReplyViewAction : UIEvent()
+data class SendReply(
+    val parent: IParentUI,
     val body: String,
     val context: Context,
     val onGoBack: Fn
-) : CreateResponseViewAction()
+) : CreateReplyViewAction()
 
 
 sealed class SettingsViewAction : UIEvent()

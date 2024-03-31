@@ -7,24 +7,24 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.data.model.RelayedItem
 
 @Entity(
-    tableName = "postRelay",
-    primaryKeys = ["postId", "relayUrl"],
+    tableName = "eventRelay",
+    primaryKeys = ["eventId", "relayUrl"],
     foreignKeys = [ForeignKey(
         entity = PostEntity::class,
         parentColumns = ["id"],
-        childColumns = ["postId"],
+        childColumns = ["eventId"],
         onDelete = ForeignKey.CASCADE,
         onUpdate = ForeignKey.NO_ACTION
     )]
 )
-data class PostRelayEntity(
-    val postId: EventIdHex,
+data class EventRelayEntity(
+    val eventId: EventIdHex,
     val relayUrl: RelayUrl
 ) {
     companion object {
-        fun from(relayedPostEntity: RelayedItem<PostEntity>): PostRelayEntity {
-            return PostRelayEntity(
-                postId = relayedPostEntity.item.id,
+        fun from(relayedPostEntity: RelayedItem<PostEntity>): EventRelayEntity {
+            return EventRelayEntity(
+                eventId = relayedPostEntity.item.id,
                 relayUrl = relayedPostEntity.relayUrl
             )
         }

@@ -41,7 +41,7 @@ import okhttp3.OkHttpClient
 import java.util.Collections
 
 class AppContainer(context: Context) {
-    private val roomDb: AppDatabase = Room.databaseBuilder(
+    val roomDb: AppDatabase = Room.databaseBuilder(
         context = context,
         klass = AppDatabase::class.java,
         name = "voyage_database",
@@ -53,7 +53,7 @@ class AppContainer(context: Context) {
     private val syncedFilterCache = Collections
         .synchronizedMap(mutableMapOf<SubId, List<FilterWrapper>>())
     private val syncedIdCache = Collections.synchronizedSet(mutableSetOf<EventIdHex>())
-    private val syncedPostRelayCache = Collections
+    private val syncedEventRelayCache = Collections
         .synchronizedSet(mutableSetOf<Pair<EventIdHex, RelayUrl>>())
 
     val snackbar = SnackbarHostState()
@@ -66,7 +66,7 @@ class AppContainer(context: Context) {
         nostrClient = nostrClient,
         syncedEventQueue = syncedEventQueueSet,
         syncedIdCache = syncedIdCache,
-        syncedPostRelayCache = syncedPostRelayCache
+        syncedEventRelayCache = syncedEventRelayCache
     )
 
     private val relayProvider = RelayProvider(
@@ -108,7 +108,7 @@ class AppContainer(context: Context) {
     private val eventValidator = EventValidator(
         syncedFilterCache = syncedFilterCache,
         syncedIdCache = syncedIdCache,
-        syncedPostRelayCache = syncedPostRelayCache,
+        syncedEventRelayCache = syncedEventRelayCache,
         pubkeyProvider = accountManager
     )
     private val eventProcessor = EventProcessor(
@@ -163,7 +163,7 @@ class AppContainer(context: Context) {
     val threadProvider = ThreadProvider(
         nostrSubscriber = nostrSubscriber,
         rootPostDao = roomDb.rootPostDao(),
-        commentDao = roomDb.commentDao(),
+        replyDao = roomDb.replyDao(),
         forcedVotes = postVoter.forcedVotes,
         collapsedIds = threadCollapser.collapsedIds
     )

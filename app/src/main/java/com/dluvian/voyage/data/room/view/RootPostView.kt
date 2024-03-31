@@ -21,7 +21,7 @@ import com.dluvian.voyage.data.interactor.Vote
             "(SELECT isPositive FROM vote WHERE vote.postId = post.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)) AS myVote, " +
             "(SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 1) AS upvoteCount, " +
             "(SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 0) AS downvoteCount, " +
-            "(SELECT COUNT(*) FROM post AS post2 WHERE post2.parentId = post.id) AS commentCount " +
+            "(SELECT COUNT(*) FROM post AS post2 WHERE post2.parentId = post.id) AS replyCount " +
             "FROM post " +
             "WHERE post.parentId IS NULL"
 )
@@ -39,7 +39,7 @@ data class RootPostView(
     val myVote: Boolean?,
     val upvoteCount: Int,
     val downvoteCount: Int,
-    val commentCount: Int,
+    val replyCount: Int,
 ) {
     fun mapToRootPostUI(forcedVotes: Map<EventIdHex, Vote>): RootPostUI {
         val rootPostUI = RootPostUI.from(this)

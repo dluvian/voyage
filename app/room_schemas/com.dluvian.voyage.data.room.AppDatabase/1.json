@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "61f43b2382be1968a630e477518a680b",
+    "identityHash": "38bcdb74328ceae45594cd59e3599463",
     "entities": [
       {
         "tableName": "post",
@@ -134,12 +134,12 @@
         ]
       },
       {
-        "tableName": "postRelay",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`postId` TEXT NOT NULL, `relayUrl` TEXT NOT NULL, PRIMARY KEY(`postId`, `relayUrl`), FOREIGN KEY(`postId`) REFERENCES `post`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "tableName": "eventRelay",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`eventId` TEXT NOT NULL, `relayUrl` TEXT NOT NULL, PRIMARY KEY(`eventId`, `relayUrl`), FOREIGN KEY(`eventId`) REFERENCES `post`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
-            "fieldPath": "postId",
-            "columnName": "postId",
+            "fieldPath": "eventId",
+            "columnName": "eventId",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -153,7 +153,7 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "postId",
+            "eventId",
             "relayUrl"
           ]
         },
@@ -164,7 +164,7 @@
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
             "columns": [
-              "postId"
+              "eventId"
             ],
             "referencedColumns": [
               "id"
@@ -490,7 +490,7 @@
     "views": [
       {
         "viewName": "RootPostView",
-        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT post.id, post.pubkey, post.title, post.content, post.createdAt, (SELECT name FROM profile WHERE profile.pubkey = post.pubkey) AS authorName, (SELECT hashtag FROM hashtag WHERE hashtag.postId = post.id AND hashtag IN (SELECT topic FROM topic WHERE myPubkey = (SELECT pubkey FROM account LIMIT 1)) LIMIT 1) AS myTopic, (SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.pubkey)) AS authorIsMe, (SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.pubkey)) AS authorIsFriend, (SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = post.pubkey)) AS authorIsTrusted, (SELECT isPositive FROM vote WHERE vote.postId = post.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)) AS myVote, (SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 1) AS upvoteCount, (SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 0) AS downvoteCount, (SELECT COUNT(*) FROM post AS post2 WHERE post2.parentId = post.id) AS commentCount FROM post WHERE post.parentId IS NULL"
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT post.id, post.pubkey, post.title, post.content, post.createdAt, (SELECT name FROM profile WHERE profile.pubkey = post.pubkey) AS authorName, (SELECT hashtag FROM hashtag WHERE hashtag.postId = post.id AND hashtag IN (SELECT topic FROM topic WHERE myPubkey = (SELECT pubkey FROM account LIMIT 1)) LIMIT 1) AS myTopic, (SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.pubkey)) AS authorIsMe, (SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.pubkey)) AS authorIsFriend, (SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = post.pubkey)) AS authorIsTrusted, (SELECT isPositive FROM vote WHERE vote.postId = post.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)) AS myVote, (SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 1) AS upvoteCount, (SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 0) AS downvoteCount, (SELECT COUNT(*) FROM post AS post2 WHERE post2.parentId = post.id) AS replyCount FROM post WHERE post.parentId IS NULL"
       },
       {
         "viewName": "AdvancedProfileView",
@@ -498,16 +498,16 @@
       },
       {
         "viewName": "EventRelayAuthorView",
-        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT post.pubkey, postRelay.relayUrl AS relay, COUNT(*) AS relayCount FROM postRelay LEFT JOIN post ON post.id = postRelay.postId GROUP BY post.pubkey, postRelay.relayUrl"
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT post.pubkey, eventRelay.relayUrl AS relay, COUNT(*) AS relayCount FROM eventRelay LEFT JOIN post ON post.id = eventRelay.eventId GROUP BY post.pubkey, eventRelay.relayUrl"
       },
       {
-        "viewName": "CommentView",
-        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT post.id, post.parentId, post.pubkey, post.content, post.createdAt, (SELECT name FROM profile WHERE profile.pubkey = post.pubkey) AS authorName, (SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.pubkey)) AS authorIsMe, (SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.pubkey)) AS authorIsFriend, (SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = post.pubkey)) AS authorIsTrusted, (SELECT isPositive FROM vote WHERE vote.postId = post.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)) AS myVote, (SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 1) AS upvoteCount, (SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 0) AS downvoteCount, (SELECT COUNT(*) FROM post AS post2 WHERE post2.parentId = post.id) AS commentCount FROM post WHERE post.parentId IS NOT NULL"
+        "viewName": "ReplyView",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT post.id, post.parentId, post.pubkey, post.content, post.createdAt, (SELECT name FROM profile WHERE profile.pubkey = post.pubkey) AS authorName, (SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.pubkey)) AS authorIsMe, (SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.pubkey)) AS authorIsFriend, (SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = post.pubkey)) AS authorIsTrusted, (SELECT isPositive FROM vote WHERE vote.postId = post.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)) AS myVote, (SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 1) AS upvoteCount, (SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 0) AS downvoteCount, (SELECT COUNT(*) FROM post AS post2 WHERE post2.parentId = post.id) AS replyCount FROM post WHERE post.parentId IS NOT NULL"
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '61f43b2382be1968a630e477518a680b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '38bcdb74328ceae45594cd59e3599463')"
     ]
   }
 }

@@ -2,7 +2,6 @@ package com.dluvian.voyage.ui.views.nonMain
 
 import androidx.compose.runtime.Composable
 import com.dluvian.voyage.core.Core
-import com.dluvian.voyage.core.navigator.CommentCreationNavView
 import com.dluvian.voyage.core.navigator.CreatePostNavView
 import com.dluvian.voyage.core.navigator.EditProfileNavView
 import com.dluvian.voyage.core.navigator.NonMainNavView
@@ -63,9 +62,8 @@ fun NonMainView(
             onUpdate = core.onUpdate
         )
 
-        is CommentCreationNavView,
         is ReplyCreationNavView -> CreateResponseView(
-            vm = core.vmContainer.createResponseVM,
+            vm = core.vmContainer.createReplyVM,
             snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate
         )

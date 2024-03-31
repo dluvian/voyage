@@ -10,7 +10,6 @@ import com.dluvian.nostr_kt.createTitleTag
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.account.AccountManager
-import com.dluvian.voyage.data.model.EventIdAndPubkey
 import rust.nostr.protocol.Contact
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventBuilder
@@ -36,30 +35,28 @@ class EventMaker(
         if (title.isNotEmpty()) tags.add(createTitleTag(title = title))
         if (mentions.isNotEmpty()) tags.add(createMentionTag(pubkeys = mentions))
 
-        val publicKey = accountManager.getPublicKey()
-        val unsignedEvent = EventBuilder.textNote(content, tags).toUnsignedEvent(publicKey)
+        val unsignedEvent = EventBuilder
+            .textNote(content = content, tags = tags)
+            .toUnsignedEvent(accountManager.getPublicKey())
 
         return accountManager.sign(unsignedEvent = unsignedEvent)
     }
 
     suspend fun buildReply(
-        rootId: EventId,
-        parentEvent: EventIdAndPubkey,
+        parentId: EventId,
+        mentions: Collection<PublicKey>,
         relayHint: RelayUrl,
         content: String
     ): Result<Event> {
-        val tags = listOf(
+        val tags = mutableListOf(
             createLabelTag(label = REPLY_LABEL),
-            createReplyTag(
-                parentEventId = parentEvent.id,
-                relayHint = relayHint,
-                parentIsRoot = rootId.toHex() == parentEvent.id.toHex()
-            ),
-            Tag.publicKey(publicKey = parentEvent.pubkey)
+            createReplyTag(parentEventId = parentId, relayHint = relayHint)
         )
+        mentions.forEach { tags.add(Tag.publicKey(publicKey = it)) }
 
-        val publicKey = accountManager.getPublicKey()
-        val unsignedEvent = EventBuilder.textNote(content, tags).toUnsignedEvent(publicKey)
+        val unsignedEvent = EventBuilder
+            .textNote(content = content, tags = tags)
+            .toUnsignedEvent(accountManager.getPublicKey())
 
         return accountManager.sign(unsignedEvent = unsignedEvent)
     }

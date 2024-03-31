@@ -9,7 +9,7 @@ class EventCacheClearer(
     private val nostrClient: NostrClient,
     private val syncedEventQueue: MutableSet<RelayedValidatedEvent>,
     private val syncedIdCache: MutableSet<EventIdHex>,
-    private val syncedPostRelayCache: MutableSet<Pair<EventIdHex, RelayUrl>>,
+    private val syncedEventRelayCache: MutableSet<Pair<EventIdHex, RelayUrl>>,
 ) {
     fun clear() {
         nostrClient.unsubscribeAll()
@@ -19,8 +19,8 @@ class EventCacheClearer(
         synchronized(syncedIdCache) {
             syncedIdCache.clear()
         }
-        synchronized(syncedPostRelayCache) {
-            syncedPostRelayCache.clear()
+        synchronized(syncedEventRelayCache) {
+            syncedEventRelayCache.clear()
         }
     }
 }

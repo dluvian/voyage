@@ -44,11 +44,14 @@
     <string name="title_optional">Title (optional)</string>
     <string name="body_text">Body text</string>
     <string name="send">Send</string>
-    <string name="post_sent">Post sent</string>
     <string name="failed_to_create_post">Failed to create post</string>
     <string name="edit">Edit</string>
     <string name="no_comments_found">No comments found</string>
     <string name="reply">Reply</string>
     <string name="one_reply">1 reply</string>
     <string name="replies">replies</string>
+    <string name="show_original_post">Show original post</string>
+    <string name="post_created">Post created</string>
+    <string name="reply_created">Reply created</string>
+    <string name="failed_to_create_reply">Failed to create reply</string>
 </resources>

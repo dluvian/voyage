@@ -5,6 +5,7 @@ import com.dluvian.nostr_kt.INostrListener
 import com.dluvian.nostr_kt.NostrClient
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
+import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.event.EventMaker
@@ -82,6 +83,23 @@ class NostrService(
             content = content,
             topics = topics,
             mentions = mentions
+        )
+            .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
+    }
+
+
+    suspend fun publishReply(
+        content: String,
+        parentId: EventIdHex,
+        mentions: List<PubkeyHex>,
+        relayHint: RelayUrl,
+        relayUrls: Collection<RelayUrl>
+    ): Result<Event> {
+        return eventMaker.buildReply(
+            parentId = EventId.fromHex(parentId),
+            mentions = mentions.map { PublicKey.fromHex(it) },
+            relayHint = relayHint,
+            content = content,
         )
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }

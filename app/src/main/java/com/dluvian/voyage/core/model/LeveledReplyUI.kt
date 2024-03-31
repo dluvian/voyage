@@ -1,8 +1,8 @@
 package com.dluvian.voyage.core.model
 
-data class LeveledCommentUI(
+data class LeveledReplyUI(
     val level: Int,
-    val comment: CommentUI,
+    val reply: ReplyUI,
     val isCollapsed: Boolean,
     val hasLoadedReplies: Boolean,
 )

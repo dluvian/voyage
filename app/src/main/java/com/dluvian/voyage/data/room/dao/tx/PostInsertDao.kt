@@ -5,12 +5,12 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Transaction
-import com.dluvian.voyage.data.event.ValidatedComment
+import com.dluvian.voyage.data.event.ValidatedReply
 import com.dluvian.voyage.data.event.ValidatedRootPost
 import com.dluvian.voyage.data.model.RelayedItem
+import com.dluvian.voyage.data.room.entity.EventRelayEntity
 import com.dluvian.voyage.data.room.entity.HashtagEntity
 import com.dluvian.voyage.data.room.entity.PostEntity
-import com.dluvian.voyage.data.room.entity.PostRelayEntity
 
 private const val TAG = "PostInsertDao"
 
@@ -24,10 +24,10 @@ interface PostInsertDao {
         val entities = relayedPosts.map { relayedItem -> PostEntity.from(relayedItem.item) }
 
         internalInsertPostOrIgnore(posts = entities)
-        val postRelays = relayedPosts.map {
-            PostRelayEntity(postId = it.item.id, relayUrl = it.relayUrl)
+        val eventRelays = relayedPosts.map {
+            EventRelayEntity(eventId = it.item.id, relayUrl = it.relayUrl)
         }
-        internalInsertPostRelayOrIgnore(postRelays = postRelays)
+        internalInsertEventRelayOrIgnore(eventRelays = eventRelays)
 
         val hashtags = relayedPosts.flatMap { post ->
             post.item.topics.map { topic ->
@@ -49,26 +49,31 @@ interface PostInsertDao {
     }
 
     @Transaction
-    suspend fun insertComments(relayedComments: Collection<RelayedItem<ValidatedComment>>) {
-        if (relayedComments.isEmpty()) return
+    suspend fun insertReplies(relayedReplies: Collection<RelayedItem<ValidatedReply>>) {
+        if (relayedReplies.isEmpty()) return
 
-        val entities = relayedComments.map { relayedItem -> PostEntity.from(relayedItem.item) }
-        val postRelayEntities = relayedComments
-            .map { PostRelayEntity(postId = it.item.id, relayUrl = it.relayUrl) }
+        val entities = relayedReplies.map { relayedItem -> PostEntity.from(relayedItem.item) }
+        val eventRelayEntities = relayedReplies
+            .map { EventRelayEntity(eventId = it.item.id, relayUrl = it.relayUrl) }
 
         runCatching {
             internalInsertPostOrIgnore(posts = entities)
-            internalInsertPostRelayOrIgnore(postRelays = postRelayEntities)
+            internalInsertEventRelayOrIgnore(eventRelays = eventRelayEntities)
         }.onFailure {
-            Log.w(TAG, "Failed to insert ${relayedComments.size} comments: ${it.message}")
+            Log.w(TAG, "Failed to insert ${relayedReplies.size} comments: ${it.message}")
         }
+    }
+
+    suspend fun insertReply(reply: ValidatedReply) {
+        val entity = PostEntity.from(reply)
+        internalInsertPostOrIgnore(posts = listOf(entity))
     }
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun internalInsertPostOrIgnore(posts: Collection<PostEntity>)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun internalInsertPostRelayOrIgnore(postRelays: Collection<PostRelayEntity>)
+    suspend fun internalInsertEventRelayOrIgnore(eventRelays: Collection<EventRelayEntity>)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun internalInsertHashtagsOrIgnore(hashtags: Collection<HashtagEntity>)

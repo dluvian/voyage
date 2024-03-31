@@ -12,7 +12,7 @@ import com.dluvian.voyage.core.ThreadViewRefresh
 import com.dluvian.voyage.core.ThreadViewShowReplies
 import com.dluvian.voyage.core.ThreadViewToggleCollapse
 import com.dluvian.voyage.core.launchIO
-import com.dluvian.voyage.core.model.LeveledCommentUI
+import com.dluvian.voyage.core.model.LeveledReplyUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.data.interactor.ThreadCollapser
 import com.dluvian.voyage.data.provider.ThreadProvider
@@ -28,14 +28,14 @@ class ThreadViewModel(
 ) : ViewModel() {
     val isRefreshing = mutableStateOf(false)
     var root: StateFlow<RootPostUI?> = MutableStateFlow(null)
-    val leveledComments: MutableState<StateFlow<List<LeveledCommentUI>>> =
+    val leveledReplies: MutableState<StateFlow<List<LeveledReplyUI>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
     private val parentIds = mutableStateOf(emptySet<EventIdHex>())
 
     fun openThread(rootPost: RootPostUI) {
         if (rootPost.id == root.value?.id) return
 
-        leveledComments.value = MutableStateFlow(emptyList())
+        leveledReplies.value = MutableStateFlow(emptyList())
         parentIds.value = setOf()
         root =
             threadProvider.getRoot(scope = viewModelScope, nevent = createNevent(hex = rootPost.id))
@@ -66,14 +66,14 @@ class ThreadViewModel(
 
             root = threadProvider.getRoot(scope = viewModelScope, nevent = nip19)
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), currentRoot)
-            leveledComments.value = threadProvider.getLeveledComments(
+            leveledReplies.value = threadProvider.getLeveledReplies(
                 rootId = currentRoot.id,
                 parentIds = parentIds.value
             )
                 .stateIn(
                     viewModelScope,
                     SharingStarted.WhileSubscribed(),
-                    leveledComments.value.value
+                    leveledReplies.value.value
                 )
             delay(DELAY_1SEC)
         }.invokeOnCompletion { isRefreshing.value = false }
@@ -82,10 +82,10 @@ class ThreadViewModel(
     private fun loadReplies(rootId: EventIdHex?, parentId: EventIdHex, isInit: Boolean) {
         if (rootId == null || parentIds.value.contains(parentId)) return
 
-        val init = if (isInit) emptyList() else leveledComments.value.value
+        val init = if (isInit) emptyList() else leveledReplies.value.value
         parentIds.value += parentId
-        leveledComments.value =
-            threadProvider.getLeveledComments(rootId = rootId, parentIds = parentIds.value)
+        leveledReplies.value =
+            threadProvider.getLeveledReplies(rootId = rootId, parentIds = parentIds.value)
                 .stateIn(viewModelScope, SharingStarted.Eagerly, init)
     }
 }

@@ -44,7 +44,7 @@ class CreatePostViewModel(
             result.onSuccess {
                 snackbar.showToast(
                     viewModelScope,
-                    context.getString(R.string.post_sent)
+                    context.getString(R.string.post_created)
                 )
             }.onFailure {
                 snackbar.showToast(

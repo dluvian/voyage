@@ -19,7 +19,7 @@ data class ValidatedRootPost(
     val createdAt: Long
 ) : ValidatedPost(id = id, topics = topics)
 
-data class ValidatedComment(
+data class ValidatedReply(
     override val id: EventIdHex,
     val pubkey: PubkeyHex,
     val parentId: EventIdHex,

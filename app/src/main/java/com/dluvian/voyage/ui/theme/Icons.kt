@@ -8,6 +8,7 @@ import androidx.compose.material.icons.automirrored.filled.Reply
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ExpandCircleDown
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
@@ -39,3 +40,4 @@ val DownvoteIcon = Icons.Default.ThumbDownAlt
 val SearchIcon = Icons.Default.Search
 val SendIcon = Icons.AutoMirrored.Filled.Send
 val ReplyIcon = Icons.AutoMirrored.Filled.Reply
+val ExpandCircleIcon = Icons.Default.ExpandCircleDown

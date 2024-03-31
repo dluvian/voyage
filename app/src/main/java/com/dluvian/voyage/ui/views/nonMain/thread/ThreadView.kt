@@ -32,13 +32,13 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.ThreadViewRefresh
 import com.dluvian.voyage.core.ThreadViewShowReplies
 import com.dluvian.voyage.core.ThreadViewToggleCollapse
-import com.dluvian.voyage.core.model.LeveledCommentUI
+import com.dluvian.voyage.core.model.LeveledReplyUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.viewModel.ThreadViewModel
-import com.dluvian.voyage.ui.components.CommentRow
 import com.dluvian.voyage.ui.components.FullHorizontalDivider
 import com.dluvian.voyage.ui.components.PostRow
 import com.dluvian.voyage.ui.components.PullRefreshBox
+import com.dluvian.voyage.ui.components.ReplyRow
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import com.dluvian.voyage.ui.theme.sizing
@@ -48,14 +48,14 @@ import com.dluvian.voyage.ui.theme.spacing
 fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
     val isRefreshing by vm.isRefreshing
     val root by vm.root.collectAsState()
-    val leveledComments by vm.leveledComments.value.collectAsState()
+    val leveledReplies by vm.leveledReplies.value.collectAsState()
 
     ThreadScaffold(snackbar = snackbar, onUpdate = onUpdate) {
         if (root == null) FullLinearProgressIndicator()
         root?.let {
             ThreadViewContent(
                 root = it,
-                leveledComments = leveledComments,
+                leveledReplies = leveledReplies,
                 isRefreshing = isRefreshing,
                 onUpdate = onUpdate
             )
@@ -66,7 +66,7 @@ fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpd
 @Composable
 private fun ThreadViewContent(
     root: RootPostUI,
-    leveledComments: List<LeveledCommentUI>,
+    leveledReplies: List<LeveledReplyUI>,
     isRefreshing: Boolean,
     onUpdate: OnUpdate
 ) {
@@ -76,18 +76,18 @@ private fun ThreadViewContent(
                 PostRow(post = root, isDetailed = true, onUpdate = onUpdate)
                 FullHorizontalDivider()
             }
-            if (root.commentCount > leveledComments.size) item {
+            if (root.replyCount > leveledReplies.size) item {
                 FullLinearProgressIndicator()
             }
-            itemsIndexed(leveledComments) { i, comment ->
-                if (comment.level == 0) FullHorizontalDivider()
-                Comment(
-                    leveledComment = comment,
+            itemsIndexed(leveledReplies) { i, reply ->
+                if (reply.level == 0) FullHorizontalDivider()
+                Reply(
+                    leveledReply = reply,
                     onUpdate = onUpdate
                 )
-                if (i == leveledComments.size - 1) FullHorizontalDivider()
+                if (i == leveledReplies.size - 1) FullHorizontalDivider()
             }
-            if (root.commentCount == 0 && leveledComments.isEmpty()) item {
+            if (root.replyCount == 0 && leveledReplies.isEmpty()) item {
                 Column(modifier = Modifier.fillParentMaxHeight(0.5f)) {
                     BaseHint(text = stringResource(id = R.string.no_comments_found))
                 }
@@ -97,28 +97,28 @@ private fun ThreadViewContent(
 }
 
 @Composable
-private fun Comment(
-    leveledComment: LeveledCommentUI,
+private fun Reply(
+    leveledReply: LeveledReplyUI,
     onUpdate: OnUpdate
 ) {
-    RowWithDivider(level = leveledComment.level) {
+    RowWithDivider(level = leveledReply.level) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { onUpdate(ThreadViewToggleCollapse(id = leveledComment.comment.id)) }) {
-            CommentRow(
-                comment = leveledComment.comment,
-                isCollapsed = leveledComment.isCollapsed,
-                showDetailedReply = leveledComment.level == 0,
+                .clickable { onUpdate(ThreadViewToggleCollapse(id = leveledReply.reply.id)) }) {
+            ReplyRow(
+                reply = leveledReply.reply,
+                isCollapsed = leveledReply.isCollapsed,
+                showDetailedReply = leveledReply.level == 0,
                 onUpdate = onUpdate
             )
-            if (leveledComment.comment.commentCount > 0 &&
-                !leveledComment.isCollapsed &&
-                !leveledComment.hasLoadedReplies
+            if (leveledReply.reply.replyCount > 0 &&
+                !leveledReply.isCollapsed &&
+                !leveledReply.hasLoadedReplies
             ) {
                 MoreRepliesTextButton(
-                    commentCount = leveledComment.comment.commentCount,
-                    onShowReplies = { onUpdate(ThreadViewShowReplies(id = leveledComment.comment.id)) })
+                    replyCount = leveledReply.reply.replyCount,
+                    onShowReplies = { onUpdate(ThreadViewShowReplies(id = leveledReply.reply.id)) })
             }
         }
     }
@@ -139,7 +139,7 @@ fun RowWithDivider(level: Int, content: ComposableContent) {
 }
 
 @Composable
-fun MoreRepliesTextButton(commentCount: Int, onShowReplies: Fn) {
+fun MoreRepliesTextButton(replyCount: Int, onShowReplies: Fn) {
     val isLoading = remember { mutableStateOf(false) }
     Row(
         modifier = Modifier.height(IntrinsicSize.Min),
@@ -149,8 +149,8 @@ fun MoreRepliesTextButton(commentCount: Int, onShowReplies: Fn) {
             onShowReplies()
             isLoading.value = true
         }) {
-            if (commentCount == 1) Text(text = stringResource(id = R.string.one_reply))
-            else Text(text = "$commentCount ${stringResource(id = R.string.replies)}")
+            if (replyCount == 1) Text(text = stringResource(id = R.string.one_reply))
+            else Text(text = "$replyCount ${stringResource(id = R.string.replies)}")
         }
         if (isLoading.value) CircularProgressIndicator(
             modifier = Modifier.size(sizing.smallIndicator),
