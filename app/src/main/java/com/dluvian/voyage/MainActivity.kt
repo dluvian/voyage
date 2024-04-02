@@ -27,9 +27,11 @@ import com.dluvian.voyage.core.viewModel.TopicViewModel
 import com.dluvian.voyage.ui.VoyageApp
 
 class MainActivity : ComponentActivity() {
+    private lateinit var appContainer: AppContainer
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val appContainer = AppContainer(this.applicationContext)
+        appContainer = AppContainer(this.applicationContext)
         setContent {
             val activity = (LocalContext.current as? Activity)
             val closeApp: Fn = { activity?.finish() }
@@ -64,6 +66,11 @@ class MainActivity : ComponentActivity() {
 
             VoyageApp(core)
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        appContainer.eventSweeper.sweep()
     }
 }
 

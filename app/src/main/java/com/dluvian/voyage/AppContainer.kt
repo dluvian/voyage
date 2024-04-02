@@ -17,7 +17,9 @@ import com.dluvian.voyage.data.event.EventCacheClearer
 import com.dluvian.voyage.data.event.EventMaker
 import com.dluvian.voyage.data.event.EventProcessor
 import com.dluvian.voyage.data.event.EventQueue
+import com.dluvian.voyage.data.event.EventSweeper
 import com.dluvian.voyage.data.event.EventValidator
+import com.dluvian.voyage.data.event.OldestUsedEvent
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
 import com.dluvian.voyage.data.interactor.PostSender
 import com.dluvian.voyage.data.interactor.PostVoter
@@ -27,6 +29,7 @@ import com.dluvian.voyage.data.interactor.TopicFollower
 import com.dluvian.voyage.data.model.FilterWrapper
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.NostrSubscriber
+import com.dluvian.voyage.data.preferences.DatabasePreferences
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
@@ -63,7 +66,6 @@ class AppContainer(context: Context) {
     val externalSigner = ExternalSigner()
 
     private val eventCacheClearer = EventCacheClearer(
-        nostrClient = nostrClient,
         syncedEventQueue = syncedEventQueueSet,
         syncedIdCache = syncedIdCache,
         syncedEventRelayCache = syncedEventRelayCache
@@ -154,10 +156,14 @@ class AppContainer(context: Context) {
         forcedFollowStates = forcedFollowStates
     )
 
+    val oldestUsedEvent = OldestUsedEvent()
+
     val feedProvider = FeedProvider(
         nostrSubscriber = nostrSubscriber,
         rootPostDao = roomDb.rootPostDao(),
-        forcedVotes = postVoter.forcedVotes
+        forcedVotes = postVoter.forcedVotes,
+        oldestUsedEvent = oldestUsedEvent
+
     )
 
     val threadProvider = ThreadProvider(
@@ -195,5 +201,14 @@ class AppContainer(context: Context) {
         nostrService = nostrService,
         relayProvider = relayProvider,
         postInsertDao = roomDb.postInsertDao()
+    )
+
+    val databasePreferences = DatabasePreferences(context = context)
+
+    val eventSweeper = EventSweeper(
+        databasePreferences = databasePreferences,
+        eventCacheClearer = eventCacheClearer,
+        deleteDao = roomDb.deleteDao(),
+        oldestUsedEvent = oldestUsedEvent
     )
 }
