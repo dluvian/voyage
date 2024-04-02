@@ -12,7 +12,7 @@ import com.dluvian.voyage.core.navigator.SettingsNavView
 import com.dluvian.voyage.core.navigator.ThreadNavView
 import com.dluvian.voyage.core.navigator.TopicNavView
 import com.dluvian.voyage.ui.views.nonMain.createPost.CreatePostView
-import com.dluvian.voyage.ui.views.nonMain.createResponse.CreateResponseView
+import com.dluvian.voyage.ui.views.nonMain.createReply.CreateReplyView
 import com.dluvian.voyage.ui.views.nonMain.editProfile.EditProfileView
 import com.dluvian.voyage.ui.views.nonMain.profile.ProfileView
 import com.dluvian.voyage.ui.views.nonMain.search.SearchView
@@ -62,7 +62,7 @@ fun NonMainView(
             onUpdate = core.onUpdate
         )
 
-        is ReplyCreationNavView -> CreateResponseView(
+        is ReplyCreationNavView -> CreateReplyView(
             vm = core.vmContainer.createReplyVM,
             snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate

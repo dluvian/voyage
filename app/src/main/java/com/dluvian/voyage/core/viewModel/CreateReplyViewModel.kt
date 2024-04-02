@@ -68,10 +68,7 @@ class CreateReplyViewModel(
             delay(DELAY_1SEC)
             onGoBack()
             result.onSuccess {
-                snackbar.showToast(
-                    viewModelScope,
-                    context.getString(R.string.reply_created)
-                )
+                snackbar.showToast(viewModelScope, context.getString(R.string.reply_created))
             }.onFailure {
                 snackbar.showToast(
                     viewModelScope,
