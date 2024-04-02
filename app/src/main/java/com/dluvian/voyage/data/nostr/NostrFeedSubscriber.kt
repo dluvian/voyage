@@ -1,6 +1,8 @@
 package com.dluvian.voyage.data.nostr
 
 import com.dluvian.nostr_kt.RelayUrl
+import com.dluvian.nostr_kt.secs
+import com.dluvian.voyage.core.ONE_WEEK_IN_SECS
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.syncedPutOrAdd
@@ -27,6 +29,10 @@ class NostrFeedSubscriber(
         limit: ULong
     ): Map<RelayUrl, List<FilterWrapper>> {
         if (limit <= 0u) return emptyMap()
+        val since = maxOf(1, until.secs() - ONE_WEEK_IN_SECS)
+
+        // Scope home feed to last week to prevent fetching useless notes
+        val sinceTimestamp = Timestamp.fromSecs(secs = since.toULong())
 
         val result = mutableMapOf<RelayUrl, MutableList<FilterWrapper>>()
 
@@ -40,6 +46,7 @@ class NostrFeedSubscriber(
                         .authors(authors = publicKeys)
                         .until(timestamp = until)
                         .limit(limit = limit)
+                        .since(timestamp = sinceTimestamp)
                     val friendsNoteFilters = mutableListOf(FilterWrapper(friendsNoteFilter))
                     result.syncedPutOrAdd(relayUrl, friendsNoteFilters)
                 }
@@ -51,6 +58,7 @@ class NostrFeedSubscriber(
                 .hashtags(hashtags = topics)
                 .until(timestamp = until)
                 .limit(limit = limit)
+                .since(timestamp = sinceTimestamp)
             val topicedNoteFilters = mutableListOf(FilterWrapper(topicedNoteFilter))
 
             relayProvider.getReadRelays().forEach { relay ->
