@@ -12,7 +12,7 @@ import rust.nostr.protocol.Event
 import java.util.concurrent.atomic.AtomicBoolean
 
 private const val TAG = "EventQueue"
-private const val EVENT_PROCESSING_DELAY = 500L
+private const val EVENT_PROCESSING_DELAY = 900L
 
 class EventQueue(
     private val syncedQueue: MutableSet<RelayedValidatedEvent>,
@@ -49,6 +49,7 @@ class EventQueue(
         scope.launch {
             while (true) {
                 delay(EVENT_PROCESSING_DELAY)
+
                 val events = mutableSetOf<RelayedValidatedEvent>()
                 synchronized(syncedQueue) {
                     events.addAll(syncedQueue.toList())

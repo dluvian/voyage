@@ -34,9 +34,8 @@ class EventSweeper(
     }
 
     private suspend fun sweepRootPostThreshold() {
-        val threshold = databasePreferences.getSweepThreshold()
         deleteDao.deleteOldestRootPosts(
-            threshold = threshold,
+            threshold = databasePreferences.getSweepThreshold(),
             oldestCreatedAtInUse = oldestUsedEvent.getOldestCreatedAt()
         )
     }

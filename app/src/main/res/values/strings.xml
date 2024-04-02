@@ -56,4 +56,7 @@
     <string name="reply_created">Reply created</string>
     <string name="failed_to_create_reply">Failed to create reply</string>
     <string name="original_post">ORIGINAL POST</string>
+    <string name="database">Database</string>
+    <string name="keep_at_least_n_root_posts">Keep at least %d root posts</string>
+    <string name="currently_n_root_posts_in_db">Currently %d root posts in database</string>
 </resources>

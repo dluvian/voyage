@@ -9,11 +9,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -24,6 +27,7 @@ import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.RequestExternalAccount
+import com.dluvian.voyage.core.UpdateRootPostThreshold
 import com.dluvian.voyage.core.UseDefaultAccount
 import com.dluvian.voyage.core.model.AccountType
 import com.dluvian.voyage.core.model.DefaultAccount
@@ -46,40 +50,85 @@ fun SettingsView(vm: SettingsViewModel, snackbar: SnackbarHostState, onUpdate: O
 private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: OnUpdate) {
     val accountType by vm.accountType
     val isLoadingAccount by vm.isLoadingAccount
+    val rootPostThreshold by vm.rootPostThreshold
+    val currentRootPostCount by vm.currentRootPostCount.collectAsState()
+
     LazyColumn {
         if (isLoadingAccount) item { FullLinearProgressIndicator() }
         item {
-            SettingsSection(header = stringResource(id = R.string.account)) {
-                AccountRow(accountType = accountType, onUpdate = onUpdate)
-            }
+            AccountSection(accountType = accountType, onUpdate = onUpdate)
         }
         item {
-            SettingsSection(header = stringResource(id = R.string.app)) {
-                ClickableRow(
-                    header = stringResource(id = R.string.version),
-                    text = stringResource(id = R.string.version_nr)
-                )
-            }
+            DatabaseSection(
+                rootPostThreshold = rootPostThreshold,
+                currentRootPostCount = currentRootPostCount,
+                onUpdate = onUpdate
+            )
+        }
+        item {
+            AppSection()
         }
     }
-
 }
 
 @Composable
-private fun AccountRow(accountType: AccountType, onUpdate: OnUpdate) {
-    val shortenedNpub = remember(accountType) { accountType.publicKey.shortenBech32() }
-    ClickableRow(
-        header = when (accountType) {
-            is ExternalAccount -> stringResource(id = R.string.external_signer)
-            is DefaultAccount -> stringResource(id = R.string.default_account)
-        },
-        text = shortenedNpub,
-        imageVector = AccountIcon,
-        onClick = {
-            onUpdate(OpenProfile(nprofile = createNprofile(pubkey = accountType.publicKey)))
+private fun AccountSection(accountType: AccountType, onUpdate: OnUpdate) {
+    SettingsSection(header = stringResource(id = R.string.account)) {
+        val shortenedNpub = remember(accountType) { accountType.publicKey.shortenBech32() }
+        ClickableRow(
+            header = when (accountType) {
+                is ExternalAccount -> stringResource(id = R.string.external_signer)
+                is DefaultAccount -> stringResource(id = R.string.default_account)
+            },
+            text = shortenedNpub,
+            imageVector = AccountIcon,
+            onClick = {
+                onUpdate(OpenProfile(nprofile = createNprofile(pubkey = accountType.publicKey)))
+            }
+        ) {
+            AccountRowButton(accountType = accountType, onUpdate = onUpdate)
         }
-    ) {
-        AccountRowButton(accountType = accountType, onUpdate = onUpdate)
+    }
+}
+
+@Composable
+private fun DatabaseSection(
+    rootPostThreshold: Int,
+    currentRootPostCount: Int,
+    onUpdate: OnUpdate
+) {
+    val localRootPostThreshold = remember(rootPostThreshold) {
+        mutableFloatStateOf(rootPostThreshold.toFloat())
+    }
+    SettingsSection(header = stringResource(id = R.string.database)) {
+        ClickableRow(
+            header = stringResource(
+                id = R.string.keep_at_least_n_root_posts,
+                localRootPostThreshold.floatValue.toInt()
+            ),
+            text = stringResource(id = R.string.currently_n_root_posts_in_db, currentRootPostCount),
+            imageVector = AccountIcon,
+        ) {
+            Slider(
+                modifier = Modifier.padding(horizontal = spacing.bigScreenEdge),
+                value = localRootPostThreshold.floatValue,
+                onValueChange = { localRootPostThreshold.floatValue = it },
+                onValueChangeFinished = {
+                    onUpdate(UpdateRootPostThreshold(threshold = localRootPostThreshold.floatValue))
+                },
+                valueRange = 100f..5000f
+            )
+        }
+    }
+}
+
+@Composable
+private fun AppSection() {
+    SettingsSection(header = stringResource(id = R.string.app)) {
+        ClickableRow(
+            header = stringResource(id = R.string.version),
+            text = stringResource(id = R.string.version_nr)
+        )
     }
 }
 

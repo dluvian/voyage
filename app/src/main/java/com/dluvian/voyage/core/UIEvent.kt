@@ -142,6 +142,8 @@ data class ProcessExternalAccount(
     val context: Context
 ) : SettingsViewAction()
 
+data class UpdateRootPostThreshold(val threshold: Float) : SettingsViewAction()
+
 
 sealed class SearchViewAction : UIEvent()
 data class UpdateSearchText(val text: String) : SearchViewAction()

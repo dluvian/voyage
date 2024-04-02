@@ -50,7 +50,6 @@ class EventProcessor(
                 is ValidatedProfile -> profiles.add(item)
             }
         }
-
         processRootPosts(relayedRootPosts = rootPosts)
         processReplies(relayedReplies = replies)
         processVotes(votes = votes)
@@ -63,9 +62,8 @@ class EventProcessor(
     private fun processRootPosts(relayedRootPosts: Collection<RelayedItem<ValidatedRootPost>>) {
         if (relayedRootPosts.isEmpty()) return
 
-        val sorted = relayedRootPosts.sortedBy { it.item.createdAt }
         scope.launch {
-            room.postInsertDao().insertRelayedRootPosts(relayedPosts = sorted)
+            room.postInsertDao().insertRelayedRootPosts(relayedPosts = relayedRootPosts)
         }.invokeOnCompletion { exception ->
             if (exception != null) Log.w(tag, "Failed to process root posts", exception)
         }
@@ -74,9 +72,8 @@ class EventProcessor(
     private fun processReplies(relayedReplies: Collection<RelayedItem<ValidatedReply>>) {
         if (relayedReplies.isEmpty()) return
 
-        val sorted = relayedReplies.sortedBy { it.item.createdAt }
         scope.launch {
-            room.postInsertDao().insertReplies(relayedReplies = sorted)
+            room.postInsertDao().insertReplies(relayedReplies = relayedReplies)
         }.invokeOnCompletion { exception ->
             if (exception != null) Log.w(tag, "Failed to process replies", exception)
         }

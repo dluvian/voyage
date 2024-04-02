@@ -93,6 +93,8 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             SettingsViewModel(
                 accountSwitcher = appContainer.accountSwitcher,
                 snackbar = appContainer.snackbar,
+                databasePreferences = appContainer.databasePreferences,
+                databaseStatProvider = appContainer.databaseStatProvider
             )
         },
         searchVM = viewModel {

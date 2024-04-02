@@ -3,6 +3,7 @@ package com.dluvian.voyage.data.room
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.dluvian.voyage.data.room.dao.AccountDao
+import com.dluvian.voyage.data.room.dao.CountDao
 import com.dluvian.voyage.data.room.dao.DeleteDao
 import com.dluvian.voyage.data.room.dao.EventRelayDao
 import com.dluvian.voyage.data.room.dao.FriendDao
@@ -65,20 +66,23 @@ import com.dluvian.voyage.data.room.view.RootPostView
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun accountDao(): AccountDao
-    abstract fun postInsertDao(): PostInsertDao
     abstract fun voteDao(): VoteDao
     abstract fun rootPostDao(): RootPostDao
     abstract fun topicDao(): TopicDao
     abstract fun friendDao(): FriendDao
     abstract fun webOfTrustDao(): WebOfTrustDao
     abstract fun nip65Dao(): Nip65Dao
-    abstract fun resetDao(): ResetDao
     abstract fun profileDao(): ProfileDao
     abstract fun eventRelayDao(): EventRelayDao
     abstract fun replyDao(): ReplyDao
+
+    // Util
+    abstract fun resetDao(): ResetDao
     abstract fun deleteDao(): DeleteDao
+    abstract fun countDao(): CountDao
 
     // TX
+    abstract fun postInsertDao(): PostInsertDao
     abstract fun voteUpsertDao(): VoteUpsertDao
     abstract fun friendUpsertDao(): FriendUpsertDao
     abstract fun webOfTrustUpsertDao(): WebOfTrustUpsertDao

@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.activity.result.ActivityResult
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,6 +14,7 @@ import com.dluvian.voyage.core.ExternalSignerHandler
 import com.dluvian.voyage.core.ProcessExternalAccount
 import com.dluvian.voyage.core.RequestExternalAccount
 import com.dluvian.voyage.core.SettingsViewAction
+import com.dluvian.voyage.core.UpdateRootPostThreshold
 import com.dluvian.voyage.core.UseDefaultAccount
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.AccountType
@@ -20,13 +22,22 @@ import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.account.AccountSwitcher
+import com.dluvian.voyage.data.preferences.DatabasePreferences
+import com.dluvian.voyage.data.provider.DatabaseStatProvider
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import rust.nostr.protocol.PublicKey
 
 class SettingsViewModel(
     private val accountSwitcher: AccountSwitcher,
     private val snackbar: SnackbarHostState,
+    private val databasePreferences: DatabasePreferences,
+    databaseStatProvider: DatabaseStatProvider,
 ) : ViewModel() {
     val accountType: State<AccountType> = accountSwitcher.accountType
+    val rootPostThreshold = mutableIntStateOf(databasePreferences.getSweepThreshold())
+    val currentRootPostCount = databaseStatProvider.getRootPostCountFlow()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
 
     val isLoadingAccount = mutableStateOf(false)
     lateinit var externalSignerHandler: ExternalSignerHandler
@@ -36,14 +47,18 @@ class SettingsViewModel(
         when (action) {
             is UseDefaultAccount -> useDefaultAccount()
 
-            is RequestExternalAccount -> requestExternalAccountData(
-                context = action.context
-            )
+            is RequestExternalAccount -> requestExternalAccountData(context = action.context)
 
             is ProcessExternalAccount -> processExternalAccountData(
                 result = action.activityResult,
                 context = action.context
             )
+
+            is UpdateRootPostThreshold -> {
+                val newThreshold = action.threshold.toInt()
+                rootPostThreshold.intValue = newThreshold
+                databasePreferences.setSweepThreshold(newThreshold = newThreshold)
+            }
         }
     }
 

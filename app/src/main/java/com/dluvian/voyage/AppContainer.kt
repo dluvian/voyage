@@ -30,6 +30,7 @@ import com.dluvian.voyage.data.model.FilterWrapper
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.preferences.DatabasePreferences
+import com.dluvian.voyage.data.provider.DatabaseStatProvider
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
@@ -204,6 +205,7 @@ class AppContainer(context: Context) {
     )
 
     val databasePreferences = DatabasePreferences(context = context)
+    val databaseStatProvider = DatabaseStatProvider(countDao = roomDb.countDao())
 
     val eventSweeper = EventSweeper(
         databasePreferences = databasePreferences,
