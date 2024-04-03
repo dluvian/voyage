@@ -7,6 +7,7 @@ import com.dluvian.nostr_kt.NostrClient
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
 import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.RelayedValidatedEvent
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.account.AccountManager
@@ -161,7 +162,13 @@ class AppContainer(context: Context) {
 
     private val oldestUsedEvent = OldestUsedEvent()
 
-    private val nameProvider = NameProvider()
+    private val nameCache = Collections.synchronizedMap(mutableMapOf<PubkeyHex, String?>())
+
+    private val nameProvider = NameProvider(
+        profileDao = roomDb.profileDao(),
+        nameCache = nameCache,
+        nostrSubscriber = nostrSubscriber
+    )
 
     private val annotatedStringProvider = AnnotatedStringProvider(
         nameProvider = nameProvider
@@ -172,7 +179,8 @@ class AppContainer(context: Context) {
         rootPostDao = roomDb.rootPostDao(),
         forcedVotes = postVoter.forcedVotes,
         oldestUsedEvent = oldestUsedEvent,
-        annotatedStringProvider = annotatedStringProvider
+        annotatedStringProvider = annotatedStringProvider,
+        nameCache = nameCache
     )
 
     val threadProvider = ThreadProvider(
@@ -181,7 +189,8 @@ class AppContainer(context: Context) {
         replyDao = roomDb.replyDao(),
         forcedVotes = postVoter.forcedVotes,
         collapsedIds = threadCollapser.collapsedIds,
-        annotatedStringProvider = annotatedStringProvider
+        annotatedStringProvider = annotatedStringProvider,
+        nameCache = nameCache
     )
 
     val profileFollower = ProfileFollower(

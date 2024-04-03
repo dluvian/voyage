@@ -2,6 +2,7 @@ package com.dluvian.voyage.data.provider
 
 import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.firstThenDistinctDebounce
 import com.dluvian.voyage.core.launchIO
@@ -27,6 +28,7 @@ class ThreadProvider(
     private val forcedVotes: Flow<Map<EventIdHex, Vote>>,
     private val collapsedIds: Flow<Set<EventIdHex>>,
     private val annotatedStringProvider: AnnotatedStringProvider,
+    private val nameCache: MutableMap<PubkeyHex, String?>,
 ) {
 
     @OptIn(FlowPreview::class)
@@ -62,6 +64,9 @@ class ThreadProvider(
             val result = LinkedList<LeveledReplyUI>()
 
             for (reply in replies) {
+                if (!reply.authorName.isNullOrEmpty()) {
+                    nameCache.putIfAbsent(reply.pubkey, reply.authorName)
+                }
                 val parent = result.find { it.reply.id == reply.parentId }
 
                 if (parent?.isCollapsed == true) continue

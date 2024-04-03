@@ -1,6 +1,7 @@
 package com.dluvian.voyage.data.provider
 
 import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.data.event.OldestUsedEvent
@@ -23,6 +24,7 @@ class FeedProvider(
     private val forcedVotes: Flow<Map<EventIdHex, Vote>>,
     private val oldestUsedEvent: OldestUsedEvent,
     private val annotatedStringProvider: AnnotatedStringProvider,
+    private val nameCache: MutableMap<PubkeyHex, String?>,
 ) {
     @OptIn(FlowPreview::class)
     suspend fun getFeedFlow(
@@ -59,6 +61,8 @@ class FeedProvider(
             .onEach { posts ->
                 oldestUsedEvent.updateOldestCreatedAt(posts.minOfOrNull { it.createdAt })
                 nostrSubscriber.subVotesAndReplies(postIds = posts.map { it.id })
+                posts.filter { it.authorName.isNotEmpty() }
+                    .forEach { nameCache.putIfAbsent(it.pubkey, it.authorName) }
             }
     }
 }
