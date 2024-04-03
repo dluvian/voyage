@@ -1,5 +1,6 @@
 package com.dluvian.voyage.core
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.AppContainer
@@ -16,6 +17,8 @@ class Core(
     lateinit var externalSignerHandler: ExternalSignerHandler
 
     val onUpdate: (UIEvent) -> Unit = { uiEvent ->
+        Log.i("LOLOL", "$uiEvent")
+
         when (uiEvent) {
             is NavEvent -> navigator.handle(action = uiEvent)
 

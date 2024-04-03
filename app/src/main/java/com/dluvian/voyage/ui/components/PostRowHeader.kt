@@ -16,6 +16,7 @@ import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
+import com.dluvian.voyage.core.OpenTopic
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.ui.components.chip.TopicChip
@@ -48,7 +49,8 @@ fun PostRowHeader(
                 modifier = Modifier
                     .weight(weight = 1f, fill = false)
                     .padding(start = spacing.large),
-                topic = topic
+                topic = topic,
+                onClick = { onUpdate(OpenTopic(topic = topic)) },
             )
         }
         Spacer(modifier = Modifier.width(spacing.large))
