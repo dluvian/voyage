@@ -1,5 +1,7 @@
 package com.dluvian.voyage.ui.components
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import com.dluvian.nostr_kt.createNprofile
+import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.PubkeyHex
@@ -32,12 +35,14 @@ fun PostRowHeader(
     collapsedText: String? = null,
     onUpdate: OnUpdate
 ) {
+    val onOpenProfile = { onUpdate(OpenProfile(nprofile = createNprofile(hex = pubkey))) }
+
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         if (isDetailed) TrustChip(
             trustType = trustType,
             name = authorName,
-            onOpenProfile = { onUpdate(OpenProfile(nprofile = createNprofile(hex = pubkey))) }
-        ) else TrustIcon(trustType = trustType)
+            onOpenProfile = onOpenProfile
+        ) else ClickableTrustIcon(trustType = trustType, onClick = onOpenProfile)
         myTopic?.let { topic ->
             TopicChip(
                 modifier = Modifier
@@ -49,5 +54,12 @@ fun PostRowHeader(
         Spacer(modifier = Modifier.width(spacing.large))
         if (collapsedText == null) RelativeTime(from = createdAt)
         else Text(text = collapsedText, maxLines = 1, overflow = TextOverflow.Ellipsis)
+    }
+}
+
+@Composable
+fun ClickableTrustIcon(trustType: TrustType, onClick: Fn) {
+    Box(modifier = Modifier.clickable(onClick = onClick)) {
+        TrustIcon(trustType = trustType)
     }
 }
