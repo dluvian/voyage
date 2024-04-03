@@ -6,6 +6,7 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.data.interactor.Vote
+import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 
 @DatabaseView(
     "SELECT post.id, " +
@@ -41,8 +42,14 @@ data class RootPostView(
     val downvoteCount: Int,
     val replyCount: Int,
 ) {
-    fun mapToRootPostUI(forcedVotes: Map<EventIdHex, Vote>): RootPostUI {
-        val rootPostUI = RootPostUI.from(this)
+    fun mapToRootPostUI(
+        forcedVotes: Map<EventIdHex, Vote>,
+        annotatedStringProvider: AnnotatedStringProvider,
+    ): RootPostUI {
+        val rootPostUI = RootPostUI.from(
+            rootPostView = this,
+            annotatedStringProvider = annotatedStringProvider
+        )
         val vote = forcedVotes.getOrDefault(this.id, null)
         return if (vote != null) rootPostUI.copy(myVote = vote) else rootPostUI
     }

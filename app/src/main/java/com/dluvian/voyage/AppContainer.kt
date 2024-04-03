@@ -30,9 +30,11 @@ import com.dluvian.voyage.data.model.FilterWrapper
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.preferences.DatabasePreferences
+import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 import com.dluvian.voyage.data.provider.DatabaseStatProvider
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.FriendProvider
+import com.dluvian.voyage.data.provider.NameProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.SuggestionProvider
@@ -157,14 +159,20 @@ class AppContainer(context: Context) {
         forcedFollowStates = forcedFollowStates
     )
 
-    val oldestUsedEvent = OldestUsedEvent()
+    private val oldestUsedEvent = OldestUsedEvent()
+
+    private val nameProvider = NameProvider()
+
+    private val annotatedStringProvider = AnnotatedStringProvider(
+        nameProvider = nameProvider
+    )
 
     val feedProvider = FeedProvider(
         nostrSubscriber = nostrSubscriber,
         rootPostDao = roomDb.rootPostDao(),
         forcedVotes = postVoter.forcedVotes,
-        oldestUsedEvent = oldestUsedEvent
-
+        oldestUsedEvent = oldestUsedEvent,
+        annotatedStringProvider = annotatedStringProvider
     )
 
     val threadProvider = ThreadProvider(
@@ -172,7 +180,8 @@ class AppContainer(context: Context) {
         rootPostDao = roomDb.rootPostDao(),
         replyDao = roomDb.replyDao(),
         forcedVotes = postVoter.forcedVotes,
-        collapsedIds = threadCollapser.collapsedIds
+        collapsedIds = threadCollapser.collapsedIds,
+        annotatedStringProvider = annotatedStringProvider
     )
 
     val profileFollower = ProfileFollower(
@@ -190,7 +199,8 @@ class AppContainer(context: Context) {
         metadataInMemory = metadataInMemory,
         profileDao = roomDb.profileDao(),
         friendProvider = friendProvider,
-        nostrSubscriber = nostrSubscriber
+        nostrSubscriber = nostrSubscriber,
+        annotatedStringProvider = annotatedStringProvider
     )
 
     val suggestionProvider = SuggestionProvider(

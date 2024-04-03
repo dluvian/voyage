@@ -22,6 +22,7 @@ class FeedProvider(
     private val rootPostDao: RootPostDao,
     private val forcedVotes: Flow<Map<EventIdHex, Vote>>,
     private val oldestUsedEvent: OldestUsedEvent,
+    private val annotatedStringProvider: AnnotatedStringProvider,
 ) {
     @OptIn(FlowPreview::class)
     suspend fun getFeedFlow(
@@ -47,7 +48,12 @@ class FeedProvider(
         }
 
         return flow.combine(forcedVotes) { posts, votes ->
-            posts.map { it.mapToRootPostUI(forcedVotes = votes) }
+            posts.map {
+                it.mapToRootPostUI(
+                    forcedVotes = votes,
+                    annotatedStringProvider = annotatedStringProvider
+                )
+            }
         }
             .debounce(SHORT_DEBOUNCE)
             .onEach { posts ->

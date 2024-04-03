@@ -10,13 +10,13 @@ import com.dluvian.voyage.core.ClickEditProfile
 import com.dluvian.voyage.core.FollowProfile
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.UnfollowProfile
-import com.dluvian.voyage.data.model.FullProfile
+import com.dluvian.voyage.data.model.FullProfileUI
 import com.dluvian.voyage.ui.components.bar.GoBackTopAppBar
 import com.dluvian.voyage.ui.components.button.FollowButton
 
 
 @Composable
-fun ProfileTopAppBar(profile: FullProfile, onUpdate: OnUpdate) {
+fun ProfileTopAppBar(profile: FullProfileUI, onUpdate: OnUpdate) {
     GoBackTopAppBar(
         title = {
             Text(

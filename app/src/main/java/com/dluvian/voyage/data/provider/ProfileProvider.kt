@@ -5,7 +5,7 @@ import com.dluvian.voyage.core.toShortenedBech32
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
 import com.dluvian.voyage.data.interactor.ProfileFollower
-import com.dluvian.voyage.data.model.FullProfile
+import com.dluvian.voyage.data.model.FullProfileUI
 import com.dluvian.voyage.data.model.RelevantMetadata
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.room.dao.ProfileDao
@@ -22,9 +22,9 @@ class ProfileProvider(
     private val profileDao: ProfileDao,
     private val friendProvider: FriendProvider,
     private val nostrSubscriber: NostrSubscriber,
+    private val annotatedStringProvider: AnnotatedStringProvider,
 ) {
-
-    fun getProfileFlow(pubkey: PubkeyHex): Flow<FullProfile> {
+    fun getProfileFlow(pubkey: PubkeyHex): Flow<FullProfileUI> {
         return combine(
             profileDao.getAdvancedProfileFlow(pubkey = pubkey),
             profileFollower.forcedFollowsFlow,
@@ -43,7 +43,7 @@ class ProfileProvider(
         return profileDao.getProfilesByName(name = name, limit = limit)
     }
 
-    suspend fun getPopularUnfollowedProfiles(limit: Int): Flow<List<FullProfile>> {
+    suspend fun getPopularUnfollowedProfiles(limit: Int): Flow<List<FullProfileUI>> {
         val unfollowedPubkeys = profileDao.getPopularUnfollowedPubkeys(limit = limit)
             .ifEmpty {
                 val default = defaultPubkeys.toMutableSet()
@@ -56,7 +56,7 @@ class ProfileProvider(
         return getProfilesFlow(pubkeys = unfollowedPubkeys)
     }
 
-    private fun getProfilesFlow(pubkeys: Collection<PubkeyHex>): Flow<List<FullProfile>> {
+    private fun getProfilesFlow(pubkeys: Collection<PubkeyHex>): Flow<List<FullProfileUI>> {
         if (pubkeys.isEmpty()) return flowOf(emptyList())
 
         return combine(
@@ -79,7 +79,7 @@ class ProfileProvider(
         dbProfile: AdvancedProfileView?,
         forcedFollowState: Boolean?,
         metadata: RelevantMetadata?
-    ): FullProfile {
+    ): FullProfileUI {
         val advancedProfile = AdvancedProfileView(
             pubkey = pubkey,
             name = dbProfile?.name.orEmpty().ifEmpty { pubkey.toShortenedBech32() },
@@ -87,9 +87,9 @@ class ProfileProvider(
             isFriend = forcedFollowState ?: dbProfile?.isFriend ?: false,
             isWebOfTrust = dbProfile?.isWebOfTrust ?: false
         )
-        return FullProfile(
+        return FullProfileUI(
             inner = advancedProfile,
-            about = metadata?.about
+            about = metadata?.about?.let { annotatedStringProvider.annotate(it) }
         )
     }
 

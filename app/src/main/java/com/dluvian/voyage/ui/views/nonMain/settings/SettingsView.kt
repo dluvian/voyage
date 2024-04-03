@@ -32,7 +32,7 @@ import com.dluvian.voyage.core.UseDefaultAccount
 import com.dluvian.voyage.core.model.AccountType
 import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
-import com.dluvian.voyage.core.shortenBech32
+import com.dluvian.voyage.core.toShortenedNpub
 import com.dluvian.voyage.core.viewModel.SettingsViewModel
 import com.dluvian.voyage.ui.components.ClickableRow
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
@@ -74,7 +74,7 @@ private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: OnUpdate) {
 @Composable
 private fun AccountSection(accountType: AccountType, onUpdate: OnUpdate) {
     SettingsSection(header = stringResource(id = R.string.account)) {
-        val shortenedNpub = remember(accountType) { accountType.publicKey.shortenBech32() }
+        val shortenedNpub = remember(accountType) { accountType.publicKey.toShortenedNpub() }
         ClickableRow(
             header = when (accountType) {
                 is ExternalAccount -> stringResource(id = R.string.external_signer)

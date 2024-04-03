@@ -10,7 +10,7 @@ import com.dluvian.voyage.core.ProfileViewRefresh
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.core.navigator.ProfileNavView
-import com.dluvian.voyage.data.model.FullProfile
+import com.dluvian.voyage.data.model.FullProfileUI
 import com.dluvian.voyage.data.model.ProfileFeedSetting
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.provider.FeedProvider
@@ -27,8 +27,8 @@ class ProfileViewModel(
     private val profileProvider: ProfileProvider,
 ) : ViewModel() {
     val paginator = Paginator(feedProvider = feedProvider, scope = viewModelScope)
-    val profile: MutableState<StateFlow<FullProfile>> =
-        mutableStateOf(MutableStateFlow(FullProfile()))
+    val profile: MutableState<StateFlow<FullProfileUI>> =
+        mutableStateOf(MutableStateFlow(FullProfileUI()))
 
     fun openProfile(profileNavView: ProfileNavView) {
         val pubkeyHex = profileNavView.nprofile.publicKey().toHex()
@@ -43,7 +43,7 @@ class ProfileViewModel(
             .stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(),
-                FullProfile(inner = AdvancedProfileView(pubkey = pubkeyHex))
+                FullProfileUI(inner = AdvancedProfileView(pubkey = pubkeyHex))
             )
     }
 

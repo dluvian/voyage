@@ -13,6 +13,8 @@ val DenimBlue = Color(0xFF1565c0)
 
 val Orange = Color(0xFFff7b00)
 
+val HyperlinkBlue = Color(0xFF007AFF)
+
 val md_theme_light_primary = Color(0xFF3B4DD8)
 val md_theme_light_onPrimary = Color(0xFFFFFFFF)
 val md_theme_light_primaryContainer = Color(0xFFDFE0FF)

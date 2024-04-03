@@ -10,7 +10,7 @@ import com.dluvian.voyage.core.DiscoverViewInit
 import com.dluvian.voyage.core.DiscoverViewRefresh
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.TopicFollowState
-import com.dluvian.voyage.data.model.FullProfile
+import com.dluvian.voyage.data.model.FullProfileUI
 import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import kotlinx.coroutines.delay
@@ -31,7 +31,7 @@ class DiscoverViewModel(
     val isRefreshing = mutableStateOf(false)
     val popularTopics: MutableState<StateFlow<List<TopicFollowState>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
-    val popularProfiles: MutableState<StateFlow<List<FullProfile>>> =
+    val popularProfiles: MutableState<StateFlow<List<FullProfileUI>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
 
     fun handle(action: DiscoverViewAction) {
@@ -78,7 +78,7 @@ class DiscoverViewModel(
             )
     }
 
-    private suspend fun getProfileFlow(): StateFlow<List<FullProfile>> {
+    private suspend fun getProfileFlow(): StateFlow<List<FullProfileUI>> {
         return profileProvider.getPopularUnfollowedProfiles(limit = maxCount)
             .stateIn(
                 viewModelScope,

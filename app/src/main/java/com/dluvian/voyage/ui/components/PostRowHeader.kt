@@ -7,12 +7,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Text
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import com.dluvian.nostr_kt.createNprofile
+import com.dluvian.voyage.core.ClickText
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
@@ -33,7 +35,7 @@ fun PostRowHeader(
     isDetailed: Boolean,
     createdAt: Long,
     myTopic: String?,
-    collapsedText: String? = null,
+    collapsedText: AnnotatedString? = null,
     onUpdate: OnUpdate
 ) {
     val onOpenProfile = { onUpdate(OpenProfile(nprofile = createNprofile(hex = pubkey))) }
@@ -55,7 +57,12 @@ fun PostRowHeader(
         }
         Spacer(modifier = Modifier.width(spacing.large))
         if (collapsedText == null) RelativeTime(from = createdAt)
-        else Text(text = collapsedText, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        else ClickableText(
+            text = collapsedText,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            onClick = { offset -> onUpdate(ClickText(text = collapsedText, offset = offset)) }
+        )
     }
 }
 

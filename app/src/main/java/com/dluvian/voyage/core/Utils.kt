@@ -17,24 +17,27 @@ import kotlinx.coroutines.launch
 import rust.nostr.protocol.Metadata
 import rust.nostr.protocol.PublicKey
 
-fun PublicKey.shortenBech32(): String {
-    val bech32 = this.toBech32()
-    return "${bech32.take(10)}:${bech32.takeLast(5)}"
+fun PublicKey.toShortenedNpub(): String {
+    return shortenBech32(bech32 = this.toBech32())
 }
+
+fun shortenBech32(bech32: Bech32) = "${bech32.take(10)}:${bech32.takeLast(5)}"
 
 fun PubkeyHex.toShortenedBech32(): String {
     if (this.isEmpty()) return ""
     val pubkey = runCatching { PublicKey.fromHex(this) }.getOrNull() ?: return ""
-    return pubkey.shortenBech32()
+    return pubkey.toShortenedNpub()
 }
 
 private val hashtagRegex = Regex("""#\w+""")
-fun extractHashtags(content: String): List<Topic> {
+fun extractCleanHashtags(content: String): List<Topic> {
     return hashtagRegex.findAll(content)
         .distinct()
         .map { it.value.removePrefix("#") }
         .toList()
 }
+
+fun extractHashtags(extractFrom: String) = hashtagRegex.findAll(extractFrom).toList()
 
 fun Metadata.toRelevantMetadata(createdAt: Long): RelevantMetadata {
     return RelevantMetadata(about = this.getAbout()?.trim(), createdAt = createdAt)
@@ -86,3 +89,13 @@ fun CoroutineScope.launchIO(block: suspend CoroutineScope.() -> Unit): Job {
 fun <T> Collection<T>.takeRandom(n: Int): List<T> {
     return if (this.size <= n) return this.toList() else this.shuffled().take(n)
 }
+
+private val urlRegex = Regex(pattern = "https?://[^\\s]+")
+fun extractUrls(extractFrom: String) = urlRegex.findAll(extractFrom).toList()
+
+
+private val nostrMentionRegex = Regex("(nostr:|@)(npub1|note1|nevent1|nprofile1)[a-zA-Z0-9]+")
+fun extractNostrMentions(extractFrom: String) = nostrMentionRegex.findAll(extractFrom).toList()
+
+fun shortenUrl(url: String) = url.removePrefix("https://").removePrefix("http://")
+

@@ -1,8 +1,9 @@
 package com.dluvian.voyage.data.model
 
+import androidx.compose.ui.text.AnnotatedString
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 
-data class FullProfile(
+data class FullProfileUI(
     val inner: AdvancedProfileView = AdvancedProfileView(),
-    val about: String? = null,
+    val about: AnnotatedString? = null,
 )

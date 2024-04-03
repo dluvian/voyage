@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -22,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Fn
@@ -84,7 +86,6 @@ fun CreateResponseViewContent(parent: IParentUI?, response: MutableState<String>
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Parent(parent: IParentUI) {
     val showFullParent = remember { mutableStateOf(false) }
@@ -116,7 +117,7 @@ private fun Parent(parent: IParentUI) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FullPostBottomSheet(isVisible: Boolean, content: String, onDismiss: Fn) {
+fun FullPostBottomSheet(isVisible: Boolean, content: AnnotatedString, onDismiss: Fn) {
     if (isVisible) ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(
             modifier = Modifier
@@ -133,7 +134,7 @@ fun FullPostBottomSheet(isVisible: Boolean, content: String, onDismiss: Fn) {
                     .fillMaxWidth()
                     .padding(vertical = spacing.xl)
             )
-            Text(text = content)
+            ClickableText(text = content, onClick = { })
         }
     }
 }

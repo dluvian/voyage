@@ -25,7 +25,8 @@ class ThreadProvider(
     private val rootPostDao: RootPostDao,
     private val replyDao: ReplyDao,
     private val forcedVotes: Flow<Map<EventIdHex, Vote>>,
-    private val collapsedIds: Flow<Set<EventIdHex>>
+    private val collapsedIds: Flow<Set<EventIdHex>>,
+    private val annotatedStringProvider: AnnotatedStringProvider,
 ) {
 
     @OptIn(FlowPreview::class)
@@ -36,7 +37,10 @@ class ThreadProvider(
             rootPostDao.getRootPostFlow(id = nevent.eventId().toHex()),
             forcedVotes
         ) { post, votes ->
-            post?.mapToRootPostUI(forcedVotes = votes)
+            post?.mapToRootPostUI(
+                forcedVotes = votes,
+                annotatedStringProvider = annotatedStringProvider
+            )
         }.debounce(SHORT_DEBOUNCE)
     }
 
@@ -67,7 +71,8 @@ class ThreadProvider(
                     level = parent?.level?.plus(1) ?: 0,
                     forcedVotes = votes,
                     collapsedIds = collapsed,
-                    parentIds = parentIds
+                    parentIds = parentIds,
+                    annotatedStringProvider = annotatedStringProvider
                 )
 
                 if (reply.parentId == rootId) {

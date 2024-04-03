@@ -8,7 +8,7 @@ import com.dluvian.nostr_kt.getTitle
 import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.extractHashtags
+import com.dluvian.voyage.core.extractCleanHashtags
 import com.dluvian.voyage.data.event.ValidatedReply
 import com.dluvian.voyage.data.event.ValidatedRootPost
 import com.dluvian.voyage.data.nostr.NostrService
@@ -33,7 +33,7 @@ class PostSender(
         return nostrService.publishPost(
             title = trimmedHeader,
             content = trimmedBody,
-            topics = extractHashtags(content = concat),
+            topics = extractCleanHashtags(content = concat),
             mentions = extractMentionPubkeys(content = concat),
             relayUrls = relayProvider.getReadRelays() // TODO: publish to mentions inbox relays too
         ).onSuccess { event ->

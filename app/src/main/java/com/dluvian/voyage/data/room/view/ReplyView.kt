@@ -6,6 +6,7 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.model.LeveledReplyUI
 import com.dluvian.voyage.core.model.ReplyUI
 import com.dluvian.voyage.data.interactor.Vote
+import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 
 
 @DatabaseView(
@@ -40,8 +41,14 @@ data class ReplyView(
     val downvoteCount: Int,
     val replyCount: Int,
 ) {
-    fun mapToReplyUI(forcedVotes: Map<EventIdHex, Vote>): ReplyUI {
-        val reply = ReplyUI.from(replyView = this)
+    private fun mapToReplyUI(
+        forcedVotes: Map<EventIdHex, Vote>,
+        annotatedStringProvider: AnnotatedStringProvider
+    ): ReplyUI {
+        val reply = ReplyUI.from(
+            replyView = this,
+            annotatedStringProvider = annotatedStringProvider
+        )
         val vote = forcedVotes.getOrDefault(this.id, null)
         return if (vote != null) reply.copy(myVote = vote) else reply
     }
@@ -50,11 +57,15 @@ data class ReplyView(
         level: Int,
         forcedVotes: Map<EventIdHex, Vote>,
         collapsedIds: Set<EventIdHex>,
-        parentIds: Set<EventIdHex>
+        parentIds: Set<EventIdHex>,
+        annotatedStringProvider: AnnotatedStringProvider,
     ): LeveledReplyUI {
         return LeveledReplyUI(
             level = level,
-            reply = this.mapToReplyUI(forcedVotes = forcedVotes),
+            reply = this.mapToReplyUI(
+                forcedVotes = forcedVotes,
+                annotatedStringProvider = annotatedStringProvider
+            ),
             isCollapsed = collapsedIds.contains(this.id),
             hasLoadedReplies = parentIds.contains(this.id)
         )
