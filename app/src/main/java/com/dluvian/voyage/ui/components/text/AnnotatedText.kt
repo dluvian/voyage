@@ -12,11 +12,13 @@ import androidx.compose.ui.text.style.TextOverflow
 @Composable
 fun AnnotatedText(
     text: AnnotatedString,
-    style: TextStyle = MaterialTheme.typography.bodyLarge,
+    style: TextStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
     maxLines: Int = Int.MAX_VALUE,
     onClick: (Int) -> Unit
 ) {
-    val annotatedString = remember(text) { useDefaultTextStyle(text = text, style = style) }
+    val annotatedString = remember(text, style) {
+        useDefaultTextStyle(text = text, style = style)
+    }
     ClickableText(
         text = annotatedString,
         maxLines = maxLines,
