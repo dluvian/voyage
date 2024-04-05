@@ -13,6 +13,7 @@ fun TopicView(vm: TopicViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdat
     TopicScaffold(vm = vm, snackbar = snackbar, onUpdate = onUpdate) {
         Feed(
             paginator = vm.paginator,
+            state = vm.feedState,
             onRefresh = { onUpdate(TopicViewRefresh) },
             onAppend = { onUpdate(TopicViewAppend) },
             onUpdate = onUpdate

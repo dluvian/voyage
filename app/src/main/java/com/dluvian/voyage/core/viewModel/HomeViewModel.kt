@@ -1,5 +1,6 @@
 package com.dluvian.voyage.core.viewModel
 
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.core.HomeViewAction
@@ -16,7 +17,8 @@ import kotlinx.coroutines.Job
 
 class HomeViewModel(
     feedProvider: FeedProvider,
-    private val nostrSubscriber: NostrSubscriber
+    private val nostrSubscriber: NostrSubscriber,
+    val feedState: LazyListState,
 ) : ViewModel() {
     val paginator = Paginator(feedProvider = feedProvider, scope = viewModelScope)
 

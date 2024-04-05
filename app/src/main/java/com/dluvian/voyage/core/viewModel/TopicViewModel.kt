@@ -1,5 +1,6 @@
 package com.dluvian.voyage.core.viewModel
 
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,7 +19,8 @@ import kotlinx.coroutines.flow.stateIn
 
 class TopicViewModel(
     feedProvider: FeedProvider,
-    private val topicProvider: TopicProvider
+    private val topicProvider: TopicProvider,
+    val feedState: LazyListState,
 ) : ViewModel() {
 
     val currentTopic = mutableStateOf("")

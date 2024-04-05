@@ -1,5 +1,6 @@
 package com.dluvian.voyage.core.viewModel
 
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -25,6 +26,7 @@ class ProfileViewModel(
     feedProvider: FeedProvider,
     private val nostrSubscriber: NostrSubscriber,
     private val profileProvider: ProfileProvider,
+    val feedState: LazyListState,
 ) : ViewModel() {
     val paginator = Paginator(feedProvider = feedProvider, scope = viewModelScope)
     val profile: MutableState<StateFlow<FullProfileUI>> =

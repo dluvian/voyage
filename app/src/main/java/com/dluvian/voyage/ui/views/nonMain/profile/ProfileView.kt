@@ -31,6 +31,7 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
     ProfileScaffold(profile = profile, snackbar = snackbar, onUpdate = onUpdate) {
         Feed(
             paginator = vm.paginator,
+            state = vm.feedState,
             onRefresh = { onUpdate(ProfileViewRefresh) },
             onAppend = { onUpdate(ProfileViewAppend) },
             onUpdate = onUpdate,

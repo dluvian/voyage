@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -76,11 +77,16 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun createVMContainer(appContainer: AppContainer): VMContainer {
+    val homeFeedState = rememberLazyListState()
+    val profileFeedState = rememberLazyListState()
+    val topicFeedState = rememberLazyListState()
+
     return VMContainer(
         homeVM = viewModel {
             HomeViewModel(
                 feedProvider = appContainer.feedProvider,
-                nostrSubscriber = appContainer.nostrSubscriber
+                nostrSubscriber = appContainer.nostrSubscriber,
+                feedState = homeFeedState,
             )
         },
         discoverVM = viewModel {
@@ -109,6 +115,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 feedProvider = appContainer.feedProvider,
                 nostrSubscriber = appContainer.nostrSubscriber,
                 profileProvider = appContainer.profileProvider,
+                feedState = profileFeedState,
             )
         },
         threadVM = viewModel {
@@ -121,6 +128,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             TopicViewModel(
                 feedProvider = appContainer.feedProvider,
                 topicProvider = appContainer.topicProvider,
+                feedState = topicFeedState,
             )
         },
         createPostVM = viewModel {

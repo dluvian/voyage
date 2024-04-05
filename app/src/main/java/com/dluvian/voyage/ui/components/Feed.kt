@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -25,6 +26,7 @@ import com.dluvian.voyage.ui.theme.spacing
 @Composable
 fun Feed(
     paginator: IPaginator,
+    state: LazyListState,
     onRefresh: Fn,
     onAppend: Fn,
     onUpdate: OnUpdate,
@@ -36,7 +38,7 @@ fun Feed(
 
     PullRefreshBox(isRefreshing = isRefreshing, onRefresh = onRefresh) {
         if (isAppending) FullLinearProgressIndicator()
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(modifier = Modifier.fillMaxSize(), state = state) {
             item { header() }
             items(items = posts, key = { item -> item.id }) { post ->
                 PostRow(
