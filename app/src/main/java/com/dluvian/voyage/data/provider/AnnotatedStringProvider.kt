@@ -25,11 +25,13 @@ private const val TAG = "AnnotatedStringProvider"
 class AnnotatedStringProvider(
     private val nameProvider: NameProvider,
 ) {
-    private val NEVENT_TAG = "NEVENT"
-    private val NOTE1_TAG = "NOTE1"
-    private val NPROFILE_TAG = "NPROFILE"
-    private val NPUB_TAG = "NPUB"
-    private val HASHTAG = "HASHTAG"
+    companion object {
+        const val NEVENT_TAG = "NEVENT"
+        const val NOTE1_TAG = "NOTE1"
+        const val NPROFILE_TAG = "NPROFILE"
+        const val NPUB_TAG = "NPUB"
+        const val HASHTAG = "HASHTAG"
+    }
 
     private val cache: MutableMap<String, AnnotatedString> =
         Collections.synchronizedMap(mutableMapOf())
@@ -106,6 +108,7 @@ class AnnotatedStringProvider(
             append(editedContent)
         }
         if (isCacheable) cache[str] = result
+
         return result
     }
 

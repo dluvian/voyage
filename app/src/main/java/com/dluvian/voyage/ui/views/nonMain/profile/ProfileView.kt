@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import com.dluvian.voyage.R
@@ -40,6 +41,7 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
 
 @Composable
 private fun About(about: AnnotatedString, onUpdate: OnUpdate) {
+    val uriHandler = LocalUriHandler.current
     Column {
         Column(
             modifier = Modifier
@@ -53,7 +55,15 @@ private fun About(about: AnnotatedString, onUpdate: OnUpdate) {
             )
             ClickableText(
                 text = about,
-                onClick = { offset -> onUpdate(ClickText(text = about, offset = offset)) }
+                onClick = { offset ->
+                    onUpdate(
+                        ClickText(
+                            text = about,
+                            offset = offset,
+                            uriHandler = uriHandler
+                        )
+                    )
+                }
             )
         }
         FullHorizontalDivider()

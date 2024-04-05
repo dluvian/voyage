@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import com.dluvian.nostr_kt.createNprofile
-import com.dluvian.voyage.core.ClickText
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
@@ -61,7 +60,7 @@ fun PostRowHeader(
             text = collapsedText,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            onClick = { offset -> onUpdate(ClickText(text = collapsedText, offset = offset)) }
+            onClick = { }
         )
     }
 }

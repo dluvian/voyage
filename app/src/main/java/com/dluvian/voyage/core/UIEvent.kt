@@ -2,6 +2,7 @@ package com.dluvian.voyage.core
 
 import android.content.Context
 import androidx.activity.result.ActivityResult
+import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.text.AnnotatedString
 import com.dluvian.voyage.core.model.IParentUI
 import com.dluvian.voyage.core.model.RootPostUI
@@ -157,4 +158,9 @@ data class SearchText(
 
 
 data class ProcessExternalSignature(val activityResult: ActivityResult) : UIEvent()
-data class ClickText(val text: AnnotatedString, val offset: Int) : UIEvent()
+data class ClickText(
+    val text: AnnotatedString,
+    val offset: Int,
+    val uriHandler: UriHandler,
+    val rootPost: RootPostUI? = null,
+) : UIEvent()

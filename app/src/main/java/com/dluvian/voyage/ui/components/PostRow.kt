@@ -10,6 +10,8 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.dluvian.voyage.core.ClickText
@@ -28,6 +30,17 @@ fun PostRow(post: RootPostUI, isDetailed: Boolean = false, onUpdate: OnUpdate) {
             .clickable(onClick = { onUpdate(OpenThread(rootPost = post)) })
             .padding(spacing.screenEdge)
     ) {
+        val uriHandler = LocalUriHandler.current
+        val onClickText = { offset: Int, text: AnnotatedString ->
+            onUpdate(
+                ClickText(
+                    text = text,
+                    offset = offset,
+                    uriHandler = uriHandler,
+                    rootPost = post
+                )
+            )
+        }
         PostRowHeader(
             trustType = post.trustType,
             authorName = post.authorName,
@@ -44,7 +57,7 @@ fun PostRow(post: RootPostUI, isDetailed: Boolean = false, onUpdate: OnUpdate) {
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
                 maxLines = if (isDetailed) Int.MAX_VALUE else 3,
                 overflow = TextOverflow.Ellipsis,
-                onClick = { offset -> onUpdate(ClickText(text = post.title, offset = offset)) }
+                onClick = { onClickText(it, post.title) }
             )
             Spacer(modifier = Modifier.height(spacing.large))
         }
@@ -52,7 +65,7 @@ fun PostRow(post: RootPostUI, isDetailed: Boolean = false, onUpdate: OnUpdate) {
             text = post.content,
             maxLines = if (isDetailed) Int.MAX_VALUE else 12,
             overflow = TextOverflow.Ellipsis,
-            onClick = { offset -> onUpdate(ClickText(text = post.content, offset = offset)) }
+            onClick = { onClickText(it, post.content) }
         )
         Spacer(modifier = Modifier.height(spacing.large))
         PostRowActions(
