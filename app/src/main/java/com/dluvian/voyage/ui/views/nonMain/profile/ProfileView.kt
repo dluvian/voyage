@@ -3,7 +3,6 @@ package com.dluvian.voyage.ui.views.nonMain.profile
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -22,6 +21,7 @@ import com.dluvian.voyage.core.ProfileViewRefresh
 import com.dluvian.voyage.core.viewModel.ProfileViewModel
 import com.dluvian.voyage.ui.components.Feed
 import com.dluvian.voyage.ui.components.FullHorizontalDivider
+import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
@@ -53,7 +53,7 @@ private fun About(about: AnnotatedString, onUpdate: OnUpdate) {
                 text = stringResource(id = R.string.about),
                 style = MaterialTheme.typography.titleMedium
             )
-            ClickableText(
+            AnnotatedText(
                 text = about,
                 onClick = { offset ->
                     onUpdate(

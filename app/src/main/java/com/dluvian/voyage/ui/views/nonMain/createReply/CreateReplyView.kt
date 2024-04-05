@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -33,6 +32,7 @@ import com.dluvian.voyage.core.SendReply
 import com.dluvian.voyage.core.model.IParentUI
 import com.dluvian.voyage.core.viewModel.CreateReplyViewModel
 import com.dluvian.voyage.ui.components.TextInput
+import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.theme.ExpandIcon
 import com.dluvian.voyage.ui.theme.light
 import com.dluvian.voyage.ui.theme.spacing
@@ -73,7 +73,14 @@ fun CreateReplyView(
 @Composable
 fun CreateResponseViewContent(parent: IParentUI?, response: MutableState<String>) {
     Column {
-        if (parent != null) Parent(parent = parent)
+        if (parent != null) {
+            Parent(parent = parent)
+            HorizontalDivider(
+                modifier = Modifier
+                    .padding(horizontal = spacing.screenEdge)
+                    .padding(top = spacing.xxl)
+            )
+        }
 
         TextInput(
             modifier = Modifier.fillMaxSize(),
@@ -100,7 +107,7 @@ private fun Parent(parent: IParentUI) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            modifier = Modifier.weight(weight = 1f, fill = false),
+            modifier = Modifier.weight(weight = 1f, fill = true),
             text = parent.content,
             maxLines = 3,
             overflow = TextOverflow.Ellipsis
@@ -134,7 +141,7 @@ fun FullPostBottomSheet(isVisible: Boolean, content: AnnotatedString, onDismiss:
                     .fillMaxWidth()
                     .padding(vertical = spacing.xl)
             )
-            ClickableText(text = content, onClick = { })
+            AnnotatedText(text = content, onClick = { })
         }
     }
 }

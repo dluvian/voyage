@@ -7,12 +7,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.style.TextOverflow
 import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
@@ -23,6 +21,7 @@ import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.ui.components.chip.TopicChip
 import com.dluvian.voyage.ui.components.chip.TrustChip
 import com.dluvian.voyage.ui.components.icon.TrustIcon
+import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.components.text.RelativeTime
 import com.dluvian.voyage.ui.theme.spacing
 
@@ -56,10 +55,9 @@ fun PostRowHeader(
         }
         Spacer(modifier = Modifier.width(spacing.large))
         if (collapsedText == null) RelativeTime(from = createdAt)
-        else ClickableText(
+        else AnnotatedText(
             text = collapsedText,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
             onClick = { }
         )
     }
