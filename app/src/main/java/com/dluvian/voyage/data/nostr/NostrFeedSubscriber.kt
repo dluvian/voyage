@@ -2,8 +2,8 @@ package com.dluvian.voyage.data.nostr
 
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.secs
-import com.dluvian.voyage.core.ONE_WEEK_IN_SECS
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.core.TWO_WEEKS_IN_SECS
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.syncedPutOrAdd
 import com.dluvian.voyage.data.model.FilterWrapper
@@ -29,9 +29,9 @@ class NostrFeedSubscriber(
         limit: ULong
     ): Map<RelayUrl, List<FilterWrapper>> {
         if (limit <= 0u) return emptyMap()
-        val since = maxOf(1, until.secs() - ONE_WEEK_IN_SECS)
+        val since = maxOf(1, until.secs() - TWO_WEEKS_IN_SECS)
 
-        // Scope home feed to last week to prevent fetching useless notes
+        // Scope home feed to last two weeks to prevent fetching notes from inactive accounts
         val sinceTimestamp = Timestamp.fromSecs(secs = since.toULong())
 
         val result = mutableMapOf<RelayUrl, MutableList<FilterWrapper>>()

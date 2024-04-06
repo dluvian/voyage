@@ -21,6 +21,6 @@ const val MAX_PUBKEYS = 750
 const val RND_RESUB_COUNT = 20
 
 const val FEED_PAGE_SIZE = 40
-const val FEED_OFFSET = 15
+const val FEED_OFFSET = 10
 
-const val ONE_WEEK_IN_SECS = 7 * 24 * 60 * 60
+const val TWO_WEEKS_IN_SECS = 14 * 24 * 60 * 60

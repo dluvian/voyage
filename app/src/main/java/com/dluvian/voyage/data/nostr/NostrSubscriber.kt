@@ -60,7 +60,7 @@ class NostrSubscriber(
 
     suspend fun subFeed(until: Long, limit: Int, setting: FeedSetting) {
         val untilTimestamp = Timestamp.fromSecs(until.toULong())
-        val adjustedLimit = (5L * limit).toULong() // We don't know if we receive enough root posts
+        val adjustedLimit = (4 * limit).toULong() // We don't know if we receive enough root posts
 
         val subscriptions = when (setting) {
             is HomeFeedSetting -> feedSubscriber.getHomeFeedSubscriptions(

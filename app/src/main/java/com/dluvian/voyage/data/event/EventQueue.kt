@@ -12,7 +12,7 @@ import rust.nostr.protocol.Event
 import java.util.concurrent.atomic.AtomicBoolean
 
 private const val TAG = "EventQueue"
-private const val EVENT_PROCESSING_DELAY = 900L
+private const val EVENT_PROCESSING_DELAY = 600L
 
 class EventQueue(
     private val syncedQueue: MutableSet<RelayedValidatedEvent>,
