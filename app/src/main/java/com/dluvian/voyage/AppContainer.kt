@@ -4,11 +4,9 @@ import android.content.Context
 import androidx.compose.material3.SnackbarHostState
 import androidx.room.Room
 import com.dluvian.nostr_kt.NostrClient
-import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.RelayedValidatedEvent
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.account.AccountManager
 import com.dluvian.voyage.data.account.AccountSwitcher
@@ -21,6 +19,7 @@ import com.dluvian.voyage.data.event.EventQueue
 import com.dluvian.voyage.data.event.EventSweeper
 import com.dluvian.voyage.data.event.EventValidator
 import com.dluvian.voyage.data.event.OldestUsedEvent
+import com.dluvian.voyage.data.event.ValidatedEvent
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
 import com.dluvian.voyage.data.interactor.PostSender
 import com.dluvian.voyage.data.interactor.PostVoter
@@ -55,13 +54,10 @@ class AppContainer(context: Context) {
     ).build()
 
     // Shared collections
-    private val syncedEventQueueSet = Collections
-        .synchronizedSet(mutableSetOf<RelayedValidatedEvent>())
+    private val syncedEventQueueSet = Collections.synchronizedSet(mutableSetOf<ValidatedEvent>())
     private val syncedFilterCache = Collections
         .synchronizedMap(mutableMapOf<SubId, List<FilterWrapper>>())
     private val syncedIdCache = Collections.synchronizedSet(mutableSetOf<EventIdHex>())
-    private val syncedEventRelayCache = Collections
-        .synchronizedSet(mutableSetOf<Pair<EventIdHex, RelayUrl>>())
 
     val snackbar = SnackbarHostState()
     private val client = OkHttpClient()
@@ -72,7 +68,6 @@ class AppContainer(context: Context) {
     private val eventCacheClearer = EventCacheClearer(
         syncedEventQueue = syncedEventQueueSet,
         syncedIdCache = syncedIdCache,
-        syncedEventRelayCache = syncedEventRelayCache
     )
 
     private val relayProvider = RelayProvider(
@@ -114,7 +109,6 @@ class AppContainer(context: Context) {
     private val eventValidator = EventValidator(
         syncedFilterCache = syncedFilterCache,
         syncedIdCache = syncedIdCache,
-        syncedEventRelayCache = syncedEventRelayCache,
         pubkeyProvider = accountManager
     )
     private val eventProcessor = EventProcessor(

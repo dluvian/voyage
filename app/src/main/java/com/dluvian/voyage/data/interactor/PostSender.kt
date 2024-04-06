@@ -30,12 +30,14 @@ class PostSender(
         val trimmedBody = body.trim()
         val concat = "$trimmedHeader $trimmedBody"
 
+        val writeRelays = relayProvider.getWriteRelays()
+
         return nostrService.publishPost(
             title = trimmedHeader,
             content = trimmedBody,
             topics = extractCleanHashtags(content = concat),
             mentions = extractMentionPubkeys(content = concat),
-            relayUrls = relayProvider.getReadRelays() // TODO: publish to mentions inbox relays too
+            relayUrls = writeRelays // TODO: publish to mentions inbox relays too
         ).onSuccess { event ->
             val validatedPost = ValidatedRootPost(
                 id = event.id().toHex(),
@@ -43,7 +45,8 @@ class PostSender(
                 topics = event.getHashtags(),
                 title = event.getTitle(),
                 content = event.content(),
-                createdAt = event.createdAt().secs()
+                createdAt = event.createdAt().secs(),
+                relayUrl = writeRelays.random()
             )
             postInsertDao.insertRootPost(rootPost = validatedPost)
         }.onFailure {
@@ -58,20 +61,22 @@ class PostSender(
         relayHint: RelayUrl,
     ): Result<Event> {
         val trimmedBody = body.trim()
+        val writeRelays = relayProvider.getWriteRelays()
 
         return nostrService.publishReply(
             content = trimmedBody,
             parentId = parentId,
             mentions = (extractMentionPubkeys(content = trimmedBody) + recipient).distinct(),
             relayHint = relayHint,
-            relayUrls = relayProvider.getReadRelays() // TODO: publish to mentions inbox relays too
+            relayUrls = writeRelays // TODO: publish to mentions inbox relays too
         ).onSuccess { event ->
             val validatedReply = ValidatedReply(
                 id = event.id().toHex(),
                 pubkey = event.author().toHex(),
                 parentId = parentId,
                 content = event.content(),
-                createdAt = event.createdAt().secs()
+                createdAt = event.createdAt().secs(),
+                relayUrl = writeRelays.random()
             )
             postInsertDao.insertReply(reply = validatedReply)
         }.onFailure {

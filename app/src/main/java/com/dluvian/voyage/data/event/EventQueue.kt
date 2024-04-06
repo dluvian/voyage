@@ -3,7 +3,6 @@ package com.dluvian.voyage.data.event
 import android.util.Log
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
-import com.dluvian.voyage.core.RelayedValidatedEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -15,7 +14,7 @@ private const val TAG = "EventQueue"
 private const val EVENT_PROCESSING_DELAY = 600L
 
 class EventQueue(
-    private val syncedQueue: MutableSet<RelayedValidatedEvent>,
+    private val syncedQueue: MutableSet<ValidatedEvent>,
     private val eventValidator: EventValidator,
     private val eventProcessor: EventProcessor,
 ) {
@@ -50,7 +49,7 @@ class EventQueue(
             while (true) {
                 delay(EVENT_PROCESSING_DELAY)
 
-                val events = mutableSetOf<RelayedValidatedEvent>()
+                val events = mutableSetOf<ValidatedEvent>()
                 synchronized(syncedQueue) {
                     events.addAll(syncedQueue.toList())
                     syncedQueue.clear()

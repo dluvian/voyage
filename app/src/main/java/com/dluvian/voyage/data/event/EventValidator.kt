@@ -10,7 +10,6 @@ import com.dluvian.nostr_kt.getReplyToId
 import com.dluvian.nostr_kt.getTitle
 import com.dluvian.nostr_kt.isContactList
 import com.dluvian.nostr_kt.isNip65
-import com.dluvian.nostr_kt.isPostOrReply
 import com.dluvian.nostr_kt.isProfile
 import com.dluvian.nostr_kt.isReplyPost
 import com.dluvian.nostr_kt.isRootPost
@@ -25,13 +24,11 @@ import com.dluvian.voyage.core.MAX_TOPIC_LEN
 import com.dluvian.voyage.core.isBareTopicStr
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.model.FilterWrapper
-import com.dluvian.voyage.data.model.RelayedItem
 import rust.nostr.protocol.Event
 
 class EventValidator(
     private val syncedFilterCache: Map<SubId, List<FilterWrapper>>,
     private val syncedIdCache: MutableSet<EventIdHex>,
-    private val syncedEventRelayCache: MutableSet<Pair<EventIdHex, RelayUrl>>,
     private val pubkeyProvider: IPubkeyProvider,
 ) {
     private val tag = "EventValidator"
@@ -40,37 +37,24 @@ class EventValidator(
         event: Event,
         subId: SubId,
         relayUrl: RelayUrl
-    ): RelayedItem<ValidatedEvent>? {
-        if (isCached(event = event, relayUrl = relayUrl)) return null
+    ): ValidatedEvent? {
+        val idHex = event.id().toHex()
+        if (syncedIdCache.contains(idHex)) return null
 
         if (!matchesFilter(subId = subId, event = event)) {
-            Log.v(tag, "Discard event not matching filter, ${event.id().toHex()} from $relayUrl")
+            Log.v(tag, "Discard event not matching filter, $idHex from $relayUrl")
             return null
         }
-        val validatedEvent = validate(event = event)
-        cache(event = event, relayUrl = relayUrl)
+
+        val validatedEvent = validate(event = event, relayUrl = relayUrl)
+        syncedIdCache.add(idHex)
+
         if (validatedEvent == null) {
-            Log.w(tag, "Discard invalid event ${event.id().toHex()} from $relayUrl")
+            Log.w(tag, "Discard invalid event $idHex from $relayUrl")
             return null
         }
 
-        return RelayedItem(item = validatedEvent, relayUrl = relayUrl)
-    }
-
-    private fun isCached(event: Event, relayUrl: RelayUrl): Boolean {
-        val eventIdHex = event.id().toHex()
-        val idIsCached = syncedIdCache.contains(eventIdHex)
-        if (event.isPostOrReply()) {
-            return idIsCached && syncedEventRelayCache.contains(Pair(eventIdHex, relayUrl))
-        }
-
-        return idIsCached
-    }
-
-    private fun cache(event: Event, relayUrl: RelayUrl) {
-        val eventIdHex = event.id().toHex()
-        syncedIdCache.add(eventIdHex)
-        if (event.isPostOrReply()) syncedEventRelayCache.add(Pair(eventIdHex, relayUrl))
+        return validatedEvent
     }
 
     private fun matchesFilter(subId: SubId, event: Event): Boolean {
@@ -88,7 +72,7 @@ class EventValidator(
         return filters.any { it.filter.matchEvent(event = event) && it.e.contains(replyToId) }
     }
 
-    private fun validate(event: Event): ValidatedEvent? {
+    private fun validate(event: Event, relayUrl: RelayUrl): ValidatedEvent? {
         val validatedEvent = if (event.isRootPost()) {
             val topics = event.getHashtags()
                 .map { it.removePrefix("#").trim().take(MAX_TOPIC_LEN).lowercase() }
@@ -104,7 +88,8 @@ class EventValidator(
                 topics = topics,
                 title = title,
                 content = content,
-                createdAt = event.createdAt().secs()
+                createdAt = event.createdAt().secs(),
+                relayUrl = relayUrl,
             )
         } else if (event.isReplyPost()) {
             val replyToId = event.getReplyToId() ?: return null
@@ -119,7 +104,8 @@ class EventValidator(
                 pubkey = event.author().toHex(),
                 parentId = replyToId,
                 content = content,
-                createdAt = event.createdAt().secs()
+                createdAt = event.createdAt().secs(),
+                relayUrl = relayUrl,
             )
         } else if (event.isVote()) {
             val postId = event.eventIds().firstOrNull() ?: return null

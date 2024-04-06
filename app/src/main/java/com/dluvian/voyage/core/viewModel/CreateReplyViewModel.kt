@@ -60,10 +60,7 @@ class CreateReplyViewModel(
                 parentId = parent.id,
                 recipient = parent.pubkey,
                 body = body,
-                relayHint = eventRelayDao.getEventRelays(eventId = parent.id)
-                    .shuffled()
-                    .firstOrNull()
-                    .orEmpty(),
+                relayHint = eventRelayDao.getEventRelay(eventId = parent.id).orEmpty(),
             )
             delay(DELAY_1SEC)
             onGoBack()

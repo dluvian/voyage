@@ -1,6 +1,7 @@
 package com.dluvian.voyage.data.event
 
 import com.dluvian.nostr_kt.Nip65Relay
+import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
@@ -16,7 +17,8 @@ data class ValidatedRootPost(
     override val topics: List<String>,
     val title: String?,
     val content: String,
-    val createdAt: Long
+    val createdAt: Long,
+    val relayUrl: RelayUrl
 ) : ValidatedPost(id = id, topics = topics)
 
 data class ValidatedReply(
@@ -24,7 +26,8 @@ data class ValidatedReply(
     val pubkey: PubkeyHex,
     val parentId: EventIdHex,
     val content: String,
-    val createdAt: Long
+    val createdAt: Long,
+    val relayUrl: RelayUrl
 ) : ValidatedPost(id = id, topics = emptyList())
 
 data class ValidatedVote(

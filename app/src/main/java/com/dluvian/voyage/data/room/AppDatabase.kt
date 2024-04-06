@@ -23,7 +23,6 @@ import com.dluvian.voyage.data.room.dao.tx.TopicUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.VoteUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.WebOfTrustUpsertDao
 import com.dluvian.voyage.data.room.entity.AccountEntity
-import com.dluvian.voyage.data.room.entity.EventRelayEntity
 import com.dluvian.voyage.data.room.entity.FriendEntity
 import com.dluvian.voyage.data.room.entity.HashtagEntity
 import com.dluvian.voyage.data.room.entity.Nip65Entity
@@ -48,7 +47,6 @@ import com.dluvian.voyage.data.room.view.RootPostView
     entities = [
         PostEntity::class,
         VoteEntity::class,
-        EventRelayEntity::class,
         AccountEntity::class,
         FriendEntity::class,
         WebOfTrustEntity::class,

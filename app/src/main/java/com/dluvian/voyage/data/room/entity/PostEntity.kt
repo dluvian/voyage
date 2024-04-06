@@ -3,6 +3,7 @@ package com.dluvian.voyage.data.room.entity
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
+import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_CONTENT_LEN
 import com.dluvian.voyage.core.MAX_TITLE_LEN
@@ -30,6 +31,7 @@ data class PostEntity(
     val title: String?,
     val content: String,
     val createdAt: Long,
+    val relayUrl: RelayUrl,
 ) {
     companion object {
 
@@ -42,6 +44,7 @@ data class PostEntity(
                     title = post.title?.trim()?.take(MAX_TITLE_LEN),
                     content = post.content.trim().take(MAX_CONTENT_LEN),
                     createdAt = post.createdAt,
+                    relayUrl = post.relayUrl
                 )
 
                 is ValidatedReply -> PostEntity(
@@ -51,6 +54,7 @@ data class PostEntity(
                     title = null,
                     content = post.content.trim().take(MAX_CONTENT_LEN),
                     createdAt = post.createdAt,
+                    relayUrl = post.relayUrl
                 )
             }
         }

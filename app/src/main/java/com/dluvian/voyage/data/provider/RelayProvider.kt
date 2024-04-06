@@ -91,7 +91,7 @@ class RelayProvider(
         eventRelayDao.getEventRelayAuthorView(authors = pubkeys)
             .sortedByDescending { it.relayCount }
             .distinctBy { it.pubkey }
-            .groupBy(keySelector = { it.relay }, valueTransform = { it.pubkey })
+            .groupBy(keySelector = { it.relayUrl }, valueTransform = { it.pubkey })
             .toList()
             .forEach { (relay, pubkeys) ->
                 if (pubkeys.isNotEmpty()) result.putOrAdd(relay, pubkeys)

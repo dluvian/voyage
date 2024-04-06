@@ -6,13 +6,12 @@ import com.dluvian.voyage.core.PubkeyHex
 
 
 @DatabaseView(
-    "SELECT post.pubkey, eventRelay.relayUrl AS relay, COUNT(*) AS relayCount " +
-            "FROM eventRelay " +
-            "LEFT JOIN post ON post.id = eventRelay.eventId " +
-            "GROUP BY post.pubkey, eventRelay.relayUrl"
+    "SELECT post.pubkey, post.relayUrl, COUNT(*) AS relayCount " +
+            "FROM post " +
+            "GROUP BY post.pubkey, post.relayUrl"
 )
 data class EventRelayAuthorView(
     val pubkey: PubkeyHex,
-    val relay: RelayUrl,
+    val relayUrl: RelayUrl,
     val relayCount: Int
 )

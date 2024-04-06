@@ -3,11 +3,9 @@ package com.dluvian.voyage.data.event
 import android.util.Log
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.RelayedValidatedEvent
 import com.dluvian.voyage.core.toRelevantMetadata
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
-import com.dluvian.voyage.data.model.RelayedItem
 import com.dluvian.voyage.data.room.AppDatabase
 import com.dluvian.voyage.data.room.entity.ProfileEntity
 import com.dluvian.voyage.data.room.entity.VoteEntity
@@ -24,34 +22,30 @@ class EventProcessor(
     private val tag = "EventProcessor"
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    fun processEvents(events: Set<RelayedValidatedEvent>) {
+    fun processEvents(events: Set<ValidatedEvent>) {
         if (events.isEmpty()) return
 
-        val rootPosts = mutableListOf<RelayedItem<ValidatedRootPost>>()
-        val replies = mutableListOf<RelayedItem<ValidatedReply>>()
+        val rootPosts = mutableListOf<ValidatedRootPost>()
+        val replies = mutableListOf<ValidatedReply>()
         val votes = mutableListOf<ValidatedVote>()
         val contactLists = mutableListOf<ValidatedContactList>()
         val topicLists = mutableListOf<ValidatedTopicList>()
         val nip65s = mutableListOf<ValidatedNip65>()
         val profiles = mutableListOf<ValidatedProfile>()
 
-        events.forEach { relayedItem ->
-            when (val item = relayedItem.item) {
-                is ValidatedRootPost ->
-                    rootPosts.add(RelayedItem(item = item, relayUrl = relayedItem.relayUrl))
-
-                is ValidatedReply ->
-                    replies.add(RelayedItem(item = item, relayUrl = relayedItem.relayUrl))
-
-                is ValidatedVote -> votes.add(item)
-                is ValidatedContactList -> contactLists.add(item)
-                is ValidatedTopicList -> topicLists.add(item)
-                is ValidatedNip65 -> nip65s.add(item)
-                is ValidatedProfile -> profiles.add(item)
+        events.forEach { event ->
+            when (event) {
+                is ValidatedRootPost -> rootPosts.add(event)
+                is ValidatedReply -> replies.add(event)
+                is ValidatedVote -> votes.add(event)
+                is ValidatedContactList -> contactLists.add(event)
+                is ValidatedTopicList -> topicLists.add(event)
+                is ValidatedNip65 -> nip65s.add(event)
+                is ValidatedProfile -> profiles.add(event)
             }
         }
-        processRootPosts(relayedRootPosts = rootPosts)
-        processReplies(relayedReplies = replies)
+        processRootPosts(rootPosts = rootPosts)
+        processReplies(replies = replies)
         processVotes(votes = votes)
         processContactLists(contactLists = contactLists)
         processTopicLists(topicLists = topicLists)
@@ -59,21 +53,21 @@ class EventProcessor(
         processProfiles(profiles = profiles)
     }
 
-    private fun processRootPosts(relayedRootPosts: Collection<RelayedItem<ValidatedRootPost>>) {
-        if (relayedRootPosts.isEmpty()) return
+    private fun processRootPosts(rootPosts: Collection<ValidatedRootPost>) {
+        if (rootPosts.isEmpty()) return
 
         scope.launch {
-            room.postInsertDao().insertRelayedRootPosts(relayedPosts = relayedRootPosts)
+            room.postInsertDao().insertRelayedRootPosts(posts = rootPosts)
         }.invokeOnCompletion { exception ->
             if (exception != null) Log.w(tag, "Failed to process root posts", exception)
         }
     }
 
-    private fun processReplies(relayedReplies: Collection<RelayedItem<ValidatedReply>>) {
-        if (relayedReplies.isEmpty()) return
+    private fun processReplies(replies: Collection<ValidatedReply>) {
+        if (replies.isEmpty()) return
 
         scope.launch {
-            room.postInsertDao().insertReplies(relayedReplies = relayedReplies)
+            room.postInsertDao().insertReplies(replies = replies)
         }.invokeOnCompletion { exception ->
             if (exception != null) Log.w(tag, "Failed to process replies", exception)
         }
