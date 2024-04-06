@@ -77,8 +77,10 @@ class AppContainer(context: Context) {
 
     private val forcedFollowStates = MutableStateFlow(emptyMap<Topic, Boolean>())
 
-    val topicProvider =
-        TopicProvider(topicDao = roomDb.topicDao(), forcedFollowStates = forcedFollowStates)
+    val topicProvider = TopicProvider(
+        topicDao = roomDb.topicDao(),
+        forcedFollowStates = forcedFollowStates
+    )
 
     private val accountManager = AccountManager(
         mnemonicSigner = mnemonicSigner,
