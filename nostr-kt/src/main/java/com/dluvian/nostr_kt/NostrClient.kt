@@ -16,7 +16,8 @@ import java.util.UUID
 
 private const val TAG = "Client"
 
-class NostrClient(private val httpClient: OkHttpClient) {
+class NostrClient {
+    private val httpClient = OkHttpClient()
     private val sockets: MutableMap<RelayUrl, WebSocket> =
         Collections.synchronizedMap(mutableMapOf())
     private val subscriptions: MutableMap<SubId, WebSocket> =

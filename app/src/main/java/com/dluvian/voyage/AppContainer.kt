@@ -43,7 +43,6 @@ import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import com.dluvian.voyage.data.room.AppDatabase
 import kotlinx.coroutines.flow.MutableStateFlow
-import okhttp3.OkHttpClient
 import java.util.Collections
 
 class AppContainer(context: Context) {
@@ -60,8 +59,7 @@ class AppContainer(context: Context) {
     private val syncedIdCache = Collections.synchronizedSet(mutableSetOf<EventIdHex>())
 
     val snackbar = SnackbarHostState()
-    private val client = OkHttpClient()
-    private val nostrClient = NostrClient(httpClient = client)
+    private val nostrClient = NostrClient()
     private val mnemonicSigner = MnemonicSigner(context = context)
     val externalSigner = ExternalSigner()
 
