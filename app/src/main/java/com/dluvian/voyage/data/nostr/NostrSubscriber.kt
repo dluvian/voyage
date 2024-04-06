@@ -142,7 +142,7 @@ class NostrSubscriber(
 
         val timestamp = Timestamp.now()
 
-        relayProvider.getAutopilotRelays(pubkeys = unknownPubkeys).forEach { (relay, pubkeyBatch) ->
+        relayProvider.getObserveRelays(pubkeys = unknownPubkeys).forEach { (relay, pubkeyBatch) ->
             val profileFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Metadata))
                 .authors(authors = pubkeyBatch.map { PublicKey.fromHex(it) })
                 .until(timestamp = timestamp)
@@ -179,7 +179,7 @@ class NostrSubscriber(
 
         val timestamp = Timestamp.now()
         relayProvider
-            .getAutopilotRelays(pubkeys = webOfTrustWithMissingProfiles)
+            .getObserveRelays(pubkeys = webOfTrustWithMissingProfiles)
             .forEach { (relay, pubkeys) ->
                 val profileFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Metadata))
                     .authors(authors = pubkeys.map { PublicKey.fromHex(it) })
@@ -228,7 +228,7 @@ class NostrSubscriber(
 
         val timestamp = Timestamp.now()
         relayProvider
-            .getAutopilotRelays(pubkeys = nip65Resub)
+            .getObserveRelays(pubkeys = nip65Resub)
             .forEach { (relay, pubkeys) ->
                 val nip65Filter = Filter().kind(kind = Kind.fromEnum(KindEnum.RelayList))
                     .authors(authors = pubkeys.map { PublicKey.fromHex(it) })
@@ -246,7 +246,7 @@ class NostrSubscriber(
 
         val timestamp = Timestamp.now()
         relayProvider
-            .getAutopilotRelays(pubkeys = webOfTrustResub)
+            .getObserveRelays(pubkeys = webOfTrustResub)
             .forEach { (relay, pubkeys) ->
                 val webOfTrustFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.ContactList))
                     .authors(authors = pubkeys.map { PublicKey.fromHex(it) })

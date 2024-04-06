@@ -65,7 +65,7 @@ class RelayProvider(
     }
 
     // TODO: Cache result and use it when applicable
-    suspend fun getAutopilotRelays(pubkeys: Collection<PubkeyHex>): Map<RelayUrl, Set<PubkeyHex>> {
+    suspend fun getObserveRelays(pubkeys: Collection<PubkeyHex>): Map<RelayUrl, Set<PubkeyHex>> {
         if (pubkeys.isEmpty()) return emptyMap()
 
         val result = mutableMapOf<RelayUrl, MutableSet<PubkeyHex>>()
@@ -98,10 +98,11 @@ class RelayProvider(
                 pubkeyCache.addAll(pubkeys)
             }
 
-        // Cover rest with my read relays
+        // Cover rest with my read and autopilot relays
         val restPubkeys = pubkeys - pubkeyCache
         if (restPubkeys.isNotEmpty()) {
             Log.w(tag, "Default to read relays for ${restPubkeys.size}/${pubkeys.size} pubkeys")
+            result.keys.forEach { relay -> result.putOrAdd(relay, restPubkeys) }
             getReadRelays().forEach { relay -> result.putOrAdd(relay, restPubkeys) }
         }
 
