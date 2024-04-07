@@ -15,6 +15,7 @@ const val DEBOUNCE = 600L
 const val MAX_EVENTS_TO_SUB = 1000uL
 
 const val MAX_RELAYS = 6
+const val MAX_RELAYS_PER_PUBKEY = 6
 
 const val MAX_PUBKEYS = 750
 

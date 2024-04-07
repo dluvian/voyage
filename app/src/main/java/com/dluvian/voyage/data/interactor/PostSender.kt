@@ -30,13 +30,14 @@ class PostSender(
         val trimmedBody = body.trim()
         val concat = "$trimmedHeader $trimmedBody"
 
-        val writeRelays = relayProvider.getWriteRelays()
+        val mentions = extractMentionPubkeys(content = concat)
+        val writeRelays = relayProvider.getPublishRelays(publishTo = mentions)
 
         return nostrService.publishPost(
             title = trimmedHeader,
             content = trimmedBody,
             topics = extractCleanHashtags(content = concat),
-            mentions = extractMentionPubkeys(content = concat),
+            mentions = mentions,
             relayUrls = writeRelays
         ).onSuccess { event ->
             val validatedPost = ValidatedRootPost(
@@ -61,12 +62,13 @@ class PostSender(
         relayHint: RelayUrl,
     ): Result<Event> {
         val trimmedBody = body.trim()
-        val writeRelays = relayProvider.getWriteRelays()
+        val mentions = (extractMentionPubkeys(content = trimmedBody) + recipient).distinct()
+        val writeRelays = relayProvider.getPublishRelays(publishTo = mentions)
 
         return nostrService.publishReply(
             content = trimmedBody,
             parentId = parentId,
-            mentions = (extractMentionPubkeys(content = trimmedBody) + recipient).distinct(),
+            mentions = mentions,
             relayHint = relayHint,
             relayUrls = writeRelays
         ).onSuccess { event ->

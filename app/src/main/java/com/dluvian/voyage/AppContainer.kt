@@ -71,16 +71,17 @@ class AppContainer(context: Context) {
 
     private val relayProvider = RelayProvider(
         nip65Dao = roomDb.nip65Dao(),
-        eventRelayDao = roomDb.eventRelayDao()
+        eventRelayDao = roomDb.eventRelayDao(),
+        nostrClient = nostrClient
     )
     private val friendProvider = FriendProvider(friendDao = roomDb.friendDao())
     private val webOfTrustProvider = WebOfTrustProvider(webOfTrustDao = roomDb.webOfTrustDao())
 
-    private val forcedFollowStates = MutableStateFlow(emptyMap<Topic, Boolean>())
+    private val forcedFollowTopicStates = MutableStateFlow(emptyMap<Topic, Boolean>())
 
     val topicProvider = TopicProvider(
         topicDao = roomDb.topicDao(),
-        forcedFollowStates = forcedFollowStates
+        forcedFollowStates = forcedFollowTopicStates
     )
 
     private val accountManager = AccountManager(
@@ -160,7 +161,7 @@ class AppContainer(context: Context) {
         topicDao = roomDb.topicDao(),
         snackbar = snackbar,
         context = context,
-        forcedFollowStates = forcedFollowStates
+        forcedFollowStates = forcedFollowTopicStates
     )
 
     private val oldestUsedEvent = OldestUsedEvent()

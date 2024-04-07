@@ -111,7 +111,7 @@ class PostVoter(
             mention = PublicKey.fromHex(mention),
             isPositive = isPositive,
             kind = kind,
-            relayUrls = relayProvider.getPublishRelays(publishTo = mention)
+            relayUrls = relayProvider.getPublishRelays(publishTo = listOf(mention))
         )
             .onSuccess { event ->
                 val entity = VoteEntity(

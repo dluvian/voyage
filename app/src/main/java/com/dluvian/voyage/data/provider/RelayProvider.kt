@@ -5,6 +5,7 @@ import com.dluvian.nostr_kt.NostrClient
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.removeTrailingSlashes
 import com.dluvian.voyage.core.MAX_RELAYS
+import com.dluvian.voyage.core.MAX_RELAYS_PER_PUBKEY
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.putOrAdd
 import com.dluvian.voyage.core.takeRandom
@@ -42,8 +43,14 @@ class RelayProvider(
             .let { if (limit) it.takeRandom(MAX_RELAYS) else it }
     }
 
-    suspend fun getPublishRelays(publishTo: PubkeyHex): List<RelayUrl> {
-        val foreignRelays = nip65Dao.getReadRelays(pubkey = publishTo).takeRandom(MAX_RELAYS)
+    suspend fun getPublishRelays(publishTo: List<PubkeyHex>): List<RelayUrl> {
+        val foreignRelays = if (publishTo.isEmpty()) emptyList()
+        else nip65Dao.getReadRelays(pubkeys = publishTo)
+            .groupBy { it.pubkey }
+            .flatMap { (_, nip65s) ->
+                nip65s.map { it.nip65Relay.url }.takeRandom(MAX_RELAYS_PER_PUBKEY)
+            }
+
         return (getWriteRelays(limit = true) + foreignRelays).distinct()
     }
 
