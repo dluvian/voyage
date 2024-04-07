@@ -61,7 +61,7 @@ fun PostRow(post: RootPostUI, isDetailed: Boolean = false, onUpdate: OnUpdate) {
         }
         AnnotatedText(
             text = post.content,
-            maxLines = if (isDetailed) Int.MAX_VALUE else 12,
+            maxLines = if (isDetailed) Int.MAX_VALUE else 21,
             onClick = { onClickText(it, post.content) }
         )
         Spacer(modifier = Modifier.height(spacing.large))

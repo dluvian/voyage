@@ -30,10 +30,4 @@ fun TrustChip(trustType: TrustType, name: String, onOpenProfile: Fn) {
             overflow = TextOverflow.Ellipsis
         )
     }
-//    SmallAssistChip(
-//        onClick = onOpenProfile,
-//        label = { Text(text = name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-//        leadingIcon = {  },
-//        colors = AssistChipDefaults.assistChipColors(containerColor = getTrustColor(trustType = trustType).superLight())
-//    )
 }
