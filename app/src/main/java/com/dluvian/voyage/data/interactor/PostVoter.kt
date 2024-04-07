@@ -55,7 +55,7 @@ class PostVoter(
         updateForcedVote(action, newVote)
         vote(
             postId = action.postId,
-            pubkey = action.pubkey,
+            mention = action.mention,
             vote = newVote,
             kind = 1
         )
@@ -70,7 +70,7 @@ class PostVoter(
     }
 
     private val jobs: MutableMap<EventIdHex, Job?> = mutableMapOf()
-    private fun vote(postId: EventIdHex, pubkey: PubkeyHex, vote: Vote, kind: Int) {
+    private fun vote(postId: EventIdHex, mention: PubkeyHex, vote: Vote, kind: Int) {
         jobs[postId]?.cancel(CancellationException("User clicks fast"))
         jobs[postId] = scope.launch {
             delay(DEBOUNCE)
@@ -79,7 +79,7 @@ class PostVoter(
                 Upvote, Downvote -> handleVote(
                     currentVote = currentVote,
                     postId = postId,
-                    pubkey = pubkey,
+                    mention = mention,
                     isPositive = vote.isPositive(),
                     kind = kind
                 )
@@ -100,7 +100,7 @@ class PostVoter(
     private suspend fun handleVote(
         currentVote: VoteEntity?,
         postId: EventIdHex,
-        pubkey: PubkeyHex,
+        mention: PubkeyHex,
         isPositive: Boolean,
         kind: Int
     ) {
@@ -108,10 +108,10 @@ class PostVoter(
         if (currentVote != null) deleteVote(voteId = currentVote.id)
         nostrService.publishVote(
             eventId = EventId.fromHex(postId),
-            pubkey = PublicKey.fromHex(pubkey),
+            mention = PublicKey.fromHex(mention),
             isPositive = isPositive,
             kind = kind,
-            relayUrls = relayProvider.getPublishRelays(publishTo = pubkey)
+            relayUrls = relayProvider.getPublishRelays(publishTo = mention)
         )
             .onSuccess { event ->
                 val entity = VoteEntity(

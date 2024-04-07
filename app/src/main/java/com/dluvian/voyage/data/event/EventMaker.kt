@@ -63,15 +63,16 @@ class EventMaker(
 
     suspend fun buildVote(
         eventId: EventId,
-        pubkey: PublicKey,
+        mention: PublicKey,
         isPositive: Boolean,
         kind: Int,
     ): Result<Event> {
         val unsignedEvent = createReaction(
             eventId = eventId,
-            pubkey = pubkey,
+            mention = mention,
             content = if (isPositive) "+" else "-",
-            kind = kind
+            kind = kind,
+            myPubkey = accountManager.getPublicKey()
         )
         return accountManager.sign(unsignedEvent)
     }

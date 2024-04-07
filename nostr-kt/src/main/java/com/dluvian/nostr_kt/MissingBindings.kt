@@ -190,13 +190,14 @@ fun createNevent(
 
 fun createReaction(
     eventId: EventId,
-    pubkey: PublicKey,
+    mention: PublicKey,
     content: String,
     kind: Int,
+    myPubkey: PublicKey
 ): UnsignedEvent {
     val tags = listOf(
         Tag.event(eventId),
-        Tag.publicKey(pubkey),
+        Tag.publicKey(mention),
         Tag.parse(listOf("k", "$kind"))
     )
 
@@ -204,5 +205,5 @@ fun createReaction(
         kind = Kind.fromEnum(KindEnum.Reaction),
         content = content,
         tags = tags
-    ).toUnsignedEvent(publicKey = pubkey)
+    ).toUnsignedEvent(publicKey = myPubkey)
 }

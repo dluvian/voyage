@@ -107,14 +107,14 @@ class NostrService(
 
     suspend fun publishVote(
         eventId: EventId,
-        pubkey: PublicKey,
+        mention: PublicKey,
         isPositive: Boolean,
         kind: Int,
         relayUrls: Collection<RelayUrl>,
     ): Result<Event> {
         return eventMaker.buildVote(
             eventId = eventId,
-            pubkey = pubkey,
+            mention = mention,
             isPositive = isPositive,
             kind = kind
         )

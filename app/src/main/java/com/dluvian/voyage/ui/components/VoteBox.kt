@@ -78,9 +78,9 @@ private fun VoteButtonsAndTally(
             description = stringResource(id = R.string.upvote),
             onClick = {
                 if (myVote is Upvote)
-                    onUpdate(ClickNeutralizeVote(postId = postId, pubkey = authorPubkey))
+                    onUpdate(ClickNeutralizeVote(postId = postId, mention = authorPubkey))
                 else
-                    onUpdate(ClickUpvote(postId = postId, pubkey = authorPubkey))
+                    onUpdate(ClickUpvote(postId = postId, mention = authorPubkey))
             }
         )
         Text(
@@ -94,9 +94,9 @@ private fun VoteButtonsAndTally(
             description = stringResource(id = R.string.downvote),
             onClick = {
                 if (myVote is Downvote)
-                    onUpdate(ClickNeutralizeVote(postId = postId, pubkey = authorPubkey))
+                    onUpdate(ClickNeutralizeVote(postId = postId, mention = authorPubkey))
                 else
-                    onUpdate(ClickDownvote(postId = postId, pubkey = authorPubkey))
+                    onUpdate(ClickDownvote(postId = postId, mention = authorPubkey))
             })
     }
 }

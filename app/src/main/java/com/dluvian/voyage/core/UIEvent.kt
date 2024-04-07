@@ -64,21 +64,21 @@ data class OpenTopic(val topic: Topic) : AdvancedPushNavEvent()
 data class OpenReplyCreation(val parent: IParentUI) : AdvancedPushNavEvent()
 
 
-sealed class VoteEvent(open val postId: EventIdHex, open val pubkey: PubkeyHex) : UIEvent()
+sealed class VoteEvent(open val postId: EventIdHex, open val mention: PubkeyHex) : UIEvent()
 data class ClickUpvote(
     override val postId: EventIdHex,
-    override val pubkey: PubkeyHex
-) : VoteEvent(postId = postId, pubkey = pubkey)
+    override val mention: PubkeyHex
+) : VoteEvent(postId = postId, mention = mention)
 
 data class ClickDownvote(
     override val postId: EventIdHex,
-    override val pubkey: PubkeyHex
-) : VoteEvent(postId = postId, pubkey = pubkey)
+    override val mention: PubkeyHex
+) : VoteEvent(postId = postId, mention = mention)
 
 data class ClickNeutralizeVote(
     override val postId: EventIdHex,
-    override val pubkey: PubkeyHex
-) : VoteEvent(postId = postId, pubkey = pubkey)
+    override val mention: PubkeyHex
+) : VoteEvent(postId = postId, mention = mention)
 
 
 sealed class TopicEvent(open val topic: Topic) : UIEvent()
