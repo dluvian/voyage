@@ -206,7 +206,7 @@ class AppContainer(context: Context) {
     )
 
     val profileProvider = ProfileProvider(
-        profileFollower = profileFollower, // TODO: Only inject flow
+        profileFollower = profileFollower,
         pubkeyProvider = accountManager,
         metadataInMemory = metadataInMemory,
         profileDao = roomDb.profileDao(),

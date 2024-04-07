@@ -17,7 +17,6 @@ import com.dluvian.voyage.ui.theme.getTrustColor
 import com.dluvian.voyage.ui.theme.sizing
 
 
-// TODO: Info box when clicked to explain 2 different icons
 @Composable
 fun TrustIcon(trustType: TrustType) {
     val (icon, color, description) = when (trustType) {

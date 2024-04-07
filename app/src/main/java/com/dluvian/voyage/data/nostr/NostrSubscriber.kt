@@ -51,8 +51,6 @@ class NostrSubscriber(
         friendProvider = friendProvider
     )
 
-    // TODO: Split lazySub methods to new class
-
     suspend fun subFeed(until: Long, limit: Int, setting: FeedSetting) {
         val untilTimestamp = Timestamp.fromSecs(until.toULong())
         val adjustedLimit = (4 * limit).toULong() // We don't know if we receive enough root posts
@@ -81,7 +79,6 @@ class NostrSubscriber(
         }
     }
 
-    // TODO: remove ids after x seconds to enable resubbing
     private val votesAndRepliesCache = mutableSetOf<EventIdHex>()
     private var votesAndRepliesJob: Job? = null
     fun subVotesAndReplies(postIds: Collection<EventIdHex>) {
@@ -133,7 +130,7 @@ class NostrSubscriber(
     suspend fun subMyAccountAndTrustData() {
         Log.d(TAG, "subMyAccountAndTrustData")
         subMyAccount()
-        delay(DELAY_1SEC) // TODO: Channel wait instead of delay
+        delay(DELAY_1SEC)
         lazyNostrSubscriber.semiLazySubFriendsNip65()
         delay(DELAY_1SEC)
         lazyNostrSubscriber.semiLazySubWebOfTrustPubkeys()

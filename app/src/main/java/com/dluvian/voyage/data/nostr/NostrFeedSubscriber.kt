@@ -42,7 +42,7 @@ class NostrFeedSubscriber(
                 .forEach { (relayUrl, pubkeys) ->
                     val publicKeys = pubkeys.map { PublicKey.fromHex(it) }
                     val friendsNoteFilter = Filter()
-                        .kind(kind = Kind.fromEnum(KindEnum.TextNote)) // TODO: Support reposts
+                        .kind(kind = Kind.fromEnum(KindEnum.TextNote))
                         .authors(authors = publicKeys)
                         .until(timestamp = until)
                         .limit(limit = limit)

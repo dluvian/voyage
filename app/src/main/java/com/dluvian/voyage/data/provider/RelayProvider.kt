@@ -64,14 +64,12 @@ class RelayProvider(
         return (foreignRelays + nip65).distinct()
     }
 
-    // TODO: Cache result and use it when applicable
     suspend fun getObserveRelays(pubkeys: Collection<PubkeyHex>): Map<RelayUrl, Set<PubkeyHex>> {
         if (pubkeys.isEmpty()) return emptyMap()
 
         val result = mutableMapOf<RelayUrl, MutableSet<PubkeyHex>>()
 
         // Cover pubkey-write-relay pairing
-        // TODO: Filter bad relays / blacklisted relays
         val pubkeyCache = mutableSetOf<PubkeyHex>()
         nip65Dao
             .getNip65WriteRelays(pubkeys = pubkeys)
@@ -112,7 +110,7 @@ class RelayProvider(
     }
 
     suspend fun getAllRelays(pubkey: PubkeyHex): List<RelayUrl> {
-        return getObserveRelays(pubkey = pubkey, limit = false) // TODO: add all connected relays
+        return getObserveRelays(pubkey = pubkey, limit = false)
     }
 
     private val defaultRelays = listOf(

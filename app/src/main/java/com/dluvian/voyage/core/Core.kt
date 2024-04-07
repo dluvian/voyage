@@ -90,8 +90,8 @@ class Core(
                 onUpdate(OpenProfile(nprofile = nip19))
             }
 
-            is NeventMention -> {} // TODO: Implement detached threads
-            is NoteMention -> {} // TODO: Implement detached threads
+            is NeventMention -> {}
+            is NoteMention -> {}
             null -> Log.w(TAG, "Unknown clickable string ${other.item}")
         }
     }

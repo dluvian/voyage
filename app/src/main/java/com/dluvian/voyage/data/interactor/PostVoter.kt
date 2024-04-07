@@ -57,7 +57,7 @@ class PostVoter(
             postId = action.postId,
             pubkey = action.pubkey,
             vote = newVote,
-            kind = 1 // TODO: Set real kind. Important once reposts are supported
+            kind = 1
         )
     }
 

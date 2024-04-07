@@ -39,7 +39,6 @@ class MnemonicSigner(context: Context) : IPubkeyProvider {
     }
 
     override fun getPublicKey(): PublicKey {
-        // TODO: Implement anonymous signing when rust-nostr new release published
         return deriveMainAccount().publicKey()
     }
 

@@ -37,7 +37,7 @@ class PostSender(
             content = trimmedBody,
             topics = extractCleanHashtags(content = concat),
             mentions = extractMentionPubkeys(content = concat),
-            relayUrls = writeRelays // TODO: publish to mentions inbox relays too
+            relayUrls = writeRelays
         ).onSuccess { event ->
             val validatedPost = ValidatedRootPost(
                 id = event.id().toHex(),
@@ -68,7 +68,7 @@ class PostSender(
             parentId = parentId,
             mentions = (extractMentionPubkeys(content = trimmedBody) + recipient).distinct(),
             relayHint = relayHint,
-            relayUrls = writeRelays // TODO: publish to mentions inbox relays too
+            relayUrls = writeRelays
         ).onSuccess { event ->
             val validatedReply = ValidatedReply(
                 id = event.id().toHex(),
