@@ -122,9 +122,8 @@ class NostrService(
     }
 
     suspend fun publishDelete(eventId: EventId, relayUrls: Collection<RelayUrl>): Result<Event> {
-        val allRelays = nostrClient.getAllConnectedUrls() + relayUrls
         return eventMaker.buildDelete(eventId = eventId)
-            .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = allRelays) }
+            .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
     suspend fun publishTopicList(

@@ -142,7 +142,7 @@ class NostrSubscriber(
             .until(timestamp = Timestamp.now())
             .limit(1u)
         val filters = listOf(FilterWrapper(nip65Filter))
-        relayProvider.getAllRelays(pubkey = pubkey).forEach { relay ->
+        relayProvider.getObserveRelays(pubkey = pubkey, includeConnected = true).forEach { relay ->
             lazyNostrSubscriber.subscribe(relayUrl = relay, filters = filters)
         }
     }

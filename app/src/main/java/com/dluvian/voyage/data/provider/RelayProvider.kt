@@ -1,6 +1,7 @@
 package com.dluvian.voyage.data.provider
 
 import android.util.Log
+import com.dluvian.nostr_kt.NostrClient
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.removeTrailingSlashes
 import com.dluvian.voyage.core.MAX_RELAYS
@@ -19,6 +20,7 @@ import rust.nostr.protocol.Nip19Profile
 class RelayProvider(
     private val nip65Dao: Nip65Dao,
     private val eventRelayDao: EventRelayDao,
+    private val nostrClient: NostrClient
 ) {
     private val tag = "RelayProvider"
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -45,12 +47,17 @@ class RelayProvider(
         return (getWriteRelays(limit = true) + foreignRelays).distinct()
     }
 
-    private suspend fun getObserveRelays(pubkey: PubkeyHex, limit: Boolean = true): List<RelayUrl> {
+    suspend fun getObserveRelays(
+        pubkey: PubkeyHex,
+        limit: Boolean = true,
+        includeConnected: Boolean = false
+    ): List<RelayUrl> {
         val relays = nip65Dao.getNip65WriteRelays(pubkeys = listOf(pubkey))
             .map { it.nip65Relay.url }
             .let { if (limit) it.takeRandom(MAX_RELAYS) else it }
             .toMutableSet()
         relays.addAll(getReadRelays(limit = limit))
+        if (includeConnected) relays.addAll(nostrClient.getAllConnectedUrls())
 
         return relays.toList()
     }
@@ -107,10 +114,6 @@ class RelayProvider(
         Log.i(tag, "Selected ${result.size} autopilot relays")
 
         return result
-    }
-
-    suspend fun getAllRelays(pubkey: PubkeyHex): List<RelayUrl> {
-        return getObserveRelays(pubkey = pubkey, limit = false)
     }
 
     private val defaultRelays = listOf(
