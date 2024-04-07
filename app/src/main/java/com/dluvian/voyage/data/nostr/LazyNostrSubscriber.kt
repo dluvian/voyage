@@ -1,9 +1,5 @@
 package com.dluvian.voyage.data.nostr
 
-import android.util.Log
-import com.dluvian.nostr_kt.NostrClient
-import com.dluvian.nostr_kt.RelayUrl
-import com.dluvian.nostr_kt.SubId
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.RND_RESUB_COUNT
 import com.dluvian.voyage.data.model.FilterWrapper
@@ -17,13 +13,10 @@ import rust.nostr.protocol.KindEnum
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Timestamp
 
-private const val TAG = "LazyNostrSubscriber"
-
 class LazyNostrSubscriber(
     private val profileDao: ProfileDao,
     private val relayProvider: RelayProvider,
-    private val nostrClient: NostrClient,
-    private val syncedFilterCache: MutableMap<SubId, List<FilterWrapper>>,
+    private val subCreator: SubscriptionCreator,
     private val webOfTrustProvider: WebOfTrustProvider,
     private val friendProvider: FriendProvider,
 ) {
@@ -39,7 +32,7 @@ class LazyNostrSubscriber(
                 .authors(authors = pubkeyBatch.map { PublicKey.fromHex(it) })
                 .until(timestamp = timestamp)
             val filters = listOf(FilterWrapper(profileFilter))
-            subscribe(relayUrl = relay, filters = filters)
+            subCreator.subscribe(relayUrl = relay, filters = filters)
         }
     }
 
@@ -55,7 +48,7 @@ class LazyNostrSubscriber(
                     .authors(authors = pubkeys.map { PublicKey.fromHex(it) })
                     .until(timestamp = timestamp)
                 val filters = listOf(FilterWrapper(profileFilter))
-                subscribe(relayUrl = relay, filters = filters)
+                subCreator.subscribe(relayUrl = relay, filters = filters)
             }
     }
 
@@ -73,7 +66,7 @@ class LazyNostrSubscriber(
                     .authors(authors = pubkeys.map { PublicKey.fromHex(it) })
                     .until(timestamp = timestamp)
                 val filters = listOf(FilterWrapper(nip65Filter))
-                subscribe(relayUrl = relay, filters = filters)
+                subCreator.subscribe(relayUrl = relay, filters = filters)
             }
     }
 
@@ -91,21 +84,7 @@ class LazyNostrSubscriber(
                     .authors(authors = pubkeys.map { PublicKey.fromHex(it) })
                     .until(timestamp = timestamp)
                 val filters = listOf(FilterWrapper(webOfTrustFilter))
-                subscribe(relayUrl = relay, filters = filters)
+                subCreator.subscribe(relayUrl = relay, filters = filters)
             }
-    }
-
-    fun subscribe(relayUrl: RelayUrl, filters: List<FilterWrapper>): SubId? {
-        if (filters.isEmpty()) return null
-        Log.d(TAG, "Subscribe ${filters.size} in $relayUrl")
-
-        val subId = nostrClient.subscribe(filters = filters.map { it.filter }, relayUrl = relayUrl)
-        if (subId == null) {
-            Log.w(TAG, "Failed to create subscription ID")
-            return null
-        }
-        syncedFilterCache[subId] = filters
-
-        return subId
     }
 }

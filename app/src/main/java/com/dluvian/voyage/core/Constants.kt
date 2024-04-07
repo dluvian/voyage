@@ -9,8 +9,11 @@ const val MAX_NAME_LEN = 32
 const val DELAY_1SEC = 1000L
 const val DELAY_10SEC = 10 * DELAY_1SEC
 
+const val RESUB_TIMEOUT = DELAY_10SEC
+
 const val SHORT_DEBOUNCE = 300L
 const val DEBOUNCE = 600L
+const val LONG_DEBOUNCE = 900L
 
 const val MAX_EVENTS_TO_SUB = 1000uL
 

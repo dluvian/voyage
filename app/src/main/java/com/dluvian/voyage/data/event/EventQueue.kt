@@ -3,10 +3,10 @@ package com.dluvian.voyage.data.event
 import android.util.Log
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
+import com.dluvian.voyage.core.launchIO
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import rust.nostr.protocol.Event
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -20,7 +20,6 @@ class EventQueue(
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    // Not a synchronized set bc we synchronize with `synchronized()`
     private val isProcessingEvents = AtomicBoolean(false)
 
     init {
@@ -45,7 +44,7 @@ class EventQueue(
     private fun startProcessingJob() {
         if (!isProcessingEvents.compareAndSet(false, true)) return
         Log.i(TAG, "Start job")
-        scope.launch {
+        scope.launchIO {
             while (true) {
                 delay(EVENT_PROCESSING_DELAY)
 

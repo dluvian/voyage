@@ -58,17 +58,13 @@ class Core(
     private fun clickText(event: ClickText) {
         val url = event.text.getUrlAnnotations(event.offset, event.offset).firstOrNull()
         if (url != null) {
-            Log.i("LOLOL", "url")
             event.uriHandler.openUri(url.item.url)
             return
         }
 
         val other = event.text.getStringAnnotations(event.offset, event.offset).firstOrNull()
         if (other == null) {
-            Log.i("LOLOL", "other ${event.offset}")
-
             if (event.rootPost != null) {
-                Log.i("LOLOL", "root")
                 onUpdate(OpenThread(rootPost = event.rootPost))
             }
             return

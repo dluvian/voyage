@@ -2,11 +2,11 @@ package com.dluvian.voyage.data.nostr
 
 import android.util.Log
 import com.dluvian.nostr_kt.removeTrailingSlashes
-import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.core.RESUB_TIMEOUT
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.FilterWrapper
@@ -17,12 +17,9 @@ import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
 import rust.nostr.protocol.Kind
@@ -40,7 +37,9 @@ class NostrSubscriber(
     private val relayProvider: RelayProvider,
     private val webOfTrustProvider: WebOfTrustProvider,
     private val pubkeyProvider: IPubkeyProvider,
+    private val subCreator: SubscriptionCreator,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
+    private val subQueue: SubQueue,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -75,32 +74,29 @@ class NostrSubscriber(
         }
 
         subscriptions.forEach { (relay, filters) ->
-            lazyNostrSubscriber.subscribe(relayUrl = relay, filters = filters)
+            subCreator.subscribe(relayUrl = relay, filters = filters)
         }
     }
 
     private val votesAndRepliesCache = mutableSetOf<EventIdHex>()
-    private var votesAndRepliesJob: Job? = null
+    private var lastUpdate = System.currentTimeMillis()
     fun subVotesAndReplies(postIds: Collection<EventIdHex>) {
         if (postIds.isEmpty()) return
 
-        val newIds = postIds - votesAndRepliesCache
-        if (newIds.isEmpty()) return
+        synchronized(votesAndRepliesCache) {
+            val newIds = postIds - votesAndRepliesCache
+            if (newIds.isEmpty()) return
 
-        votesAndRepliesJob?.cancel(CancellationException("Debounce"))
-        votesAndRepliesJob = scope.launch {
-            delay(DEBOUNCE)
             val ids = newIds.map { EventId.fromHex(it) }
             val filters = createReplyAndVoteFilters(ids = ids)
             relayProvider.getReadRelays().forEach { relay ->
-                lazyNostrSubscriber.subscribe(relayUrl = relay, filters = filters)
+                subQueue.submit(relayUrl = relay, filters = filters)
             }
-        }
-        votesAndRepliesJob?.invokeOnCompletion { ex ->
-            if (ex != null) return@invokeOnCompletion
+            val currentMillis = System.currentTimeMillis()
+            if (currentMillis - lastUpdate > RESUB_TIMEOUT) votesAndRepliesCache.clear()
+            lastUpdate = currentMillis
 
             votesAndRepliesCache.addAll(newIds)
-            Log.d(TAG, "Finished subscribing votes and replies")
         }
     }
 
@@ -111,7 +107,7 @@ class NostrSubscriber(
             .map { it.removeTrailingSlashes() }
             .toSet() + relayProvider.getReadRelays()
             .forEach { relay ->
-                lazyNostrSubscriber.subscribe(relayUrl = relay, filters = filters)
+                subCreator.subscribe(relayUrl = relay, filters = filters)
             }
     }
 
@@ -123,7 +119,7 @@ class NostrSubscriber(
         val filters = listOf(FilterWrapper(profileFilter))
 
         relayProvider.getObserveRelays(nprofile = nprofile).forEach { relay ->
-            lazyNostrSubscriber.subscribe(relayUrl = relay, filters = filters)
+            subCreator.subscribe(relayUrl = relay, filters = filters)
         }
     }
 
@@ -143,7 +139,7 @@ class NostrSubscriber(
             .limit(1u)
         val filters = listOf(FilterWrapper(nip65Filter))
         relayProvider.getObserveRelays(pubkey = pubkey, includeConnected = true).forEach { relay ->
-            lazyNostrSubscriber.subscribe(relayUrl = relay, filters = filters)
+            subCreator.subscribe(relayUrl = relay, filters = filters)
         }
     }
 
@@ -174,7 +170,7 @@ class NostrSubscriber(
         )
 
         relayProvider.getReadRelays().forEach { relay ->
-            lazyNostrSubscriber.subscribe(relayUrl = relay, filters = filters)
+            subCreator.subscribe(relayUrl = relay, filters = filters)
         }
     }
 

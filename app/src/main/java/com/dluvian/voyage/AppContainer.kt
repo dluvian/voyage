@@ -30,6 +30,8 @@ import com.dluvian.voyage.data.model.FilterWrapper
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.NostrSubscriber
+import com.dluvian.voyage.data.nostr.SubQueue
+import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.preferences.DatabasePreferences
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 import com.dluvian.voyage.data.provider.DatabaseStatProvider
@@ -90,13 +92,19 @@ class AppContainer(context: Context) {
         accountDao = roomDb.accountDao(),
     )
 
+    private val subCreator = SubscriptionCreator(
+        nostrClient = nostrClient,
+        syncedFilterCache = syncedFilterCache,
+    )
+
+    private val subQueue = SubQueue(subCreator = subCreator)
+
     val lazyNostrSubscriber = LazyNostrSubscriber(
         profileDao = roomDb.profileDao(),
         relayProvider = relayProvider,
-        nostrClient = nostrClient,
-        syncedFilterCache = syncedFilterCache,
+        subCreator = subCreator,
         webOfTrustProvider = webOfTrustProvider,
-        friendProvider = friendProvider
+        friendProvider = friendProvider,
     )
 
     val nostrSubscriber = NostrSubscriber(
@@ -105,8 +113,11 @@ class AppContainer(context: Context) {
         relayProvider = relayProvider,
         webOfTrustProvider = webOfTrustProvider,
         pubkeyProvider = accountManager,
-        lazyNostrSubscriber = lazyNostrSubscriber
+        subCreator = subCreator,
+        lazyNostrSubscriber = lazyNostrSubscriber,
+        subQueue = subQueue,
     )
+
     val accountSwitcher = AccountSwitcher(
         accountManager = accountManager,
         accountDao = roomDb.accountDao(),
