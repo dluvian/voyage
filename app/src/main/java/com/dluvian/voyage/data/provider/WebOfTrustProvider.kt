@@ -8,17 +8,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
-import rust.nostr.protocol.PublicKey
 
 class WebOfTrustProvider(private val webOfTrustDao: WebOfTrustDao) {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val webOfTrust = webOfTrustDao.getWebOfTrustFlow()
         .stateIn(scope, SharingStarted.Eagerly, emptyList())
 
-    fun getWebOfTrustPubkeys(limited: Boolean = true, max: Int = MAX_PUBKEYS): List<PublicKey> {
-        return webOfTrust.value
-            .let { if (limited) it.takeRandom(max) else it }
-            .map { PublicKey.fromHex(it) }
+    fun getWebOfTrustPubkeys(max: Int? = MAX_PUBKEYS): List<PubkeyHex> {
+        return webOfTrust.value.let { if (max != null) it.takeRandom(max) else it }
     }
 
     suspend fun getWotWithMissingProfiles(): List<PubkeyHex> {

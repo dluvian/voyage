@@ -7,7 +7,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
-import rust.nostr.protocol.PublicKey
 
 class FriendProvider(private val friendDao: FriendDao) {
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -16,10 +15,6 @@ class FriendProvider(private val friendDao: FriendDao) {
 
     fun getFriendPubkeys(max: Int? = null): List<PubkeyHex> {
         return friends.value.let { if (max != null) it.takeRandom(max) else it }
-    }
-
-    fun getFriendPublicKeys(max: Int? = null): List<PublicKey> {
-        return getFriendPubkeys(max = max).map { PublicKey.fromHex(it) }
     }
 
     suspend fun getFriendsWithMissingContactList() = friendDao.getFriendsWithMissingContactList()

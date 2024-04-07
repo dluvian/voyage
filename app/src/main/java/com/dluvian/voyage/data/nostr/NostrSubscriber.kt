@@ -104,7 +104,7 @@ class NostrSubscriber(
     fun subVotesAndReplies(nevent: Nip19Event) {
         val filters = createReplyAndVoteFilters(
             ids = listOf(nevent.eventId()),
-            votePubkeys = getVotePubkeys(),
+            votePubkeys = getVotePubkeys().map { PublicKey.fromHex(it) },
             timestamp = Timestamp.now()
         )
 
@@ -179,9 +179,9 @@ class NostrSubscriber(
         }
     }
 
-    private fun getVotePubkeys(): List<PublicKey> {
-        val pubkeys = mutableSetOf(pubkeyProvider.getPublicKey())
-        pubkeys.addAll(friendProvider.getFriendPublicKeys())
+    private fun getVotePubkeys(): List<PubkeyHex> {
+        val pubkeys = mutableSetOf(pubkeyProvider.getPubkeyHex())
+        pubkeys.addAll(friendProvider.getFriendPubkeys())
         pubkeys.addAll(webOfTrustProvider.getWebOfTrustPubkeys())
 
         return pubkeys.toList()

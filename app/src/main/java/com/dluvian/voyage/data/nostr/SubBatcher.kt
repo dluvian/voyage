@@ -4,6 +4,7 @@ import android.util.Log
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.createReplyAndVoteFilters
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.syncedPutOrAdd
@@ -20,7 +21,7 @@ private const val BATCH_DELAY = 2 * DEBOUNCE
 
 class SubBatcher(private val subCreator: SubscriptionCreator) {
     private val idQueue = mutableMapOf<RelayUrl, MutableSet<EventIdHex>>()
-    private val votePubkeyQueue = mutableSetOf<PublicKey>()
+    private val votePubkeyQueue = mutableSetOf<PubkeyHex>()
     private val isProcessingSubs = AtomicBoolean(false)
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -31,7 +32,7 @@ class SubBatcher(private val subCreator: SubscriptionCreator) {
     fun submitVotesAndReplies(
         relayUrl: RelayUrl,
         eventIds: List<EventIdHex>,
-        votePubkeys: List<PublicKey>
+        votePubkeys: List<PubkeyHex>
     ) {
         if (eventIds.isEmpty()) return
 
@@ -50,7 +51,7 @@ class SubBatcher(private val subCreator: SubscriptionCreator) {
                 delay(BATCH_DELAY)
 
                 val idsByRelay = mutableMapOf<RelayUrl, Set<EventIdHex>>()
-                val votePubkeys = mutableListOf<PublicKey>()
+                val votePubkeys = mutableListOf<PubkeyHex>()
                 synchronized(idQueue) {
                     idsByRelay.putAll(idQueue)
                     idQueue.clear()
@@ -62,6 +63,7 @@ class SubBatcher(private val subCreator: SubscriptionCreator) {
 
                 val timestamp = Timestamp.now()
                 val convertedIds = mutableMapOf<EventIdHex, EventId>()
+                val pubkeys = votePubkeys.map { PublicKey.fromHex(it) }
                 idsByRelay.forEach { (relay, ids) ->
                     val eventIds = ids.map {
                         val id = convertedIds[it] ?: EventId.fromHex(it)
@@ -69,7 +71,7 @@ class SubBatcher(private val subCreator: SubscriptionCreator) {
                     }
                     val filters = createReplyAndVoteFilters(
                         ids = eventIds,
-                        votePubkeys = votePubkeys,
+                        votePubkeys = pubkeys,
                         timestamp = timestamp
                     )
                     Log.d(TAG, "Sub ${ids.size} ids and ${votePubkeys.size} pubkeys in $relay")
