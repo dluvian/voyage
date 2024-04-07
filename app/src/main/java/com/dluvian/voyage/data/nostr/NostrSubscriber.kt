@@ -39,9 +39,9 @@ class NostrSubscriber(
     private val pubkeyProvider: IPubkeyProvider,
     private val subCreator: SubscriptionCreator,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
-    private val subQueue: SubQueue,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
+    private val subDebouncer = SubDebouncer(subCreator = subCreator)
 
     private val feedSubscriber = NostrFeedSubscriber(
         scope = scope,
@@ -90,7 +90,7 @@ class NostrSubscriber(
             val ids = newIds.map { EventId.fromHex(it) }
             val filters = createReplyAndVoteFilters(ids = ids)
             relayProvider.getReadRelays().forEach { relay ->
-                subQueue.submit(relayUrl = relay, filters = filters)
+                subDebouncer.submit(relayUrl = relay, filters = filters)
             }
             val currentMillis = System.currentTimeMillis()
             if (currentMillis - lastUpdate > RESUB_TIMEOUT) votesAndRepliesCache.clear()

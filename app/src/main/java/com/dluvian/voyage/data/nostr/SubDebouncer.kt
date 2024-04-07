@@ -10,9 +10,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import java.util.concurrent.atomic.AtomicBoolean
 
-private const val TAG = "SubQueue"
+private const val TAG = "SubDebouncer"
 
-class SubQueue(private val subCreator: SubscriptionCreator) {
+class SubDebouncer(private val subCreator: SubscriptionCreator) {
     private val queue = mutableMapOf<RelayUrl, List<FilterWrapper>>()
     private val isProcessingSubs = AtomicBoolean(false)
     private val scope = CoroutineScope(Dispatchers.IO)

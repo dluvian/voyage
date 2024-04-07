@@ -30,7 +30,6 @@ import com.dluvian.voyage.data.model.FilterWrapper
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.NostrSubscriber
-import com.dluvian.voyage.data.nostr.SubQueue
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.preferences.DatabasePreferences
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
@@ -97,8 +96,6 @@ class AppContainer(context: Context) {
         syncedFilterCache = syncedFilterCache,
     )
 
-    private val subQueue = SubQueue(subCreator = subCreator)
-
     val lazyNostrSubscriber = LazyNostrSubscriber(
         profileDao = roomDb.profileDao(),
         relayProvider = relayProvider,
@@ -115,7 +112,6 @@ class AppContainer(context: Context) {
         pubkeyProvider = accountManager,
         subCreator = subCreator,
         lazyNostrSubscriber = lazyNostrSubscriber,
-        subQueue = subQueue,
     )
 
     val accountSwitcher = AccountSwitcher(
