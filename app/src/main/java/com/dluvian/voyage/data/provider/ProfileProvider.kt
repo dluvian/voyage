@@ -7,7 +7,7 @@ import com.dluvian.voyage.data.inMemory.MetadataInMemory
 import com.dluvian.voyage.data.interactor.ProfileFollower
 import com.dluvian.voyage.data.model.FullProfileUI
 import com.dluvian.voyage.data.model.RelevantMetadata
-import com.dluvian.voyage.data.nostr.NostrSubscriber
+import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.room.dao.ProfileDao
 import com.dluvian.voyage.data.room.entity.ProfileEntity
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
@@ -21,7 +21,7 @@ class ProfileProvider(
     private val metadataInMemory: MetadataInMemory,
     private val profileDao: ProfileDao,
     private val friendProvider: FriendProvider,
-    private val nostrSubscriber: NostrSubscriber,
+    private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val annotatedStringProvider: AnnotatedStringProvider,
 ) {
     fun getProfileFlow(pubkey: PubkeyHex): Flow<FullProfileUI> {
@@ -51,7 +51,7 @@ class ProfileProvider(
                 default.remove(pubkeyProvider.getPubkeyHex())
                 default
             }
-        nostrSubscriber.lazySubProfiles(pubkeys = unfollowedPubkeys)
+        lazyNostrSubscriber.lazySubProfiles(pubkeys = unfollowedPubkeys)
 
         return getProfilesFlow(pubkeys = unfollowedPubkeys)
     }

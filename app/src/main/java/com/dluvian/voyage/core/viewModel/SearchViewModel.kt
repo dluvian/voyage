@@ -19,7 +19,7 @@ import com.dluvian.voyage.core.UpdateSearchText
 import com.dluvian.voyage.core.isBareTopicStr
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.showToast
-import com.dluvian.voyage.data.nostr.NostrSubscriber
+import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.SuggestionProvider
 import com.dluvian.voyage.data.room.entity.ProfileEntity
 import kotlinx.coroutines.Job
@@ -29,7 +29,7 @@ import rust.nostr.protocol.PublicKey
 
 class SearchViewModel(
     private val suggestionProvider: SuggestionProvider,
-    private val nostrSubscriber: NostrSubscriber,
+    private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val snackbar: SnackbarHostState
 ) : ViewModel() {
     val topics = mutableStateOf<List<Topic>>(emptyList())
@@ -52,7 +52,7 @@ class SearchViewModel(
         if (profileJob?.isActive == true) return
 
         profileJob = viewModelScope.launchIO {
-            nostrSubscriber.lazySubWebOfTrustProfiles()
+            lazyNostrSubscriber.lazySubWebOfTrustProfiles()
             delay(DELAY_10SEC)
         }
     }

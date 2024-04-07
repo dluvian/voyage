@@ -106,7 +106,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         searchVM = viewModel {
             SearchViewModel(
                 suggestionProvider = appContainer.suggestionProvider,
-                nostrSubscriber = appContainer.nostrSubscriber,
+                lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
                 snackbar = appContainer.snackbar,
             )
         },

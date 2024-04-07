@@ -27,6 +27,7 @@ import com.dluvian.voyage.data.interactor.ProfileFollower
 import com.dluvian.voyage.data.interactor.ThreadCollapser
 import com.dluvian.voyage.data.interactor.TopicFollower
 import com.dluvian.voyage.data.model.FilterWrapper
+import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.preferences.DatabasePreferences
@@ -87,15 +88,23 @@ class AppContainer(context: Context) {
         externalSigner = externalSigner,
         accountDao = roomDb.accountDao(),
     )
-    val nostrSubscriber = NostrSubscriber(
-        topicProvider = topicProvider,
-        relayProvider = relayProvider,
-        webOfTrustProvider = webOfTrustProvider,
-        friendProvider = friendProvider,
-        pubkeyProvider = accountManager,
+
+    val lazyNostrSubscriber = LazyNostrSubscriber(
         profileDao = roomDb.profileDao(),
+        relayProvider = relayProvider,
         nostrClient = nostrClient,
         syncedFilterCache = syncedFilterCache,
+        webOfTrustProvider = webOfTrustProvider,
+        friendProvider = friendProvider
+    )
+
+    val nostrSubscriber = NostrSubscriber(
+        topicProvider = topicProvider,
+        friendProvider = friendProvider,
+        relayProvider = relayProvider,
+        webOfTrustProvider = webOfTrustProvider,
+        pubkeyProvider = accountManager,
+        lazyNostrSubscriber = lazyNostrSubscriber
     )
     val accountSwitcher = AccountSwitcher(
         accountManager = accountManager,
@@ -202,7 +211,7 @@ class AppContainer(context: Context) {
         metadataInMemory = metadataInMemory,
         profileDao = roomDb.profileDao(),
         friendProvider = friendProvider,
-        nostrSubscriber = nostrSubscriber,
+        lazyNostrSubscriber = lazyNostrSubscriber,
         annotatedStringProvider = annotatedStringProvider
     )
 
