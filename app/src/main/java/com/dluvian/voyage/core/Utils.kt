@@ -1,6 +1,7 @@
 package com.dluvian.voyage.core
 
 import androidx.compose.material3.SnackbarHostState
+import com.dluvian.voyage.data.model.FilterWrapper
 import com.dluvian.voyage.data.model.RelevantMetadata
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,8 +15,13 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
+import rust.nostr.protocol.EventId
+import rust.nostr.protocol.Filter
+import rust.nostr.protocol.Kind
+import rust.nostr.protocol.KindEnum
 import rust.nostr.protocol.Metadata
 import rust.nostr.protocol.PublicKey
+import rust.nostr.protocol.Timestamp
 
 fun PublicKey.toShortenedNpub(): String {
     return shortenBech32(bech32 = this.toBech32())
@@ -65,6 +71,18 @@ fun <K, V> MutableMap<K, MutableList<V>>.syncedPutOrAdd(key: K, value: MutableLi
     }
 }
 
+fun <K, V> MutableMap<K, MutableSet<V>>.syncedPutOrAdd(key: K, value: Collection<V>) {
+    val alreadyPresent: MutableSet<V>?
+    synchronized(this) {
+        alreadyPresent = this.putIfAbsent(key, value.toMutableSet())
+    }
+    if (alreadyPresent != null) {
+        synchronized(alreadyPresent) {
+            alreadyPresent.addAll(value)
+        }
+    }
+}
+
 fun <K, V> MutableMap<K, MutableSet<V>>.putOrAdd(key: K, value: Collection<V>) {
     val alreadyPresent = this.putIfAbsent(key, value.toMutableSet())
     alreadyPresent?.addAll(value)
@@ -99,3 +117,23 @@ fun extractNostrMentions(extractFrom: String) = nostrMentionRegex.findAll(extrac
 
 fun shortenUrl(url: String) = url.removePrefix("https://").removePrefix("http://")
 
+fun createReplyAndVoteFilters(
+    ids: List<EventId>,
+    votePubkeys: List<PublicKey>,
+    timestamp: Timestamp,
+): List<FilterWrapper> {
+    val voteFilter = Filter().kind(Kind.fromEnum(KindEnum.Reaction))
+        .events(ids = ids)
+        .authors(authors = votePubkeys)
+        .until(timestamp = timestamp)
+        .limit(limit = MAX_EVENTS_TO_SUB)
+    val replyFilter = Filter().kind(Kind.fromEnum(KindEnum.TextNote))
+        .events(ids = ids)
+        .until(timestamp = timestamp)
+        .limit(limit = MAX_EVENTS_TO_SUB)
+
+    return listOf(
+        FilterWrapper(filter = voteFilter),
+        FilterWrapper(filter = replyFilter, e = ids.map { it.toHex() })
+    )
+}

@@ -4,9 +4,9 @@ import android.util.Log
 import com.dluvian.nostr_kt.removeTrailingSlashes
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.EventIdHex
-import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.RESUB_TIMEOUT
+import com.dluvian.voyage.core.createReplyAndVoteFilters
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.FilterWrapper
@@ -20,7 +20,6 @@ import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
 import rust.nostr.protocol.Kind
 import rust.nostr.protocol.KindEnum
@@ -33,7 +32,7 @@ private const val TAG = "NostrSubscriber"
 
 class NostrSubscriber(
     topicProvider: TopicProvider,
-    friendProvider: FriendProvider,
+    private val friendProvider: FriendProvider,
     private val relayProvider: RelayProvider,
     private val webOfTrustProvider: WebOfTrustProvider,
     private val pubkeyProvider: IPubkeyProvider,
@@ -41,7 +40,7 @@ class NostrSubscriber(
     private val lazyNostrSubscriber: LazyNostrSubscriber,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
-    private val subDebouncer = SubDebouncer(subCreator = subCreator)
+    private val subBatcher = SubBatcher(subCreator = subCreator)
 
     private val feedSubscriber = NostrFeedSubscriber(
         scope = scope,
@@ -87,10 +86,12 @@ class NostrSubscriber(
             val newIds = postIds - votesAndRepliesCache
             if (newIds.isEmpty()) return
 
-            val ids = newIds.map { EventId.fromHex(it) }
-            val filters = createReplyAndVoteFilters(ids = ids)
             relayProvider.getReadRelays().forEach { relay ->
-                subDebouncer.submit(relayUrl = relay, filters = filters)
+                subBatcher.submitVotesAndReplies(
+                    relayUrl = relay,
+                    eventIds = newIds,
+                    votePubkeys = getVotePubkeys()
+                )
             }
             val currentMillis = System.currentTimeMillis()
             if (currentMillis - lastUpdate > RESUB_TIMEOUT) votesAndRepliesCache.clear()
@@ -101,7 +102,11 @@ class NostrSubscriber(
     }
 
     fun subVotesAndReplies(nevent: Nip19Event) {
-        val filters = createReplyAndVoteFilters(ids = listOf(nevent.eventId()))
+        val filters = createReplyAndVoteFilters(
+            ids = listOf(nevent.eventId()),
+            votePubkeys = getVotePubkeys(),
+            timestamp = Timestamp.now()
+        )
 
         nevent.relays()
             .map { it.removeTrailingSlashes() }
@@ -174,21 +179,11 @@ class NostrSubscriber(
         }
     }
 
-    private fun createReplyAndVoteFilters(ids: List<EventId>): List<FilterWrapper> {
-        val now = Timestamp.now()
-        val voteFilter = Filter().kind(Kind.fromEnum(KindEnum.Reaction))
-            .events(ids = ids)
-            .authors(authors = webOfTrustProvider.getWebOfTrustPubkeys())
-            .until(timestamp = now)
-            .limit(limit = MAX_EVENTS_TO_SUB)
-        val replyFilter = Filter().kind(Kind.fromEnum(KindEnum.TextNote))
-            .events(ids = ids)
-            .until(timestamp = now)
-            .limit(limit = MAX_EVENTS_TO_SUB)
+    private fun getVotePubkeys(): List<PublicKey> {
+        val pubkeys = mutableSetOf(pubkeyProvider.getPublicKey())
+        pubkeys.addAll(friendProvider.getFriendPublicKeys())
+        pubkeys.addAll(webOfTrustProvider.getWebOfTrustPubkeys())
 
-        return listOf(
-            FilterWrapper(filter = voteFilter),
-            FilterWrapper(filter = replyFilter, e = ids.map { it.toHex() })
-        )
+        return pubkeys.toList()
     }
 }

@@ -59,7 +59,7 @@ class ProfileFollower(
         jobs[pubkey] = scope.launch {
             delay(DEBOUNCE)
 
-            val allFriends = friendProvider.getFriendPubkeys(limited = false).toMutableSet()
+            val allFriends = friendProvider.getFriendPubkeys().toMutableSet()
             if (isFollowed) allFriends.add(pubkey) else allFriends.remove(pubkey)
 
             nostrService.publishContactList(

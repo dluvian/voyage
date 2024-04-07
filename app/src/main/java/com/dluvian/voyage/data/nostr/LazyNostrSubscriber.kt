@@ -54,7 +54,7 @@ class LazyNostrSubscriber(
 
     suspend fun semiLazySubFriendsNip65() {
         val friendsWithMissingNip65 = friendProvider.getFriendsWithMissingNip65()
-        val randomResub = friendProvider.getFriendPubkeys(limited = true, max = RND_RESUB_COUNT)
+        val randomResub = friendProvider.getFriendPubkeys(max = RND_RESUB_COUNT)
         val nip65Resub = (friendsWithMissingNip65 + randomResub).distinct()
         if (nip65Resub.isEmpty()) return
 
@@ -72,7 +72,7 @@ class LazyNostrSubscriber(
 
     suspend fun semiLazySubWebOfTrustPubkeys() {
         val friendsWithMissingContactList = friendProvider.getFriendsWithMissingContactList()
-        val randomResub = friendProvider.getFriendPubkeys(limited = true, max = RND_RESUB_COUNT)
+        val randomResub = friendProvider.getFriendPubkeys(max = RND_RESUB_COUNT)
         val webOfTrustResub = (friendsWithMissingContactList + randomResub).distinct()
         if (webOfTrustResub.isEmpty()) return
 

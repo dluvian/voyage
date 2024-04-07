@@ -3,6 +3,7 @@ package com.dluvian.voyage.data.event
 import android.util.Log
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
+import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.launchIO
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -11,7 +12,7 @@ import rust.nostr.protocol.Event
 import java.util.concurrent.atomic.AtomicBoolean
 
 private const val TAG = "EventQueue"
-private const val EVENT_PROCESSING_DELAY = 600L
+private const val EVENT_PROCESSING_DELAY = DEBOUNCE
 
 class EventQueue(
     private val syncedQueue: MutableSet<ValidatedEvent>,
