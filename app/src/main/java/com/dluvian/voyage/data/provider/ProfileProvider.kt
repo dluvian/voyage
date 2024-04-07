@@ -4,7 +4,6 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.toShortenedBech32
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
-import com.dluvian.voyage.data.interactor.ProfileFollower
 import com.dluvian.voyage.data.model.FullProfileUI
 import com.dluvian.voyage.data.model.RelevantMetadata
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
@@ -16,7 +15,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 
 class ProfileProvider(
-    private val profileFollower: ProfileFollower,
+    private val forcedFollowFlow: Flow<Map<PubkeyHex /* = String */, Boolean>>,
     private val pubkeyProvider: IPubkeyProvider,
     private val metadataInMemory: MetadataInMemory,
     private val profileDao: ProfileDao,
@@ -27,7 +26,7 @@ class ProfileProvider(
     fun getProfileFlow(pubkey: PubkeyHex): Flow<FullProfileUI> {
         return combine(
             profileDao.getAdvancedProfileFlow(pubkey = pubkey),
-            profileFollower.forcedFollowsFlow,
+            forcedFollowFlow,
             metadataInMemory.getMetadataFlow(pubkey = pubkey)
         ) { dbProfile, forcedFollows, metadata ->
             createFullProfile(
@@ -61,7 +60,7 @@ class ProfileProvider(
 
         return combine(
             profileDao.getAdvancedProfilesFlow(pubkeys = pubkeys),
-            profileFollower.forcedFollowsFlow,
+            forcedFollowFlow,
         ) { dbProfiles, forcedFollows ->
             dbProfiles.map { dbProfile ->
                 createFullProfile(
