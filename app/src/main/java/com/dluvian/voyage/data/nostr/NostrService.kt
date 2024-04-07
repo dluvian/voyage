@@ -87,7 +87,6 @@ class NostrService(
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
-
     suspend fun publishReply(
         content: String,
         parentId: EventIdHex,

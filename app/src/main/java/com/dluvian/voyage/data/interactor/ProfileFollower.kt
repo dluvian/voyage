@@ -64,7 +64,7 @@ class ProfileFollower(
 
             nostrService.publishContactList(
                 pubkeys = allFriends.toList(),
-                relayUrls = relayProvider.getReadRelays()
+                relayUrls = relayProvider.getPublishRelays()
             ).onSuccess { event ->
                 val friendList = ValidatedContactList(
                     pubkey = event.author().toHex(),

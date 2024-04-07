@@ -135,7 +135,7 @@ class PostVoter(
     private suspend fun deleteVote(voteId: EventIdHex) {
         nostrService.publishDelete(
             eventId = EventId.fromHex(voteId),
-            relayUrls = relayProvider.getWriteRelays()
+            relayUrls = relayProvider.getPublishRelays()
         ).onFailure {
             Log.w(tag, "Failed to delete vote: ${it.message}", it)
             snackbar.showToast(
