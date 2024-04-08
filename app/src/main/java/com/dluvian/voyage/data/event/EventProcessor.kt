@@ -22,7 +22,7 @@ class EventProcessor(
     private val tag = "EventProcessor"
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    fun processEvents(events: Set<ValidatedEvent>) {
+    fun processEvents(events: Collection<ValidatedEvent>) {
         if (events.isEmpty()) return
 
         val rootPosts = mutableListOf<ValidatedRootPost>()

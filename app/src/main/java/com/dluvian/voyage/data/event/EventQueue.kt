@@ -49,9 +49,9 @@ class EventQueue(
             while (true) {
                 delay(EVENT_PROCESSING_DELAY)
 
-                val events = mutableSetOf<ValidatedEvent>()
+                val events = mutableListOf<ValidatedEvent>()
                 synchronized(syncedQueue) {
-                    events.addAll(syncedQueue.toList())
+                    events.addAll(syncedQueue)
                     syncedQueue.clear()
                 }
                 eventProcessor.processEvents(events = events)
