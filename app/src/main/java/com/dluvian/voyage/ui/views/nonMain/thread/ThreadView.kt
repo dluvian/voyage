@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.SnackbarHostState
@@ -57,6 +58,7 @@ fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpd
                 root = it,
                 leveledReplies = leveledReplies,
                 isRefreshing = isRefreshing,
+                state = vm.threadState,
                 onUpdate = onUpdate
             )
         }
@@ -68,10 +70,11 @@ private fun ThreadViewContent(
     root: RootPostUI,
     leveledReplies: List<LeveledReplyUI>,
     isRefreshing: Boolean,
+    state: LazyListState,
     onUpdate: OnUpdate
 ) {
     PullRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(ThreadViewRefresh) }) {
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(modifier = Modifier.fillMaxSize(), state = state) {
             item {
                 PostRow(post = root, isDetailed = true, onUpdate = onUpdate)
                 FullHorizontalDivider()

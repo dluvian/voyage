@@ -80,6 +80,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
     val homeFeedState = rememberLazyListState()
     val profileFeedState = rememberLazyListState()
     val topicFeedState = rememberLazyListState()
+    val threadState = rememberLazyListState()
 
     return VMContainer(
         homeVM = viewModel {
@@ -121,7 +122,8 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         threadVM = viewModel {
             ThreadViewModel(
                 threadProvider = appContainer.threadProvider,
-                threadCollapser = appContainer.threadCollapser
+                threadCollapser = appContainer.threadCollapser,
+                threadState = threadState
             )
         },
         topicVM = viewModel {

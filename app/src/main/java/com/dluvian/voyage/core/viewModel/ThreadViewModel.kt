@@ -1,5 +1,6 @@
 package com.dluvian.voyage.core.viewModel
 
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.stateIn
 class ThreadViewModel(
     private val threadProvider: ThreadProvider,
     private val threadCollapser: ThreadCollapser,
+    val threadState: LazyListState,
 ) : ViewModel() {
     val isRefreshing = mutableStateOf(false)
     var root: StateFlow<RootPostUI?> = MutableStateFlow(null)
