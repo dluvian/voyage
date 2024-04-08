@@ -27,8 +27,11 @@ class TopicViewModel(
 
     val currentTopic = mutableStateOf("")
     var isFollowed: StateFlow<Boolean> = MutableStateFlow(false)
-    val paginator =
-        Paginator(feedProvider = feedProvider, scope = viewModelScope, subCreator = subCreator)
+    val paginator = Paginator(
+        feedProvider = feedProvider,
+        scope = viewModelScope,
+        subCreator = subCreator
+    )
 
 
     fun openTopic(topicNavView: TopicNavView) {

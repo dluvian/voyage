@@ -39,6 +39,7 @@ class Paginator(
     private lateinit var feedSetting: FeedSetting
 
     fun init(setting: FeedSetting) {
+        subCreator.unsubAll()
         val isSame = when (setting) {
             is HomeFeedSetting -> page.value.value.isNotEmpty()
             is TopicFeedSetting -> page.value.value.isNotEmpty() && feedSetting == setting

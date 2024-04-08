@@ -14,11 +14,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
+import com.dluvian.voyage.core.ClickText
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenReplyCreation
 import com.dluvian.voyage.core.model.ReplyUI
+import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.theme.ReplyIcon
 import com.dluvian.voyage.ui.theme.spacing
 
@@ -50,9 +53,20 @@ fun ReplyRow(
             exit = slideOutVertically(animationSpec = tween(durationMillis = 0))
         ) {
             Spacer(modifier = Modifier.height(spacing.large))
-            Text(
+            val uriHandler = LocalUriHandler.current
+            AnnotatedText(
                 text = reply.content,
                 maxLines = Int.MAX_VALUE,
+                onClick = { offset ->
+                    onUpdate(
+                        ClickText(
+                            text = reply.content,
+                            offset = offset,
+                            uriHandler = uriHandler,
+                            rootPost = null
+                        )
+                    )
+                }
             )
             Spacer(modifier = Modifier.height(spacing.large))
         }
