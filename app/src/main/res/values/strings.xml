@@ -61,4 +61,5 @@
     <string name="currently_n_root_posts_in_db">Currently %d root posts in database</string>
     <string name="next_page">Next Page</string>
     <string name="thread">Thread</string>
+    <string name="scroll_to_the_page_top">Scroll to the page top</string>
 </resources>

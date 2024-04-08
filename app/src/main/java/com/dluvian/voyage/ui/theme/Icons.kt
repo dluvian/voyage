@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.KeyboardDoubleArrowUp
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
@@ -41,3 +42,4 @@ val SearchIcon = Icons.Default.Search
 val SendIcon = Icons.AutoMirrored.Filled.Send
 val ReplyIcon = Icons.AutoMirrored.Filled.Reply
 val ExpandIcon = Icons.Default.ExpandMore
+val ScrollUpIcon = Icons.Default.KeyboardDoubleArrowUp
