@@ -1,6 +1,8 @@
 package com.dluvian.voyage.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -42,7 +44,10 @@ fun ReplyRow(
             collapsedText = if (isCollapsed) reply.content else null,
             onUpdate = onUpdate
         )
-        AnimatedVisibility(visible = !isCollapsed) {
+        AnimatedVisibility(
+            visible = !isCollapsed,
+            exit = slideOutVertically(animationSpec = tween(durationMillis = 0))
+        ) {
             Spacer(modifier = Modifier.height(spacing.large))
             Text(
                 text = reply.content,
