@@ -57,7 +57,7 @@ class EventProcessor(
         if (rootPosts.isEmpty()) return
 
         scope.launch {
-            room.postInsertDao().insertRelayedRootPosts(posts = rootPosts)
+            room.postInsertDao().insertRootPosts(posts = rootPosts)
         }.invokeOnCompletion { exception ->
             if (exception != null) Log.w(tag, "Failed to process root posts", exception)
         }

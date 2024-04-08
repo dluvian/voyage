@@ -50,7 +50,7 @@ class PostSender(
                 createdAt = event.createdAt().secs(),
                 relayUrl = writeRelays.random()
             )
-            postInsertDao.insertRootPost(rootPost = validatedPost)
+            postInsertDao.insertRootPosts(posts = listOf(validatedPost))
         }.onFailure {
             Log.w(tag, "Failed to create post event", it)
         }
@@ -81,7 +81,7 @@ class PostSender(
                 createdAt = event.createdAt().secs(),
                 relayUrl = writeRelays.random()
             )
-            postInsertDao.insertReply(reply = validatedReply)
+            postInsertDao.insertReplies(replies = listOf(validatedReply))
         }.onFailure {
             Log.w(tag, "Failed to create reply event", it)
         }
