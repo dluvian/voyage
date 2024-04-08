@@ -35,7 +35,9 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
             onRefresh = { onUpdate(ProfileViewRefresh) },
             onAppend = { onUpdate(ProfileViewAppend) },
             onUpdate = onUpdate,
-            header = { profile.about?.let { About(about = it, onUpdate = onUpdate) } }
+            header = {
+                profile.about?.let { if (it.isNotEmpty()) About(about = it, onUpdate = onUpdate) }
+            }
         )
     }
 }
