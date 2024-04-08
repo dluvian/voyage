@@ -41,6 +41,7 @@ fun ReplyRow(
             isDetailed = true,
             createdAt = reply.createdAt,
             myTopic = null,
+            id = reply.id,
             collapsedText = if (isCollapsed) reply.content else null,
             onUpdate = onUpdate
         )

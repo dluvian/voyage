@@ -12,11 +12,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
 import com.dluvian.nostr_kt.createNprofile
+import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenTopic
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.core.ThreadViewToggleCollapse
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.ui.components.chip.TopicChip
 import com.dluvian.voyage.ui.components.chip.TrustChip
@@ -33,6 +35,7 @@ fun PostRowHeader(
     isDetailed: Boolean,
     createdAt: Long,
     myTopic: String?,
+    id: EventIdHex,
     collapsedText: AnnotatedString? = null,
     onUpdate: OnUpdate
 ) {
@@ -58,7 +61,7 @@ fun PostRowHeader(
         else AnnotatedText(
             text = collapsedText,
             maxLines = 1,
-            onClick = { }
+            onClick = { onUpdate(ThreadViewToggleCollapse(id = id)) }
         )
     }
 }
