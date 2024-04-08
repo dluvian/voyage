@@ -22,7 +22,7 @@ interface VoteUpsertDao {
             pubkey = voteEntity.pubkey,
             postId = voteEntity.postId
         ) ?: 0L
-        if (voteEntity.createdAt < newestCreatedAt) return
+        if (voteEntity.createdAt <= newestCreatedAt) return
 
         runCatching {
             internalUpsertVote(voteEntity = voteEntity)
