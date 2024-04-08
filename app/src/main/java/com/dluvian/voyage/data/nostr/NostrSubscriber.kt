@@ -38,9 +38,9 @@ class NostrSubscriber(
     private val webOfTrustProvider: WebOfTrustProvider,
     private val pubkeyProvider: IPubkeyProvider,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
+    private val subBatcher: SubBatcher,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
-    private val subBatcher = SubBatcher(subCreator = subCreator)
 
     private val feedSubscriber = NostrFeedSubscriber(
         scope = scope,
@@ -94,8 +94,10 @@ class NostrSubscriber(
                 )
             }
             val currentMillis = System.currentTimeMillis()
-            if (currentMillis - lastUpdate > RESUB_TIMEOUT) votesAndRepliesCache.clear()
-            lastUpdate = currentMillis
+            if (currentMillis - lastUpdate > RESUB_TIMEOUT) {
+                votesAndRepliesCache.clear()
+                lastUpdate = currentMillis
+            }
 
             votesAndRepliesCache.addAll(newIds)
         }

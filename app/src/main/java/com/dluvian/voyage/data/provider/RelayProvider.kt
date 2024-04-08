@@ -27,12 +27,13 @@ class RelayProvider(
     private val scope = CoroutineScope(Dispatchers.IO)
     private val myNip65 = nip65Dao.getMyNip65().stateIn(scope, SharingStarted.Eagerly, emptyList())
 
-    fun getReadRelays(limit: Boolean = true): List<RelayUrl> {
+    fun getReadRelays(limit: Boolean = true, includeConnected: Boolean = false): List<RelayUrl> {
         return myNip65.value
             .filter { it.nip65Relay.isRead }
             .map { it.nip65Relay.url }
             .ifEmpty { defaultRelays }
             .let { if (limit) it.takeRandom(MAX_RELAYS) else it }
+            .let { if (includeConnected) it + nostrClient.getAllConnectedUrls() else it }
     }
 
     private fun getWriteRelays(limit: Boolean = true): List<RelayUrl> {
@@ -130,6 +131,8 @@ class RelayProvider(
 
         return result
     }
+
+    fun getConnectedRelays() = nostrClient.getAllConnectedUrls()
 
     private val defaultRelays = listOf(
         "wss://nos.lol",

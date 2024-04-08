@@ -30,6 +30,7 @@ import com.dluvian.voyage.data.model.FilterWrapper
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.NostrSubscriber
+import com.dluvian.voyage.data.nostr.SubBatcher
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.preferences.DatabasePreferences
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
@@ -104,6 +105,8 @@ class AppContainer(context: Context) {
         friendProvider = friendProvider,
     )
 
+    private val subBatcher = SubBatcher(subCreator = subCreator)
+
     val nostrSubscriber = NostrSubscriber(
         topicProvider = topicProvider,
         subCreator = subCreator,
@@ -112,6 +115,7 @@ class AppContainer(context: Context) {
         webOfTrustProvider = webOfTrustProvider,
         pubkeyProvider = accountManager,
         lazyNostrSubscriber = lazyNostrSubscriber,
+        subBatcher = subBatcher
     )
 
     val accountSwitcher = AccountSwitcher(
@@ -201,7 +205,9 @@ class AppContainer(context: Context) {
         forcedVotes = postVoter.forcedVotes,
         collapsedIds = threadCollapser.collapsedIds,
         annotatedStringProvider = annotatedStringProvider,
-        nameCache = nameCache
+        nameCache = nameCache,
+        subBatcher = subBatcher,
+        relayProvider = relayProvider
     )
 
     val profileFollower = ProfileFollower(
