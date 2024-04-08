@@ -3,6 +3,7 @@ package com.dluvian.voyage.data.provider
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
+import com.dluvian.voyage.core.firstThenDistinctDebounce
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.data.event.OldestUsedEvent
 import com.dluvian.voyage.data.interactor.Vote
@@ -12,10 +13,8 @@ import com.dluvian.voyage.data.model.ProfileFeedSetting
 import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.room.dao.RootPostDao
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.onEach
 
 class FeedProvider(
@@ -26,7 +25,6 @@ class FeedProvider(
     private val annotatedStringProvider: AnnotatedStringProvider,
     private val nameCache: MutableMap<PubkeyHex, String?>,
 ) {
-    @OptIn(FlowPreview::class)
     suspend fun getFeedFlow(
         until: Long,
         size: Int,
@@ -57,7 +55,7 @@ class FeedProvider(
                 )
             }
         }
-            .debounce(SHORT_DEBOUNCE)
+            .firstThenDistinctDebounce(SHORT_DEBOUNCE)
             .onEach { posts ->
                 oldestUsedEvent.updateOldestCreatedAt(posts.minOfOrNull { it.createdAt })
                 nostrSubscriber.subVotesAndReplies(postIds = posts.map { it.id })
