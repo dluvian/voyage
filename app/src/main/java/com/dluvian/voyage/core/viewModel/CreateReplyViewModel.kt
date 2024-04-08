@@ -6,6 +6,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.CreateReplyViewAction
 import com.dluvian.voyage.core.DELAY_1SEC
@@ -33,7 +34,7 @@ class CreateReplyViewModel(
 
         if (parent.pubkey != this.parent.value?.pubkey) {
             viewModelScope.launchIO {
-                nostrSubscriber.subNip65(pubkey = parent.pubkey)
+                nostrSubscriber.subNip65(nprofile = createNprofile(hex = parent.pubkey))
             }
         }
 

@@ -5,6 +5,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.voyage.core.ProfileViewAction
 import com.dluvian.voyage.core.ProfileViewAppend
 import com.dluvian.voyage.core.ProfileViewRefresh
@@ -40,7 +41,7 @@ class ProfileViewModel(
         if (profile.value.value.inner.pubkey == pubkeyHex) return
 
         subCreator.unsubAll()
-        profile.value = profileProvider.getProfileFlow(pubkey = pubkeyHex)
+        profile.value = profileProvider.getProfileFlow(nprofile = profileNavView.nprofile)
             .stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(),
@@ -58,7 +59,8 @@ class ProfileViewModel(
 
     private fun refresh() {
         subCreator.unsubAll()
-        profile.value = profileProvider.getProfileFlow(pubkey = profile.value.value.inner.pubkey)
+        val nprofile = createNprofile(hex = profile.value.value.inner.pubkey)
+        profile.value = profileProvider.getProfileFlow(nprofile = nprofile)
             .stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(),

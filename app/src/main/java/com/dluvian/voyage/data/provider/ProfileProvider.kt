@@ -17,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
+import rust.nostr.protocol.Nip19Profile
 
 class ProfileProvider(
     private val forcedFollowFlow: Flow<Map<PubkeyHex /* = String */, Boolean>>,
@@ -29,20 +30,21 @@ class ProfileProvider(
     private val nostrSubscriber: NostrSubscriber
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
-    fun getProfileFlow(pubkey: PubkeyHex): Flow<FullProfileUI> {
+    fun getProfileFlow(nprofile: Nip19Profile): Flow<FullProfileUI> {
         scope.launchIO {
-            nostrSubscriber.subNip65(pubkey = pubkey)
-            nostrSubscriber.subProfile(pubkey = pubkey)
+            nostrSubscriber.subNip65(nprofile = nprofile)
+            nostrSubscriber.subProfile(nprofile = nprofile)
         }
+        val hex = nprofile.publicKey().toHex()
         return combine(
-            profileDao.getAdvancedProfileFlow(pubkey = pubkey),
+            profileDao.getAdvancedProfileFlow(pubkey = hex),
             forcedFollowFlow,
-            metadataInMemory.getMetadataFlow(pubkey = pubkey)
+            metadataInMemory.getMetadataFlow(pubkey = hex)
         ) { dbProfile, forcedFollows, metadata ->
             createFullProfile(
-                pubkey = pubkey,
+                pubkey = hex,
                 dbProfile = dbProfile,
-                forcedFollowState = forcedFollows[pubkey],
+                forcedFollowState = forcedFollows[hex],
                 metadata = metadata
             )
         }
