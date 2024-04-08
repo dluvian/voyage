@@ -52,7 +52,7 @@ class PostVoter(
             is ClickDownvote -> Downvote
             is ClickNeutralizeVote -> NoVote
         }
-        updateForcedVote(action, newVote)
+        updateForcedVote(action.postId, newVote)
         vote(
             postId = action.postId,
             mention = action.mention,
@@ -61,10 +61,10 @@ class PostVoter(
         )
     }
 
-    private fun updateForcedVote(voteEvent: VoteEvent, newVote: Vote) {
+    private fun updateForcedVote(postId: EventIdHex, newVote: Vote) {
         _forcedVotes.update {
             val mutable = it.toMutableMap()
-            mutable[voteEvent.postId] = newVote
+            mutable[postId] = newVote
             mutable
         }
     }
@@ -125,6 +125,7 @@ class PostVoter(
             }
             .onFailure {
                 Log.w(tag, "Failed to publish vote: ${it.message}", it)
+                updateForcedVote(postId = postId, newVote = NoVote)
                 snackbar.showToast(
                     scope = scope,
                     msg = context.getString(R.string.failed_to_sign_vote)
