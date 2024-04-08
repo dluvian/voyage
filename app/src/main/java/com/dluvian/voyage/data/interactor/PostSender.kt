@@ -61,6 +61,7 @@ class PostSender(
         recipient: PubkeyHex,
         body: String,
         relayHint: RelayUrl,
+        isTopLevel: Boolean,
     ): Result<Event> {
         val trimmedBody = body.trim()
         val mentions = (extractMentionPubkeys(content = trimmedBody) + recipient).distinct()
@@ -71,6 +72,7 @@ class PostSender(
             parentId = parentId,
             mentions = mentions,
             relayHint = relayHint,
+            isTopLevel = isTopLevel,
             relayUrls = writeRelays
         ).onSuccess { event ->
             val validatedReply = ValidatedReply(

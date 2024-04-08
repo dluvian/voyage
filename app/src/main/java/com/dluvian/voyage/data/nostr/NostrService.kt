@@ -92,6 +92,7 @@ class NostrService(
         parentId: EventIdHex,
         mentions: List<PubkeyHex>,
         relayHint: RelayUrl,
+        isTopLevel: Boolean,
         relayUrls: Collection<RelayUrl>
     ): Result<Event> {
         return eventMaker.buildReply(
@@ -99,6 +100,7 @@ class NostrService(
             mentions = mentions.map { PublicKey.fromHex(it) },
             relayHint = relayHint,
             content = content,
+            isTopLevel = isTopLevel
         )
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }

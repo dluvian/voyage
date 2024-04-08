@@ -20,6 +20,7 @@ import rust.nostr.protocol.Tag
 
 private const val ROOT_LABEL = "root"
 private const val REPLY_LABEL = "reply"
+private const val TOP_LEVEL_REPLY_LABEL = "top-level-reply"
 
 class EventMaker(
     private val accountManager: AccountManager,
@@ -46,10 +47,11 @@ class EventMaker(
         parentId: EventId,
         mentions: Collection<PublicKey>,
         relayHint: RelayUrl,
-        content: String
+        content: String,
+        isTopLevel: Boolean,
     ): Result<Event> {
         val tags = mutableListOf(
-            createLabelTag(label = REPLY_LABEL),
+            createLabelTag(label = if (isTopLevel) TOP_LEVEL_REPLY_LABEL else REPLY_LABEL),
             createReplyTag(parentEventId = parentId, relayHint = relayHint)
         )
         mentions.forEach { tags.add(Tag.publicKey(publicKey = it)) }

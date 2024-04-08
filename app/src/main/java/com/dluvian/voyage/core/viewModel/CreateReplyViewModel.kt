@@ -14,6 +14,7 @@ import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.SendReply
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.IParentUI
+import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.interactor.PostSender
 import com.dluvian.voyage.data.nostr.NostrSubscriber
@@ -29,16 +30,16 @@ class CreateReplyViewModel(
     val isSendingReply = mutableStateOf(false)
     val parent: MutableState<IParentUI?> = mutableStateOf(null)
 
-    fun openParent(parent: IParentUI) {
-        if (parent.id == this.parent.value?.id) return
+    fun openParent(newParent: IParentUI) {
+        if (newParent.id == this.parent.value?.id) return
 
-        if (parent.pubkey != this.parent.value?.pubkey) {
+        if (newParent.pubkey != this.parent.value?.pubkey) {
             viewModelScope.launchIO {
-                nostrSubscriber.subNip65(nprofile = createNprofile(hex = parent.pubkey))
+                nostrSubscriber.subNip65(nprofile = createNprofile(hex = newParent.pubkey))
             }
         }
 
-        this.parent.value = parent
+        this.parent.value = newParent
     }
 
     fun handle(action: CreateReplyViewAction) {
@@ -62,6 +63,7 @@ class CreateReplyViewModel(
                 recipient = parent.pubkey,
                 body = body,
                 relayHint = eventRelayDao.getEventRelay(eventId = parent.id).orEmpty(),
+                isTopLevel = parent is RootPostUI,
             )
             delay(DELAY_1SEC)
             onGoBack()
