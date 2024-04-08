@@ -9,6 +9,7 @@ import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.extractCleanHashtags
+import com.dluvian.voyage.core.normalizeTopics
 import com.dluvian.voyage.data.event.ValidatedReply
 import com.dluvian.voyage.data.event.ValidatedRootPost
 import com.dluvian.voyage.data.nostr.NostrService
@@ -43,7 +44,7 @@ class PostSender(
             val validatedPost = ValidatedRootPost(
                 id = event.id().toHex(),
                 pubkey = event.author().toHex(),
-                topics = event.getHashtags(),
+                topics = event.getHashtags().normalizeTopics(),
                 title = event.getTitle(),
                 content = event.content(),
                 createdAt = event.createdAt().secs(),

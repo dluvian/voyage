@@ -137,3 +137,10 @@ fun createReplyAndVoteFilters(
         FilterWrapper(filter = replyFilter, e = ids.map { it.toHex() })
     )
 }
+
+fun List<Topic>.normalizeTopics(): List<Topic> {
+    return this
+        .map { it.removePrefix("#").trim().take(MAX_TOPIC_LEN).lowercase() }
+        .filter { it.isBareTopicStr() }
+        .distinct()
+}

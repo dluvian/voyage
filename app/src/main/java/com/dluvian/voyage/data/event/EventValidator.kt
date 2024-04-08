@@ -20,8 +20,7 @@ import com.dluvian.nostr_kt.removeTrailingSlashes
 import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_TOPICS
-import com.dluvian.voyage.core.MAX_TOPIC_LEN
-import com.dluvian.voyage.core.isBareTopicStr
+import com.dluvian.voyage.core.normalizeTopics
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.model.FilterWrapper
 import rust.nostr.protocol.Event
@@ -74,18 +73,13 @@ class EventValidator(
 
     private fun validate(event: Event, relayUrl: RelayUrl): ValidatedEvent? {
         val validatedEvent = if (event.isRootPost()) {
-            val topics = event.getHashtags()
-                .map { it.removePrefix("#").trim().take(MAX_TOPIC_LEN).lowercase() }
-                .filter { it.isBareTopicStr() }
-                .distinct()
-                .take(MAX_TOPICS)
             val title = event.getTitle()?.trim()
             val content = event.content().trim()
             if (title.isNullOrEmpty() && content.isEmpty()) return null
             ValidatedRootPost(
                 id = event.id().toHex(),
                 pubkey = event.author().toHex(),
-                topics = topics,
+                topics = event.getHashtags().normalizeTopics().take(MAX_TOPICS),
                 title = title,
                 content = content,
                 createdAt = event.createdAt().secs(),
@@ -126,10 +120,7 @@ class EventValidator(
             if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) return null
             ValidatedTopicList(
                 myPubkey = event.author().toHex(),
-                topics = event.getHashtags()
-                    .map { it.trim().lowercase() }
-                    .filter { it.isBareTopicStr() }
-                    .toSet(),
+                topics = event.getHashtags().normalizeTopics().toSet(),
                 createdAt = event.createdAt().secs()
             )
         } else if (event.isNip65()) {
