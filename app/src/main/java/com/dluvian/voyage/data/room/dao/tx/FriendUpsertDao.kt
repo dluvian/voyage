@@ -21,7 +21,7 @@ interface FriendUpsertDao {
         val myPubkey = validatedContactList.pubkey
 
         val newestCreatedAt = internalGetNewestCreatedAt(myPubkey = myPubkey) ?: 0L
-        if (validatedContactList.createdAt < newestCreatedAt) return
+        if (validatedContactList.createdAt <= newestCreatedAt) return
 
         if (list.isEmpty()) {
             internalDeleteList(myPubkey = myPubkey)

@@ -22,7 +22,7 @@ interface TopicUpsertDao {
         val myPubkey = validatedTopicList.myPubkey
 
         val newestCreatedAt = internalGetNewestCreatedAt(myPubkey = myPubkey) ?: 0L
-        if (validatedTopicList.createdAt < newestCreatedAt) return
+        if (validatedTopicList.createdAt <= newestCreatedAt) return
 
         if (list.isEmpty()) {
             internalDeleteList(myPubkey = myPubkey)

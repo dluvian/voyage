@@ -17,7 +17,7 @@ interface Nip65UpsertDao {
         val pubkey = validatedNip65.pubkey
 
         val newestCreatedAt = internalGetNewestCreatedAt(pubkey = pubkey) ?: 0L
-        if (validatedNip65.createdAt < newestCreatedAt) return
+        if (validatedNip65.createdAt <= newestCreatedAt) return
 
         if (list.isEmpty()) {
             internalDeleteList(pubkey = pubkey)

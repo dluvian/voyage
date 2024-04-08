@@ -17,7 +17,7 @@ interface ProfileUpsertDao {
     @Transaction
     suspend fun upsertProfile(profile: ProfileEntity) {
         val newestCreatedAt = internalGetNewestCreatedAt(pubkey = profile.pubkey) ?: 0L
-        if (profile.createdAt < newestCreatedAt) return
+        if (profile.createdAt <= newestCreatedAt) return
 
         runCatching {
             internalUpsertProfile(profileEntity = profile)

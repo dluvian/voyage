@@ -22,7 +22,7 @@ interface WebOfTrustUpsertDao {
         val friendPubkey = validatedWebOfTrust.pubkey
 
         val newestCreatedAt = internalGetNewestCreatedAt(friendPubkey = friendPubkey) ?: 0L
-        if (validatedWebOfTrust.createdAt < newestCreatedAt) return
+        if (validatedWebOfTrust.createdAt <= newestCreatedAt) return
 
         if (list.isEmpty()) {
             internalDeleteList(friendPubkey = friendPubkey)
