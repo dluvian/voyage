@@ -17,10 +17,8 @@ import com.dluvian.voyage.data.room.dao.RootPostDao
 import com.dluvian.voyage.data.room.view.ReplyView
 import com.dluvian.voyage.data.room.view.RootPostView
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.onEach
 import rust.nostr.protocol.Nip19Event
 import java.util.Collections
@@ -38,12 +36,12 @@ class ThreadProvider(
     private val relayProvider: RelayProvider,
 ) {
 
-    @OptIn(FlowPreview::class)
     fun getRoot(scope: CoroutineScope, nevent: Nip19Event): Flow<RootPostUI?> {
         scope.launchIO { nostrSubscriber.subVotesAndReplies(nevent = nevent) }
 
         return combine(
-            rootPostDao.getRootPostFlow(id = nevent.eventId().toHex()),
+            rootPostDao.getRootPostFlow(id = nevent.eventId().toHex())
+                .firstThenDistinctDebounce(SHORT_DEBOUNCE),
             forcedVotes
         ) { post, votes ->
             handleProfileSub(post = post)
@@ -51,7 +49,7 @@ class ThreadProvider(
                 forcedVotes = votes,
                 annotatedStringProvider = annotatedStringProvider
             )
-        }.debounce(SHORT_DEBOUNCE)
+        }
     }
 
     fun getLeveledReplies(
@@ -62,6 +60,7 @@ class ThreadProvider(
             .firstThenDistinctDebounce(DEBOUNCE)
             .onEach {
                 nostrSubscriber.subVotesAndReplies(postIds = it.map { reply -> reply.id })
+                handleProfileSub(replies = it)
             }
 
         return combine(
@@ -70,7 +69,6 @@ class ThreadProvider(
             collapsedIds,
         ) { replies, votes, collapsed ->
             val result = LinkedList<LeveledReplyUI>()
-            handleProfileSub(replies = replies)
 
             for (reply in replies) {
                 if (!reply.authorName.isNullOrEmpty()) {
@@ -121,14 +119,13 @@ class ThreadProvider(
             .distinct()
         if (unknownPubkeys.isEmpty()) return
 
-        val snapshot: Set<PubkeyHex>
+        val toSub: List<PubkeyHex>
         synchronized(pubkeyCache) {
-            snapshot = pubkeyCache.toSet()
+            toSub = unknownPubkeys - pubkeyCache
+            if (toSub.isEmpty()) return
+            pubkeyCache.addAll(toSub)
         }
-        val toSub = unknownPubkeys - snapshot
-        if (toSub.isEmpty()) return
 
-        pubkeyCache.addAll(toSub)
         relayProvider.getConnectedRelays().forEach { relay ->
             subBatcher.submitProfiles(relayUrl = relay, pubkeys = toSub)
         }
