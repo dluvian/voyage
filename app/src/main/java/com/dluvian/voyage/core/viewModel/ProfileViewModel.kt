@@ -8,12 +8,11 @@ import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.core.ProfileViewAction
 import com.dluvian.voyage.core.ProfileViewAppend
 import com.dluvian.voyage.core.ProfileViewRefresh
-import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.core.navigator.ProfileNavView
 import com.dluvian.voyage.data.model.FullProfileUI
 import com.dluvian.voyage.data.model.ProfileFeedSetting
-import com.dluvian.voyage.data.nostr.NostrSubscriber
+import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
@@ -24,14 +23,14 @@ import kotlinx.coroutines.flow.stateIn
 
 class ProfileViewModel(
     feedProvider: FeedProvider,
-    private val nostrSubscriber: NostrSubscriber,
+    private val subCreator: SubscriptionCreator,
     private val profileProvider: ProfileProvider,
     val feedState: LazyListState,
 ) : ViewModel() {
     val paginator = Paginator(
         feedProvider = feedProvider,
         scope = viewModelScope,
-        subCreator = nostrSubscriber.subCreator
+        subCreator = subCreator
     )
     val profile: MutableState<StateFlow<FullProfileUI>> =
         mutableStateOf(MutableStateFlow(FullProfileUI()))
@@ -40,24 +39,31 @@ class ProfileViewModel(
         val pubkeyHex = profileNavView.nprofile.publicKey().toHex()
         if (profile.value.value.inner.pubkey == pubkeyHex) return
 
-        paginator.init(setting = ProfileFeedSetting(pubkey = pubkeyHex))
-        viewModelScope.launchIO {
-            nostrSubscriber.subNip65(nprofile = profileNavView.nprofile)
-            nostrSubscriber.subProfile(nprofile = profileNavView.nprofile)
-        }
-
+        subCreator.unsubAll()
         profile.value = profileProvider.getProfileFlow(pubkey = pubkeyHex)
             .stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(),
                 FullProfileUI(inner = AdvancedProfileView(pubkey = pubkeyHex))
             )
+        paginator.init(setting = ProfileFeedSetting(pubkey = pubkeyHex))
     }
 
     fun handle(action: ProfileViewAction) {
         when (action) {
-            is ProfileViewRefresh -> paginator.refresh()
+            is ProfileViewRefresh -> refresh()
             is ProfileViewAppend -> paginator.append()
         }
+    }
+
+    private fun refresh() {
+        subCreator.unsubAll()
+        profile.value = profileProvider.getProfileFlow(pubkey = profile.value.value.inner.pubkey)
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(),
+                FullProfileUI(inner = profile.value.value.inner)
+            )
+        paginator.refresh()
     }
 }

@@ -1,7 +1,6 @@
 package com.dluvian.voyage.data.provider
 
 import android.util.Log
-import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.launchIO
@@ -34,7 +33,7 @@ class NameProvider(
                 if (dbName.isNullOrEmpty()) {
                     if (subCache.add(pubkey)) {
                         Log.d(TAG, "Sub unknown profile $pubkey")
-                        nostrSubscriber.subProfile(nprofile = createNprofile(hex = pubkey))
+                        nostrSubscriber.subProfile(pubkey = pubkey)
                     }
                 } else {
                     Log.d(TAG, "Found profile $pubkey in database")

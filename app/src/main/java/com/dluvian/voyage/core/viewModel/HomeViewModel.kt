@@ -48,6 +48,7 @@ class HomeViewModel(
     }
 
     private fun refresh() {
+        nostrSubscriber.subCreator.unsubAll()
         paginator.refresh(onSub = { subMyAccountAndTrustData() })
     }
 }

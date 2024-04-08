@@ -1,15 +1,19 @@
 package com.dluvian.voyage.data.provider
 
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.toShortenedBech32
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
 import com.dluvian.voyage.data.model.FullProfileUI
 import com.dluvian.voyage.data.model.RelevantMetadata
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
+import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.room.dao.ProfileDao
 import com.dluvian.voyage.data.room.entity.ProfileEntity
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
@@ -22,8 +26,14 @@ class ProfileProvider(
     private val friendProvider: FriendProvider,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val annotatedStringProvider: AnnotatedStringProvider,
+    private val nostrSubscriber: NostrSubscriber
 ) {
+    private val scope = CoroutineScope(Dispatchers.IO)
     fun getProfileFlow(pubkey: PubkeyHex): Flow<FullProfileUI> {
+        scope.launchIO {
+            nostrSubscriber.subNip65(pubkey = pubkey)
+            nostrSubscriber.subProfile(pubkey = pubkey)
+        }
         return combine(
             profileDao.getAdvancedProfileFlow(pubkey = pubkey),
             forcedFollowFlow,

@@ -226,7 +226,8 @@ class AppContainer(context: Context) {
         profileDao = roomDb.profileDao(),
         friendProvider = friendProvider,
         lazyNostrSubscriber = lazyNostrSubscriber,
-        annotatedStringProvider = annotatedStringProvider
+        annotatedStringProvider = annotatedStringProvider,
+        nostrSubscriber = nostrSubscriber,
     )
 
     val suggestionProvider = SuggestionProvider(

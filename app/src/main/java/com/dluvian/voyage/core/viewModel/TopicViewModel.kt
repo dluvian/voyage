@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.stateIn
 
 class TopicViewModel(
     feedProvider: FeedProvider,
-    subCreator: SubscriptionCreator,
+    private val subCreator: SubscriptionCreator,
     private val topicProvider: TopicProvider,
     val feedState: LazyListState,
 ) : ViewModel() {
@@ -33,9 +33,9 @@ class TopicViewModel(
         subCreator = subCreator
     )
 
-
     fun openTopic(topicNavView: TopicNavView) {
         val stripped = topicNavView.topic.removePrefix("#")
+        subCreator.unsubAll()
         paginator.init(setting = TopicFeedSetting(topic = stripped))
         val initVal = if (currentTopic.value == stripped) isFollowed.value else false
         currentTopic.value = stripped
@@ -45,7 +45,10 @@ class TopicViewModel(
 
     fun handle(action: TopicViewAction) {
         when (action) {
-            is TopicViewRefresh -> paginator.refresh()
+            is TopicViewRefresh -> {
+                subCreator.unsubAll()
+                paginator.refresh()
+            }
             is TopicViewAppend -> paginator.append()
         }
     }

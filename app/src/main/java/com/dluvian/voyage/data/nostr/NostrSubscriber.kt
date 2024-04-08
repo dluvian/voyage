@@ -24,7 +24,6 @@ import rust.nostr.protocol.Filter
 import rust.nostr.protocol.Kind
 import rust.nostr.protocol.KindEnum
 import rust.nostr.protocol.Nip19Event
-import rust.nostr.protocol.Nip19Profile
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Timestamp
 
@@ -118,27 +117,16 @@ class NostrSubscriber(
             }
     }
 
-    suspend fun subProfile(nprofile: Nip19Profile) {
+    suspend fun subProfile(pubkey: PubkeyHex) {
         val profileFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Metadata))
-            .author(author = nprofile.publicKey())
+            .author(author = PublicKey.fromHex(pubkey))
             .until(timestamp = Timestamp.now())
             .limit(1u)
         val filters = listOf(FilterWrapper(profileFilter))
 
-        relayProvider.getObserveRelays(nprofile = nprofile).forEach { relay ->
+        relayProvider.getObserveRelays(pubkey = pubkey).forEach { relay ->
             subCreator.subscribe(relayUrl = relay, filters = filters)
         }
-    }
-
-    suspend fun subNip65(nprofile: Nip19Profile) {
-        val nip65Filter = Filter().kind(kind = Kind.fromEnum(KindEnum.RelayList))
-            .author(author = nprofile.publicKey())
-            .until(timestamp = Timestamp.now())
-            .limit(1u)
-        val filters = listOf(FilterWrapper(nip65Filter))
-
-        relayProvider.getObserveRelays(nprofile = nprofile, includeConnected = true)
-            .forEach { relay -> subCreator.subscribe(relayUrl = relay, filters = filters) }
     }
 
     suspend fun subMyAccountAndTrustData() {
