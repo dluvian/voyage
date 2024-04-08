@@ -77,9 +77,11 @@ class AnnotatedStringProvider(
                     when (val nostrMention = NostrMention.from(token.value)) {
                         is NpubMention, is NprofileMention -> {
                             val mentionedName = nameProvider.getName(pubkey = nostrMention.hex)
-                            if (mentionedName.isNullOrBlank()) isCacheable = false
-                            val name =
-                                "@${mentionedName?.ifBlank { shortenBech32(bech32 = nostrMention.bech32) }}"
+                            if (mentionedName == null) isCacheable = false
+                            val name = "@${
+                                mentionedName.orEmpty()
+                                    .ifEmpty { shortenBech32(bech32 = nostrMention.bech32) }
+                            }"
                             pushAnnotatedString(
                                 tag = if (nostrMention is NpubMention) NPUB_TAG else NPROFILE_TAG,
                                 annotation = nostrMention.bech32,
