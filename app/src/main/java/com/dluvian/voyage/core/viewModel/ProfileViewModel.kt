@@ -28,7 +28,11 @@ class ProfileViewModel(
     private val profileProvider: ProfileProvider,
     val feedState: LazyListState,
 ) : ViewModel() {
-    val paginator = Paginator(feedProvider = feedProvider, scope = viewModelScope)
+    val paginator = Paginator(
+        feedProvider = feedProvider,
+        scope = viewModelScope,
+        subCreator = nostrSubscriber.subCreator
+    )
     val profile: MutableState<StateFlow<FullProfileUI>> =
         mutableStateOf(MutableStateFlow(FullProfileUI()))
 

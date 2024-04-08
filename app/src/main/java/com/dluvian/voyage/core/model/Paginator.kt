@@ -13,6 +13,7 @@ import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.ProfileFeedSetting
 import com.dluvian.voyage.data.model.TopicFeedSetting
+import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.provider.FeedProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -26,6 +27,7 @@ import kotlinx.coroutines.launch
 
 class Paginator(
     private val feedProvider: FeedProvider,
+    private val subCreator: SubscriptionCreator,
     private val scope: CoroutineScope
 ) : IPaginator {
     private val tag = "Paginator"
@@ -62,6 +64,7 @@ class Paginator(
     fun refresh(onSub: Fn = {}) {
         if (isRefreshing.value) return
 
+        subCreator.unsubAll()
         isRefreshing.value = true
 
         scope.launchIO {
@@ -79,6 +82,7 @@ class Paginator(
     fun append() {
         if (isAppending.value || isRefreshing.value || page.value.value.isEmpty()) return
 
+        subCreator.unsubAll()
         isAppending.value = true
 
         scope.launchIO {

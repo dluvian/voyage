@@ -32,11 +32,11 @@ private const val TAG = "NostrSubscriber"
 
 class NostrSubscriber(
     topicProvider: TopicProvider,
+    val subCreator: SubscriptionCreator,
     private val friendProvider: FriendProvider,
     private val relayProvider: RelayProvider,
     private val webOfTrustProvider: WebOfTrustProvider,
     private val pubkeyProvider: IPubkeyProvider,
-    private val subCreator: SubscriptionCreator,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)

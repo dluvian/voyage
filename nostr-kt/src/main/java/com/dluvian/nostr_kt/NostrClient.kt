@@ -137,7 +137,7 @@ class NostrClient {
     fun unsubscribeAll() {
         synchronized(subscriptions) {
             subscriptions.entries.forEach { (subId, socket) ->
-                Log.d(TAG, "Unsubscribe from $subId")
+                Log.d(TAG, "(all) Unsubscribe from $subId")
                 val closeRequest = ClientMessage.close(subscriptionId = subId).asJson()
                 socket.send(closeRequest)
             }

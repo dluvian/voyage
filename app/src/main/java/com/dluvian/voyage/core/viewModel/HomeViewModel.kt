@@ -20,7 +20,11 @@ class HomeViewModel(
     private val nostrSubscriber: NostrSubscriber,
     val feedState: LazyListState,
 ) : ViewModel() {
-    val paginator = Paginator(feedProvider = feedProvider, scope = viewModelScope)
+    val paginator = Paginator(
+        feedProvider = feedProvider,
+        scope = viewModelScope,
+        subCreator = nostrSubscriber.subCreator
+    )
 
     init {
         paginator.init(setting = HomeFeedSetting)

@@ -25,4 +25,6 @@ class SubscriptionCreator(
 
         return subId
     }
+
+    fun unsubAll() = nostrClient.unsubscribeAll()
 }

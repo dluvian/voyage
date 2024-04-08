@@ -91,7 +91,7 @@ class AppContainer(context: Context) {
         accountDao = roomDb.accountDao(),
     )
 
-    private val subCreator = SubscriptionCreator(
+    val subCreator = SubscriptionCreator(
         nostrClient = nostrClient,
         syncedFilterCache = syncedFilterCache,
     )
@@ -106,11 +106,11 @@ class AppContainer(context: Context) {
 
     val nostrSubscriber = NostrSubscriber(
         topicProvider = topicProvider,
+        subCreator = subCreator,
         friendProvider = friendProvider,
         relayProvider = relayProvider,
         webOfTrustProvider = webOfTrustProvider,
         pubkeyProvider = accountManager,
-        subCreator = subCreator,
         lazyNostrSubscriber = lazyNostrSubscriber,
     )
 
