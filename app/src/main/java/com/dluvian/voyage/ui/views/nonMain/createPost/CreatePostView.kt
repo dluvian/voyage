@@ -5,11 +5,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -28,6 +31,11 @@ fun CreatePostView(vm: CreatePostViewModel, snackbar: SnackbarHostState, onUpdat
     val isSendingPost by vm.isSendingPost
     val context = LocalContext.current
 
+    val focusRequester = remember { FocusRequester() }
+    LaunchedEffect(key1 = Unit) {
+        focusRequester.requestFocus()
+    }
+
     ContentCreationScaffold(
         showSendButton = body.value.isNotBlank(),
         isSendingContent = isSendingPost,
@@ -43,14 +51,19 @@ fun CreatePostView(vm: CreatePostViewModel, snackbar: SnackbarHostState, onUpdat
         },
         onUpdate = onUpdate
     ) {
-        CreatePostContent(header = header, body = body)
+        CreatePostContent(header = header, body = body, focusRequester = focusRequester)
     }
 }
 
 @Composable
-private fun CreatePostContent(header: MutableState<String>, body: MutableState<String>) {
+private fun CreatePostContent(
+    header: MutableState<String>,
+    body: MutableState<String>,
+    focusRequester: FocusRequester
+) {
     Column {
         TextInput(
+            modifier = Modifier.focusRequester(focusRequester),
             value = header.value,
             onValueChange = { str -> header.value = str },
             placeholder = stringResource(id = R.string.title_optional),
