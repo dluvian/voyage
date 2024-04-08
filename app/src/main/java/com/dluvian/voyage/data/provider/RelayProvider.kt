@@ -78,11 +78,19 @@ class RelayProvider(
         return relays.toList()
     }
 
-    suspend fun getObserveRelays(nprofile: Nip19Profile, limit: Boolean = true): List<RelayUrl> {
+    suspend fun getObserveRelays(
+        nprofile: Nip19Profile,
+        limit: Boolean = true,
+        includeConnected: Boolean = false
+    ): List<RelayUrl> {
         val foreignRelays = nprofile.relays()
             .let { if (limit) it.takeRandom(MAX_RELAYS) else it }
             .map { it.removeTrailingSlashes() }
-        val nip65 = getObserveRelays(pubkey = nprofile.publicKey().toHex(), limit = limit)
+        val nip65 = getObserveRelays(
+            pubkey = nprofile.publicKey().toHex(),
+            limit = limit,
+            includeConnected = includeConnected
+        )
 
         return (foreignRelays + nip65).distinct()
     }

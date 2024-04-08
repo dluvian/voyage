@@ -42,6 +42,7 @@ class ProfileViewModel(
 
         paginator.init(setting = ProfileFeedSetting(pubkey = pubkeyHex))
         viewModelScope.launchIO {
+            nostrSubscriber.subNip65(nprofile = profileNavView.nprofile)
             nostrSubscriber.subProfile(nprofile = profileNavView.nprofile)
         }
 

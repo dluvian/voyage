@@ -93,7 +93,7 @@ class NostrFeedSubscriber(
         return result
     }
 
-    fun getProfileFeedSubscription(
+    suspend fun getProfileFeedSubscription(
         pubkey: PubkeyHex,
         until: Timestamp,
         limit: ULong
@@ -108,8 +108,9 @@ class NostrFeedSubscriber(
             .limit(limit = limit)
         val pubkeyNoteFilters = mutableListOf(FilterWrapper(pubkeyNoteFilter))
 
-        relayProvider.getReadRelays().forEach { relay ->
-            result.syncedPutOrAdd(relay, pubkeyNoteFilters)
+        relayProvider.getObserveRelays(pubkey = pubkey).forEach { relay ->
+            val present = result.putIfAbsent(relay, pubkeyNoteFilters)
+            present?.addAll(pubkeyNoteFilters)
         }
 
         return result

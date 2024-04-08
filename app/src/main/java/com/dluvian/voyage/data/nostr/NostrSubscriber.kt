@@ -130,6 +130,17 @@ class NostrSubscriber(
         }
     }
 
+    suspend fun subNip65(nprofile: Nip19Profile) {
+        val nip65Filter = Filter().kind(kind = Kind.fromEnum(KindEnum.RelayList))
+            .author(author = nprofile.publicKey())
+            .until(timestamp = Timestamp.now())
+            .limit(1u)
+        val filters = listOf(FilterWrapper(nip65Filter))
+
+        relayProvider.getObserveRelays(nprofile = nprofile, includeConnected = true)
+            .forEach { relay -> subCreator.subscribe(relayUrl = relay, filters = filters) }
+    }
+
     suspend fun subMyAccountAndTrustData() {
         Log.d(TAG, "subMyAccountAndTrustData")
         subMyAccount()

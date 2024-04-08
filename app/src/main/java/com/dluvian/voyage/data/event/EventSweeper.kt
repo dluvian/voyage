@@ -41,7 +41,8 @@ class EventSweeper(
     }
 
     private suspend fun sweepOrphanedRootPosts() {
-        deleteDao
-            .deleteOrphanedRootPosts(oldestCreatedAtInUse = oldestUsedEvent.getOldestCreatedAt())
+        deleteDao.deleteOrphanedRootPosts(
+            oldestCreatedAtInUse = oldestUsedEvent.getOldestCreatedAt()
+        )
     }
 }
