@@ -14,14 +14,4 @@ interface DeleteDao {
                 "ORDER BY createdAt DESC LIMIT :threshold) "
     )
     suspend fun deleteOldestRootPosts(threshold: Int, oldestCreatedAtInUse: Long)
-
-
-    @Query(
-        "DELETE FROM post " +
-                "WHERE parentId IS NULL " +
-                "AND createdAt < :oldestCreatedAtInUse " +
-                "AND pubkey NOT IN (SELECT friendPubkey FROM friend) " +
-                "AND id NOT IN (SELECT postId FROM hashtag WHERE hashtag IN (SELECT topic FROM topic)) "
-    )
-    suspend fun deleteOrphanedRootPosts(oldestCreatedAtInUse: Long)
 }

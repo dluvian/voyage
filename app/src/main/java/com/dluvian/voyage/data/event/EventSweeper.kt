@@ -6,7 +6,6 @@ import com.dluvian.voyage.data.preferences.DatabasePreferences
 import com.dluvian.voyage.data.room.dao.DeleteDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlin.random.Random
 
 private const val TAG = "EventSweeper"
 
@@ -22,10 +21,7 @@ class EventSweeper(
         Log.i(TAG, "Sweep events")
 
         scope.launchIO {
-            when (Random.nextInt(2)) {
-                0 -> sweepRootPostThreshold()
-                1 -> sweepOrphanedRootPosts()
-            }
+            sweepRootPostThreshold()
             eventCacheClearer.clear()
             oldestUsedEvent.reset()
         }.invokeOnCompletion {
@@ -36,12 +32,6 @@ class EventSweeper(
     private suspend fun sweepRootPostThreshold() {
         deleteDao.deleteOldestRootPosts(
             threshold = databasePreferences.getSweepThreshold(),
-            oldestCreatedAtInUse = oldestUsedEvent.getOldestCreatedAt()
-        )
-    }
-
-    private suspend fun sweepOrphanedRootPosts() {
-        deleteDao.deleteOrphanedRootPosts(
             oldestCreatedAtInUse = oldestUsedEvent.getOldestCreatedAt()
         )
     }
