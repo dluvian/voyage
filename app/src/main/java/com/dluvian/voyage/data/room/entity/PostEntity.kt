@@ -26,7 +26,7 @@ import com.dluvian.voyage.data.event.ValidatedRootPost
         Index(value = ["parentId"], unique = false),
         Index(value = ["createdAt"], unique = false),
         Index(value = ["pubkey"], unique = false),
-    ], // ksp suggestion: parentId "Highly advised"
+    ],
 )
 data class PostEntity(
     val id: EventIdHex,
