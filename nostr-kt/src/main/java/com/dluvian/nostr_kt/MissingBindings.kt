@@ -63,14 +63,6 @@ fun Event.isPostOrReply(): Boolean {
     return this.kind().matchEnum(KindEnum.TextNote)
 }
 
-fun Event.isRootPost(): Boolean {
-    return this.isPostOrReply() && this.getReplyToId() == null
-}
-
-fun Event.isReplyPost(): Boolean {
-    return this.isPostOrReply() && this.getReplyToId() != null
-}
-
 fun isValidEventId(hex: String): Boolean {
     return hex.length == 64 && hex.all { it.isDigit() || it in ('a'..'f') || it in ('A'..'F') }
 }
@@ -112,10 +104,8 @@ fun String.removeMentionChar(): String {
 fun Event.getNip65s(): List<Nip65Relay> {
     return this.tags().asSequence()
         .map { it.asVec() }
-        .filter { it.firstOrNull() == "r" }
-        .filter { it.size >= 2 }
-        .filter { it[1].startsWith(WEBSOCKET_PREFIX) }
-        .filter { it[1].trim().length >= 10 }
+        .filter { it.firstOrNull() == "r" && it.size >= 2 }
+        .filter { it[1].startsWith(WEBSOCKET_PREFIX) && it[1].trim().length >= 10 }
         .map {
             val restriction = it.getOrNull(2)
             Nip65Relay(

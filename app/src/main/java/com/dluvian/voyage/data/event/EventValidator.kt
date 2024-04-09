@@ -9,13 +9,10 @@ import com.dluvian.nostr_kt.getReplyToId
 import com.dluvian.nostr_kt.getTitle
 import com.dluvian.nostr_kt.isContactList
 import com.dluvian.nostr_kt.isNip65
+import com.dluvian.nostr_kt.isPostOrReply
 import com.dluvian.nostr_kt.isProfile
-import com.dluvian.nostr_kt.isReplyPost
-import com.dluvian.nostr_kt.isRootPost
 import com.dluvian.nostr_kt.isTopicList
-import com.dluvian.nostr_kt.isValidEventId
 import com.dluvian.nostr_kt.isVote
-import com.dluvian.nostr_kt.removeTrailingSlashes
 import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.getNormalizedTopics
@@ -72,35 +69,32 @@ class EventValidator(
     }
 
     private fun validate(event: Event, relayUrl: RelayUrl): ValidatedEvent? {
-        val validatedEvent = if (event.isRootPost()) {
-            val title = event.getTitle()?.trim()
+        val validatedEvent = if (event.isPostOrReply()) {
+            val replyToId = event.getReplyToId()
             val content = event.content().trim()
-            if (title.isNullOrEmpty() && content.isEmpty()) return null
-            ValidatedRootPost(
-                id = event.id().toHex(),
-                pubkey = event.author().toHex(),
-                topics = event.getNormalizedTopics(limited = true),
-                title = title,
-                content = content,
-                createdAt = event.createdAt().secs(),
-                relayUrl = relayUrl,
-            )
-        } else if (event.isReplyPost()) {
-            val replyToId = event.getReplyToId() ?: return null
-            val content = event.content().trim()
-            if (content.isEmpty() || replyToId == event.id()
-                    .toHex() || !isValidEventId(replyToId)
-            ) {
-                return null
+            if (replyToId == null) {
+                val title = event.getTitle()?.trim()
+                if (title.isNullOrEmpty() && content.isEmpty()) return null
+                ValidatedRootPost(
+                    id = event.id().toHex(),
+                    pubkey = event.author().toHex(),
+                    topics = event.getNormalizedTopics(limited = true),
+                    title = title,
+                    content = content,
+                    createdAt = event.createdAt().secs(),
+                    relayUrl = relayUrl,
+                )
+            } else {
+                if (content.isEmpty() || replyToId == event.id().toHex()) return null
+                ValidatedReply(
+                    id = event.id().toHex(),
+                    pubkey = event.author().toHex(),
+                    parentId = replyToId,
+                    content = content,
+                    createdAt = event.createdAt().secs(),
+                    relayUrl = relayUrl,
+                )
             }
-            ValidatedReply(
-                id = event.id().toHex(),
-                pubkey = event.author().toHex(),
-                parentId = replyToId,
-                content = content,
-                createdAt = event.createdAt().secs(),
-                relayUrl = relayUrl,
-            )
         } else if (event.isVote()) {
             val postId = event.eventIds().firstOrNull() ?: return null
             ValidatedVote(
@@ -125,8 +119,6 @@ class EventValidator(
             )
         } else if (event.isNip65()) {
             val relays = event.getNip65s()
-                .map { it.copy(url = it.url.removeTrailingSlashes()) }
-                .distinct()
             if (relays.isEmpty()) return null
             ValidatedNip65(
                 pubkey = event.author().toHex(),
