@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -49,44 +50,59 @@ fun Feed(
 ) {
     val isRefreshing by paginator.isRefreshing
     val isAppending by paginator.isAppending
+    val hasMoreRecentPosts by paginator.hasMoreRecentPosts
     val posts by paginator.page.value.collectAsState()
+    val scope = rememberCoroutineScope()
 
     PullRefreshBox(isRefreshing = isRefreshing, onRefresh = onRefresh) {
         if (isAppending) FullLinearProgressIndicator()
         LazyColumn(modifier = Modifier.fillMaxSize(), state = state) {
             item { header() }
+
+            if (hasMoreRecentPosts) item { MostRecentPostsTextButton(onClick = onRefresh) }
+
             items(items = posts, key = { item -> item.id }) { post ->
-                PostRow(
-                    post = post,
-                    onUpdate = onUpdate
-                )
+                PostRow(post = post, onUpdate = onUpdate)
                 FullHorizontalDivider()
             }
-            if (posts.size >= FEED_PAGE_SIZE) {
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        Button(
-                            modifier = Modifier.padding(horizontal = spacing.screenEdge),
-                            onClick = onAppend
-                        ) {
-                            Text(text = stringResource(id = R.string.next_page))
-                        }
-                    }
-                }
-            }
+
+            if (posts.size >= FEED_PAGE_SIZE) item { NextPageButton(onAppend = onAppend) }
         }
         if (state.showScrollButton()) {
-            val scope = rememberCoroutineScope()
-            ScrollUpButton(onScrollUp = { scope.launch { state.scrollToItem(index = 0) } })
+            ScrollUpButton(onScrollToTop = { scope.launch { state.scrollToItem(index = 0) } })
         }
     }
 }
 
 @Composable
-private fun ScrollUpButton(onScrollUp: Fn) {
+private fun MostRecentPostsTextButton(onClick: Fn) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        TextButton(onClick = onClick) {
+            Text(text = stringResource(id = R.string.click_to_load_most_recent_posts))
+        }
+    }
+}
+
+@Composable
+private fun NextPageButton(onAppend: Fn) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.End
+    ) {
+        Button(
+            modifier = Modifier.padding(horizontal = spacing.screenEdge),
+            onClick = onAppend
+        ) {
+            Text(text = stringResource(id = R.string.next_page))
+        }
+    }
+}
+
+@Composable
+private fun ScrollUpButton(onScrollToTop: Fn) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -100,7 +116,7 @@ private fun ScrollUpButton(onScrollUp: Fn) {
             modifier = Modifier
                 .clip(CircleShape)
                 .background(Color.White)
-                .clickable(onClick = onScrollUp)
+                .clickable(onClick = onScrollToTop)
                 .size(sizing.iconButton),
             contentAlignment = Alignment.Center
         ) {

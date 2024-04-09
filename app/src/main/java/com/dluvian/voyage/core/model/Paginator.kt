@@ -33,6 +33,7 @@ class Paginator(
     private val tag = "Paginator"
     override val isRefreshing = mutableStateOf(false)
     override val isAppending = mutableStateOf(false)
+    override val hasMoreRecentPosts = mutableStateOf(false)
     override val page: MutableState<StateFlow<List<RootPostUI>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
 
@@ -62,6 +63,7 @@ class Paginator(
 
         isRefreshing.value = true
         val now = getCurrentSecs()
+        hasMoreRecentPosts.value = false
 
         scope.launchIO {
             onSub()
@@ -79,6 +81,7 @@ class Paginator(
 
         subCreator.unsubAll()
         isAppending.value = true
+        hasMoreRecentPosts.value = true
 
         scope.launchIO {
             val newUntil = page.value.value.takeLast(FEED_OFFSET).first().createdAt

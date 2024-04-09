@@ -7,5 +7,6 @@ import kotlinx.coroutines.flow.StateFlow
 interface IPaginator {
     val isRefreshing: State<Boolean>
     val isAppending: State<Boolean>
+    val hasMoreRecentPosts: State<Boolean>
     val page: MutableState<StateFlow<List<RootPostUI>>>
 }

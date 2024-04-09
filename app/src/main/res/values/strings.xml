@@ -62,4 +62,5 @@
     <string name="next_page">Next Page</string>
     <string name="thread">Thread</string>
     <string name="scroll_to_the_page_top">Scroll to the page top</string>
+    <string name="click_to_load_most_recent_posts">Click to load most recent posts</string>
 </resources>
