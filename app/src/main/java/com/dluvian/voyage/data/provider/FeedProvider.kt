@@ -27,10 +27,11 @@ class FeedProvider(
 ) {
     suspend fun getFeedFlow(
         until: Long,
+        subUntil: Long,
         size: Int,
         setting: FeedSetting,
     ): Flow<List<RootPostUI>> {
-        nostrSubscriber.subFeed(until = until, limit = size, setting = setting)
+        nostrSubscriber.subFeed(until = subUntil, limit = size, setting = setting)
 
         val flow = when (setting) {
             is HomeFeedSetting -> rootPostDao.getHomeRootPostFlow(until = until, size = size)

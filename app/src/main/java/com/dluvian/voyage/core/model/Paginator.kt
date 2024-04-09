@@ -53,7 +53,7 @@ class Paginator(
         feedSetting = setting
 
         scope.launch {
-            page.value = getFlow(until = now)
+            page.value = getFlow(until = now, subUntil = now)
                 .stateIn(scope, SharingStarted.Eagerly, getStaticFeed(until = now))
         }
     }
@@ -68,7 +68,7 @@ class Paginator(
         scope.launchIO {
             onSub()
             delay(DELAY_1SEC)
-            page.value = getFlow(until = now)
+            page.value = getFlow(until = now, subUntil = now)
                 .stateIn(scope, SharingStarted.Eagerly, getStaticFeed(until = now))
         }.invokeOnCompletion {
             isRefreshing.value = false
@@ -85,7 +85,8 @@ class Paginator(
 
         scope.launchIO {
             val newUntil = page.value.value.takeLast(FEED_OFFSET).first().createdAt
-            page.value = getFlow(until = newUntil)
+            val subUntil = page.value.value.last().createdAt - 1
+            page.value = getFlow(until = newUntil, subUntil = subUntil)
                 .stateIn(scope, SharingStarted.Eagerly, getStaticFeed(until = newUntil))
             delay(DELAY_1SEC)
         }.invokeOnCompletion {
@@ -93,11 +94,12 @@ class Paginator(
         }
     }
 
-    private suspend fun getFlow(until: Long): Flow<List<RootPostUI>> {
+    private suspend fun getFlow(until: Long, subUntil: Long): Flow<List<RootPostUI>> {
         return feedProvider.getFeedFlow(
             until = until,
+            subUntil = subUntil,
             size = FEED_PAGE_SIZE,
-            setting = feedSetting
+            setting = feedSetting,
         )
     }
 
