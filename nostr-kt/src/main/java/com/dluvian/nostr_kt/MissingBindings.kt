@@ -86,7 +86,7 @@ fun Event.getReplyToId(): String? {
 
     return nip10Tags.find { it.getOrNull(3) == "reply" }?.get(1)
         ?: nip10Tags.find { it.getOrNull(3) == "root" }?.get(1)
-        ?: nip10Tags.first()[1]
+        ?: nip10Tags.last()[1] // Deprecated but still used by Damus. First is root, not reply
 }
 
 fun Event.getHashtags(): List<String> {

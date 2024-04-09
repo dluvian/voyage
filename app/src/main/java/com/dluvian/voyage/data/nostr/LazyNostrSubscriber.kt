@@ -65,6 +65,7 @@ class LazyNostrSubscriber(
                 val nip65Filter = Filter().kind(kind = Kind.fromEnum(KindEnum.RelayList))
                     .authors(authors = pubkeys.map { PublicKey.fromHex(it) })
                     .until(timestamp = timestamp)
+                    .limit(pubkeys.size.toULong())
                 val filters = listOf(FilterWrapper(nip65Filter))
                 subCreator.subscribe(relayUrl = relay, filters = filters)
             }
@@ -83,6 +84,7 @@ class LazyNostrSubscriber(
                 val webOfTrustFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.ContactList))
                     .authors(authors = pubkeys.map { PublicKey.fromHex(it) })
                     .until(timestamp = timestamp)
+                    .limit(pubkeys.size.toULong())
                 val filters = listOf(FilterWrapper(webOfTrustFilter))
                 subCreator.subscribe(relayUrl = relay, filters = filters)
             }
