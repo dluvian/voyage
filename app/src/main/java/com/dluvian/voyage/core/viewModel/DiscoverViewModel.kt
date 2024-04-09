@@ -73,7 +73,7 @@ class DiscoverViewModel(
         }
             .stateIn(
                 viewModelScope,
-                SharingStarted.WhileSubscribed(),
+                SharingStarted.Eagerly,
                 popularTopics.value.value
             )
     }
@@ -82,7 +82,7 @@ class DiscoverViewModel(
         return profileProvider.getPopularUnfollowedProfiles(limit = maxCount)
             .stateIn(
                 viewModelScope,
-                SharingStarted.WhileSubscribed(),
+                SharingStarted.Eagerly,
                 popularProfiles.value.value
             )
     }

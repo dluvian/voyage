@@ -63,4 +63,32 @@ class FeedProvider(
                     .forEach { nameCache.putIfAbsent(it.pubkey, it.authorName) }
             }
     }
+
+    suspend fun getStaticFeed(
+        until: Long,
+        size: Int,
+        setting: FeedSetting,
+    ): List<RootPostUI> {
+        val posts = when (setting) {
+            is HomeFeedSetting -> rootPostDao.getHomeRootPosts(until = until, size = size)
+            is TopicFeedSetting -> rootPostDao.getTopicRootPosts(
+                topic = setting.topic,
+                until = until,
+                size = size
+            )
+
+            is ProfileFeedSetting -> rootPostDao.getProfileRootPosts(
+                pubkey = setting.pubkey,
+                until = until,
+                size = size
+            )
+        }
+
+        return posts.map {
+            it.mapToRootPostUI(
+                forcedVotes = emptyMap(),
+                annotatedStringProvider = annotatedStringProvider
+            )
+        }
+    }
 }

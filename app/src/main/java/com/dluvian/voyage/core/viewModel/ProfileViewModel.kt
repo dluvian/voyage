@@ -44,7 +44,7 @@ class ProfileViewModel(
         profile.value = profileProvider.getProfileFlow(nprofile = profileNavView.nprofile)
             .stateIn(
                 viewModelScope,
-                SharingStarted.WhileSubscribed(),
+                SharingStarted.Eagerly,
                 FullProfileUI(inner = AdvancedProfileView(pubkey = pubkeyHex))
             )
         paginator.init(setting = ProfileFeedSetting(pubkey = pubkeyHex))
@@ -63,7 +63,7 @@ class ProfileViewModel(
         profile.value = profileProvider.getProfileFlow(nprofile = nprofile)
             .stateIn(
                 viewModelScope,
-                SharingStarted.WhileSubscribed(),
+                SharingStarted.Eagerly,
                 FullProfileUI(inner = profile.value.value.inner)
             )
         paginator.refresh()

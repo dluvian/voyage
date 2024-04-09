@@ -144,9 +144,7 @@ private fun getTalliedBrush(isNeutral: Boolean, upvoteCount: Int, downvoteCount:
                 )
             }
 
-            Pair(true, false) -> {
-                SolidColor(UpvoteColor)
-            }
+            Pair(true, false) -> SolidColor(UpvoteColor)
 
             Pair(false, true) -> SolidColor(DownvoteColor)
 

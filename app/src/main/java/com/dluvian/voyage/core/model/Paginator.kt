@@ -48,16 +48,17 @@ class Paginator(
             Log.i(tag, "Skip init. Settings are the same")
             return
         }
-
+        val now = getCurrentSecs()
         feedSetting = setting
 
         scope.launch {
-            page.value = feedProvider.getFeedFlow(
-                until = getCurrentSecs(),
+            val init = feedProvider.getStaticFeed(
+                until = now,
                 size = FEED_PAGE_SIZE,
                 setting = setting
             )
-                .stateIn(scope, SharingStarted.WhileSubscribed(), emptyList())
+
+            page.value = getFlow(until = now).stateIn(scope, SharingStarted.Eagerly, init)
         }
     }
 
@@ -70,8 +71,8 @@ class Paginator(
             onSub()
             delay(DELAY_1SEC)
             val initValue = page.value.value.take(FEED_PAGE_SIZE)
-            page.value = getFlow(until = getCurrentSecs())
-                .stateIn(scope, SharingStarted.WhileSubscribed(), initValue)
+            page.value =
+                getFlow(until = getCurrentSecs()).stateIn(scope, SharingStarted.Eagerly, initValue)
         }.invokeOnCompletion {
             isRefreshing.value = false
         }
@@ -87,8 +88,7 @@ class Paginator(
         scope.launchIO {
             val newUntil = page.value.value.takeLast(FEED_OFFSET).first().createdAt
             val initValue = page.value.value.takeLast(FEED_OFFSET)
-            page.value = getFlow(until = newUntil)
-                .stateIn(scope, SharingStarted.WhileSubscribed(), initValue)
+            page.value = getFlow(until = newUntil).stateIn(scope, SharingStarted.Eagerly, initValue)
         }.invokeOnCompletion {
             isAppending.value = false
         }

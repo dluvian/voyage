@@ -40,7 +40,7 @@ class TopicViewModel(
         val initVal = if (currentTopic.value == stripped) isFollowed.value else false
         currentTopic.value = stripped
         isFollowed = topicProvider.getIsFollowedFlow(topic = topicNavView.topic)
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), initVal)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, initVal)
     }
 
     fun handle(action: TopicViewAction) {

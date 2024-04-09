@@ -41,7 +41,7 @@ class ThreadViewModel(
         parentIds.value = setOf()
         root =
             threadProvider.getRoot(scope = viewModelScope, nevent = createNevent(hex = rootPost.id))
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), rootPost)
+                .stateIn(viewModelScope, SharingStarted.Eagerly, rootPost)
         loadReplies(rootId = rootPost.id, parentId = rootPost.id, isInit = true)
     }
 
@@ -67,14 +67,14 @@ class ThreadViewModel(
             val nip19 = createNevent(hex = currentRoot.id)
 
             root = threadProvider.getRoot(scope = viewModelScope, nevent = nip19)
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), currentRoot)
+                .stateIn(viewModelScope, SharingStarted.Eagerly, currentRoot)
             leveledReplies.value = threadProvider.getLeveledReplies(
                 rootId = currentRoot.id,
                 parentIds = parentIds.value
             )
                 .stateIn(
                     viewModelScope,
-                    SharingStarted.WhileSubscribed(),
+                    SharingStarted.Eagerly,
                     leveledReplies.value.value
                 )
             delay(DELAY_1SEC)
