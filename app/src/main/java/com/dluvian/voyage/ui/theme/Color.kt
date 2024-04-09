@@ -13,6 +13,9 @@ val DenimBlue = Color(0xFF1565c0)
 
 val Orange = Color(0xFFff7b00)
 
+val UpvoteColor = Orange
+val DownvoteColor = DenimBlue
+
 val HyperlinkBlue = Color(0xFF007AFF)
 
 val md_theme_light_primary = Color(0xFF3B4DD8)
@@ -75,7 +78,7 @@ val md_theme_dark_surfaceTint = Color(0xFFBCC2FF)
 val md_theme_dark_outlineVariant = Color(0xFF46464F)
 val md_theme_dark_scrim = Color(0xFF000000)
 
-fun Color.light() = this.copy(alpha = 0.5f)
+fun Color.light() = this.copy(alpha = this.alpha * 0.5f)
 
 @Composable
 fun getTrustColor(trustType: TrustType): Color {

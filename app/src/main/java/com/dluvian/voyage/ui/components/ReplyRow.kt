@@ -74,7 +74,8 @@ fun ReplyRow(
             id = reply.id,
             pubkey = reply.pubkey,
             myVote = reply.myVote,
-            tally = reply.tally,
+            upvoteCount = reply.upvoteCount,
+            downvoteCount = reply.downvoteCount,
             onUpdate = onUpdate,
             additionalAction = {
                 TextButton(

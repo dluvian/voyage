@@ -19,7 +19,8 @@ data class ReplyUI(
     val createdAt: Long,
     override val content: AnnotatedString,
     val myVote: Vote,
-    val tally: Int,
+    val upvoteCount: Int,
+    val downvoteCount: Int,
     val replyCount: Int,
 ) : IParentUI {
     companion object {
@@ -37,7 +38,8 @@ data class ReplyUI(
                 createdAt = replyView.createdAt,
                 content = annotatedStringProvider.annotate(replyView.content),
                 myVote = Vote.from(vote = replyView.myVote),
-                tally = replyView.upvoteCount - replyView.downvoteCount,
+                upvoteCount = replyView.upvoteCount,
+                downvoteCount = replyView.downvoteCount,
                 replyCount = replyView.replyCount,
             )
         }

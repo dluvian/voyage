@@ -70,7 +70,8 @@ fun PostRow(post: RootPostUI, isDetailed: Boolean = false, onUpdate: OnUpdate) {
             id = post.id,
             pubkey = post.pubkey,
             myVote = post.myVote,
-            tally = post.tally,
+            upvoteCount = post.upvoteCount,
+            downvoteCount = post.downvoteCount,
             onUpdate = onUpdate,
             additionalAction = {
                 CommentChip(

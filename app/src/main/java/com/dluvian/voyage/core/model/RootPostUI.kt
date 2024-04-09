@@ -20,7 +20,8 @@ data class RootPostUI(
     val title: AnnotatedString,
     override val content: AnnotatedString,
     val myVote: Vote,
-    val tally: Int,
+    val upvoteCount: Int,
+    val downvoteCount: Int,
     val replyCount: Int,
 ) : IParentUI {
     companion object {
@@ -42,7 +43,8 @@ data class RootPostUI(
                 title = annotatedStringProvider.annotate(rootPostView.title.orEmpty()),
                 content = annotatedStringProvider.annotate(rootPostView.content),
                 myVote = Vote.from(vote = rootPostView.myVote),
-                tally = rootPostView.upvoteCount - rootPostView.downvoteCount,
+                upvoteCount = rootPostView.upvoteCount,
+                downvoteCount = rootPostView.downvoteCount,
                 replyCount = rootPostView.replyCount,
             )
         }

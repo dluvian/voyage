@@ -17,7 +17,8 @@ fun PostRowActions(
     id: EventIdHex,
     pubkey: PubkeyHex,
     myVote: Vote,
-    tally: Int,
+    upvoteCount: Int,
+    downvoteCount: Int,
     onUpdate: OnUpdate,
     additionalAction: ComposableContent = {},
 ) {
@@ -31,7 +32,8 @@ fun PostRowActions(
             postId = id,
             authorPubkey = pubkey,
             myVote = myVote,
-            tally = tally,
+            upvoteCount = upvoteCount,
+            downvoteCount = downvoteCount,
             onUpdate = onUpdate
         )
     }
