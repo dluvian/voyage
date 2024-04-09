@@ -30,9 +30,9 @@ import com.dluvian.voyage.ui.theme.DenimBlue
 import com.dluvian.voyage.ui.theme.DownvoteIcon
 import com.dluvian.voyage.ui.theme.DownvoteOffIcon
 import com.dluvian.voyage.ui.theme.LeftRoundedChip
+import com.dluvian.voyage.ui.theme.Orange
 import com.dluvian.voyage.ui.theme.RightRoundedChip
 import com.dluvian.voyage.ui.theme.RoundedChip
-import com.dluvian.voyage.ui.theme.TallPoppyRed
 import com.dluvian.voyage.ui.theme.UpvoteIcon
 import com.dluvian.voyage.ui.theme.UpvoteOffIcon
 import com.dluvian.voyage.ui.theme.spacing
@@ -74,7 +74,7 @@ private fun VoteButtonsAndTally(
         VoteButton(
             isUpvote = true,
             isActive = myVote is Upvote,
-            tint = if (myVote is Upvote) TallPoppyRed else MaterialTheme.colorScheme.onSurfaceVariant,
+            tint = if (myVote is Upvote) Orange else MaterialTheme.colorScheme.onSurfaceVariant,
             description = stringResource(id = R.string.upvote),
             onClick = {
                 if (myVote is Upvote)
