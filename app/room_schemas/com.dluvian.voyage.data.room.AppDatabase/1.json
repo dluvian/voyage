@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "817f2bcb2198d8298047c5b788b0e615",
+    "identityHash": "fc335c3fc67036443837d0a0663dcf9f",
     "entities": [
       {
         "tableName": "post",
@@ -66,6 +66,24 @@
             ],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_post_parentId` ON `${TABLE_NAME}` (`parentId`)"
+          },
+          {
+            "name": "index_post_createdAt",
+            "unique": false,
+            "columnNames": [
+              "createdAt"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_post_createdAt` ON `${TABLE_NAME}` (`createdAt`)"
+          },
+          {
+            "name": "index_post_pubkey",
+            "unique": false,
+            "columnNames": [
+              "pubkey"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_post_pubkey` ON `${TABLE_NAME}` (`pubkey`)"
           }
         ],
         "foreignKeys": [
@@ -474,7 +492,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '817f2bcb2198d8298047c5b788b0e615')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fc335c3fc67036443837d0a0663dcf9f')"
     ]
   }
 }

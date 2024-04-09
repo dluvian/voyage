@@ -22,7 +22,11 @@ import com.dluvian.voyage.data.event.ValidatedRootPost
         onDelete = ForeignKey.CASCADE,
         onUpdate = ForeignKey.NO_ACTION
     )],
-    indices = [Index(value = ["parentId"], unique = false)], // ksp suggestion: "Highly advised"
+    indices = [
+        Index(value = ["parentId"], unique = false),
+        Index(value = ["createdAt"], unique = false),
+        Index(value = ["pubkey"], unique = false),
+    ], // ksp suggestion: parentId "Highly advised"
 )
 data class PostEntity(
     val id: EventIdHex,
