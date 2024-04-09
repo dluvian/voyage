@@ -32,7 +32,7 @@ class TopicFollower(
     private val topicDao: TopicDao,
     private val snackbar: SnackbarHostState,
     private val context: Context,
-    private val forcedFollowStates: MutableStateFlow<Map<Topic /* = String */, Boolean>>
+    private val forcedFollowStates: MutableStateFlow<Map<Topic, Boolean>>
 ) {
     private val tag = "TopicFollower"
     private val scope = CoroutineScope(Dispatchers.IO)

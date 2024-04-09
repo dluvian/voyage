@@ -3,7 +3,6 @@ package com.dluvian.voyage.data.event
 import android.util.Log
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
-import com.dluvian.nostr_kt.getHashtags
 import com.dluvian.nostr_kt.getMetadata
 import com.dluvian.nostr_kt.getNip65s
 import com.dluvian.nostr_kt.getReplyToId
@@ -19,18 +18,19 @@ import com.dluvian.nostr_kt.isVote
 import com.dluvian.nostr_kt.removeTrailingSlashes
 import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.core.EventIdHex
-import com.dluvian.voyage.core.MAX_TOPICS
-import com.dluvian.voyage.core.normalizeTopics
+import com.dluvian.voyage.core.getNormalizedTopics
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.model.FilterWrapper
 import rust.nostr.protocol.Event
+
+
+private const val TAG = "EventValidator"
 
 class EventValidator(
     private val syncedFilterCache: Map<SubId, List<FilterWrapper>>,
     private val syncedIdCache: MutableSet<EventIdHex>,
     private val pubkeyProvider: IPubkeyProvider,
 ) {
-    private val tag = "EventValidator"
 
     fun getValidatedEvent(
         event: Event,
@@ -41,7 +41,7 @@ class EventValidator(
         if (syncedIdCache.contains(idHex)) return null
 
         if (!matchesFilter(subId = subId, event = event)) {
-            Log.v(tag, "Discard event not matching filter, $idHex from $relayUrl")
+            Log.v(TAG, "Discard event not matching filter, $idHex from $relayUrl")
             return null
         }
 
@@ -49,7 +49,7 @@ class EventValidator(
         syncedIdCache.add(idHex)
 
         if (validatedEvent == null) {
-            Log.w(tag, "Discard invalid event $idHex from $relayUrl")
+            Log.w(TAG, "Discard invalid event $idHex from $relayUrl")
             return null
         }
 
@@ -59,7 +59,7 @@ class EventValidator(
     private fun matchesFilter(subId: SubId, event: Event): Boolean {
         val filters = syncedFilterCache.getOrDefault(subId, emptyList()).toList()
         if (filters.isEmpty()) {
-            Log.w(tag, "Filter is empty")
+            Log.w(TAG, "Filter is empty")
             return false
         }
 
@@ -79,7 +79,7 @@ class EventValidator(
             ValidatedRootPost(
                 id = event.id().toHex(),
                 pubkey = event.author().toHex(),
-                topics = event.getHashtags().normalizeTopics().take(MAX_TOPICS),
+                topics = event.getNormalizedTopics(limited = true),
                 title = title,
                 content = content,
                 createdAt = event.createdAt().secs(),
@@ -120,7 +120,7 @@ class EventValidator(
             if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) return null
             ValidatedTopicList(
                 myPubkey = event.author().toHex(),
-                topics = event.getHashtags().normalizeTopics().toSet(),
+                topics = event.getNormalizedTopics(limited = false).toSet(),
                 createdAt = event.createdAt().secs()
             )
         } else if (event.isNip65()) {

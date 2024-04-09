@@ -9,6 +9,7 @@ import com.dluvian.voyage.core.TopicViewAppend
 import com.dluvian.voyage.core.TopicViewRefresh
 import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.core.navigator.TopicNavView
+import com.dluvian.voyage.core.normalizeTopic
 import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.provider.FeedProvider
@@ -34,7 +35,7 @@ class TopicViewModel(
     )
 
     fun openTopic(topicNavView: TopicNavView) {
-        val stripped = topicNavView.topic.removePrefix("#")
+        val stripped = topicNavView.topic.normalizeTopic()
         subCreator.unsubAll()
         paginator.init(setting = TopicFeedSetting(topic = stripped))
         val initVal = if (currentTopic.value == stripped) isFollowed.value else false

@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.dluvian.nostr_kt.getHashtags
 import com.dluvian.voyage.data.model.FilterWrapper
 import com.dluvian.voyage.data.model.RelevantMetadata
 import kotlinx.coroutines.CoroutineScope
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
+import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
 import rust.nostr.protocol.Kind
@@ -42,16 +44,6 @@ fun PubkeyHex.toShortenedBech32(): String {
     val pubkey = runCatching { PublicKey.fromHex(this) }.getOrNull() ?: return ""
     return pubkey.toShortenedNpub()
 }
-
-private val hashtagRegex = Regex("""#\w+""")
-fun extractCleanHashtags(content: String): List<Topic> {
-    return hashtagRegex.findAll(content)
-        .distinct()
-        .map { it.value.removePrefix("#") }
-        .toList()
-}
-
-fun extractHashtags(extractFrom: String) = hashtagRegex.findAll(extractFrom).toList()
 
 fun Metadata.toRelevantMetadata(createdAt: Long): RelevantMetadata {
     return RelevantMetadata(about = this.getAbout()?.trim(), createdAt = createdAt)
@@ -146,11 +138,29 @@ fun createReplyAndVoteFilters(
     )
 }
 
-fun List<Topic>.normalizeTopics(): List<Topic> {
+private val hashtagRegex = Regex("""#\w+""")
+fun extractCleanHashtags(content: String): List<Topic> {
+    return hashtagRegex.findAll(content)
+        .map { it.value.normalizeTopic() }
+        .distinct()
+        .toList()
+}
+
+fun extractHashtags(extractFrom: String) = hashtagRegex.findAll(extractFrom).toList()
+
+fun Topic.normalizeTopic(): Topic {
+    return this.trim().removePrefix("#").trim().take(MAX_TOPIC_LEN).lowercase()
+}
+
+private fun List<Topic>.normalizeTopics(): List<Topic> {
     return this
-        .map { it.removePrefix("#").trim().take(MAX_TOPIC_LEN).lowercase() }
+        .map { it.normalizeTopic() }
         .filter { it.isBareTopicStr() }
         .distinct()
+}
+
+fun Event.getNormalizedTopics(limited: Boolean): List<Topic> {
+    return this.getHashtags().normalizeTopics().take(if (limited) MAX_TOPICS else Int.MAX_VALUE)
 }
 
 @Composable

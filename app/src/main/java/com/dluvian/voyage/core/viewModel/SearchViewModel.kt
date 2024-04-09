@@ -18,6 +18,7 @@ import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.UpdateSearchText
 import com.dluvian.voyage.core.isBareTopicStr
 import com.dluvian.voyage.core.launchIO
+import com.dluvian.voyage.core.normalizeTopic
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.SuggestionProvider
@@ -86,7 +87,7 @@ class SearchViewModel(
         onOpenTopic: (Topic) -> Unit,
         onOpenProfile: (Nip19Profile) -> Unit
     ) {
-        val strippedTopic = suggestionProvider.getStrippedSearchText(text = text)
+        val strippedTopic = suggestionProvider.getStrippedSearchText(text = text).normalizeTopic()
         if (strippedTopic.length <= MAX_TOPIC_LEN && strippedTopic.isBareTopicStr()) {
             onOpenTopic(strippedTopic)
             return

@@ -3,13 +3,13 @@ package com.dluvian.voyage.data.interactor
 import android.util.Log
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.extractMentions
-import com.dluvian.nostr_kt.getHashtags
 import com.dluvian.nostr_kt.getTitle
 import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.extractCleanHashtags
-import com.dluvian.voyage.core.normalizeTopics
+import com.dluvian.voyage.core.getNormalizedTopics
 import com.dluvian.voyage.data.event.ValidatedReply
 import com.dluvian.voyage.data.event.ValidatedRootPost
 import com.dluvian.voyage.data.nostr.NostrService
@@ -37,14 +37,14 @@ class PostSender(
         return nostrService.publishPost(
             title = trimmedHeader,
             content = trimmedBody,
-            topics = extractCleanHashtags(content = concat),
+            topics = extractCleanHashtags(content = concat).take(MAX_TOPICS),
             mentions = mentions,
             relayUrls = writeRelays
         ).onSuccess { event ->
             val validatedPost = ValidatedRootPost(
                 id = event.id().toHex(),
                 pubkey = event.author().toHex(),
-                topics = event.getHashtags().normalizeTopics(),
+                topics = event.getNormalizedTopics(limited = false),
                 title = event.getTitle(),
                 content = event.content(),
                 createdAt = event.createdAt().secs(),

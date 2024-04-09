@@ -71,7 +71,7 @@ class Core(
         }
 
         if (other.item.startsWith("#")) {
-            onUpdate(OpenTopic(topic = other.item.removePrefix("#").lowercase()))
+            onUpdate(OpenTopic(topic = other.item.normalizeTopic()))
             return
         }
 
