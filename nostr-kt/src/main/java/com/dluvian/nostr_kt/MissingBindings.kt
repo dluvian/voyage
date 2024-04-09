@@ -80,13 +80,13 @@ fun Event.getReplyToId(): String? {
 
     val nip10Tags = this.tags()
         .map { it.asVec() }
-        .filter { it.size >= 2 && it[0] == "e" }
+        .filter { it.size >= 2 && it[0] == "e" && isValidEventId(it[1]) }
 
     if (nip10Tags.isEmpty()) return null
 
     return nip10Tags.find { it.getOrNull(3) == "reply" }?.get(1)
         ?: nip10Tags.find { it.getOrNull(3) == "root" }?.get(1)
-        ?: nip10Tags.find { it.getOrNull(1) != null }?.get(1)
+        ?: nip10Tags.first()[1]
 }
 
 fun Event.getHashtags(): List<String> {
