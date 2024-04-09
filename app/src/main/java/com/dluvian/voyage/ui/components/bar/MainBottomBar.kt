@@ -4,11 +4,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -29,16 +31,27 @@ import com.dluvian.voyage.ui.theme.DiscoverIcon
 import com.dluvian.voyage.ui.theme.HomeIcon
 import com.dluvian.voyage.ui.theme.InboxIcon
 import com.dluvian.voyage.ui.theme.SettingsIcon
+import kotlinx.coroutines.launch
 
 @Composable
-fun MainBottomBar(currentView: MainNavView, onUpdate: (UIEvent) -> Unit) {
+fun MainBottomBar(
+    currentView: MainNavView,
+    homeFeedState: LazyListState,
+    onUpdate: (UIEvent) -> Unit
+) {
     NavigationBar {
+        val scope = rememberCoroutineScope()
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             MainBottomBarItem(
                 selected = currentView is HomeNavView,
                 label = stringResource(id = R.string.home),
                 icon = HomeIcon,
-                onClick = { onUpdate(ClickHome) })
+                onClick = {
+                    onUpdate(ClickHome)
+                    if (currentView is HomeNavView) {
+                        scope.launch { homeFeedState.scrollToItem(index = 0) }
+                    }
+                })
             MainBottomBarItem(
                 selected = currentView is DiscoverNavView,
                 label = stringResource(id = R.string.discover),

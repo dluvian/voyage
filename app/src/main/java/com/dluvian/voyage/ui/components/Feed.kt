@@ -80,7 +80,7 @@ fun Feed(
         }
         if (state.showScrollButton()) {
             val scope = rememberCoroutineScope()
-            ScrollUpButton(onScrollUp = { scope.launch { state.animateScrollToItem(0) } })
+            ScrollUpButton(onScrollUp = { scope.launch { state.scrollToItem(index = 0) } })
         }
     }
 }

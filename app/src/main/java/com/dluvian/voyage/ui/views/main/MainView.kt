@@ -19,6 +19,7 @@ fun MainView(
     MainScaffold(
         currentView = currentView,
         snackbar = core.appContainer.snackbar,
+        homeFeedState = core.vmContainer.homeVM.feedState,
         onUpdate = core.onUpdate
     ) {
         when (currentView) {

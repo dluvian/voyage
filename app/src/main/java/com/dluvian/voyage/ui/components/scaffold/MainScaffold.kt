@@ -1,5 +1,6 @@
 package com.dluvian.voyage.ui.components.scaffold
 
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import com.dluvian.voyage.core.ComposableContent
@@ -12,6 +13,7 @@ import com.dluvian.voyage.ui.components.bar.VoyageTopAppBar
 fun MainScaffold(
     currentView: MainNavView,
     snackbar: SnackbarHostState,
+    homeFeedState: LazyListState,
     onUpdate: OnUpdate,
     content: ComposableContent
 ) {
@@ -27,6 +29,7 @@ fun MainScaffold(
         bottomBar = {
             MainBottomBar(
                 currentView = currentView,
+                homeFeedState = homeFeedState,
                 onUpdate = onUpdate
             )
         }
