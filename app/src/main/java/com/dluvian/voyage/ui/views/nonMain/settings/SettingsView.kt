@@ -24,6 +24,8 @@ import androidx.compose.ui.res.stringResource
 import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ComposableContent
+import com.dluvian.voyage.core.MAX_RETAIN_ROOT
+import com.dluvian.voyage.core.MIN_RETAIN_ROOT
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.RequestExternalAccount
@@ -116,7 +118,7 @@ private fun DatabaseSection(
                 onValueChangeFinished = {
                     onUpdate(UpdateRootPostThreshold(threshold = localRootPostThreshold.floatValue))
                 },
-                valueRange = 100f..5000f
+                valueRange = MIN_RETAIN_ROOT..MAX_RETAIN_ROOT
             )
         }
     }
