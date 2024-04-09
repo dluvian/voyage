@@ -52,13 +52,8 @@ class Paginator(
         feedSetting = setting
 
         scope.launch {
-            val init = feedProvider.getStaticFeed(
-                until = now,
-                size = FEED_PAGE_SIZE,
-                setting = setting
-            )
-
-            page.value = getFlow(until = now).stateIn(scope, SharingStarted.Eagerly, init)
+            page.value = getFlow(until = now)
+                .stateIn(scope, SharingStarted.Eagerly, getStaticFeed(until = now))
         }
     }
 
@@ -66,13 +61,13 @@ class Paginator(
         if (isRefreshing.value) return
 
         isRefreshing.value = true
+        val now = getCurrentSecs()
 
         scope.launchIO {
             onSub()
             delay(DELAY_1SEC)
-            val initValue = page.value.value.take(FEED_PAGE_SIZE)
-            page.value =
-                getFlow(until = getCurrentSecs()).stateIn(scope, SharingStarted.Eagerly, initValue)
+            page.value = getFlow(until = now)
+                .stateIn(scope, SharingStarted.Eagerly, getStaticFeed(until = now))
         }.invokeOnCompletion {
             isRefreshing.value = false
         }
@@ -87,8 +82,9 @@ class Paginator(
 
         scope.launchIO {
             val newUntil = page.value.value.takeLast(FEED_OFFSET).first().createdAt
-            val initValue = page.value.value.takeLast(FEED_OFFSET)
-            page.value = getFlow(until = newUntil).stateIn(scope, SharingStarted.Eagerly, initValue)
+            page.value = getFlow(until = newUntil)
+                .stateIn(scope, SharingStarted.Eagerly, getStaticFeed(until = newUntil))
+            delay(DELAY_1SEC)
         }.invokeOnCompletion {
             isAppending.value = false
         }
@@ -98,6 +94,14 @@ class Paginator(
         return feedProvider.getFeedFlow(
             until = until,
             size = FEED_PAGE_SIZE,
+            setting = feedSetting
+        )
+    }
+
+    private suspend fun getStaticFeed(until: Long): List<RootPostUI> {
+        return feedProvider.getStaticFeed(
+            until = until,
+            size = FEED_PAGE_SIZE.div(2),
             setting = feedSetting
         )
     }

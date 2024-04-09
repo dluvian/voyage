@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ComposableContent
+import com.dluvian.voyage.core.FEED_PAGE_SIZE
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.model.IPaginator
@@ -61,7 +62,7 @@ fun Feed(
                 )
                 FullHorizontalDivider()
             }
-            if (posts.isNotEmpty()) {
+            if (posts.size >= FEED_PAGE_SIZE) {
                 item {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
