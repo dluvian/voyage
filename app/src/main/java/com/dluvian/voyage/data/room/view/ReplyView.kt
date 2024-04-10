@@ -16,7 +16,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             "post.content, " +
             "post.createdAt, " +
             "(SELECT name FROM profile WHERE profile.pubkey = post.pubkey) AS authorName, " +
-            "(SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.pubkey)) AS authorIsMe, " +
+            "(SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.pubkey)) AS authorIsOneself, " +
             "(SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.pubkey)) AS authorIsFriend, " +
             "(SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = post.pubkey)) AS authorIsTrusted, " +
             "(SELECT isPositive FROM vote WHERE vote.postId = post.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)) AS myVote, " +
@@ -33,7 +33,7 @@ data class ReplyView(
     val pubkey: PubkeyHex,
     val content: String,
     val createdAt: Long,
-    val authorIsMe: Boolean,
+    val authorIsOneself: Boolean,
     val authorIsFriend: Boolean,
     val authorIsTrusted: Boolean,
     val myVote: Boolean?,

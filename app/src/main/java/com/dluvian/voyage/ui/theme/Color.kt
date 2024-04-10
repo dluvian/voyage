@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.dluvian.voyage.core.model.FriendTrust
 import com.dluvian.voyage.core.model.NoTrust
+import com.dluvian.voyage.core.model.Oneself
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.core.model.WebTrust
 
@@ -83,6 +84,7 @@ fun Color.light() = this.copy(alpha = this.alpha * 0.5f)
 @Composable
 fun getTrustColor(trustType: TrustType): Color {
     return when (trustType) {
+        Oneself -> Color.Yellow
         FriendTrust -> Color.Green
         WebTrust -> Orange
         NoTrust -> MaterialTheme.colorScheme.onBackground.light()

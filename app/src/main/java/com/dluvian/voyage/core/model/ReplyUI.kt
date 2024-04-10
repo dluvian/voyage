@@ -32,6 +32,7 @@ data class ReplyUI(
                     .ifEmpty { replyView.pubkey.toShortenedBech32() },
                 pubkey = replyView.pubkey,
                 trustType = TrustType.from(
+                    isOneself = replyView.authorIsOneself,
                     isFriend = replyView.authorIsFriend,
                     isWebOfTrust = replyView.authorIsTrusted
                 ),

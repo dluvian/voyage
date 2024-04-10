@@ -8,9 +8,11 @@ import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.model.FriendTrust
 import com.dluvian.voyage.core.model.NoTrust
+import com.dluvian.voyage.core.model.Oneself
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.core.model.WebTrust
 import com.dluvian.voyage.ui.theme.FriendIcon
+import com.dluvian.voyage.ui.theme.OneselfIcon
 import com.dluvian.voyage.ui.theme.TrustedIcon
 import com.dluvian.voyage.ui.theme.UnknownIcon
 import com.dluvian.voyage.ui.theme.getTrustColor
@@ -20,6 +22,12 @@ import com.dluvian.voyage.ui.theme.sizing
 @Composable
 fun TrustIcon(trustType: TrustType) {
     val (icon, color, description) = when (trustType) {
+        Oneself -> Triple(
+            OneselfIcon,
+            getTrustColor(trustType = trustType),
+            stringResource(id = R.string.oneself)
+        )
+
         FriendTrust -> Triple(
             FriendIcon,
             getTrustColor(trustType = trustType),

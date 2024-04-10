@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "1460ab86b5cf0b04d953454c8543b4c9",
+    "identityHash": "57c244599be77678af37ce2812260b43",
     "entities": [
       {
         "tableName": "post",
@@ -475,7 +475,7 @@
     "views": [
       {
         "viewName": "RootPostView",
-        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT post.id, post.pubkey, post.subject, post.content, post.createdAt, (SELECT name FROM profile WHERE profile.pubkey = post.pubkey) AS authorName, (SELECT hashtag FROM hashtag WHERE hashtag.postId = post.id AND hashtag IN (SELECT topic FROM topic WHERE myPubkey = (SELECT pubkey FROM account LIMIT 1)) LIMIT 1) AS myTopic, (SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.pubkey)) AS authorIsMe, (SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.pubkey)) AS authorIsFriend, (SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = post.pubkey)) AS authorIsTrusted, (SELECT isPositive FROM vote WHERE vote.postId = post.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)) AS myVote, (SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 1) AS upvoteCount, (SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 0) AS downvoteCount, (SELECT COUNT(*) FROM post AS post2 WHERE post2.parentId = post.id) AS replyCount FROM post WHERE post.parentId IS NULL"
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT post.id, post.pubkey, post.subject, post.content, post.createdAt, (SELECT name FROM profile WHERE profile.pubkey = post.pubkey) AS authorName, (SELECT hashtag FROM hashtag WHERE hashtag.postId = post.id AND hashtag IN (SELECT topic FROM topic WHERE myPubkey = (SELECT pubkey FROM account LIMIT 1)) LIMIT 1) AS myTopic, (SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.pubkey)) AS authorIsOneself, (SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.pubkey)) AS authorIsFriend, (SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = post.pubkey)) AS authorIsTrusted, (SELECT isPositive FROM vote WHERE vote.postId = post.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)) AS myVote, (SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 1) AS upvoteCount, (SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 0) AS downvoteCount, (SELECT COUNT(*) FROM post AS post2 WHERE post2.parentId = post.id) AS replyCount FROM post WHERE post.parentId IS NULL"
       },
       {
         "viewName": "AdvancedProfileView",
@@ -487,12 +487,12 @@
       },
       {
         "viewName": "ReplyView",
-        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT post.id, post.parentId, post.pubkey, post.content, post.createdAt, (SELECT name FROM profile WHERE profile.pubkey = post.pubkey) AS authorName, (SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.pubkey)) AS authorIsMe, (SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.pubkey)) AS authorIsFriend, (SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = post.pubkey)) AS authorIsTrusted, (SELECT isPositive FROM vote WHERE vote.postId = post.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)) AS myVote, (SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 1) AS upvoteCount, (SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 0) AS downvoteCount, (SELECT COUNT(*) FROM post AS post2 WHERE post2.parentId = post.id) AS replyCount FROM post WHERE post.parentId IS NOT NULL"
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT post.id, post.parentId, post.pubkey, post.content, post.createdAt, (SELECT name FROM profile WHERE profile.pubkey = post.pubkey) AS authorName, (SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.pubkey)) AS authorIsOneself, (SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.pubkey)) AS authorIsFriend, (SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = post.pubkey)) AS authorIsTrusted, (SELECT isPositive FROM vote WHERE vote.postId = post.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)) AS myVote, (SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 1) AS upvoteCount, (SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 0) AS downvoteCount, (SELECT COUNT(*) FROM post AS post2 WHERE post2.parentId = post.id) AS replyCount FROM post WHERE post.parentId IS NOT NULL"
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1460ab86b5cf0b04d953454c8543b4c9')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '57c244599be77678af37ce2812260b43')"
     ]
   }
 }

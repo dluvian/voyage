@@ -35,6 +35,7 @@ data class RootPostUI(
                 authorName = rootPostView.authorName
                     .orEmpty().ifEmpty { rootPostView.pubkey.toShortenedBech32() },
                 trustType = TrustType.from(
+                    isOneself = rootPostView.authorIsOneself,
                     isFriend = rootPostView.authorIsFriend,
                     isWebOfTrust = rootPostView.authorIsTrusted
                 ),

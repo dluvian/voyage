@@ -12,7 +12,7 @@ private const val HOME_FEED_QUERY = "SELECT * " +
         "FROM RootPostView " +
         "WHERE createdAt <= :until " +
         "AND (authorIsFriend OR myTopic IS NOT NULL) " +
-        "AND authorIsMe = 0 " +
+        "AND authorIsOneself = 0 " +
         "ORDER BY createdAt DESC " +
         "LIMIT :size"
 
@@ -20,7 +20,7 @@ private const val TOPIC_FEED_QUERY = "SELECT * " +
         "FROM RootPostView " +
         "WHERE createdAt <= :until " +
         "AND id IN (SELECT postId FROM hashtag WHERE hashtag = :topic) " +
-        "AND authorIsMe = 0 " +
+        "AND authorIsOneself = 0 " +
         "ORDER BY createdAt DESC " +
         "LIMIT :size"
 

@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.KeyboardDoubleArrowUp
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material.icons.filled.ThumbDownAlt
 import androidx.compose.material.icons.filled.ThumbDownOffAlt
@@ -29,6 +30,7 @@ val InboxIcon = Icons.Default.Notifications
 val SettingsIcon = Icons.Default.Settings
 val BackIcon = Icons.AutoMirrored.Filled.ArrowBack
 val CommentIcon = Icons.AutoMirrored.Filled.Comment
+val OneselfIcon = Icons.Default.Star
 val FriendIcon = Icons.Default.VerifiedUser
 val TrustedIcon = FriendIcon
 val UnknownIcon = Icons.AutoMirrored.Filled.HelpOutline
