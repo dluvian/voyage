@@ -1,8 +1,8 @@
 package com.dluvian.voyage.data.room.dao.tx
 
-import android.util.Log
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.MapColumn
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
@@ -10,25 +10,30 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.room.entity.ProfileEntity
 
 
-private const val TAG = "VoteUpsertDao"
-
 @Dao
 interface ProfileUpsertDao {
     @Transaction
-    suspend fun upsertProfile(profile: ProfileEntity) {
-        val newestCreatedAt = internalGetNewestCreatedAt(pubkey = profile.pubkey) ?: 0L
-        if (profile.createdAt <= newestCreatedAt) return
+    suspend fun upsertProfiles(profiles: Collection<ProfileEntity>) {
+        if (profiles.isEmpty()) return
 
-        runCatching {
-            internalUpsertProfile(profileEntity = profile)
-        }.onFailure {
-            Log.w(TAG, "Failed to upsert profile: ${it.message}")
-        }
+        val newestCreatedAt = internalGetNewestCreatedAt(pubkeys = profiles.map { it.pubkey })
+        val toInsert = profiles
+            .filter { it.createdAt > newestCreatedAt.getOrDefault(it.pubkey, 0L) }
+
+        if (toInsert.isEmpty()) return
+
+        internalUpsertProfiles(profileEntities = toInsert)
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun internalUpsertProfile(profileEntity: ProfileEntity)
+    suspend fun internalUpsertProfiles(profileEntities: Collection<ProfileEntity>)
 
-    @Query("SELECT MAX(createdAt) FROM profile WHERE pubkey = :pubkey")
-    suspend fun internalGetNewestCreatedAt(pubkey: PubkeyHex): Long?
+    @Query(
+        "SELECT MAX(createdAt) AS maxCreatedAt, pubkey " +
+                "FROM profile " +
+                "WHERE pubkey IN (:pubkeys)"
+    )
+    suspend fun internalGetNewestCreatedAt(pubkeys: Collection<PubkeyHex>):
+            Map<@MapColumn("pubkey") PubkeyHex,
+                    @MapColumn("maxCreatedAt") Long>
 }

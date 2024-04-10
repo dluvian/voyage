@@ -157,21 +157,25 @@ class EventProcessor(
         if (profiles.isEmpty()) return
         Log.d(TAG, "Process ${profiles.size} profiles")
 
-        profiles
+        val uniqueProfiles = profiles
             .sortedByDescending { it.createdAt }
             .distinctBy { it.pubkey }
-            .forEach { profile ->
-                metadataInMemory.submit(
-                    pubkey = profile.pubkey,
-                    metadata = profile.metadata.toRelevantMetadata(createdAt = profile.createdAt)
-                )
-                scope.launch {
-                    val entity = ProfileEntity.from(validatedProfile = profile)
-                    room.profileUpsertDao().upsertProfile(profile = entity)
-                }.invokeOnCompletion { ex ->
-                    if (ex != null) Log.w(TAG, "Failed to process profile ${profile.id}", ex)
-                }
-            }
+
+        uniqueProfiles.forEach { profile ->
+            metadataInMemory.submit(
+                pubkey = profile.pubkey,
+                metadata = profile.metadata.toRelevantMetadata(createdAt = profile.createdAt)
+            )
+        }
+
+        val entities = uniqueProfiles.map { ProfileEntity.from(it) }
+
+        scope.launch {
+            Log.d(TAG, "Upsert ${entities.size}/${profiles.size} profiles")
+            room.profileUpsertDao().upsertProfiles(profiles = entities)
+        }.invokeOnCompletion { ex ->
+            if (ex != null) Log.w(TAG, "Failed to process profile ${entities.size}", ex)
+        }
     }
 
     private fun filterNewestVotes(votes: Collection<ValidatedVote>): List<ValidatedVote> {
