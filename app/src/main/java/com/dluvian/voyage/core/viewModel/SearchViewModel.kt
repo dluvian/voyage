@@ -87,9 +87,9 @@ class SearchViewModel(
         onOpenTopic: (Topic) -> Unit,
         onOpenProfile: (Nip19Profile) -> Unit
     ) {
-        val strippedTopic = suggestionProvider.getStrippedSearchText(text = text).normalizeTopic()
+        val strippedTopic = suggestionProvider.getStrippedSearchText(text = text)
         if (strippedTopic.length <= MAX_TOPIC_LEN && strippedTopic.isBareTopicStr()) {
-            onOpenTopic(strippedTopic)
+            onOpenTopic(strippedTopic.normalizeTopic())
             return
         }
 
