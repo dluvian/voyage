@@ -49,6 +49,7 @@ class Paginator(
             Log.i(tag, "Skip init. Settings are the same")
             return
         }
+        hasMoreRecentPosts.value = false
         val now = getCurrentSecs()
         feedSetting = setting
 

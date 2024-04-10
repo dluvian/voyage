@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.flowOf
 import rust.nostr.protocol.Nip19Profile
 
 class ProfileProvider(
-    private val forcedFollowFlow: Flow<Map<PubkeyHex /* = String */, Boolean>>,
+    private val forcedFollowFlow: Flow<Map<PubkeyHex, Boolean>>,
     private val pubkeyProvider: IPubkeyProvider,
     private val metadataInMemory: MetadataInMemory,
     private val profileDao: ProfileDao,
