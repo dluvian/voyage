@@ -15,7 +15,7 @@ data class ValidatedRootPost(
     override val id: EventIdHex,
     val pubkey: PubkeyHex,
     override val topics: List<String>,
-    val title: String?,
+    val subject: String?,
     val content: String,
     val createdAt: Long,
     val relayUrl: RelayUrl

@@ -18,7 +18,7 @@ import rust.nostr.protocol.UnsignedEvent
 import java.security.SecureRandom
 
 
-fun createTitleTag(title: String) = Tag.fromEnum(TagEnum.Title(title))
+fun createSubjectTag(subject: String) = Tag.fromEnum(TagEnum.Subject(subject))
 
 fun createHashtagTag(hashtag: String) = Tag.fromEnum(TagEnum.Hashtag(hashtag))
 
@@ -117,9 +117,9 @@ fun Event.getNip65s(): List<Nip65Relay> {
         .distinctBy { it.url }.toList()
 }
 
-fun Event.getTitle(): String? {
+fun Event.getSubject(): String? {
     return this.tags()
-        .firstOrNull { it.kind() == TagKind.Title }
+        .firstOrNull { it.kind() == TagKind.Subject }
         ?.asVec()
         ?.getOrNull(1)
 }

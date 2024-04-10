@@ -66,7 +66,7 @@ private fun CreatePostContent(
             modifier = Modifier.focusRequester(focusRequester),
             value = header.value,
             onValueChange = { str -> header.value = str },
-            placeholder = stringResource(id = R.string.title_optional),
+            placeholder = stringResource(id = R.string.subject_optional),
             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
             imeAction = ImeAction.Next
         )

@@ -6,7 +6,7 @@ import com.dluvian.nostr_kt.SubId
 import com.dluvian.nostr_kt.getMetadata
 import com.dluvian.nostr_kt.getNip65s
 import com.dluvian.nostr_kt.getReplyToId
-import com.dluvian.nostr_kt.getTitle
+import com.dluvian.nostr_kt.getSubject
 import com.dluvian.nostr_kt.isContactList
 import com.dluvian.nostr_kt.isNip65
 import com.dluvian.nostr_kt.isPostOrReply
@@ -15,6 +15,7 @@ import com.dluvian.nostr_kt.isTopicList
 import com.dluvian.nostr_kt.isVote
 import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.core.MAX_SUBJECT_LEN
 import com.dluvian.voyage.core.getNormalizedTopics
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.model.FilterWrapper
@@ -73,13 +74,13 @@ class EventValidator(
             val replyToId = event.getReplyToId()
             val content = event.content().trim()
             if (replyToId == null) {
-                val title = event.getTitle()?.trim()
-                if (title.isNullOrEmpty() && content.isEmpty()) return null
+                val subject = event.getSubject()?.trim()?.take(MAX_SUBJECT_LEN)
+                if (subject.isNullOrEmpty() && content.isEmpty()) return null
                 ValidatedRootPost(
                     id = event.id().toHex(),
                     pubkey = event.author().toHex(),
                     topics = event.getNormalizedTopics(limited = true),
-                    title = title,
+                    subject = subject,
                     content = content,
                     createdAt = event.createdAt().secs(),
                     relayUrl = relayUrl,

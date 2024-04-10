@@ -72,14 +72,14 @@ class NostrService(
     }
 
     suspend fun publishPost(
-        title: String,
+        subject: String,
         content: String,
         topics: List<Topic>,
         mentions: List<PubkeyHex>,
         relayUrls: Collection<RelayUrl>
     ): Result<Event> {
         return eventMaker.buildPost(
-            title = title,
+            subject = subject,
             content = content,
             topics = topics,
             mentions = mentions

@@ -6,7 +6,7 @@ import androidx.room.Index
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_CONTENT_LEN
-import com.dluvian.voyage.core.MAX_TITLE_LEN
+import com.dluvian.voyage.core.MAX_SUBJECT_LEN
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.event.ValidatedPost
 import com.dluvian.voyage.data.event.ValidatedReply
@@ -32,7 +32,7 @@ data class PostEntity(
     val id: EventIdHex,
     val pubkey: PubkeyHex,
     val parentId: EventIdHex?,
-    val title: String?,
+    val subject: String?,
     val content: String,
     val createdAt: Long,
     val relayUrl: RelayUrl,
@@ -45,7 +45,7 @@ data class PostEntity(
                     id = post.id,
                     pubkey = post.pubkey,
                     parentId = null,
-                    title = post.title?.trim()?.take(MAX_TITLE_LEN),
+                    subject = post.subject?.trim()?.take(MAX_SUBJECT_LEN),
                     content = post.content.trim().take(MAX_CONTENT_LEN),
                     createdAt = post.createdAt,
                     relayUrl = post.relayUrl
@@ -55,7 +55,7 @@ data class PostEntity(
                     id = post.id,
                     pubkey = post.pubkey,
                     parentId = post.parentId,
-                    title = null,
+                    subject = null,
                     content = post.content.trim().take(MAX_CONTENT_LEN),
                     createdAt = post.createdAt,
                     relayUrl = post.relayUrl

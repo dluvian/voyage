@@ -3,7 +3,7 @@ package com.dluvian.voyage.data.interactor
 import android.util.Log
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.extractMentions
-import com.dluvian.nostr_kt.getTitle
+import com.dluvian.nostr_kt.getSubject
 import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_TOPICS
@@ -35,7 +35,7 @@ class PostSender(
         val writeRelays = relayProvider.getPublishRelays(publishTo = mentions)
 
         return nostrService.publishPost(
-            title = trimmedHeader,
+            subject = trimmedHeader,
             content = trimmedBody,
             topics = extractCleanHashtags(content = concat).take(MAX_TOPICS),
             mentions = mentions,
@@ -45,7 +45,7 @@ class PostSender(
                 id = event.id().toHex(),
                 pubkey = event.author().toHex(),
                 topics = event.getNormalizedTopics(limited = false),
-                title = event.getTitle(),
+                subject = event.getSubject(),
                 content = event.content(),
                 createdAt = event.createdAt().secs(),
                 relayUrl = writeRelays.random()

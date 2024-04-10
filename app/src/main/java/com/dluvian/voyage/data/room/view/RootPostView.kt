@@ -11,7 +11,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 @DatabaseView(
     "SELECT post.id, " +
             "post.pubkey, " +
-            "post.title, " +
+            "post.subject, " +
             "post.content, " +
             "post.createdAt, " +
             "(SELECT name FROM profile WHERE profile.pubkey = post.pubkey) AS authorName, " +
@@ -34,7 +34,7 @@ data class RootPostView(
     val authorIsFriend: Boolean,
     val authorIsTrusted: Boolean,
     val myTopic: Topic?,
-    val title: String?,
+    val subject: String?,
     val content: String,
     val createdAt: Long,
     val myVote: Boolean?,

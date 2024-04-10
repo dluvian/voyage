@@ -51,12 +51,12 @@ fun PostRow(post: RootPostUI, isDetailed: Boolean = false, onUpdate: OnUpdate) {
             onUpdate = onUpdate,
         )
         Spacer(modifier = Modifier.height(spacing.large))
-        if (post.title.isNotEmpty()) {
+        if (post.subject.isNotEmpty()) {
             AnnotatedText(
-                text = post.title,
+                text = post.subject,
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
                 maxLines = if (isDetailed) Int.MAX_VALUE else 3,
-                onClick = { onClickText(it, post.title) }
+                onClick = { onClickText(it, post.subject) }
             )
             Spacer(modifier = Modifier.height(spacing.large))
         }

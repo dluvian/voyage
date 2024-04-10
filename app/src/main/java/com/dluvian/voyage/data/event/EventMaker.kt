@@ -6,7 +6,7 @@ import com.dluvian.nostr_kt.createLabelTag
 import com.dluvian.nostr_kt.createMentionTag
 import com.dluvian.nostr_kt.createReaction
 import com.dluvian.nostr_kt.createReplyTag
-import com.dluvian.nostr_kt.createTitleTag
+import com.dluvian.nostr_kt.createSubjectTag
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.account.AccountManager
@@ -26,14 +26,14 @@ class EventMaker(
     private val accountManager: AccountManager,
 ) {
     suspend fun buildPost(
-        title: String,
+        subject: String,
         content: String,
         topics: List<Topic>,
         mentions: List<PubkeyHex>
     ): Result<Event> {
         val tags = mutableListOf(createLabelTag(ROOT_LABEL))
         topics.forEach { tags.add(createHashtagTag(it)) }
-        if (title.isNotEmpty()) tags.add(createTitleTag(title = title))
+        if (subject.isNotEmpty()) tags.add(createSubjectTag(subject = subject))
         if (mentions.isNotEmpty()) tags.add(createMentionTag(pubkeys = mentions))
 
         val unsignedEvent = EventBuilder
