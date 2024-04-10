@@ -17,19 +17,23 @@ private const val TAG = "FriendUpsertDao"
 interface FriendUpsertDao {
     @Transaction
     suspend fun upsertFriends(validatedContactList: ValidatedContactList) {
-        val list = FriendEntity.from(validatedContactList = validatedContactList)
         val myPubkey = validatedContactList.pubkey
-
         val newestCreatedAt = internalGetNewestCreatedAt(myPubkey = myPubkey) ?: 0L
         if (validatedContactList.createdAt <= newestCreatedAt) return
 
+        val list = FriendEntity.from(validatedContactList = validatedContactList)
         if (list.isEmpty()) {
             internalDeleteList(myPubkey = myPubkey)
             return
         }
 
         runCatching {
-            internalUpsert(friendEntities = list)
+            // REPLACE seems to cascade delete wot pubkeys, so we have to update manually
+            internalUpdateCreatedAt(
+                friendPubkeys = list.map { it.friendPubkey },
+                newCreatedAt = validatedContactList.createdAt
+            )
+            internalInsertOrIgnore(friendEntities = list)
             internalDeleteOutdated(newestCreatedAt = validatedContactList.createdAt)
         }.onFailure {
             Log.w(TAG, "Failed to upsert friends: ${it.message}")
@@ -39,8 +43,11 @@ interface FriendUpsertDao {
     @Query("SELECT MAX(createdAt) FROM friend WHERE myPubkey = :myPubkey")
     suspend fun internalGetNewestCreatedAt(myPubkey: PubkeyHex): Long?
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun internalUpsert(friendEntities: Collection<FriendEntity>)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun internalInsertOrIgnore(friendEntities: Collection<FriendEntity>)
+
+    @Query("UPDATE friend SET createdAt = :newCreatedAt WHERE friendPubkey IN (:friendPubkeys)")
+    suspend fun internalUpdateCreatedAt(friendPubkeys: Collection<PubkeyHex>, newCreatedAt: Long)
 
     @Query("DELETE FROM friend WHERE myPubkey = :myPubkey")
     suspend fun internalDeleteList(myPubkey: PubkeyHex)
