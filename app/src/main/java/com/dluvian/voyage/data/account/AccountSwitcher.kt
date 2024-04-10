@@ -11,14 +11,12 @@ import com.dluvian.voyage.core.model.ExternalAccount
 import com.dluvian.voyage.data.event.EventCacheClearer
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.room.dao.AccountDao
-import com.dluvian.voyage.data.room.dao.ResetDao
 import com.dluvian.voyage.data.room.entity.AccountEntity
 import rust.nostr.protocol.PublicKey
 
 class AccountSwitcher(
     private val accountManager: AccountManager,
     private val accountDao: AccountDao,
-    private val resetDao: ResetDao,
     private val eventCacheClearer: EventCacheClearer,
     private val nostrSubscriber: NostrSubscriber,
 ) {
@@ -57,9 +55,9 @@ class AccountSwitcher(
 
     private suspend fun updateAndReset(account: AccountEntity) {
         Log.i(tag, "Update account and reset caches")
+        nostrSubscriber.subCreator.unsubAll()
         eventCacheClearer.clear()
         accountDao.updateAccount(account = account)
-        resetDao.resetAfterAccountChange()
         nostrSubscriber.subMyAccountAndTrustData()
     }
 }

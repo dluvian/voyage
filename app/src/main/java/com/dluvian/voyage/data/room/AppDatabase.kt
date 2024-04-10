@@ -10,7 +10,6 @@ import com.dluvian.voyage.data.room.dao.FriendDao
 import com.dluvian.voyage.data.room.dao.Nip65Dao
 import com.dluvian.voyage.data.room.dao.ProfileDao
 import com.dluvian.voyage.data.room.dao.ReplyDao
-import com.dluvian.voyage.data.room.dao.ResetDao
 import com.dluvian.voyage.data.room.dao.RootPostDao
 import com.dluvian.voyage.data.room.dao.TopicDao
 import com.dluvian.voyage.data.room.dao.VoteDao
@@ -74,7 +73,6 @@ abstract class AppDatabase : RoomDatabase() {
 
 
     // Util
-    abstract fun resetDao(): ResetDao
     abstract fun deleteDao(): DeleteDao
     abstract fun countDao(): CountDao
 

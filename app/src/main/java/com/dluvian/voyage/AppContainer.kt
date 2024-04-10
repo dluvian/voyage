@@ -121,7 +121,6 @@ class AppContainer(context: Context) {
     val accountSwitcher = AccountSwitcher(
         accountManager = accountManager,
         accountDao = roomDb.accountDao(),
-        resetDao = roomDb.resetDao(),
         eventCacheClearer = eventCacheClearer,
         nostrSubscriber = nostrSubscriber
     )
