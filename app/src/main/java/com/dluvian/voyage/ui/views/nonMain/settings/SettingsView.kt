@@ -109,7 +109,6 @@ private fun DatabaseSection(
                 localRootPostThreshold.floatValue.toInt()
             ),
             text = stringResource(id = R.string.currently_n_root_posts_in_db, currentRootPostCount),
-            imageVector = AccountIcon,
         ) {
             Slider(
                 modifier = Modifier.padding(horizontal = spacing.bigScreenEdge),
