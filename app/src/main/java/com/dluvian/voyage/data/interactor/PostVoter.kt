@@ -16,7 +16,6 @@ import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.VoteDao
-import com.dluvian.voyage.data.room.dao.tx.VoteUpsertDao
 import com.dluvian.voyage.data.room.entity.VoteEntity
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -37,7 +36,6 @@ class PostVoter(
     private val snackbar: SnackbarHostState,
     private val context: Context,
     private val voteDao: VoteDao,
-    private val voteUpsertDao: VoteUpsertDao,
 ) {
     private val tag = "PostVoter"
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -121,7 +119,7 @@ class PostVoter(
                     isPositive = isPositive,
                     createdAt = event.createdAt().secs(),
                 )
-                voteUpsertDao.upsertVote(voteEntity = entity)
+                voteDao.insertOrReplaceVote(voteEntity = entity)
             }
             .onFailure {
                 Log.w(tag, "Failed to publish vote: ${it.message}", it)

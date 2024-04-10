@@ -14,12 +14,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
+private const val TAG = "EventProcessor"
+
 class EventProcessor(
     private val room: AppDatabase,
     private val metadataInMemory: MetadataInMemory,
     private val pubkeyProvider: IPubkeyProvider,
 ) {
-    private val tag = "EventProcessor"
     private val scope = CoroutineScope(Dispatchers.IO)
 
     fun processEvents(events: Collection<ValidatedEvent>) {
@@ -59,7 +60,7 @@ class EventProcessor(
         scope.launch {
             room.postInsertDao().insertRootPosts(posts = rootPosts)
         }.invokeOnCompletion { exception ->
-            if (exception != null) Log.w(tag, "Failed to process root posts", exception)
+            if (exception != null) Log.w(TAG, "Failed to process root posts", exception)
         }
     }
 
@@ -69,22 +70,23 @@ class EventProcessor(
         scope.launch {
             room.postInsertDao().insertReplies(replies = replies)
         }.invokeOnCompletion { exception ->
-            if (exception != null) Log.w(tag, "Failed to process replies", exception)
+            if (exception != null) Log.w(TAG, "Failed to process replies", exception)
         }
     }
 
     private fun processVotes(votes: Collection<ValidatedVote>) {
         if (votes.isEmpty()) return
 
-        filterNewestVotes(votes = votes)
-            .map { VoteEntity.from(it) }
-            .forEach { vote ->
-                scope.launch {
-                    room.voteUpsertDao().upsertVote(voteEntity = vote)
-                }.invokeOnCompletion { ex ->
-                    if (ex != null) Log.w(tag, "Failed to process vote ${vote.id}", ex)
-                }
-            }
+        val entities = filterNewestVotes(votes = votes).map { VoteEntity.from(it) }
+        if (entities.isEmpty()) return
+
+        scope.launch {
+            // We don't update new incoming votes. If a vote is in db, it will stay
+            room.voteDao().insertOrIgnoreVotes(voteEntities = entities)
+            Log.d(TAG, "Insert ${entities.size}/${votes.size} votes")
+        }.invokeOnCompletion { ex ->
+            if (ex != null) Log.w(TAG, "Failed to process ${entities.size}", ex)
+        }
     }
 
     private fun processContactLists(contactLists: Collection<ValidatedContactList>) {
@@ -102,45 +104,45 @@ class EventProcessor(
 
     private fun processFriendList(myFriendList: ValidatedContactList?) {
         if (myFriendList == null) return
-        Log.d(tag, "Process my friend list")
+        Log.d(TAG, "Process my friend list")
 
         scope.launch {
             room.friendUpsertDao().upsertFriends(validatedContactList = myFriendList)
         }.invokeOnCompletion { exception ->
-            if (exception != null) Log.w(tag, "Failed to process friend list", exception)
+            if (exception != null) Log.w(TAG, "Failed to process friend list", exception)
         }
     }
 
     private fun processWebOfTrustList(webOfTrustList: Collection<ValidatedContactList>) {
         if (webOfTrustList.isEmpty()) return
-        Log.d(tag, "Process ${webOfTrustList.size} wot contact lists")
+        Log.d(TAG, "Process ${webOfTrustList.size} wot contact lists")
 
         webOfTrustList.forEach { wot ->
             scope.launch {
                 room.webOfTrustUpsertDao().upsertWebOfTrust(validatedWebOfTrust = wot)
             }.invokeOnCompletion { ex ->
-                if (ex != null) Log.w(tag, "Failed to process web of trust list", ex)
+                if (ex != null) Log.w(TAG, "Failed to process web of trust list", ex)
             }
         }
     }
 
     private fun processTopicLists(topicLists: Collection<ValidatedTopicList>) {
         if (topicLists.isEmpty()) return
-        Log.d(tag, "Process ${topicLists.size} topic lists")
 
         val myNewestList = filterNewestLists(lists = topicLists)
             .firstOrNull { it.myPubkey == pubkeyProvider.getPubkeyHex() } ?: return
 
         scope.launch {
             room.topicUpsertDao().upsertTopics(validatedTopicList = myNewestList)
+            Log.d(TAG, "Upsert topic list of ${myNewestList.topics.size} topics")
         }.invokeOnCompletion { exception ->
-            if (exception != null) Log.w(tag, "Failed to process topic list", exception)
+            if (exception != null) Log.w(TAG, "Failed to process topic list", exception)
         }
     }
 
     private fun processNip65s(nip65s: Collection<ValidatedNip65>) {
         if (nip65s.isEmpty()) return
-        Log.d(tag, "Process ${nip65s.size} nip65s")
+        Log.d(TAG, "Process ${nip65s.size} nip65s")
 
         val newestNip65s = filterNewestLists(lists = nip65s)
 
@@ -148,14 +150,14 @@ class EventProcessor(
             scope.launch {
                 room.nip65UpsertDao().upsertNip65(validatedNip65 = nip65)
             }.invokeOnCompletion { exception ->
-                if (exception != null) Log.w(tag, "Failed to process nip65", exception)
+                if (exception != null) Log.w(TAG, "Failed to process nip65", exception)
             }
         }
     }
 
     private fun processProfiles(profiles: MutableList<ValidatedProfile>) {
         if (profiles.isEmpty()) return
-        Log.d(tag, "Process ${profiles.size} profiles")
+        Log.d(TAG, "Process ${profiles.size} profiles")
 
         profiles
             .sortedByDescending { it.createdAt }
@@ -169,7 +171,7 @@ class EventProcessor(
                     val entity = ProfileEntity.from(validatedProfile = profile)
                     room.profileUpsertDao().upsertProfile(profile = entity)
                 }.invokeOnCompletion { ex ->
-                    if (ex != null) Log.w(tag, "Failed to process profile ${profile.id}", ex)
+                    if (ex != null) Log.w(TAG, "Failed to process profile ${profile.id}", ex)
                 }
             }
     }

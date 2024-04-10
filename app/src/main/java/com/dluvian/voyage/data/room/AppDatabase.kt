@@ -20,7 +20,6 @@ import com.dluvian.voyage.data.room.dao.tx.Nip65UpsertDao
 import com.dluvian.voyage.data.room.dao.tx.PostInsertDao
 import com.dluvian.voyage.data.room.dao.tx.ProfileUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.TopicUpsertDao
-import com.dluvian.voyage.data.room.dao.tx.VoteUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.WebOfTrustUpsertDao
 import com.dluvian.voyage.data.room.entity.AccountEntity
 import com.dluvian.voyage.data.room.entity.FriendEntity
@@ -74,6 +73,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun eventRelayDao(): EventRelayDao
     abstract fun replyDao(): ReplyDao
 
+
     // Util
     abstract fun resetDao(): ResetDao
     abstract fun deleteDao(): DeleteDao
@@ -81,7 +81,6 @@ abstract class AppDatabase : RoomDatabase() {
 
     // TX
     abstract fun postInsertDao(): PostInsertDao
-    abstract fun voteUpsertDao(): VoteUpsertDao
     abstract fun friendUpsertDao(): FriendUpsertDao
     abstract fun webOfTrustUpsertDao(): WebOfTrustUpsertDao
     abstract fun topicUpsertDao(): TopicUpsertDao

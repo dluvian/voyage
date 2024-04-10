@@ -160,7 +160,6 @@ class AppContainer(context: Context) {
         snackbar = snackbar,
         context = context,
         voteDao = roomDb.voteDao(),
-        voteUpsertDao = roomDb.voteUpsertDao()
     )
 
     val threadCollapser = ThreadCollapser()
