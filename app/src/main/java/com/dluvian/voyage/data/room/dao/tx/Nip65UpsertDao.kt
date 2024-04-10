@@ -2,6 +2,7 @@ package com.dluvian.voyage.data.room.dao.tx
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.MapColumn
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
@@ -12,30 +13,34 @@ import com.dluvian.voyage.data.room.entity.Nip65Entity
 @Dao
 interface Nip65UpsertDao {
     @Transaction
-    suspend fun upsertNip65(validatedNip65: ValidatedNip65) {
-        val list = Nip65Entity.from(validatedNip65 = validatedNip65)
-        val pubkey = validatedNip65.pubkey
+    suspend fun upsertNip65s(validatedNip65s: Collection<ValidatedNip65>) {
+        if (validatedNip65s.isEmpty()) return
 
-        val newestCreatedAt = internalGetNewestCreatedAt(pubkey = pubkey) ?: 0L
-        if (validatedNip65.createdAt <= newestCreatedAt) return
+        val newestCreatedAt = internalGetNewestCreatedAt(
+            pubkeys = validatedNip65s.map { it.pubkey }
+        )
 
-        if (list.isEmpty()) {
-            internalDeleteList(pubkey = pubkey)
-            return
+        val toInsert = validatedNip65s
+            .filter { it.createdAt > newestCreatedAt.getOrDefault(it.pubkey, 0L) }
+        if (toInsert.isEmpty()) return
+
+        internalUpsert(nip65Entities = toInsert.flatMap { Nip65Entity.from(validatedNip65 = it) })
+        toInsert.forEach {
+            internalDeleteOutdated(newestCreatedAt = it.createdAt, pubkey = it.pubkey)
         }
-
-        internalUpsert(nip65Entities = list)
-        internalDeleteOutdated(newestCreatedAt = validatedNip65.createdAt, pubkey = pubkey)
     }
 
-    @Query("SELECT MAX(createdAt) FROM nip65 WHERE pubkey = :pubkey")
-    suspend fun internalGetNewestCreatedAt(pubkey: PubkeyHex): Long?
+    @Query(
+        "SELECT MAX(createdAt) AS maxCreatedAt, pubkey " +
+                "FROM nip65 " +
+                "WHERE pubkey IN (:pubkeys)"
+    )
+    suspend fun internalGetNewestCreatedAt(pubkeys: Collection<PubkeyHex>):
+            Map<@MapColumn("pubkey") PubkeyHex,
+                    @MapColumn("maxCreatedAt") Long>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun internalUpsert(nip65Entities: Collection<Nip65Entity>)
-
-    @Query("DELETE FROM nip65 WHERE pubkey = :pubkey")
-    suspend fun internalDeleteList(pubkey: PubkeyHex)
 
     @Query("DELETE FROM nip65 WHERE createdAt < :newestCreatedAt AND pubkey = :pubkey")
     suspend fun internalDeleteOutdated(newestCreatedAt: Long, pubkey: PubkeyHex)

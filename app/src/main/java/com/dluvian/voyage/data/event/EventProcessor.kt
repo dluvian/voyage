@@ -81,10 +81,10 @@ class EventProcessor(
         if (entities.isEmpty()) return
 
         scope.launch {
+            Log.d(TAG, "Insert ${entities.size}/${votes.size} votes")
             // We don't update new incoming votes. If a vote is in db, it will stay
             // RunCatching bc EventSweeper might delete parent post
             runCatching { room.voteDao().insertOrIgnoreVotes(voteEntities = entities) }
-            Log.d(TAG, "Insert ${entities.size}/${votes.size} votes")
         }.invokeOnCompletion { ex ->
             if (ex != null) Log.w(TAG, "Failed to process ${entities.size}", ex)
         }
@@ -132,25 +132,24 @@ class EventProcessor(
             .firstOrNull { it.myPubkey == pubkeyProvider.getPubkeyHex() } ?: return
 
         scope.launch {
-            room.topicUpsertDao().upsertTopics(validatedTopicList = myNewestList)
             Log.d(TAG, "Upsert topic list of ${myNewestList.topics.size} topics")
-        }.invokeOnCompletion { exception ->
-            if (exception != null) Log.w(TAG, "Failed to process topic list", exception)
+            room.topicUpsertDao().upsertTopics(validatedTopicList = myNewestList)
+        }.invokeOnCompletion { ex ->
+            if (ex != null) Log.w(TAG, "Failed to process topic list", ex)
         }
     }
 
     private fun processNip65s(nip65s: Collection<ValidatedNip65>) {
         if (nip65s.isEmpty()) return
-        Log.d(TAG, "Process ${nip65s.size} nip65s")
 
-        val newestNip65s = filterNewestLists(lists = nip65s)
+        val newestNip65s = filterNewestLists(lists = nip65s).filter { it.relays.isNotEmpty() }
+        if (newestNip65s.isEmpty()) return
 
-        newestNip65s.forEach { nip65 ->
-            scope.launch {
-                room.nip65UpsertDao().upsertNip65(validatedNip65 = nip65)
-            }.invokeOnCompletion { exception ->
-                if (exception != null) Log.w(TAG, "Failed to process nip65", exception)
-            }
+        scope.launch {
+            Log.d(TAG, "Upsert ${nip65s.size} nip65s")
+            room.nip65UpsertDao().upsertNip65s(validatedNip65s = newestNip65s)
+        }.invokeOnCompletion { ex ->
+            if (ex != null) Log.w(TAG, "Failed to process nip65", ex)
         }
     }
 

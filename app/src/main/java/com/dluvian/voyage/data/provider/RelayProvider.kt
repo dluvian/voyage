@@ -134,7 +134,7 @@ class RelayProvider(
             result.keys.forEach { relay -> result.putOrAdd(relay, restPubkeys) }
         }
 
-        Log.i(tag, "Selected ${result.size} autopilot relays")
+        Log.i(tag, "Selected ${result.size} autopilot relays ${result.keys}")
 
         return result
     }
