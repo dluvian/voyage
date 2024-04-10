@@ -127,11 +127,12 @@ class RelayProvider(
                 pubkeyCache.addAll(pubkeys)
             }
 
-        // Cover rest with already selected relays
+        // Cover rest with already selected relays and read relays for initial start up
         val restPubkeys = pubkeys - pubkeyCache
         if (restPubkeys.isNotEmpty()) {
             Log.w(tag, "Default to read relays for ${restPubkeys.size}/${pubkeys.size} pubkeys")
             result.keys.forEach { relay -> result.putOrAdd(relay, restPubkeys) }
+            getReadRelays().forEach { relay -> result.putOrAdd(relay, restPubkeys) }
         }
 
         Log.i(tag, "Selected ${result.size} autopilot relays ${result.keys}")

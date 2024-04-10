@@ -1,5 +1,6 @@
 package com.dluvian.voyage.data.provider
 
+import android.util.Log
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.toShortenedBech32
@@ -62,6 +63,7 @@ class ProfileProvider(
                 default.remove(pubkeyProvider.getPubkeyHex())
                 default
             }
+        Log.i("LOLOL", "1 $unfollowedPubkeys")
         lazyNostrSubscriber.lazySubProfiles(pubkeys = unfollowedPubkeys)
 
         return getProfilesFlow(pubkeys = unfollowedPubkeys)

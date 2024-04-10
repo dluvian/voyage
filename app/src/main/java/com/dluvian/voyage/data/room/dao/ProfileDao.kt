@@ -28,6 +28,7 @@ interface ProfileDao {
         "SELECT DISTINCT pubkey AS pk " +
                 "FROM post " +
                 "WHERE pk NOT IN (SELECT friendPubkey FROM friend) " +
+                "AND pk NOT IN (SELECT pubkey FROM account) " +
                 "GROUP BY pk " +
                 "ORDER BY COUNT(pk) DESC, (SELECT EXISTS (SELECT * FROM weboftrust WHERE webOfTrustPubkey = pk)) DESC " +
                 "LIMIT :limit"
