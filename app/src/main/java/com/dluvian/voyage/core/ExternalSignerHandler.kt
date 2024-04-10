@@ -9,6 +9,26 @@ import kotlinx.coroutines.channels.Channel
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.UnsignedEvent
 
+private const val PERMISSIONS = """
+    [
+        {"type":"get_public_key"},
+        {"type":"sign_event","kind":0},
+        {"type":"sign_event","kind":1},
+        {"type":"sign_event","kind":3},
+        {"type":"sign_event","kind":5},
+        {"type":"sign_event","kind":6},
+        {"type":"sign_event","kind":7},
+        {"type":"sign_event","kind":16},
+        {"type":"sign_event","kind":10000},
+        {"type":"sign_event","kind":10002},
+        {"type":"sign_event","kind":10003},
+        {"type":"sign_event","kind":10004},
+        {"type":"sign_event","kind":10006},
+        {"type":"sign_event","kind":10015},
+        {"type":"sign_event","kind":22242}
+    ]
+"""
+
 class ExternalSignerHandler(
     private val requestAccountLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>,
     private val requestSignatureLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>,
@@ -17,7 +37,7 @@ class ExternalSignerHandler(
     fun requestExternalAccount(): Throwable? {
         return runCatching {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse("nostrsigner:"))
-            intent.putExtra("permissions", "[{\"type\":\"get_public_key\"}]")
+            intent.putExtra("permissions", PERMISSIONS)
             intent.putExtra("type", "get_public_key")
             requestAccountLauncher.launch(intent)
         }.exceptionOrNull()

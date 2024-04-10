@@ -28,6 +28,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import rust.nostr.protocol.PublicKey
 
+private const val TAG = "SettingsViewModel"
+
 class SettingsViewModel(
     private val accountSwitcher: AccountSwitcher,
     private val snackbar: SnackbarHostState,
@@ -41,7 +43,6 @@ class SettingsViewModel(
 
     val isLoadingAccount = mutableStateOf(false)
     lateinit var externalSignerHandler: ExternalSignerHandler
-    private val tag = "SettingsViewModel"
 
     fun handle(action: SettingsViewAction) {
         when (action) {
@@ -93,7 +94,7 @@ class SettingsViewModel(
                 scope = viewModelScope,
                 msg = context.getString(R.string.failed_to_get_permission)
             )
-            Log.w(tag, "Failed to request external account", result)
+            Log.w(TAG, "Failed to request external account", result)
         }
         // Wait for processExternalAccountData
     }
