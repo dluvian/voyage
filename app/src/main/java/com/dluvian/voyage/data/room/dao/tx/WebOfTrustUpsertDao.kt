@@ -3,6 +3,7 @@ package com.dluvian.voyage.data.room.dao.tx
 import android.util.Log
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.MapColumn
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
@@ -13,41 +14,60 @@ import com.dluvian.voyage.data.room.entity.WebOfTrustEntity
 
 private const val TAG = "WebOfTrustUpsertDao"
 
-
 @Dao
 interface WebOfTrustUpsertDao {
+
     @Transaction
-    suspend fun upsertWebOfTrust(validatedWebOfTrust: ValidatedContactList) {
-        val list = WebOfTrustEntity.from(validatedContactList = validatedWebOfTrust)
-        val friendPubkey = validatedWebOfTrust.pubkey
+    suspend fun upsertWebOfTrust(validatedWoTs: Collection<ValidatedContactList>) {
+        if (validatedWoTs.isEmpty()) return
 
-        val newestCreatedAt = internalGetNewestCreatedAt(friendPubkey = friendPubkey) ?: 0L
-        if (validatedWebOfTrust.createdAt <= newestCreatedAt) return
+        val newestCreatedAt = internalGetNewestCreatedAt(
+            friendPubkeys = validatedWoTs.map { it.pubkey }
+        )
 
-        if (list.isEmpty()) {
-            internalDeleteList(friendPubkey = friendPubkey)
-            return
+        val toInsert = validatedWoTs.filter { list ->
+            list.createdAt > newestCreatedAt.getOrDefault(list.pubkey, 0L)
+        }
+        if (toInsert.isEmpty()) return
+
+        val emptyLists = toInsert.filter { it.friendPubkeys.isEmpty() }
+        if (emptyLists.isNotEmpty()) {
+            internalDeleteLists(friendPubkeys = emptyLists.map { it.pubkey })
         }
 
+        val rest = (toInsert - emptyLists.toSet())
+        if (rest.isEmpty()) return
+
+        val restEntities = rest.flatMap { WebOfTrustEntity.from(it) }
+
         runCatching {
-            internalUpsert(webOfTrustEntities = list)
-            internalDeleteOutdated(
-                newestCreatedAt = validatedWebOfTrust.createdAt,
-                friendPubkey = friendPubkey
-            )
+            internalUpsert(webOfTrustEntities = restEntities)
+            rest.forEach {
+                internalDeleteOutdated(
+                    newestCreatedAt = it.createdAt,
+                    friendPubkey = it.pubkey
+                )
+            }
         }.onFailure {
             Log.w(TAG, "Failed to upsert wot: ${it.message}")
         }
     }
 
-    @Query("SELECT MAX(createdAt) FROM weboftrust WHERE friendPubkey = :friendPubkey")
-    suspend fun internalGetNewestCreatedAt(friendPubkey: PubkeyHex): Long?
+    @Query(
+        "SELECT MAX(createdAt) AS maxCreatedAt, friendPubkey " +
+                "FROM weboftrust " +
+                "WHERE friendPubkey IN (:friendPubkeys) " +
+                "GROUP BY friendPubkey"
+    )
+    suspend fun internalGetNewestCreatedAt(friendPubkeys: Collection<PubkeyHex>):
+            Map<@MapColumn("friendPubkey") PubkeyHex,
+                    @MapColumn("maxCreatedAt") Long>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun internalUpsert(webOfTrustEntities: Collection<WebOfTrustEntity>)
 
-    @Query("DELETE FROM weboftrust WHERE friendPubkey = :friendPubkey")
-    suspend fun internalDeleteList(friendPubkey: PubkeyHex)
+    @Query("DELETE FROM weboftrust WHERE friendPubkey IN (:friendPubkeys)")
+    suspend fun internalDeleteLists(friendPubkeys: Collection<PubkeyHex>)
 
     @Query(
         "DELETE FROM weboftrust " +

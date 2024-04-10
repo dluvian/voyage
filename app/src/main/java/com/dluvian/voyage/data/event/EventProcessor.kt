@@ -82,7 +82,8 @@ class EventProcessor(
 
         scope.launch {
             // We don't update new incoming votes. If a vote is in db, it will stay
-            room.voteDao().insertOrIgnoreVotes(voteEntities = entities)
+            // RunCatching bc EventSweeper might delete parent post
+            runCatching { room.voteDao().insertOrIgnoreVotes(voteEntities = entities) }
             Log.d(TAG, "Insert ${entities.size}/${votes.size} votes")
         }.invokeOnCompletion { ex ->
             if (ex != null) Log.w(TAG, "Failed to process ${entities.size}", ex)
@@ -99,30 +100,28 @@ class EventProcessor(
         val otherLists = newestLists.let { if (myList != null) it - myList else it }
 
         processFriendList(myFriendList = myList)
-        processWebOfTrustList(webOfTrustList = otherLists)
+        processWebOfTrustList(validatedWoTs = otherLists)
     }
 
     private fun processFriendList(myFriendList: ValidatedContactList?) {
         if (myFriendList == null) return
-        Log.d(TAG, "Process my friend list")
 
         scope.launch {
+            Log.d(TAG, "Upsert my friend list of ${myFriendList.friendPubkeys.size} friends")
             room.friendUpsertDao().upsertFriends(validatedContactList = myFriendList)
         }.invokeOnCompletion { exception ->
             if (exception != null) Log.w(TAG, "Failed to process friend list", exception)
         }
     }
 
-    private fun processWebOfTrustList(webOfTrustList: Collection<ValidatedContactList>) {
-        if (webOfTrustList.isEmpty()) return
-        Log.d(TAG, "Process ${webOfTrustList.size} wot contact lists")
+    private fun processWebOfTrustList(validatedWoTs: Collection<ValidatedContactList>) {
+        if (validatedWoTs.isEmpty()) return
 
-        webOfTrustList.forEach { wot ->
-            scope.launch {
-                room.webOfTrustUpsertDao().upsertWebOfTrust(validatedWebOfTrust = wot)
-            }.invokeOnCompletion { ex ->
-                if (ex != null) Log.w(TAG, "Failed to process web of trust list", ex)
-            }
+        scope.launch {
+            Log.d(TAG, "Upsert ${validatedWoTs.size} wot contact lists")
+            room.webOfTrustUpsertDao().upsertWebOfTrust(validatedWoTs = validatedWoTs)
+        }.invokeOnCompletion { ex ->
+            if (ex != null) Log.w(TAG, "Failed to process web of trust list", ex)
         }
     }
 

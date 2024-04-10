@@ -36,7 +36,6 @@ import com.dluvian.voyage.data.room.view.ReplyView
 import com.dluvian.voyage.data.room.view.RootPostView
 
 
-// TODO: Reset before v0.1
 @Database(
     version = 1,
     exportSchema = true,
