@@ -59,7 +59,7 @@ class FeedProvider(
             .firstThenDistinctDebounce(SHORT_DEBOUNCE)
             .onEach { posts ->
                 oldestUsedEvent.updateOldestCreatedAt(posts.minOfOrNull { it.createdAt })
-                nostrSubscriber.subVotesAndReplies(postIds = posts.map { it.id })
+                nostrSubscriber.subVotesAndReplies(posts = posts)
                 posts.filter { it.authorName.isNotEmpty() }
                     .forEach { nameCache.putIfAbsent(it.pubkey, it.authorName) }
             }

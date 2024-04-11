@@ -5,6 +5,7 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.RESUB_TIMEOUT
 import com.dluvian.voyage.core.createReplyAndVoteFilters
+import com.dluvian.voyage.core.model.IParentUI
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.FilterWrapper
@@ -17,6 +18,7 @@ import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import rust.nostr.protocol.Filter
 import rust.nostr.protocol.Kind
 import rust.nostr.protocol.KindEnum
@@ -24,6 +26,7 @@ import rust.nostr.protocol.Nip19Event
 import rust.nostr.protocol.Nip19Profile
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Timestamp
+import java.util.concurrent.atomic.AtomicBoolean
 
 class NostrSubscriber(
     topicProvider: TopicProvider,
@@ -87,29 +90,43 @@ class NostrSubscriber(
 
     private val votesAndRepliesCache = mutableSetOf<EventIdHex>()
     private var lastUpdate = System.currentTimeMillis()
-    fun subVotesAndReplies(postIds: Collection<EventIdHex>) {
-        if (postIds.isEmpty()) return
+    private val isSubbingVotesAndReplies = AtomicBoolean(false)
+    suspend fun subVotesAndReplies(posts: Collection<IParentUI>) {
+        if (posts.isEmpty()) return
 
-        val votePubkeys = getVotePubkeys()
+        if (isSubbingVotesAndReplies.compareAndSet(false, true)) {
+            scope.launch(Dispatchers.Default) {
+                val currentMillis = System.currentTimeMillis()
+                if (currentMillis - lastUpdate > RESUB_TIMEOUT) {
+                    votesAndRepliesCache.clear()
+                    lastUpdate = currentMillis
+                }
 
-        synchronized(votesAndRepliesCache) {
-            val newIds = postIds - votesAndRepliesCache
-            if (newIds.isEmpty()) return
+                val newIds = posts.map { it.id } - votesAndRepliesCache
+                if (newIds.isEmpty()) return@launch
 
-            relayProvider.getReadRelays(includeConnected = true).forEach { relay ->
-                subBatcher.submitVotesAndReplies(
-                    relayUrl = relay,
-                    eventIds = newIds,
-                    votePubkeys = votePubkeys
-                )
+
+                votesAndRepliesCache.addAll(newIds)
+
+                val newPostsByAuthor = posts.filter { newIds.contains(it.id) }.groupBy { it.pubkey }
+                // Repliers and voters publish to authors read relays
+                val relaysByAuthor = relayProvider.getReadRelays(pubkeys = newPostsByAuthor.keys)
+                val myReadRelays = relayProvider.getReadRelays().toSet()
+                val votePubkeys = getVotePubkeys()
+
+                relaysByAuthor.forEach { (author, relays) ->
+                    val adjustedRelays = myReadRelays + relays
+                    adjustedRelays.forEach { relay ->
+                        subBatcher.submitVotesAndReplies(
+                            relayUrl = relay,
+                            eventIds = newPostsByAuthor[author]?.map { it.id } ?: emptyList(),
+                            votePubkeys = votePubkeys
+                        )
+                    }
+                }
+            }.invokeOnCompletion {
+                isSubbingVotesAndReplies.set(false)
             }
-            val currentMillis = System.currentTimeMillis()
-            if (currentMillis - lastUpdate > RESUB_TIMEOUT) {
-                votesAndRepliesCache.clear()
-                lastUpdate = currentMillis
-            }
-
-            votesAndRepliesCache.addAll(newIds)
         }
     }
 

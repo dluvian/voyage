@@ -26,7 +26,7 @@ private const val BATCH_DELAY = 2 * DEBOUNCE
 class SubBatcher(private val subCreator: SubscriptionCreator) {
     private val idQueue = mutableMapOf<RelayUrl, MutableSet<EventIdHex>>()
     private val profileQueue = mutableMapOf<RelayUrl, MutableSet<PubkeyHex>>()
-    private val votePubkeyQueue = mutableSetOf<PubkeyHex>()
+    private val votePubkeyQueue = mutableMapOf<RelayUrl, MutableSet<PubkeyHex>>()
     private val isProcessingSubs = AtomicBoolean(false)
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -56,9 +56,7 @@ class SubBatcher(private val subCreator: SubscriptionCreator) {
         if (eventIds.isEmpty()) return
 
         idQueue.syncedPutOrAdd(relayUrl, eventIds)
-        synchronized(votePubkeyQueue) {
-            if (votePubkeyQueue.isEmpty()) votePubkeyQueue.addAll(votePubkeys)
-        }
+        votePubkeyQueue.syncedPutOrAdd(relayUrl, votePubkeys)
         startProcessingJob()
     }
 
@@ -70,14 +68,14 @@ class SubBatcher(private val subCreator: SubscriptionCreator) {
                 delay(BATCH_DELAY)
 
                 val idsByRelay = mutableMapOf<RelayUrl, Set<EventIdHex>>()
-                val votePubkeys = mutableListOf<PubkeyHex>()
+                val votePubkeys = mutableMapOf<RelayUrl, Set<PubkeyHex>>()
                 val profilePubkeysByRelay = mutableMapOf<RelayUrl, Set<PubkeyHex>>()
                 synchronized(idQueue) {
                     idsByRelay.putAll(idQueue)
                     idQueue.clear()
                 }
                 synchronized(votePubkeyQueue) {
-                    votePubkeys.addAll(votePubkeyQueue)
+                    votePubkeys.putAll(votePubkeyQueue)
                     votePubkeyQueue.clear()
                 }
                 synchronized(profileQueue) {
@@ -86,11 +84,10 @@ class SubBatcher(private val subCreator: SubscriptionCreator) {
                 }
 
                 val timestamp = Timestamp.now()
-                val votePublicKeys = votePubkeys.map { PublicKey.fromHex(it) }
 
                 val replyAndVoteFilters = getReplyAndVoteFilters(
                     idsByRelay = idsByRelay,
-                    votePubkeys = votePublicKeys,
+                    votePubkeys = votePubkeys,
                     timestamp = timestamp
                 )
                 val profileFilters = getProfileFilters(
@@ -110,19 +107,24 @@ class SubBatcher(private val subCreator: SubscriptionCreator) {
 
     private fun getReplyAndVoteFilters(
         idsByRelay: Map<RelayUrl, Set<EventIdHex>>,
-        votePubkeys: List<PublicKey>,
+        votePubkeys: Map<RelayUrl, Set<PubkeyHex>>,
         timestamp: Timestamp,
     ): Map<RelayUrl, List<FilterWrapper>> {
         val convertedIds = mutableMapOf<EventIdHex, EventId>()
+        val convertedPubkeys = mutableMapOf<EventIdHex, PublicKey>()
 
-        return idsByRelay.mapValues { (_, ids) ->
+        return idsByRelay.mapValues { (relay, ids) ->
             val eventIds = ids.map {
                 val id = convertedIds[it] ?: EventId.fromHex(it)
                 convertedIds.putIfAbsent(it, id) ?: id
             }
+            val publicKeys = votePubkeys.getOrDefault(relay, emptySet()).map {
+                val pubkey = convertedPubkeys[it] ?: PublicKey.fromHex(it)
+                convertedPubkeys.putIfAbsent(it, pubkey) ?: pubkey
+            }
             createReplyAndVoteFilters(
                 ids = eventIds,
-                votePubkeys = votePubkeys,
+                votePubkeys = publicKeys,
                 timestamp = timestamp
             )
         }

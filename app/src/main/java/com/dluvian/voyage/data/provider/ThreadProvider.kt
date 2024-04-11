@@ -58,10 +58,7 @@ class ThreadProvider(
     ): Flow<List<LeveledReplyUI>> {
         val replyFlow = replyDao.getReplyFlow(parentIds = parentIds + rootId)
             .firstThenDistinctDebounce(DEBOUNCE)
-            .onEach {
-                nostrSubscriber.subVotesAndReplies(postIds = it.map { reply -> reply.id })
-                handleProfileSub(replies = it)
-            }
+            .onEach { handleProfileSub(replies = it) }
 
         return combine(
             replyFlow,
@@ -96,6 +93,7 @@ class ThreadProvider(
 
             result
         }
+            .onEach { nostrSubscriber.subVotesAndReplies(posts = it.map { reply -> reply.reply }) }
     }
 
     private val pubkeyCache = Collections.synchronizedSet(mutableSetOf<EventIdHex>())

@@ -9,15 +9,15 @@ const val MAX_NAME_LEN = 32
 const val DELAY_1SEC = 1000L
 const val DELAY_10SEC = 10 * DELAY_1SEC
 
-const val RESUB_TIMEOUT = DELAY_10SEC
+const val RESUB_TIMEOUT = 3 * DELAY_10SEC
 
 const val SHORT_DEBOUNCE = 300L
 const val DEBOUNCE = 600L
 
 const val MAX_EVENTS_TO_SUB = 1000uL
 
-const val MAX_RELAYS = 6
-const val MAX_RELAYS_PER_PUBKEY = 6
+const val MAX_RELAYS = 5
+const val MAX_RELAYS_PER_PUBKEY = 2
 
 const val MAX_PUBKEYS = 750
 

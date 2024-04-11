@@ -46,6 +46,19 @@ class RelayProvider(
             .let { if (limit) it.takeRandom(MAX_RELAYS) else it }
     }
 
+    suspend fun getReadRelays(
+        pubkeys: Collection<PubkeyHex>,
+        limitPerPubkey: Int = MAX_RELAYS_PER_PUBKEY
+    ): Map<PubkeyHex, List<RelayUrl>> {
+        val readRelays = nip65Dao.getReadRelays(pubkeys)
+            .groupBy { it.pubkey }
+            .mapValues { (_, nip65s) ->
+                nip65s.map { it.nip65Relay.url }.distinct().takeRandom(limitPerPubkey)
+            }
+
+        return pubkeys.associateWith { readRelays.getOrDefault(it, emptyList()) }
+    }
+
     fun getPublishRelays(): List<RelayUrl> {
         val relays = nostrClient.getAllConnectedUrls().toMutableSet()
         relays.addAll(getWriteRelays())
@@ -70,7 +83,7 @@ class RelayProvider(
         limit: Boolean = true,
         includeConnected: Boolean = false
     ): List<RelayUrl> {
-        val relays = nip65Dao.getNip65WriteRelays(pubkeys = listOf(pubkey))
+        val relays = nip65Dao.getWriteRelays(pubkeys = listOf(pubkey))
             .map { it.nip65Relay.url }
             .let { if (limit) it.takeRandom(MAX_RELAYS) else it }
             .toMutableSet()
@@ -100,12 +113,17 @@ class RelayProvider(
     suspend fun getObserveRelays(pubkeys: Collection<PubkeyHex>): Map<RelayUrl, Set<PubkeyHex>> {
         if (pubkeys.isEmpty()) return emptyMap()
 
+        if (pubkeys.size == 1) {
+            val pubkey = pubkeys.first()
+            return getObserveRelays(pubkey = pubkey).associateWith { setOf(pubkey) }
+        }
+
         val result = mutableMapOf<RelayUrl, MutableSet<PubkeyHex>>()
 
         // Cover pubkey-write-relay pairing
         val pubkeyCache = mutableSetOf<PubkeyHex>()
         nip65Dao
-            .getNip65WriteRelays(pubkeys = pubkeys)
+            .getWriteRelays(pubkeys = pubkeys)
             .groupBy { it.nip65Relay.url }
             .toList()
             .shuffled()
