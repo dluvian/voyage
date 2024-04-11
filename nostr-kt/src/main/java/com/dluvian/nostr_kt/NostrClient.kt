@@ -206,7 +206,11 @@ class NostrClient {
     }
 
     fun getAllConnectedUrls(): List<RelayUrl> {
-        return sockets.keys.toList()
+        val allUrls = sockets.keys
+        synchronized(allUrls) {
+            return allUrls.toList()
+        }
+
     }
 
     private fun filterSocketsByRelays(relays: Collection<RelayUrl>): List<Map.Entry<RelayUrl, WebSocket>> {
