@@ -59,13 +59,7 @@ private fun About(about: AnnotatedString, onUpdate: OnUpdate) {
             AnnotatedText(
                 text = about,
                 onClick = { offset ->
-                    onUpdate(
-                        ClickText(
-                            text = about,
-                            offset = offset,
-                            uriHandler = uriHandler
-                        )
-                    )
+                    onUpdate(ClickText(text = about, offset = offset, uriHandler = uriHandler))
                 }
             )
         }

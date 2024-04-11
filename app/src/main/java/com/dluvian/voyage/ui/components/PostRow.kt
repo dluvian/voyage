@@ -23,10 +23,11 @@ import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
 fun PostRow(post: RootPostUI, isDetailed: Boolean = false, onUpdate: OnUpdate) {
+    val onOpenThread = { onUpdate(OpenThread(rootPost = post)) }
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = { onUpdate(OpenThread(rootPost = post)) })
+            .clickable(onClick = onOpenThread)
             .padding(spacing.screenEdge)
     ) {
         val uriHandler = LocalUriHandler.current
@@ -36,7 +37,7 @@ fun PostRow(post: RootPostUI, isDetailed: Boolean = false, onUpdate: OnUpdate) {
                     text = text,
                     offset = offset,
                     uriHandler = uriHandler,
-                    rootPost = post
+                    onNoneClick = onOpenThread
                 )
             )
         }

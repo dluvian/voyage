@@ -64,9 +64,7 @@ class Core(
 
         val other = event.text.getStringAnnotations(event.offset, event.offset).firstOrNull()
         if (other == null) {
-            if (event.rootPost != null) {
-                onUpdate(OpenThread(rootPost = event.rootPost))
-            }
+            event.onNoneClick()
             return
         }
 

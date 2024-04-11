@@ -162,5 +162,5 @@ data class ClickText(
     val text: AnnotatedString,
     val offset: Int,
     val uriHandler: UriHandler,
-    val rootPost: RootPostUI? = null,
+    val onNoneClick: Fn = {},
 ) : UIEvent()

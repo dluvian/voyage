@@ -20,6 +20,7 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ClickText
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenReplyCreation
+import com.dluvian.voyage.core.ThreadViewToggleCollapse
 import com.dluvian.voyage.core.model.ReplyUI
 import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.theme.ReplyIcon
@@ -63,7 +64,7 @@ fun ReplyRow(
                             text = reply.content,
                             offset = offset,
                             uriHandler = uriHandler,
-                            rootPost = null
+                            onNoneClick = { onUpdate(ThreadViewToggleCollapse(id = reply.id)) }
                         )
                     )
                 }
