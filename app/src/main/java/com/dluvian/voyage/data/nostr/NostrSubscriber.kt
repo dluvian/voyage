@@ -90,15 +90,17 @@ class NostrSubscriber(
     fun subVotesAndReplies(postIds: Collection<EventIdHex>) {
         if (postIds.isEmpty()) return
 
+        val votePubkeys = getVotePubkeys()
+
         synchronized(votesAndRepliesCache) {
             val newIds = postIds - votesAndRepliesCache
             if (newIds.isEmpty()) return
 
-            relayProvider.getReadRelays().forEach { relay ->
+            relayProvider.getReadRelays(includeConnected = true).forEach { relay ->
                 subBatcher.submitVotesAndReplies(
                     relayUrl = relay,
                     eventIds = newIds,
-                    votePubkeys = getVotePubkeys()
+                    votePubkeys = votePubkeys
                 )
             }
             val currentMillis = System.currentTimeMillis()
