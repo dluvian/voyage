@@ -72,7 +72,14 @@ fun Event.getReplyToId(): String? {
 
     val nip10Tags = this.tags()
         .map { it.asVec() }
-        .filter { it.size >= 2 && it[0] == "e" && isValidEventId(it[1]) }
+        .filter {
+            it.size >= 2 &&
+                    it[0] == "e" &&
+                    (it.getOrNull(3).isNullOrEmpty() ||
+                            it.getOrNull(3) == "reply" ||
+                            it.getOrNull(3) == "root") &&
+                    isValidEventId(it[1])
+        }
 
     if (nip10Tags.isEmpty()) return null
 
