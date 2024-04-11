@@ -103,6 +103,8 @@ class AppContainer(context: Context) {
         subCreator = subCreator,
         webOfTrustProvider = webOfTrustProvider,
         friendProvider = friendProvider,
+        topicProvider = topicProvider,
+        pubkeyProvider = accountManager,
     )
 
     private val subBatcher = SubBatcher(subCreator = subCreator)
@@ -114,7 +116,6 @@ class AppContainer(context: Context) {
         relayProvider = relayProvider,
         webOfTrustProvider = webOfTrustProvider,
         pubkeyProvider = accountManager,
-        lazyNostrSubscriber = lazyNostrSubscriber,
         subBatcher = subBatcher
     )
 
@@ -122,7 +123,7 @@ class AppContainer(context: Context) {
         accountManager = accountManager,
         accountDao = roomDb.accountDao(),
         eventCacheClearer = eventCacheClearer,
-        nostrSubscriber = nostrSubscriber
+        lazyNostrSubscriber = lazyNostrSubscriber
     )
 
     private val metadataInMemory = MetadataInMemory()
@@ -180,7 +181,7 @@ class AppContainer(context: Context) {
     private val nameProvider = NameProvider(
         profileDao = roomDb.profileDao(),
         nameCache = nameCache,
-        nostrSubscriber = nostrSubscriber
+        lazyNostrSubscriber = lazyNostrSubscriber
     )
 
     private val annotatedStringProvider = AnnotatedStringProvider(
@@ -225,7 +226,6 @@ class AppContainer(context: Context) {
         friendProvider = friendProvider,
         lazyNostrSubscriber = lazyNostrSubscriber,
         annotatedStringProvider = annotatedStringProvider,
-        nostrSubscriber = nostrSubscriber,
     )
 
     val suggestionProvider = SuggestionProvider(

@@ -10,20 +10,20 @@ import com.dluvian.voyage.core.HomeViewSubAccountAndTrustData
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.data.model.HomeFeedSetting
-import com.dluvian.voyage.data.nostr.NostrSubscriber
+import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.FeedProvider
 import kotlinx.coroutines.Job
 
 
 class HomeViewModel(
     feedProvider: FeedProvider,
-    private val nostrSubscriber: NostrSubscriber,
+    private val lazyNostrSubscriber: LazyNostrSubscriber,
     val feedState: LazyListState,
 ) : ViewModel() {
     val paginator = Paginator(
         feedProvider = feedProvider,
         scope = viewModelScope,
-        subCreator = nostrSubscriber.subCreator
+        subCreator = lazyNostrSubscriber.subCreator
     )
 
     init {
@@ -43,12 +43,12 @@ class HomeViewModel(
     private fun subMyAccountAndTrustData() {
         job?.cancel()
         job = viewModelScope.launchIO {
-            nostrSubscriber.subMyAccountAndTrustData()
+            lazyNostrSubscriber.lazySubMyAccountAndTrustData()
         }
     }
 
     private fun refresh() {
-        nostrSubscriber.subCreator.unsubAll()
+        lazyNostrSubscriber.subCreator.unsubAll()
         paginator.refresh(onSub = { subMyAccountAndTrustData() })
     }
 }

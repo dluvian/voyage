@@ -18,6 +18,9 @@ interface ProfileDao {
     @Query("SELECT name FROM profile WHERE pubkey = :pubkey")
     suspend fun getName(pubkey: PubkeyHex): String?
 
+    @Query("SELECT createdAt FROM profile WHERE pubkey = :pubkey")
+    suspend fun getMaxCreatedAt(pubkey: PubkeyHex): Long?
+
     suspend fun getProfilesByName(name: String, limit: Int): List<ProfileEntity> {
         if (limit <= 0) return emptyList()
 

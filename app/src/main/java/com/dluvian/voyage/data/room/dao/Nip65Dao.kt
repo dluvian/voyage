@@ -19,4 +19,7 @@ interface Nip65Dao {
 
     @Query("SELECT MAX(createdAt) FROM nip65")
     suspend fun getNewestCreatedAt(): Long?
+
+    @Query("SELECT MAX(createdAt) FROM nip65 WHERE pubkey = :pubkey")
+    suspend fun getNewestCreatedAt(pubkey: PubkeyHex): Long?
 }

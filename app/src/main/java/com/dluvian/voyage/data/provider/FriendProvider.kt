@@ -20,4 +20,7 @@ class FriendProvider(private val friendDao: FriendDao) {
     suspend fun getFriendsWithMissingContactList() = friendDao.getFriendsWithMissingContactList()
 
     suspend fun getFriendsWithMissingNip65() = friendDao.getFriendsWithMissingNip65()
+
+    // Not named "getMaxCreatedAt" bc there should only be one createdAt available
+    suspend fun getCreatedAt() = friendDao.getMaxCreatedAt()
 }

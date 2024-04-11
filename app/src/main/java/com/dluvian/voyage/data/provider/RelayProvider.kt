@@ -146,6 +146,8 @@ class RelayProvider(
 
     suspend fun getNewestCreatedAt() = nip65Dao.getNewestCreatedAt()
 
+    suspend fun getCreatedAt(pubkey: PubkeyHex) = nip65Dao.getNewestCreatedAt(pubkey = pubkey)
+
     private val defaultRelays = listOf(
         "wss://nos.lol",
         "wss://nostr.einundzwanzig.space",

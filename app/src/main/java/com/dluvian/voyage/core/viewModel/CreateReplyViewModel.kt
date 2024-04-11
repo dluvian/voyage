@@ -17,12 +17,12 @@ import com.dluvian.voyage.core.model.IParentUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.interactor.PostSender
-import com.dluvian.voyage.data.nostr.NostrSubscriber
+import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.room.dao.EventRelayDao
 import kotlinx.coroutines.delay
 
 class CreateReplyViewModel(
-    private val nostrSubscriber: NostrSubscriber,
+    private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val postSender: PostSender,
     private val snackbar: SnackbarHostState,
     private val eventRelayDao: EventRelayDao,
@@ -35,7 +35,7 @@ class CreateReplyViewModel(
 
         if (newParent.pubkey != this.parent.value?.pubkey) {
             viewModelScope.launchIO {
-                nostrSubscriber.subNip65(nprofile = createNprofile(hex = newParent.pubkey))
+                lazyNostrSubscriber.lazySubNip65(nprofile = createNprofile(hex = newParent.pubkey))
             }
         }
 

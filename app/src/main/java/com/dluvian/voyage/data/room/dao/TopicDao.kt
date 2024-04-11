@@ -25,4 +25,7 @@ interface TopicDao {
                 "LIMIT :limit"
     )
     suspend fun getUnfollowedTopics(limit: Int): List<Topic>
+
+    @Query("SELECT MAX(createdAt) FROM topic")
+    suspend fun getMaxCreatedAt(): Long?
 }

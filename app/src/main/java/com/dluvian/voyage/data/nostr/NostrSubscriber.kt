@@ -1,15 +1,12 @@
 package com.dluvian.voyage.data.nostr
 
-import android.util.Log
 import com.dluvian.nostr_kt.removeTrailingSlashes
-import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.RESUB_TIMEOUT
 import com.dluvian.voyage.core.createReplyAndVoteFilters
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.model.FeedSetting
-import com.dluvian.voyage.data.model.FilterWrapper
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.ProfileFeedSetting
 import com.dluvian.voyage.data.model.TopicFeedSetting
@@ -19,16 +16,9 @@ import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import rust.nostr.protocol.Filter
-import rust.nostr.protocol.Kind
-import rust.nostr.protocol.KindEnum
 import rust.nostr.protocol.Nip19Event
-import rust.nostr.protocol.Nip19Profile
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Timestamp
-
-private const val TAG = "NostrSubscriber"
 
 class NostrSubscriber(
     topicProvider: TopicProvider,
@@ -37,7 +27,6 @@ class NostrSubscriber(
     private val relayProvider: RelayProvider,
     private val webOfTrustProvider: WebOfTrustProvider,
     private val pubkeyProvider: IPubkeyProvider,
-    private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val subBatcher: SubBatcher,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -117,70 +106,6 @@ class NostrSubscriber(
             .forEach { relay ->
                 subCreator.subscribe(relayUrl = relay, filters = filters)
             }
-    }
-
-    suspend fun subProfile(nprofile: Nip19Profile) {
-        val profileFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Metadata))
-            .author(author = nprofile.publicKey())
-            .until(timestamp = Timestamp.now())
-            .limit(1u)
-        val filters = listOf(FilterWrapper(profileFilter))
-
-        relayProvider.getObserveRelays(nprofile = nprofile).forEach { relay ->
-            subCreator.subscribe(relayUrl = relay, filters = filters)
-        }
-    }
-
-    suspend fun subMyAccountAndTrustData() {
-        Log.d(TAG, "subMyAccountAndTrustData")
-        subMyAccount()
-        delay(DELAY_1SEC)
-        lazyNostrSubscriber.semiLazySubFriendsNip65()
-        delay(DELAY_1SEC)
-        lazyNostrSubscriber.semiLazySubWebOfTrustPubkeys()
-    }
-
-    suspend fun subNip65(nprofile: Nip19Profile) {
-        val nip65Filter = Filter().kind(kind = Kind.fromEnum(KindEnum.RelayList))
-            .author(author = nprofile.publicKey())
-            .until(timestamp = Timestamp.now())
-            .limit(1u)
-        val filters = listOf(FilterWrapper(nip65Filter))
-        relayProvider.getObserveRelays(nprofile = nprofile, includeConnected = true)
-            .forEach { relay ->
-            subCreator.subscribe(relayUrl = relay, filters = filters)
-        }
-    }
-
-    private fun subMyAccount() {
-        val timestamp = Timestamp.now()
-        val myPubkey = pubkeyProvider.getPublicKey()
-        val myContactFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.ContactList))
-            .author(author = myPubkey)
-            .until(timestamp = timestamp)
-            .limit(1u)
-        val myTopicsFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Interests))
-            .author(author = myPubkey)
-            .until(timestamp = timestamp)
-            .limit(1u)
-        val myNip65Filter = Filter().kind(kind = Kind.fromEnum(KindEnum.RelayList))
-            .author(author = myPubkey)
-            .until(timestamp = timestamp)
-            .limit(1u)
-        val myProfileFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Metadata))
-            .author(author = myPubkey)
-            .until(timestamp = timestamp)
-            .limit(1u)
-        val filters = listOf(
-            FilterWrapper(myContactFilter),
-            FilterWrapper(myTopicsFilter),
-            FilterWrapper(myNip65Filter),
-            FilterWrapper(myProfileFilter),
-        )
-
-        relayProvider.getReadRelays().forEach { relay ->
-            subCreator.subscribe(relayUrl = relay, filters = filters)
-        }
     }
 
     private fun getVotePubkeys(): List<PubkeyHex> {

@@ -86,7 +86,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         homeVM = viewModel {
             HomeViewModel(
                 feedProvider = appContainer.feedProvider,
-                nostrSubscriber = appContainer.nostrSubscriber,
+                lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
                 feedState = homeFeedState,
             )
         },
@@ -142,7 +142,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         },
         createReplyVM = viewModel {
             CreateReplyViewModel(
-                nostrSubscriber = appContainer.nostrSubscriber,
+                lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
                 postSender = appContainer.postSender,
                 snackbar = appContainer.snackbar,
                 eventRelayDao = appContainer.roomDb.eventRelayDao()

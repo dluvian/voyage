@@ -5,7 +5,7 @@ import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.launchIO
-import com.dluvian.voyage.data.nostr.NostrSubscriber
+import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.room.dao.ProfileDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +18,7 @@ private const val TAG = "NameProvider"
 class NameProvider(
     private val profileDao: ProfileDao,
     private val nameCache: MutableMap<PubkeyHex, String?>,
-    private val nostrSubscriber: NostrSubscriber
+    private val lazyNostrSubscriber: LazyNostrSubscriber,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val subCache = Collections.synchronizedSet(mutableSetOf<PubkeyHex>())
@@ -34,7 +34,10 @@ class NameProvider(
                 if (dbName.isNullOrEmpty()) {
                     if (subCache.add(pubkey)) {
                         Log.d(TAG, "Sub unknown profile $pubkey")
-                        nostrSubscriber.subProfile(nprofile = createNprofile(hex = pubkey))
+                        lazyNostrSubscriber.lazySubProfile(
+                            nprofile = createNprofile(hex = pubkey),
+                            since = 1
+                        )
                     }
                 } else {
                     Log.d(TAG, "Found profile $pubkey in database")
