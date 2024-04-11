@@ -19,7 +19,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +35,7 @@ import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.model.IPaginator
 import com.dluvian.voyage.core.showScrollButton
+import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import com.dluvian.voyage.ui.theme.ScrollUpIcon
 import com.dluvian.voyage.ui.theme.sizing
@@ -51,11 +54,17 @@ fun Feed(
     val isRefreshing by paginator.isRefreshing
     val isAppending by paginator.isAppending
     val hasMoreRecentPosts by paginator.hasMoreRecentPosts
+    val hasPosts by paginator.hasPosts.value.collectAsState()
     val posts by paginator.page.value.collectAsState()
     val scope = rememberCoroutineScope()
+    val showProgressIndicator by remember {
+        derivedStateOf { isAppending || (hasPosts && posts.isEmpty()) }
+    }
 
     PullRefreshBox(isRefreshing = isRefreshing, onRefresh = onRefresh) {
-        if (isAppending) FullLinearProgressIndicator()
+        if (showProgressIndicator) FullLinearProgressIndicator()
+        if (!hasPosts && posts.isEmpty()) BaseHint(stringResource(id = R.string.no_posts_found))
+
         LazyColumn(modifier = Modifier.fillMaxSize(), state = state) {
             item { header() }
 

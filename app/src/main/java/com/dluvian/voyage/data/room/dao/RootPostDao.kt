@@ -16,6 +16,11 @@ private const val HOME_FEED_QUERY = "SELECT * " +
         "ORDER BY createdAt DESC " +
         "LIMIT :size"
 
+private const val HOME_FEED_EXISTS_QUERY = "SELECT EXISTS(SELECT * " +
+        "FROM RootPostView " +
+        "WHERE (authorIsFriend OR myTopic IS NOT NULL) " +
+        "AND authorIsOneself = 0)"
+
 private const val TOPIC_FEED_QUERY = "SELECT * " +
         "FROM RootPostView " +
         "WHERE createdAt <= :until " +
@@ -24,12 +29,21 @@ private const val TOPIC_FEED_QUERY = "SELECT * " +
         "ORDER BY createdAt DESC " +
         "LIMIT :size"
 
+private const val TOPIC_FEED_EXISTS_QUERY = "SELECT EXISTS(SELECT * " +
+        "FROM RootPostView " +
+        "WHERE id IN (SELECT postId FROM hashtag WHERE hashtag = :topic) " +
+        "AND authorIsOneself = 0)"
+
 private const val PROFILE_FEED_QUERY = "SELECT * " +
         "FROM RootPostView " +
         "WHERE createdAt <= :until " +
         "AND pubkey = :pubkey " +
         "ORDER BY createdAt DESC " +
         "LIMIT :size"
+
+private const val PROFILE_FEED_EXISTS_QUERY = "SELECT EXISTS(SELECT * " +
+        "FROM RootPostView " +
+        "WHERE pubkey = :pubkey)"
 
 @Dao
 interface RootPostDao {
@@ -40,17 +54,26 @@ interface RootPostDao {
     @Query(HOME_FEED_QUERY)
     fun getHomeRootPostFlow(until: Long, size: Int): Flow<List<RootPostView>>
 
+    @Query(HOME_FEED_EXISTS_QUERY)
+    fun hasHomeRootPostsFlow(): Flow<Boolean>
+
     @Query(HOME_FEED_QUERY)
     suspend fun getHomeRootPosts(until: Long, size: Int): List<RootPostView>
 
     @Query(TOPIC_FEED_QUERY)
     fun getTopicRootPostFlow(topic: Topic, until: Long, size: Int): Flow<List<RootPostView>>
 
+    @Query(TOPIC_FEED_EXISTS_QUERY)
+    fun hasTopicRootPostsFlow(topic: Topic): Flow<Boolean>
+
     @Query(TOPIC_FEED_QUERY)
     suspend fun getTopicRootPosts(topic: Topic, until: Long, size: Int): List<RootPostView>
 
     @Query(PROFILE_FEED_QUERY)
     fun getProfileRootPostFlow(pubkey: PubkeyHex, until: Long, size: Int): Flow<List<RootPostView>>
+
+    @Query(PROFILE_FEED_EXISTS_QUERY)
+    fun hasProfileRootPostsFlow(pubkey: PubkeyHex): Flow<Boolean>
 
     @Query(PROFILE_FEED_QUERY)
     suspend fun getProfileRootPosts(pubkey: PubkeyHex, until: Long, size: Int): List<RootPostView>

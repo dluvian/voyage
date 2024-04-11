@@ -64,4 +64,5 @@
     <string name="scroll_to_the_page_top">Scroll to the page top</string>
     <string name="click_to_load_most_recent_posts">Click to load most recent posts</string>
     <string name="oneself">Oneself</string>
+    <string name="no_posts_found">No posts found</string>
 </resources>

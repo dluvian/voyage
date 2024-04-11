@@ -28,12 +28,14 @@ import kotlinx.coroutines.launch
 class Paginator(
     private val feedProvider: FeedProvider,
     private val subCreator: SubscriptionCreator,
-    private val scope: CoroutineScope
+    private val scope: CoroutineScope,
 ) : IPaginator {
     private val tag = "Paginator"
     override val isRefreshing = mutableStateOf(false)
     override val isAppending = mutableStateOf(false)
     override val hasMoreRecentPosts = mutableStateOf(false)
+    override val hasPosts: MutableState<StateFlow<Boolean>> =
+        mutableStateOf(MutableStateFlow(true))
     override val page: MutableState<StateFlow<List<RootPostUI>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
 
@@ -49,9 +51,10 @@ class Paginator(
             Log.i(tag, "Skip init. Settings are the same")
             return
         }
-        hasMoreRecentPosts.value = false
-        val now = getCurrentSecs()
+
+        hasPosts.value = getHasPosts(setting = setting)
         feedSetting = setting
+        val now = getCurrentSecs()
 
         scope.launch {
             page.value = getFlow(until = now, subUntil = now)
@@ -65,6 +68,8 @@ class Paginator(
         isRefreshing.value = true
         val now = getCurrentSecs()
         hasMoreRecentPosts.value = false
+
+        hasPosts.value = getHasPosts(setting = feedSetting)
 
         scope.launchIO {
             onSub()
@@ -111,4 +116,8 @@ class Paginator(
             setting = feedSetting
         )
     }
+
+    private fun getHasPosts(setting: FeedSetting) = feedProvider
+        .settingHasPostsFlow(setting = setting)
+        .stateIn(scope, SharingStarted.Eagerly, true)
 }

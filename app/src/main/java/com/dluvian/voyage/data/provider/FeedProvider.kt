@@ -92,4 +92,12 @@ class FeedProvider(
             )
         }
     }
+
+    fun settingHasPostsFlow(setting: FeedSetting): Flow<Boolean> {
+        return when (setting) {
+            is HomeFeedSetting -> rootPostDao.hasHomeRootPostsFlow()
+            is TopicFeedSetting -> rootPostDao.hasTopicRootPostsFlow(topic = setting.topic)
+            is ProfileFeedSetting -> rootPostDao.hasProfileRootPostsFlow(pubkey = setting.pubkey)
+        }
+    }
 }
