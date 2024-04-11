@@ -21,7 +21,7 @@ const val MAX_RELAYS_PER_PUBKEY = 6
 
 const val MAX_PUBKEYS = 750
 
-const val RND_RESUB_COUNT = 20
+const val RND_RESUB_COUNT = 12
 
 const val FEED_PAGE_SIZE = 35
 const val FEED_OFFSET = 7

@@ -20,4 +20,7 @@ interface WebOfTrustDao {
                 "WHERE friendPubkey NOT IN (SELECT pubkey FROM profile)"
     )
     suspend fun getWotWithMissingProfiles(): List<PubkeyHex>
+
+    @Query("SELECT MAX(createdAt) FROM weboftrust")
+    suspend fun getNewestCreatedAt(): Long?
 }

@@ -21,4 +21,8 @@ class WebOfTrustProvider(private val webOfTrustDao: WebOfTrustDao) {
     suspend fun getWotWithMissingProfiles(): List<PubkeyHex> {
         return webOfTrustDao.getWotWithMissingProfiles().takeRandom(MAX_PUBKEYS)
     }
+
+    suspend fun getNewestCreatedAt(): Long? {
+        return webOfTrustDao.getNewestCreatedAt()
+    }
 }

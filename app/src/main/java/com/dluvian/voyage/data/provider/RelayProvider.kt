@@ -33,7 +33,9 @@ class RelayProvider(
             .map { it.nip65Relay.url }
             .ifEmpty { defaultRelays }
             .let { if (limit) it.takeRandom(MAX_RELAYS) else it }
-            .let { if (includeConnected) it + nostrClient.getAllConnectedUrls() else it }
+            .let {
+                if (includeConnected) (it + nostrClient.getAllConnectedUrls()).distinct() else it
+            }
     }
 
     private fun getWriteRelays(limit: Boolean = true): List<RelayUrl> {
@@ -141,6 +143,8 @@ class RelayProvider(
     }
 
     fun getConnectedRelays() = nostrClient.getAllConnectedUrls()
+
+    suspend fun getNewestCreatedAt() = nip65Dao.getNewestCreatedAt()
 
     private val defaultRelays = listOf(
         "wss://nos.lol",

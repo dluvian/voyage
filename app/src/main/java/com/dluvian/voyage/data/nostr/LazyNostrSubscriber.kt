@@ -69,6 +69,23 @@ class LazyNostrSubscriber(
                 val filters = listOf(FilterWrapper(nip65Filter))
                 subCreator.subscribe(relayUrl = relay, filters = filters)
             }
+
+        lazySubNewestFriendNip65(until = timestamp)
+    }
+
+    private suspend fun lazySubNewestFriendNip65(until: Timestamp) {
+        val newestCreatedAt = relayProvider.getNewestCreatedAt()?.toULong() ?: return
+        if (newestCreatedAt >= until.asSecs()) return
+
+        val friendPubkeys = friendProvider.getFriendPubkeys().map { PublicKey.fromHex(it) }
+        val newNip65Filter = Filter().kind(kind = Kind.fromEnum(KindEnum.RelayList))
+            .authors(authors = friendPubkeys)
+            .until(timestamp = until)
+            .since(timestamp = Timestamp.fromSecs(newestCreatedAt + 1u))
+            .limit(friendPubkeys.size.toULong())
+        val filters = listOf(FilterWrapper(newNip65Filter))
+        relayProvider.getReadRelays(includeConnected = true)
+            .forEach { subCreator.subscribe(relayUrl = it, filters = filters) }
     }
 
     suspend fun semiLazySubWebOfTrustPubkeys() {
@@ -88,5 +105,23 @@ class LazyNostrSubscriber(
                 val filters = listOf(FilterWrapper(webOfTrustFilter))
                 subCreator.subscribe(relayUrl = relay, filters = filters)
             }
+
+        lazySubNewestWotPubkeys(until = timestamp)
+    }
+
+
+    private suspend fun lazySubNewestWotPubkeys(until: Timestamp) {
+        val newestCreatedAt = webOfTrustProvider.getNewestCreatedAt()?.toULong() ?: return
+        if (newestCreatedAt >= until.asSecs()) return
+
+        val friendPubkeys = friendProvider.getFriendPubkeys().map { PublicKey.fromHex(it) }
+        val newWotFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.ContactList))
+            .authors(authors = friendPubkeys)
+            .until(timestamp = until)
+            .since(timestamp = Timestamp.fromSecs(newestCreatedAt + 1u))
+            .limit(friendPubkeys.size.toULong())
+        val filters = listOf(FilterWrapper(newWotFilter))
+        relayProvider.getReadRelays()
+            .forEach { subCreator.subscribe(relayUrl = it, filters = filters) }
     }
 }
