@@ -181,7 +181,7 @@ class AppContainer(context: Context) {
     private val nameProvider = NameProvider(
         profileDao = roomDb.profileDao(),
         nameCache = nameCache,
-        lazyNostrSubscriber = lazyNostrSubscriber
+        nostrSubscriber = nostrSubscriber
     )
 
     private val annotatedStringProvider = AnnotatedStringProvider(
@@ -225,6 +225,7 @@ class AppContainer(context: Context) {
         profileDao = roomDb.profileDao(),
         friendProvider = friendProvider,
         lazyNostrSubscriber = lazyNostrSubscriber,
+        nostrSubscriber = nostrSubscriber,
         annotatedStringProvider = annotatedStringProvider,
     )
 

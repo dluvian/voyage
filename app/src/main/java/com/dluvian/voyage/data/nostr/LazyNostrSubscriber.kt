@@ -39,7 +39,7 @@ class LazyNostrSubscriber(
         semiLazySubWebOfTrustPubkeys()
     }
 
-    suspend fun lazySubProfiles(pubkeys: Collection<PubkeyHex>) {
+    suspend fun lazySubUnknownProfiles(pubkeys: Collection<PubkeyHex>) {
         if (pubkeys.isEmpty()) return
         val unknownPubkeys = pubkeys - profileDao.filterKnownProfiles(pubkeys = pubkeys).toSet()
         if (unknownPubkeys.isEmpty()) return
@@ -71,28 +71,12 @@ class LazyNostrSubscriber(
             }
     }
 
-    suspend fun lazySubProfile(nprofile: Nip19Profile, since: Long? = null) {
-        val profileSince = since
-            ?: profileDao.getMaxCreatedAt(pubkey = nprofile.publicKey().toHex())
-            ?: 1
-        val profileFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Metadata))
-            .author(author = nprofile.publicKey())
-            .until(timestamp = Timestamp.now())
-            .since(timestamp = Timestamp.fromSecs(profileSince.toULong()))
-            .limit(1u)
-        val filters = listOf(FilterWrapper(profileFilter))
-
-        relayProvider.getObserveRelays(nprofile = nprofile).forEach { relay ->
-            subCreator.subscribe(relayUrl = relay, filters = filters)
-        }
-    }
-
     suspend fun lazySubNip65(nprofile: Nip19Profile) {
         val since = relayProvider.getCreatedAt(pubkey = nprofile.publicKey().toHex()) ?: 1
         val nip65Filter = Filter().kind(kind = Kind.fromEnum(KindEnum.RelayList))
             .author(author = nprofile.publicKey())
             .until(timestamp = Timestamp.now())
-            .since(timestamp = Timestamp.fromSecs(since.toULong()))
+            .since(timestamp = Timestamp.fromSecs((since + 1).toULong()))
             .limit(1u)
         val filters = listOf(FilterWrapper(nip65Filter))
         relayProvider.getObserveRelays(nprofile = nprofile, includeConnected = true)

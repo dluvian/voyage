@@ -7,6 +7,7 @@ import com.dluvian.voyage.core.RESUB_TIMEOUT
 import com.dluvian.voyage.core.createReplyAndVoteFilters
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.model.FeedSetting
+import com.dluvian.voyage.data.model.FilterWrapper
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.ProfileFeedSetting
 import com.dluvian.voyage.data.model.TopicFeedSetting
@@ -16,7 +17,11 @@ import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import rust.nostr.protocol.Filter
+import rust.nostr.protocol.Kind
+import rust.nostr.protocol.KindEnum
 import rust.nostr.protocol.Nip19Event
+import rust.nostr.protocol.Nip19Profile
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Timestamp
 
@@ -63,6 +68,19 @@ class NostrSubscriber(
         }
 
         subscriptions.forEach { (relay, filters) ->
+            subCreator.subscribe(relayUrl = relay, filters = filters)
+        }
+    }
+
+    // No lazySubProfile bc we always don't save fields in db
+    suspend fun subProfile(nprofile: Nip19Profile) {
+        val profileFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Metadata))
+            .author(author = nprofile.publicKey())
+            .until(timestamp = Timestamp.now())
+            .limit(1u)
+        val filters = listOf(FilterWrapper(profileFilter))
+
+        relayProvider.getObserveRelays(nprofile = nprofile).forEach { relay ->
             subCreator.subscribe(relayUrl = relay, filters = filters)
         }
     }

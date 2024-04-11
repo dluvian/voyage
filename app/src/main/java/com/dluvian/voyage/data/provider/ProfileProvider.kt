@@ -8,6 +8,7 @@ import com.dluvian.voyage.data.inMemory.MetadataInMemory
 import com.dluvian.voyage.data.model.FullProfileUI
 import com.dluvian.voyage.data.model.RelevantMetadata
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
+import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.room.dao.ProfileDao
 import com.dluvian.voyage.data.room.entity.ProfileEntity
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
@@ -25,13 +26,14 @@ class ProfileProvider(
     private val profileDao: ProfileDao,
     private val friendProvider: FriendProvider,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
+    private val nostrSubscriber: NostrSubscriber,
     private val annotatedStringProvider: AnnotatedStringProvider,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
     fun getProfileFlow(nprofile: Nip19Profile): Flow<FullProfileUI> {
         scope.launchIO {
             lazyNostrSubscriber.lazySubNip65(nprofile = nprofile)
-            lazyNostrSubscriber.lazySubProfile(nprofile = nprofile)
+            nostrSubscriber.subProfile(nprofile = nprofile)
         }
         val hex = nprofile.publicKey().toHex()
         return combine(
@@ -60,7 +62,7 @@ class ProfileProvider(
                 default.remove(pubkeyProvider.getPubkeyHex())
                 default
             }
-        lazyNostrSubscriber.lazySubProfiles(pubkeys = unfollowedPubkeys)
+        lazyNostrSubscriber.lazySubUnknownProfiles(pubkeys = unfollowedPubkeys)
 
         return getProfilesFlow(pubkeys = unfollowedPubkeys)
     }
