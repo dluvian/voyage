@@ -21,18 +21,14 @@ class EventSweeper(
         Log.i(TAG, "Sweep events")
 
         scope.launchIO {
-            sweepRootPostThreshold()
+            deleteDao.sweepPosts(
+                threshold = databasePreferences.getSweepThreshold(),
+                oldestCreatedAtInUse = oldestUsedEvent.getOldestCreatedAt()
+            )
             eventCacheClearer.clear()
             oldestUsedEvent.reset()
         }.invokeOnCompletion {
             Log.i(TAG, "Finished sweeping events", it)
         }
-    }
-
-    private suspend fun sweepRootPostThreshold() {
-        deleteDao.deleteOldestRootPosts(
-            threshold = databasePreferences.getSweepThreshold(),
-            oldestCreatedAtInUse = oldestUsedEvent.getOldestCreatedAt()
-        )
     }
 }

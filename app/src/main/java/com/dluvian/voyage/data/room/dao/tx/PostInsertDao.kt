@@ -1,6 +1,5 @@
 package com.dluvian.voyage.data.room.dao.tx
 
-import android.util.Log
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -11,8 +10,6 @@ import com.dluvian.voyage.data.event.ValidatedReply
 import com.dluvian.voyage.data.event.ValidatedRootPost
 import com.dluvian.voyage.data.room.entity.HashtagEntity
 import com.dluvian.voyage.data.room.entity.PostEntity
-
-private const val TAG = "PostInsertDao"
 
 @Dao
 interface PostInsertDao {
@@ -43,12 +40,7 @@ interface PostInsertDao {
         if (newReplies.isEmpty()) return
 
         val newEntities = newReplies.map { relayedItem -> PostEntity.from(relayedItem) }
-
-        runCatching {
-            internalInsertPostOrIgnore(posts = newEntities)
-        }.onFailure {
-            Log.w(TAG, "Failed to insert ${replies.size} comments: ${it.message}")
-        }
+        internalInsertPostOrIgnore(posts = newEntities)
     }
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)

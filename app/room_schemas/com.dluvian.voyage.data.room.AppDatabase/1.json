@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "57c244599be77678af37ce2812260b43",
+    "identityHash": "33657c6485993401bbdb662ae854b2ae",
     "entities": [
       {
         "tableName": "post",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `pubkey` TEXT NOT NULL, `parentId` TEXT, `subject` TEXT, `content` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `relayUrl` TEXT NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`parentId`) REFERENCES `post`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `pubkey` TEXT NOT NULL, `parentId` TEXT, `subject` TEXT, `content` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `relayUrl` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -86,19 +86,7 @@
             "createSql": "CREATE INDEX IF NOT EXISTS `index_post_pubkey` ON `${TABLE_NAME}` (`pubkey`)"
           }
         ],
-        "foreignKeys": [
-          {
-            "table": "post",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "parentId"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          }
-        ]
+        "foreignKeys": []
       },
       {
         "tableName": "vote",
@@ -492,7 +480,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '57c244599be77678af37ce2812260b43')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '33657c6485993401bbdb662ae854b2ae')"
     ]
   }
 }

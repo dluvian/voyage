@@ -1,7 +1,6 @@
 package com.dluvian.voyage.data.room.entity
 
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.Index
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.core.EventIdHex
@@ -15,13 +14,6 @@ import com.dluvian.voyage.data.event.ValidatedRootPost
 @Entity(
     tableName = "post",
     primaryKeys = ["id"],
-    foreignKeys = [ForeignKey(
-        entity = PostEntity::class,
-        parentColumns = ["id"],
-        childColumns = ["parentId"],
-        onDelete = ForeignKey.CASCADE,
-        onUpdate = ForeignKey.NO_ACTION
-    )],
     indices = [
         Index(value = ["parentId"], unique = false),
         Index(value = ["createdAt"], unique = false),
