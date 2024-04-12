@@ -120,7 +120,8 @@ class AppContainer(context: Context) {
         accountManager = accountManager,
         accountDao = roomDb.accountDao(),
         idCacheClearer = idCacheClearer,
-        lazyNostrSubscriber = lazyNostrSubscriber
+        lazyNostrSubscriber = lazyNostrSubscriber,
+        nostrSubscriber = nostrSubscriber
     )
 
     private val metadataInMemory = MetadataInMemory()
