@@ -36,6 +36,7 @@ fun PostRowHeader(
     createdAt: Long,
     myTopic: String?,
     id: EventIdHex,
+    isOp: Boolean,
     collapsedText: AnnotatedString? = null,
     onUpdate: OnUpdate
 ) {
@@ -45,6 +46,7 @@ fun PostRowHeader(
         if (isDetailed) TrustChip(
             trustType = trustType,
             name = authorName,
+            isOp = isOp,
             onOpenProfile = onOpenProfile
         ) else ClickableTrustIcon(trustType = trustType, onClick = onOpenProfile)
         myTopic?.let { topic ->

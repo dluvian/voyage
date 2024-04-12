@@ -5,4 +5,5 @@ data class LeveledReplyUI(
     val reply: ReplyUI,
     val isCollapsed: Boolean,
     val hasLoadedReplies: Boolean,
+    val isOp: Boolean
 )

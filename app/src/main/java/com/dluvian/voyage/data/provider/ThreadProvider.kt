@@ -59,7 +59,8 @@ class ThreadProvider(
     // Don't update oldestCreatedAt in replies. They are always younger than root
     fun getLeveledReplies(
         rootId: EventIdHex,
-        parentIds: Set<EventIdHex>
+        parentIds: Set<EventIdHex>,
+        opPubkey: PubkeyHex?
     ): Flow<List<LeveledReplyUI>> {
         val replyFlow = replyDao.getReplyFlow(parentIds = parentIds + rootId)
             .firstThenDistinctDebounce(DEBOUNCE)
@@ -86,6 +87,7 @@ class ThreadProvider(
                     forcedVotes = votes,
                     collapsedIds = collapsed,
                     parentIds = parentIds,
+                    isOp = opPubkey == reply.pubkey,
                     annotatedStringProvider = annotatedStringProvider
                 )
 

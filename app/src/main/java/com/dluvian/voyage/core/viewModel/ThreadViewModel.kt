@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.dluvian.nostr_kt.createNevent
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.ThreadViewAction
 import com.dluvian.voyage.core.ThreadViewRefresh
 import com.dluvian.voyage.core.ThreadViewShowReplies
@@ -33,16 +34,24 @@ class ThreadViewModel(
     val leveledReplies: MutableState<StateFlow<List<LeveledReplyUI>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
     private val parentIds = mutableStateOf(emptySet<EventIdHex>())
+    private var opPubkey: PubkeyHex? = null
 
     fun openThread(rootPost: RootPostUI) {
         if (rootPost.id == root.value?.id) return
 
         leveledReplies.value = MutableStateFlow(emptyList())
         parentIds.value = setOf()
-        root =
-            threadProvider.getRoot(scope = viewModelScope, nevent = createNevent(hex = rootPost.id))
-                .stateIn(viewModelScope, SharingStarted.Eagerly, rootPost)
-        loadReplies(rootId = rootPost.id, parentId = rootPost.id, isInit = true)
+        opPubkey = rootPost.pubkey
+
+        root = threadProvider
+            .getRoot(scope = viewModelScope, nevent = createNevent(hex = rootPost.id))
+            .stateIn(viewModelScope, SharingStarted.Eagerly, rootPost)
+        loadReplies(
+            rootId = rootPost.id,
+            parentId = rootPost.id,
+            isInit = true,
+            opPubkey = opPubkey
+        )
     }
 
     fun handle(action: ThreadViewAction) {
@@ -52,7 +61,8 @@ class ThreadViewModel(
             is ThreadViewShowReplies -> loadReplies(
                 rootId = root.value?.id,
                 parentId = action.id,
-                isInit = false
+                isInit = false,
+                opPubkey = opPubkey,
             )
         }
     }
@@ -70,7 +80,8 @@ class ThreadViewModel(
                 .stateIn(viewModelScope, SharingStarted.Eagerly, currentRoot)
             leveledReplies.value = threadProvider.getLeveledReplies(
                 rootId = currentRoot.id,
-                parentIds = parentIds.value
+                parentIds = parentIds.value,
+                opPubkey = opPubkey,
             )
                 .stateIn(
                     viewModelScope,
@@ -81,13 +92,18 @@ class ThreadViewModel(
         }.invokeOnCompletion { isRefreshing.value = false }
     }
 
-    private fun loadReplies(rootId: EventIdHex?, parentId: EventIdHex, isInit: Boolean) {
+    private fun loadReplies(
+        rootId: EventIdHex?,
+        parentId: EventIdHex,
+        isInit: Boolean,
+        opPubkey: PubkeyHex?,
+    ) {
         if (rootId == null || parentIds.value.contains(parentId)) return
 
         val init = if (isInit) emptyList() else leveledReplies.value.value
         parentIds.value += parentId
-        leveledReplies.value =
-            threadProvider.getLeveledReplies(rootId = rootId, parentIds = parentIds.value)
-                .stateIn(viewModelScope, SharingStarted.Eagerly, init)
+        leveledReplies.value = threadProvider
+            .getLeveledReplies(rootId = rootId, parentIds = parentIds.value, opPubkey = opPubkey)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, init)
     }
 }

@@ -114,6 +114,7 @@ private fun Reply(
                 reply = leveledReply.reply,
                 isCollapsed = leveledReply.isCollapsed,
                 showDetailedReply = leveledReply.level == 0,
+                isOp = leveledReply.isOp,
                 onUpdate = onUpdate,
                 additionalStartAction = {
                     if (leveledReply.reply.replyCount > 0 && !leveledReply.hasLoadedReplies) {

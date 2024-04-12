@@ -41,6 +41,26 @@ data class ReplyView(
     val downvoteCount: Int,
     val replyCount: Int,
 ) {
+    fun mapToLeveledReplyUI(
+        level: Int,
+        forcedVotes: Map<EventIdHex, Vote>,
+        collapsedIds: Set<EventIdHex>,
+        parentIds: Set<EventIdHex>,
+        isOp: Boolean,
+        annotatedStringProvider: AnnotatedStringProvider,
+    ): LeveledReplyUI {
+        return LeveledReplyUI(
+            level = level,
+            reply = this.mapToReplyUI(
+                forcedVotes = forcedVotes,
+                annotatedStringProvider = annotatedStringProvider
+            ),
+            isOp = isOp,
+            isCollapsed = collapsedIds.contains(this.id),
+            hasLoadedReplies = parentIds.contains(this.id)
+        )
+    }
+
     private fun mapToReplyUI(
         forcedVotes: Map<EventIdHex, Vote>,
         annotatedStringProvider: AnnotatedStringProvider
@@ -51,23 +71,5 @@ data class ReplyView(
         )
         val vote = forcedVotes.getOrDefault(this.id, null)
         return if (vote != null) reply.copy(myVote = vote) else reply
-    }
-
-    fun mapToLeveledReplyUI(
-        level: Int,
-        forcedVotes: Map<EventIdHex, Vote>,
-        collapsedIds: Set<EventIdHex>,
-        parentIds: Set<EventIdHex>,
-        annotatedStringProvider: AnnotatedStringProvider,
-    ): LeveledReplyUI {
-        return LeveledReplyUI(
-            level = level,
-            reply = this.mapToReplyUI(
-                forcedVotes = forcedVotes,
-                annotatedStringProvider = annotatedStringProvider
-            ),
-            isCollapsed = collapsedIds.contains(this.id),
-            hasLoadedReplies = parentIds.contains(this.id)
-        )
     }
 }

@@ -32,6 +32,7 @@ fun ReplyRow(
     reply: ReplyUI,
     isCollapsed: Boolean,
     showDetailedReply: Boolean,
+    isOp: Boolean,
     onUpdate: OnUpdate,
     additionalStartAction: ComposableContent = {},
 ) {
@@ -48,6 +49,7 @@ fun ReplyRow(
             createdAt = reply.createdAt,
             myTopic = null,
             id = reply.id,
+            isOp = isOp,
             collapsedText = if (isCollapsed) reply.content else null,
             onUpdate = onUpdate
         )

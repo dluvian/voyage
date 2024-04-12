@@ -49,6 +49,7 @@ fun PostRow(post: RootPostUI, isDetailed: Boolean = false, onUpdate: OnUpdate) {
             createdAt = post.createdAt,
             myTopic = post.myTopic,
             id = post.id,
+            isOp = true,
             onUpdate = onUpdate,
         )
         Spacer(modifier = Modifier.height(spacing.large))

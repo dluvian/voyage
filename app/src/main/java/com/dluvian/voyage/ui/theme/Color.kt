@@ -1,5 +1,6 @@
 package com.dluvian.voyage.ui.theme
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -80,6 +81,10 @@ val md_theme_dark_outlineVariant = Color(0xFF46464F)
 val md_theme_dark_scrim = Color(0xFF000000)
 
 fun Color.light() = this.copy(alpha = this.alpha * 0.5f)
+
+val OPBlue: Color
+    @Composable
+    get() = if (isSystemInDarkTheme()) Color(0xFF388de2) else Color(0xFF244b99)
 
 @Composable
 fun getTrustColor(trustType: TrustType): Color {
