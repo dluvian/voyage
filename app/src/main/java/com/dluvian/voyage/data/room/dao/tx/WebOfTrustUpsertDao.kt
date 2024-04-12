@@ -40,6 +40,7 @@ interface WebOfTrustUpsertDao {
 
         val restEntities = rest.flatMap { WebOfTrustEntity.from(it) }
 
+        // RunCatching bc we might change accounts or update friendList
         runCatching {
             internalUpsert(webOfTrustEntities = restEntities)
             rest.forEach {

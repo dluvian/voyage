@@ -27,6 +27,7 @@ interface FriendUpsertDao {
             return
         }
 
+        // RunCatching bc we might switch accounts
         runCatching {
             // REPLACE seems to cascade delete wot pubkeys, so we have to update manually
             internalUpdateCreatedAt(

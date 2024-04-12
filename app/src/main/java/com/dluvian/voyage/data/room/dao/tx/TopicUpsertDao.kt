@@ -29,6 +29,7 @@ interface TopicUpsertDao {
             return
         }
 
+        // RunCatching bc we might change account
         runCatching {
             internalUpsert(topicEntities = list)
             internalDeleteOutdated(newestCreatedAt = validatedTopicList.createdAt)
