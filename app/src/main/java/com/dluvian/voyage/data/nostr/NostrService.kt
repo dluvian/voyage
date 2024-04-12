@@ -7,6 +7,7 @@ import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.core.SignerLauncher
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.event.EventMaker
 import com.dluvian.voyage.data.event.EventQueue
@@ -76,13 +77,15 @@ class NostrService(
         content: String,
         topics: List<Topic>,
         mentions: List<PubkeyHex>,
-        relayUrls: Collection<RelayUrl>
+        relayUrls: Collection<RelayUrl>,
+        signerLauncher: SignerLauncher,
     ): Result<Event> {
         return eventMaker.buildPost(
             subject = subject,
             content = content,
             topics = topics,
-            mentions = mentions
+            mentions = mentions,
+            signerLauncher = signerLauncher,
         )
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
@@ -93,14 +96,16 @@ class NostrService(
         mentions: List<PubkeyHex>,
         relayHint: RelayUrl,
         isTopLevel: Boolean,
-        relayUrls: Collection<RelayUrl>
+        relayUrls: Collection<RelayUrl>,
+        signerLauncher: SignerLauncher,
     ): Result<Event> {
         return eventMaker.buildReply(
             parentId = EventId.fromHex(parentId),
             mentions = mentions.map { PublicKey.fromHex(it) },
             relayHint = relayHint,
             content = content,
-            isTopLevel = isTopLevel
+            isTopLevel = isTopLevel,
+            signerLauncher = signerLauncher,
         )
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
@@ -112,34 +117,42 @@ class NostrService(
         isPositive: Boolean,
         kind: Int,
         relayUrls: Collection<RelayUrl>,
+        signerLauncher: SignerLauncher,
     ): Result<Event> {
         return eventMaker.buildVote(
             eventId = eventId,
             mention = mention,
             isPositive = isPositive,
-            kind = kind
+            kind = kind,
+            signerLauncher = signerLauncher,
         )
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
-    suspend fun publishDelete(eventId: EventId, relayUrls: Collection<RelayUrl>): Result<Event> {
-        return eventMaker.buildDelete(eventId = eventId)
+    suspend fun publishDelete(
+        eventId: EventId,
+        relayUrls: Collection<RelayUrl>,
+        signerLauncher: SignerLauncher
+    ): Result<Event> {
+        return eventMaker.buildDelete(eventId = eventId, signerLauncher = signerLauncher)
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
     suspend fun publishTopicList(
         topics: List<Topic>,
-        relayUrls: Collection<RelayUrl>
+        relayUrls: Collection<RelayUrl>,
+        signerLauncher: SignerLauncher,
     ): Result<Event> {
-        return eventMaker.buildTopicList(topics = topics)
+        return eventMaker.buildTopicList(topics = topics, signerLauncher = signerLauncher)
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
     suspend fun publishContactList(
         pubkeys: List<PubkeyHex>,
-        relayUrls: Collection<RelayUrl>
+        relayUrls: Collection<RelayUrl>,
+        signerLauncher: SignerLauncher,
     ): Result<Event> {
-        return eventMaker.buildContactList(pubkeys = pubkeys)
+        return eventMaker.buildContactList(pubkeys = pubkeys, signerLauncher = signerLauncher)
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 

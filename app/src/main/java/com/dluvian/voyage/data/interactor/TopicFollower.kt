@@ -8,6 +8,7 @@ import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.FollowTopic
+import com.dluvian.voyage.core.SignerLauncher
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.TopicEvent
 import com.dluvian.voyage.core.UnfollowTopic
@@ -39,13 +40,22 @@ class TopicFollower(
 
     fun handle(action: TopicEvent) {
         when (action) {
-            is FollowTopic -> handleAction(topic = action.topic, isFollowed = true)
-            is UnfollowTopic -> handleAction(topic = action.topic, isFollowed = false)
+            is FollowTopic -> handleAction(
+                topic = action.topic,
+                isFollowed = true,
+                signerLauncher = action.signerLauncher
+            )
+
+            is UnfollowTopic -> handleAction(
+                topic = action.topic,
+                isFollowed = false,
+                signerLauncher = action.signerLauncher
+            )
         }
     }
 
     private val jobs: MutableMap<Topic, Job?> = mutableMapOf()
-    private fun handleAction(topic: Topic, isFollowed: Boolean) {
+    private fun handleAction(topic: Topic, isFollowed: Boolean, signerLauncher: SignerLauncher) {
         updateForcedState(topic = topic, isFollowed = isFollowed)
 
         jobs[topic]?.cancel(CancellationException("User clicks fast"))
@@ -57,7 +67,8 @@ class TopicFollower(
 
             nostrService.publishTopicList(
                 topics = allTopics.toList(),
-                relayUrls = relayProvider.getPublishRelays()
+                relayUrls = relayProvider.getPublishRelays(),
+                signerLauncher = signerLauncher,
             ).onSuccess { event ->
                 val topicList = ValidatedTopicList(
                     myPubkey = event.author().toHex(),

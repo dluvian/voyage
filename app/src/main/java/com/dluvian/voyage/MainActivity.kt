@@ -4,18 +4,13 @@ import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.dluvian.voyage.core.Core
-import com.dluvian.voyage.core.ExternalSignerHandler
 import com.dluvian.voyage.core.Fn
-import com.dluvian.voyage.core.ProcessExternalAccount
-import com.dluvian.voyage.core.ProcessExternalSignature
 import com.dluvian.voyage.core.viewModel.CreatePostViewModel
 import com.dluvian.voyage.core.viewModel.CreateReplyViewModel
 import com.dluvian.voyage.core.viewModel.DiscoverViewModel
@@ -47,26 +42,6 @@ class MainActivity : ComponentActivity() {
                     closeApp = closeApp
                 )
             }
-            val externalSignerHandler = ExternalSignerHandler(
-                requestAccountLauncher = rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.StartActivityForResult()
-                ) { activityResult ->
-                    core.onUpdate(
-                        ProcessExternalAccount(
-                            activityResult = activityResult,
-                            context = this.applicationContext
-                        )
-                    )
-                },
-                requestSignatureLauncher = rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.StartActivityForResult()
-                ) { activityResult ->
-                    core.onUpdate(ProcessExternalSignature(activityResult = activityResult))
-                },
-            )
-            appContainer.externalSigner.externalSignerHandler = externalSignerHandler
-            vmContainer.settingsVM.externalSignerHandler = externalSignerHandler
-            core.externalSignerHandler = externalSignerHandler
 
             VoyageApp(core)
         }
@@ -111,7 +86,8 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 accountSwitcher = appContainer.accountSwitcher,
                 snackbar = appContainer.snackbar,
                 databasePreferences = appContainer.databasePreferences,
-                databaseStatProvider = appContainer.databaseStatProvider
+                databaseStatProvider = appContainer.databaseStatProvider,
+                externalSignerHandler = appContainer.externalSignerHandler
             )
         },
         searchVM = viewModel {

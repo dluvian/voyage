@@ -9,6 +9,7 @@ import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.FollowProfile
 import com.dluvian.voyage.core.ProfileEvent
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.core.SignerLauncher
 import com.dluvian.voyage.core.UnfollowProfile
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.event.ValidatedContactList
@@ -45,14 +46,27 @@ class ProfileFollower(
 
     fun handle(action: ProfileEvent) {
         when (action) {
-            is FollowProfile -> handleAction(pubkey = action.pubkey, isFollowed = true)
-            is UnfollowProfile -> handleAction(pubkey = action.pubkey, isFollowed = false)
+            is FollowProfile -> handleAction(
+                pubkey = action.pubkey,
+                isFollowed = true,
+                signerLauncher = action.signerLauncher
+            )
+
+            is UnfollowProfile -> handleAction(
+                pubkey = action.pubkey,
+                isFollowed = false,
+                signerLauncher = action.signerLauncher
+            )
         }
     }
 
 
     private val jobs: MutableMap<PubkeyHex, Job?> = mutableMapOf()
-    private fun handleAction(pubkey: PubkeyHex, isFollowed: Boolean) {
+    private fun handleAction(
+        pubkey: PubkeyHex,
+        isFollowed: Boolean,
+        signerLauncher: SignerLauncher
+    ) {
         updateForcedFollows(pubkey = pubkey, isFollowed = isFollowed)
 
         jobs[pubkey]?.cancel(CancellationException("User clicks fast"))
@@ -64,7 +78,8 @@ class ProfileFollower(
 
             nostrService.publishContactList(
                 pubkeys = allFriends.toList(),
-                relayUrls = relayProvider.getPublishRelays()
+                relayUrls = relayProvider.getPublishRelays(),
+                signerLauncher = signerLauncher,
             ).onSuccess { event ->
                 val friendList = ValidatedContactList(
                     pubkey = event.author().toHex(),

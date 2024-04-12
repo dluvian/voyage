@@ -1,5 +1,7 @@
 package com.dluvian.voyage.core
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -181,4 +183,13 @@ fun LazyListState.showScrollButton(): Boolean {
             }
         }
     }.value && hasScrolled && hasOffset
+}
+
+@Composable
+fun getSignerLauncher(onUpdate: OnUpdate): SignerLauncher {
+    return rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { activityResult ->
+        onUpdate(ProcessExternalSignature(activityResult = activityResult))
+    }
 }

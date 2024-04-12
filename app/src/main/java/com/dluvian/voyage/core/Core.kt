@@ -24,7 +24,6 @@ class Core(
     closeApp: Fn,
 ) : ViewModel() {
     val navigator = Navigator(vmContainer = vmContainer, closeApp = closeApp)
-    lateinit var externalSignerHandler: ExternalSignerHandler
 
     val onUpdate: (UIEvent) -> Unit = { uiEvent ->
         when (uiEvent) {
@@ -45,7 +44,7 @@ class Core(
             is SearchViewAction -> vmContainer.searchVM.handle(action = uiEvent)
 
             is ProcessExternalSignature -> viewModelScope.launch {
-                externalSignerHandler.processExternalSignature(
+                appContainer.externalSignerHandler.processExternalSignature(
                     result = uiEvent.activityResult
                 )
             }

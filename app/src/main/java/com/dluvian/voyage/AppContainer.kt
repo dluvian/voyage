@@ -6,6 +6,7 @@ import androidx.room.Room
 import com.dluvian.nostr_kt.NostrClient
 import com.dluvian.nostr_kt.SubId
 import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.core.ExternalSignerHandler
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.account.AccountManager
@@ -62,7 +63,8 @@ class AppContainer(context: Context) {
     val snackbar = SnackbarHostState()
     private val nostrClient = NostrClient()
     private val mnemonicSigner = MnemonicSigner(context = context)
-    val externalSigner = ExternalSigner()
+    val externalSignerHandler = ExternalSignerHandler()
+    val externalSigner = ExternalSigner(handler = externalSignerHandler)
 
     private val idCacheClearer = IdCacheClearer(
         syncedIdCache = syncedIdCache,

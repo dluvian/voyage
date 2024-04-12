@@ -2,7 +2,6 @@ package com.dluvian.voyage.core
 
 import android.content.Intent
 import android.net.Uri
-import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
 import androidx.core.app.ActivityOptionsCompat
 import kotlinx.coroutines.channels.Channel
@@ -29,21 +28,19 @@ private const val PERMISSIONS = """
     ]
 """
 
-class ExternalSignerHandler(
-    private val requestAccountLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>,
-    private val requestSignatureLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>,
-) {
+class ExternalSignerHandler {
     private val signatureChannel = Channel<String?>()
-    fun requestExternalAccount(): Throwable? {
+    fun requestExternalAccount(reqAccountLauncher: SignerLauncher): Throwable? {
         return runCatching {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse("nostrsigner:"))
             intent.putExtra("permissions", PERMISSIONS)
             intent.putExtra("type", "get_public_key")
-            requestAccountLauncher.launch(intent)
+            reqAccountLauncher.launch(intent)
         }.exceptionOrNull()
     }
 
     suspend fun sign(
+        signerLauncher: SignerLauncher,
         unsignedEvent: UnsignedEvent,
         packageName: String
     ): Result<Event> {
@@ -55,7 +52,7 @@ class ExternalSignerHandler(
             intent.putExtra("type", "sign_event")
             intent.putExtra("id", unsignedEvent.id().toHex())
             intent.putExtra("current_user", unsignedEvent.author().toBech32())
-            requestSignatureLauncher.launch(
+            signerLauncher.launch(
                 input = intent,
                 options = ActivityOptionsCompat.makeBasic()
             )

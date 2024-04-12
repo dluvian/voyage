@@ -11,6 +11,7 @@ import com.dluvian.voyage.core.ClickUpvote
 import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.core.SignerLauncher
 import com.dluvian.voyage.core.VoteEvent
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.nostr.NostrService
@@ -55,7 +56,8 @@ class PostVoter(
             postId = action.postId,
             mention = action.mention,
             vote = newVote,
-            kind = 1
+            kind = 1,
+            signerLauncher = action.signerLauncher,
         )
     }
 
@@ -68,7 +70,13 @@ class PostVoter(
     }
 
     private val jobs: MutableMap<EventIdHex, Job?> = mutableMapOf()
-    private fun vote(postId: EventIdHex, mention: PubkeyHex, vote: Vote, kind: Int) {
+    private fun vote(
+        postId: EventIdHex,
+        mention: PubkeyHex,
+        vote: Vote,
+        kind: Int,
+        signerLauncher: SignerLauncher
+    ) {
         jobs[postId]?.cancel(CancellationException("User clicks fast"))
         jobs[postId] = scope.launch {
             delay(DEBOUNCE)
@@ -79,12 +87,13 @@ class PostVoter(
                     postId = postId,
                     mention = mention,
                     isPositive = vote.isPositive(),
-                    kind = kind
+                    kind = kind,
+                    signerLauncher = signerLauncher,
                 )
 
                 NoVote -> {
                     if (currentVote == null) return@launch
-                    deleteVote(voteId = currentVote.id)
+                    deleteVote(voteId = currentVote.id, signerLauncher = signerLauncher)
                     voteDao.deleteMyVote(postId = postId)
                 }
             }
@@ -100,16 +109,20 @@ class PostVoter(
         postId: EventIdHex,
         mention: PubkeyHex,
         isPositive: Boolean,
-        kind: Int
+        kind: Int,
+        signerLauncher: SignerLauncher,
     ) {
         if (currentVote?.isPositive == isPositive) return
-        if (currentVote != null) deleteVote(voteId = currentVote.id)
+        if (currentVote != null) {
+            deleteVote(voteId = currentVote.id, signerLauncher = signerLauncher)
+        }
         nostrService.publishVote(
             eventId = EventId.fromHex(postId),
             mention = PublicKey.fromHex(mention),
             isPositive = isPositive,
             kind = kind,
-            relayUrls = relayProvider.getPublishRelays(publishTo = listOf(mention))
+            relayUrls = relayProvider.getPublishRelays(publishTo = listOf(mention)),
+            signerLauncher = signerLauncher,
         )
             .onSuccess { event ->
                 val entity = VoteEntity(
@@ -131,10 +144,11 @@ class PostVoter(
             }
     }
 
-    private suspend fun deleteVote(voteId: EventIdHex) {
+    private suspend fun deleteVote(voteId: EventIdHex, signerLauncher: SignerLauncher) {
         nostrService.publishDelete(
             eventId = EventId.fromHex(voteId),
-            relayUrls = relayProvider.getPublishRelays()
+            relayUrls = relayProvider.getPublishRelays(),
+            signerLauncher = signerLauncher,
         ).onFailure {
             Log.w(tag, "Failed to delete vote: ${it.message}", it)
             snackbar.showToast(

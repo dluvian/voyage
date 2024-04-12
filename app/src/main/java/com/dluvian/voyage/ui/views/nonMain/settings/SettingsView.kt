@@ -1,5 +1,7 @@
 package com.dluvian.voyage.ui.views.nonMain.settings
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,6 +30,7 @@ import com.dluvian.voyage.core.MAX_RETAIN_ROOT
 import com.dluvian.voyage.core.MIN_RETAIN_ROOT
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
+import com.dluvian.voyage.core.ProcessExternalAccount
 import com.dluvian.voyage.core.RequestExternalAccount
 import com.dluvian.voyage.core.UpdateRootPostThreshold
 import com.dluvian.voyage.core.UseDefaultAccount
@@ -136,6 +139,11 @@ private fun AppSection() {
 @Composable
 private fun AccountRowButton(accountType: AccountType, onUpdate: OnUpdate) {
     val context = LocalContext.current
+    val requestAccount = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { activityResult ->
+        onUpdate(ProcessExternalAccount(activityResult = activityResult, context = context))
+    }
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         when (accountType) {
             is ExternalAccount -> TextButton(onClick = { onUpdate(UseDefaultAccount) }) {
@@ -143,7 +151,9 @@ private fun AccountRowButton(accountType: AccountType, onUpdate: OnUpdate) {
             }
 
             is DefaultAccount -> TextButton(onClick = {
-                onUpdate(RequestExternalAccount(context = context))
+                onUpdate(
+                    RequestExternalAccount(reqAccountLauncher = requestAccount, context = context)
+                )
             }) {
                 Text(text = stringResource(id = R.string.login_with_external_signer))
             }

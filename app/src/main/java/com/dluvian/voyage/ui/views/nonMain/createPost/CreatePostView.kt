@@ -21,6 +21,7 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.SendPost
+import com.dluvian.voyage.core.getSignerLauncher
 import com.dluvian.voyage.core.viewModel.CreatePostViewModel
 import com.dluvian.voyage.ui.components.TextInput
 
@@ -36,6 +37,8 @@ fun CreatePostView(vm: CreatePostViewModel, snackbar: SnackbarHostState, onUpdat
         focusRequester.requestFocus()
     }
 
+    val signerLauncher = getSignerLauncher(onUpdate = onUpdate)
+
     ContentCreationScaffold(
         showSendButton = body.value.isNotBlank(),
         isSendingContent = isSendingPost,
@@ -46,6 +49,7 @@ fun CreatePostView(vm: CreatePostViewModel, snackbar: SnackbarHostState, onUpdat
                     header = header.value,
                     body = body.value,
                     context = context,
+                    signerLauncher = signerLauncher,
                     onGoBack = { onUpdate(GoBack) })
             )
         },

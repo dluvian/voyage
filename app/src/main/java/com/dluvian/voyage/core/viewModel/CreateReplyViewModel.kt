@@ -1,6 +1,5 @@
 package com.dluvian.voyage.core.viewModel
 
-import android.content.Context
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -10,7 +9,6 @@ import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.CreateReplyViewAction
 import com.dluvian.voyage.core.DELAY_1SEC
-import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.SendReply
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.IParentUI
@@ -44,35 +42,31 @@ class CreateReplyViewModel(
 
     fun handle(action: CreateReplyViewAction) {
         when (action) {
-            is SendReply -> sendReply(
-                parent = action.parent,
-                body = action.body,
-                context = action.context,
-                onGoBack = action.onGoBack
-            )
+            is SendReply -> sendReply(action = action)
         }
     }
 
-    private fun sendReply(parent: IParentUI, body: String, context: Context, onGoBack: Fn) {
+    private fun sendReply(action: SendReply) {
         if (isSendingReply.value) return
 
         isSendingReply.value = true
         viewModelScope.launchIO {
             val result = postSender.sendReply(
-                parentId = parent.id,
-                recipient = parent.pubkey,
-                body = body,
-                relayHint = eventRelayDao.getEventRelay(eventId = parent.id).orEmpty(),
-                isTopLevel = parent is RootPostUI,
+                parentId = action.parent.id,
+                recipient = action.parent.pubkey,
+                body = action.body,
+                relayHint = eventRelayDao.getEventRelay(eventId = action.parent.id).orEmpty(),
+                isTopLevel = action.parent is RootPostUI,
+                signerLauncher = action.signerLauncher
             )
             delay(DELAY_1SEC)
-            onGoBack()
+            action.onGoBack()
             result.onSuccess {
-                snackbar.showToast(viewModelScope, context.getString(R.string.reply_created))
+                snackbar.showToast(viewModelScope, action.context.getString(R.string.reply_created))
             }.onFailure {
                 snackbar.showToast(
                     viewModelScope,
-                    context.getString(R.string.failed_to_create_reply)
+                    action.context.getString(R.string.failed_to_create_reply)
                 )
             }
         }.invokeOnCompletion { isSendingReply.value = false }

@@ -64,31 +64,53 @@ data class OpenTopic(val topic: Topic) : AdvancedPushNavEvent()
 data class OpenReplyCreation(val parent: IParentUI) : AdvancedPushNavEvent()
 
 
-sealed class VoteEvent(open val postId: EventIdHex, open val mention: PubkeyHex) : UIEvent()
+sealed class VoteEvent(
+    open val postId: EventIdHex,
+    open val mention: PubkeyHex,
+    open val signerLauncher: SignerLauncher
+) : UIEvent()
+
 data class ClickUpvote(
     override val postId: EventIdHex,
-    override val mention: PubkeyHex
-) : VoteEvent(postId = postId, mention = mention)
+    override val mention: PubkeyHex,
+    override val signerLauncher: SignerLauncher,
+) : VoteEvent(postId = postId, mention = mention, signerLauncher = signerLauncher)
 
 data class ClickDownvote(
     override val postId: EventIdHex,
-    override val mention: PubkeyHex
-) : VoteEvent(postId = postId, mention = mention)
+    override val mention: PubkeyHex,
+    override val signerLauncher: SignerLauncher,
+) : VoteEvent(postId = postId, mention = mention, signerLauncher = signerLauncher)
 
 data class ClickNeutralizeVote(
     override val postId: EventIdHex,
-    override val mention: PubkeyHex
-) : VoteEvent(postId = postId, mention = mention)
+    override val mention: PubkeyHex,
+    override val signerLauncher: SignerLauncher,
+) : VoteEvent(postId = postId, mention = mention, signerLauncher = signerLauncher)
 
 
-sealed class TopicEvent(open val topic: Topic) : UIEvent()
-data class FollowTopic(override val topic: Topic) : TopicEvent(topic = topic)
-data class UnfollowTopic(override val topic: Topic) : TopicEvent(topic = topic)
+sealed class TopicEvent(open val topic: Topic, open val signerLauncher: SignerLauncher) : UIEvent()
+data class FollowTopic(override val topic: Topic, override val signerLauncher: SignerLauncher) :
+    TopicEvent(topic = topic, signerLauncher = signerLauncher)
+
+data class UnfollowTopic(override val topic: Topic, override val signerLauncher: SignerLauncher) :
+    TopicEvent(topic = topic, signerLauncher = signerLauncher)
 
 
-sealed class ProfileEvent(open val pubkey: PubkeyHex) : UIEvent()
-data class FollowProfile(override val pubkey: PubkeyHex) : ProfileEvent(pubkey = pubkey)
-data class UnfollowProfile(override val pubkey: PubkeyHex) : ProfileEvent(pubkey = pubkey)
+sealed class ProfileEvent(open val pubkey: PubkeyHex, open val signerLauncher: SignerLauncher) :
+    UIEvent()
+
+data class FollowProfile(
+    override val pubkey: PubkeyHex,
+    override val signerLauncher: SignerLauncher
+) :
+    ProfileEvent(pubkey = pubkey, signerLauncher = signerLauncher)
+
+data class UnfollowProfile(
+    override val pubkey: PubkeyHex,
+    override val signerLauncher: SignerLauncher
+) :
+    ProfileEvent(pubkey = pubkey, signerLauncher = signerLauncher)
 
 
 sealed class HomeViewAction : UIEvent()
@@ -123,6 +145,7 @@ data class SendPost(
     val header: String,
     val body: String,
     val context: Context,
+    val signerLauncher: SignerLauncher,
     val onGoBack: Fn
 ) : CreatePostViewAction()
 
@@ -132,13 +155,18 @@ data class SendReply(
     val parent: IParentUI,
     val body: String,
     val context: Context,
+    val signerLauncher: SignerLauncher,
     val onGoBack: Fn
 ) : CreateReplyViewAction()
 
 
 sealed class SettingsViewAction : UIEvent()
 data object UseDefaultAccount : SettingsViewAction()
-data class RequestExternalAccount(val context: Context) : SettingsViewAction()
+data class RequestExternalAccount(
+    val reqAccountLauncher: SignerLauncher,
+    val context: Context
+) : SettingsViewAction()
+
 data class ProcessExternalAccount(
     val activityResult: ActivityResult,
     val context: Context

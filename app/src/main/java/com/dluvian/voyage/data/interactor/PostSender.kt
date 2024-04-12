@@ -8,6 +8,7 @@ import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.core.SignerLauncher
 import com.dluvian.voyage.core.extractCleanHashtags
 import com.dluvian.voyage.core.getNormalizedTopics
 import com.dluvian.voyage.data.event.ValidatedReply
@@ -26,7 +27,11 @@ class PostSender(
 ) {
     private val tag = "PostSender"
 
-    suspend fun sendPost(header: String, body: String): Result<Event> {
+    suspend fun sendPost(
+        header: String,
+        body: String,
+        signerLauncher: SignerLauncher
+    ): Result<Event> {
         val trimmedHeader = header.trim()
         val trimmedBody = body.trim()
         val concat = "$trimmedHeader $trimmedBody"
@@ -38,7 +43,8 @@ class PostSender(
             content = trimmedBody,
             topics = extractCleanHashtags(content = concat).take(MAX_TOPICS),
             mentions = mentions,
-            relayUrls = relayProvider.getPublishRelays(publishTo = mentions)
+            relayUrls = relayProvider.getPublishRelays(publishTo = mentions),
+            signerLauncher = signerLauncher,
         ).onSuccess { event ->
             val validatedPost = ValidatedRootPost(
                 id = event.id().toHex(),
@@ -61,6 +67,7 @@ class PostSender(
         body: String,
         relayHint: RelayUrl,
         isTopLevel: Boolean,
+        signerLauncher: SignerLauncher,
     ): Result<Event> {
         val trimmedBody = body.trim()
         val mentions = (extractMentionPubkeys(content = trimmedBody) + recipient).distinct()
@@ -71,7 +78,8 @@ class PostSender(
             mentions = mentions,
             relayHint = relayHint,
             isTopLevel = isTopLevel,
-            relayUrls = relayProvider.getPublishRelays(publishTo = mentions)
+            relayUrls = relayProvider.getPublishRelays(publishTo = mentions),
+            signerLauncher = signerLauncher,
         ).onSuccess { event ->
             val validatedReply = ValidatedReply(
                 id = event.id().toHex(),

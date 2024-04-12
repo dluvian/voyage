@@ -3,6 +3,7 @@ package com.dluvian.voyage.data.account
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import com.dluvian.voyage.core.SignerLauncher
 import com.dluvian.voyage.core.model.AccountType
 import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
@@ -53,7 +54,7 @@ class AccountManager(
         return accountType.value.publicKey
     }
 
-    suspend fun sign(unsignedEvent: UnsignedEvent): Result<Event> {
+    suspend fun sign(signerLauncher: SignerLauncher, unsignedEvent: UnsignedEvent): Result<Event> {
         return when (accountType.value) {
             is DefaultAccount -> {
                 mnemonicSigner.sign(unsignedEvent = unsignedEvent)
@@ -61,6 +62,7 @@ class AccountManager(
 
             is ExternalAccount -> {
                 externalSigner.sign(
+                    signerLauncher = signerLauncher,
                     unsignedEvent = unsignedEvent,
                     packageName = accountDao.getPackageName()
                 )

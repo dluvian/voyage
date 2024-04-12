@@ -35,6 +35,7 @@ class SettingsViewModel(
     private val snackbar: SnackbarHostState,
     private val databasePreferences: DatabasePreferences,
     databaseStatProvider: DatabaseStatProvider,
+    private val externalSignerHandler: ExternalSignerHandler,
 ) : ViewModel() {
     val accountType: State<AccountType> = accountSwitcher.accountType
     val rootPostThreshold = mutableIntStateOf(databasePreferences.getSweepThreshold())
@@ -42,13 +43,12 @@ class SettingsViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
 
     val isLoadingAccount = mutableStateOf(false)
-    lateinit var externalSignerHandler: ExternalSignerHandler
 
     fun handle(action: SettingsViewAction) {
         when (action) {
             is UseDefaultAccount -> useDefaultAccount()
 
-            is RequestExternalAccount -> requestExternalAccountData(context = action.context)
+            is RequestExternalAccount -> requestExternalAccountData(action = action)
 
             is ProcessExternalAccount -> processExternalAccountData(
                 result = action.activityResult,
@@ -74,25 +74,27 @@ class SettingsViewModel(
         }
     }
 
-    private fun requestExternalAccountData(context: Context) {
+    private fun requestExternalAccountData(action: RequestExternalAccount) {
         if (accountType.value is ExternalAccount || isLoadingAccount.value) return
         isLoadingAccount.value = true
 
-        if (!accountSwitcher.isExternalSignerInstalled(context = context)) {
+        if (!accountSwitcher.isExternalSignerInstalled(context = action.context)) {
             snackbar.showToast(
                 scope = viewModelScope,
-                msg = context.getString(R.string.no_external_signer_installed)
+                msg = action.context.getString(R.string.no_external_signer_installed)
             )
             isLoadingAccount.value = false
             return
         }
 
-        val result = externalSignerHandler.requestExternalAccount()
+        val result = externalSignerHandler.requestExternalAccount(
+            reqAccountLauncher = action.reqAccountLauncher
+        )
         if (result != null) {
             isLoadingAccount.value = false
             snackbar.showToast(
                 scope = viewModelScope,
-                msg = context.getString(R.string.failed_to_get_permission)
+                msg = action.context.getString(R.string.failed_to_get_permission)
             )
             Log.w(TAG, "Failed to request external account", result)
         }
