@@ -5,11 +5,15 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.State
+import com.dluvian.nostr_kt.getCurrentSecs
+import com.dluvian.voyage.core.FEED_PAGE_SIZE
 import com.dluvian.voyage.core.model.AccountType
 import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
 import com.dluvian.voyage.data.event.IdCacheClearer
+import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
+import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.room.dao.AccountDao
 import com.dluvian.voyage.data.room.entity.AccountEntity
 import rust.nostr.protocol.PublicKey
@@ -19,6 +23,7 @@ class AccountSwitcher(
     private val accountDao: AccountDao,
     private val idCacheClearer: IdCacheClearer,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
+    private val nostrSubscriber: NostrSubscriber,
 ) {
     private val tag = "AccountSwitcher"
 
@@ -59,5 +64,10 @@ class AccountSwitcher(
         idCacheClearer.clear()
         accountDao.updateAccount(account = account)
         lazyNostrSubscriber.lazySubMyAccountAndTrustData()
+        nostrSubscriber.subFeed(
+            until = getCurrentSecs(),
+            limit = FEED_PAGE_SIZE,
+            setting = HomeFeedSetting
+        )
     }
 }
