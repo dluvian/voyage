@@ -12,5 +12,6 @@ class OldestUsedEvent {
         oldestCreatedAt.getAndUpdate { old -> if (createdAt < old) createdAt else old }
     }
 
-    fun reset() = oldestCreatedAt.set(Long.MAX_VALUE)
+    // No reset method.
+    // Resetting in EventSweeper could be fatal if user closes and reopens many times
 }

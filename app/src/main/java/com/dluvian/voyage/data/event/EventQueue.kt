@@ -9,17 +9,18 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import rust.nostr.protocol.Event
+import java.util.Collections
 import java.util.concurrent.atomic.AtomicBoolean
 
 private const val TAG = "EventQueue"
 private const val EVENT_PROCESSING_DELAY = DEBOUNCE
 
 class EventQueue(
-    private val syncedQueue: MutableSet<ValidatedEvent>,
     private val eventValidator: EventValidator,
     private val eventProcessor: EventProcessor,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
+    private val syncedQueue = Collections.synchronizedSet(mutableSetOf<ValidatedEvent>())
 
     private val isProcessingEvents = AtomicBoolean(false)
 

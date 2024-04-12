@@ -2,6 +2,7 @@ package com.dluvian.voyage
 
 import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -26,6 +27,8 @@ import com.dluvian.voyage.core.viewModel.SettingsViewModel
 import com.dluvian.voyage.core.viewModel.ThreadViewModel
 import com.dluvian.voyage.core.viewModel.TopicViewModel
 import com.dluvian.voyage.ui.VoyageApp
+
+private const val TAG = "MainActivity"
 
 class MainActivity : ComponentActivity() {
     private lateinit var appContainer: AppContainer
@@ -71,7 +74,14 @@ class MainActivity : ComponentActivity() {
 
     override fun onPause() {
         super.onPause()
+        Log.i(TAG, "onPause")
+
         appContainer.eventSweeper.sweep()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.i(TAG, "onDestroy")
     }
 }
 

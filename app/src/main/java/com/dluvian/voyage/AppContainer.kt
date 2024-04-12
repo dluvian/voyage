@@ -12,14 +12,13 @@ import com.dluvian.voyage.data.account.AccountManager
 import com.dluvian.voyage.data.account.AccountSwitcher
 import com.dluvian.voyage.data.account.ExternalSigner
 import com.dluvian.voyage.data.account.MnemonicSigner
-import com.dluvian.voyage.data.event.EventCacheClearer
 import com.dluvian.voyage.data.event.EventMaker
 import com.dluvian.voyage.data.event.EventProcessor
 import com.dluvian.voyage.data.event.EventQueue
 import com.dluvian.voyage.data.event.EventSweeper
 import com.dluvian.voyage.data.event.EventValidator
+import com.dluvian.voyage.data.event.IdCacheClearer
 import com.dluvian.voyage.data.event.OldestUsedEvent
-import com.dluvian.voyage.data.event.ValidatedEvent
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
 import com.dluvian.voyage.data.interactor.PostSender
 import com.dluvian.voyage.data.interactor.PostVoter
@@ -56,7 +55,6 @@ class AppContainer(context: Context) {
     ).build()
 
     // Shared collections
-    private val syncedEventQueueSet = Collections.synchronizedSet(mutableSetOf<ValidatedEvent>())
     private val syncedFilterCache = Collections
         .synchronizedMap(mutableMapOf<SubId, List<FilterWrapper>>())
     private val syncedIdCache = Collections.synchronizedSet(mutableSetOf<EventIdHex>())
@@ -66,8 +64,7 @@ class AppContainer(context: Context) {
     private val mnemonicSigner = MnemonicSigner(context = context)
     val externalSigner = ExternalSigner()
 
-    private val eventCacheClearer = EventCacheClearer(
-        syncedEventQueue = syncedEventQueueSet,
+    private val idCacheClearer = IdCacheClearer(
         syncedIdCache = syncedIdCache,
     )
 
@@ -122,7 +119,7 @@ class AppContainer(context: Context) {
     val accountSwitcher = AccountSwitcher(
         accountManager = accountManager,
         accountDao = roomDb.accountDao(),
-        eventCacheClearer = eventCacheClearer,
+        idCacheClearer = idCacheClearer,
         lazyNostrSubscriber = lazyNostrSubscriber
     )
 
@@ -138,7 +135,6 @@ class AppContainer(context: Context) {
         pubkeyProvider = accountManager
     )
     private val eventQueue = EventQueue(
-        syncedQueue = syncedEventQueueSet,
         eventValidator = eventValidator,
         eventProcessor = eventProcessor
     )
@@ -206,7 +202,8 @@ class AppContainer(context: Context) {
         annotatedStringProvider = annotatedStringProvider,
         nameCache = nameCache,
         subBatcher = subBatcher,
-        relayProvider = relayProvider
+        relayProvider = relayProvider,
+        oldestUsedEvent = oldestUsedEvent
     )
 
     val profileFollower = ProfileFollower(
@@ -245,7 +242,7 @@ class AppContainer(context: Context) {
 
     val eventSweeper = EventSweeper(
         databasePreferences = databasePreferences,
-        eventCacheClearer = eventCacheClearer,
+        idCacheClearer = idCacheClearer,
         deleteDao = roomDb.deleteDao(),
         oldestUsedEvent = oldestUsedEvent
     )

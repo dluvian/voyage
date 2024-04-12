@@ -11,7 +11,7 @@ private const val TAG = "EventSweeper"
 
 class EventSweeper(
     private val databasePreferences: DatabasePreferences,
-    private val eventCacheClearer: EventCacheClearer,
+    private val idCacheClearer: IdCacheClearer,
     private val deleteDao: DeleteDao,
     private val oldestUsedEvent: OldestUsedEvent,
 ) {
@@ -25,8 +25,7 @@ class EventSweeper(
                 threshold = databasePreferences.getSweepThreshold(),
                 oldestCreatedAtInUse = oldestUsedEvent.getOldestCreatedAt()
             )
-            eventCacheClearer.clear()
-            oldestUsedEvent.reset()
+            idCacheClearer.clear()
         }.invokeOnCompletion {
             Log.i(TAG, "Finished sweeping events", it)
         }

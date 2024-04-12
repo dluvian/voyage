@@ -9,6 +9,7 @@ import com.dluvian.voyage.core.firstThenDistinctDebounce
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.LeveledReplyUI
 import com.dluvian.voyage.core.model.RootPostUI
+import com.dluvian.voyage.data.event.OldestUsedEvent
 import com.dluvian.voyage.data.interactor.Vote
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.nostr.SubBatcher
@@ -34,6 +35,7 @@ class ThreadProvider(
     private val nameCache: MutableMap<PubkeyHex, String?>,
     private val subBatcher: SubBatcher,
     private val relayProvider: RelayProvider,
+    private val oldestUsedEvent: OldestUsedEvent,
 ) {
 
     fun getRoot(scope: CoroutineScope, nevent: Nip19Event): Flow<RootPostUI?> {
@@ -49,9 +51,12 @@ class ThreadProvider(
                 forcedVotes = votes,
                 annotatedStringProvider = annotatedStringProvider
             )
+        }.onEach {
+            oldestUsedEvent.updateOldestCreatedAt(it?.createdAt)
         }
     }
 
+    // Don't update oldestCreatedAt in replies. They are always younger than root
     fun getLeveledReplies(
         rootId: EventIdHex,
         parentIds: Set<EventIdHex>

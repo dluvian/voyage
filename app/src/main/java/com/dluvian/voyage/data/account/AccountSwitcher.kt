@@ -8,7 +8,7 @@ import androidx.compose.runtime.State
 import com.dluvian.voyage.core.model.AccountType
 import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
-import com.dluvian.voyage.data.event.EventCacheClearer
+import com.dluvian.voyage.data.event.IdCacheClearer
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.room.dao.AccountDao
 import com.dluvian.voyage.data.room.entity.AccountEntity
@@ -17,7 +17,7 @@ import rust.nostr.protocol.PublicKey
 class AccountSwitcher(
     private val accountManager: AccountManager,
     private val accountDao: AccountDao,
-    private val eventCacheClearer: EventCacheClearer,
+    private val idCacheClearer: IdCacheClearer,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
 ) {
     private val tag = "AccountSwitcher"
@@ -56,7 +56,7 @@ class AccountSwitcher(
     private suspend fun updateAndReset(account: AccountEntity) {
         Log.i(tag, "Update account and reset caches")
         lazyNostrSubscriber.subCreator.unsubAll()
-        eventCacheClearer.clear()
+        idCacheClearer.clear()
         accountDao.updateAccount(account = account)
         lazyNostrSubscriber.lazySubMyAccountAndTrustData()
     }
