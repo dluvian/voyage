@@ -84,8 +84,8 @@ class RelayProvider(
         includeConnected: Boolean = false
     ): List<RelayUrl> {
         val relays = nip65Dao.getWriteRelays(pubkeys = listOf(pubkey))
-            .map { it.nip65Relay.url }
             .let { if (limit) it.takeRandom(MAX_RELAYS) else it }
+            .map { it.nip65Relay.url }
             .toMutableSet()
         relays.addAll(getReadRelays(limit = limit))
         if (includeConnected) relays.addAll(nostrClient.getAllConnectedUrls())
