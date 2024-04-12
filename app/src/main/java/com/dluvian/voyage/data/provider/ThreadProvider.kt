@@ -108,7 +108,7 @@ class ThreadProvider(
         if (pubkeyCache.contains(post.pubkey)) return
 
         pubkeyCache.add(post.pubkey)
-        relayProvider.getConnectedRelays().forEach { relay ->
+        relayProvider.getReadRelays(includeConnected = true).forEach { relay ->
             subBatcher.submitProfile(relayUrl = relay, pubkey = post.pubkey)
         }
         handleLastUpdate()
@@ -129,7 +129,7 @@ class ThreadProvider(
             pubkeyCache.addAll(toSub)
         }
 
-        relayProvider.getConnectedRelays().forEach { relay ->
+        relayProvider.getReadRelays(includeConnected = true).forEach { relay ->
             subBatcher.submitProfiles(relayUrl = relay, pubkeys = toSub)
         }
         handleLastUpdate()
