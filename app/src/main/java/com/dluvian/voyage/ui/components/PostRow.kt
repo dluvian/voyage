@@ -74,7 +74,7 @@ fun PostRow(post: RootPostUI, isDetailed: Boolean = false, onUpdate: OnUpdate) {
             upvoteCount = post.upvoteCount,
             downvoteCount = post.downvoteCount,
             onUpdate = onUpdate,
-            additionalAction = {
+            additionalEndAction = {
                 CommentChip(
                     commentCount = post.replyCount,
                     onClick = { onUpdate(OpenReplyCreation(parent = post)) })

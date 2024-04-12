@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ClickText
+import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenReplyCreation
 import com.dluvian.voyage.core.ThreadViewToggleCollapse
@@ -31,7 +32,8 @@ fun ReplyRow(
     reply: ReplyUI,
     isCollapsed: Boolean,
     showDetailedReply: Boolean,
-    onUpdate: OnUpdate
+    onUpdate: OnUpdate,
+    additionalStartAction: ComposableContent = {},
 ) {
     Column(
         modifier = Modifier
@@ -78,7 +80,8 @@ fun ReplyRow(
             upvoteCount = reply.upvoteCount,
             downvoteCount = reply.downvoteCount,
             onUpdate = onUpdate,
-            additionalAction = {
+            additionalStartAction = additionalStartAction,
+            additionalEndAction = {
                 TextButton(
                     modifier = Modifier.height(ButtonDefaults.MinHeight),
                     onClick = { onUpdate(OpenReplyCreation(parent = reply)) }) {

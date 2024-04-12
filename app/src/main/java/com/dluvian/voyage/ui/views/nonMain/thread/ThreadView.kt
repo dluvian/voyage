@@ -85,10 +85,7 @@ private fun ThreadViewContent(
             }
             itemsIndexed(leveledReplies) { i, reply ->
                 if (reply.level == 0) FullHorizontalDivider()
-                Reply(
-                    leveledReply = reply,
-                    onUpdate = onUpdate
-                )
+                Reply(leveledReply = reply, onUpdate = onUpdate)
                 if (i == leveledReplies.size - 1) {
                     FullHorizontalDivider()
                     Spacer(modifier = Modifier.height(spacing.xxl))
@@ -117,16 +114,18 @@ private fun Reply(
                 reply = leveledReply.reply,
                 isCollapsed = leveledReply.isCollapsed,
                 showDetailedReply = leveledReply.level == 0,
-                onUpdate = onUpdate
+                onUpdate = onUpdate,
+                additionalStartAction = {
+                    if (leveledReply.reply.replyCount > 0 && !leveledReply.hasLoadedReplies) {
+                        MoreRepliesTextButton(
+                            replyCount = leveledReply.reply.replyCount,
+                            onShowReplies = {
+                                onUpdate(ThreadViewShowReplies(id = leveledReply.reply.id))
+                            }
+                        )
+                    }
+                }
             )
-            if (leveledReply.reply.replyCount > 0 &&
-                !leveledReply.isCollapsed &&
-                !leveledReply.hasLoadedReplies
-            ) {
-                MoreRepliesTextButton(
-                    replyCount = leveledReply.reply.replyCount,
-                    onShowReplies = { onUpdate(ThreadViewShowReplies(id = leveledReply.reply.id)) })
-            }
         }
     }
 }
