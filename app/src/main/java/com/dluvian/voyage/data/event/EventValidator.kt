@@ -18,14 +18,14 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_SUBJECT_LEN
 import com.dluvian.voyage.core.getNormalizedTopics
 import com.dluvian.voyage.data.account.IPubkeyProvider
-import com.dluvian.voyage.data.model.FilterWrapper
 import rust.nostr.protocol.Event
+import rust.nostr.protocol.Filter
 
 
 private const val TAG = "EventValidator"
 
 class EventValidator(
-    private val syncedFilterCache: Map<SubId, List<FilterWrapper>>,
+    private val syncedFilterCache: Map<SubId, List<Filter>>,
     private val syncedIdCache: MutableSet<EventIdHex>,
     private val pubkeyProvider: IPubkeyProvider,
 ) {
@@ -61,12 +61,7 @@ class EventValidator(
             return false
         }
 
-        val matches = filters.any { it.filter.matchEvent(event = event) }
-        if (!matches) return false
-
-        val replyToId = event.getReplyToId() ?: return true
-
-        return filters.any { it.filter.matchEvent(event = event) && it.e.contains(replyToId) }
+        return filters.any { it.matchEvent(event = event) }
     }
 
     private fun validate(event: Event, relayUrl: RelayUrl): ValidatedEvent? {

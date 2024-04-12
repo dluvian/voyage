@@ -8,7 +8,6 @@ import com.dluvian.voyage.core.createReplyAndVoteFilters
 import com.dluvian.voyage.core.model.IParentUI
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.model.FeedSetting
-import com.dluvian.voyage.data.model.FilterWrapper
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.ProfileFeedSetting
 import com.dluvian.voyage.data.model.TopicFeedSetting
@@ -81,7 +80,7 @@ class NostrSubscriber(
             .author(author = nprofile.publicKey())
             .until(timestamp = Timestamp.now())
             .limit(1u)
-        val filters = listOf(FilterWrapper(profileFilter))
+        val filters = listOf(profileFilter)
 
         relayProvider.getObserveRelays(nprofile = nprofile).forEach { relay ->
             subCreator.subscribe(relayUrl = relay, filters = filters)

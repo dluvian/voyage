@@ -8,7 +8,6 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.createReplyAndVoteFilters
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.syncedPutOrAdd
-import com.dluvian.voyage.data.model.FilterWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -109,7 +108,7 @@ class SubBatcher(private val subCreator: SubscriptionCreator) {
         idsByRelay: Map<RelayUrl, Set<EventIdHex>>,
         votePubkeys: Map<RelayUrl, Set<PubkeyHex>>,
         timestamp: Timestamp,
-    ): Map<RelayUrl, List<FilterWrapper>> {
+    ): Map<RelayUrl, List<Filter>> {
         val convertedIds = mutableMapOf<EventIdHex, EventId>()
         val convertedPubkeys = mutableMapOf<EventIdHex, PublicKey>()
 
@@ -133,7 +132,7 @@ class SubBatcher(private val subCreator: SubscriptionCreator) {
     private fun getProfileFilters(
         pubkeysByRelay: Map<RelayUrl, Set<PubkeyHex>>,
         timestamp: Timestamp
-    ): Map<RelayUrl, List<FilterWrapper>> {
+    ): Map<RelayUrl, List<Filter>> {
         val convertedPubkeys = mutableMapOf<PubkeyHex, PublicKey>()
 
         return pubkeysByRelay.mapValues { (_, pubkeys) ->
@@ -145,12 +144,12 @@ class SubBatcher(private val subCreator: SubscriptionCreator) {
                 .authors(authors = publicKeys)
                 .until(timestamp = timestamp)
                 .limit(limit = publicKeys.size.toULong())
-            listOf(FilterWrapper(filter))
+            listOf(filter)
         }
     }
 
-    private fun merge(vararg maps: Map<RelayUrl, List<FilterWrapper>>): Map<RelayUrl, List<FilterWrapper>> {
-        val result = mutableMapOf<RelayUrl, MutableList<FilterWrapper>>()
+    private fun merge(vararg maps: Map<RelayUrl, List<Filter>>): Map<RelayUrl, List<Filter>> {
+        val result = mutableMapOf<RelayUrl, MutableList<Filter>>()
         for (map in maps) {
             map.forEach { (relay, filters) ->
                 val present = result.putIfAbsent(relay, filters.toMutableList())

@@ -25,7 +25,6 @@ import com.dluvian.voyage.data.interactor.PostVoter
 import com.dluvian.voyage.data.interactor.ProfileFollower
 import com.dluvian.voyage.data.interactor.ThreadCollapser
 import com.dluvian.voyage.data.interactor.TopicFollower
-import com.dluvian.voyage.data.model.FilterWrapper
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.NostrSubscriber
@@ -45,6 +44,7 @@ import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import com.dluvian.voyage.data.room.AppDatabase
 import kotlinx.coroutines.flow.MutableStateFlow
+import rust.nostr.protocol.Filter
 import java.util.Collections
 
 class AppContainer(context: Context) {
@@ -56,7 +56,7 @@ class AppContainer(context: Context) {
 
     // Shared collections
     private val syncedFilterCache = Collections
-        .synchronizedMap(mutableMapOf<SubId, List<FilterWrapper>>())
+        .synchronizedMap(mutableMapOf<SubId, List<Filter>>())
     private val syncedIdCache = Collections.synchronizedSet(mutableSetOf<EventIdHex>())
 
     val snackbar = SnackbarHostState()

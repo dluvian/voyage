@@ -5,7 +5,6 @@ import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.RND_RESUB_COUNT
 import com.dluvian.voyage.data.account.IPubkeyProvider
-import com.dluvian.voyage.data.model.FilterWrapper
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
@@ -50,7 +49,7 @@ class LazyNostrSubscriber(
             val profileFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Metadata))
                 .authors(authors = pubkeyBatch.map { PublicKey.fromHex(it) })
                 .until(timestamp = timestamp)
-            val filters = listOf(FilterWrapper(profileFilter))
+            val filters = listOf(profileFilter)
             subCreator.subscribe(relayUrl = relay, filters = filters)
         }
     }
@@ -66,7 +65,7 @@ class LazyNostrSubscriber(
                 val profileFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Metadata))
                     .authors(authors = pubkeys.map { PublicKey.fromHex(it) })
                     .until(timestamp = timestamp)
-                val filters = listOf(FilterWrapper(profileFilter))
+                val filters = listOf(profileFilter)
                 subCreator.subscribe(relayUrl = relay, filters = filters)
             }
     }
@@ -78,7 +77,7 @@ class LazyNostrSubscriber(
             .until(timestamp = Timestamp.now())
             .since(timestamp = Timestamp.fromSecs((since + 1).toULong()))
             .limit(1u)
-        val filters = listOf(FilterWrapper(nip65Filter))
+        val filters = listOf(nip65Filter)
         relayProvider.getObserveRelays(nprofile = nprofile, includeConnected = true)
             .forEach { relay ->
                 subCreator.subscribe(relayUrl = relay, filters = filters)
@@ -118,12 +117,7 @@ class LazyNostrSubscriber(
             .since(timestamp = Timestamp.fromSecs(secs = profileSince))
             .limit(1u)
 
-        val filters = listOf(
-            FilterWrapper(myContactFilter),
-            FilterWrapper(myTopicsFilter),
-            FilterWrapper(myNip65Filter),
-            FilterWrapper(myProfileFilter),
-        )
+        val filters = listOf(myContactFilter, myTopicsFilter, myNip65Filter, myProfileFilter)
 
         relayProvider.getReadRelays().forEach { relay ->
             subCreator.subscribe(relayUrl = relay, filters = filters)
@@ -144,7 +138,7 @@ class LazyNostrSubscriber(
                     .authors(authors = pubkeys.map { PublicKey.fromHex(it) })
                     .until(timestamp = timestamp)
                     .limit(pubkeys.size.toULong())
-                val filters = listOf(FilterWrapper(nip65Filter))
+                val filters = listOf(nip65Filter)
                 subCreator.subscribe(relayUrl = relay, filters = filters)
             }
 
@@ -161,7 +155,7 @@ class LazyNostrSubscriber(
             .until(timestamp = until)
             .since(timestamp = Timestamp.fromSecs(newestCreatedAt + 1u))
             .limit(friendPubkeys.size.toULong())
-        val filters = listOf(FilterWrapper(newNip65Filter))
+        val filters = listOf(newNip65Filter)
         relayProvider.getReadRelays(includeConnected = true)
             .forEach { subCreator.subscribe(relayUrl = it, filters = filters) }
     }
@@ -180,7 +174,7 @@ class LazyNostrSubscriber(
                     .authors(authors = pubkeys.map { PublicKey.fromHex(it) })
                     .until(timestamp = timestamp)
                     .limit(pubkeys.size.toULong())
-                val filters = listOf(FilterWrapper(webOfTrustFilter))
+                val filters = listOf(webOfTrustFilter)
                 subCreator.subscribe(relayUrl = relay, filters = filters)
             }
 
@@ -197,7 +191,7 @@ class LazyNostrSubscriber(
             .until(timestamp = until)
             .since(timestamp = Timestamp.fromSecs(newestCreatedAt + 1u))
             .limit(friendPubkeys.size.toULong())
-        val filters = listOf(FilterWrapper(newWotFilter))
+        val filters = listOf(newWotFilter)
         relayProvider.getReadRelays()
             .forEach { subCreator.subscribe(relayUrl = it, filters = filters) }
     }

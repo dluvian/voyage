@@ -10,7 +10,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.dluvian.nostr_kt.getHashtags
-import com.dluvian.voyage.data.model.FilterWrapper
 import com.dluvian.voyage.data.model.RelevantMetadata
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -121,21 +120,21 @@ fun createReplyAndVoteFilters(
     ids: List<EventId>,
     votePubkeys: List<PublicKey>,
     timestamp: Timestamp,
-): List<FilterWrapper> {
+): List<Filter> {
+    val voteLimit = minOf(MAX_EVENTS_TO_SUB, ids.size.toULong() * MAX_VOTES_TO_SUB)
     val voteFilter = Filter().kind(Kind.fromEnum(KindEnum.Reaction))
         .events(ids = ids)
         .authors(authors = votePubkeys)
         .until(timestamp = timestamp)
-        .limit(limit = MAX_EVENTS_TO_SUB)
+        .limit(limit = voteLimit)
+
+    val replyLimit = minOf(MAX_EVENTS_TO_SUB, ids.size.toULong() * MAX_REPLIES_TO_SUB)
     val replyFilter = Filter().kind(Kind.fromEnum(KindEnum.TextNote))
         .events(ids = ids)
         .until(timestamp = timestamp)
-        .limit(limit = MAX_EVENTS_TO_SUB)
+        .limit(limit = replyLimit)
 
-    return listOf(
-        FilterWrapper(filter = voteFilter),
-        FilterWrapper(filter = replyFilter, e = ids.map { it.toHex() })
-    )
+    return listOf(voteFilter, replyFilter)
 }
 
 private val hashtagRegex = Regex("""#\w+""")
