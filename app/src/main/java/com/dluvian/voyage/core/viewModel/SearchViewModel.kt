@@ -21,7 +21,9 @@ import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.normalizeTopic
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
+import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.SuggestionProvider
+import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import com.dluvian.voyage.data.room.entity.ProfileEntity
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -31,7 +33,9 @@ import rust.nostr.protocol.PublicKey
 class SearchViewModel(
     private val suggestionProvider: SuggestionProvider,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
-    private val snackbar: SnackbarHostState
+    private val snackbar: SnackbarHostState,
+    private val webOfTrustProvider: WebOfTrustProvider,
+    private val friendProvider: FriendProvider,
 ) : ViewModel() {
     val topics = mutableStateOf<List<Topic>>(emptyList())
     val profiles = mutableStateOf<List<ProfileEntity>>(emptyList())
@@ -53,7 +57,10 @@ class SearchViewModel(
         if (profileJob?.isActive == true) return
 
         profileJob = viewModelScope.launchIO {
-            lazyNostrSubscriber.lazySubWebOfTrustProfiles()
+            lazyNostrSubscriber.lazySubUnknownProfiles(friendProvider.getFriendPubkeys())
+            lazyNostrSubscriber.lazySubUnknownProfiles(
+                webOfTrustProvider.getWebOfTrustPubkeys(max = null)
+            )
             delay(DELAY_10SEC)
         }
     }

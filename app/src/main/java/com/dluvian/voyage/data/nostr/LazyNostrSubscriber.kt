@@ -2,8 +2,10 @@ package com.dluvian.voyage.data.nostr
 
 import android.util.Log
 import com.dluvian.voyage.core.DELAY_1SEC
+import com.dluvian.voyage.core.MAX_PUBKEYS
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.RND_RESUB_COUNT
+import com.dluvian.voyage.core.takeRandom
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
@@ -43,31 +45,17 @@ class LazyNostrSubscriber(
         val unknownPubkeys = pubkeys - profileDao.filterKnownProfiles(pubkeys = pubkeys).toSet()
         if (unknownPubkeys.isEmpty()) return
 
+        val limitedPubkeys = unknownPubkeys.takeRandom(MAX_PUBKEYS)
+
         val timestamp = Timestamp.now()
 
-        relayProvider.getObserveRelays(pubkeys = unknownPubkeys).forEach { (relay, pubkeyBatch) ->
+        relayProvider.getObserveRelays(pubkeys = limitedPubkeys).forEach { (relay, pubkeyBatch) ->
             val profileFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Metadata))
                 .authors(authors = pubkeyBatch.map { PublicKey.fromHex(it) })
                 .until(timestamp = timestamp)
             val filters = listOf(profileFilter)
             subCreator.subscribe(relayUrl = relay, filters = filters)
         }
-    }
-
-    suspend fun lazySubWebOfTrustProfiles() {
-        val pubkeys = webOfTrustProvider.getWotWithMissingProfiles()
-        if (pubkeys.isEmpty()) return
-
-        val timestamp = Timestamp.now()
-        relayProvider
-            .getObserveRelays(pubkeys = pubkeys)
-            .forEach { (relay, pubkeys) ->
-                val profileFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Metadata))
-                    .authors(authors = pubkeys.map { PublicKey.fromHex(it) })
-                    .until(timestamp = timestamp)
-                val filters = listOf(profileFilter)
-                subCreator.subscribe(relayUrl = relay, filters = filters)
-            }
     }
 
     suspend fun lazySubNip65(nprofile: Nip19Profile) {

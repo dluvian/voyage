@@ -119,6 +119,8 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 suggestionProvider = appContainer.suggestionProvider,
                 lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
                 snackbar = appContainer.snackbar,
+                webOfTrustProvider = appContainer.webOfTrustProvider,
+                friendProvider = appContainer.friendProvider,
             )
         },
         profileVM = viewModel {
