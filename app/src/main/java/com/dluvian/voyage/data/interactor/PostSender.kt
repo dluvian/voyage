@@ -32,14 +32,13 @@ class PostSender(
         val concat = "$trimmedHeader $trimmedBody"
 
         val mentions = extractMentionPubkeys(content = concat)
-        val writeRelays = relayProvider.getPublishRelays(publishTo = mentions)
 
         return nostrService.publishPost(
             subject = trimmedHeader,
             content = trimmedBody,
             topics = extractCleanHashtags(content = concat).take(MAX_TOPICS),
             mentions = mentions,
-            relayUrls = writeRelays
+            relayUrls = relayProvider.getPublishRelays(publishTo = mentions)
         ).onSuccess { event ->
             val validatedPost = ValidatedRootPost(
                 id = event.id().toHex(),
@@ -48,7 +47,7 @@ class PostSender(
                 subject = event.getSubject(),
                 content = event.content(),
                 createdAt = event.createdAt().secs(),
-                relayUrl = writeRelays.random()
+                relayUrl = "" // We don't know which relay accepted this note
             )
             postInsertDao.insertRootPosts(posts = listOf(validatedPost))
         }.onFailure {
@@ -65,7 +64,6 @@ class PostSender(
     ): Result<Event> {
         val trimmedBody = body.trim()
         val mentions = (extractMentionPubkeys(content = trimmedBody) + recipient).distinct()
-        val writeRelays = relayProvider.getPublishRelays(publishTo = mentions)
 
         return nostrService.publishReply(
             content = trimmedBody,
@@ -73,7 +71,7 @@ class PostSender(
             mentions = mentions,
             relayHint = relayHint,
             isTopLevel = isTopLevel,
-            relayUrls = writeRelays
+            relayUrls = relayProvider.getPublishRelays(publishTo = mentions)
         ).onSuccess { event ->
             val validatedReply = ValidatedReply(
                 id = event.id().toHex(),
@@ -81,7 +79,7 @@ class PostSender(
                 parentId = parentId,
                 content = event.content(),
                 createdAt = event.createdAt().secs(),
-                relayUrl = writeRelays.random()
+                relayUrl = "" // We don't know which relay accepted this note
             )
             postInsertDao.insertReplies(replies = listOf(validatedReply))
         }.onFailure {

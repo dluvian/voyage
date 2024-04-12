@@ -73,7 +73,6 @@ class AppContainer(context: Context) {
         eventRelayDao = roomDb.eventRelayDao(),
         nostrClient = nostrClient
     )
-    private val friendProvider = FriendProvider(friendDao = roomDb.friendDao())
     private val webOfTrustProvider = WebOfTrustProvider(webOfTrustDao = roomDb.webOfTrustDao())
 
     private val forcedFollowTopicStates = MutableStateFlow(emptyMap<Topic, Boolean>())
@@ -87,6 +86,11 @@ class AppContainer(context: Context) {
         mnemonicSigner = mnemonicSigner,
         externalSigner = externalSigner,
         accountDao = roomDb.accountDao(),
+    )
+
+    private val friendProvider = FriendProvider(
+        friendDao = roomDb.friendDao(),
+        pubkeyProvider = accountManager,
     )
 
     val subCreator = SubscriptionCreator(
