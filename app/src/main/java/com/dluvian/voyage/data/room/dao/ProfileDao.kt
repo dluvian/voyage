@@ -24,7 +24,7 @@ interface ProfileDao {
     suspend fun getProfilesByName(name: String, limit: Int): List<ProfileEntity> {
         if (limit <= 0) return emptyList()
 
-        return internalGetProfilesByName(name = "$name%", limit = limit)
+        return internalGetProfilesWithNameLike(name = name, somewhere = "%$name%", limit = limit)
     }
 
     @Query(
@@ -45,6 +45,16 @@ interface ProfileDao {
     )
     suspend fun filterKnownProfiles(pubkeys: Collection<PubkeyHex>): List<PubkeyHex>
 
-    @Query("SELECT * FROM profile WHERE name LIKE :name LIMIT :limit ")
-    suspend fun internalGetProfilesByName(name: String, limit: Int): List<ProfileEntity>
+    // UNION ALL retains order
+    @Query(
+        "SELECT * FROM profile WHERE name = :name " +
+                "UNION ALL " +
+                "SELECT * FROM profile WHERE name LIKE :somewhere ESCAPE '\\' " +
+                "LIMIT :limit"
+    )
+    suspend fun internalGetProfilesWithNameLike(
+        name: String,
+        somewhere: String,
+        limit: Int
+    ): List<ProfileEntity>
 }
