@@ -33,7 +33,7 @@ fun PostRowActions(
     ) {
         additionalStartAction()
         Spacer(modifier = Modifier.width(spacing.tiny))
-        Row {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             additionalEndAction()
             VoteBox(
                 postId = id,
