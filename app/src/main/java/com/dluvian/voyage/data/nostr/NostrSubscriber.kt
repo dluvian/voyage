@@ -59,7 +59,7 @@ class NostrSubscriber(
                 topic = setting.topic,
                 until = untilTimestamp,
                 // Smaller than adjustedLimit, bc posts with topics tend to be root
-                limit = (3 * limit).toULong()
+                limit = (2.5 * limit).toULong()
             )
 
             is ProfileFeedSetting -> feedSubscriber.getProfileFeedSubscription(
