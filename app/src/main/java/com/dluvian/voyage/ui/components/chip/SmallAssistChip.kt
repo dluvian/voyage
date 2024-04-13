@@ -16,6 +16,7 @@ fun SmallAssistChip(
     modifier: Modifier = Modifier,
     label: ComposableContent = {},
     leadingIcon: ComposableContent = {},
+    trailingIcon: ComposableContent = {},
     colors: ChipColors = AssistChipDefaults.assistChipColors(),
     border: BorderStroke? = AssistChipDefaults.assistChipBorder(enabled = true)
 ) {
@@ -23,6 +24,7 @@ fun SmallAssistChip(
         modifier = modifier.height(AssistChipDefaults.Height.times(0.7f)),
         onClick = onClick,
         leadingIcon = leadingIcon,
+        trailingIcon = trailingIcon,
         label = label,
         colors = colors,
         border = border,

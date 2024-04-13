@@ -9,6 +9,7 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SignerLauncher
+import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.extractCleanHashtags
 import com.dluvian.voyage.core.getNormalizedTopics
 import com.dluvian.voyage.data.event.ValidatedReply
@@ -30,6 +31,7 @@ class PostSender(
     suspend fun sendPost(
         header: String,
         body: String,
+        topics: List<Topic>,
         signerLauncher: SignerLauncher
     ): Result<Event> {
         val trimmedHeader = header.trim()
@@ -37,11 +39,13 @@ class PostSender(
         val concat = "$trimmedHeader $trimmedBody"
 
         val mentions = extractMentionPubkeys(content = concat)
+        val allTopics = topics.toMutableList()
+        allTopics.addAll(extractCleanHashtags(content = concat))
 
         return nostrService.publishPost(
             subject = trimmedHeader,
             content = trimmedBody,
-            topics = extractCleanHashtags(content = concat).take(MAX_TOPICS),
+            topics = allTopics.distinct().take(MAX_TOPICS),
             mentions = mentions,
             relayUrls = relayProvider.getPublishRelays(publishTo = mentions),
             signerLauncher = signerLauncher,

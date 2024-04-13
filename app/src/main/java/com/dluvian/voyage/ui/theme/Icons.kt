@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowUp
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.RemoveCircle
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
@@ -26,6 +27,7 @@ import androidx.compose.material.icons.filled.VerifiedUser
 val HomeIcon = Icons.Default.Home
 val DiscoverIcon = Icons.Default.TravelExplore
 val AddIcon = Icons.Default.Add
+val RemoveCircleIcon = Icons.Default.RemoveCircle
 val InboxIcon = Icons.Default.Notifications
 val SettingsIcon = Icons.Default.Settings
 val BackIcon = Icons.AutoMirrored.Filled.ArrowBack

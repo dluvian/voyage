@@ -125,7 +125,8 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         createPostVM = viewModel {
             CreatePostViewModel(
                 postSender = appContainer.postSender,
-                snackbar = appContainer.snackbar
+                snackbar = appContainer.snackbar,
+                topicProvider = appContainer.topicProvider,
             )
         },
         createReplyVM = viewModel {

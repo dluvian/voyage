@@ -8,21 +8,31 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.core.CreatePostViewAction
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.SendPost
+import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.interactor.PostSender
+import com.dluvian.voyage.data.provider.TopicProvider
 import kotlinx.coroutines.delay
 
 
 class CreatePostViewModel(
     private val postSender: PostSender,
     private val snackbar: SnackbarHostState,
+    private val topicProvider: TopicProvider,
 ) : ViewModel() {
     val isSendingPost = mutableStateOf(false)
+    val myTopics = mutableStateOf(emptyList<Topic>())
 
     fun handle(action: CreatePostViewAction) {
         when (action) {
             is SendPost -> sendPost(action = action)
+        }
+    }
+
+    fun updateMyTopics() {
+        viewModelScope.launchIO {
+            myTopics.value = topicProvider.getMyTopics()
         }
     }
 
@@ -34,6 +44,7 @@ class CreatePostViewModel(
             val result = postSender.sendPost(
                 header = action.header,
                 body = action.body,
+                topics = action.topics,
                 signerLauncher = action.signerLauncher
             )
             delay(DELAY_1SEC)

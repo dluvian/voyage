@@ -146,7 +146,7 @@ private fun Parent(parent: IParentUI) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FullPostBottomSheet(isVisible: Boolean, content: AnnotatedString, onDismiss: Fn) {
+private fun FullPostBottomSheet(isVisible: Boolean, content: AnnotatedString, onDismiss: Fn) {
     if (isVisible) ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(
             modifier = Modifier

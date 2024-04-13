@@ -66,4 +66,8 @@
     <string name="oneself">Oneself</string>
     <string name="no_posts_found">No posts found</string>
     <string name="op">OP</string>
+    <string name="no_topics_selected">No topics selected</string>
+    <string name="my_topics">My topics</string>
+    <string name="you_dont_follow_any_topics">You don\'t follow any topics</string>
+    <string name="selected_">Selected</string>
 </resources>
