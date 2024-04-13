@@ -50,7 +50,7 @@ class ExternalSignerHandler {
             )
             intent.`package` = packageName
             intent.putExtra("type", "sign_event")
-            intent.putExtra("id", unsignedEvent.id().toHex())
+            intent.putExtra("id", unsignedEvent.id()?.toHex())
             intent.putExtra("current_user", unsignedEvent.author().toBech32())
             signerLauncher.launch(
                 input = intent,

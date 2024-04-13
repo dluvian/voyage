@@ -31,7 +31,7 @@ sealed class NostrMention(open val bech32: Bech32, open val hex: String) {
                 NpubMention(bech32 = trimmed, hex = result.toHex())
             } else if (trimmed.startsWith("note1")) {
                 val result = runCatching {
-                    EventId.fromBech32(id = trimmed)
+                    EventId.fromBech32(bech32 = trimmed)
                 }.getOrNull() ?: return null
                 NoteMention(bech32 = trimmed, hex = result.toHex())
             } else null

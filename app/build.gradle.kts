@@ -95,5 +95,5 @@ dependencies {
     implementation("androidx.room:room-ktx:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
 
-    implementation("io.github.rust-nostr:nostr:0.10.0")
+    implementation("io.github.rust-nostr:nostr:0.11.0")
 }
