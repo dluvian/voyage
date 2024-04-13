@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import com.dluvian.nostr_kt.getHashtags
 import com.dluvian.voyage.data.model.RelevantMetadata
 import kotlinx.coroutines.CoroutineScope
@@ -191,5 +192,15 @@ fun getSignerLauncher(onUpdate: OnUpdate): SignerLauncher {
         contract = ActivityResultContracts.StartActivityForResult()
     ) { activityResult ->
         onUpdate(ProcessExternalSignature(activityResult = activityResult))
+    }
+}
+
+@Composable
+fun getAccountLauncher(onUpdate: OnUpdate): SignerLauncher {
+    val context = LocalContext.current
+    return rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { activityResult ->
+        onUpdate(ProcessExternalAccount(activityResult = activityResult, context = context))
     }
 }

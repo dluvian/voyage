@@ -1,7 +1,5 @@
 package com.dluvian.voyage.ui.views.nonMain.settings
 
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,10 +28,11 @@ import com.dluvian.voyage.core.MAX_RETAIN_ROOT
 import com.dluvian.voyage.core.MIN_RETAIN_ROOT
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
-import com.dluvian.voyage.core.ProcessExternalAccount
 import com.dluvian.voyage.core.RequestExternalAccount
+import com.dluvian.voyage.core.SignerLauncher
 import com.dluvian.voyage.core.UpdateRootPostThreshold
 import com.dluvian.voyage.core.UseDefaultAccount
+import com.dluvian.voyage.core.getAccountLauncher
 import com.dluvian.voyage.core.model.AccountType
 import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
@@ -57,11 +56,16 @@ private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: OnUpdate) {
     val isLoadingAccount by vm.isLoadingAccount
     val rootPostThreshold by vm.rootPostThreshold
     val currentRootPostCount by vm.currentRootPostCount.collectAsState()
+    val requestAccount = getAccountLauncher(onUpdate = onUpdate)
 
     LazyColumn {
         if (isLoadingAccount) item { FullLinearProgressIndicator() }
         item {
-            AccountSection(accountType = accountType, onUpdate = onUpdate)
+            AccountSection(
+                accountType = accountType,
+                requestAccount = requestAccount,
+                onUpdate = onUpdate
+            )
         }
         item {
             DatabaseSection(
@@ -77,7 +81,11 @@ private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: OnUpdate) {
 }
 
 @Composable
-private fun AccountSection(accountType: AccountType, onUpdate: OnUpdate) {
+private fun AccountSection(
+    accountType: AccountType,
+    requestAccount: SignerLauncher,
+    onUpdate: OnUpdate
+) {
     SettingsSection(header = stringResource(id = R.string.account)) {
         val shortenedNpub = remember(accountType) { accountType.publicKey.toShortenedNpub() }
         ClickableRow(
@@ -91,7 +99,11 @@ private fun AccountSection(accountType: AccountType, onUpdate: OnUpdate) {
                 onUpdate(OpenProfile(nprofile = createNprofile(pubkey = accountType.publicKey)))
             }
         ) {
-            AccountRowButton(accountType = accountType, onUpdate = onUpdate)
+            AccountRowButton(
+                accountType = accountType,
+                requestAccount = requestAccount,
+                onUpdate = onUpdate
+            )
         }
     }
 }
@@ -137,13 +149,12 @@ private fun AppSection() {
 }
 
 @Composable
-private fun AccountRowButton(accountType: AccountType, onUpdate: OnUpdate) {
+private fun AccountRowButton(
+    accountType: AccountType,
+    requestAccount: SignerLauncher,
+    onUpdate: OnUpdate
+) {
     val context = LocalContext.current
-    val requestAccount = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { activityResult ->
-        onUpdate(ProcessExternalAccount(activityResult = activityResult, context = context))
-    }
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         when (accountType) {
             is ExternalAccount -> TextButton(onClick = { onUpdate(UseDefaultAccount) }) {
