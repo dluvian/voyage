@@ -47,9 +47,9 @@ interface ProfileDao {
 
     // UNION ALL retains order
     @Query(
-        "SELECT * FROM profile WHERE name = :name " +
+        "SELECT * FROM profile WHERE name = :name AND name != ''" +
                 "UNION ALL " +
-                "SELECT * FROM profile WHERE name LIKE :somewhere ESCAPE '\\' " +
+                "SELECT * FROM profile WHERE name LIKE :somewhere ESCAPE '\\'  AND name != ''" +
                 "LIMIT :limit"
     )
     suspend fun internalGetProfilesWithNameLike(
