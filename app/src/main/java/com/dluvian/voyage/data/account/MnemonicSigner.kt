@@ -45,7 +45,7 @@ class MnemonicSigner(context: Context) : IPubkeyProvider {
     fun sign(unsignedEvent: UnsignedEvent): Result<Event> {
         val keys = deriveMainAccount()
 
-        if (unsignedEvent.author().toHex() != keys.publicKey().toHex()) {
+        if (unsignedEvent.author() != keys.publicKey()) {
             val err = "Author of unsigned event ${unsignedEvent.author().toHex()} " +
                     "does not match mnemonic main account ${keys.publicKey().toHex()}"
             return Result.failure(IllegalArgumentException(err))

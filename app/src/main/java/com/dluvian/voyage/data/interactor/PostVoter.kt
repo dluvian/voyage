@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import rust.nostr.protocol.EventId
+import rust.nostr.protocol.Kind
 import rust.nostr.protocol.PublicKey
 
 class PostVoter(
@@ -56,7 +57,7 @@ class PostVoter(
             postId = action.postId,
             mention = action.mention,
             vote = newVote,
-            kind = 1,
+            kind = 1u,
             signerLauncher = action.signerLauncher,
         )
     }
@@ -74,7 +75,7 @@ class PostVoter(
         postId: EventIdHex,
         mention: PubkeyHex,
         vote: Vote,
-        kind: Int,
+        kind: ULong,
         signerLauncher: SignerLauncher
     ) {
         jobs[postId]?.cancel(CancellationException("User clicks fast"))
@@ -109,7 +110,7 @@ class PostVoter(
         postId: EventIdHex,
         mention: PubkeyHex,
         isPositive: Boolean,
-        kind: Int,
+        kind: ULong,
         signerLauncher: SignerLauncher,
     ) {
         if (currentVote?.isPositive == isPositive) return
@@ -120,7 +121,7 @@ class PostVoter(
             eventId = EventId.fromHex(postId),
             mention = PublicKey.fromHex(mention),
             isPositive = isPositive,
-            kind = kind,
+            kind = Kind(kind),
             relayUrls = relayProvider.getPublishRelays(publishTo = listOf(mention)),
             signerLauncher = signerLauncher,
         )

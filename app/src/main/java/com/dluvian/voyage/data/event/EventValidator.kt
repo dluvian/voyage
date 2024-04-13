@@ -14,11 +14,11 @@ import com.dluvian.nostr_kt.isProfile
 import com.dluvian.nostr_kt.isTopicList
 import com.dluvian.nostr_kt.isVote
 import com.dluvian.nostr_kt.secs
-import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_SUBJECT_LEN
 import com.dluvian.voyage.core.getNormalizedTopics
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import rust.nostr.protocol.Event
+import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
 
 
@@ -26,7 +26,7 @@ private const val TAG = "EventValidator"
 
 class EventValidator(
     private val syncedFilterCache: Map<SubId, List<Filter>>,
-    private val syncedIdCache: MutableSet<EventIdHex>,
+    private val syncedIdCache: MutableSet<EventId>,
     private val pubkeyProvider: IPubkeyProvider,
 ) {
 
@@ -35,19 +35,19 @@ class EventValidator(
         subId: SubId,
         relayUrl: RelayUrl
     ): ValidatedEvent? {
-        val idHex = event.id().toHex()
-        if (syncedIdCache.contains(idHex)) return null
+        val id = event.id()
+        if (syncedIdCache.contains(id)) return null
 
         if (!matchesFilter(subId = subId, event = event)) {
-            Log.v(TAG, "Discard event not matching filter, $idHex from $relayUrl")
+            Log.v(TAG, "Discard event not matching filter, $id from $relayUrl")
             return null
         }
 
         val validatedEvent = validate(event = event, relayUrl = relayUrl)
-        syncedIdCache.add(idHex)
+        syncedIdCache.add(id)
 
         if (validatedEvent == null) {
-            Log.w(TAG, "Discard invalid event $idHex from $relayUrl")
+            Log.w(TAG, "Discard invalid event $id from $relayUrl")
             return null
         }
 

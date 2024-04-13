@@ -2,9 +2,7 @@ package com.dluvian.nostr_kt
 
 import cash.z.ecc.android.bip39.Mnemonics
 import rust.nostr.protocol.Event
-import rust.nostr.protocol.EventBuilder
 import rust.nostr.protocol.EventId
-import rust.nostr.protocol.Kind
 import rust.nostr.protocol.KindEnum
 import rust.nostr.protocol.Metadata
 import rust.nostr.protocol.Nip19Event
@@ -14,7 +12,6 @@ import rust.nostr.protocol.Tag
 import rust.nostr.protocol.TagEnum
 import rust.nostr.protocol.TagKind
 import rust.nostr.protocol.Timestamp
-import rust.nostr.protocol.UnsignedEvent
 import java.security.SecureRandom
 
 
@@ -183,24 +180,4 @@ fun createNevent(
     relays: List<String> = emptyList()
 ): Nip19Event {
     return Nip19Event(eventId = eventId, author = author, relays = relays)
-}
-
-fun createReaction(
-    eventId: EventId,
-    mention: PublicKey,
-    content: String,
-    kind: Int,
-    myPubkey: PublicKey
-): UnsignedEvent {
-    val tags = listOf(
-        Tag.event(eventId),
-        Tag.publicKey(mention),
-        Tag.parse(listOf("k", "$kind"))
-    )
-
-    return EventBuilder(
-        kind = Kind.fromEnum(KindEnum.Reaction),
-        content = content,
-        tags = tags
-    ).toUnsignedEvent(publicKey = myPubkey)
 }

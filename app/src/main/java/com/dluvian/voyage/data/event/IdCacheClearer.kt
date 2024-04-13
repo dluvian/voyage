@@ -1,9 +1,9 @@
 package com.dluvian.voyage.data.event
 
-import com.dluvian.voyage.core.EventIdHex
+import rust.nostr.protocol.EventId
 
 class IdCacheClearer(
-    private val syncedIdCache: MutableSet<EventIdHex>,
+    private val syncedIdCache: MutableSet<EventId>,
 ) {
     fun clear() {
         synchronized(syncedIdCache) {

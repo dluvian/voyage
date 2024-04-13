@@ -14,6 +14,7 @@ import com.dluvian.voyage.data.event.EventQueue
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
+import rust.nostr.protocol.Kind
 import rust.nostr.protocol.PublicKey
 
 class NostrService(
@@ -115,7 +116,7 @@ class NostrService(
         eventId: EventId,
         mention: PublicKey,
         isPositive: Boolean,
-        kind: Int,
+        kind: Kind,
         relayUrls: Collection<RelayUrl>,
         signerLauncher: SignerLauncher,
     ): Result<Event> {

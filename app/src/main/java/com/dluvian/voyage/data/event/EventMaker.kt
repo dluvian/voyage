@@ -4,7 +4,6 @@ import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.createHashtagTag
 import com.dluvian.nostr_kt.createLabelTag
 import com.dluvian.nostr_kt.createMentionTag
-import com.dluvian.nostr_kt.createReaction
 import com.dluvian.nostr_kt.createReplyTag
 import com.dluvian.nostr_kt.createSubjectTag
 import com.dluvian.voyage.core.PubkeyHex
@@ -16,6 +15,7 @@ import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventBuilder
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Interests
+import rust.nostr.protocol.Kind
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Tag
 
@@ -70,16 +70,16 @@ class EventMaker(
         eventId: EventId,
         mention: PublicKey,
         isPositive: Boolean,
-        kind: Int,
+        kind: Kind,
         signerLauncher: SignerLauncher,
     ): Result<Event> {
-        val unsignedEvent = createReaction(
+        val unsignedEvent = EventBuilder.reactionExtended(
             eventId = eventId,
-            mention = mention,
-            content = if (isPositive) "+" else "-",
+            publicKey = mention,
             kind = kind,
-            myPubkey = accountManager.getPublicKey()
-        )
+            reaction = if (isPositive) "+" else "-",
+        ).toUnsignedEvent(publicKey = accountManager.getPublicKey())
+
         return accountManager.sign(signerLauncher = signerLauncher, unsignedEvent = unsignedEvent)
     }
 

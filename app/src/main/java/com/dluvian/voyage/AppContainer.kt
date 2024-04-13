@@ -5,7 +5,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.room.Room
 import com.dluvian.nostr_kt.NostrClient
 import com.dluvian.nostr_kt.SubId
-import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.ExternalSignerHandler
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
@@ -45,6 +44,7 @@ import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import com.dluvian.voyage.data.room.AppDatabase
 import kotlinx.coroutines.flow.MutableStateFlow
+import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
 import java.util.Collections
 
@@ -58,7 +58,7 @@ class AppContainer(context: Context) {
     // Shared collections
     private val syncedFilterCache = Collections
         .synchronizedMap(mutableMapOf<SubId, List<Filter>>())
-    private val syncedIdCache = Collections.synchronizedSet(mutableSetOf<EventIdHex>())
+    private val syncedIdCache = Collections.synchronizedSet(mutableSetOf<EventId>())
 
     val snackbar = SnackbarHostState()
     private val nostrClient = NostrClient()
