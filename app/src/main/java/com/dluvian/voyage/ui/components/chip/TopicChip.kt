@@ -18,6 +18,7 @@ fun TopicChip(
     onClick: Fn,
     modifier: Modifier = Modifier,
     isSelected: Boolean = false,
+    heightRatio: Float? = null,
     trailingImageVector: ImageVector? = null,
 ) {
     SmallFilterChip(
@@ -25,6 +26,7 @@ fun TopicChip(
         onClick = onClick,
         label = { Text(text = "#$topic") },
         isSelected = isSelected,
+        heightRatio = heightRatio,
         trailingIcon = {
             if (trailingImageVector != null) {
                 Icon(

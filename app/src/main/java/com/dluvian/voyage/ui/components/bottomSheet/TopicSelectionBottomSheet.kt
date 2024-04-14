@@ -1,6 +1,7 @@
 package com.dluvian.voyage.ui.components.bottomSheet
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,7 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -53,17 +54,20 @@ private fun TopicSelection(myTopics: List<Topic>, selectedTopics: MutableState<L
         )
         else {
             LazyVerticalStaggeredGrid(
-                columns = StaggeredGridCells.Adaptive(minSize = sizing.topicChipMinSize)
+                columns = StaggeredGridCells.Adaptive(minSize = sizing.topicChipMinSize),
+                verticalItemSpacing = spacing.small,
+                contentPadding = PaddingValues(bottom = spacing.xxl)
             ) {
-                items(myTopics) {
-                    val isSelected = selectedTopics.value.contains(it)
+                itemsIndexed(myTopics) { i, topic ->
+                    val isSelected = selectedTopics.value.contains(topic)
                     TopicChip(
-                        modifier = Modifier.padding(spacing.small),
+                        modifier = Modifier.padding(spacing.medium),
                         isSelected = isSelected,
-                        topic = it,
+                        heightRatio = 0.85f,
+                        topic = topic,
                         onClick = {
-                            if (isSelected) selectedTopics.value -= it
-                            else if (selectedTopics.value.size < MAX_TOPICS) selectedTopics.value += it
+                            if (isSelected) selectedTopics.value -= topic
+                            else if (selectedTopics.value.size < MAX_TOPICS) selectedTopics.value += topic
                         }
                     )
                 }

@@ -16,6 +16,7 @@ fun SmallFilterChip(
     onClick: Fn,
     modifier: Modifier = Modifier,
     isSelected: Boolean = false,
+    heightRatio: Float? = null,
     label: ComposableContent = {},
     leadingIcon: ComposableContent = {},
     trailingIcon: ComposableContent = {},
@@ -23,7 +24,7 @@ fun SmallFilterChip(
     border: BorderStroke? = AssistChipDefaults.assistChipBorder(enabled = true)
 ) {
     FilterChip(
-        modifier = modifier.height(AssistChipDefaults.Height.times(0.7f)),
+        modifier = modifier.height(AssistChipDefaults.Height.times(heightRatio ?: 0.7f)),
         selected = isSelected,
         onClick = onClick,
         leadingIcon = leadingIcon,
