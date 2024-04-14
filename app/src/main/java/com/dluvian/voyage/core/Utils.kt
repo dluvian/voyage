@@ -167,7 +167,7 @@ fun Event.getNormalizedTopics(limited: Boolean): List<Topic> {
 
 @Composable
 fun LazyListState.showScrollButton(): Boolean {
-    val hasOffset by remember { derivedStateOf { this.firstVisibleItemIndex > 5 } }
+    val hasOffset by remember { derivedStateOf { this.firstVisibleItemIndex > 2 } }
     var hasScrolled by remember(this) { mutableStateOf(false) }
     var previousIndex by remember(this) { mutableIntStateOf(firstVisibleItemIndex) }
     var previousScrollOffset by remember(this) { mutableIntStateOf(firstVisibleItemScrollOffset) }
