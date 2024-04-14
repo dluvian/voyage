@@ -6,6 +6,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.State
 import com.dluvian.nostr_kt.getCurrentSecs
+import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.FEED_PAGE_SIZE
 import com.dluvian.voyage.core.model.AccountType
 import com.dluvian.voyage.core.model.DefaultAccount
@@ -16,6 +17,7 @@ import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.room.dao.AccountDao
 import com.dluvian.voyage.data.room.entity.AccountEntity
+import kotlinx.coroutines.delay
 import rust.nostr.protocol.PublicKey
 
 class AccountSwitcher(
@@ -64,6 +66,7 @@ class AccountSwitcher(
         idCacheClearer.clear()
         accountDao.updateAccount(account = account)
         lazyNostrSubscriber.lazySubMyAccount()
+        delay(DELAY_1SEC)
         nostrSubscriber.subFeed(
             until = getCurrentSecs(),
             limit = FEED_PAGE_SIZE,
