@@ -11,7 +11,8 @@ data class Sizing(
     val iconButton: Dp = 32.dp,
     val smallIndicatorStrokeWidth: Dp = 3.dp,
     val baseHint: Dp = 48.dp,
-    val bigDivider: Dp = 8.dp
+    val bigDivider: Dp = 8.dp,
+    val topicChipMinSize: Dp = 128.dp,
 )
 
 val LocalSizing = compositionLocalOf { Sizing() }

@@ -38,8 +38,8 @@ import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
 import com.dluvian.voyage.core.toShortenedNpub
 import com.dluvian.voyage.core.viewModel.SettingsViewModel
-import com.dluvian.voyage.ui.components.ClickableRow
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
+import com.dluvian.voyage.ui.components.row.ClickableRow
 import com.dluvian.voyage.ui.theme.AccountIcon
 import com.dluvian.voyage.ui.theme.spacing
 

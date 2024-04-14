@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.components
+package com.dluvian.voyage.ui.components.row
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween

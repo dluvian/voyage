@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.components
+package com.dluvian.voyage.ui.components.row
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -13,6 +13,7 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.interactor.Vote
+import com.dluvian.voyage.ui.components.VoteBox
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable

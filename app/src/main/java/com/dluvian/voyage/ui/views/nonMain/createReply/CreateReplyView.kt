@@ -5,12 +5,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,10 +22,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.SendReply
@@ -36,9 +31,8 @@ import com.dluvian.voyage.core.getSignerLauncher
 import com.dluvian.voyage.core.model.IParentUI
 import com.dluvian.voyage.core.viewModel.CreateReplyViewModel
 import com.dluvian.voyage.ui.components.TextInput
-import com.dluvian.voyage.ui.components.text.AnnotatedText
+import com.dluvian.voyage.ui.components.bottomSheet.FullPostBottomSheet
 import com.dluvian.voyage.ui.theme.ExpandIcon
-import com.dluvian.voyage.ui.theme.light
 import com.dluvian.voyage.ui.theme.spacing
 import com.dluvian.voyage.ui.views.nonMain.createPost.ContentCreationScaffold
 
@@ -118,8 +112,7 @@ fun CreateResponseViewContent(
 @Composable
 private fun Parent(parent: IParentUI) {
     val showFullParent = remember { mutableStateOf(false) }
-    FullPostBottomSheet(
-        isVisible = showFullParent.value,
+    if (showFullParent.value) FullPostBottomSheet(
         content = parent.content,
         onDismiss = { showFullParent.value = false })
     Row(
@@ -140,30 +133,6 @@ private fun Parent(parent: IParentUI) {
                 imageVector = ExpandIcon,
                 contentDescription = stringResource(id = R.string.show_original_post)
             )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun FullPostBottomSheet(isVisible: Boolean, content: AnnotatedString, onDismiss: Fn) {
-    if (isVisible) ModalBottomSheet(onDismissRequest = onDismiss) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = spacing.bigScreenEdge)
-        ) {
-            Text(
-                text = stringResource(id = R.string.original_post),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onBackground.light()
-            )
-            HorizontalDivider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = spacing.xl)
-            )
-            AnnotatedText(text = content, onClick = { })
         }
     }
 }

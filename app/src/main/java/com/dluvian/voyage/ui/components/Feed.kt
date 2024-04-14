@@ -37,6 +37,7 @@ import com.dluvian.voyage.core.model.IPaginator
 import com.dluvian.voyage.core.showScrollButton
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
+import com.dluvian.voyage.ui.components.row.PostRow
 import com.dluvian.voyage.ui.theme.ScrollUpIcon
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing

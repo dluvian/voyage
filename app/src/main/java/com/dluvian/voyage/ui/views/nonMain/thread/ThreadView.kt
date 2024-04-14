@@ -38,11 +38,11 @@ import com.dluvian.voyage.core.model.LeveledReplyUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.viewModel.ThreadViewModel
 import com.dluvian.voyage.ui.components.FullHorizontalDivider
-import com.dluvian.voyage.ui.components.PostRow
 import com.dluvian.voyage.ui.components.PullRefreshBox
-import com.dluvian.voyage.ui.components.ReplyRow
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
+import com.dluvian.voyage.ui.components.row.PostRow
+import com.dluvian.voyage.ui.components.row.ReplyRow
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
 

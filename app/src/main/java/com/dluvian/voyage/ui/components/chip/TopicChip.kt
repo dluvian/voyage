@@ -17,12 +17,14 @@ fun TopicChip(
     topic: String,
     onClick: Fn,
     modifier: Modifier = Modifier,
+    isSelected: Boolean = false,
     trailingImageVector: ImageVector? = null,
 ) {
-    SmallAssistChip(
+    SmallFilterChip(
         modifier = modifier,
         onClick = onClick,
         label = { Text(text = "#$topic") },
+        isSelected = isSelected,
         trailingIcon = {
             if (trailingImageVector != null) {
                 Icon(
