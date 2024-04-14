@@ -41,6 +41,7 @@ I don't plan to publish this app in the Google Play Store.
 - [NIP-27: Text Note References](https://github.com/nostr-protocol/nips/blob/master/27.md)
 - [NIP-51: Lists](https://github.com/nostr-protocol/nips/blob/master/51.md)
 - [NIP-65: Relay List Metadata](https://github.com/nostr-protocol/nips/blob/master/65.md)
+- [NIP-100: Android Signer Application (Pull Request)](https://github.com/nostr-protocol/nips/pull/868)
 
 ## Screenshots
 
@@ -55,11 +56,16 @@ I don't plan to publish this app in the Google Play Store.
 
 [MIT licence](https://github.com/dluvian/voyage/blob/master/LICENSE)
 
+## Resources
+
+- Our external signer of choice is [Amber](https://github.com/greenart7c3/Amber)
+- The project uses [rust-nostr](https://github.com/rust-nostr/nostr), a cross platform Nostr library
+  written in Rust
+
 ## Nostr
 
 Find me on nostr:
 
 npub1useke4f9maul5nf67dj0m9sq6jcsmnjzzk4ycvldwl4qss35fvgqjdk5ks
-
 
 nprofile1qqswgvmv65ja7706f5a0xe8ajcqdfvgdeeppt2jvx0kh06sggg6ykyqpp4mhxue69uhkummn9ekx7mqpzamhxue69uhkummnw3ezuendwsh8w6t69e3xj7spremhxue69uhkummnw3ezuum9w35xvmmjwpexjanpvdujucm0d5q3camnwvaz7tmjv4kxz7fwd46hg6tw09mkzmrvv46zucm0d5q36amnwvaz7tmjv4kxz7fwdehhxarj9emkjun9v3hx2apwdfcqev7j8c
