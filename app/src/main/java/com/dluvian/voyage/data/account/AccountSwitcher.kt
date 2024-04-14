@@ -63,7 +63,7 @@ class AccountSwitcher(
         lazyNostrSubscriber.subCreator.unsubAll()
         idCacheClearer.clear()
         accountDao.updateAccount(account = account)
-        lazyNostrSubscriber.lazySubMyAccountAndTrustData()
+        lazyNostrSubscriber.lazySubMyAccount()
         nostrSubscriber.subFeed(
             until = getCurrentSecs(),
             limit = FEED_PAGE_SIZE,

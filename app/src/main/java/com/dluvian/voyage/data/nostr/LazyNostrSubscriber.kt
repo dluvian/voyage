@@ -72,7 +72,7 @@ class LazyNostrSubscriber(
             }
     }
 
-    private suspend fun lazySubMyAccount() {
+    suspend fun lazySubMyAccount() {
         val timestamp = Timestamp.now()
         val pubkey = pubkeyProvider.getPublicKey()
         val hex = pubkey.toHex()
