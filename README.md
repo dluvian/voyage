@@ -26,6 +26,7 @@ I don't plan to publish this app in the Google Play Store.
   - Green check: You follow this profile (friend).
   - Orange check: You don't follow this profile, but at least one of your friends does.
   - Grey question mark: You don't follow this profile and neither do any of your friends.
+  - Yellow star: Yourself
 - Apk size of less than 15MB.
 
 ## Supported (and partially supported) nips
