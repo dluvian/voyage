@@ -95,7 +95,7 @@ class ProfileProvider(
             pubkey = pubkey,
             name = dbProfile?.name.orEmpty().ifEmpty { pubkey.toShortenedBech32() },
             isMe = dbProfile?.isMe ?: (pubkeyProvider.getPubkeyHex() == pubkey),
-            isFriend = forcedFollowState ?: dbProfile?.isFriend ?: false,
+            isFriend = forcedFollowState ?: dbProfile?.isFriend ?: friendProvider.isFriend(pubkey),
             isWebOfTrust = dbProfile?.isWebOfTrust ?: false
         )
         return FullProfileUI(

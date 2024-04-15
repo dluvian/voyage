@@ -28,4 +28,8 @@ class FriendProvider(
 
     // Not named "getMaxCreatedAt" bc there should only be one createdAt available
     suspend fun getCreatedAt() = friendDao.getMaxCreatedAt()
+
+    fun isFriend(pubkey: PubkeyHex): Boolean {
+        return getFriendPubkeys(max = null).contains(pubkey)
+    }
 }
