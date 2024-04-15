@@ -3,8 +3,8 @@ package com.dluvian.voyage.ui.views.nonMain.thread
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -75,7 +75,11 @@ private fun ThreadViewContent(
     onUpdate: OnUpdate
 ) {
     PullRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(ThreadViewRefresh) }) {
-        LazyColumn(modifier = Modifier.fillMaxSize(), state = state) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = spacing.xxl),
+            state = state
+        ) {
             item {
                 PostRow(post = root, isDetailed = true, onUpdate = onUpdate)
                 FullHorizontalDivider()
@@ -86,10 +90,7 @@ private fun ThreadViewContent(
             itemsIndexed(leveledReplies) { i, reply ->
                 if (reply.level == 0) FullHorizontalDivider()
                 Reply(leveledReply = reply, onUpdate = onUpdate)
-                if (i == leveledReplies.size - 1) {
-                    FullHorizontalDivider()
-                    Spacer(modifier = Modifier.height(spacing.xxl))
-                }
+                if (i == leveledReplies.size - 1) FullHorizontalDivider()
             }
             if (root.replyCount == 0 && leveledReplies.isEmpty()) item {
                 Column(modifier = Modifier.fillParentMaxHeight(0.5f)) {
