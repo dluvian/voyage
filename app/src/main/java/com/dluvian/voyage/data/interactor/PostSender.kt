@@ -70,7 +70,6 @@ class PostSender(
         recipient: PubkeyHex,
         body: String,
         relayHint: RelayUrl,
-        isTopLevel: Boolean,
         signerLauncher: SignerLauncher,
     ): Result<Event> {
         val trimmedBody = body.trim()
@@ -81,7 +80,6 @@ class PostSender(
             parentId = parentId,
             mentions = mentions,
             relayHint = relayHint,
-            isTopLevel = isTopLevel,
             relayUrls = relayProvider.getPublishRelays(publishTo = mentions),
             signerLauncher = signerLauncher,
         ).onSuccess { event ->

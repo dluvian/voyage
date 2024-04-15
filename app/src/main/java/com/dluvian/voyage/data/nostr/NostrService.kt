@@ -96,7 +96,6 @@ class NostrService(
         parentId: EventIdHex,
         mentions: List<PubkeyHex>,
         relayHint: RelayUrl,
-        isTopLevel: Boolean,
         relayUrls: Collection<RelayUrl>,
         signerLauncher: SignerLauncher,
     ): Result<Event> {
@@ -105,7 +104,6 @@ class NostrService(
             mentions = mentions.map { PublicKey.fromHex(it) },
             relayHint = relayHint,
             content = content,
-            isTopLevel = isTopLevel,
             signerLauncher = signerLauncher,
         )
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }

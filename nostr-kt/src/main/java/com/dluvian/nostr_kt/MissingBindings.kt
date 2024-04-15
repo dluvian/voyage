@@ -19,8 +19,6 @@ fun createSubjectTag(subject: String) = Tag.fromEnum(TagEnum.Subject(subject))
 
 fun createHashtagTag(hashtag: String) = Tag.fromEnum(TagEnum.Hashtag(hashtag))
 
-fun createLabelTag(label: String) = Tag.parse(listOf("l", label))
-
 fun createMentionTag(pubkeys: Collection<String>): Tag {
     val tag = mutableListOf("p")
     tag.addAll(pubkeys)

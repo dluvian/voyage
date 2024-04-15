@@ -12,7 +12,6 @@ import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.SendReply
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.IParentUI
-import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.interactor.PostSender
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
@@ -56,7 +55,6 @@ class CreateReplyViewModel(
                 recipient = action.parent.pubkey,
                 body = action.body,
                 relayHint = eventRelayDao.getEventRelay(eventId = action.parent.id).orEmpty(),
-                isTopLevel = action.parent is RootPostUI,
                 signerLauncher = action.signerLauncher
             )
             delay(DELAY_1SEC)
