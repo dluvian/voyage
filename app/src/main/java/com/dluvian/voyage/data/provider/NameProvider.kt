@@ -5,6 +5,7 @@ import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.launchIO
+import com.dluvian.voyage.data.inMemory.MetadataInMemory
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.room.dao.ProfileDao
 import kotlinx.coroutines.CoroutineScope
@@ -19,6 +20,7 @@ class NameProvider(
     private val profileDao: ProfileDao,
     private val nameCache: MutableMap<PubkeyHex, String?>,
     private val nostrSubscriber: NostrSubscriber,
+    private val metadataInMemory: MetadataInMemory,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val subCache = Collections.synchronizedSet(mutableSetOf<PubkeyHex>())
@@ -30,17 +32,25 @@ class NameProvider(
 
         if (isActive.compareAndSet(false, true)) {
             scope.launchIO {
+                val inMemoryName = metadataInMemory.getMetadata(pubkey = pubkey)?.name
+                if (!inMemoryName.isNullOrEmpty()) {
+                    Log.d(TAG, "Found profile $pubkey in memory")
+                    nameCache[pubkey] = inMemoryName
+                    return@launchIO
+                }
+
                 val dbName = profileDao.getName(pubkey = pubkey)
-                if (dbName.isNullOrEmpty()) {
-                    if (subCache.add(pubkey)) {
-                        Log.d(TAG, "Sub unknown profile $pubkey")
-                        nostrSubscriber.subProfile(nprofile = createNprofile(hex = pubkey))
-                    }
-                } else {
+                if (!dbName.isNullOrEmpty()) {
                     Log.d(TAG, "Found profile $pubkey in database")
                     nameCache[pubkey] = dbName
+                    return@launchIO
                 }
-                delay(SHORT_DEBOUNCE)
+
+                if (subCache.add(pubkey)) {
+                    Log.d(TAG, "Sub unknown profile $pubkey")
+                    nostrSubscriber.subProfile(nprofile = createNprofile(hex = pubkey))
+                    delay(SHORT_DEBOUNCE)
+                }
             }.invokeOnCompletion { isActive.set(false) }
         }
 

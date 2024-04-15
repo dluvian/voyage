@@ -91,9 +91,11 @@ class ProfileProvider(
         forcedFollowState: Boolean?,
         metadata: RelevantMetadata?
     ): FullProfileUI {
+        val name = (dbProfile?.name ?: metadata?.name.orEmpty())
+            .ifEmpty { pubkey.toShortenedBech32() }
         val advancedProfile = AdvancedProfileView(
             pubkey = pubkey,
-            name = dbProfile?.name.orEmpty().ifEmpty { pubkey.toShortenedBech32() },
+            name = name,
             isMe = dbProfile?.isMe ?: (pubkeyProvider.getPubkeyHex() == pubkey),
             isFriend = forcedFollowState ?: dbProfile?.isFriend ?: friendProvider.isFriend(pubkey),
             isWebOfTrust = dbProfile?.isWebOfTrust ?: false

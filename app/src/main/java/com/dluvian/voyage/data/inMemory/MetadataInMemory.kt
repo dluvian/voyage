@@ -18,6 +18,10 @@ class MetadataInMemory {
         }
     }
 
+    fun getMetadata(pubkey: PubkeyHex): RelevantMetadata? {
+        return map[pubkey]
+    }
+
     fun getMetadataFlow(pubkey: PubkeyHex): Flow<RelevantMetadata?> {
         return flow {
             var lastMetadata = map[pubkey]

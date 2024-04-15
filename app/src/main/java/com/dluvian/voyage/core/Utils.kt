@@ -48,7 +48,11 @@ fun PubkeyHex.toShortenedBech32(): String {
 }
 
 fun Metadata.toRelevantMetadata(createdAt: Long): RelevantMetadata {
-    return RelevantMetadata(about = this.getAbout()?.trim(), createdAt = createdAt)
+    return RelevantMetadata(
+        name = this.getName()?.trim(),
+        about = this.getAbout()?.trim(),
+        createdAt = createdAt
+    )
 }
 
 fun SnackbarHostState.showToast(scope: CoroutineScope, msg: String) {

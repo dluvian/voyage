@@ -184,7 +184,8 @@ class AppContainer(context: Context) {
     private val nameProvider = NameProvider(
         profileDao = roomDb.profileDao(),
         nameCache = nameCache,
-        nostrSubscriber = nostrSubscriber
+        nostrSubscriber = nostrSubscriber,
+        metadataInMemory = metadataInMemory,
     )
 
     private val annotatedStringProvider = AnnotatedStringProvider(
