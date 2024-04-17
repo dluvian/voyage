@@ -91,7 +91,7 @@ class ProfileProvider(
         forcedFollowState: Boolean?,
         metadata: RelevantMetadata?
     ): FullProfileUI {
-        val name = (dbProfile?.name ?: metadata?.name.orEmpty())
+        val name = (metadata?.name ?: dbProfile?.name.orEmpty())
             .ifEmpty { pubkey.toShortenedBech32() }
         val advancedProfile = AdvancedProfileView(
             pubkey = pubkey,

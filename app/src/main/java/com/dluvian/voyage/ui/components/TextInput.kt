@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import com.dluvian.voyage.ui.theme.light
 
 @Composable
@@ -21,8 +22,10 @@ fun TextInput(
     onValueChange: (String) -> Unit,
     placeholder: String,
     modifier: Modifier = Modifier,
+    isSingleLine: Boolean = false,
     style: TextStyle = LocalTextStyle.current,
-    imeAction: ImeAction = ImeAction.Default
+    imeAction: ImeAction = ImeAction.Default,
+    keyboardType: KeyboardType = KeyboardType.Text
 ) {
     val transparentTextFieldColor = TextFieldDefaults.colors(
         focusedIndicatorColor = Color.Transparent,
@@ -36,7 +39,11 @@ fun TextInput(
         onValueChange = onValueChange,
         colors = transparentTextFieldColor,
         textStyle = style,
-        keyboardOptions = KeyboardOptions(imeAction = imeAction),
+        singleLine = isSingleLine,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = keyboardType,
+            imeAction = imeAction
+        ),
         placeholder = {
             Text(
                 text = placeholder,

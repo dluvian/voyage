@@ -7,6 +7,7 @@ import com.dluvian.voyage.core.toRelevantMetadata
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
 import com.dluvian.voyage.data.room.AppDatabase
+import com.dluvian.voyage.data.room.entity.FullProfileEntity
 import com.dluvian.voyage.data.room.entity.ProfileEntity
 import com.dluvian.voyage.data.room.entity.VoteEntity
 import kotlinx.coroutines.CoroutineScope
@@ -175,6 +176,16 @@ class EventProcessor(
             room.profileUpsertDao().upsertProfiles(profiles = entities)
         }.invokeOnCompletion { ex ->
             if (ex != null) Log.w(TAG, "Failed to process profile ${entities.size}", ex)
+        }
+
+        val myPubkey = pubkeyProvider.getPubkeyHex()
+        val myProfile = uniqueProfiles.find { it.pubkey == myPubkey } ?: return
+        val myProfileEntity = FullProfileEntity.from(profile = myProfile)
+
+        scope.launch {
+            room.fullProfileUpsertDao().upsertProfile(profile = myProfileEntity)
+        }.invokeOnCompletion { ex ->
+            if (ex != null) Log.w(TAG, "Failed to process my profile $myProfileEntity", ex)
         }
     }
 

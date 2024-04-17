@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "5ec9c6de95bbed809c18b10e44072f25",
+    "identityHash": "acfb2cdb77f4fc07c13df35afda40391",
     "entities": [
       {
         "tableName": "post",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `pubkey` TEXT NOT NULL, `replyToId` TEXT, `title` TEXT, `content` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`replyToId`) REFERENCES `post`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `pubkey` TEXT NOT NULL, `parentId` TEXT, `subject` TEXT, `content` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `relayUrl` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -21,14 +21,14 @@
             "notNull": true
           },
           {
-            "fieldPath": "replyToId",
-            "columnName": "replyToId",
+            "fieldPath": "parentId",
+            "columnName": "parentId",
             "affinity": "TEXT",
             "notNull": false
           },
           {
-            "fieldPath": "title",
-            "columnName": "title",
+            "fieldPath": "subject",
+            "columnName": "subject",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -43,6 +43,12 @@
             "columnName": "createdAt",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "relayUrl",
+            "columnName": "relayUrl",
+            "affinity": "TEXT",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -53,28 +59,34 @@
         },
         "indices": [
           {
-            "name": "index_post_replyToId",
+            "name": "index_post_parentId",
             "unique": false,
             "columnNames": [
-              "replyToId"
+              "parentId"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_post_replyToId` ON `${TABLE_NAME}` (`replyToId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_post_parentId` ON `${TABLE_NAME}` (`parentId`)"
+          },
+          {
+            "name": "index_post_createdAt",
+            "unique": false,
+            "columnNames": [
+              "createdAt"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_post_createdAt` ON `${TABLE_NAME}` (`createdAt`)"
+          },
+          {
+            "name": "index_post_pubkey",
+            "unique": false,
+            "columnNames": [
+              "pubkey"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_post_pubkey` ON `${TABLE_NAME}` (`pubkey`)"
           }
         ],
-        "foreignKeys": [
-          {
-            "table": "post",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "replyToId"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          }
-        ]
+        "foreignKeys": []
       },
       {
         "tableName": "vote",
@@ -116,45 +128,6 @@
           "columnNames": [
             "postId",
             "pubkey"
-          ]
-        },
-        "indices": [],
-        "foreignKeys": [
-          {
-            "table": "post",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "postId"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          }
-        ]
-      },
-      {
-        "tableName": "postRelay",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`postId` TEXT NOT NULL, `relayUrl` TEXT NOT NULL, PRIMARY KEY(`postId`, `relayUrl`), FOREIGN KEY(`postId`) REFERENCES `post`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
-        "fields": [
-          {
-            "fieldPath": "postId",
-            "columnName": "postId",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "relayUrl",
-            "columnName": "relayUrl",
-            "affinity": "TEXT",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "postId",
-            "relayUrl"
           ]
         },
         "indices": [],
@@ -446,7 +419,7 @@
       },
       {
         "tableName": "profile",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`pubkey` TEXT NOT NULL, `name` TEXT, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`pubkey`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`pubkey` TEXT NOT NULL, `name` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`pubkey`))",
         "fields": [
           {
             "fieldPath": "pubkey",
@@ -458,7 +431,7 @@
             "fieldPath": "name",
             "columnName": "name",
             "affinity": "TEXT",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "createdAt",
@@ -485,25 +458,121 @@
           }
         ],
         "foreignKeys": []
+      },
+      {
+        "tableName": "fullProfile",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`about` TEXT NOT NULL, `picture` TEXT NOT NULL, `lud06` TEXT NOT NULL, `lud16` TEXT NOT NULL, `nip05` TEXT NOT NULL, `displayName` TEXT NOT NULL, `website` TEXT NOT NULL, `banner` TEXT NOT NULL, `pubkey` TEXT NOT NULL, `name` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`pubkey`), FOREIGN KEY(`pubkey`) REFERENCES `account`(`pubkey`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "about",
+            "columnName": "about",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "picture",
+            "columnName": "picture",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lud06",
+            "columnName": "lud06",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lud16",
+            "columnName": "lud16",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nip05",
+            "columnName": "nip05",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "displayName",
+            "columnName": "displayName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "website",
+            "columnName": "website",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "banner",
+            "columnName": "banner",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "profileEntity.pubkey",
+            "columnName": "pubkey",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "profileEntity.name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "profileEntity.createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "pubkey"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "account",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "pubkey"
+            ],
+            "referencedColumns": [
+              "pubkey"
+            ]
+          }
+        ]
       }
     ],
     "views": [
       {
         "viewName": "RootPostView",
-        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT post.id, post.pubkey, (SELECT hashtag FROM hashtag WHERE hashtag.postId = post.id AND hashtag IN (SELECT topic FROM topic WHERE myPubkey = (SELECT pubkey FROM account LIMIT 1)) LIMIT 1) AS myTopic, post.title, post.content, post.createdAt, (SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.pubkey)) AS authorIsFriend, (SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = post.pubkey)) AS authorIsTrusted, (SELECT isPositive FROM vote WHERE vote.postId = post.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)) AS myVote, (SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 1) AS upvoteCount, (SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 0) AS downvoteCount, (SELECT COUNT(*) FROM post AS post2 WHERE post2.replyToId = post.id) AS commentCount FROM post WHERE post.replyToId IS NULL"
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT post.id, post.pubkey, post.subject, post.content, post.createdAt, (SELECT name FROM profile WHERE profile.pubkey = post.pubkey) AS authorName, (SELECT hashtag FROM hashtag WHERE hashtag.postId = post.id AND hashtag IN (SELECT topic FROM topic WHERE myPubkey = (SELECT pubkey FROM account LIMIT 1)) LIMIT 1) AS myTopic, (SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.pubkey)) AS authorIsOneself, (SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.pubkey)) AS authorIsFriend, (SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = post.pubkey)) AS authorIsTrusted, (SELECT isPositive FROM vote WHERE vote.postId = post.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)) AS myVote, (SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 1) AS upvoteCount, (SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 0) AS downvoteCount, (SELECT COUNT(*) FROM post AS post2 WHERE post2.parentId = post.id) AS replyCount FROM post WHERE post.parentId IS NULL"
       },
       {
         "viewName": "AdvancedProfileView",
-        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT *, (SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = profile.pubkey)) AS isFriend, (SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = profile.pubkey)) AS isWebOfTrust, (SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = profile.pubkey)) AS isMe FROM profile"
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT profile.pubkey, profile.name,  (SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = profile.pubkey)) AS isFriend, (SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = profile.pubkey)) AS isWebOfTrust, (SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = profile.pubkey)) AS isMe FROM profile"
       },
       {
         "viewName": "EventRelayAuthorView",
-        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT post.pubkey, postRelay.relayUrl AS relay, COUNT(*) AS relayCount FROM postRelay LEFT JOIN post ON post.id = postRelay.postId GROUP BY post.pubkey, relay"
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT post.pubkey, post.relayUrl, COUNT(*) AS relayCount FROM post GROUP BY post.pubkey, post.relayUrl"
+      },
+      {
+        "viewName": "ReplyView",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT post.id, post.parentId, post.pubkey, post.content, post.createdAt, (SELECT name FROM profile WHERE profile.pubkey = post.pubkey) AS authorName, (SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.pubkey)) AS authorIsOneself, (SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.pubkey)) AS authorIsFriend, (SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = post.pubkey)) AS authorIsTrusted, (SELECT isPositive FROM vote WHERE vote.postId = post.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)) AS myVote, (SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 1) AS upvoteCount, (SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 0) AS downvoteCount, (SELECT COUNT(*) FROM post AS post2 WHERE post2.parentId = post.id) AS replyCount FROM post WHERE post.parentId IS NOT NULL"
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5ec9c6de95bbed809c18b10e44072f25')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'acfb2cdb77f4fc07c13df35afda40391')"
     ]
   }
 }

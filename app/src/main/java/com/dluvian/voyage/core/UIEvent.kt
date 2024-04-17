@@ -18,6 +18,7 @@ import com.dluvian.voyage.core.navigator.SearchNavView
 import com.dluvian.voyage.core.navigator.SettingsNavView
 import com.dluvian.voyage.core.navigator.ThreadNavView
 import com.dluvian.voyage.core.navigator.TopicNavView
+import rust.nostr.protocol.Metadata
 import rust.nostr.protocol.Nip19Profile
 
 sealed class UIEvent
@@ -159,6 +160,16 @@ data class SendReply(
     val signerLauncher: SignerLauncher,
     val onGoBack: Fn
 ) : CreateReplyViewAction()
+
+
+sealed class EditProfileViewAction : UIEvent()
+data object LoadFullProfile : EditProfileViewAction()
+data class SaveProfile(
+    val metadata: Metadata,
+    val signerLauncher: SignerLauncher,
+    val context: Context,
+    val onGoBack: Fn,
+) : EditProfileViewAction()
 
 
 sealed class SettingsViewAction : UIEvent()

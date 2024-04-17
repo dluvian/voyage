@@ -38,6 +38,7 @@ I don't plan to publish this app in the Google Play Store.
 - [NIP-10: Conventions for clients' use of e and p tags in text events](https://github.com/nostr-protocol/nips/blob/master/10.md)
 - [NIP-14: Subject tag in text events](https://github.com/nostr-protocol/nips/blob/master/14.md)
 - [NIP-19: bech32-encoded entities](https://github.com/nostr-protocol/nips/blob/master/19.md)
+- [NIP-24: Extra metadata fields and tags](https://github.com/nostr-protocol/nips/blob/master/24.md)
 - [NIP-25: Reactions](https://github.com/nostr-protocol/nips/blob/master/25.md)
 - [NIP-27: Text Note References](https://github.com/nostr-protocol/nips/blob/master/27.md)
 - [NIP-51: Lists](https://github.com/nostr-protocol/nips/blob/master/51.md)

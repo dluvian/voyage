@@ -8,11 +8,13 @@ import androidx.compose.material.icons.automirrored.filled.Reply
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowUp
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.RemoveCircle
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
@@ -45,5 +47,7 @@ val DownvoteIcon = Icons.Default.ThumbDownAlt
 val SearchIcon = Icons.Default.Search
 val SendIcon = Icons.AutoMirrored.Filled.Send
 val ReplyIcon = Icons.AutoMirrored.Filled.Reply
-val ExpandIcon = Icons.Default.ExpandMore
 val ScrollUpIcon = Icons.Default.KeyboardDoubleArrowUp
+val SaveIcon = Icons.Default.Save
+val ExpandIcon = Icons.Default.ExpandMore
+val CollapseIcon = Icons.Default.ExpandLess

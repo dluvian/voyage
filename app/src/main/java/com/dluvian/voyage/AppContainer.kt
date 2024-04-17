@@ -70,7 +70,7 @@ class AppContainer(context: Context) {
         syncedIdCache = syncedIdCache,
     )
 
-    private val relayProvider = RelayProvider(
+    val relayProvider = RelayProvider(
         nip65Dao = roomDb.nip65Dao(),
         eventRelayDao = roomDb.eventRelayDao(),
         nostrClient = nostrClient
@@ -130,7 +130,7 @@ class AppContainer(context: Context) {
         nostrSubscriber = nostrSubscriber
     )
 
-    private val metadataInMemory = MetadataInMemory()
+    val metadataInMemory = MetadataInMemory()
     private val eventValidator = EventValidator(
         syncedFilterCache = syncedFilterCache,
         syncedIdCache = syncedIdCache,

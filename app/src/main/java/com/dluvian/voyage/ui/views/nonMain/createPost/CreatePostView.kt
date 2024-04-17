@@ -28,6 +28,7 @@ import com.dluvian.voyage.core.getSignerLauncher
 import com.dluvian.voyage.core.viewModel.CreatePostViewModel
 import com.dluvian.voyage.ui.components.TextInput
 import com.dluvian.voyage.ui.components.row.TopicSelectionRow
+import com.dluvian.voyage.ui.components.scaffold.ContentCreationScaffold
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable

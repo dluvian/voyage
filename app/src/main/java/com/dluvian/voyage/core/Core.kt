@@ -42,6 +42,7 @@ class Core(
             is SettingsViewAction -> vmContainer.settingsVM.handle(action = uiEvent)
             is CreateReplyViewAction -> vmContainer.createReplyVM.handle(action = uiEvent)
             is SearchViewAction -> vmContainer.searchVM.handle(action = uiEvent)
+            is EditProfileViewAction -> vmContainer.editProfileVM.handle(action = uiEvent)
 
             is ProcessExternalSignature -> viewModelScope.launch {
                 appContainer.externalSignerHandler.processExternalSignature(

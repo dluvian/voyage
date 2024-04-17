@@ -138,7 +138,14 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             )
         },
         editProfileVM = viewModel {
-            EditProfileViewModel()
+            EditProfileViewModel(
+                fullProfileUpsertDao = appContainer.roomDb.fullProfileUpsertDao(),
+                nostrService = appContainer.nostrService,
+                snackbar = appContainer.snackbar,
+                relayProvider = appContainer.relayProvider,
+                fullProfileDao = appContainer.roomDb.fullProfileDao(),
+                metadataInMemory = appContainer.metadataInMemory
+            )
         },
     )
 }

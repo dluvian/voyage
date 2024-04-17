@@ -15,6 +15,7 @@ import rust.nostr.protocol.EventBuilder
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Interests
 import rust.nostr.protocol.Kind
+import rust.nostr.protocol.Metadata
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Tag
 
@@ -103,6 +104,16 @@ class EventMaker(
             .map { Contact(pk = PublicKey.fromHex(it), relayUrl = null, alias = null) }
         val unsignedEvent = EventBuilder.contactList(list = contacts)
             .toUnsignedEvent(accountManager.getPublicKey())
+
+        return accountManager.sign(signerLauncher = signerLauncher, unsignedEvent = unsignedEvent)
+    }
+
+    suspend fun buildProfile(
+        metadata: Metadata,
+        signerLauncher: SignerLauncher,
+    ): Result<Event> {
+        val unsignedEvent = EventBuilder.metadata(metadata)
+            .toUnsignedEvent(publicKey = accountManager.getPublicKey())
 
         return accountManager.sign(signerLauncher = signerLauncher, unsignedEvent = unsignedEvent)
     }

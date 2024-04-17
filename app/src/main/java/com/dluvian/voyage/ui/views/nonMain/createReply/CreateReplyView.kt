@@ -32,9 +32,9 @@ import com.dluvian.voyage.core.model.IParentUI
 import com.dluvian.voyage.core.viewModel.CreateReplyViewModel
 import com.dluvian.voyage.ui.components.TextInput
 import com.dluvian.voyage.ui.components.bottomSheet.FullPostBottomSheet
+import com.dluvian.voyage.ui.components.scaffold.ContentCreationScaffold
 import com.dluvian.voyage.ui.theme.ExpandIcon
 import com.dluvian.voyage.ui.theme.spacing
-import com.dluvian.voyage.ui.views.nonMain.createPost.ContentCreationScaffold
 
 @Composable
 fun CreateReplyView(

@@ -8,7 +8,6 @@ import com.dluvian.voyage.core.MAX_RELAYS
 import com.dluvian.voyage.core.MAX_RELAYS_PER_PUBKEY
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.putOrAdd
-import com.dluvian.voyage.core.takeRandom
 import com.dluvian.voyage.data.room.dao.EventRelayDao
 import com.dluvian.voyage.data.room.dao.Nip65Dao
 import kotlinx.coroutines.CoroutineScope
@@ -32,7 +31,7 @@ class RelayProvider(
             .filter { it.nip65Relay.isRead }
             .map { it.nip65Relay.url }
             .ifEmpty { defaultRelays }
-            .let { if (limit) it.takeRandom(MAX_RELAYS) else it }
+            .let { if (limit) it.preferConnected(MAX_RELAYS) else it }
             .let {
                 if (includeConnected) (it + nostrClient.getAllConnectedUrls()).distinct() else it
             }
@@ -43,7 +42,7 @@ class RelayProvider(
             .filter { it.nip65Relay.isWrite }
             .map { it.nip65Relay.url }
             .ifEmpty { defaultRelays }
-            .let { if (limit) it.takeRandom(MAX_RELAYS) else it }
+            .let { if (limit) it.preferConnected(MAX_RELAYS) else it }
     }
 
     suspend fun getReadRelays(

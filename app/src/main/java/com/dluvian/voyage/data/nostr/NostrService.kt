@@ -15,6 +15,7 @@ import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
 import rust.nostr.protocol.Kind
+import rust.nostr.protocol.Metadata
 import rust.nostr.protocol.PublicKey
 
 class NostrService(
@@ -152,6 +153,15 @@ class NostrService(
         signerLauncher: SignerLauncher,
     ): Result<Event> {
         return eventMaker.buildContactList(pubkeys = pubkeys, signerLauncher = signerLauncher)
+            .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
+    }
+
+    suspend fun publishProfile(
+        metadata: Metadata,
+        relayUrls: Collection<RelayUrl>,
+        signerLauncher: SignerLauncher,
+    ): Result<Event> {
+        return eventMaker.buildProfile(metadata = metadata, signerLauncher = signerLauncher)
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 

@@ -1,6 +1,6 @@
 package com.dluvian.voyage.data.inMemory
 
-import com.dluvian.voyage.core.DELAY_1SEC
+import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.model.RelevantMetadata
 import kotlinx.coroutines.delay
@@ -28,7 +28,7 @@ class MetadataInMemory {
             emit(lastMetadata)
 
             while (true) {
-                delay(DELAY_1SEC)
+                delay(DEBOUNCE)
                 val newMetadata = map[pubkey]
                 if (newMetadata != lastMetadata) {
                     lastMetadata = newMetadata
