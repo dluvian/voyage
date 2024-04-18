@@ -178,13 +178,12 @@ data class RequestExternalAccount(
     val reqAccountLauncher: SignerLauncher,
     val context: Context
 ) : SettingsViewAction()
-
 data class ProcessExternalAccount(
     val activityResult: ActivityResult,
     val context: Context
 ) : SettingsViewAction()
-
 data class UpdateRootPostThreshold(val threshold: Float) : SettingsViewAction()
+data object LoadSeed : SettingsViewAction()
 
 
 sealed class SearchViewAction : UIEvent()

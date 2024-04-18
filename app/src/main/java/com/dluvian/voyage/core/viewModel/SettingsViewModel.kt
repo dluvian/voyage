@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ExternalSignerHandler
+import com.dluvian.voyage.core.LoadSeed
 import com.dluvian.voyage.core.ProcessExternalAccount
 import com.dluvian.voyage.core.RequestExternalAccount
 import com.dluvian.voyage.core.SettingsViewAction
@@ -22,6 +23,7 @@ import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.account.AccountSwitcher
+import com.dluvian.voyage.data.account.MnemonicSigner
 import com.dluvian.voyage.data.preferences.DatabasePreferences
 import com.dluvian.voyage.data.provider.DatabaseStatProvider
 import kotlinx.coroutines.flow.SharingStarted
@@ -36,11 +38,13 @@ class SettingsViewModel(
     private val databasePreferences: DatabasePreferences,
     databaseStatProvider: DatabaseStatProvider,
     private val externalSignerHandler: ExternalSignerHandler,
+    private val mnemonicSigner: MnemonicSigner,
 ) : ViewModel() {
     val accountType: State<AccountType> = accountSwitcher.accountType
     val rootPostThreshold = mutableIntStateOf(databasePreferences.getSweepThreshold())
     val currentRootPostCount = databaseStatProvider.getRootPostCountFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
+    val seed = mutableStateOf(emptyList<String>())
 
     val isLoadingAccount = mutableStateOf(false)
 
@@ -60,6 +64,8 @@ class SettingsViewModel(
                 rootPostThreshold.intValue = newThreshold
                 databasePreferences.setSweepThreshold(newThreshold = newThreshold)
             }
+
+            is LoadSeed -> seed.value = mnemonicSigner.getSeed()
         }
     }
 

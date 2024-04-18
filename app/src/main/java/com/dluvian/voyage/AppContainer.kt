@@ -62,9 +62,9 @@ class AppContainer(context: Context) {
 
     val snackbar = SnackbarHostState()
     private val nostrClient = NostrClient()
-    private val mnemonicSigner = MnemonicSigner(context = context)
+    val mnemonicSigner = MnemonicSigner(context = context)
     val externalSignerHandler = ExternalSignerHandler()
-    val externalSigner = ExternalSigner(handler = externalSignerHandler)
+    private val externalSigner = ExternalSigner(handler = externalSignerHandler)
 
     private val idCacheClearer = IdCacheClearer(
         syncedIdCache = syncedIdCache,

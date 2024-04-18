@@ -93,4 +93,6 @@
     <string name="enter_your_banner_url">Enter your banner URL</string>
     <string name="profile_updated">Profile updated</string>
     <string name="failed_to_sign_profile">Failed to sign profile</string>
+    <string name="recovery_phrase">Recovery phrase</string>
+    <string name="click_to_show_recovery_phrase">Click to show recovery phrase</string>
 </resources>

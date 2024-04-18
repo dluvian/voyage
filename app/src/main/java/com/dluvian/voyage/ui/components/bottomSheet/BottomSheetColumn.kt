@@ -1,0 +1,35 @@
+package com.dluvian.voyage.ui.components.bottomSheet
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.dluvian.voyage.core.ComposableContent
+import com.dluvian.voyage.ui.theme.light
+import com.dluvian.voyage.ui.theme.spacing
+
+@Composable
+fun BottomSheetColumn(header: String, content: ComposableContent) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = spacing.bigScreenEdge)
+    ) {
+        Text(
+            text = header,
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onBackground.light()
+        )
+        HorizontalDivider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = spacing.xl)
+        )
+        content()
+    }
+}

@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -24,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ComposableContent
+import com.dluvian.voyage.core.LoadSeed
 import com.dluvian.voyage.core.MAX_RETAIN_ROOT
 import com.dluvian.voyage.core.MIN_RETAIN_ROOT
 import com.dluvian.voyage.core.OnUpdate
@@ -38,6 +40,7 @@ import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
 import com.dluvian.voyage.core.toShortenedNpub
 import com.dluvian.voyage.core.viewModel.SettingsViewModel
+import com.dluvian.voyage.ui.components.bottomSheet.SeedBottomSheet
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import com.dluvian.voyage.ui.components.row.ClickableRow
 import com.dluvian.voyage.ui.theme.AccountIcon
@@ -53,6 +56,7 @@ fun SettingsView(vm: SettingsViewModel, snackbar: SnackbarHostState, onUpdate: O
 @Composable
 private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: OnUpdate) {
     val accountType by vm.accountType
+    val seed by vm.seed
     val isLoadingAccount by vm.isLoadingAccount
     val rootPostThreshold by vm.rootPostThreshold
     val currentRootPostCount by vm.currentRootPostCount.collectAsState()
@@ -64,6 +68,7 @@ private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: OnUpdate) {
             AccountSection(
                 accountType = accountType,
                 requestAccount = requestAccount,
+                seed = seed,
                 onUpdate = onUpdate
             )
         }
@@ -84,6 +89,7 @@ private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: OnUpdate) {
 private fun AccountSection(
     accountType: AccountType,
     requestAccount: SignerLauncher,
+    seed: List<String>,
     onUpdate: OnUpdate
 ) {
     SettingsSection(header = stringResource(id = R.string.account)) {
@@ -104,6 +110,18 @@ private fun AccountSection(
                 requestAccount = requestAccount,
                 onUpdate = onUpdate
             )
+        }
+        if (accountType is DefaultAccount) {
+            val showSeed = remember { mutableStateOf(false) }
+            ClickableRow(
+                header = stringResource(id = R.string.recovery_phrase),
+                text = stringResource(id = R.string.click_to_show_recovery_phrase),
+                onClick = { showSeed.value = true }
+            )
+            if (showSeed.value) SeedBottomSheet(
+                seed = seed,
+                onLoadSeed = { onUpdate(LoadSeed) },
+                onDismiss = { showSeed.value = false })
         }
     }
 }

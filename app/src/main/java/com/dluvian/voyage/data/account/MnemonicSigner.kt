@@ -54,6 +54,8 @@ class MnemonicSigner(context: Context) : IPubkeyProvider {
         return runCatching { unsignedEvent.sign(keys) }
     }
 
+    fun getSeed() = getMnemonic()?.split(" ").orEmpty()
+
     private fun deriveMainAccount(): Keys {
         return Keys.fromMnemonicWithAccount(
             mnemonic = getMnemonic() ?: throw IllegalStateException("No mnemonic saved"),
