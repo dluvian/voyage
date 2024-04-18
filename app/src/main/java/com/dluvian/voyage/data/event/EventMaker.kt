@@ -1,5 +1,6 @@
 package com.dluvian.voyage.data.event
 
+import android.util.Log
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.createHashtagTag
 import com.dluvian.nostr_kt.createMentionTag
@@ -18,6 +19,8 @@ import rust.nostr.protocol.Kind
 import rust.nostr.protocol.Metadata
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Tag
+
+private const val TAG = "EventMaker"
 
 class EventMaker(
     private val accountManager: AccountManager,
@@ -116,5 +119,29 @@ class EventMaker(
             .toUnsignedEvent(publicKey = accountManager.getPublicKey())
 
         return accountManager.sign(signerLauncher = signerLauncher, unsignedEvent = unsignedEvent)
+    }
+
+    suspend fun buildAuth(
+        relayUrl: RelayUrl,
+        challenge: String,
+        signerLauncher: SignerLauncher,
+    ): Result<Event> {
+        Log.d(TAG, "Build AUTH for $relayUrl")
+        val unsignedEvent = runCatching {
+            EventBuilder.auth(challenge = challenge, relayUrl = relayUrl)
+                .toUnsignedEvent(publicKey = accountManager.getPublicKey())
+        }
+
+        return if (unsignedEvent.isSuccess) {
+            accountManager.sign(
+                signerLauncher = signerLauncher,
+                unsignedEvent = unsignedEvent.getOrThrow()
+            )
+        } else {
+            Log.w(TAG, "EventBuilder.auth for $relayUrl failed")
+            Result.failure(
+                unsignedEvent.exceptionOrNull() ?: IllegalStateException("EventBuilder.auth failed")
+            )
+        }
     }
 }

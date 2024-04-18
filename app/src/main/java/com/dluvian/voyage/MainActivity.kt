@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.dluvian.voyage.core.Core
 import com.dluvian.voyage.core.Fn
+import com.dluvian.voyage.core.getSignerLauncher
 import com.dluvian.voyage.core.viewModel.CreatePostViewModel
 import com.dluvian.voyage.core.viewModel.CreateReplyViewModel
 import com.dluvian.voyage.core.viewModel.DiscoverViewModel
@@ -30,7 +31,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appContainer = AppContainer(this.applicationContext)
+        appContainer = AppContainer(context = this.applicationContext)
         setContent {
             val activity = (LocalContext.current as? Activity)
             val closeApp: Fn = { activity?.finish() }
@@ -42,6 +43,8 @@ class MainActivity : ComponentActivity() {
                     closeApp = closeApp
                 )
             }
+            val signerLauncher = getSignerLauncher(onUpdate = core.onUpdate)
+            appContainer.nostrService.defaultLauncher = signerLauncher
 
             VoyageApp(core)
         }

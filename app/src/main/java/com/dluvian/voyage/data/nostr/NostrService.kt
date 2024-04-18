@@ -9,8 +9,11 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SignerLauncher
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.data.event.EventMaker
 import com.dluvian.voyage.data.event.EventQueue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
@@ -18,17 +21,20 @@ import rust.nostr.protocol.Kind
 import rust.nostr.protocol.Metadata
 import rust.nostr.protocol.PublicKey
 
+private const val TAG = "NostrService"
+
 class NostrService(
     private val nostrClient: NostrClient,
     private val eventQueue: EventQueue,
     private val eventMaker: EventMaker,
     private val filterCache: MutableMap<SubId, List<Filter>>,
 ) {
-    private val tag = "NostrService"
+    private val scope = CoroutineScope(Dispatchers.IO)
+    var defaultLauncher: SignerLauncher? = null
 
     private val listener = object : INostrListener {
         override fun onOpen(relayUrl: RelayUrl, msg: String) {
-            Log.i(tag, "OnOpen($relayUrl): $msg")
+            Log.i(TAG, "OnOpen($relayUrl): $msg")
         }
 
         override fun onEvent(subId: SubId, event: Event, relayUrl: RelayUrl?) {
@@ -36,41 +42,44 @@ class NostrService(
         }
 
         override fun onError(relayUrl: RelayUrl, msg: String, throwable: Throwable?) {
-            Log.w(tag, "OnError($relayUrl): $msg", throwable)
+            Log.w(TAG, "OnError($relayUrl): $msg", throwable)
         }
 
         override fun onEOSE(relayUrl: RelayUrl, subId: SubId) {
-            Log.d(tag, "OnEOSE($relayUrl): $subId")
+            Log.d(TAG, "OnEOSE($relayUrl): $subId")
             nostrClient.unsubscribe(subId)
         }
 
         override fun onClosed(relayUrl: RelayUrl, subId: SubId, reason: String) {
-            Log.d(tag, "OnClosed($relayUrl): $subId, reason: $reason")
+            Log.d(TAG, "OnClosed($relayUrl): $subId, reason: $reason")
         }
 
         override fun onClose(relayUrl: RelayUrl, reason: String) {
-            Log.i(tag, "OnClose($relayUrl): $reason")
+            Log.i(TAG, "OnClose($relayUrl): $reason")
         }
 
         override fun onFailure(relayUrl: RelayUrl, msg: String?, throwable: Throwable?) {
-            Log.w(tag, "OnFailure($relayUrl): $msg", throwable)
+            Log.w(TAG, "OnFailure($relayUrl): $msg", throwable)
         }
 
         override fun onOk(relayUrl: RelayUrl, eventId: EventId, accepted: Boolean, msg: String) {
             Log.d(
-                tag,
+                TAG,
                 "OnOk($relayUrl): ${eventId.toHex()}, accepted=$accepted, ${msg.ifBlank { "No message" }}"
             )
         }
 
-        override fun onAuth(relayUrl: RelayUrl, challengeString: String) {
-            Log.d(tag, "OnAuth($relayUrl): challenge=$challengeString")
+        override fun onAuth(relayUrl: RelayUrl, challenge: String) {
+            Log.d(TAG, "OnAuth($relayUrl): challenge=$challenge")
+            scope.launchIO {
+                sendAuth(relayUrl = relayUrl, challenge = challenge)
+            }
         }
     }
 
     fun initialize(initRelayUrls: Collection<RelayUrl>) {
         nostrClient.setListener(listener)
-        Log.i(tag, "Add ${initRelayUrls.size} relays: $initRelayUrls")
+        Log.i(TAG, "Add ${initRelayUrls.size} relays: $initRelayUrls")
         nostrClient.addRelays(initRelayUrls)
     }
 
@@ -168,5 +177,23 @@ class NostrService(
     fun close() {
         filterCache.clear()
         nostrClient.close()
+    }
+
+    private suspend fun sendAuth(relayUrl: RelayUrl, challenge: String) {
+        if (defaultLauncher == null) {
+            Log.w(TAG, "Launcher is not yet initialized")
+            return
+        }
+        defaultLauncher?.let {
+            eventMaker.buildAuth(
+                relayUrl = relayUrl,
+                challenge = challenge,
+                signerLauncher = it
+            )
+                .onSuccess { event ->
+                    nostrClient.publishAuth(authEvent = event, relayUrl = relayUrl)
+                }
+                .onFailure { Log.w(TAG, "Failed to sign AUTH event for $relayUrl") }
+        }
     }
 }

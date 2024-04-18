@@ -91,7 +91,7 @@ class NostrClient {
 
                         is RelayMessageEnum.Auth -> nostrListener?.onAuth(
                             relayUrl = relayUrl,
-                            challengeString = enum.challenge,
+                            challenge = enum.challenge,
                         )
 
                         else -> nostrListener?.onError(
@@ -157,6 +157,26 @@ class NostrClient {
         relayUrls.forEach { addRelay(it) }
     }
 
+    fun getAllConnectedUrls(): List<RelayUrl> {
+        val allUrls = sockets.keys
+        synchronized(allUrls) {
+            return allUrls.toList()
+        }
+    }
+
+    fun publishAuth(authEvent: Event, relayUrl: RelayUrl) {
+        addRelay(relayUrl)
+        val socket = sockets.entries.find { (relay, _) -> relay == relayUrl }?.value
+        if (socket == null) {
+            Log.e(TAG, "Failed to send AUTH. Socket for $relayUrl is not registered")
+            return
+        }
+
+        val authMsg = ClientMessage.auth(event = authEvent).asJson()
+        Log.i(TAG, "Publish AUTH to $relayUrl: $authMsg")
+        socket.send(authMsg)
+    }
+
     private fun addRelay(relayUrl: RelayUrl) {
         if (sockets.containsKey(relayUrl)) return
         if (!relayUrl.startsWith(WEBSOCKET_PREFIX)) return
@@ -203,14 +223,6 @@ class NostrClient {
                 subscriptions.remove(it.key)
             }
         }
-    }
-
-    fun getAllConnectedUrls(): List<RelayUrl> {
-        val allUrls = sockets.keys
-        synchronized(allUrls) {
-            return allUrls.toList()
-        }
-
     }
 
     private fun filterSocketsByRelays(relays: Collection<RelayUrl>): List<Map.Entry<RelayUrl, WebSocket>> {

@@ -12,5 +12,5 @@ interface INostrListener {
     fun onClose(relayUrl: RelayUrl, reason: String)
     fun onFailure(relayUrl: RelayUrl, msg: String?, throwable: Throwable? = null)
     fun onOk(relayUrl: RelayUrl, eventId: EventId, accepted: Boolean, msg: String)
-    fun onAuth(relayUrl: RelayUrl, challengeString: String)
+    fun onAuth(relayUrl: RelayUrl, challenge: String)
 }
