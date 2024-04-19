@@ -41,14 +41,10 @@ fun ReplyRow(
             .fillMaxWidth()
             .padding(spacing.screenEdge)
     ) {
-        PostRowHeader(
-            trustType = reply.trustType,
-            authorName = reply.authorName,
-            pubkey = reply.pubkey,
+        ParentRowHeader(
+            parent = reply,
             isDetailed = true,
-            createdAt = reply.createdAt,
             myTopic = null,
-            id = reply.id,
             isOp = isOp,
             collapsedText = if (isCollapsed) reply.content else null,
             onUpdate = onUpdate

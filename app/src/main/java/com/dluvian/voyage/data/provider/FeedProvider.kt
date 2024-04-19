@@ -24,6 +24,7 @@ class FeedProvider(
     private val oldestUsedEvent: OldestUsedEvent,
     private val annotatedStringProvider: AnnotatedStringProvider,
     private val nameCache: MutableMap<PubkeyHex, String?>,
+    private val forcedFollows: Flow<Map<PubkeyHex, Boolean>>
 ) {
     suspend fun getFeedFlow(
         until: Long,
@@ -48,10 +49,11 @@ class FeedProvider(
             )
         }
 
-        return flow.combine(forcedVotes) { posts, votes ->
+        return combine(flow, forcedVotes, forcedFollows) { posts, votes, follows ->
             posts.map {
                 it.mapToRootPostUI(
                     forcedVotes = votes,
+                    forcedFollows = follows,
                     annotatedStringProvider = annotatedStringProvider
                 )
             }
@@ -88,6 +90,7 @@ class FeedProvider(
         return posts.map {
             it.mapToRootPostUI(
                 forcedVotes = emptyMap(),
+                forcedFollows = emptyMap(),
                 annotatedStringProvider = annotatedStringProvider
             )
         }

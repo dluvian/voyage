@@ -36,6 +36,7 @@ class ThreadProvider(
     private val subBatcher: SubBatcher,
     private val relayProvider: RelayProvider,
     private val oldestUsedEvent: OldestUsedEvent,
+    private val forcedFollows: Flow<Map<PubkeyHex, Boolean>>,
 ) {
 
     fun getRoot(scope: CoroutineScope, nevent: Nip19Event): Flow<RootPostUI?> {
@@ -44,11 +45,13 @@ class ThreadProvider(
         return combine(
             rootPostDao.getRootPostFlow(id = nevent.eventId().toHex())
                 .firstThenDistinctDebounce(SHORT_DEBOUNCE),
-            forcedVotes
-        ) { post, votes ->
+            forcedVotes,
+            forcedFollows,
+        ) { post, votes, follows ->
             handleProfileSub(post = post)
             post?.mapToRootPostUI(
                 forcedVotes = votes,
+                forcedFollows = follows,
                 annotatedStringProvider = annotatedStringProvider
             )
         }.onEach {
@@ -69,8 +72,9 @@ class ThreadProvider(
         return combine(
             replyFlow,
             forcedVotes,
+            forcedFollows,
             collapsedIds,
-        ) { replies, votes, collapsed ->
+        ) { replies, votes, follows, collapsed ->
             val result = LinkedList<LeveledReplyUI>()
 
             for (reply in replies) {
@@ -85,6 +89,7 @@ class ThreadProvider(
                 val leveledReply = reply.mapToLeveledReplyUI(
                     level = parent?.level?.plus(1) ?: 0,
                     forcedVotes = votes,
+                    forcedFollows = follows,
                     collapsedIds = collapsed,
                     parentIds = parentIds,
                     isOp = opPubkey == reply.pubkey,

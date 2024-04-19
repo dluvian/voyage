@@ -41,14 +41,10 @@ fun PostRow(post: RootPostUI, isDetailed: Boolean = false, onUpdate: OnUpdate) {
                 )
             )
         }
-        PostRowHeader(
-            trustType = post.trustType,
-            authorName = post.authorName,
-            pubkey = post.pubkey,
+        ParentRowHeader(
+            parent = post,
             isDetailed = isDetailed,
-            createdAt = post.createdAt,
             myTopic = post.myTopic,
-            id = post.id,
             isOp = true,
             onUpdate = onUpdate,
         )

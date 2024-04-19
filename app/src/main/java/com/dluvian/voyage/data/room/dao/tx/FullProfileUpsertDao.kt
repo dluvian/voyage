@@ -13,7 +13,7 @@ interface FullProfileUpsertDao {
     @Transaction
     suspend fun upsertProfile(profile: FullProfileEntity) {
         val newestCreatedAt = internalGetNewestCreatedAt() ?: 0L
-        if (profile.profileEntity.createdAt <= newestCreatedAt) return
+        if (profile.createdAt <= newestCreatedAt) return
 
         internalUpsertProfile(profile = profile)
     }

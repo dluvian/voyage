@@ -192,13 +192,23 @@ class AppContainer(context: Context) {
         nameProvider = nameProvider
     )
 
+    val profileFollower = ProfileFollower(
+        nostrService = nostrService,
+        relayProvider = relayProvider,
+        snackbar = snackbar,
+        context = context,
+        friendProvider = friendProvider,
+        friendUpsertDao = roomDb.friendUpsertDao(),
+    )
+
     val feedProvider = FeedProvider(
         nostrSubscriber = nostrSubscriber,
         rootPostDao = roomDb.rootPostDao(),
         forcedVotes = postVoter.forcedVotes,
         oldestUsedEvent = oldestUsedEvent,
         annotatedStringProvider = annotatedStringProvider,
-        nameCache = nameCache
+        nameCache = nameCache,
+        forcedFollows = profileFollower.forcedFollowsFlow
     )
 
     val threadProvider = ThreadProvider(
@@ -211,16 +221,8 @@ class AppContainer(context: Context) {
         nameCache = nameCache,
         subBatcher = subBatcher,
         relayProvider = relayProvider,
-        oldestUsedEvent = oldestUsedEvent
-    )
-
-    val profileFollower = ProfileFollower(
-        nostrService = nostrService,
-        relayProvider = relayProvider,
-        snackbar = snackbar,
-        context = context,
-        friendProvider = friendProvider,
-        friendUpsertDao = roomDb.friendUpsertDao(),
+        oldestUsedEvent = oldestUsedEvent,
+        forcedFollows = profileFollower.forcedFollowsFlow,
     )
 
     val profileProvider = ProfileProvider(

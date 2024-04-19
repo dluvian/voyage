@@ -41,7 +41,7 @@ fun EditProfileView(
     val isSaving by vm.isSaving
     val fullProfile by vm.fullProfile
 
-    val name = remember(fullProfile) { mutableStateOf(fullProfile?.profileEntity?.name.orEmpty()) }
+    val name = remember(fullProfile) { mutableStateOf(fullProfile?.name.orEmpty()) }
     val about = remember(fullProfile) { mutableStateOf(fullProfile?.about.orEmpty()) }
     val picture = remember(fullProfile) { mutableStateOf(fullProfile?.picture.orEmpty()) }
     val lud06 = remember(fullProfile) { mutableStateOf(fullProfile?.lud06.orEmpty()) }
@@ -53,7 +53,7 @@ fun EditProfileView(
 
     val showSaveButton = remember {
         derivedStateOf {
-            name.value != fullProfile?.profileEntity?.name.orEmpty() ||
+            name.value != fullProfile?.name.orEmpty() ||
                     about.value != fullProfile?.about.orEmpty() ||
                     picture.value != fullProfile?.picture.orEmpty() ||
                     lud06.value != fullProfile?.lud06.orEmpty() ||

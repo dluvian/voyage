@@ -1,10 +1,10 @@
 package com.dluvian.voyage.data.room.entity
 
-import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import com.dluvian.nostr_kt.getMetadata
 import com.dluvian.nostr_kt.secs
+import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.event.ValidatedProfile
 import rust.nostr.protocol.Event
 
@@ -20,7 +20,9 @@ import rust.nostr.protocol.Event
     )]
 )
 data class FullProfileEntity(
-    @Embedded val profileEntity: ProfileEntity,
+    val pubkey: PubkeyHex,
+    val name: String,
+    val createdAt: Long,
     val about: String,
     val picture: String,
     val lud06: String,
@@ -33,7 +35,9 @@ data class FullProfileEntity(
     companion object {
         fun from(profile: ValidatedProfile): FullProfileEntity {
             return FullProfileEntity(
-                profileEntity = ProfileEntity.from(profile),
+                pubkey = profile.pubkey,
+                name = profile.metadata.getName().orEmpty(),
+                createdAt = profile.createdAt,
                 about = profile.metadata.getAbout().orEmpty(),
                 picture = profile.metadata.getPicture().orEmpty(),
                 lud06 = profile.metadata.getLud06().orEmpty(),
@@ -49,11 +53,9 @@ data class FullProfileEntity(
             val metadata = event.getMetadata() ?: return null
 
             return FullProfileEntity(
-                profileEntity = ProfileEntity(
-                    pubkey = event.author().toHex(),
-                    name = metadata.getName().orEmpty().trim(),
-                    createdAt = event.createdAt().secs()
-                ),
+                pubkey = event.author().toHex(),
+                name = metadata.getName().orEmpty().trim(),
+                createdAt = event.createdAt().secs(),
                 about = metadata.getAbout().orEmpty().trim(),
                 picture = metadata.getPicture().orEmpty().trim(),
                 lud06 = metadata.getLud06().orEmpty().trim(),

@@ -2,6 +2,7 @@ package com.dluvian.voyage.core.model
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.text.AnnotatedString
+import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.toShortenedBech32
@@ -13,16 +14,17 @@ import com.dluvian.voyage.data.room.view.RootPostView
 data class RootPostUI(
     override val id: EventIdHex,
     override val pubkey: PubkeyHex,
-    val authorName: String,
-    val trustType: TrustType,
+    override val authorName: String,
+    override val trustType: TrustType,
     val myTopic: String?,
-    val createdAt: Long,
+    override val createdAt: Long,
     val subject: AnnotatedString,
     override val content: AnnotatedString,
     val myVote: Vote,
     val upvoteCount: Int,
     val downvoteCount: Int,
     val replyCount: Int,
+    override val relayUrl: RelayUrl,
 ) : IParentUI {
     companion object {
         fun from(
@@ -47,6 +49,7 @@ data class RootPostUI(
                 upvoteCount = rootPostView.upvoteCount,
                 downvoteCount = rootPostView.downvoteCount,
                 replyCount = rootPostView.replyCount,
+                relayUrl = rootPostView.relayUrl
             )
         }
     }

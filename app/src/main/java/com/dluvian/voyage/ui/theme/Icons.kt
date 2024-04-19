@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowUp
+import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.RemoveCircle
 import androidx.compose.material.icons.filled.Save
@@ -51,3 +52,4 @@ val ScrollUpIcon = Icons.Default.KeyboardDoubleArrowUp
 val SaveIcon = Icons.Default.Save
 val ExpandIcon = Icons.Default.ExpandMore
 val CollapseIcon = Icons.Default.ExpandLess
+val HorizMoreIcon = Icons.Default.MoreHoriz

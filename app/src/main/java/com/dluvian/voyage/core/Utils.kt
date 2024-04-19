@@ -1,5 +1,7 @@
 package com.dluvian.voyage.core
 
+import android.content.Context
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.lazy.LazyListState
@@ -11,7 +13,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
 import com.dluvian.nostr_kt.getHashtags
 import com.dluvian.voyage.data.model.RelevantMetadata
 import kotlinx.coroutines.CoroutineScope
@@ -207,4 +211,13 @@ fun getAccountLauncher(onUpdate: OnUpdate): SignerLauncher {
     ) { activityResult ->
         onUpdate(ProcessExternalAccount(activityResult = activityResult, context = context))
     }
+}
+
+fun copyAndToast(text: String, toast: String, context: Context, clip: ClipboardManager) {
+    copyAndToast(text = AnnotatedString(text), toast = toast, context = context, clip = clip)
+}
+
+fun copyAndToast(text: AnnotatedString, toast: String, context: Context, clip: ClipboardManager) {
+    clip.setText(text)
+    Toast.makeText(context, toast, Toast.LENGTH_SHORT).show()
 }

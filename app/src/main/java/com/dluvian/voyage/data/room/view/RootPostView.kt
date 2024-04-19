@@ -1,10 +1,12 @@
 package com.dluvian.voyage.data.room.view
 
 import androidx.room.DatabaseView
+import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.RootPostUI
+import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.data.interactor.Vote
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 
@@ -14,6 +16,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             "post.subject, " +
             "post.content, " +
             "post.createdAt, " +
+            "post.relayUrl, " +
             "(SELECT name FROM profile WHERE profile.pubkey = post.pubkey) AS authorName, " +
             "(SELECT hashtag FROM hashtag WHERE hashtag.postId = post.id AND hashtag IN (SELECT topic FROM topic WHERE myPubkey = (SELECT pubkey FROM account LIMIT 1)) LIMIT 1) AS myTopic, " +
             "(SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.pubkey)) AS authorIsOneself, " +
@@ -41,9 +44,11 @@ data class RootPostView(
     val upvoteCount: Int,
     val downvoteCount: Int,
     val replyCount: Int,
+    val relayUrl: RelayUrl,
 ) {
     fun mapToRootPostUI(
         forcedVotes: Map<EventIdHex, Vote>,
+        forcedFollows: Map<PubkeyHex, Boolean>,
         annotatedStringProvider: AnnotatedStringProvider,
     ): RootPostUI {
         val rootPostUI = RootPostUI.from(
@@ -51,6 +56,15 @@ data class RootPostView(
             annotatedStringProvider = annotatedStringProvider
         )
         val vote = forcedVotes.getOrDefault(this.id, null)
-        return if (vote != null) rootPostUI.copy(myVote = vote) else rootPostUI
+        val follow = forcedFollows.getOrDefault(this.pubkey, null)
+        return if (vote != null || follow != null) rootPostUI.copy(
+            myVote = vote ?: rootPostUI.myVote,
+            trustType = TrustType.from(
+                isOneself = this.authorIsOneself,
+                isFriend = follow ?: this.authorIsFriend,
+                isWebOfTrust = this.authorIsTrusted
+            )
+        )
+        else rootPostUI
     }
 }

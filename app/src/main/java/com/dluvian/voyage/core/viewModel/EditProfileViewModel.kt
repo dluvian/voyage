@@ -72,7 +72,7 @@ class EditProfileViewModel(
                         fullProfile.value = entity
                         it.getMetadata()?.let { metadata ->
                             metadataInMemory.submit(
-                                pubkey = entity.profileEntity.pubkey,
+                                pubkey = entity.pubkey,
                                 metadata = metadata.toRelevantMetadata(it.createdAt().secs())
                             )
                         }

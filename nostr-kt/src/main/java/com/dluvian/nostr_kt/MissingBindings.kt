@@ -172,6 +172,18 @@ fun createNevent(
     )
 }
 
+fun createNeventStr(
+    hex: String,
+    author: String? = null,
+    relays: List<String> = emptyList()
+): String {
+    return createNevent(
+        eventId = EventId.fromHex(hex),
+        author = author?.let { PublicKey.fromHex(it) },
+        relays = relays
+    ).toBech32()
+}
+
 fun createNevent(
     eventId: EventId,
     author: PublicKey? = null,

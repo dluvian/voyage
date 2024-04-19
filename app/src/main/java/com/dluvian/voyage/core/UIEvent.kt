@@ -114,6 +114,10 @@ data class UnfollowProfile(
     ProfileEvent(pubkey = pubkey, signerLauncher = signerLauncher)
 
 
+sealed class PostEvent : UIEvent()
+data class DeletePost(val id: EventIdHex) : PostEvent()
+
+
 sealed class HomeViewAction : UIEvent()
 data object HomeViewRefresh : HomeViewAction()
 data object HomeViewAppend : HomeViewAction()

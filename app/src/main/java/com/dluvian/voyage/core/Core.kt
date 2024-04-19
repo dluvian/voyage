@@ -51,6 +51,7 @@ class Core(
             }
 
             is ClickText -> clickText(event = uiEvent)
+            is DeletePost -> TODO()
         }
     }
 

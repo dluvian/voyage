@@ -95,4 +95,11 @@
     <string name="failed_to_sign_profile">Failed to sign profile</string>
     <string name="recovery_phrase">Recovery phrase</string>
     <string name="click_to_show_recovery_phrase">Click to show recovery phrase</string>
+    <string name="unfollow">Unfollow</string>
+    <string name="copy_id">Copy ID</string>
+    <string name="note_id_copied">Note ID copied</string>
+    <string name="content_copied">Content copied</string>
+    <string name="copy_content">Copy content</string>
+    <string name="attempt_deletion">Attempt deletion</string>
+    <string name="show_options_menu">Show options menu</string>
 </resources>
