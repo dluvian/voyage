@@ -3,9 +3,17 @@ package com.dluvian.voyage.data.room.dao
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
+import com.dluvian.voyage.core.EventIdHex
 
 @Dao
 interface DeleteDao {
+
+    @Query("DELETE FROM vote WHERE id = :voteId")
+    suspend fun deleteVote(voteId: EventIdHex)
+
+    @Query("DELETE FROM post WHERE id = :postId")
+    suspend fun deletePost(postId: EventIdHex)
+
     @Transaction
     suspend fun sweepPosts(threshold: Int, oldestCreatedAtInUse: Long) {
         internalDeleteOldestRootPosts(

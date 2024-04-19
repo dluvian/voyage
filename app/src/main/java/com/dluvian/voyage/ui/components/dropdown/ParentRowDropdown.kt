@@ -38,10 +38,7 @@ fun ParentRowDropdown(
                     text = stringResource(id = R.string.unfollow),
                     onClick = {
                         onUpdate(
-                            UnfollowProfile(
-                                pubkey = parent.pubkey,
-                                signerLauncher = signerLauncher
-                            )
+                            UnfollowProfile(pubkey = parent.pubkey, signerLauncher = signerLauncher)
                         )
                         onDismiss()
                     }
@@ -53,10 +50,7 @@ fun ParentRowDropdown(
                     text = stringResource(id = R.string.follow),
                     onClick = {
                         onUpdate(
-                            FollowProfile(
-                                pubkey = parent.pubkey,
-                                signerLauncher = signerLauncher
-                            )
+                            FollowProfile(pubkey = parent.pubkey, signerLauncher = signerLauncher)
                         )
                         onDismiss()
                     }
@@ -98,7 +92,7 @@ fun ParentRowDropdown(
             SimpleDropdownItem(
                 text = stringResource(id = R.string.attempt_deletion),
                 onClick = {
-                    onUpdate(DeletePost(id = parent.id))
+                    onUpdate(DeletePost(id = parent.id, signerLauncher = signerLauncher))
                     onDismiss()
                 }
             )

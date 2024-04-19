@@ -32,6 +32,13 @@ class Core(
             is VoteEvent -> appContainer.postVoter.handle(action = uiEvent)
             is ProfileEvent -> appContainer.profileFollower.handle(action = uiEvent)
             is TopicEvent -> appContainer.topicFollower.handle(action = uiEvent)
+            is DeletePost -> viewModelScope.launchIO {
+                appContainer.eventDeletor.deletePost(
+                    postId = uiEvent.id,
+                    signerLauncher = uiEvent.signerLauncher
+                )
+            }
+
 
             is HomeViewAction -> vmContainer.homeVM.handle(action = uiEvent)
             is DiscoverViewAction -> vmContainer.discoverVM.handle(action = uiEvent)
@@ -51,7 +58,6 @@ class Core(
             }
 
             is ClickText -> clickText(event = uiEvent)
-            is DeletePost -> TODO()
         }
     }
 

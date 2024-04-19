@@ -14,6 +14,7 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SignerLauncher
 import com.dluvian.voyage.core.VoteEvent
 import com.dluvian.voyage.core.showToast
+import com.dluvian.voyage.data.event.EventDeletor
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.VoteDao
@@ -32,14 +33,16 @@ import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Kind
 import rust.nostr.protocol.PublicKey
 
+private const val TAG = "PostVoter"
+
 class PostVoter(
     private val nostrService: NostrService,
     private val relayProvider: RelayProvider,
     private val snackbar: SnackbarHostState,
     private val context: Context,
     private val voteDao: VoteDao,
+    private val eventDeletor: EventDeletor,
 ) {
-    private val tag = "PostVoter"
     private val scope = CoroutineScope(Dispatchers.IO)
     private val _forcedVotes = MutableStateFlow(mapOf<EventIdHex, Vote>())
 
@@ -94,14 +97,16 @@ class PostVoter(
 
                 NoVote -> {
                     if (currentVote == null) return@launch
-                    deleteVote(voteId = currentVote.id, signerLauncher = signerLauncher)
-                    voteDao.deleteMyVote(postId = postId)
+                    eventDeletor.deleteVote(
+                        voteId = currentVote.id,
+                        signerLauncher = signerLauncher
+                    )
                 }
             }
         }
         jobs[postId]?.invokeOnCompletion { ex ->
-            if (ex == null) Log.d(tag, "Successfully voted $vote on $postId")
-            else Log.d(tag, "Failed to vote $vote on $postId: ${ex.message}")
+            if (ex == null) Log.d(TAG, "Successfully voted $vote on $postId")
+            else Log.d(TAG, "Failed to vote $vote on $postId: ${ex.message}")
         }
     }
 
@@ -115,7 +120,7 @@ class PostVoter(
     ) {
         if (currentVote?.isPositive == isPositive) return
         if (currentVote != null) {
-            deleteVote(voteId = currentVote.id, signerLauncher = signerLauncher)
+            eventDeletor.deleteVote(voteId = currentVote.id, signerLauncher = signerLauncher)
         }
         nostrService.publishVote(
             eventId = EventId.fromHex(postId),
@@ -136,26 +141,12 @@ class PostVoter(
                 voteDao.insertOrReplaceVote(voteEntity = entity)
             }
             .onFailure {
-                Log.w(tag, "Failed to publish vote: ${it.message}", it)
+                Log.w(TAG, "Failed to publish vote: ${it.message}", it)
                 updateForcedVote(postId = postId, newVote = NoVote)
                 snackbar.showToast(
                     scope = scope,
                     msg = context.getString(R.string.failed_to_sign_vote)
                 )
             }
-    }
-
-    private suspend fun deleteVote(voteId: EventIdHex, signerLauncher: SignerLauncher) {
-        nostrService.publishDelete(
-            eventId = EventId.fromHex(voteId),
-            relayUrls = relayProvider.getPublishRelays(),
-            signerLauncher = signerLauncher,
-        ).onFailure {
-            Log.w(tag, "Failed to delete vote: ${it.message}", it)
-            snackbar.showToast(
-                scope = scope,
-                msg = context.getString(R.string.failed_to_sign_vote_deletion)
-            )
-        }
     }
 }

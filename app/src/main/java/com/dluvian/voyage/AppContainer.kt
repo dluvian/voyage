@@ -12,6 +12,7 @@ import com.dluvian.voyage.data.account.AccountManager
 import com.dluvian.voyage.data.account.AccountSwitcher
 import com.dluvian.voyage.data.account.ExternalSigner
 import com.dluvian.voyage.data.account.MnemonicSigner
+import com.dluvian.voyage.data.event.EventDeletor
 import com.dluvian.voyage.data.event.EventMaker
 import com.dluvian.voyage.data.event.EventProcessor
 import com.dluvian.voyage.data.event.EventQueue
@@ -157,12 +158,21 @@ class AppContainer(context: Context) {
         nostrService.initialize(initRelayUrls = relayProvider.getReadRelays())
     }
 
+    val eventDeletor = EventDeletor(
+        snackbar = snackbar,
+        nostrService = nostrService,
+        context = context,
+        relayProvider = relayProvider,
+        deleteDao = roomDb.deleteDao()
+    )
+
     val postVoter = PostVoter(
         nostrService = nostrService,
         relayProvider = relayProvider,
         snackbar = snackbar,
         context = context,
         voteDao = roomDb.voteDao(),
+        eventDeletor = eventDeletor,
     )
 
     val threadCollapser = ThreadCollapser()

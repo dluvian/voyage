@@ -115,7 +115,7 @@ data class UnfollowProfile(
 
 
 sealed class PostEvent : UIEvent()
-data class DeletePost(val id: EventIdHex) : PostEvent()
+data class DeletePost(val id: EventIdHex, val signerLauncher: SignerLauncher) : PostEvent()
 
 
 sealed class HomeViewAction : UIEvent()
