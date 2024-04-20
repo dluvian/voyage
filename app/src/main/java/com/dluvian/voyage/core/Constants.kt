@@ -31,5 +31,5 @@ const val FEED_OFFSET = 7
 const val TWO_WEEKS_IN_SECS = 14 * 24 * 60 * 60
 
 const val MIN_RETAIN_ROOT = 500f
-const val MAX_RETAIN_ROOT = 10_000f
+const val MAX_RETAIN_ROOT = 5_000f
 const val DEFAULT_RETAIN_ROOT = 1500
