@@ -67,9 +67,7 @@ class LazyNostrSubscriber(
             .limit(1u)
         val filters = listOf(nip65Filter)
         relayProvider.getObserveRelays(nprofile = nprofile, includeConnected = true)
-            .forEach { relay ->
-                subCreator.subscribe(relayUrl = relay, filters = filters)
-            }
+            .forEach { relay -> subCreator.subscribe(relayUrl = relay, filters = filters) }
     }
 
     suspend fun lazySubMyAccount() {

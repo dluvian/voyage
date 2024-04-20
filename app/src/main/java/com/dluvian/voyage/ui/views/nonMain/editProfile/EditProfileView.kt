@@ -128,16 +128,16 @@ private fun EditProfileViewContent(
     val showAdvanced = remember { mutableStateOf(false) }
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
-        item(contentType = "name") { Name(username = name) }
-        item(contentType = "about") { About(about = about) }
-        item(contentType = "show_adv_btn") { ShowAdvancedButton(showAdvanced = showAdvanced) }
-        item(contentType = "disName") { DisplayName(showAdvanced.value, displayName = displayName) }
-        item(contentType = "picture") { Picture(isVisible = showAdvanced.value, picture = picture) }
-        item(contentType = "lud16") { Lud16(isVisible = showAdvanced.value, lud16 = lud16) }
-        item(contentType = "lud06") { Lud06(isVisible = showAdvanced.value, lud06 = lud06) }
-        item(contentType = "nip05") { Nip05(isVisible = showAdvanced.value, nip05 = nip05) }
-        item(contentType = "website") { Website(isVisible = showAdvanced.value, website = website) }
-        item(contentType = "banner") { Banner(isVisible = showAdvanced.value, banner = banner) }
+        item { Name(username = name) }
+        item { About(about = about) }
+        item { ShowAdvancedButton(showAdvanced = showAdvanced) }
+        item { DisplayName(showAdvanced.value, displayName = displayName) }
+        item { Picture(isVisible = showAdvanced.value, picture = picture) }
+        item { Lud16(isVisible = showAdvanced.value, lud16 = lud16) }
+        item { Lud06(isVisible = showAdvanced.value, lud06 = lud06) }
+        item { Nip05(isVisible = showAdvanced.value, nip05 = nip05) }
+        item { Website(isVisible = showAdvanced.value, website = website) }
+        item { Banner(isVisible = showAdvanced.value, banner = banner) }
     }
 }
 

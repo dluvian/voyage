@@ -6,7 +6,7 @@ import com.dluvian.voyage.core.navigator.CreatePostNavView
 import com.dluvian.voyage.core.navigator.EditProfileNavView
 import com.dluvian.voyage.core.navigator.NonMainNavView
 import com.dluvian.voyage.core.navigator.ProfileNavView
-import com.dluvian.voyage.core.navigator.RelayListNavView
+import com.dluvian.voyage.core.navigator.RelayEditorNavView
 import com.dluvian.voyage.core.navigator.ReplyCreationNavView
 import com.dluvian.voyage.core.navigator.SearchNavView
 import com.dluvian.voyage.core.navigator.SettingsNavView
@@ -16,7 +16,7 @@ import com.dluvian.voyage.ui.views.nonMain.createPost.CreatePostView
 import com.dluvian.voyage.ui.views.nonMain.createReply.CreateReplyView
 import com.dluvian.voyage.ui.views.nonMain.editProfile.EditProfileView
 import com.dluvian.voyage.ui.views.nonMain.profile.ProfileView
-import com.dluvian.voyage.ui.views.nonMain.relayList.RelayListView
+import com.dluvian.voyage.ui.views.nonMain.relayEditor.RelayEditorView
 import com.dluvian.voyage.ui.views.nonMain.search.SearchView
 import com.dluvian.voyage.ui.views.nonMain.settings.SettingsView
 import com.dluvian.voyage.ui.views.nonMain.thread.ThreadView
@@ -76,7 +76,8 @@ fun NonMainView(
             onUpdate = core.onUpdate
         )
 
-        RelayListNavView -> RelayListView(
+        RelayEditorNavView -> RelayEditorView(
+            vm = core.vmContainer.relayEditorVM,
             snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate
         )

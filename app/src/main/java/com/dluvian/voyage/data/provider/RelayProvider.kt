@@ -1,9 +1,11 @@
 package com.dluvian.voyage.data.provider
 
 import android.util.Log
+import com.dluvian.nostr_kt.Nip65Relay
 import com.dluvian.nostr_kt.NostrClient
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.removeTrailingSlashes
+import com.dluvian.voyage.core.MAX_POPULAR_RELAYS
 import com.dluvian.voyage.core.MAX_RELAYS
 import com.dluvian.voyage.core.MAX_RELAYS_PER_PUBKEY
 import com.dluvian.voyage.core.PubkeyHex
@@ -164,6 +166,13 @@ class RelayProvider(
     suspend fun getNewestCreatedAt() = nip65Dao.getNewestCreatedAt()
 
     suspend fun getCreatedAt(pubkey: PubkeyHex) = nip65Dao.getNewestCreatedAt(pubkey = pubkey)
+
+    fun getMyNip65(): List<Nip65Relay> {
+        return myNip65.value.map { it.nip65Relay }
+            .ifEmpty { defaultRelays.map { Nip65Relay(url = it, isRead = true, isWrite = true) } }
+    }
+
+    suspend fun getPopularRelays() = nip65Dao.getPopularRelays(limit = MAX_POPULAR_RELAYS)
 
     private fun List<RelayUrl>.preferConnected(limit: Int): List<RelayUrl> {
         if (this.size <= limit) return this

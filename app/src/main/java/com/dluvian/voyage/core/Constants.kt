@@ -20,6 +20,7 @@ const val MAX_EVENTS_TO_SUB = 1000uL
 
 const val MAX_RELAYS = 5
 const val MAX_RELAYS_PER_PUBKEY = 2
+const val MAX_POPULAR_RELAYS = 50
 
 const val MAX_PUBKEYS = 750
 

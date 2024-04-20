@@ -14,7 +14,7 @@ import com.dluvian.voyage.core.navigator.HomeNavView
 import com.dluvian.voyage.core.navigator.InboxNavView
 import com.dluvian.voyage.core.navigator.NavView
 import com.dluvian.voyage.core.navigator.ProfileNavView
-import com.dluvian.voyage.core.navigator.RelayListNavView
+import com.dluvian.voyage.core.navigator.RelayEditorNavView
 import com.dluvian.voyage.core.navigator.ReplyCreationNavView
 import com.dluvian.voyage.core.navigator.SearchNavView
 import com.dluvian.voyage.core.navigator.SettingsNavView
@@ -43,7 +43,7 @@ sealed class PushNavEvent : NavEvent() {
             ClickSettings -> SettingsNavView
             ClickSearch -> SearchNavView
             ClickEditProfile -> EditProfileNavView
-            ClickRelayList -> RelayListNavView
+            ClickRelayEditor -> RelayEditorNavView
             is OpenThread -> ThreadNavView(rootPost = this.rootPost)
             is OpenProfile -> ProfileNavView(nprofile = this.nprofile)
             is OpenTopic -> TopicNavView(topic = this.topic)
@@ -59,7 +59,7 @@ data object ClickCreate : PushNavEvent()
 data object ClickSettings : PushNavEvent()
 data object ClickSearch : PushNavEvent()
 data object ClickEditProfile : PushNavEvent()
-data object ClickRelayList : PushNavEvent()
+data object ClickRelayEditor : PushNavEvent()
 
 
 sealed class AdvancedPushNavEvent : PushNavEvent()
@@ -144,8 +144,9 @@ data object TopicViewRefresh : TopicViewAction()
 data object TopicViewAppend : TopicViewAction()
 
 
-sealed class RelayListViewAction : UIEvent()
-data class AddRelay(val relayUrl: RelayUrl) : RelayListViewAction()
+sealed class RelayEditorViewAction : UIEvent()
+data class AddRelay(val relayUrl: RelayUrl) : RelayEditorViewAction()
+data object LoadRelays : RelayEditorViewAction()
 
 
 sealed class ProfileViewAction : UIEvent()

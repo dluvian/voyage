@@ -24,7 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.ClickRelayList
+import com.dluvian.voyage.core.ClickRelayEditor
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.LoadSeed
 import com.dluvian.voyage.core.MAX_RETAIN_ROOT
@@ -139,7 +139,7 @@ private fun RelaySection(onUpdate: OnUpdate) {
         ClickableRow(
             header = stringResource(id = R.string.relays),
             text = stringResource(id = R.string.click_to_edit_your_relay_list),
-            onClick = { onUpdate(ClickRelayList) }
+            onClick = { onUpdate(ClickRelayEditor) }
         )
     }
 }

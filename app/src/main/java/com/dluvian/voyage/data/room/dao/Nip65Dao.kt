@@ -2,6 +2,7 @@ package com.dluvian.voyage.data.room.dao
 
 import androidx.room.Dao
 import androidx.room.Query
+import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.room.entity.Nip65Entity
 import kotlinx.coroutines.flow.Flow
@@ -22,4 +23,14 @@ interface Nip65Dao {
 
     @Query("SELECT MAX(createdAt) FROM nip65 WHERE pubkey = :pubkey")
     suspend fun getNewestCreatedAt(pubkey: PubkeyHex): Long?
+
+    @Query(
+        "SELECT url " +
+                "FROM nip65 " +
+                "WHERE pubkey IN (SELECT pubkey FROM friend) " +
+                "GROUP BY url " +
+                "ORDER BY COUNT(url) DESC " +
+                "LIMIT :limit"
+    )
+    suspend fun getPopularRelays(limit: Int): List<RelayUrl>
 }

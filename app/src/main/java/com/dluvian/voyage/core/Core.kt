@@ -39,7 +39,6 @@ class Core(
                 )
             }
 
-
             is HomeViewAction -> vmContainer.homeVM.handle(action = uiEvent)
             is DiscoverViewAction -> vmContainer.discoverVM.handle(action = uiEvent)
             is CreatePostViewAction -> vmContainer.createPostVM.handle(action = uiEvent)
@@ -50,6 +49,7 @@ class Core(
             is CreateReplyViewAction -> vmContainer.createReplyVM.handle(action = uiEvent)
             is SearchViewAction -> vmContainer.searchVM.handle(action = uiEvent)
             is EditProfileViewAction -> vmContainer.editProfileVM.handle(action = uiEvent)
+            is RelayEditorViewAction -> vmContainer.relayEditorVM.handle(action = uiEvent)
 
             is ProcessExternalSignature -> viewModelScope.launch {
                 appContainer.externalSignerHandler.processExternalSignature(
@@ -58,7 +58,6 @@ class Core(
             }
 
             is ClickText -> clickText(event = uiEvent)
-            is AddRelay -> TODO()
         }
     }
 

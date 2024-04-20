@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.views.nonMain.relayList
+package com.dluvian.voyage.ui.views.nonMain.relayEditor
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,13 +17,17 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dluvian.nostr_kt.Nip65Relay
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.R
+import com.dluvian.voyage.core.LoadRelays
 import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.core.viewModel.RelayEditorViewModel
 import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.ui.components.text.SectionHeader
 import com.dluvian.voyage.ui.theme.AddIcon
@@ -31,24 +35,33 @@ import com.dluvian.voyage.ui.theme.DeleteIcon
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
-fun RelayListView(snackbar: SnackbarHostState, onUpdate: OnUpdate) {
+fun RelayEditorView(vm: RelayEditorViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
+    val myRelays by vm.myRelays
+    val popularRelays by vm.popularRelays
+    val addIsEnabled by vm.addIsEnabled
+    val isError by vm.isError
+
+    LaunchedEffect(key1 = Unit) {
+        onUpdate(LoadRelays)
+    }
+
     SimpleGoBackScaffold(
         header = stringResource(id = R.string.relays),
         snackbar = snackbar,
         onUpdate = onUpdate
     ) {
-        RelayListViewContent(
-            myRelays = listOf("nos.lol", "lololol").map { Nip65Relay(url = it, true, true) },
-            popularRelays = listOf("hahaha", "ggez"),
-            addIsEnabled = true,
-            isError = false,
+        RelayEditorViewContent(
+            myRelays = myRelays,
+            popularRelays = popularRelays,
+            addIsEnabled = addIsEnabled,
+            isError = isError,
             onUpdate = onUpdate
         )
     }
 }
 
 @Composable
-private fun RelayListViewContent(
+private fun RelayEditorViewContent(
     myRelays: List<Nip65Relay>,
     popularRelays: List<RelayUrl>,
     addIsEnabled: Boolean,
@@ -160,6 +173,6 @@ private fun RelayRow(
 @Composable
 fun FirstRelayRow(relay: RelayUrl, onUpdate: OnUpdate) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(text = "relay")
+        Text(text = relay)
     }
 }
