@@ -8,6 +8,7 @@ import androidx.compose.material.icons.automirrored.filled.Reply
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Home
@@ -53,3 +54,4 @@ val SaveIcon = Icons.Default.Save
 val ExpandIcon = Icons.Default.ExpandMore
 val CollapseIcon = Icons.Default.ExpandLess
 val HorizMoreIcon = Icons.Default.MoreHoriz
+val DeleteIcon = Icons.Default.Delete

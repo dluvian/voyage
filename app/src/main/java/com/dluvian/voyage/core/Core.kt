@@ -58,6 +58,7 @@ class Core(
             }
 
             is ClickText -> clickText(event = uiEvent)
+            is AddRelay -> TODO()
         }
     }
 

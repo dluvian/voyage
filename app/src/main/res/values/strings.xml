@@ -105,5 +105,7 @@
     <string name="show_options_menu">Show options menu</string>
     <string name="relays">Relays</string>
     <string name="click_to_edit_your_relay_list">Click to edit your relay list</string>
-    <string name="relay_list">Relay list</string>
+    <string name="my_relays">My relays</string>
+    <string name="popular_relays">Popular relays</string>
+    <string name="add_relay">Add relay</string>
 </resources>

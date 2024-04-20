@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.activity.result.ActivityResult
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.text.AnnotatedString
+import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.core.model.IParentUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.navigator.CreatePostNavView
@@ -141,6 +142,10 @@ data object DiscoverViewRefresh : DiscoverViewAction()
 sealed class TopicViewAction : UIEvent()
 data object TopicViewRefresh : TopicViewAction()
 data object TopicViewAppend : TopicViewAction()
+
+
+sealed class RelayListViewAction : UIEvent()
+data class AddRelay(val relayUrl: RelayUrl) : RelayListViewAction()
 
 
 sealed class ProfileViewAction : UIEvent()
