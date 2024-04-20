@@ -44,12 +44,17 @@ import com.dluvian.voyage.core.viewModel.SettingsViewModel
 import com.dluvian.voyage.ui.components.bottomSheet.SeedBottomSheet
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import com.dluvian.voyage.ui.components.row.ClickableRow
+import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.ui.theme.AccountIcon
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
 fun SettingsView(vm: SettingsViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
-    SettingsScaffold(snackbar = snackbar, onUpdate = onUpdate) {
+    SimpleGoBackScaffold(
+        header = stringResource(id = R.string.settings),
+        snackbar = snackbar,
+        onUpdate = onUpdate
+    ) {
         SettingsViewContent(vm = vm, onUpdate = onUpdate)
     }
 }

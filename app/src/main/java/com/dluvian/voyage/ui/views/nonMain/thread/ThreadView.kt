@@ -43,6 +43,7 @@ import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import com.dluvian.voyage.ui.components.row.PostRow
 import com.dluvian.voyage.ui.components.row.ReplyRow
+import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
 
@@ -52,7 +53,11 @@ fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpd
     val root by vm.root.collectAsState()
     val leveledReplies by vm.leveledReplies.value.collectAsState()
 
-    ThreadScaffold(snackbar = snackbar, onUpdate = onUpdate) {
+    SimpleGoBackScaffold(
+        header = stringResource(id = R.string.thread),
+        snackbar = snackbar,
+        onUpdate = onUpdate
+    ) {
         if (root == null) FullLinearProgressIndicator()
         root?.let {
             ThreadViewContent(
