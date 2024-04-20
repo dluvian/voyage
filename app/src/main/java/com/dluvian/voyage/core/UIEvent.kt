@@ -13,6 +13,7 @@ import com.dluvian.voyage.core.navigator.HomeNavView
 import com.dluvian.voyage.core.navigator.InboxNavView
 import com.dluvian.voyage.core.navigator.NavView
 import com.dluvian.voyage.core.navigator.ProfileNavView
+import com.dluvian.voyage.core.navigator.RelayListNavView
 import com.dluvian.voyage.core.navigator.ReplyCreationNavView
 import com.dluvian.voyage.core.navigator.SearchNavView
 import com.dluvian.voyage.core.navigator.SettingsNavView
@@ -34,13 +35,14 @@ data object GoBack : PopNavEvent()
 sealed class PushNavEvent : NavEvent() {
     fun getNavView(): NavView {
         return when (this) {
-            is ClickHome -> HomeNavView
-            is ClickDiscover -> DiscoverNavView
-            is ClickCreate -> CreatePostNavView
-            is ClickInbox -> InboxNavView
-            is ClickSettings -> SettingsNavView
-            is ClickSearch -> SearchNavView
-            is ClickEditProfile -> EditProfileNavView
+            ClickHome -> HomeNavView
+            ClickDiscover -> DiscoverNavView
+            ClickCreate -> CreatePostNavView
+            ClickInbox -> InboxNavView
+            ClickSettings -> SettingsNavView
+            ClickSearch -> SearchNavView
+            ClickEditProfile -> EditProfileNavView
+            ClickRelayList -> RelayListNavView
             is OpenThread -> ThreadNavView(rootPost = this.rootPost)
             is OpenProfile -> ProfileNavView(nprofile = this.nprofile)
             is OpenTopic -> TopicNavView(topic = this.topic)
@@ -56,6 +58,7 @@ data object ClickCreate : PushNavEvent()
 data object ClickSettings : PushNavEvent()
 data object ClickSearch : PushNavEvent()
 data object ClickEditProfile : PushNavEvent()
+data object ClickRelayList : PushNavEvent()
 
 
 sealed class AdvancedPushNavEvent : PushNavEvent()

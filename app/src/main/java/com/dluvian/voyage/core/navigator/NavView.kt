@@ -29,13 +29,12 @@ data object InboxNavView : MainNavView()
 
 
 sealed class NonMainNavView : NavView()
-
-
 sealed class SimpleNonMainNavView : NonMainNavView()
 data object CreatePostNavView : SimpleNonMainNavView()
 data object SettingsNavView : SimpleNonMainNavView()
 data object SearchNavView : SimpleNonMainNavView()
 data object EditProfileNavView : SimpleNonMainNavView()
+data object RelayListNavView : SimpleNonMainNavView()
 
 
 sealed class AdvancedNonMainNavView : NonMainNavView()

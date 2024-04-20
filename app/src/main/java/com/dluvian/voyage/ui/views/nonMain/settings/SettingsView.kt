@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.voyage.R
+import com.dluvian.voyage.core.ClickRelayList
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.LoadSeed
 import com.dluvian.voyage.core.MAX_RETAIN_ROOT
@@ -72,6 +73,7 @@ private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: OnUpdate) {
                 onUpdate = onUpdate
             )
         }
+        item { RelaySection(onUpdate = onUpdate) }
         item {
             DatabaseSection(
                 rootPostThreshold = rootPostThreshold,
@@ -123,6 +125,17 @@ private fun AccountSection(
                 onLoadSeed = { onUpdate(LoadSeed) },
                 onDismiss = { showSeed.value = false })
         }
+    }
+}
+
+@Composable
+private fun RelaySection(onUpdate: OnUpdate) {
+    SettingsSection(header = stringResource(id = R.string.relays)) {
+        ClickableRow(
+            header = stringResource(id = R.string.relay_list),
+            text = stringResource(id = R.string.click_to_edit_your_relay_list),
+            onClick = { onUpdate(ClickRelayList) }
+        )
     }
 }
 
@@ -194,12 +207,11 @@ private fun AccountRowButton(
 private fun SettingsSection(header: String, content: ComposableContent) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
-            modifier = Modifier.padding(
-                horizontal = spacing.bigScreenEdge,
-                vertical = spacing.large
-            ),
+            modifier = Modifier
+                .padding(horizontal = spacing.bigScreenEdge)
+                .padding(top = spacing.xl, bottom = spacing.small),
             text = header,
-            style = MaterialTheme.typography.labelLarge,
+            style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.primary
         )
         content()
