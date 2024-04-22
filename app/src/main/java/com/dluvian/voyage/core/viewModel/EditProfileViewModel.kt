@@ -24,6 +24,7 @@ import com.dluvian.voyage.data.room.dao.tx.ProfileUpsertDao
 import com.dluvian.voyage.data.room.entity.FullProfileEntity
 import com.dluvian.voyage.data.room.entity.ProfileEntity
 import kotlinx.coroutines.delay
+import rust.nostr.protocol.Event
 
 private const val TAG = "EditProfileViewModel"
 
@@ -57,39 +58,48 @@ class EditProfileViewModel(
 
         isSaving.value = true
         viewModelScope.launchIO {
-            delay(DELAY_1SEC)
-            action.onGoBack()
-            nostrService.publishProfile(
+            val result = nostrService.publishProfile(
                 metadata = action.metadata,
                 relayUrls = relayProvider.getPublishRelays(),
                 signerLauncher = action.signerLauncher
             )
-                .onSuccess { event ->
-                    snackbar.showToast(
-                        viewModelScope,
-                        action.context.getString(R.string.profile_updated)
-                    )
-                    val entity = FullProfileEntity.from(event = event)
-                    if (entity != null) {
-                        event.getMetadata()?.let { metadata ->
-                            metadataInMemory.submit(
-                                pubkey = entity.pubkey,
-                                metadata = metadata.toRelevantMetadata(event.createdAt().secs())
-                            )
-                        }
-                        profileUpsertDao.upsertProfiles(
-                            profiles = listOf(ProfileEntity.from(fullProfileEntity = entity))
-                        )
-                        fullProfileUpsertDao.upsertProfile(profile = entity)
-                        fullProfile.value = entity
-                    } else Log.w(TAG, "Failed to create FullProfileEntity from event")
-
-                }.onFailure {
-                    snackbar.showToast(
-                        viewModelScope,
-                        action.context.getString(R.string.failed_to_sign_profile)
-                    )
-                }
+            if (result.isSuccess) {
+                saveInDb(event = result.getOrThrow())
+                snackbar.showToast(
+                    viewModelScope,
+                    action.context.getString(R.string.profile_updated)
+                )
+            } else {
+                Log.w(TAG, "Failed to sign profile", result.exceptionOrNull())
+                snackbar.showToast(
+                    viewModelScope,
+                    action.context.getString(R.string.failed_to_sign_profile)
+                )
+            }
+            delay(DELAY_1SEC)
+            action.onGoBack()
         }.invokeOnCompletion { isSaving.value = false }
+    }
+
+    private suspend fun saveInDb(event: Event) {
+        val entity = FullProfileEntity.from(event = event)
+        if (entity == null) {
+            Log.w(TAG, "Failed to create FullProfileEntity from event")
+            return
+        }
+
+        viewModelScope.launchIO {
+            event.getMetadata()?.let { metadata ->
+                metadataInMemory.submit(
+                    pubkey = entity.pubkey,
+                    metadata = metadata.toRelevantMetadata(event.createdAt().secs())
+                )
+            }
+            profileUpsertDao.upsertProfiles(
+                profiles = listOf(ProfileEntity.from(fullProfileEntity = entity))
+            )
+            fullProfileUpsertDao.upsertProfile(profile = entity)
+            fullProfile.value = entity
+        }
     }
 }
