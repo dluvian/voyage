@@ -1,6 +1,7 @@
 package com.dluvian.voyage.data.event
 
 import android.util.Log
+import com.dluvian.nostr_kt.Nip65Relay
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.createHashtagTag
 import com.dluvian.nostr_kt.createMentionTag
@@ -18,6 +19,7 @@ import rust.nostr.protocol.Interests
 import rust.nostr.protocol.Kind
 import rust.nostr.protocol.Metadata
 import rust.nostr.protocol.PublicKey
+import rust.nostr.protocol.RelayMetadata
 import rust.nostr.protocol.Tag
 
 private const val TAG = "EventMaker"
@@ -106,6 +108,24 @@ class EventMaker(
         val contacts = pubkeys
             .map { Contact(pk = PublicKey.fromHex(it), relayUrl = null, alias = null) }
         val unsignedEvent = EventBuilder.contactList(list = contacts)
+            .toUnsignedEvent(accountManager.getPublicKey())
+
+        return accountManager.sign(signerLauncher = signerLauncher, unsignedEvent = unsignedEvent)
+    }
+
+    suspend fun buildNip65(
+        relays: List<Nip65Relay>,
+        signerLauncher: SignerLauncher,
+    ): Result<Event> {
+        val metadata = mutableMapOf<RelayUrl, RelayMetadata?>()
+
+        relays.forEach {
+            if (it.isRead && it.isWrite) metadata[it.url] = null
+            else if (it.isRead) metadata[it.url] = RelayMetadata.READ
+            else metadata[it.url] = RelayMetadata.WRITE
+        }
+
+        val unsignedEvent = EventBuilder.relayList(list = metadata)
             .toUnsignedEvent(accountManager.getPublicKey())
 
         return accountManager.sign(signerLauncher = signerLauncher, unsignedEvent = unsignedEvent)

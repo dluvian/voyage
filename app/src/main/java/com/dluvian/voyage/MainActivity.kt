@@ -156,6 +156,8 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             RelayEditorViewModel(
                 relayProvider = appContainer.relayProvider,
                 snackbar = appContainer.snackbar,
+                nostrService = appContainer.nostrService,
+                nip65UpsertDao = appContainer.roomDb.nip65UpsertDao()
             )
         }
     )

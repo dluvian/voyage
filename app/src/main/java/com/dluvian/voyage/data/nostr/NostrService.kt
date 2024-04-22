@@ -2,6 +2,7 @@ package com.dluvian.voyage.data.nostr
 
 import android.util.Log
 import com.dluvian.nostr_kt.INostrListener
+import com.dluvian.nostr_kt.Nip65Relay
 import com.dluvian.nostr_kt.NostrClient
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
@@ -162,6 +163,15 @@ class NostrService(
         signerLauncher: SignerLauncher,
     ): Result<Event> {
         return eventMaker.buildContactList(pubkeys = pubkeys, signerLauncher = signerLauncher)
+            .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
+    }
+
+    suspend fun publishNip65(
+        relays: List<Nip65Relay>,
+        relayUrls: Collection<RelayUrl>,
+        signerLauncher: SignerLauncher,
+    ): Result<Event> {
+        return eventMaker.buildNip65(relays = relays, signerLauncher = signerLauncher)
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 

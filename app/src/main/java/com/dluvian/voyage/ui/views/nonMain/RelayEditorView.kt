@@ -37,12 +37,14 @@ import com.dluvian.nostr_kt.Nip65Relay
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.AddRelay
+import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.LoadRelays
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.RemoveRelay
 import com.dluvian.voyage.core.SaveRelays
 import com.dluvian.voyage.core.ToggleReadRelay
 import com.dluvian.voyage.core.ToggleWriteRelay
+import com.dluvian.voyage.core.getSignerLauncher
 import com.dluvian.voyage.core.viewModel.RelayEditorViewModel
 import com.dluvian.voyage.ui.components.NamedCheckbox
 import com.dluvian.voyage.ui.components.scaffold.SaveableScaffold
@@ -60,6 +62,8 @@ fun RelayEditorView(vm: RelayEditorViewModel, snackbar: SnackbarHostState, onUpd
     val addIsEnabled by vm.addIsEnabled
     val isSaving by vm.isSaving
     val scope = rememberCoroutineScope()
+    val signerLauncher = getSignerLauncher(onUpdate = onUpdate)
+    val context = LocalContext.current
 
     LaunchedEffect(key1 = Unit) {
         onUpdate(LoadRelays)
@@ -70,7 +74,15 @@ fun RelayEditorView(vm: RelayEditorViewModel, snackbar: SnackbarHostState, onUpd
         isSaving = isSaving,
         snackbar = snackbar,
         title = stringResource(id = R.string.relays),
-        onSave = { onUpdate(SaveRelays) },
+        onSave = {
+            onUpdate(
+                SaveRelays(
+                    signerLauncher = signerLauncher,
+                    context = context,
+                    onGoBack = { onUpdate(GoBack) },
+                )
+            )
+        },
         onUpdate = onUpdate
     ) {
         RelayEditorViewContent(

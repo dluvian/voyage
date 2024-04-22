@@ -113,4 +113,8 @@
     <string name="relay_is_invalid">%s is invalid</string>
     <string name="read">Read</string>
     <string name="write">Write</string>
+    <string name="relay_list_updated">Relay list updated</string>
+    <string name="failed_to_sign_relay_list">Failed to sign relay list</string>
+    <string name="you_dont_have_any_read_relays_configured">You don\'t have any read-relays configured</string>
+    <string name="you_dont_have_any_write_relays_configured">You don\'t have any write-relays configured</string>
 </resources>

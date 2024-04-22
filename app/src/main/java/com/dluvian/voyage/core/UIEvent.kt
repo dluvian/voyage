@@ -155,8 +155,12 @@ data class AddRelay(
 data class RemoveRelay(val relayUrl: RelayUrl) : RelayEditorViewAction()
 data class ToggleReadRelay(val relayUrl: RelayUrl) : RelayEditorViewAction()
 data class ToggleWriteRelay(val relayUrl: RelayUrl) : RelayEditorViewAction()
+data class SaveRelays(
+    val signerLauncher: SignerLauncher,
+    val context: Context,
+    val onGoBack: Fn
+) : RelayEditorViewAction()
 data object LoadRelays : RelayEditorViewAction()
-data object SaveRelays : RelayEditorViewAction()
 
 
 sealed class ProfileViewAction : UIEvent()
