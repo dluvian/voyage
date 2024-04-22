@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.views.nonMain.createReply
+package com.dluvian.voyage.ui.views.nonMain
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

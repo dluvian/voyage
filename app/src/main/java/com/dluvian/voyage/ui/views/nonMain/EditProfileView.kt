@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.views.nonMain.editProfile
+package com.dluvian.voyage.ui.views.nonMain
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.fillMaxSize

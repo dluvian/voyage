@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.views.nonMain.thread
+package com.dluvian.voyage.ui.views.nonMain
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column

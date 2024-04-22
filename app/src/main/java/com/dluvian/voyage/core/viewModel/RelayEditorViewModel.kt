@@ -18,7 +18,7 @@ class RelayEditorViewModel(
     val myRelays = mutableStateOf(emptyList<Nip65Relay>())
     val popularRelays = mutableStateOf(emptyList<RelayUrl>())
     val addIsEnabled = mutableStateOf(myRelays.value.size < MAX_RELAYS)
-    val isError = mutableStateOf(false)
+    val isSaving = mutableStateOf(false)
 
     fun handle(action: RelayEditorViewAction) {
         when (action) {

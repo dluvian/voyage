@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.views.nonMain.relayEditor
+package com.dluvian.voyage.ui.views.nonMain
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -44,7 +44,7 @@ fun RelayEditorView(vm: RelayEditorViewModel, snackbar: SnackbarHostState, onUpd
     val myRelays by vm.myRelays
     val popularRelays by vm.popularRelays
     val addIsEnabled by vm.addIsEnabled
-    val isError by vm.isError
+    val isSaving by vm.isSaving
 
     LaunchedEffect(key1 = Unit) {
         onUpdate(LoadRelays)
@@ -52,7 +52,7 @@ fun RelayEditorView(vm: RelayEditorViewModel, snackbar: SnackbarHostState, onUpd
 
     SaveableScaffold(
         showSaveButton = true,
-        isSaving = false,
+        isSaving = isSaving,
         snackbar = snackbar,
         title = stringResource(id = R.string.relays),
         onSave = {
@@ -63,7 +63,6 @@ fun RelayEditorView(vm: RelayEditorViewModel, snackbar: SnackbarHostState, onUpd
             myRelays = myRelays,
             popularRelays = popularRelays,
             addIsEnabled = addIsEnabled,
-            isError = isError,
             onUpdate = onUpdate
         )
     }
@@ -74,7 +73,6 @@ private fun RelayEditorViewContent(
     myRelays: List<Nip65Relay>,
     popularRelays: List<RelayUrl>,
     addIsEnabled: Boolean,
-    isError: Boolean,
     onUpdate: OnUpdate,
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -93,7 +91,7 @@ private fun RelayEditorViewContent(
 
 
         if (addIsEnabled) item {
-            AddRelayRow(isError = isError, onUpdate = onUpdate)
+            AddRelayRow(onUpdate = onUpdate)
             Spacer(modifier = Modifier.height(spacing.xxl))
         }
 
@@ -115,10 +113,7 @@ private fun RelayEditorViewContent(
 }
 
 @Composable
-private fun AddRelayRow(
-    isError: Boolean,
-    onUpdate: OnUpdate,
-) {
+private fun AddRelayRow(onUpdate: OnUpdate) {
     val input = remember { mutableStateOf("") }
     val focus = LocalFocusManager.current
     TextField(
@@ -192,7 +187,7 @@ private fun RelayRow(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column(Modifier.weight(weight = 1f, fill = false)) {
-            FirstRelayRow(relay = relayUrl, onUpdate = onUpdate)
+            MainRelayRow(relay = relayUrl, onUpdate = onUpdate)
             secondRow()
         }
         trailingContent()
@@ -200,7 +195,7 @@ private fun RelayRow(
 }
 
 @Composable
-fun FirstRelayRow(relay: RelayUrl, onUpdate: OnUpdate) {
+fun MainRelayRow(relay: RelayUrl, onUpdate: OnUpdate) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(text = relay)
     }

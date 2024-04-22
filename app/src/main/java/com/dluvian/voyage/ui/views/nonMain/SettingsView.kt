@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.views.nonMain.settings
+package com.dluvian.voyage.ui.views.nonMain
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

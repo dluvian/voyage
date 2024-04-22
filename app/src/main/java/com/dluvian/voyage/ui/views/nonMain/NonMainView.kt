@@ -12,14 +12,8 @@ import com.dluvian.voyage.core.navigator.SearchNavView
 import com.dluvian.voyage.core.navigator.SettingsNavView
 import com.dluvian.voyage.core.navigator.ThreadNavView
 import com.dluvian.voyage.core.navigator.TopicNavView
-import com.dluvian.voyage.ui.views.nonMain.createPost.CreatePostView
-import com.dluvian.voyage.ui.views.nonMain.createReply.CreateReplyView
-import com.dluvian.voyage.ui.views.nonMain.editProfile.EditProfileView
 import com.dluvian.voyage.ui.views.nonMain.profile.ProfileView
-import com.dluvian.voyage.ui.views.nonMain.relayEditor.RelayEditorView
 import com.dluvian.voyage.ui.views.nonMain.search.SearchView
-import com.dluvian.voyage.ui.views.nonMain.settings.SettingsView
-import com.dluvian.voyage.ui.views.nonMain.thread.ThreadView
 import com.dluvian.voyage.ui.views.nonMain.topic.TopicView
 
 @Composable
