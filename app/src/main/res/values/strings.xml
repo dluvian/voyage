@@ -111,4 +111,6 @@
     <string name="remove_relay">Remove relay</string>
     <string name="relay_is_already_in_your_list">%s is already in your list</string>
     <string name="relay_is_invalid">%s is invalid</string>
+    <string name="read">Read</string>
+    <string name="write">Write</string>
 </resources>

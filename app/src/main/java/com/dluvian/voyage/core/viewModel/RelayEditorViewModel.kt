@@ -15,6 +15,8 @@ import com.dluvian.voyage.core.MAX_RELAYS
 import com.dluvian.voyage.core.RelayEditorViewAction
 import com.dluvian.voyage.core.RemoveRelay
 import com.dluvian.voyage.core.SaveRelays
+import com.dluvian.voyage.core.ToggleReadRelay
+import com.dluvian.voyage.core.ToggleWriteRelay
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.provider.RelayProvider
@@ -25,7 +27,7 @@ class RelayEditorViewModel(
 ) : ViewModel() {
     val myRelays = mutableStateOf(emptyList<Nip65Relay>())
     val popularRelays = mutableStateOf(emptyList<RelayUrl>())
-    val addIsEnabled = mutableStateOf(myRelays.value.size < MAX_RELAYS)
+    val addIsEnabled = mutableStateOf(getAddIsEnabled(myRelays.value))
     val isSaving = mutableStateOf(false)
 
     fun handle(action: RelayEditorViewAction) {
@@ -33,18 +35,35 @@ class RelayEditorViewModel(
             LoadRelays -> loadRelays()
             SaveRelays -> {}
             is AddRelay -> addRelay(action = action)
-
-            is RemoveRelay -> {
-                myRelays.value = myRelays.value.filter { it.url != action.relayUrl }
-            }
+            is RemoveRelay -> removeRelay(relayUrl = action.relayUrl)
+            is ToggleReadRelay -> toggleRead(relayUrl = action.relayUrl)
+            is ToggleWriteRelay -> toggleWrite(relayUrl = action.relayUrl)
         }
     }
 
     private fun loadRelays() {
         myRelays.value = relayProvider.getMyNip65()
+        addIsEnabled.value = getAddIsEnabled(myRelays.value)
         viewModelScope.launchIO {
             popularRelays.value = relayProvider.getPopularRelays()
         }
+    }
+
+    private fun removeRelay(relayUrl: RelayUrl) {
+        if (myRelays.value.size <= 1) return
+
+        myRelays.value = myRelays.value.filter { it.url != relayUrl }
+        addIsEnabled.value = getAddIsEnabled(myRelays.value)
+    }
+
+    private fun toggleRead(relayUrl: RelayUrl) {
+        myRelays.value = myRelays.value
+            .map { if (it.url == relayUrl) it.copy(isRead = !it.isRead) else it }
+    }
+
+    private fun toggleWrite(relayUrl: RelayUrl) {
+        myRelays.value = myRelays.value
+            .map { if (it.url == relayUrl) it.copy(isWrite = !it.isWrite) else it }
     }
 
     private fun addRelay(action: AddRelay) {
@@ -64,10 +83,13 @@ class RelayEditorViewModel(
         }
 
         myRelays.value += Nip65Relay(url = checked)
+        addIsEnabled.value = getAddIsEnabled(myRelays.value)
     }
 
     private fun String.isWebsocketUrl(): Boolean {
         val regex = Regex("^wss://[a-zA-Z0-9]+(\\.[a-zA-Z0-9]+)*(:\\d+)?(/\\S*)?\$")
         return regex.matches(this)
     }
+
+    private fun getAddIsEnabled(myRelays: Collection<Nip65Relay>) = myRelays.size < MAX_RELAYS
 }

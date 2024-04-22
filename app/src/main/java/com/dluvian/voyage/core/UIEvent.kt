@@ -146,9 +146,15 @@ data object TopicViewAppend : TopicViewAction()
 
 
 sealed class RelayEditorViewAction : UIEvent()
-data class AddRelay(val relayUrl: RelayUrl, val scope: CoroutineScope, val context: Context) :
-    RelayEditorViewAction()
+data class AddRelay(
+    val relayUrl: RelayUrl,
+    val scope: CoroutineScope,
+    val context: Context
+) : RelayEditorViewAction()
+
 data class RemoveRelay(val relayUrl: RelayUrl) : RelayEditorViewAction()
+data class ToggleReadRelay(val relayUrl: RelayUrl) : RelayEditorViewAction()
+data class ToggleWriteRelay(val relayUrl: RelayUrl) : RelayEditorViewAction()
 data object LoadRelays : RelayEditorViewAction()
 data object SaveRelays : RelayEditorViewAction()
 
@@ -195,10 +201,12 @@ data class RequestExternalAccount(
     val reqAccountLauncher: SignerLauncher,
     val context: Context
 ) : SettingsViewAction()
+
 data class ProcessExternalAccount(
     val activityResult: ActivityResult,
     val context: Context
 ) : SettingsViewAction()
+
 data class UpdateRootPostThreshold(val threshold: Float) : SettingsViewAction()
 data object LoadSeed : SettingsViewAction()
 

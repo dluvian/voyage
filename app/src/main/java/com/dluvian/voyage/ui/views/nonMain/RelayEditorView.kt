@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardActions
@@ -40,7 +41,10 @@ import com.dluvian.voyage.core.LoadRelays
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.RemoveRelay
 import com.dluvian.voyage.core.SaveRelays
+import com.dluvian.voyage.core.ToggleReadRelay
+import com.dluvian.voyage.core.ToggleWriteRelay
 import com.dluvian.voyage.core.viewModel.RelayEditorViewModel
+import com.dluvian.voyage.ui.components.NamedCheckbox
 import com.dluvian.voyage.ui.components.scaffold.SaveableScaffold
 import com.dluvian.voyage.ui.components.text.SectionHeader
 import com.dluvian.voyage.ui.theme.AddIcon
@@ -165,7 +169,7 @@ private fun PopularRelayRow(
     onUpdate: OnUpdate
 ) {
     val context = LocalContext.current
-    RelayRow(relayUrl = relayUrl, onUpdate = onUpdate) {
+    RelayRow(relayUrl = relayUrl) {
         if (isAddable) IconButton(
             modifier = Modifier.size(sizing.iconButton),
             onClick = { onUpdate(AddRelay(relayUrl = relayUrl, scope = scope, context = context)) }
@@ -186,13 +190,24 @@ private fun MyRelayRow(
 ) {
     RelayRow(
         relayUrl = relay.url,
-        onUpdate = onUpdate,
         secondRow = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text("lol")
+                NamedCheckbox(
+                    isChecked = relay.isRead,
+                    name = stringResource(id = R.string.read),
+                    isEnabled = relay.isWrite || !relay.isRead,
+                    onClick = { onUpdate(ToggleReadRelay(relayUrl = relay.url)) }
+                )
+                Spacer(modifier = Modifier.width(spacing.xxl))
+                NamedCheckbox(
+                    isChecked = relay.isWrite,
+                    name = stringResource(id = R.string.write),
+                    isEnabled = relay.isRead || !relay.isWrite,
+                    onClick = { onUpdate(ToggleWriteRelay(relayUrl = relay.url)) }
+                )
             }
         },
         trailingContent = {
@@ -211,7 +226,6 @@ private fun MyRelayRow(
 @Composable
 private fun RelayRow(
     relayUrl: RelayUrl,
-    onUpdate: OnUpdate,
     secondRow: @Composable () -> Unit = {},
     trailingContent: @Composable () -> Unit = {},
 ) {
