@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Fn
+import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import com.dluvian.voyage.ui.theme.spacing
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -30,6 +31,7 @@ fun SeedBottomSheet(seed: List<String>, onLoadSeed: Fn, onDismiss: Fn) {
     }
     ModalBottomSheet(onDismissRequest = onDismiss) {
         BottomSheetColumn(header = stringResource(id = R.string.recovery_phrase)) {
+            if (seed.isEmpty()) FullLinearProgressIndicator()
             LazyVerticalGrid(
                 modifier = Modifier.fillMaxSize(),
                 columns = GridCells.Fixed(count = 3),
