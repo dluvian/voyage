@@ -28,6 +28,7 @@ import com.dluvian.voyage.core.getSignerLauncher
 import com.dluvian.voyage.core.viewModel.EditProfileViewModel
 import com.dluvian.voyage.ui.components.TextInput
 import com.dluvian.voyage.ui.components.button.ExpandToggleTextButton
+import com.dluvian.voyage.ui.components.scaffold.SaveableScaffold
 import com.dluvian.voyage.ui.theme.spacing
 import rust.nostr.protocol.Metadata
 import rust.nostr.protocol.MetadataRecord
@@ -72,10 +73,11 @@ fun EditProfileView(
     val signerLauncher = getSignerLauncher(onUpdate = onUpdate)
     val context = LocalContext.current
 
-    EditProfileScaffold(
+    SaveableScaffold(
         showSaveButton = showSaveButton.value,
         isSaving = isSaving,
         snackbar = snackbar,
+        title = stringResource(id = R.string.edit),
         onSave = {
             val metadataRecord = MetadataRecord(
                 name = name.value,
