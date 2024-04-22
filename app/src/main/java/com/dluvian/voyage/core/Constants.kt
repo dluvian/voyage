@@ -24,7 +24,7 @@ const val MAX_POPULAR_RELAYS = 50
 
 const val MAX_PUBKEYS = 750
 
-const val RND_RESUB_COUNT = 12
+const val MAX_RND_RESUB_PERCENTAGE = 0.12f
 
 const val FEED_PAGE_SIZE = 35
 const val FEED_OFFSET = 7

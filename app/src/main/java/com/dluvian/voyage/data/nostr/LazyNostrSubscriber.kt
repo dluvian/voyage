@@ -3,8 +3,8 @@ package com.dluvian.voyage.data.nostr
 import android.util.Log
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.MAX_PUBKEYS
+import com.dluvian.voyage.core.MAX_RND_RESUB_PERCENTAGE
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.RND_RESUB_COUNT
 import com.dluvian.voyage.core.takeRandom
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.provider.FriendProvider
@@ -116,7 +116,7 @@ class LazyNostrSubscriber(
 
     private suspend fun semiLazySubFriendsNip65() {
         val friendsWithMissingNip65 = friendProvider.getFriendsWithMissingNip65()
-        val randomResub = friendProvider.getFriendPubkeys(max = RND_RESUB_COUNT)
+        val randomResub = friendProvider.getFriendPubkeys(maxPercentage = MAX_RND_RESUB_PERCENTAGE)
         val nip65Resub = (friendsWithMissingNip65 + randomResub).distinct()
         if (nip65Resub.isEmpty()) return
 
@@ -152,7 +152,7 @@ class LazyNostrSubscriber(
 
     private suspend fun semiLazySubWebOfTrustPubkeys() {
         val friendsWithMissingContactList = friendProvider.getFriendsWithMissingContactList()
-        val randomResub = friendProvider.getFriendPubkeys(max = RND_RESUB_COUNT)
+        val randomResub = friendProvider.getFriendPubkeys(maxPercentage = MAX_RND_RESUB_PERCENTAGE)
         val webOfTrustResub = (friendsWithMissingContactList + randomResub).distinct()
         if (webOfTrustResub.isEmpty()) return
 
