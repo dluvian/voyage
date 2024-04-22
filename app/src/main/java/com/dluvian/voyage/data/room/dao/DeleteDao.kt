@@ -25,8 +25,7 @@ interface DeleteDao {
 
     @Query(
         "DELETE FROM post " +
-                "WHERE parentId IS NULL " +
-                "AND createdAt < :oldestCreatedAtInUse " +
+                "WHERE createdAt < :oldestCreatedAtInUse " +
                 "AND pubkey NOT IN (SELECT pubkey FROM account) " +
                 "AND id NOT IN (SELECT id FROM post WHERE parentId IS NULL ORDER BY createdAt DESC LIMIT :threshold)"
     )
