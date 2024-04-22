@@ -1,9 +1,7 @@
 package com.dluvian.voyage.data.nostr
 
 import com.dluvian.nostr_kt.RelayUrl
-import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.TWO_WEEKS_IN_SECS
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.syncedPutOrAdd
 import com.dluvian.voyage.data.provider.FriendProvider
@@ -25,13 +23,10 @@ class NostrFeedSubscriber(
 ) {
     suspend fun getHomeFeedSubscriptions(
         until: Timestamp,
+        since: Timestamp,
         limit: ULong
     ): Map<RelayUrl, List<Filter>> {
         if (limit <= 0u) return emptyMap()
-        val since = maxOf(1, until.secs() - TWO_WEEKS_IN_SECS)
-
-        // Scope home feed to last two weeks to prevent fetching notes from inactive accounts
-        val sinceTimestamp = Timestamp.fromSecs(secs = since.toULong())
 
         val result = mutableMapOf<RelayUrl, MutableList<Filter>>()
 
@@ -45,7 +40,7 @@ class NostrFeedSubscriber(
                         .authors(authors = publicKeys)
                         .until(timestamp = until)
                         .limit(limit = limit)
-                        .since(timestamp = sinceTimestamp)
+                        .since(timestamp = since)
                     val friendsNoteFilters = mutableListOf(friendsNoteFilter)
                     result.syncedPutOrAdd(relayUrl, friendsNoteFilters)
                 }
@@ -57,7 +52,7 @@ class NostrFeedSubscriber(
                 .hashtags(hashtags = topics)
                 .until(timestamp = until)
                 .limit(limit = limit)
-                .since(timestamp = sinceTimestamp)
+                .since(timestamp = since)
             val topicedNoteFilters = mutableListOf(topicedNoteFilter)
 
             relayProvider.getReadRelays().forEach { relay ->
@@ -73,6 +68,7 @@ class NostrFeedSubscriber(
     fun getTopicFeedSubscription(
         topic: Topic,
         until: Timestamp,
+        since: Timestamp,
         limit: ULong
     ): Map<RelayUrl, List<Filter>> {
         if (limit <= 0u || topic.isBlank()) return emptyMap()
@@ -82,6 +78,7 @@ class NostrFeedSubscriber(
         val topicedNoteFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.TextNote))
             .hashtag(hashtag = topic)
             .until(timestamp = until)
+            .since(timestamp = since)
             .limit(limit = limit)
         val topicedNoteFilters = mutableListOf(topicedNoteFilter)
 
@@ -95,6 +92,7 @@ class NostrFeedSubscriber(
     suspend fun getProfileFeedSubscription(
         pubkey: PubkeyHex,
         until: Timestamp,
+        since: Timestamp,
         limit: ULong
     ): Map<RelayUrl, List<Filter>> {
         if (limit <= 0u || pubkey.isBlank()) return emptyMap()
@@ -104,6 +102,7 @@ class NostrFeedSubscriber(
         val pubkeyNoteFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.TextNote))
             .author(PublicKey.fromHex(hex = pubkey))
             .until(timestamp = until)
+            .since(timestamp = since)
             .limit(limit = limit)
         val pubkeyNoteFilters = mutableListOf(pubkeyNoteFilter)
 

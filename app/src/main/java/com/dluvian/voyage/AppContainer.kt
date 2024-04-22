@@ -120,7 +120,8 @@ class AppContainer(context: Context) {
         relayProvider = relayProvider,
         webOfTrustProvider = webOfTrustProvider,
         pubkeyProvider = accountManager,
-        subBatcher = subBatcher
+        subBatcher = subBatcher,
+        rootPostDao = roomDb.rootPostDao()
     )
 
     val accountSwitcher = AccountSwitcher(

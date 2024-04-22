@@ -15,6 +15,7 @@ import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
+import com.dluvian.voyage.data.room.dao.RootPostDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,6 +36,7 @@ class NostrSubscriber(
     private val webOfTrustProvider: WebOfTrustProvider,
     private val pubkeyProvider: IPubkeyProvider,
     private val subBatcher: SubBatcher,
+    private val rootPostDao: RootPostDao,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -52,12 +54,14 @@ class NostrSubscriber(
         val subscriptions = when (setting) {
             is HomeFeedSetting -> feedSubscriber.getHomeFeedSubscriptions(
                 until = untilTimestamp,
+                since = getCachedSinceTimestamp(setting = setting, until = until, pageSize = limit),
                 limit = adjustedLimit
             )
 
             is TopicFeedSetting -> feedSubscriber.getTopicFeedSubscription(
                 topic = setting.topic,
                 until = untilTimestamp,
+                since = getCachedSinceTimestamp(setting = setting, until = until, pageSize = limit),
                 // Smaller than adjustedLimit, bc posts with topics tend to be root
                 limit = (2.5 * limit).toULong()
             )
@@ -65,6 +69,7 @@ class NostrSubscriber(
             is ProfileFeedSetting -> feedSubscriber.getProfileFeedSubscription(
                 pubkey = setting.pubkey,
                 until = untilTimestamp,
+                since = getCachedSinceTimestamp(setting = setting, until = until, pageSize = limit),
                 limit = adjustedLimit
             )
         }
@@ -150,5 +155,37 @@ class NostrSubscriber(
         pubkeys.addAll(webOfTrustProvider.getWebOfTrustPubkeys())
 
         return pubkeys.toList()
+    }
+
+    private suspend fun getCachedSinceTimestamp(
+        setting: FeedSetting,
+        until: Long,
+        pageSize: Int
+    ): Timestamp {
+        val pageSizeAndHalfOfNext = pageSize.times(1.5).toInt()
+
+        val timestamps = when (setting) {
+            HomeFeedSetting -> rootPostDao.getHomeRootPostsCreatedAt(
+                until = until,
+                size = pageSizeAndHalfOfNext
+            )
+
+            is ProfileFeedSetting -> rootPostDao.getProfileRootPostsCreatedAt(
+                pubkey = setting.pubkey,
+                until = until,
+                size = pageSizeAndHalfOfNext,
+            )
+
+            is TopicFeedSetting -> rootPostDao.getTopicRootPostsCreatedAt(
+                topic = setting.topic,
+                until = until,
+                size = pageSizeAndHalfOfNext
+            )
+        }
+
+        val bestTimestamp = if (timestamps.size < pageSizeAndHalfOfNext) 1L
+        else timestamps.min() + 1
+
+        return Timestamp.fromSecs(secs = bestTimestamp.toULong())
     }
 }
