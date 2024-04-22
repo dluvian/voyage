@@ -1,5 +1,6 @@
 package com.dluvian.voyage.core.viewModel
 
+import android.util.Log
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -27,6 +28,8 @@ import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.tx.Nip65UpsertDao
 import kotlinx.coroutines.delay
+
+private const val TAG = "RelayEditorViewModel"
 
 class RelayEditorViewModel(
     private val relayProvider: RelayProvider,
@@ -77,34 +80,34 @@ class RelayEditorViewModel(
             return
         }
 
-
         isSaving.value = true
         viewModelScope.launchIO {
-            delay(DELAY_1SEC)
-            action.onGoBack()
-            nostrService.publishNip65(
+            val result = nostrService.publishNip65(
                 relays = myRelays.value,
                 relayUrls = relayProvider.getPublishRelays(),
                 signerLauncher = action.signerLauncher
             )
-                .onSuccess {
-                    snackbar.showToast(
-                        viewModelScope,
-                        action.context.getString(R.string.relay_list_updated)
-                    )
-                    val validatedNip65 = ValidatedNip65(
-                        pubkey = it.author().toHex(),
-                        relays = it.getNip65s(),
-                        createdAt = it.createdAt().secs()
-                    )
-                    nip65UpsertDao.upsertNip65s(validatedNip65s = listOf(validatedNip65))
-
-                }.onFailure {
-                    snackbar.showToast(
-                        viewModelScope,
-                        action.context.getString(R.string.failed_to_sign_relay_list)
-                    )
-                }
+            if (result.isSuccess) {
+                snackbar.showToast(
+                    viewModelScope,
+                    action.context.getString(R.string.relay_list_updated)
+                )
+                val event = result.getOrThrow()
+                val validatedNip65 = ValidatedNip65(
+                    pubkey = event.author().toHex(),
+                    relays = event.getNip65s(),
+                    createdAt = event.createdAt().secs()
+                )
+                nip65UpsertDao.upsertNip65s(validatedNip65s = listOf(validatedNip65))
+            } else {
+                Log.w(TAG, "Failed to sign relay list", result.exceptionOrNull())
+                snackbar.showToast(
+                    viewModelScope,
+                    action.context.getString(R.string.failed_to_sign_relay_list)
+                )
+            }
+            delay(DELAY_1SEC)
+            action.onGoBack()
         }.invokeOnCompletion { isSaving.value = false }
     }
 
