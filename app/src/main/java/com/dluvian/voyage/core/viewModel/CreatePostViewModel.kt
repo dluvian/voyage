@@ -47,8 +47,10 @@ class CreatePostViewModel(
                 topics = action.topics,
                 signerLauncher = action.signerLauncher
             )
+
             delay(DELAY_1SEC)
             action.onGoBack()
+
             result.onSuccess {
                 snackbar.showToast(
                     viewModelScope,

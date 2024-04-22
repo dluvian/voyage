@@ -88,10 +88,6 @@ class RelayEditorViewModel(
                 signerLauncher = action.signerLauncher
             )
             if (result.isSuccess) {
-                snackbar.showToast(
-                    viewModelScope,
-                    action.context.getString(R.string.relay_list_updated)
-                )
                 val event = result.getOrThrow()
                 val validatedNip65 = ValidatedNip65(
                     pubkey = event.author().toHex(),
@@ -101,13 +97,14 @@ class RelayEditorViewModel(
                 nip65UpsertDao.upsertNip65s(validatedNip65s = listOf(validatedNip65))
             } else {
                 Log.w(TAG, "Failed to sign relay list", result.exceptionOrNull())
-                snackbar.showToast(
-                    viewModelScope,
-                    action.context.getString(R.string.failed_to_sign_relay_list)
-                )
             }
+
             delay(DELAY_1SEC)
             action.onGoBack()
+
+            val msgId = if (result.isSuccess) R.string.relay_list_updated
+            else R.string.failed_to_sign_relay_list
+            snackbar.showToast(viewModelScope, action.context.getString(msgId))
         }.invokeOnCompletion { isSaving.value = false }
     }
 

@@ -63,21 +63,16 @@ class EditProfileViewModel(
                 relayUrls = relayProvider.getPublishRelays(),
                 signerLauncher = action.signerLauncher
             )
-            if (result.isSuccess) {
-                saveInDb(event = result.getOrThrow())
-                snackbar.showToast(
-                    viewModelScope,
-                    action.context.getString(R.string.profile_updated)
-                )
-            } else {
-                Log.w(TAG, "Failed to sign profile", result.exceptionOrNull())
-                snackbar.showToast(
-                    viewModelScope,
-                    action.context.getString(R.string.failed_to_sign_profile)
-                )
-            }
+
+            if (result.isSuccess) saveInDb(event = result.getOrThrow())
+            else Log.w(TAG, "Failed to sign profile", result.exceptionOrNull())
+
             delay(DELAY_1SEC)
             action.onGoBack()
+
+            val msgId = if (result.isSuccess) R.string.profile_updated
+            else R.string.failed_to_sign_profile
+            snackbar.showToast(viewModelScope, action.context.getString(msgId))
         }.invokeOnCompletion { isSaving.value = false }
     }
 
@@ -88,7 +83,6 @@ class EditProfileViewModel(
             return
         }
 
-        viewModelScope.launchIO {
             event.getMetadata()?.let { metadata ->
                 metadataInMemory.submit(
                     pubkey = entity.pubkey,
@@ -100,6 +94,5 @@ class EditProfileViewModel(
             )
             fullProfileUpsertDao.upsertProfile(profile = entity)
             fullProfile.value = entity
-        }
     }
 }
