@@ -55,9 +55,7 @@ class DiscoverViewModel(
         isRefreshing.value = true
 
         viewModelScope.launch {
-            val subJob = viewModelScope.launchIO {
-                lazyNostrSubscriber.lazySubTrustData()
-            }
+            lazyNostrSubscriber.lazySubTrustData()
             val profileJob = viewModelScope.launchIO {
                 popularProfiles.value = getProfileFlow()
             }
@@ -65,7 +63,7 @@ class DiscoverViewModel(
                 popularTopics.value = getTopicFlow()
             }
             delay(DELAY_1SEC)
-            joinAll(topicJob, profileJob, subJob)
+            joinAll(topicJob, profileJob)
         }.invokeOnCompletion {
             isRefreshing.value = false
         }
