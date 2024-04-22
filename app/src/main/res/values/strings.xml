@@ -109,4 +109,6 @@
     <string name="popular_relays">Popular relays</string>
     <string name="add_relay">Add relay</string>
     <string name="remove_relay">Remove relay</string>
+    <string name="relay_is_already_in_your_list">%s is already in your list</string>
+    <string name="relay_is_invalid">%s is invalid</string>
 </resources>

@@ -24,8 +24,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -45,6 +47,7 @@ import com.dluvian.voyage.ui.theme.AddIcon
 import com.dluvian.voyage.ui.theme.DeleteIcon
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
+import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun RelayEditorView(vm: RelayEditorViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
@@ -52,6 +55,7 @@ fun RelayEditorView(vm: RelayEditorViewModel, snackbar: SnackbarHostState, onUpd
     val popularRelays by vm.popularRelays
     val addIsEnabled by vm.addIsEnabled
     val isSaving by vm.isSaving
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = Unit) {
         onUpdate(LoadRelays)
@@ -69,6 +73,7 @@ fun RelayEditorView(vm: RelayEditorViewModel, snackbar: SnackbarHostState, onUpd
             myRelays = myRelays,
             popularRelays = popularRelays,
             addIsEnabled = addIsEnabled,
+            scope = scope,
             onUpdate = onUpdate
         )
     }
@@ -79,6 +84,7 @@ private fun RelayEditorViewContent(
     myRelays: List<Nip65Relay>,
     popularRelays: List<RelayUrl>,
     addIsEnabled: Boolean,
+    scope: CoroutineScope,
     onUpdate: OnUpdate,
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -97,7 +103,7 @@ private fun RelayEditorViewContent(
 
 
         if (addIsEnabled) item {
-            AddRelayRow(onUpdate = onUpdate)
+            AddRelayRow(scope = scope, onUpdate = onUpdate)
             Spacer(modifier = Modifier.height(spacing.xxl))
         }
 
@@ -108,6 +114,7 @@ private fun RelayEditorViewContent(
                 PopularRelayRow(
                     relayUrl = relayUrl,
                     isAddable = addIsEnabled && myRelays.none { it.url == relayUrl },
+                    scope = scope,
                     onUpdate = onUpdate,
                 )
                 if (index != popularRelays.size - 1) {
@@ -119,11 +126,13 @@ private fun RelayEditorViewContent(
 }
 
 @Composable
-private fun AddRelayRow(onUpdate: OnUpdate) {
+private fun AddRelayRow(scope: CoroutineScope, onUpdate: OnUpdate) {
     val input = remember { mutableStateOf("") }
     val focus = LocalFocusManager.current
+    val context = LocalContext.current
+
     val onDone = {
-        onUpdate(AddRelay(relayUrl = input.value))
+        onUpdate(AddRelay(relayUrl = input.value, scope = scope, context = context))
         input.value = ""
         focus.clearFocus()
     }
@@ -149,11 +158,18 @@ private fun AddRelayRow(onUpdate: OnUpdate) {
 }
 
 @Composable
-private fun PopularRelayRow(relayUrl: RelayUrl, isAddable: Boolean, onUpdate: OnUpdate) {
+private fun PopularRelayRow(
+    relayUrl: RelayUrl,
+    isAddable: Boolean,
+    scope: CoroutineScope,
+    onUpdate: OnUpdate
+) {
+    val context = LocalContext.current
     RelayRow(relayUrl = relayUrl, onUpdate = onUpdate) {
         if (isAddable) IconButton(
             modifier = Modifier.size(sizing.iconButton),
-            onClick = { onUpdate(AddRelay(relayUrl = relayUrl)) }) {
+            onClick = { onUpdate(AddRelay(relayUrl = relayUrl, scope = scope, context = context)) }
+        ) {
             Icon(
                 imageVector = AddIcon,
                 contentDescription = stringResource(id = R.string.add_relay)

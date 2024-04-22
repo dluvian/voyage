@@ -20,6 +20,7 @@ import com.dluvian.voyage.core.navigator.SearchNavView
 import com.dluvian.voyage.core.navigator.SettingsNavView
 import com.dluvian.voyage.core.navigator.ThreadNavView
 import com.dluvian.voyage.core.navigator.TopicNavView
+import kotlinx.coroutines.CoroutineScope
 import rust.nostr.protocol.Metadata
 import rust.nostr.protocol.Nip19Profile
 
@@ -145,7 +146,8 @@ data object TopicViewAppend : TopicViewAction()
 
 
 sealed class RelayEditorViewAction : UIEvent()
-data class AddRelay(val relayUrl: RelayUrl) : RelayEditorViewAction()
+data class AddRelay(val relayUrl: RelayUrl, val scope: CoroutineScope, val context: Context) :
+    RelayEditorViewAction()
 data class RemoveRelay(val relayUrl: RelayUrl) : RelayEditorViewAction()
 data object LoadRelays : RelayEditorViewAction()
 data object SaveRelays : RelayEditorViewAction()

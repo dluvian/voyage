@@ -154,7 +154,8 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         },
         relayEditorVM = viewModel {
             RelayEditorViewModel(
-                relayProvider = appContainer.relayProvider
+                relayProvider = appContainer.relayProvider,
+                snackbar = appContainer.snackbar,
             )
         }
     )
