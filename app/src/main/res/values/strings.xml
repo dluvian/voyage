@@ -108,4 +108,5 @@
     <string name="my_relays">My relays</string>
     <string name="popular_relays">Popular relays</string>
     <string name="add_relay">Add relay</string>
+    <string name="remove_relay">Remove relay</string>
 </resources>

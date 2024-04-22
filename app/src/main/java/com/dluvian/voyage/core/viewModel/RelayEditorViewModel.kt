@@ -9,6 +9,8 @@ import com.dluvian.voyage.core.AddRelay
 import com.dluvian.voyage.core.LoadRelays
 import com.dluvian.voyage.core.MAX_RELAYS
 import com.dluvian.voyage.core.RelayEditorViewAction
+import com.dluvian.voyage.core.RemoveRelay
+import com.dluvian.voyage.core.SaveRelays
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.data.provider.RelayProvider
 
@@ -22,8 +24,15 @@ class RelayEditorViewModel(
 
     fun handle(action: RelayEditorViewAction) {
         when (action) {
-            is AddRelay -> {}
             LoadRelays -> loadRelays()
+            SaveRelays -> {}
+            is AddRelay -> {
+                myRelays.value += Nip65Relay(url = action.relayUrl)
+            }
+
+            is RemoveRelay -> {
+                myRelays.value = myRelays.value.filter { it.url != action.relayUrl }
+            }
         }
     }
 

@@ -146,7 +146,9 @@ data object TopicViewAppend : TopicViewAction()
 
 sealed class RelayEditorViewAction : UIEvent()
 data class AddRelay(val relayUrl: RelayUrl) : RelayEditorViewAction()
+data class RemoveRelay(val relayUrl: RelayUrl) : RelayEditorViewAction()
 data object LoadRelays : RelayEditorViewAction()
+data object SaveRelays : RelayEditorViewAction()
 
 
 sealed class ProfileViewAction : UIEvent()

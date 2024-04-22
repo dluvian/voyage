@@ -169,7 +169,7 @@ class RelayProvider(
 
     fun getMyNip65(): List<Nip65Relay> {
         return myNip65.value.map { it.nip65Relay }
-            .ifEmpty { defaultRelays.map { Nip65Relay(url = it, isRead = true, isWrite = true) } }
+            .ifEmpty { defaultRelays.map { Nip65Relay(url = it) } }
     }
 
     suspend fun getPopularRelays() = nip65Dao.getPopularRelays(limit = MAX_POPULAR_RELAYS)
@@ -184,7 +184,6 @@ class RelayProvider(
     private val defaultRelays = listOf(
         "wss://nos.lol",
         "wss://nostr.einundzwanzig.space",
-        "wss://nostr.oxtr.dev",
         "wss://relay.mutinywallet.com",
         "wss://nostr.fmt.wiz.biz",
         "wss://relay.nostr.wirednet.jp",

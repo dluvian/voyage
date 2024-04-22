@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,11 +28,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import com.dluvian.nostr_kt.Nip65Relay
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.R
+import com.dluvian.voyage.core.AddRelay
 import com.dluvian.voyage.core.LoadRelays
 import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.core.RemoveRelay
+import com.dluvian.voyage.core.SaveRelays
 import com.dluvian.voyage.core.viewModel.RelayEditorViewModel
 import com.dluvian.voyage.ui.components.scaffold.SaveableScaffold
 import com.dluvian.voyage.ui.components.text.SectionHeader
@@ -55,8 +62,7 @@ fun RelayEditorView(vm: RelayEditorViewModel, snackbar: SnackbarHostState, onUpd
         isSaving = isSaving,
         snackbar = snackbar,
         title = stringResource(id = R.string.relays),
-        onSave = {
-        },
+        onSave = { onUpdate(SaveRelays) },
         onUpdate = onUpdate
     ) {
         RelayEditorViewContent(
@@ -116,17 +122,24 @@ private fun RelayEditorViewContent(
 private fun AddRelayRow(onUpdate: OnUpdate) {
     val input = remember { mutableStateOf("") }
     val focus = LocalFocusManager.current
+    val onDone = {
+        onUpdate(AddRelay(relayUrl = input.value))
+        input.value = ""
+        focus.clearFocus()
+    }
+
     TextField(
         modifier = Modifier.fillMaxWidth(),
         value = input.value,
         onValueChange = { input.value = it },
         placeholder = { Text(text = stringResource(id = R.string.add_relay)) },
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Uri,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(onDone = { onDone() }),
         trailingIcon = {
-            if (input.value.isNotBlank()) IconButton(
-                onClick = {
-                    input.value = ""
-                    focus.clearFocus()
-                }) {
+            if (input.value.isNotBlank()) IconButton(onClick = onDone) {
                 Icon(
                     imageVector = AddIcon,
                     contentDescription = stringResource(id = R.string.add_relay)
@@ -138,8 +151,13 @@ private fun AddRelayRow(onUpdate: OnUpdate) {
 @Composable
 private fun PopularRelayRow(relayUrl: RelayUrl, isAddable: Boolean, onUpdate: OnUpdate) {
     RelayRow(relayUrl = relayUrl, onUpdate = onUpdate) {
-        if (isAddable) IconButton(modifier = Modifier.size(sizing.iconButton), onClick = {}) {
-            Icon(imageVector = AddIcon, contentDescription = "add relay")
+        if (isAddable) IconButton(
+            modifier = Modifier.size(sizing.iconButton),
+            onClick = { onUpdate(AddRelay(relayUrl = relayUrl)) }) {
+            Icon(
+                imageVector = AddIcon,
+                contentDescription = stringResource(id = R.string.add_relay)
+            )
         }
     }
 }
@@ -164,8 +182,11 @@ private fun MyRelayRow(
         trailingContent = {
             if (isDeletable) IconButton(
                 modifier = Modifier.size(sizing.iconButton),
-                onClick = { /*TODO*/ }) {
-                Icon(imageVector = DeleteIcon, contentDescription = "Delete relay")
+                onClick = { onUpdate(RemoveRelay(relayUrl = relay.url)) }) {
+                Icon(
+                    imageVector = DeleteIcon,
+                    contentDescription = stringResource(id = R.string.remove_relay)
+                )
             }
         }
     )
@@ -187,16 +208,9 @@ private fun RelayRow(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column(Modifier.weight(weight = 1f, fill = false)) {
-            MainRelayRow(relay = relayUrl, onUpdate = onUpdate)
+            Text(text = relayUrl)
             secondRow()
         }
         trailingContent()
-    }
-}
-
-@Composable
-fun MainRelayRow(relay: RelayUrl, onUpdate: OnUpdate) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(text = relay)
     }
 }
