@@ -144,7 +144,6 @@ class RelayProvider(
             .sortedByDescending { connectedRelays.contains(it.relayUrl) }
             .distinctBy { it.pubkey }
             .groupBy(keySelector = { it.relayUrl }, valueTransform = { it.pubkey })
-            .toList()
             .forEach { (relay, pubkeys) ->
                 if (pubkeys.isNotEmpty()) result.putOrAdd(relay, pubkeys)
                 pubkeyCache.addAll(pubkeys)

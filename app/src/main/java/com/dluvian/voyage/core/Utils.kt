@@ -66,9 +66,6 @@ fun SnackbarHostState.showToast(scope: CoroutineScope, msg: String) {
     }
 }
 
-private val bareTopicRegex = Regex("[^#\\s]+\$")
-fun String.isBareTopicStr(): Boolean = bareTopicRegex.matches(this)
-
 fun <K, V> MutableMap<K, MutableList<V>>.syncedPutOrAdd(key: K, value: MutableList<V>) {
     val alreadyPresent: MutableList<V>?
     synchronized(this) {
@@ -148,7 +145,9 @@ fun createReplyAndVoteFilters(
     return listOf(voteFilter, replyFilter)
 }
 
-private val hashtagRegex = Regex("""#\w+""")
+private val hashtagRegex = Regex("""#\w+(-\w+)*""")
+private val bareTopicRegex = Regex("[^#\\s]+\$")
+
 fun extractCleanHashtags(content: String): List<Topic> {
     return hashtagRegex.findAll(content)
         .map { it.value.normalizeTopic() }
@@ -157,6 +156,8 @@ fun extractCleanHashtags(content: String): List<Topic> {
 }
 
 fun extractHashtags(extractFrom: String) = hashtagRegex.findAll(extractFrom).toList()
+
+fun String.isBareTopicStr(): Boolean = bareTopicRegex.matches(this)
 
 fun Topic.normalizeTopic(): Topic {
     return this.trim().removePrefix("#").trim().take(MAX_TOPIC_LEN).lowercase()
