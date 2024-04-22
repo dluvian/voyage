@@ -27,6 +27,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.coroutines.cancellation.CancellationException
 
+private const val TAG = "ProfileFollower"
+
 class ProfileFollower(
     private val nostrService: NostrService,
     private val relayProvider: RelayProvider,
@@ -35,7 +37,6 @@ class ProfileFollower(
     private val friendProvider: FriendProvider,
     private val friendUpsertDao: FriendUpsertDao,
 ) {
-    private val tag = "ProfileFollower"
     private val scope = CoroutineScope(Dispatchers.IO)
     private val _forcedFollows = MutableStateFlow(mapOf<PubkeyHex, Boolean>())
     val forcedFollowsFlow = _forcedFollows.stateIn(
@@ -89,7 +90,7 @@ class ProfileFollower(
                 friendUpsertDao.upsertFriends(validatedContactList = friendList)
             }
                 .onFailure {
-                    Log.w(tag, "Failed to publish friend list: ${it.message}", it)
+                    Log.w(TAG, "Failed to publish friend list: ${it.message}", it)
                     snackbar.showToast(
                         scope = scope,
                         msg = context.getString(R.string.failed_to_sign_contact_list)

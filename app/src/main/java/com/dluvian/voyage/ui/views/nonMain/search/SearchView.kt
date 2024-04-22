@@ -9,6 +9,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
@@ -61,7 +62,9 @@ private fun SearchViewContent(
                 ClickableRow(
                     header = profile.name,
                     imageVector = AccountIcon,
-                    onClick = { onUpdate(OpenProfile(nprofile = profile.toNip19())) })
+                    onClick = {
+                        onUpdate(OpenProfile(nprofile = createNprofile(hex = profile.pubkey)))
+                    })
             }
         }
     }

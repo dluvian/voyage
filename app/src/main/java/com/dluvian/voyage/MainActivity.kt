@@ -150,7 +150,8 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 snackbar = appContainer.snackbar,
                 relayProvider = appContainer.relayProvider,
                 fullProfileDao = appContainer.roomDb.fullProfileDao(),
-                metadataInMemory = appContainer.metadataInMemory
+                metadataInMemory = appContainer.metadataInMemory,
+                profileUpsertDao = appContainer.roomDb.profileUpsertDao()
             )
         },
         relayEditorVM = viewModel {

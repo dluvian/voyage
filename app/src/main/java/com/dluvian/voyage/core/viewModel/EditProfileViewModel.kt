@@ -20,7 +20,9 @@ import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.FullProfileDao
 import com.dluvian.voyage.data.room.dao.tx.FullProfileUpsertDao
+import com.dluvian.voyage.data.room.dao.tx.ProfileUpsertDao
 import com.dluvian.voyage.data.room.entity.FullProfileEntity
+import com.dluvian.voyage.data.room.entity.ProfileEntity
 import kotlinx.coroutines.delay
 
 private const val TAG = "EditProfileViewModel"
@@ -32,6 +34,7 @@ class EditProfileViewModel(
     private val relayProvider: RelayProvider,
     private val fullProfileDao: FullProfileDao,
     private val metadataInMemory: MetadataInMemory,
+    private val profileUpsertDao: ProfileUpsertDao,
 ) : ViewModel() {
     val isSaving = mutableStateOf(false)
     val fullProfile = mutableStateOf<FullProfileEntity?>(null)
@@ -61,21 +64,24 @@ class EditProfileViewModel(
                 relayUrls = relayProvider.getPublishRelays(),
                 signerLauncher = action.signerLauncher
             )
-                .onSuccess {
+                .onSuccess { event ->
                     snackbar.showToast(
                         viewModelScope,
                         action.context.getString(R.string.profile_updated)
                     )
-                    val entity = FullProfileEntity.from(event = it)
+                    val entity = FullProfileEntity.from(event = event)
                     if (entity != null) {
-                        fullProfileUpsertDao.upsertProfile(profile = entity)
-                        fullProfile.value = entity
-                        it.getMetadata()?.let { metadata ->
+                        event.getMetadata()?.let { metadata ->
                             metadataInMemory.submit(
                                 pubkey = entity.pubkey,
-                                metadata = metadata.toRelevantMetadata(it.createdAt().secs())
+                                metadata = metadata.toRelevantMetadata(event.createdAt().secs())
                             )
                         }
+                        profileUpsertDao.upsertProfiles(
+                            profiles = listOf(ProfileEntity.from(fullProfileEntity = entity))
+                        )
+                        fullProfileUpsertDao.upsertProfile(profile = entity)
+                        fullProfile.value = entity
                     } else Log.w(TAG, "Failed to create FullProfileEntity from event")
 
                 }.onFailure {
