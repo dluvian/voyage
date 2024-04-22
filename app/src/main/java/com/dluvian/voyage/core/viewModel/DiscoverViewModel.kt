@@ -11,6 +11,7 @@ import com.dluvian.voyage.core.DiscoverViewRefresh
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.TopicFollowState
 import com.dluvian.voyage.data.model.FullProfileUI
+import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import kotlinx.coroutines.delay
@@ -26,6 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 class DiscoverViewModel(
     private val topicProvider: TopicProvider,
     private val profileProvider: ProfileProvider,
+    private val lazyNostrSubscriber: LazyNostrSubscriber,
 ) : ViewModel() {
     private val maxCount = 75
     val isRefreshing = mutableStateOf(false)
@@ -53,6 +55,9 @@ class DiscoverViewModel(
         isRefreshing.value = true
 
         viewModelScope.launch {
+            val subJob = viewModelScope.launchIO {
+                lazyNostrSubscriber.lazySubTrustData()
+            }
             val profileJob = viewModelScope.launchIO {
                 popularProfiles.value = getProfileFlow()
             }
@@ -60,7 +65,7 @@ class DiscoverViewModel(
                 popularTopics.value = getTopicFlow()
             }
             delay(DELAY_1SEC)
-            joinAll(topicJob, profileJob)
+            joinAll(topicJob, profileJob, subJob)
         }.invokeOnCompletion {
             isRefreshing.value = false
         }

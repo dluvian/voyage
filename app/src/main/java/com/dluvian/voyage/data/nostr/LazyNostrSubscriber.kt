@@ -35,6 +35,10 @@ class LazyNostrSubscriber(
         Log.d(TAG, "subMyAccountAndTrustData")
         lazySubMyAccount()
         delay(DELAY_1SEC)
+        lazySubTrustData()
+    }
+
+    suspend fun lazySubTrustData() {
         semiLazySubFriendsNip65()
         delay(DELAY_1SEC)
         semiLazySubWebOfTrustPubkeys()

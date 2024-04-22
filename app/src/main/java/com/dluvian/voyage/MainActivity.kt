@@ -83,6 +83,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             DiscoverViewModel(
                 topicProvider = appContainer.topicProvider,
                 profileProvider = appContainer.profileProvider,
+                lazyNostrSubscriber = appContainer.lazyNostrSubscriber
             )
         },
         settingsVM = viewModel {
