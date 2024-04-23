@@ -40,11 +40,12 @@ import com.dluvian.voyage.data.room.view.RootPostView
 
 
 @Database(
-    version = 3,
+    version = 4,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
+        AutoMigration(from = 3, to = 4),
     ],
     entities = [
         PostEntity::class,

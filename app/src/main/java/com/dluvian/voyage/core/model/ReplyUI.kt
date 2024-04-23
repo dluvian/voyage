@@ -5,7 +5,6 @@ import androidx.compose.ui.text.AnnotatedString
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.toShortenedBech32
 import com.dluvian.voyage.data.interactor.Vote
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 import com.dluvian.voyage.data.room.view.ReplyView
@@ -14,7 +13,6 @@ import com.dluvian.voyage.data.room.view.ReplyView
 data class ReplyUI(
     override val id: EventIdHex,
     val parentId: EventIdHex,
-    override val authorName: String,
     override val pubkey: PubkeyHex,
     override val trustType: TrustType,
     override val createdAt: Long,
@@ -30,8 +28,6 @@ data class ReplyUI(
             return ReplyUI(
                 id = replyView.id,
                 parentId = replyView.parentId,
-                authorName = replyView.authorName.orEmpty()
-                    .ifEmpty { replyView.pubkey.toShortenedBech32() },
                 pubkey = replyView.pubkey,
                 trustType = TrustType.from(
                     isOneself = replyView.authorIsOneself,

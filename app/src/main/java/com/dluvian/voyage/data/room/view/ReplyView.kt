@@ -18,7 +18,6 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             "post.content, " +
             "post.createdAt, " +
             "post.relayUrl, " +
-            "(SELECT name FROM profile WHERE profile.pubkey = post.pubkey) AS authorName, " +
             "(SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.pubkey)) AS authorIsOneself, " +
             "(SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.pubkey)) AS authorIsFriend, " +
             "(SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = post.pubkey)) AS authorIsTrusted, " +
@@ -32,7 +31,6 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 data class ReplyView(
     val id: EventIdHex,
     val parentId: EventIdHex,
-    val authorName: String?,
     val pubkey: PubkeyHex,
     val content: String,
     val createdAt: Long,

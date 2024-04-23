@@ -43,9 +43,8 @@ fun PostRow(post: RootPostUI, isDetailed: Boolean = false, onUpdate: OnUpdate) {
         }
         ParentRowHeader(
             parent = post,
-            isDetailed = isDetailed,
             myTopic = post.myTopic,
-            isOp = true,
+            isOp = isDetailed,
             onUpdate = onUpdate,
         )
         Spacer(modifier = Modifier.height(spacing.large))

@@ -218,7 +218,6 @@ class AppContainer(context: Context) {
         forcedVotes = postVoter.forcedVotes,
         oldestUsedEvent = oldestUsedEvent,
         annotatedStringProvider = annotatedStringProvider,
-        nameCache = nameCache,
         forcedFollows = profileFollower.forcedFollowsFlow
     )
 
@@ -229,9 +228,6 @@ class AppContainer(context: Context) {
         forcedVotes = postVoter.forcedVotes,
         collapsedIds = threadCollapser.collapsedIds,
         annotatedStringProvider = annotatedStringProvider,
-        nameCache = nameCache,
-        subBatcher = subBatcher,
-        relayProvider = relayProvider,
         oldestUsedEvent = oldestUsedEvent,
         forcedFollows = profileFollower.forcedFollowsFlow,
     )

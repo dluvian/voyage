@@ -8,11 +8,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import com.dluvian.nostr_kt.createNprofile
+import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
@@ -22,16 +27,15 @@ import com.dluvian.voyage.core.model.IParentUI
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.ui.components.button.OptionsButton
 import com.dluvian.voyage.ui.components.chip.TopicChip
-import com.dluvian.voyage.ui.components.chip.TrustChip
 import com.dluvian.voyage.ui.components.icon.TrustIcon
 import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.components.text.RelativeTime
+import com.dluvian.voyage.ui.theme.OPBlue
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
 fun ParentRowHeader(
     parent: IParentUI,
-    isDetailed: Boolean,
     myTopic: String?,
     isOp: Boolean,
     collapsedText: AnnotatedString? = null,
@@ -44,13 +48,11 @@ fun ParentRowHeader(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Row(modifier = Modifier.weight(1f, fill = false)) {
-            if (isDetailed) TrustChip(
-                trustType = parent.trustType,
-                name = parent.authorName,
-                isOp = isOp,
-                onOpenProfile = onOpenProfile
-            ) else ClickableTrustIcon(trustType = parent.trustType, onClick = onOpenProfile)
+        Row(
+            modifier = Modifier.weight(1f, fill = false),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ClickableTrustIcon(trustType = parent.trustType, isOp = isOp, onClick = onOpenProfile)
             myTopic?.let { topic ->
                 TopicChip(
                     modifier = Modifier
@@ -75,8 +77,21 @@ fun ParentRowHeader(
 }
 
 @Composable
-fun ClickableTrustIcon(trustType: TrustType, onClick: Fn) {
+fun ClickableTrustIcon(trustType: TrustType, isOp: Boolean, onClick: Fn) {
     Box(modifier = Modifier.clickable(onClick = onClick)) {
-        TrustIcon(trustType = trustType)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            TrustIcon(trustType = trustType)
+            if (isOp) {
+                Spacer(modifier = Modifier.width(spacing.small))
+                Text(
+                    text = stringResource(id = R.string.op),
+                    maxLines = 1,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = OPBlue,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+        }
     }
 }

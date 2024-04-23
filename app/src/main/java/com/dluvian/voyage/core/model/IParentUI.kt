@@ -7,7 +7,6 @@ import com.dluvian.voyage.core.PubkeyHex
 
 interface IParentUI {
     val id: EventIdHex
-    val authorName: String
     val content: AnnotatedString
     val pubkey: PubkeyHex
     val trustType: TrustType

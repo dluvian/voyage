@@ -43,7 +43,6 @@ fun ReplyRow(
     ) {
         ParentRowHeader(
             parent = reply,
-            isDetailed = true,
             myTopic = null,
             isOp = isOp,
             collapsedText = if (isCollapsed) reply.content else null,

@@ -23,7 +23,6 @@ class FeedProvider(
     private val forcedVotes: Flow<Map<EventIdHex, Vote>>,
     private val oldestUsedEvent: OldestUsedEvent,
     private val annotatedStringProvider: AnnotatedStringProvider,
-    private val nameCache: MutableMap<PubkeyHex, String?>,
     private val forcedFollows: Flow<Map<PubkeyHex, Boolean>>
 ) {
     suspend fun getFeedFlow(
@@ -62,8 +61,6 @@ class FeedProvider(
             .onEach { posts ->
                 oldestUsedEvent.updateOldestCreatedAt(posts.minOfOrNull { it.createdAt })
                 nostrSubscriber.subVotesAndReplies(posts = posts)
-                posts.filter { it.authorName.isNotEmpty() }
-                    .forEach { nameCache.putIfAbsent(it.pubkey, it.authorName) }
             }
     }
 
