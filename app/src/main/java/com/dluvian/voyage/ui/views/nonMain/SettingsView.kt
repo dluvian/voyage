@@ -137,7 +137,7 @@ private fun AccountSection(
 private fun RelaySection(onUpdate: OnUpdate) {
     SettingsSection(header = stringResource(id = R.string.relays)) {
         ClickableRow(
-            header = stringResource(id = R.string.relays),
+            header = stringResource(id = R.string.relay_list),
             text = stringResource(id = R.string.click_to_edit_your_relay_list),
             onClick = { onUpdate(ClickRelayEditor) }
         )
