@@ -62,7 +62,11 @@ private fun SearchViewContent(
                 ClickableRow(
                     header = profile.name,
                     icon = {
-                        AccountIconWithBadge(trustType = TODO(), description = profile.name)
+                        AccountIconWithBadge(
+                            trustType = TODO(),
+                            isSmall = true,
+                            description = profile.name
+                        )
                     },
                     onClick = {
                         onUpdate(OpenProfile(nprofile = createNprofile(hex = profile.pubkey)))

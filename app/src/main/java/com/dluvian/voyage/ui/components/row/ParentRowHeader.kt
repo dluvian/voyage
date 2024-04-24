@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,7 +27,7 @@ import com.dluvian.voyage.core.model.IParentUI
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.ui.components.button.OptionsButton
 import com.dluvian.voyage.ui.components.chip.TopicChip
-import com.dluvian.voyage.ui.components.icon.TrustIcon
+import com.dluvian.voyage.ui.components.icon.AccountIconWithBadge
 import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.components.text.RelativeTime
 import com.dluvian.voyage.ui.theme.OPBlue
@@ -82,7 +81,11 @@ fun ParentRowHeader(
 fun ClickableTrustIcon(trustType: TrustType, isOp: Boolean, onClick: Fn) {
     Box(modifier = Modifier.clickable(onClick = onClick)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            TrustIcon(modifier = Modifier.size(sizing.smallIndicator), trustType = trustType)
+            AccountIconWithBadge(
+                trustType = trustType,
+                isSmall = false,
+                height = sizing.smallIndicator
+            )
             if (isOp) {
                 Spacer(modifier = Modifier.width(spacing.small))
                 Text(

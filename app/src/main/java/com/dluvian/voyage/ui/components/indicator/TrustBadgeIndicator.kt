@@ -10,14 +10,14 @@ import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.ui.components.icon.TrustIcon
 
 @Composable
-fun TrustBadgeIndicator(trustType: TrustType) {
+fun TrustBadgeIndicator(trustType: TrustType, isSmall: Boolean) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.TopEnd
     ) {
         TrustIcon(
             modifier = Modifier
-                .fillMaxSize(0.4f)
+                .fillMaxSize(if (isSmall) 0.4f else 0.5f)
                 .aspectRatio(1.0f),
             trustType = trustType
         )

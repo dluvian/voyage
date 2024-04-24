@@ -9,15 +9,21 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.ui.components.indicator.TrustBadgeIndicator
 import com.dluvian.voyage.ui.theme.AccountIcon
 
 @Composable
-fun AccountIconWithBadge(trustType: TrustType, description: String) {
+fun AccountIconWithBadge(
+    trustType: TrustType,
+    isSmall: Boolean,
+    description: String? = null,
+    height: Dp = ButtonDefaults.MinHeight
+) {
     Box(
         Modifier
-            .height(ButtonDefaults.MinHeight)
+            .height(height)
             .aspectRatio(1f),
         contentAlignment = Alignment.Center
     ) {
@@ -26,6 +32,6 @@ fun AccountIconWithBadge(trustType: TrustType, description: String) {
             imageVector = AccountIcon,
             contentDescription = description
         )
-        TrustBadgeIndicator(trustType = trustType)
+        TrustBadgeIndicator(trustType = trustType, isSmall = isSmall)
     }
 }

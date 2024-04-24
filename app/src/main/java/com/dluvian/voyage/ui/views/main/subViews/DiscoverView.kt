@@ -104,6 +104,7 @@ fun DiscoverView(vm: DiscoverViewModel, onUpdate: OnUpdate) {
                             isFriend = it.inner.isFriend,
                             isWebOfTrust = it.inner.isWebOfTrust
                         ),
+                        isSmall = true,
                         description = it.inner.name,
                     )
                 },
