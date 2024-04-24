@@ -146,7 +146,7 @@ class RelayEditorViewModel(
     }
 
     private fun String.isWebsocketUrl(): Boolean {
-        val regex = Regex("^wss://[a-zA-Z0-9]+(\\.[a-zA-Z0-9]+)*(:\\d+)?(/\\S*)?\$")
+        val regex = Regex("^wss://[a-zA-Z0-9-]+(\\.[a-zA-Z0-9]+)*(:\\d+)?(/\\S*)?\$")
         return regex.matches(this)
     }
 
