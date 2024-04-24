@@ -122,6 +122,7 @@ class RelayProvider(
 
         val result = mutableMapOf<RelayUrl, MutableSet<PubkeyHex>>()
         val connectedRelays = nostrClient.getAllConnectedUrls().toSet()
+        val eventRelays = eventRelayDao.getAllEventRelays()
 
         // Cover pubkey-write-relay pairing
         val pubkeyCache = mutableSetOf<PubkeyHex>()
@@ -130,6 +131,7 @@ class RelayProvider(
             .groupBy { it.nip65Relay.url }
             .toList()
             .sortedByDescending { (_, pubkeys) -> pubkeys.size }
+            .sortedByDescending { (relay, _) -> eventRelays.contains(relay) }
             .sortedByDescending { (relay, _) -> connectedRelays.contains(relay) }
             .forEach { (relay, nip65Entities) ->
                 val newPubkeys = nip65Entities.map { it.pubkey }.toSet() - pubkeyCache

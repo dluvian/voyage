@@ -14,4 +14,7 @@ interface EventRelayDao {
 
     @Query("SELECT relayUrl FROM post WHERE id = :eventId")
     suspend fun getEventRelay(eventId: EventIdHex): RelayUrl?
+
+    @Query("SELECT DISTINCT(relayUrl) FROM post")
+    suspend fun getAllEventRelays(): List<RelayUrl>
 }
