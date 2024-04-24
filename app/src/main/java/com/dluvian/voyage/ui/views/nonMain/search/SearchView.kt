@@ -17,9 +17,9 @@ import com.dluvian.voyage.core.OpenTopic
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.viewModel.SearchViewModel
 import com.dluvian.voyage.data.room.entity.ProfileEntity
+import com.dluvian.voyage.ui.components.icon.AccountIconWithBadge
 import com.dluvian.voyage.ui.components.row.ClickableRow
 import com.dluvian.voyage.ui.components.text.SectionHeader
-import com.dluvian.voyage.ui.theme.AccountIcon
 import com.dluvian.voyage.ui.theme.HashtagIcon
 
 @Composable
@@ -61,7 +61,9 @@ private fun SearchViewContent(
             items(profiles) { profile ->
                 ClickableRow(
                     header = profile.name,
-                    imageVector = AccountIcon,
+                    icon = {
+                        AccountIconWithBadge(trustType = TODO(), description = profile.name)
+                    },
                     onClick = {
                         onUpdate(OpenProfile(nprofile = createNprofile(hex = profile.pubkey)))
                     })

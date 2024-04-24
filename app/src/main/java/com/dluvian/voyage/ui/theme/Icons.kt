@@ -27,6 +27,14 @@ import androidx.compose.material.icons.filled.ThumbUpAlt
 import androidx.compose.material.icons.filled.ThumbUpOffAlt
 import androidx.compose.material.icons.filled.TravelExplore
 import androidx.compose.material.icons.filled.VerifiedUser
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
+import androidx.compose.ui.graphics.vector.ImageVector
+import com.dluvian.voyage.core.model.FriendTrust
+import com.dluvian.voyage.core.model.NoTrust
+import com.dluvian.voyage.core.model.Oneself
+import com.dluvian.voyage.core.model.TrustType
+import com.dluvian.voyage.core.model.WebTrust
 
 val HomeIcon = Icons.Default.Home
 val DiscoverIcon = Icons.Default.TravelExplore
@@ -36,10 +44,6 @@ val InboxIcon = Icons.Default.Notifications
 val SettingsIcon = Icons.Default.Settings
 val BackIcon = Icons.AutoMirrored.Filled.ArrowBack
 val CommentIcon = Icons.AutoMirrored.Filled.Comment
-val OneselfIcon = Icons.Default.Star
-val FriendIcon = Icons.Default.VerifiedUser
-val TrustedIcon = FriendIcon
-val UnknownIcon = Icons.AutoMirrored.Filled.HelpOutline
 val AccountIcon = Icons.Default.AccountCircle
 val HashtagIcon = Icons.Default.Tag
 val UpvoteOffIcon = Icons.Default.ThumbUpOffAlt
@@ -55,3 +59,13 @@ val ExpandIcon = Icons.Default.ExpandMore
 val CollapseIcon = Icons.Default.ExpandLess
 val HorizMoreIcon = Icons.Default.MoreHoriz
 val DeleteIcon = Icons.Default.Delete
+
+@Stable
+@Composable
+fun getTrustIcon(trustType: TrustType): ImageVector {
+    return when (trustType) {
+        Oneself -> Icons.Default.Star
+        FriendTrust, WebTrust -> Icons.Default.VerifiedUser
+        NoTrust -> Icons.AutoMirrored.Filled.HelpOutline
+    }
+}

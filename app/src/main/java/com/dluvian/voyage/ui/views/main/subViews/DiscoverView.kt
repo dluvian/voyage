@@ -25,10 +25,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dluvian.voyage.R
+import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.DiscoverViewInit
 import com.dluvian.voyage.core.DiscoverViewRefresh
 import com.dluvian.voyage.core.Fn
@@ -40,12 +40,13 @@ import com.dluvian.voyage.core.OpenTopic
 import com.dluvian.voyage.core.UnfollowProfile
 import com.dluvian.voyage.core.UnfollowTopic
 import com.dluvian.voyage.core.getSignerLauncher
+import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.core.viewModel.DiscoverViewModel
 import com.dluvian.voyage.ui.components.PullRefreshBox
 import com.dluvian.voyage.ui.components.button.FollowButton
+import com.dluvian.voyage.ui.components.icon.AccountIconWithBadge
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.text.SectionHeader
-import com.dluvian.voyage.ui.theme.AccountIcon
 import com.dluvian.voyage.ui.theme.HashtagIcon
 import com.dluvian.voyage.ui.theme.spacing
 
@@ -72,26 +73,40 @@ fun DiscoverView(vm: DiscoverViewModel, onUpdate: OnUpdate) {
     val followableTopics = remember(topics) {
         topics.map {
             Followable(
-                imageVector = HashtagIcon,
                 label = it.topic,
                 isFollowed = it.isFollowed,
+                icon = {
+                    Icon(
+                        modifier = Modifier.padding(start = spacing.large),
+                        imageVector = HashtagIcon,
+                        contentDescription = it.topic
+                    )
+                },
                 onFollow = {
                     onUpdate(FollowTopic(topic = it.topic, signerLauncher = signerLauncher))
                 },
                 onUnfollow = {
                     onUpdate(UnfollowTopic(topic = it.topic, signerLauncher = signerLauncher))
-                },
-                onOpen = { onUpdate(OpenTopic(topic = it.topic)) }
-            )
+                }
+            ) { onUpdate(OpenTopic(topic = it.topic)) }
         }
     }
 
     val followableProfiles = remember(profiles) {
         profiles.map {
             Followable(
-                imageVector = AccountIcon,
                 label = it.inner.name,
                 isFollowed = it.inner.isFriend,
+                icon = {
+                    AccountIconWithBadge(
+                        trustType = TrustType.from(
+                            isOneself = it.inner.isMe,
+                            isFriend = it.inner.isFriend,
+                            isWebOfTrust = it.inner.isWebOfTrust
+                        ),
+                        description = it.inner.name,
+                    )
+                },
                 onFollow = {
                     onUpdate(
                         FollowProfile(pubkey = it.inner.pubkey, signerLauncher = signerLauncher)
@@ -101,9 +116,8 @@ fun DiscoverView(vm: DiscoverViewModel, onUpdate: OnUpdate) {
                     onUpdate(
                         UnfollowProfile(pubkey = it.inner.pubkey, signerLauncher = signerLauncher)
                     )
-                },
-                onOpen = { onUpdate(OpenProfile(nprofile = it.inner.toNip19())) }
-            )
+                }
+            ) { onUpdate(OpenProfile(nprofile = it.inner.toNip19())) }
         }
     }
 
@@ -132,9 +146,9 @@ fun DiscoverView(vm: DiscoverViewModel, onUpdate: OnUpdate) {
 }
 
 private data class Followable(
-    val imageVector: ImageVector,
     val label: String,
     val isFollowed: Boolean,
+    val icon: ComposableContent,
     val onFollow: Fn,
     val onUnfollow: Fn,
     val onOpen: Fn
@@ -177,11 +191,7 @@ private fun DiscoverChip(item: Followable) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Icon(
-            modifier = Modifier.padding(start = spacing.large),
-            imageVector = item.imageVector,
-            contentDescription = item.label
-        )
+        item.icon()
         Text(
             modifier = Modifier.padding(horizontal = spacing.large),
             text = item.label,

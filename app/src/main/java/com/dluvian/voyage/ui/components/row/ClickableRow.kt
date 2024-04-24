@@ -24,12 +24,35 @@ import com.dluvian.voyage.ui.theme.spacing
 fun ClickableRow(
     header: String,
     text: String? = null,
-    imageVector: ImageVector? = null,
+    imageVector: ImageVector?,
+    onClick: Fn = {},
+    additionalContent: ComposableContent = {},
+) {
+    val icon = @Composable {
+        if (imageVector != null) Icon(
+            imageVector = imageVector,
+            contentDescription = header
+        )
+    }
+    ClickableRow(
+        header = header,
+        text = text,
+        icon = if (imageVector == null) null else icon,
+        onClick = onClick,
+        additionalContent = additionalContent
+    )
+}
+
+@Composable
+fun ClickableRow(
+    header: String,
+    text: String? = null,
+    icon: ComposableContent? = null,
     onClick: Fn = {},
     additionalContent: ComposableContent = {},
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        ClickableBaseRow(header = header, imageVector = imageVector, text = text, onClick = onClick)
+        ClickableBaseRow(header = header, icon = icon, text = text, onClick = onClick)
         additionalContent()
     }
 }
@@ -37,7 +60,7 @@ fun ClickableRow(
 @Composable
 private fun ClickableBaseRow(
     header: String,
-    imageVector: ImageVector? = null,
+    icon: ComposableContent? = null,
     text: String? = null,
     onClick: Fn = {},
 ) {
@@ -48,11 +71,11 @@ private fun ClickableBaseRow(
             .padding(horizontal = spacing.bigScreenEdge, vertical = spacing.large),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (imageVector != null) {
-            Icon(imageVector = imageVector, contentDescription = header)
+        if (icon != null) {
+            icon()
             Spacer(modifier = Modifier.width(spacing.xl))
         }
-        Column {
+        Column() {
             Text(
                 text = header,
                 style = MaterialTheme.typography.titleMedium,

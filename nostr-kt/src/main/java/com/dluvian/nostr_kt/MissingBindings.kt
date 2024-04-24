@@ -92,7 +92,7 @@ fun Event.getHashtags(): List<String> {
 }
 
 fun String.removeTrailingSlashes(): String {
-    return this.dropLastWhile { it == '/' }
+    return this.dropLastWhile { it == '/' || it == ' ' }
 }
 
 fun String.removeNostrUri(): String {

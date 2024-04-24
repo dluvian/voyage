@@ -19,12 +19,13 @@ import kotlinx.coroutines.flow.stateIn
 import rust.nostr.protocol.Nip19Profile
 
 
+private const val TAG = "RelayProvider"
+
 class RelayProvider(
     private val nip65Dao: Nip65Dao,
     private val eventRelayDao: EventRelayDao,
     private val nostrClient: NostrClient
 ) {
-    private val tag = "RelayProvider"
     private val scope = CoroutineScope(Dispatchers.IO)
     private val myNip65 = nip65Dao.getMyNip65().stateIn(scope, SharingStarted.Eagerly, emptyList())
 
@@ -152,12 +153,12 @@ class RelayProvider(
         // Cover rest with already selected relays and read relays for initial start up
         val restPubkeys = pubkeys - pubkeyCache
         if (restPubkeys.isNotEmpty()) {
-            Log.w(tag, "Default to read relays for ${restPubkeys.size}/${pubkeys.size} pubkeys")
+            Log.w(TAG, "Default to read relays for ${restPubkeys.size}/${pubkeys.size} pubkeys")
             result.keys.forEach { relay -> result.putOrAdd(relay, restPubkeys) }
             getReadRelays().forEach { relay -> result.putOrAdd(relay, restPubkeys) }
         }
 
-        Log.i(tag, "Selected ${result.size} autopilot relays ${result.keys}")
+        Log.i(TAG, "Selected ${result.size} autopilot relays ${result.keys}")
 
         return result
     }

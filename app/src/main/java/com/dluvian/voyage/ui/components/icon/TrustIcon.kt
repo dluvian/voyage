@@ -1,9 +1,10 @@
 package com.dluvian.voyage.ui.components.icon
 
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.model.FriendTrust
@@ -11,43 +12,45 @@ import com.dluvian.voyage.core.model.NoTrust
 import com.dluvian.voyage.core.model.Oneself
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.core.model.WebTrust
-import com.dluvian.voyage.ui.theme.FriendIcon
-import com.dluvian.voyage.ui.theme.OneselfIcon
-import com.dluvian.voyage.ui.theme.TrustedIcon
-import com.dluvian.voyage.ui.theme.UnknownIcon
 import com.dluvian.voyage.ui.theme.getTrustColor
-import com.dluvian.voyage.ui.theme.sizing
+import com.dluvian.voyage.ui.theme.getTrustIcon
 
 
 @Composable
-fun TrustIcon(trustType: TrustType) {
+fun TrustIcon(modifier: Modifier = Modifier, trustType: TrustType) {
     val (icon, color, description) = when (trustType) {
         Oneself -> Triple(
-            OneselfIcon,
+            getTrustIcon(trustType = trustType),
             getTrustColor(trustType = trustType),
             stringResource(id = R.string.oneself)
         )
 
         FriendTrust -> Triple(
-            FriendIcon,
+            getTrustIcon(trustType = trustType),
             getTrustColor(trustType = trustType),
             stringResource(id = R.string.friend)
         )
 
         WebTrust -> Triple(
-            TrustedIcon,
+            getTrustIcon(trustType = trustType),
             getTrustColor(trustType = trustType),
             stringResource(id = R.string.trusted)
         )
 
         NoTrust -> Triple(
-            UnknownIcon,
+            getTrustIcon(trustType = trustType),
             getTrustColor(trustType = trustType),
             stringResource(id = R.string.unknown)
         )
     }
+    val bgColor = MaterialTheme.colorScheme.background
     Icon(
-        modifier = Modifier.size(sizing.smallIndicator),
+        modifier = modifier.drawBehind {
+            this.drawCircle(
+                color = bgColor,
+                radius = size.minDimension * 0.33f
+            )
+        },
         imageVector = icon,
         contentDescription = description,
         tint = color

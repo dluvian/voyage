@@ -3,6 +3,7 @@ package com.dluvian.voyage.ui.theme
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
 import com.dluvian.voyage.core.model.FriendTrust
 import com.dluvian.voyage.core.model.NoTrust
@@ -86,6 +87,7 @@ val OPBlue: Color
     @Composable
     get() = if (isSystemInDarkTheme()) Color(0xFF388de2) else Color(0xFF244b99)
 
+@Stable
 @Composable
 fun getTrustColor(trustType: TrustType): Color {
     return when (trustType) {
