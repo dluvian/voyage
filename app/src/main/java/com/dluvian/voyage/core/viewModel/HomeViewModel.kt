@@ -3,6 +3,7 @@ package com.dluvian.voyage.core.viewModel
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dluvian.voyage.core.DELAY_10SEC
 import com.dluvian.voyage.core.HomeViewAction
 import com.dluvian.voyage.core.HomeViewAppend
 import com.dluvian.voyage.core.HomeViewRefresh
@@ -13,6 +14,7 @@ import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.FeedProvider
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 
 
 class HomeViewModel(
@@ -41,9 +43,10 @@ class HomeViewModel(
     private var job: Job? = null
 
     private fun subMyAccountAndTrustData() {
-        job?.cancel()
+        if (job?.isActive == true) return
         job = viewModelScope.launchIO {
             lazyNostrSubscriber.lazySubMyAccountAndTrustData()
+            delay(DELAY_10SEC)
         }
     }
 
