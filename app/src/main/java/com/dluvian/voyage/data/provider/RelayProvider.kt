@@ -162,6 +162,8 @@ class RelayProvider(
 
         Log.i(TAG, "Selected ${result.size} autopilot relays ${result.keys}")
 
+        nostrClient.addRelays(relayUrls = result.keys)
+
         return result
     }
 
