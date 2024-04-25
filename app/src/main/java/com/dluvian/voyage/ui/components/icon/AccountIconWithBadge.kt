@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.ui.components.indicator.TrustBadgeIndicator
 import com.dluvian.voyage.ui.theme.AccountIcon
@@ -19,7 +20,7 @@ fun AccountIconWithBadge(
     trustType: TrustType,
     isSmall: Boolean,
     description: String? = null,
-    height: Dp = ButtonDefaults.MinHeight
+    height: Dp = ButtonDefaults.MinHeight.minus(12.dp)
 ) {
     Box(
         Modifier

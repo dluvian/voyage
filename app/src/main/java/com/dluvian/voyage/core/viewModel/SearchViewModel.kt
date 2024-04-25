@@ -24,7 +24,7 @@ import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.SuggestionProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
-import com.dluvian.voyage.data.room.entity.ProfileEntity
+import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import rust.nostr.protocol.Nip19Profile
@@ -38,7 +38,7 @@ class SearchViewModel(
     private val friendProvider: FriendProvider,
 ) : ViewModel() {
     val topics = mutableStateOf<List<Topic>>(emptyList())
-    val profiles = mutableStateOf<List<ProfileEntity>>(emptyList())
+    val profiles = mutableStateOf<List<AdvancedProfileView>>(emptyList())
 
     fun handle(action: SearchViewAction) {
         when (action) {

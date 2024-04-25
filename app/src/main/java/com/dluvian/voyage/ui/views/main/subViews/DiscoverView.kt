@@ -98,6 +98,7 @@ fun DiscoverView(vm: DiscoverViewModel, onUpdate: OnUpdate) {
                 label = it.inner.name,
                 isFollowed = it.inner.isFriend,
                 icon = {
+                    Box(modifier = Modifier.padding(start = spacing.medium)) {
                     AccountIconWithBadge(
                         trustType = TrustType.from(
                             isOneself = it.inner.isMe,
@@ -107,6 +108,7 @@ fun DiscoverView(vm: DiscoverViewModel, onUpdate: OnUpdate) {
                         isSmall = true,
                         description = it.inner.name,
                     )
+                    }
                 },
                 onFollow = {
                     onUpdate(

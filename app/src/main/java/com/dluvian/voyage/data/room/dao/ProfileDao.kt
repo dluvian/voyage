@@ -3,7 +3,6 @@ package com.dluvian.voyage.data.room.dao
 import androidx.room.Dao
 import androidx.room.Query
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.data.room.entity.ProfileEntity
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import kotlinx.coroutines.flow.Flow
 
@@ -21,7 +20,7 @@ interface ProfileDao {
     @Query("SELECT createdAt FROM profile WHERE pubkey = :pubkey")
     suspend fun getMaxCreatedAt(pubkey: PubkeyHex): Long?
 
-    suspend fun getProfilesByName(name: String, limit: Int): List<ProfileEntity> {
+    suspend fun getProfilesByName(name: String, limit: Int): List<AdvancedProfileView> {
         if (limit <= 0) return emptyList()
 
         return internalGetProfilesWithNameLike(name = name, somewhere = "%$name%", limit = limit)
@@ -45,16 +44,15 @@ interface ProfileDao {
     )
     suspend fun filterKnownProfiles(pubkeys: Collection<PubkeyHex>): List<PubkeyHex>
 
-    // UNION ALL retains order
     @Query(
-        "SELECT * FROM profile WHERE name = :name AND name != ''" +
-                "UNION ALL " +
-                "SELECT * FROM profile WHERE name LIKE :somewhere ESCAPE '\\'  AND name != ''" +
+        "SELECT * FROM AdvancedProfileView WHERE name = :name AND name != ''" +
+                "UNION " +
+                "SELECT * FROM AdvancedProfileView WHERE name LIKE :somewhere AND name != ''" +
                 "LIMIT :limit"
     )
     suspend fun internalGetProfilesWithNameLike(
         name: String,
         somewhere: String,
         limit: Int
-    ): List<ProfileEntity>
+    ): List<AdvancedProfileView>
 }

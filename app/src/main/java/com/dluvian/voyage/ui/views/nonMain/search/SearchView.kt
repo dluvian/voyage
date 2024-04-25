@@ -15,8 +15,9 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenTopic
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.core.viewModel.SearchViewModel
-import com.dluvian.voyage.data.room.entity.ProfileEntity
+import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.ui.components.icon.AccountIconWithBadge
 import com.dluvian.voyage.ui.components.row.ClickableRow
 import com.dluvian.voyage.ui.components.text.SectionHeader
@@ -39,7 +40,7 @@ fun SearchView(vm: SearchViewModel, snackbar: SnackbarHostState, onUpdate: OnUpd
 @Composable
 private fun SearchViewContent(
     topics: List<Topic>,
-    profiles: List<ProfileEntity>,
+    profiles: List<AdvancedProfileView>,
     onUpdate: OnUpdate
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -63,7 +64,11 @@ private fun SearchViewContent(
                     header = profile.name,
                     icon = {
                         AccountIconWithBadge(
-                            trustType = TODO(),
+                            trustType = TrustType.from(
+                                isOneself = profile.isMe,
+                                isFriend = profile.isFriend,
+                                isWebOfTrust = profile.isWebOfTrust
+                            ),
                             isSmall = true,
                             description = profile.name
                         )

@@ -10,7 +10,6 @@ import com.dluvian.voyage.data.model.RelevantMetadata
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.room.dao.ProfileDao
-import com.dluvian.voyage.data.room.entity.ProfileEntity
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -50,8 +49,10 @@ class ProfileProvider(
         }
     }
 
-    suspend fun getProfileByName(name: String, limit: Int): List<ProfileEntity> {
+    suspend fun getProfileByName(name: String, limit: Int): List<AdvancedProfileView> {
         return profileDao.getProfilesByName(name = name, limit = limit)
+            .sortedByDescending { it.isFriend }
+            .sortedBy { it.name.length }
     }
 
     suspend fun getPopularUnfollowedProfiles(limit: Int): Flow<List<FullProfileUI>> {

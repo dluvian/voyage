@@ -1,7 +1,7 @@
 package com.dluvian.voyage.data.provider
 
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.data.room.entity.ProfileEntity
+import com.dluvian.voyage.data.room.view.AdvancedProfileView
 
 class SuggestionProvider(
     private val topicProvider: TopicProvider,
@@ -20,7 +20,7 @@ class SuggestionProvider(
             .toList()
     }
 
-    suspend fun getProfileSuggestions(text: String): List<ProfileEntity> {
+    suspend fun getProfileSuggestions(text: String): List<AdvancedProfileView> {
         val stripped = text.stripSearchText()
         return profileProvider.getProfileByName(name = stripped, limit = maxSearchResult)
     }
