@@ -64,13 +64,13 @@ private fun SearchViewContent(
                     header = profile.name,
                     icon = {
                         AccountIconWithBadge(
+                            pubkey = profile.pubkey,
                             trustType = TrustType.from(
                                 isOneself = profile.isMe,
                                 isFriend = profile.isFriend,
                                 isWebOfTrust = profile.isWebOfTrust
                             ),
                             isSmall = true,
-                            description = profile.name
                         )
                     },
                     onClick = {

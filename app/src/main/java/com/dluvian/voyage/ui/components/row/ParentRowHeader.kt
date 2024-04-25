@@ -22,6 +22,7 @@ import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenTopic
+import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.ThreadViewToggleCollapse
 import com.dluvian.voyage.core.model.IParentUI
 import com.dluvian.voyage.core.model.TrustType
@@ -53,7 +54,12 @@ fun ParentRowHeader(
             modifier = Modifier.weight(1f, fill = false),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ClickableTrustIcon(trustType = parent.trustType, isOp = isOp, onClick = onOpenProfile)
+            ClickableTrustIcon(
+                pubkey = parent.pubkey,
+                trustType = parent.trustType,
+                isOp = isOp,
+                onClick = onOpenProfile
+            )
             myTopic?.let { topic ->
                 TopicChip(
                     modifier = Modifier
@@ -78,10 +84,16 @@ fun ParentRowHeader(
 }
 
 @Composable
-fun ClickableTrustIcon(trustType: TrustType, isOp: Boolean, onClick: Fn) {
+private fun ClickableTrustIcon(
+    pubkey: PubkeyHex,
+    trustType: TrustType,
+    isOp: Boolean,
+    onClick: Fn
+) {
     Box(modifier = Modifier.clickable(onClick = onClick)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             AccountIconWithBadge(
+                pubkey = pubkey,
                 trustType = trustType,
                 isSmall = false,
                 height = sizing.smallIndicator

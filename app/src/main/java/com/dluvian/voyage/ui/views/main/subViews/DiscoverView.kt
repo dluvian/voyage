@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -98,15 +99,17 @@ fun DiscoverView(vm: DiscoverViewModel, onUpdate: OnUpdate) {
                 label = it.inner.name,
                 isFollowed = it.inner.isFriend,
                 icon = {
-                    Box(modifier = Modifier.padding(start = spacing.medium)) {
+                    Box(modifier = Modifier
+                        .padding(start = spacing.large)
+                        .fillMaxHeight(0.7f)) {
                     AccountIconWithBadge(
+                        pubkey = it.inner.pubkey,
                         trustType = TrustType.from(
                             isOneself = it.inner.isMe,
                             isFriend = it.inner.isFriend,
                             isWebOfTrust = it.inner.isWebOfTrust
                         ),
                         isSmall = true,
-                        description = it.inner.name,
                     )
                     }
                 },
