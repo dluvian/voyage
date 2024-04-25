@@ -1,10 +1,12 @@
 package com.dluvian.voyage.data.nostr
 
 import android.util.Log
+import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.MAX_PUBKEYS
 import com.dluvian.voyage.core.MAX_RND_RESUB_PERCENTAGE
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.core.mergeRelayFilters
 import com.dluvian.voyage.core.takeRandom
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.provider.FriendProvider
@@ -41,7 +43,7 @@ class LazyNostrSubscriber(
     suspend fun lazySubTrustData() {
         semiLazySubFriendsNip65()
         delay(DELAY_1SEC)
-        semiLazySubWebOfTrustPubkeys()
+        lazySubWebOfTrustPubkeys()
     }
 
     suspend fun lazySubUnknownProfiles(pubkeys: Collection<PubkeyHex>) {
@@ -116,73 +118,80 @@ class LazyNostrSubscriber(
 
     private suspend fun semiLazySubFriendsNip65() {
         val friendsWithMissingNip65 = friendProvider.getFriendsWithMissingNip65()
+        Log.d(TAG, "Missing nip65s of ${friendsWithMissingNip65.size} pubkeys")
+
+        val timestamp = Timestamp.now()
         val randomResub = friendProvider.getFriendPubkeys(maxPercentage = MAX_RND_RESUB_PERCENTAGE)
         val nip65Resub = (friendsWithMissingNip65 + randomResub).distinct()
-        if (nip65Resub.isEmpty()) return
-
-        val timestamp = Timestamp.now()
-        relayProvider
+        val missingSubs = relayProvider
             .getObserveRelays(pubkeys = nip65Resub)
-            .forEach { (relay, pubkeys) ->
-                val nip65Filter = Filter().kind(kind = Kind.fromEnum(KindEnum.RelayList))
-                    .authors(authors = pubkeys.map { PublicKey.fromHex(it) })
-                    .until(timestamp = timestamp)
-                    .limit(pubkeys.size.toULong())
-                val filters = listOf(nip65Filter)
-                subCreator.subscribe(relayUrl = relay, filters = filters)
+            .mapValues { (_, pubkeys) ->
+                listOf(
+                    Filter().kind(kind = Kind.fromEnum(KindEnum.RelayList))
+                        .authors(authors = pubkeys.map { PublicKey.fromHex(it) })
+                        .until(timestamp = timestamp)
+                        .limit(pubkeys.size.toULong())
+                )
             }
+        val newestSubs = lazySubNewestFriendNip65(until = timestamp)
 
-        lazySubNewestFriendNip65(until = timestamp)
+        mergeRelayFilters(missingSubs, newestSubs).forEach { (relay, filters) ->
+            subCreator.subscribe(relayUrl = relay, filters = filters)
+        }
     }
 
-    private suspend fun lazySubNewestFriendNip65(until: Timestamp) {
-        val newestCreatedAt = relayProvider.getNewestCreatedAt()?.toULong() ?: return
-        if (newestCreatedAt >= until.asSecs()) return
+    private suspend fun lazySubNewestFriendNip65(until: Timestamp): Map<RelayUrl, List<Filter>> {
+        val newestCreatedAt = relayProvider.getNewestCreatedAt()?.toULong() ?: return emptyMap()
+        if (newestCreatedAt >= until.asSecs()) return emptyMap()
 
         val friendPubkeys = friendProvider.getFriendPubkeys().map { PublicKey.fromHex(it) }
-        val newNip65Filter = Filter().kind(kind = Kind.fromEnum(KindEnum.RelayList))
-            .authors(authors = friendPubkeys)
-            .until(timestamp = until)
-            .since(timestamp = Timestamp.fromSecs(newestCreatedAt + 1u))
-            .limit(friendPubkeys.size.toULong())
-        val filters = listOf(newNip65Filter)
-        relayProvider.getReadRelays(includeConnected = true)
-            .forEach { subCreator.subscribe(relayUrl = it, filters = filters) }
+        val newNip65Filter = listOf(
+            Filter().kind(kind = Kind.fromEnum(KindEnum.RelayList))
+                .authors(authors = friendPubkeys)
+                .until(timestamp = until)
+                .since(timestamp = Timestamp.fromSecs(newestCreatedAt + 1u))
+                .limit(friendPubkeys.size.toULong())
+        )
+
+        return relayProvider.getReadRelays(includeConnected = true)
+            .associateWith { newNip65Filter }
     }
 
-    private suspend fun semiLazySubWebOfTrustPubkeys() {
-        val friendsWithMissingContactList = friendProvider.getFriendsWithMissingContactList()
-        val randomResub = friendProvider.getFriendPubkeys(maxPercentage = MAX_RND_RESUB_PERCENTAGE)
-        val webOfTrustResub = (friendsWithMissingContactList + randomResub).distinct()
-        if (webOfTrustResub.isEmpty()) return
+    private suspend fun lazySubWebOfTrustPubkeys() {
+        val friendsWithMissingContacts = friendProvider.getFriendsWithMissingContactList()
+        Log.d(TAG, "Missing contact lists of ${friendsWithMissingContacts.size} pubkeys")
 
         val timestamp = Timestamp.now()
-        relayProvider
-            .getObserveRelays(pubkeys = webOfTrustResub)
-            .forEach { (relay, pubkeys) ->
-                val webOfTrustFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.ContactList))
-                    .authors(authors = pubkeys.map { PublicKey.fromHex(it) })
-                    .until(timestamp = timestamp)
-                    .limit(pubkeys.size.toULong())
-                val filters = listOf(webOfTrustFilter)
-                subCreator.subscribe(relayUrl = relay, filters = filters)
+        val missingSubs = relayProvider
+            .getObserveRelays(pubkeys = friendsWithMissingContacts)
+            .mapValues { (_, pubkeys) ->
+                listOf(
+                    Filter().kind(kind = Kind.fromEnum(KindEnum.ContactList))
+                        .authors(authors = pubkeys.map { PublicKey.fromHex(it) })
+                        .until(timestamp = timestamp)
+                        .limit(pubkeys.size.toULong())
+                )
             }
+        val newestSubs = lazySubNewestWotPubkeys(until = timestamp)
 
-        lazySubNewestWotPubkeys(until = timestamp)
+        mergeRelayFilters(missingSubs, newestSubs).forEach { (relay, filters) ->
+            subCreator.subscribe(relayUrl = relay, filters = filters)
+        }
     }
 
-    private suspend fun lazySubNewestWotPubkeys(until: Timestamp) {
-        val newestCreatedAt = webOfTrustProvider.getNewestCreatedAt()?.toULong() ?: return
-        if (newestCreatedAt >= until.asSecs()) return
+    private suspend fun lazySubNewestWotPubkeys(until: Timestamp): Map<RelayUrl, List<Filter>> {
+        val newestCreatedAt = webOfTrustProvider.getNewestCreatedAt()?.toULong()
+            ?: return emptyMap()
+        if (newestCreatedAt >= until.asSecs()) return emptyMap()
 
         val friendPubkeys = friendProvider.getFriendPubkeys().map { PublicKey.fromHex(it) }
-        val newWotFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.ContactList))
-            .authors(authors = friendPubkeys)
-            .until(timestamp = until)
-            .since(timestamp = Timestamp.fromSecs(newestCreatedAt + 1u))
-            .limit(friendPubkeys.size.toULong())
-        val filters = listOf(newWotFilter)
-        relayProvider.getReadRelays()
-            .forEach { subCreator.subscribe(relayUrl = it, filters = filters) }
+        val newWotFilter = listOf(
+            Filter().kind(kind = Kind.fromEnum(KindEnum.ContactList))
+                .authors(authors = friendPubkeys)
+                .until(timestamp = until)
+                .since(timestamp = Timestamp.fromSecs(newestCreatedAt + 1u))
+                .limit(friendPubkeys.size.toULong())
+        )
+        return relayProvider.getReadRelays().associateWith { newWotFilter }
     }
 }

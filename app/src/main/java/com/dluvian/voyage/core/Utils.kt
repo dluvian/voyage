@@ -16,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
+import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.getHashtags
 import com.dluvian.voyage.data.model.RelevantMetadata
 import kotlinx.coroutines.CoroutineScope
@@ -221,4 +222,16 @@ fun copyAndToast(text: String, toast: String, context: Context, clip: ClipboardM
 fun copyAndToast(text: AnnotatedString, toast: String, context: Context, clip: ClipboardManager) {
     clip.setText(text)
     Toast.makeText(context, toast, Toast.LENGTH_SHORT).show()
+}
+
+fun mergeRelayFilters(vararg maps: Map<RelayUrl, List<Filter>>): Map<RelayUrl, List<Filter>> {
+    val result = mutableMapOf<RelayUrl, MutableList<Filter>>()
+    for (map in maps) {
+        map.forEach { (relay, filters) ->
+            val present = result.putIfAbsent(relay, filters.toMutableList())
+            present?.addAll(filters)
+        }
+    }
+
+    return result
 }
