@@ -83,28 +83,28 @@ class LazyNostrSubscriber(
         val myContactFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.ContactList))
             .author(author = pubkey)
             .until(timestamp = timestamp)
-            .since(timestamp = Timestamp.fromSecs(secs = contactSince))
+            .since(timestamp = Timestamp.fromSecs(secs = contactSince + 1u))
             .limit(1u)
 
         val topicSince = topicProvider.getCreatedAt()?.toULong() ?: 1uL
         val myTopicsFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Interests))
             .author(author = pubkey)
             .until(timestamp = timestamp)
-            .since(timestamp = Timestamp.fromSecs(secs = topicSince))
+            .since(timestamp = Timestamp.fromSecs(secs = topicSince + 1u))
             .limit(1u)
 
         val nip65Since = relayProvider.getCreatedAt(pubkey = hex)?.toULong() ?: 1uL
         val myNip65Filter = Filter().kind(kind = Kind.fromEnum(KindEnum.RelayList))
             .author(author = pubkey)
             .until(timestamp = timestamp)
-            .since(timestamp = Timestamp.fromSecs(secs = nip65Since))
+            .since(timestamp = Timestamp.fromSecs(secs = nip65Since + 1u))
             .limit(1u)
 
         val profileSince = profileDao.getMaxCreatedAt(pubkey = hex)?.toULong() ?: 1uL
         val myProfileFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Metadata))
             .author(author = pubkey)
             .until(timestamp = timestamp)
-            .since(timestamp = Timestamp.fromSecs(secs = profileSince))
+            .since(timestamp = Timestamp.fromSecs(secs = profileSince + 1u))
             .limit(1u)
 
         val filters = listOf(myContactFilter, myTopicsFilter, myNip65Filter, myProfileFilter)
