@@ -28,7 +28,7 @@ import com.dluvian.voyage.core.model.IParentUI
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.ui.components.button.OptionsButton
 import com.dluvian.voyage.ui.components.chip.TopicChip
-import com.dluvian.voyage.ui.components.icon.AccountIconWithBadge
+import com.dluvian.voyage.ui.components.icon.BorderedTrustIcon
 import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.components.text.RelativeTime
 import com.dluvian.voyage.ui.theme.OPBlue
@@ -92,10 +92,9 @@ private fun ClickableTrustIcon(
 ) {
     Box(modifier = Modifier.clickable(onClick = onClick)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            AccountIconWithBadge(
+            BorderedTrustIcon(
                 pubkey = pubkey,
                 trustType = trustType,
-                isSmall = false,
                 height = sizing.smallIndicator
             )
             if (isOp) {

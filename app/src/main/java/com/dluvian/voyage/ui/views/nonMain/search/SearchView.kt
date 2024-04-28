@@ -18,7 +18,7 @@ import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.core.viewModel.SearchViewModel
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
-import com.dluvian.voyage.ui.components.icon.AccountIconWithBadge
+import com.dluvian.voyage.ui.components.icon.BorderedTrustIcon
 import com.dluvian.voyage.ui.components.row.ClickableRow
 import com.dluvian.voyage.ui.components.text.SectionHeader
 import com.dluvian.voyage.ui.theme.HashtagIcon
@@ -63,14 +63,13 @@ private fun SearchViewContent(
                 ClickableRow(
                     header = profile.name,
                     icon = {
-                        AccountIconWithBadge(
+                        BorderedTrustIcon(
                             pubkey = profile.pubkey,
                             trustType = TrustType.from(
                                 isOneself = profile.isMe,
                                 isFriend = profile.isFriend,
                                 isWebOfTrust = profile.isWebOfTrust
                             ),
-                            isSmall = true,
                         )
                     },
                     onClick = {

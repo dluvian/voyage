@@ -1,10 +1,8 @@
 package com.dluvian.voyage.ui.components.icon
 
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.model.FriendTrust
@@ -43,14 +41,8 @@ fun TrustIcon(modifier: Modifier = Modifier, trustType: TrustType) {
             stringResource(id = R.string.unknown)
         )
     }
-    val bgColor = MaterialTheme.colorScheme.background
     Icon(
-        modifier = modifier.drawBehind {
-            this.drawCircle(
-                color = bgColor,
-                radius = size.minDimension * 0.33f
-            )
-        },
+        modifier = modifier,
         imageVector = icon,
         contentDescription = description,
         tint = color

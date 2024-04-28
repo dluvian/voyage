@@ -45,7 +45,7 @@ import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.core.viewModel.DiscoverViewModel
 import com.dluvian.voyage.ui.components.PullRefreshBox
 import com.dluvian.voyage.ui.components.button.FollowButton
-import com.dluvian.voyage.ui.components.icon.AccountIconWithBadge
+import com.dluvian.voyage.ui.components.icon.BorderedTrustIcon
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.text.SectionHeader
 import com.dluvian.voyage.ui.theme.HashtagIcon
@@ -102,14 +102,14 @@ fun DiscoverView(vm: DiscoverViewModel, onUpdate: OnUpdate) {
                     Box(modifier = Modifier
                         .padding(start = spacing.large)
                         .fillMaxHeight(0.7f)) {
-                    AccountIconWithBadge(
+                        BorderedTrustIcon(
                         pubkey = it.inner.pubkey,
                         trustType = TrustType.from(
                             isOneself = it.inner.isMe,
                             isFriend = it.inner.isFriend,
                             isWebOfTrust = it.inner.isWebOfTrust
                         ),
-                        isSmall = true,
+                            isCircle = true
                     )
                     }
                 },

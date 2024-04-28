@@ -3,7 +3,6 @@ package com.dluvian.voyage.ui.theme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Comment
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.automirrored.filled.Reply
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.AccountCircle
@@ -15,6 +14,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowUp
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material.icons.filled.RemoveCircle
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Search
@@ -65,7 +65,7 @@ val DeleteIcon = Icons.Default.Delete
 fun getTrustIcon(trustType: TrustType): ImageVector {
     return when (trustType) {
         Oneself -> Icons.Default.Star
-        FriendTrust, WebTrust -> Icons.Default.VerifiedUser
-        NoTrust -> Icons.AutoMirrored.Filled.HelpOutline
+        FriendTrust, WebTrust -> Icons.Filled.VerifiedUser
+        NoTrust -> Icons.Default.QuestionMark
     }
 }
