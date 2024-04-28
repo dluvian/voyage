@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,13 +23,12 @@ import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenTopic
-import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.ThreadViewToggleCollapse
 import com.dluvian.voyage.core.model.IParentUI
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.ui.components.button.OptionsButton
 import com.dluvian.voyage.ui.components.chip.TopicChip
-import com.dluvian.voyage.ui.components.icon.BorderedTrustIcon
+import com.dluvian.voyage.ui.components.icon.TrustIcon
 import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.components.text.RelativeTime
 import com.dluvian.voyage.ui.theme.OPBlue
@@ -55,7 +55,6 @@ fun ParentRowHeader(
             verticalAlignment = Alignment.CenterVertically
         ) {
             ClickableTrustIcon(
-                pubkey = parent.pubkey,
                 trustType = parent.trustType,
                 isOp = isOp,
                 onClick = onOpenProfile
@@ -85,18 +84,13 @@ fun ParentRowHeader(
 
 @Composable
 private fun ClickableTrustIcon(
-    pubkey: PubkeyHex,
     trustType: TrustType,
     isOp: Boolean,
     onClick: Fn
 ) {
     Box(modifier = Modifier.clickable(onClick = onClick)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            BorderedTrustIcon(
-                pubkey = pubkey,
-                trustType = trustType,
-                height = sizing.smallIndicator
-            )
+            TrustIcon(modifier = Modifier.size(sizing.smallIndicator), trustType = trustType)
             if (isOp) {
                 Spacer(modifier = Modifier.width(spacing.small))
                 Text(

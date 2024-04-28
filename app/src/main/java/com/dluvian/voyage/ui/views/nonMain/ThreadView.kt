@@ -86,7 +86,7 @@ private fun ThreadViewContent(
             state = state
         ) {
             item {
-                PostRow(post = root, isDetailed = true, onUpdate = onUpdate)
+                PostRow(post = root, isOp = true, isThreadView = true, onUpdate = onUpdate)
                 FullHorizontalDivider()
             }
             if (root.replyCount > leveledReplies.size) item {

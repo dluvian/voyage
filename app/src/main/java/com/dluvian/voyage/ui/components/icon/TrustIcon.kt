@@ -1,5 +1,6 @@
 package com.dluvian.voyage.ui.components.icon
 
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -12,6 +13,7 @@ import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.core.model.WebTrust
 import com.dluvian.voyage.ui.theme.getTrustColor
 import com.dluvian.voyage.ui.theme.getTrustIcon
+import com.dluvian.voyage.ui.theme.sizing
 
 
 @Composable
@@ -42,7 +44,7 @@ fun TrustIcon(modifier: Modifier = Modifier, trustType: TrustType) {
         )
     }
     Icon(
-        modifier = modifier,
+        modifier = modifier.size(sizing.smallIndicator),
         imageVector = icon,
         contentDescription = description,
         tint = color

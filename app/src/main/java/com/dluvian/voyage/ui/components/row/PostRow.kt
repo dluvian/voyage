@@ -22,7 +22,12 @@ import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
-fun PostRow(post: RootPostUI, isDetailed: Boolean = false, onUpdate: OnUpdate) {
+fun PostRow(
+    post: RootPostUI,
+    isOp: Boolean = false,
+    isThreadView: Boolean = false,
+    onUpdate: OnUpdate
+) {
     val onOpenThread = { onUpdate(OpenThread(rootPost = post)) }
     Column(
         modifier = Modifier
@@ -44,7 +49,7 @@ fun PostRow(post: RootPostUI, isDetailed: Boolean = false, onUpdate: OnUpdate) {
         ParentRowHeader(
             parent = post,
             myTopic = post.myTopic,
-            isOp = isDetailed,
+            isOp = isOp,
             onUpdate = onUpdate,
         )
         Spacer(modifier = Modifier.height(spacing.large))
@@ -52,14 +57,14 @@ fun PostRow(post: RootPostUI, isDetailed: Boolean = false, onUpdate: OnUpdate) {
             AnnotatedText(
                 text = post.subject,
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
-                maxLines = if (isDetailed) Int.MAX_VALUE else 3,
+                maxLines = if (isThreadView) Int.MAX_VALUE else 3,
                 onClick = { onClickText(it, post.subject) }
             )
             Spacer(modifier = Modifier.height(spacing.large))
         }
         AnnotatedText(
             text = post.content,
-            maxLines = if (isDetailed) Int.MAX_VALUE else 21,
+            maxLines = if (isThreadView) Int.MAX_VALUE else 21,
             onClick = { onClickText(it, post.content) }
         )
         Spacer(modifier = Modifier.height(spacing.large))
