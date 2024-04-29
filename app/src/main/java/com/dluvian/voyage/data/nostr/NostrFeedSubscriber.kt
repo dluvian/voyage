@@ -4,14 +4,13 @@ import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.syncedPutOrAdd
+import com.dluvian.voyage.core.textNoteAndRepostKinds
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import rust.nostr.protocol.Filter
-import rust.nostr.protocol.Kind
-import rust.nostr.protocol.KindEnum
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Timestamp
 
@@ -36,7 +35,7 @@ class NostrFeedSubscriber(
                 .forEach { (relayUrl, pubkeys) ->
                     val publicKeys = pubkeys.map { PublicKey.fromHex(it) }
                     val friendsNoteFilter = Filter()
-                        .kind(kind = Kind.fromEnum(KindEnum.TextNote))
+                        .kinds(kinds = textNoteAndRepostKinds)
                         .authors(authors = publicKeys)
                         .until(timestamp = until)
                         .limit(limit = limit)
@@ -48,7 +47,8 @@ class NostrFeedSubscriber(
 
         val topics = topicProvider.getMyTopics()
         if (topics.isNotEmpty()) {
-            val topicedNoteFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.TextNote))
+            val topicedNoteFilter = Filter()
+                .kinds(kinds = textNoteAndRepostKinds)
                 .hashtags(hashtags = topics)
                 .until(timestamp = until)
                 .limit(limit = limit)
@@ -75,7 +75,8 @@ class NostrFeedSubscriber(
 
         val result = mutableMapOf<RelayUrl, MutableList<Filter>>()
 
-        val topicedNoteFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.TextNote))
+        val topicedNoteFilter = Filter()
+            .kinds(kinds = textNoteAndRepostKinds)
             .hashtag(hashtag = topic)
             .until(timestamp = until)
             .since(timestamp = since)
@@ -99,7 +100,8 @@ class NostrFeedSubscriber(
 
         val result = mutableMapOf<RelayUrl, MutableList<Filter>>()
 
-        val pubkeyNoteFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.TextNote))
+        val pubkeyNoteFilter = Filter()
+            .kinds(kinds = textNoteAndRepostKinds)
             .author(PublicKey.fromHex(hex = pubkey))
             .until(timestamp = until)
             .since(timestamp = since)

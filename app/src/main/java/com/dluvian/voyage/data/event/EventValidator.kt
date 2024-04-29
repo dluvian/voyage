@@ -11,6 +11,7 @@ import com.dluvian.nostr_kt.isContactList
 import com.dluvian.nostr_kt.isNip65
 import com.dluvian.nostr_kt.isPostOrReply
 import com.dluvian.nostr_kt.isProfile
+import com.dluvian.nostr_kt.isRepost
 import com.dluvian.nostr_kt.isTopicList
 import com.dluvian.nostr_kt.isVote
 import com.dluvian.nostr_kt.secs
@@ -66,31 +67,10 @@ class EventValidator(
 
     private fun validate(event: Event, relayUrl: RelayUrl): ValidatedEvent? {
         val validatedEvent = if (event.isPostOrReply()) {
-            val replyToId = event.getReplyToId()
-            val content = event.content().trim()
-            if (replyToId == null) {
-                val subject = event.getSubject()?.trim()?.take(MAX_SUBJECT_LEN)
-                if (subject.isNullOrEmpty() && content.isEmpty()) return null
-                ValidatedRootPost(
-                    id = event.id().toHex(),
-                    pubkey = event.author().toHex(),
-                    topics = event.getNormalizedTopics(limited = true),
-                    subject = subject,
-                    content = content,
-                    createdAt = event.createdAt().secs(),
-                    relayUrl = relayUrl,
-                )
-            } else {
-                if (content.isEmpty() || replyToId == event.id().toHex()) return null
-                ValidatedReply(
-                    id = event.id().toHex(),
-                    pubkey = event.author().toHex(),
-                    parentId = replyToId,
-                    content = content,
-                    createdAt = event.createdAt().secs(),
-                    relayUrl = relayUrl,
-                )
-            }
+            createValidatedMainPost(event = event, relayUrl = relayUrl)
+        } else if (event.isRepost()) {
+            Log.i("LOLOL", "repost: ${event.id().toHex()}")
+            createValidatedRepost(event = event, relayUrl = relayUrl)
         } else if (event.isVote()) {
             val postId = event.eventIds().firstOrNull() ?: return null
             ValidatedVote(
@@ -135,5 +115,50 @@ class EventValidator(
         if (!event.verify()) return null
 
         return validatedEvent
+    }
+
+    private fun createValidatedMainPost(event: Event, relayUrl: RelayUrl): ValidatedMainPost? {
+        val replyToId = event.getReplyToId()
+        val content = event.content().trim()
+        return if (replyToId == null) {
+            val subject = event.getSubject()?.trim()?.take(MAX_SUBJECT_LEN)
+            if (subject.isNullOrEmpty() && content.isEmpty()) return null
+            ValidatedRootPost(
+                id = event.id().toHex(),
+                pubkey = event.author().toHex(),
+                topics = event.getNormalizedTopics(limited = true),
+                subject = subject,
+                content = content,
+                createdAt = event.createdAt().secs(),
+                relayUrl = relayUrl,
+            )
+        } else {
+            if (content.isEmpty() || replyToId == event.id().toHex()) return null
+            ValidatedReply(
+                id = event.id().toHex(),
+                pubkey = event.author().toHex(),
+                parentId = replyToId,
+                content = content,
+                createdAt = event.createdAt().secs(),
+                relayUrl = relayUrl,
+            )
+        }
+    }
+
+    private fun createValidatedRepost(event: Event, relayUrl: RelayUrl): ValidatedCrossPost? {
+        val parsedEvent = runCatching { Event.fromJson(event.content()) }.getOrNull()
+            ?: return null
+        if (!parsedEvent.isPostOrReply()) return null
+        val validated = createValidatedMainPost(event = parsedEvent, relayUrl = relayUrl)
+            ?: return null
+        if (!parsedEvent.verify()) return null
+        return ValidatedCrossPost(
+            id = event.id().toHex(),
+            pubkey = event.author().toHex(),
+            topics = event.getNormalizedTopics(limited = true),
+            createdAt = event.createdAt().secs(),
+            relayUrl = relayUrl,
+            crossPost = validated
+        )
     }
 }

@@ -6,6 +6,8 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.data.event.ValidatedCrossPost
+import com.dluvian.voyage.data.event.ValidatedPost
 import com.dluvian.voyage.data.event.ValidatedReply
 import com.dluvian.voyage.data.event.ValidatedRootPost
 import com.dluvian.voyage.data.room.entity.HashtagEntity
@@ -16,19 +18,12 @@ interface PostInsertDao {
 
     @Transaction
     suspend fun insertRootPosts(posts: Collection<ValidatedRootPost>) {
-        if (posts.isEmpty()) return
+        internalInsertRootOrCrossPosts(rootOrCross = posts)
+    }
 
-        val oldIds = filterOld(ids = posts.map { it.id })
-        val newPosts = posts.filter { !oldIds.contains(it.id) }
-        if (newPosts.isEmpty()) return
-
-        val newEntities = newPosts.map { post -> PostEntity.from(post) }
-        internalInsertPostOrIgnore(posts = newEntities)
-
-        val hashtags = newPosts.flatMap { post ->
-            post.topics.map { topic -> HashtagEntity(postId = post.id, hashtag = topic) }
-        }
-        if (hashtags.isNotEmpty()) internalInsertHashtagsOrIgnore(hashtags = hashtags)
+    @Transaction
+    suspend fun insertCrossPosts(crossPosts: Collection<ValidatedCrossPost>) {
+        internalInsertRootOrCrossPosts(rootOrCross = crossPosts)
     }
 
     @Transaction
@@ -41,6 +36,22 @@ interface PostInsertDao {
 
         val newEntities = newReplies.map { relayedItem -> PostEntity.from(relayedItem) }
         internalInsertPostOrIgnore(posts = newEntities)
+    }
+
+    suspend fun internalInsertRootOrCrossPosts(rootOrCross: Collection<ValidatedPost>) {
+        if (rootOrCross.isEmpty()) return
+
+        val oldIds = filterOld(ids = rootOrCross.map { it.id })
+        val newPosts = rootOrCross.filter { !oldIds.contains(it.id) }
+        if (newPosts.isEmpty()) return
+
+        val newEntities = newPosts.map { post -> PostEntity.from(post) }
+        internalInsertPostOrIgnore(posts = newEntities)
+
+        val hashtags = newPosts.flatMap { post ->
+            post.topics.map { topic -> HashtagEntity(postId = post.id, hashtag = topic) }
+        }
+        if (hashtags.isNotEmpty()) internalInsertHashtagsOrIgnore(hashtags = hashtags)
     }
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)

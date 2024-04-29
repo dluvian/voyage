@@ -28,7 +28,8 @@ interface DeleteDao {
                 "WHERE createdAt < :oldestCreatedAtInUse " +
                 "AND parentId IS NULL " +
                 "AND pubkey NOT IN (SELECT pubkey FROM account) " +
-                "AND id NOT IN (SELECT id FROM post WHERE parentId IS NULL ORDER BY createdAt DESC LIMIT :threshold)"
+                "AND id NOT IN (SELECT id FROM post WHERE parentId IS NULL ORDER BY createdAt DESC LIMIT :threshold) " +
+                "AND id NOT IN (SELECT crossPostedId FROM post WHERE parentId IS NULL ORDER BY createdAt DESC LIMIT :threshold)"
     )
     suspend fun internalDeleteOldestRootPosts(threshold: Int, oldestCreatedAtInUse: Long)
 
@@ -37,7 +38,8 @@ interface DeleteDao {
                 "WHERE createdAt < :oldestCreatedAtInUse " +
                 "AND parentId IS NOT NULL " +
                 "AND pubkey NOT IN (SELECT pubkey FROM account)" +
-                "AND parentId NOT IN (SELECT id FROM post) "
+                "AND parentId NOT IN (SELECT id FROM post) " +
+                "AND id NOT IN (SELECT crossPostedId FROM post) "
     )
     suspend fun internalDeleteOrphanedPosts(oldestCreatedAtInUse: Long)
 }

@@ -9,26 +9,43 @@ import rust.nostr.protocol.Metadata
 
 sealed class ValidatedEvent
 
-sealed class ValidatedPost(open val id: EventIdHex, open val topics: List<String>) :
-    ValidatedEvent()
+sealed class ValidatedPost(
+    open val id: EventIdHex,
+    open val pubkey: PubkeyHex,
+    open val topics: List<Topic>
+) : ValidatedEvent()
+
+sealed class ValidatedMainPost(
+    override val id: EventIdHex,
+    override val pubkey: PubkeyHex,
+    override val topics: List<Topic>
+) : ValidatedPost(id = id, pubkey = pubkey, topics = topics)
 data class ValidatedRootPost(
     override val id: EventIdHex,
-    val pubkey: PubkeyHex,
+    override val pubkey: PubkeyHex,
     override val topics: List<String>,
     val subject: String?,
     val content: String,
     val createdAt: Long,
-    val relayUrl: RelayUrl
-) : ValidatedPost(id = id, topics = topics)
-
+    val relayUrl: RelayUrl,
+) : ValidatedMainPost(id = id, pubkey = pubkey, topics = topics)
 data class ValidatedReply(
     override val id: EventIdHex,
-    val pubkey: PubkeyHex,
+    override val pubkey: PubkeyHex,
     val parentId: EventIdHex,
     val content: String,
     val createdAt: Long,
     val relayUrl: RelayUrl
-) : ValidatedPost(id = id, topics = emptyList())
+) : ValidatedMainPost(id = id, pubkey = pubkey, topics = emptyList())
+
+data class ValidatedCrossPost(
+    override val id: EventIdHex,
+    override val pubkey: PubkeyHex,
+    override val topics: List<String>,
+    val createdAt: Long,
+    val relayUrl: RelayUrl,
+    val crossPost: ValidatedMainPost,
+) : ValidatedPost(id = id, pubkey = pubkey, topics = topics)
 
 data class ValidatedVote(
     val id: EventIdHex,

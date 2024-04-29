@@ -51,6 +51,10 @@ fun Timestamp.secs(): Long {
 
 fun getCurrentSecs() = System.currentTimeMillis() / 1000
 
+fun Event.isRepost(): Boolean {
+    return this.kind().matchEnum(KindEnum.Repost)
+}
+
 fun Event.isPostOrReply(): Boolean {
     return this.kind().matchEnum(KindEnum.TextNote)
 }

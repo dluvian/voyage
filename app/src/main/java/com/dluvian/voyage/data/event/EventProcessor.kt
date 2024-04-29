@@ -29,6 +29,7 @@ class EventProcessor(
 
         val rootPosts = mutableListOf<ValidatedRootPost>()
         val replies = mutableListOf<ValidatedReply>()
+        val crossPosts = mutableListOf<ValidatedCrossPost>()
         val votes = mutableListOf<ValidatedVote>()
         val contactLists = mutableListOf<ValidatedContactList>()
         val topicLists = mutableListOf<ValidatedTopicList>()
@@ -39,6 +40,7 @@ class EventProcessor(
             when (event) {
                 is ValidatedRootPost -> rootPosts.add(event)
                 is ValidatedReply -> replies.add(event)
+                is ValidatedCrossPost -> crossPosts.add(event)
                 is ValidatedVote -> votes.add(event)
                 is ValidatedContactList -> contactLists.add(event)
                 is ValidatedTopicList -> topicLists.add(event)
@@ -48,6 +50,7 @@ class EventProcessor(
         }
         processRootPosts(rootPosts = rootPosts)
         processReplies(replies = replies)
+        processCrossPosts(crossPosts = crossPosts)
         processVotes(votes = votes)
         processContactLists(contactLists = contactLists)
         processTopicLists(topicLists = topicLists)
@@ -72,6 +75,17 @@ class EventProcessor(
             room.postInsertDao().insertReplies(replies = replies)
         }.invokeOnCompletion { exception ->
             if (exception != null) Log.w(TAG, "Failed to process replies", exception)
+        }
+    }
+
+    private fun processCrossPosts(crossPosts: Collection<ValidatedCrossPost>) {
+        Log.i("LOLOL", crossPosts.size.toString())
+        if (crossPosts.isEmpty()) return
+
+        scope.launch {
+            room.postInsertDao().insertCrossPosts(crossPosts = crossPosts)
+        }.invokeOnCompletion { exception ->
+            if (exception != null) Log.w(TAG, "Failed to process reposts", exception)
         }
     }
 

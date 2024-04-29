@@ -235,3 +235,8 @@ fun mergeRelayFilters(vararg maps: Map<RelayUrl, List<Filter>>): Map<RelayUrl, L
 
     return result
 }
+
+val textNoteAndRepostKinds = listOf(
+    Kind.fromEnum(KindEnum.TextNote),
+    Kind.fromEnum(KindEnum.Repost)
+)
