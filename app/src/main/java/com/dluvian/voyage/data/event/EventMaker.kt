@@ -37,7 +37,7 @@ class EventMaker(
         val tags = mutableListOf<Tag>()
         if (subject.isNotEmpty()) tags.add(createSubjectTag(subject = subject))
         topics.forEach { tags.add(createHashtagTag(it)) }
-        if (mentions.isNotEmpty()) tags.add(createMentionTag(pubkeys = mentions))
+        if (mentions.isNotEmpty()) tags.addAll(createMentionTag(pubkeys = mentions))
 
         val unsignedEvent = EventBuilder
             .textNote(content = content, tags = tags)

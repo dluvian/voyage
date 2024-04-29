@@ -19,11 +19,8 @@ fun createSubjectTag(subject: String) = Tag.fromEnum(TagEnum.Subject(subject))
 
 fun createHashtagTag(hashtag: String) = Tag.fromEnum(TagEnum.Hashtag(hashtag))
 
-fun createMentionTag(pubkeys: Collection<String>): Tag {
-    val tag = mutableListOf("p")
-    tag.addAll(pubkeys)
-
-    return Tag.parse(data = tag)
+fun createMentionTag(pubkeys: Collection<String>): List<Tag> {
+    return pubkeys.map { Tag.parse(listOf("p", it)) }
 }
 
 private val nostrMentionPattern = Regex("(nostr:|@)(npub1|nprofile1)[a-zA-Z0-9]+")
