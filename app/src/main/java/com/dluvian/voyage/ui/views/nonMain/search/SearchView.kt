@@ -15,10 +15,9 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenTopic
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.core.viewModel.SearchViewModel
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
-import com.dluvian.voyage.ui.components.icon.TrustIcon
+import com.dluvian.voyage.ui.components.row.ClickableProfileRow
 import com.dluvian.voyage.ui.components.row.ClickableRow
 import com.dluvian.voyage.ui.components.text.SectionHeader
 import com.dluvian.voyage.ui.theme.HashtagIcon
@@ -60,17 +59,8 @@ private fun SearchViewContent(
                 SectionHeader(header = stringResource(id = R.string.profiles))
             }
             items(profiles) { profile ->
-                ClickableRow(
-                    header = profile.name,
-                    icon = {
-                        TrustIcon(
-                            trustType = TrustType.from(
-                                isOneself = profile.isMe,
-                                isFriend = profile.isFriend,
-                                isWebOfTrust = profile.isWebOfTrust
-                            ),
-                        )
-                    },
+                ClickableProfileRow(
+                    profile = profile,
                     onClick = {
                         onUpdate(OpenProfile(nprofile = createNprofile(hex = profile.pubkey)))
                     })

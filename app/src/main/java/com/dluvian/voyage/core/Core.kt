@@ -57,21 +57,23 @@ class Core(
                 )
             }
 
-            is ClickText -> clickText(event = uiEvent)
+            is ClickText -> clickText(action = uiEvent)
+
+            is ProfileSuggestionAction -> appContainer.profileSuggestionProvider.handle(action = uiEvent)
         }
     }
 
     @OptIn(ExperimentalTextApi::class)
-    private fun clickText(event: ClickText) {
-        val url = event.text.getUrlAnnotations(event.offset, event.offset).firstOrNull()
+    private fun clickText(action: ClickText) {
+        val url = action.text.getUrlAnnotations(action.offset, action.offset).firstOrNull()
         if (url != null) {
-            event.uriHandler.openUri(url.item.url)
+            action.uriHandler.openUri(url.item.url)
             return
         }
 
-        val other = event.text.getStringAnnotations(event.offset, event.offset).firstOrNull()
+        val other = action.text.getStringAnnotations(action.offset, action.offset).firstOrNull()
         if (other == null) {
-            event.onNoneClick()
+            action.onNoneClick()
             return
         }
 

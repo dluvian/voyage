@@ -167,7 +167,6 @@ sealed class ProfileViewAction : UIEvent()
 data object ProfileViewRefresh : ProfileViewAction()
 data object ProfileViewAppend : ProfileViewAction()
 
-
 sealed class CreatePostViewAction : UIEvent()
 data class SendPost(
     val header: String,
@@ -187,6 +186,11 @@ data class SendReply(
     val signerLauncher: SignerLauncher,
     val onGoBack: Fn
 ) : CreateReplyViewAction()
+
+
+sealed class ProfileSuggestionAction : UIEvent()
+data class SearchSuggestion(val name: String) : ProfileSuggestionAction()
+data object ClickSuggestion : ProfileSuggestionAction()
 
 
 sealed class EditProfileViewAction : UIEvent()

@@ -22,6 +22,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.GoBack
@@ -100,10 +101,8 @@ fun CreateResponseViewContent(
             modifier = Modifier
                 .fillMaxSize()
                 .focusRequester(focusRequester),
-            value = response.value,
-            onValueChange = { str ->
-                response.value = str
-            },
+            value = TextFieldValue(response.value),
+            onValueChange = { str -> response.value = str.text },
             placeholder = stringResource(id = R.string.your_reply),
         )
     }

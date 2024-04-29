@@ -3,7 +3,7 @@ package com.dluvian.voyage.data.provider
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 
-class SuggestionProvider(
+class SearchProvider(
     private val topicProvider: TopicProvider,
     private val profileProvider: ProfileProvider
 ) {

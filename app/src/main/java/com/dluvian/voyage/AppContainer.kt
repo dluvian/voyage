@@ -38,8 +38,9 @@ import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.NameProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
+import com.dluvian.voyage.data.provider.ProfileSuggestionProvider
 import com.dluvian.voyage.data.provider.RelayProvider
-import com.dluvian.voyage.data.provider.SuggestionProvider
+import com.dluvian.voyage.data.provider.SearchProvider
 import com.dluvian.voyage.data.provider.ThreadProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
@@ -243,9 +244,13 @@ class AppContainer(context: Context) {
         annotatedStringProvider = annotatedStringProvider,
     )
 
-    val suggestionProvider = SuggestionProvider(
+    val searchProvider = SearchProvider(
         topicProvider = topicProvider,
         profileProvider = profileProvider
+    )
+
+    val profileSuggestionProvider = ProfileSuggestionProvider(
+        searchProvider = searchProvider
     )
 
     val postSender = PostSender(

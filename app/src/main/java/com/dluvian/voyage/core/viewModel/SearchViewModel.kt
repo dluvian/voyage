@@ -22,7 +22,7 @@ import com.dluvian.voyage.core.normalizeTopic
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.FriendProvider
-import com.dluvian.voyage.data.provider.SuggestionProvider
+import com.dluvian.voyage.data.provider.SearchProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import kotlinx.coroutines.Job
@@ -31,7 +31,7 @@ import rust.nostr.protocol.Nip19Profile
 import rust.nostr.protocol.PublicKey
 
 class SearchViewModel(
-    private val suggestionProvider: SuggestionProvider,
+    private val searchProvider: SearchProvider,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val snackbar: SnackbarHostState,
     private val webOfTrustProvider: WebOfTrustProvider,
@@ -75,7 +75,7 @@ class SearchViewModel(
         updateJobTopic?.cancel()
         updateJobTopic = viewModelScope.launchIO {
             delay(SHORT_DEBOUNCE)
-            topics.value = suggestionProvider.getTopicSuggestions(text = text)
+            topics.value = searchProvider.getTopicSuggestions(text = text)
         }
     }
 
@@ -84,7 +84,7 @@ class SearchViewModel(
         updateJobProfile?.cancel()
         updateJobProfile = viewModelScope.launchIO {
             delay(SHORT_DEBOUNCE)
-            profiles.value = suggestionProvider.getProfileSuggestions(text = text)
+            profiles.value = searchProvider.getProfileSuggestions(text = text)
         }
     }
 
@@ -94,7 +94,7 @@ class SearchViewModel(
         onOpenTopic: (Topic) -> Unit,
         onOpenProfile: (Nip19Profile) -> Unit
     ) {
-        val strippedTopic = suggestionProvider.getStrippedSearchText(text = text)
+        val strippedTopic = searchProvider.getStrippedSearchText(text = text)
         if (strippedTopic.length <= MAX_TOPIC_LEN && strippedTopic.isBareTopicStr()) {
             onOpenTopic(strippedTopic.normalizeTopic())
             return

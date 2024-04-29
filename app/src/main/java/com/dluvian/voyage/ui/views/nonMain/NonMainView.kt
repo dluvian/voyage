@@ -25,6 +25,7 @@ fun NonMainView(
         CreatePostNavView -> CreatePostView(
             vm = core.vmContainer.createPostVM,
             snackbar = core.appContainer.snackbar,
+            searchSuggestions = core.appContainer.profileSuggestionProvider.suggestions,
             onUpdate = core.onUpdate
         )
 

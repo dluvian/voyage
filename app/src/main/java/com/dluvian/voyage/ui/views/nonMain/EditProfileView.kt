@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.LoadFullProfile
@@ -271,8 +272,8 @@ private fun EditableField(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = spacing.xxl, top = spacing.xl),
-            value = input.value,
-            onValueChange = { newStr: String -> input.value = newStr },
+            value = TextFieldValue(input.value),
+            onValueChange = { newText -> input.value = newText.text },
             placeholder = placeholder,
             isSingleLine = isSingleLine,
             keyboardType = keyboardType
