@@ -106,13 +106,15 @@ class NostrSubscriber(
                     lastUpdate = currentMillis
                 }
 
-                val newIds = posts.map { it.id } - votesAndRepliesCache
+                val newIds = posts.map { it.getRelevantId() } - votesAndRepliesCache
                 if (newIds.isEmpty()) return@launch
 
 
                 votesAndRepliesCache.addAll(newIds)
 
-                val newPostsByAuthor = posts.filter { newIds.contains(it.id) }.groupBy { it.pubkey }
+                val newPostsByAuthor = posts
+                    .filter { newIds.contains(it.getRelevantId()) }
+                    .groupBy { it.pubkey }
                 // Repliers and voters publish to authors read relays
                 val relaysByAuthor = relayProvider.getReadRelays(pubkeys = newPostsByAuthor.keys)
                 val myReadRelays = relayProvider.getReadRelays().toSet()
@@ -123,7 +125,8 @@ class NostrSubscriber(
                     adjustedRelays.forEach { relay ->
                         subBatcher.submitVotesAndReplies(
                             relayUrl = relay,
-                            eventIds = newPostsByAuthor[author]?.map { it.id } ?: emptyList(),
+                            eventIds = newPostsByAuthor[author]?.map { it.getRelevantId() }
+                                ?: emptyList(),
                             votePubkeys = votePubkeys
                         )
                     }

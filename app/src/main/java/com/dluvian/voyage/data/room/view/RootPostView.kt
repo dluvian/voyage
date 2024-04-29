@@ -17,6 +17,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             "post.content, " +
             "post.createdAt, " +
             "post.relayUrl, " +
+            "post.crossPostedId, " +
             "(SELECT hashtag FROM hashtag WHERE hashtag.postId = post.id AND hashtag IN (SELECT topic FROM topic WHERE myPubkey = (SELECT pubkey FROM account LIMIT 1)) LIMIT 1) AS myTopic, " +
             "(SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.pubkey)) AS authorIsOneself, " +
             "(SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.pubkey)) AS authorIsFriend, " +
@@ -43,6 +44,7 @@ data class RootPostView(
     val downvoteCount: Int,
     val replyCount: Int,
     val relayUrl: RelayUrl,
+    val crossPostedId: EventIdHex?
 ) {
     fun mapToRootPostUI(
         forcedVotes: Map<EventIdHex, Vote>,

@@ -23,6 +23,7 @@ data class RootPostUI(
     val downvoteCount: Int,
     val replyCount: Int,
     override val relayUrl: RelayUrl,
+    override val crossPostedId: EventIdHex?
 ) : IParentUI {
     companion object {
         fun from(
@@ -45,7 +46,8 @@ data class RootPostUI(
                 upvoteCount = rootPostView.upvoteCount,
                 downvoteCount = rootPostView.downvoteCount,
                 replyCount = rootPostView.replyCount,
-                relayUrl = rootPostView.relayUrl
+                relayUrl = rootPostView.relayUrl,
+                crossPostedId = rootPostView.crossPostedId
             )
         }
     }

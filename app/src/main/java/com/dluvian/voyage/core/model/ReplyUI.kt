@@ -22,6 +22,7 @@ data class ReplyUI(
     val downvoteCount: Int,
     val replyCount: Int,
     override val relayUrl: RelayUrl,
+    override val crossPostedId: EventIdHex? = null
 ) : IParentUI {
     companion object {
         fun from(replyView: ReplyView, annotatedStringProvider: AnnotatedStringProvider): ReplyUI {

@@ -12,4 +12,7 @@ interface IParentUI {
     val trustType: TrustType
     val relayUrl: RelayUrl
     val createdAt: Long
+    val crossPostedId: EventIdHex?
+
+    fun getRelevantId() = this.crossPostedId ?: this.id
 }
