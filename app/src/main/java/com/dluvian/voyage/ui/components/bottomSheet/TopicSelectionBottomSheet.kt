@@ -16,6 +16,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
@@ -41,6 +42,7 @@ fun TopicSelectionBottomSheet(
 
 @Composable
 private fun TopicSelection(myTopics: List<Topic>, selectedTopics: MutableState<List<Topic>>) {
+    val isEnabled = remember(selectedTopics.value.size) { selectedTopics.value.size < MAX_TOPICS }
     ContentRow(
         header = stringResource(
             id = R.string.selected_n_of_m,
@@ -63,6 +65,7 @@ private fun TopicSelection(myTopics: List<Topic>, selectedTopics: MutableState<L
                     TopicChip(
                         modifier = Modifier.padding(spacing.medium),
                         isSelected = isSelected,
+                        isEnabled = isEnabled || isSelected,
                         heightRatio = 0.85f,
                         topic = topic,
                         onClick = {
