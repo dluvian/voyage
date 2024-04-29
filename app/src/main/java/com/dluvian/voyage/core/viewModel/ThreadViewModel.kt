@@ -37,18 +37,19 @@ class ThreadViewModel(
     private var opPubkey: PubkeyHex? = null
 
     fun openThread(rootPost: RootPostUI) {
-        if (rootPost.id == root.value?.id) return
+        val relevantId = rootPost.getRelevantId()
+        if (relevantId == root.value?.id) return
 
         leveledReplies.value = MutableStateFlow(emptyList())
         parentIds.value = setOf()
-        opPubkey = rootPost.pubkey
+        opPubkey = rootPost.getRelevantPubkey()
 
         root = threadProvider
-            .getRoot(scope = viewModelScope, nevent = createNevent(hex = rootPost.id))
+            .getRoot(scope = viewModelScope, nevent = createNevent(hex = relevantId))
             .stateIn(viewModelScope, SharingStarted.Eagerly, rootPost)
         loadReplies(
-            rootId = rootPost.id,
-            parentId = rootPost.id,
+            rootId = relevantId,
+            parentId = relevantId,
             isInit = true,
             opPubkey = opPubkey
         )
@@ -59,7 +60,7 @@ class ThreadViewModel(
             is ThreadViewRefresh -> refresh()
             is ThreadViewToggleCollapse -> threadCollapser.toggleCollapse(id = action.id)
             is ThreadViewShowReplies -> loadReplies(
-                rootId = root.value?.id,
+                rootId = root.value?.getRelevantId(),
                 parentId = action.id,
                 isInit = false,
                 opPubkey = opPubkey,

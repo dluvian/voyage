@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material.icons.filled.RemoveCircle
+import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
@@ -59,6 +60,7 @@ val ExpandIcon = Icons.Default.ExpandMore
 val CollapseIcon = Icons.Default.ExpandLess
 val HorizMoreIcon = Icons.Default.MoreHoriz
 val DeleteIcon = Icons.Default.Delete
+val CrossPostIcon = Icons.Default.Repeat
 
 @Stable
 @Composable

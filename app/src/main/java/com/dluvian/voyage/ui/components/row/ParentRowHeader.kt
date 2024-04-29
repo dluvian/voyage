@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,12 +26,14 @@ import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenTopic
 import com.dluvian.voyage.core.ThreadViewToggleCollapse
 import com.dluvian.voyage.core.model.IParentUI
+import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.ui.components.button.OptionsButton
 import com.dluvian.voyage.ui.components.chip.TopicChip
 import com.dluvian.voyage.ui.components.icon.TrustIcon
 import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.components.text.RelativeTime
+import com.dluvian.voyage.ui.theme.CrossPostIcon
 import com.dluvian.voyage.ui.theme.OPBlue
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
@@ -43,8 +46,6 @@ fun ParentRowHeader(
     collapsedText: AnnotatedString? = null,
     onUpdate: OnUpdate
 ) {
-    val onOpenProfile = { onUpdate(OpenProfile(nprofile = createNprofile(hex = parent.pubkey))) }
-
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -54,11 +55,7 @@ fun ParentRowHeader(
             modifier = Modifier.weight(1f, fill = false),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ClickableTrustIcon(
-                trustType = parent.trustType,
-                isOp = isOp,
-                onClick = onOpenProfile
-            )
+            CrossPostedTrustIcons(parent = parent, isOp = isOp, onUpdate = onUpdate)
             myTopic?.let { topic ->
                 TopicChip(
                     modifier = Modifier
@@ -78,6 +75,34 @@ fun ParentRowHeader(
         }
         Row(horizontalArrangement = Arrangement.End) {
             OptionsButton(parent = parent, onUpdate = onUpdate)
+        }
+    }
+}
+
+@Composable
+private fun CrossPostedTrustIcons(parent: IParentUI, isOp: Boolean, onUpdate: OnUpdate) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        ClickableTrustIcon(
+            trustType = parent.trustType,
+            isOp = isOp,
+            onClick = { onUpdate(OpenProfile(nprofile = createNprofile(hex = parent.pubkey))) }
+        )
+        if (parent is RootPostUI &&
+            parent.crossPostedPubkey != null &&
+            parent.crossPostedTrustType != null
+        ) {
+            Icon(
+                modifier = Modifier.size(sizing.smallIndicator),
+                imageVector = CrossPostIcon,
+                contentDescription = stringResource(id = R.string.cross_posted)
+            )
+            ClickableTrustIcon(
+                trustType = parent.crossPostedTrustType,
+                isOp = false,
+                onClick = {
+                    onUpdate(OpenProfile(nprofile = createNprofile(hex = parent.crossPostedPubkey)))
+                }
+            )
         }
     }
 }

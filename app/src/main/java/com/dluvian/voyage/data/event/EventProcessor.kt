@@ -27,6 +27,9 @@ class EventProcessor(
     fun processEvents(events: Collection<ValidatedEvent>) {
         if (events.isEmpty()) return
 
+        val crossPosted = events.mapNotNull { if (it is ValidatedCrossPost) it.crossPost else null }
+        val allEvents = (events + crossPosted).distinct()
+
         val rootPosts = mutableListOf<ValidatedRootPost>()
         val replies = mutableListOf<ValidatedReply>()
         val crossPosts = mutableListOf<ValidatedCrossPost>()
@@ -36,7 +39,7 @@ class EventProcessor(
         val nip65s = mutableListOf<ValidatedNip65>()
         val profiles = mutableListOf<ValidatedProfile>()
 
-        events.forEach { event ->
+        allEvents.forEach { event ->
             when (event) {
                 is ValidatedRootPost -> rootPosts.add(event)
                 is ValidatedReply -> replies.add(event)

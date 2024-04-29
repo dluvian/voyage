@@ -18,6 +18,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             "post.createdAt, " +
             "post.relayUrl, " +
             "post.crossPostedId, " +
+            "post.crossPostedPubkey, " +
             "(SELECT hashtag FROM hashtag WHERE hashtag.postId = post.id AND hashtag IN (SELECT topic FROM topic WHERE myPubkey = (SELECT pubkey FROM account LIMIT 1)) LIMIT 1) AS myTopic, " +
             "(SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.pubkey)) AS authorIsOneself, " +
             "(SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.pubkey)) AS authorIsFriend, " +
@@ -25,7 +26,10 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             "(SELECT isPositive FROM vote WHERE vote.postId = post.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)) AS myVote, " +
             "(SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 1) AS upvoteCount, " +
             "(SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 0) AS downvoteCount, " +
-            "(SELECT COUNT(*) FROM post AS post2 WHERE post2.parentId = post.id) AS replyCount " +
+            "(SELECT COUNT(*) FROM post AS post2 WHERE post2.parentId = post.id) AS replyCount, " +
+            "(SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.crossPostedPubkey)) AS crossPostedAuthorIsOneself, " +
+            "(SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.crossPostedPubkey)) AS crossPostedAuthorIsFriend, " +
+            "(SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = post.crossPostedPubkey)) AS crossPostedAuthorIsTrusted " +
             "FROM post " +
             "WHERE post.parentId IS NULL"
 )
@@ -44,7 +48,11 @@ data class RootPostView(
     val downvoteCount: Int,
     val replyCount: Int,
     val relayUrl: RelayUrl,
-    val crossPostedId: EventIdHex?
+    val crossPostedId: EventIdHex?,
+    val crossPostedPubkey: PubkeyHex?,
+    val crossPostedAuthorIsOneself: Boolean,
+    val crossPostedAuthorIsFriend: Boolean,
+    val crossPostedAuthorIsTrusted: Boolean,
 ) {
     fun mapToRootPostUI(
         forcedVotes: Map<EventIdHex, Vote>,

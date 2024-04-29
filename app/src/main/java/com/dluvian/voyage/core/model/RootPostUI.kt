@@ -23,7 +23,9 @@ data class RootPostUI(
     val downvoteCount: Int,
     val replyCount: Int,
     override val relayUrl: RelayUrl,
-    override val crossPostedId: EventIdHex?
+    val crossPostedId: EventIdHex?,
+    val crossPostedPubkey: PubkeyHex?,
+    val crossPostedTrustType: TrustType?
 ) : IParentUI {
     companion object {
         fun from(
@@ -36,7 +38,7 @@ data class RootPostUI(
                 trustType = TrustType.from(
                     isOneself = rootPostView.authorIsOneself,
                     isFriend = rootPostView.authorIsFriend,
-                    isWebOfTrust = rootPostView.authorIsTrusted
+                    isWebOfTrust = rootPostView.authorIsTrusted,
                 ),
                 myTopic = rootPostView.myTopic,
                 createdAt = rootPostView.createdAt,
@@ -47,7 +49,13 @@ data class RootPostUI(
                 downvoteCount = rootPostView.downvoteCount,
                 replyCount = rootPostView.replyCount,
                 relayUrl = rootPostView.relayUrl,
-                crossPostedId = rootPostView.crossPostedId
+                crossPostedId = rootPostView.crossPostedId,
+                crossPostedPubkey = rootPostView.crossPostedPubkey,
+                crossPostedTrustType = TrustType.from(
+                    isOneself = rootPostView.crossPostedAuthorIsOneself,
+                    isFriend = rootPostView.crossPostedAuthorIsFriend,
+                    isWebOfTrust = rootPostView.crossPostedAuthorIsTrusted,
+                ),
             )
         }
     }
