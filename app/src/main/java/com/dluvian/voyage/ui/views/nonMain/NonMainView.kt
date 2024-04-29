@@ -62,6 +62,7 @@ fun NonMainView(
         is ReplyCreationNavView -> CreateReplyView(
             vm = core.vmContainer.createReplyVM,
             snackbar = core.appContainer.snackbar,
+            searchSuggestions = core.appContainer.profileSuggestionProvider.suggestions,
             onUpdate = core.onUpdate
         )
 

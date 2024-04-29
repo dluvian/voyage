@@ -1,6 +1,5 @@
 package com.dluvian.voyage.ui.views.nonMain
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,21 +31,25 @@ import com.dluvian.voyage.core.SendReply
 import com.dluvian.voyage.core.getSignerLauncher
 import com.dluvian.voyage.core.model.IParentUI
 import com.dluvian.voyage.core.viewModel.CreateReplyViewModel
+import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.ui.components.TextInput
 import com.dluvian.voyage.ui.components.bottomSheet.FullPostBottomSheet
 import com.dluvian.voyage.ui.components.scaffold.ContentCreationScaffold
+import com.dluvian.voyage.ui.components.text.InputWithSuggestions
 import com.dluvian.voyage.ui.theme.ExpandIcon
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
 fun CreateReplyView(
     vm: CreateReplyViewModel,
+    searchSuggestions: State<List<AdvancedProfileView>>,
     snackbar: SnackbarHostState,
     onUpdate: OnUpdate
 ) {
     val isSendingResponse by vm.isSendingReply
-    val response = remember { mutableStateOf("") }
+    val response = remember { mutableStateOf(TextFieldValue()) }
     val parent by vm.parent
+    val suggestions by searchSuggestions
     val context = LocalContext.current
 
     val focusRequester = remember { FocusRequester() }
@@ -56,7 +60,7 @@ fun CreateReplyView(
     val signerLauncher = getSignerLauncher(onUpdate = onUpdate)
 
     ContentCreationScaffold(
-        showSendButton = response.value.isNotBlank(),
+        showSendButton = response.value.text.isNotBlank(),
         isSendingContent = isSendingResponse,
         snackbar = snackbar,
         onSend = {
@@ -64,7 +68,7 @@ fun CreateReplyView(
                 onUpdate(
                     SendReply(
                         parent = it,
-                        body = response.value,
+                        body = response.value.text,
                         context = context,
                         signerLauncher = signerLauncher,
                         onGoBack = { onUpdate(GoBack) })
@@ -76,7 +80,9 @@ fun CreateReplyView(
         CreateResponseViewContent(
             parent = parent,
             response = response,
-            focusRequester = focusRequester
+            searchSuggestions = suggestions,
+            focusRequester = focusRequester,
+            onUpdate = onUpdate
         )
     }
 }
@@ -84,10 +90,16 @@ fun CreateReplyView(
 @Composable
 fun CreateResponseViewContent(
     parent: IParentUI?,
-    response: MutableState<String>,
-    focusRequester: FocusRequester
+    response: MutableState<TextFieldValue>,
+    searchSuggestions: List<AdvancedProfileView>,
+    focusRequester: FocusRequester,
+    onUpdate: OnUpdate,
 ) {
-    Column {
+    InputWithSuggestions(
+        body = response,
+        searchSuggestions = searchSuggestions,
+        onUpdate = onUpdate
+    ) {
         if (parent != null) {
             Parent(parent = parent)
             HorizontalDivider(
@@ -101,8 +113,8 @@ fun CreateResponseViewContent(
             modifier = Modifier
                 .fillMaxSize()
                 .focusRequester(focusRequester),
-            value = TextFieldValue(response.value),
-            onValueChange = { str -> response.value = str.text },
+            value = response.value,
+            onValueChange = { txt -> response.value = txt },
             placeholder = stringResource(id = R.string.your_reply),
         )
     }
