@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">Voyage</string>
+    <string name="app_name" translatable="false">Voyage</string>
     <string name="version">Version</string>
-    <string name="version_nr">v0.2.0</string>
+    <string name="version_nr" translatable="false">v0.2.0</string>
     <string name="home">Home</string>
     <string name="inbox">Inbox</string>
     <string name="settings">Settings</string>
@@ -66,7 +66,7 @@
     <string name="click_to_load_most_recent_posts">Click to load most recent posts</string>
     <string name="oneself">Oneself</string>
     <string name="no_posts_found">No posts found</string>
-    <string name="op">OP</string>
+    <string name="op" translatable="false">OP</string>
     <string name="no_topics_selected">No topics selected</string>
     <string name="my_topics">My topics</string>
     <string name="you_dont_follow_any_topics_yet">You don\'t follow any topics yet</string>

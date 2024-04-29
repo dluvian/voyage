@@ -31,8 +31,9 @@ interface ProfileDao {
                 "FROM post " +
                 "WHERE pk NOT IN (SELECT friendPubkey FROM friend) " +
                 "AND pk NOT IN (SELECT pubkey FROM account) " +
+                "AND pk IN (SELECT webOfTrustPubkey FROM weboftrust) " +
                 "GROUP BY pk " +
-                "ORDER BY COUNT(pk) DESC, (SELECT EXISTS (SELECT * FROM weboftrust WHERE webOfTrustPubkey = pk)) DESC " +
+                "ORDER BY COUNT(pk) DESC " +
                 "LIMIT :limit"
     )
     suspend fun getPopularUnfollowedPubkeys(limit: Int): List<PubkeyHex>

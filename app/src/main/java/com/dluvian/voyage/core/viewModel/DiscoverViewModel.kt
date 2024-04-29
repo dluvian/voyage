@@ -4,7 +4,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.DiscoverViewAction
 import com.dluvian.voyage.core.DiscoverViewInit
 import com.dluvian.voyage.core.DiscoverViewRefresh
@@ -14,7 +13,6 @@ import com.dluvian.voyage.data.model.FullProfileUI
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.provider.TopicProvider
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -62,7 +60,6 @@ class DiscoverViewModel(
                 popularTopics.value = getTopicFlow()
             }
             lazyNostrSubscriber.lazySubTrustData()
-            delay(DELAY_1SEC)
             joinAll(topicJob, profileJob)
         }.invokeOnCompletion {
             isRefreshing.value = false
