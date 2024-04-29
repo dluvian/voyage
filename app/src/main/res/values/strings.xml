@@ -118,4 +118,7 @@
     <string name="you_dont_have_any_read_relays_configured">You don\'t have any read-relays configured</string>
     <string name="you_dont_have_any_write_relays_configured">You don\'t have any write-relays configured</string>
     <string name="relay_list">Relay list</string>
+    <string name="cross_posted">cross posted</string>
+    <string name="unfollow_cross_posted_author">Unfollow cross posted author</string>
+    <string name="follow_cross_posted_author">Follow cross posted author</string>
 </resources>
