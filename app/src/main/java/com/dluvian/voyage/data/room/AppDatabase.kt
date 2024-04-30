@@ -7,6 +7,7 @@ import com.dluvian.voyage.data.room.dao.AccountDao
 import com.dluvian.voyage.data.room.dao.CountDao
 import com.dluvian.voyage.data.room.dao.DeleteDao
 import com.dluvian.voyage.data.room.dao.EventRelayDao
+import com.dluvian.voyage.data.room.dao.ExistsDao
 import com.dluvian.voyage.data.room.dao.FriendDao
 import com.dluvian.voyage.data.room.dao.FullProfileDao
 import com.dluvian.voyage.data.room.dao.Nip65Dao
@@ -87,6 +88,7 @@ abstract class AppDatabase : RoomDatabase() {
     // Util
     abstract fun deleteDao(): DeleteDao
     abstract fun countDao(): CountDao
+    abstract fun existsDao(): ExistsDao
 
     // TX
     abstract fun postInsertDao(): PostInsertDao

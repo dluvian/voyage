@@ -21,7 +21,7 @@ data class RootPostUI(
     val myVote: Vote,
     val upvoteCount: Int,
     val downvoteCount: Int,
-    val replyCount: Int,
+    override val replyCount: Int,
     override val relayUrl: RelayUrl,
     val crossPostedId: EventIdHex?,
     val crossPostedPubkey: PubkeyHex?,

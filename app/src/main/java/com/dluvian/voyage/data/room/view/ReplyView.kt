@@ -65,7 +65,7 @@ data class ReplyView(
         )
     }
 
-    private fun mapToReplyUI(
+    fun mapToReplyUI(
         forcedVotes: Map<EventIdHex, Vote>,
         forcedFollows: Map<PubkeyHex, Boolean>,
         annotatedStringProvider: AnnotatedStringProvider

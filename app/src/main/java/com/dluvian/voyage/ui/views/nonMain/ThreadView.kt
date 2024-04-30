@@ -34,7 +34,9 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.ThreadViewRefresh
 import com.dluvian.voyage.core.ThreadViewShowReplies
 import com.dluvian.voyage.core.ThreadViewToggleCollapse
+import com.dluvian.voyage.core.model.IParentUI
 import com.dluvian.voyage.core.model.LeveledReplyUI
+import com.dluvian.voyage.core.model.ReplyUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.viewModel.ThreadViewModel
 import com.dluvian.voyage.ui.components.FullHorizontalDivider
@@ -50,7 +52,7 @@ import com.dluvian.voyage.ui.theme.spacing
 @Composable
 fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
     val isRefreshing by vm.isRefreshing
-    val root by vm.root.collectAsState()
+    val parent by vm.parent.collectAsState()
     val leveledReplies by vm.leveledReplies.value.collectAsState()
 
     SimpleGoBackScaffold(
@@ -58,10 +60,10 @@ fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpd
         snackbar = snackbar,
         onUpdate = onUpdate
     ) {
-        if (root == null) FullLinearProgressIndicator()
-        root?.let {
+        if (parent == null) FullLinearProgressIndicator()
+        parent?.let {
             ThreadViewContent(
-                root = it,
+                parent = it,
                 leveledReplies = leveledReplies,
                 isRefreshing = isRefreshing,
                 state = vm.threadState,
@@ -73,12 +75,16 @@ fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpd
 
 @Composable
 private fun ThreadViewContent(
-    root: RootPostUI,
+    parent: IParentUI,
     leveledReplies: List<LeveledReplyUI>,
     isRefreshing: Boolean,
     state: LazyListState,
     onUpdate: OnUpdate
 ) {
+    val replies = remember(parent, leveledReplies) {
+        if (parent !is ReplyUI) leveledReplies
+        else leveledReplies.map { it.copy(level = it.level + 2) }
+    }
     PullRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(ThreadViewRefresh) }) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
@@ -86,18 +92,34 @@ private fun ThreadViewContent(
             state = state
         ) {
             item {
-                PostRow(post = root, isOp = true, isThreadView = true, onUpdate = onUpdate)
-                FullHorizontalDivider()
+                if (parent is RootPostUI) {
+                    PostRow(
+                        post = parent,
+                        isOp = true,
+                        isThreadView = true,
+                        onUpdate = onUpdate
+                    )
+                    FullHorizontalDivider()
+                } else if (parent is ReplyUI) Reply(
+                    leveledReply = LeveledReplyUI(
+                        level = 1,
+                        reply = parent,
+                        isCollapsed = false,
+                        hasLoadedReplies = true,
+                        isOp = true
+                    ),
+                    onUpdate = onUpdate
+                )
             }
-            if (root.replyCount > leveledReplies.size) item {
+            if (parent.replyCount > replies.size) item {
                 FullLinearProgressIndicator()
             }
-            itemsIndexed(leveledReplies) { i, reply ->
+            itemsIndexed(replies) { i, reply ->
                 if (reply.level == 0) FullHorizontalDivider()
                 Reply(leveledReply = reply, onUpdate = onUpdate)
-                if (i == leveledReplies.size - 1) FullHorizontalDivider()
+                if (i == replies.size - 1) FullHorizontalDivider()
             }
-            if (root.replyCount == 0 && leveledReplies.isEmpty()) item {
+            if (parent.replyCount == 0 && replies.isEmpty()) item {
                 Column(modifier = Modifier.fillParentMaxHeight(0.5f)) {
                     BaseHint(text = stringResource(id = R.string.no_comments_found))
                 }

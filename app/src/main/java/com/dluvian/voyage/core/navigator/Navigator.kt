@@ -1,6 +1,7 @@
 package com.dluvian.voyage.core.navigator
 
 import androidx.compose.runtime.mutableStateOf
+import com.dluvian.nostr_kt.createNevent
 import com.dluvian.voyage.VMContainer
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.NavEvent
@@ -42,8 +43,16 @@ class Navigator(private val vmContainer: VMContainer, private val closeApp: Fn) 
         when (navView) {
             is AdvancedNonMainNavView -> {
                 when (navView) {
-                    is ThreadNavView -> vmContainer.threadVM.openThread(rootPost = navView.rootPost)
-                    is ThreadRawNavView -> vmContainer.threadVM.openThread(nevent = navView.nevent)
+                    is ThreadNavView -> vmContainer.threadVM.openThread(
+                        nevent = createNevent(hex = navView.rootPost.id),
+                        parentUi = navView.rootPost
+                    )
+
+                    is ThreadRawNavView -> vmContainer.threadVM.openThread(
+                        nevent = navView.nevent,
+                        parentUi = null
+                    )
+
                     is ProfileNavView -> vmContainer.profileVM.openProfile(profileNavView = navView)
                     is TopicNavView -> vmContainer.topicVM.openTopic(topicNavView = navView)
                     is ReplyCreationNavView -> vmContainer.createReplyVM.openParent(newParent = navView.parent)

@@ -226,6 +226,7 @@ class AppContainer(context: Context) {
         nostrSubscriber = nostrSubscriber,
         rootPostDao = roomDb.rootPostDao(),
         replyDao = roomDb.replyDao(),
+        existsDao = roomDb.existsDao(),
         forcedVotes = postVoter.forcedVotes,
         collapsedIds = threadCollapser.collapsedIds,
         annotatedStringProvider = annotatedStringProvider,

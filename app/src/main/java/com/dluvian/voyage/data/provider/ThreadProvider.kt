@@ -1,19 +1,22 @@
 package com.dluvian.voyage.data.provider
 
 import com.dluvian.voyage.core.DEBOUNCE
+import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.firstThenDistinctDebounce
 import com.dluvian.voyage.core.launchIO
+import com.dluvian.voyage.core.model.IParentUI
 import com.dluvian.voyage.core.model.LeveledReplyUI
-import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.data.event.OldestUsedEvent
 import com.dluvian.voyage.data.interactor.Vote
 import com.dluvian.voyage.data.nostr.NostrSubscriber
+import com.dluvian.voyage.data.room.dao.ExistsDao
 import com.dluvian.voyage.data.room.dao.ReplyDao
 import com.dluvian.voyage.data.room.dao.RootPostDao
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
@@ -24,6 +27,7 @@ class ThreadProvider(
     private val nostrSubscriber: NostrSubscriber,
     private val rootPostDao: RootPostDao,
     private val replyDao: ReplyDao,
+    private val existsDao: ExistsDao,
     private val forcedVotes: Flow<Map<EventIdHex, Vote>>,
     private val collapsedIds: Flow<Set<EventIdHex>>,
     private val annotatedStringProvider: AnnotatedStringProvider,
@@ -31,18 +35,32 @@ class ThreadProvider(
     private val forcedFollows: Flow<Map<PubkeyHex, Boolean>>,
 ) {
 
-    fun getRoot(scope: CoroutineScope, nevent: Nip19Event): Flow<RootPostUI?> {
-        scope.launchIO { nostrSubscriber.subVotesAndReplies(nevent = nevent) }
+    fun getParent(scope: CoroutineScope, nevent: Nip19Event): Flow<IParentUI?> {
+        val id = nevent.eventId().toHex()
+        scope.launchIO {
+            if (!existsDao.postExists(id = id)) {
+                nostrSubscriber.subPost(nevent = nevent)
+                delay(DELAY_1SEC)
+            }
+            nostrSubscriber.subVotesAndReplies(nevent = nevent)
+        }
+
+        val rootFlow = rootPostDao.getRootPostFlow(id = id)
+        val replyFlow = replyDao.getReplyFlow(id = id)
 
         return combine(
-            rootPostDao.getRootPostFlow(id = nevent.eventId().toHex())
-                .firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            rootFlow.firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            replyFlow.firstThenDistinctDebounce(SHORT_DEBOUNCE),
             forcedVotes,
             forcedFollows,
-        ) { post, votes, follows ->
+        ) { post, reply, votes, follows ->
             post?.mapToRootPostUI(
                 forcedVotes = votes,
                 forcedFollows = follows,
+                annotatedStringProvider = annotatedStringProvider
+            ) ?: reply?.mapToReplyUI(
+                forcedFollows = follows,
+                forcedVotes = votes,
                 annotatedStringProvider = annotatedStringProvider
             )
         }.onEach {
@@ -56,7 +74,7 @@ class ThreadProvider(
         parentIds: Set<EventIdHex>,
         opPubkey: PubkeyHex?
     ): Flow<List<LeveledReplyUI>> {
-        val replyFlow = replyDao.getReplyFlow(parentIds = parentIds + rootId)
+        val replyFlow = replyDao.getRepliesFlow(parentIds = parentIds + rootId)
             .firstThenDistinctDebounce(DEBOUNCE)
 
         return combine(

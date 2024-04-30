@@ -9,5 +9,8 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ReplyDao {
     @Query("SELECT * FROM ReplyView WHERE parentId IN (:parentIds) ORDER BY createdAt ASC")
-    fun getReplyFlow(parentIds: Collection<EventIdHex>): Flow<List<ReplyView>>
+    fun getRepliesFlow(parentIds: Collection<EventIdHex>): Flow<List<ReplyView>>
+
+    @Query("SELECT * FROM ReplyView WHERE id = :id")
+    fun getReplyFlow(id: EventIdHex): Flow<ReplyView?>
 }

@@ -6,6 +6,7 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.RESUB_TIMEOUT
 import com.dluvian.voyage.core.createReplyAndVoteFilters
 import com.dluvian.voyage.core.model.IParentUI
+import com.dluvian.voyage.core.textNoteAndRepostKinds
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
@@ -88,6 +89,18 @@ class NostrSubscriber(
         val filters = listOf(profileFilter)
 
         relayProvider.getObserveRelays(nprofile = nprofile).forEach { relay ->
+            subCreator.subscribe(relayUrl = relay, filters = filters)
+        }
+    }
+
+    suspend fun subPost(nevent: Nip19Event) {
+        val postFilter = Filter()
+            .kinds(kinds = textNoteAndRepostKinds)
+            .id(id = nevent.eventId())
+            .limit(limit = 1u)
+        val filters = listOf(postFilter)
+
+        relayProvider.getObserveRelays(nevent = nevent, includeConnected = true).forEach { relay ->
             subCreator.subscribe(relayUrl = relay, filters = filters)
         }
     }

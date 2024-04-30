@@ -16,6 +16,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
+import rust.nostr.protocol.Nip19Event
 import rust.nostr.protocol.Nip19Profile
 
 
@@ -101,13 +102,29 @@ class RelayProvider(
         includeConnected: Boolean = false
     ): List<RelayUrl> {
         val foreignRelays = nprofile.relays()
-            .map { it.removeTrailingSlashes() }
-            .let { if (limit) it.preferConnected(MAX_RELAYS) else it }
+            .normalize(limit = if (limit) MAX_RELAYS else Int.MAX_VALUE)
         val nip65 = getObserveRelays(
             pubkey = nprofile.publicKey().toHex(),
             limit = limit,
             includeConnected = includeConnected
         )
+
+        return (foreignRelays + nip65).distinct()
+    }
+
+    suspend fun getObserveRelays(
+        nevent: Nip19Event,
+        limit: Boolean = true,
+        includeConnected: Boolean = false
+    ): List<RelayUrl> {
+        val foreignRelays = nevent.relays()
+            .normalize(limit = if (limit) MAX_RELAYS else Int.MAX_VALUE)
+        val pubkey = nevent.author()?.toHex()
+        val nip65 = if (pubkey != null) getObserveRelays(
+            pubkey = pubkey,
+            limit = limit,
+            includeConnected = includeConnected
+        ) else getReadRelays(includeConnected = includeConnected)
 
         return (foreignRelays + nip65).distinct()
     }
@@ -183,6 +200,12 @@ class RelayProvider(
 
         val connected = nostrClient.getAllConnectedUrls().toSet()
         return this.shuffled().sortedByDescending { connected.contains(it) }.take(limit)
+    }
+
+    private fun List<RelayUrl>.normalize(limit: Int = Int.MAX_VALUE): List<RelayUrl> {
+        return this.map { it.removeTrailingSlashes() }
+            .distinct()
+            .take(limit)
     }
 
     private val defaultRelays = listOf(

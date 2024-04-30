@@ -11,6 +11,7 @@ interface IParentUI {
     val pubkey: PubkeyHex
     val trustType: TrustType
     val relayUrl: RelayUrl
+    val replyCount: Int
     val createdAt: Long
 
     fun getRelevantId() = when (this) {
