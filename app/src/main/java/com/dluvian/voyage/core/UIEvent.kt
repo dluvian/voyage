@@ -19,9 +19,11 @@ import com.dluvian.voyage.core.navigator.ReplyCreationNavView
 import com.dluvian.voyage.core.navigator.SearchNavView
 import com.dluvian.voyage.core.navigator.SettingsNavView
 import com.dluvian.voyage.core.navigator.ThreadNavView
+import com.dluvian.voyage.core.navigator.ThreadRawNavView
 import com.dluvian.voyage.core.navigator.TopicNavView
 import kotlinx.coroutines.CoroutineScope
 import rust.nostr.protocol.Metadata
+import rust.nostr.protocol.Nip19Event
 import rust.nostr.protocol.Nip19Profile
 
 sealed class UIEvent
@@ -49,6 +51,7 @@ sealed class PushNavEvent : NavEvent() {
             is OpenProfile -> ProfileNavView(nprofile = this.nprofile)
             is OpenTopic -> TopicNavView(topic = this.topic)
             is OpenReplyCreation -> ReplyCreationNavView(parent = this.parent)
+            is OpenThreadRaw -> ThreadRawNavView(nevent = this.nevent)
         }
     }
 }
@@ -65,6 +68,7 @@ data object ClickRelayEditor : PushNavEvent()
 
 sealed class AdvancedPushNavEvent : PushNavEvent()
 data class OpenThread(val rootPost: RootPostUI) : AdvancedPushNavEvent()
+data class OpenThreadRaw(val nevent: Nip19Event) : AdvancedPushNavEvent()
 data class OpenProfile(val nprofile: Nip19Profile) : AdvancedPushNavEvent()
 data class OpenTopic(val topic: Topic) : AdvancedPushNavEvent()
 data class OpenReplyCreation(val parent: IParentUI) : AdvancedPushNavEvent()

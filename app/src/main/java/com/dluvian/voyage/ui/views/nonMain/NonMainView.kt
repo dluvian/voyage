@@ -11,6 +11,7 @@ import com.dluvian.voyage.core.navigator.ReplyCreationNavView
 import com.dluvian.voyage.core.navigator.SearchNavView
 import com.dluvian.voyage.core.navigator.SettingsNavView
 import com.dluvian.voyage.core.navigator.ThreadNavView
+import com.dluvian.voyage.core.navigator.ThreadRawNavView
 import com.dluvian.voyage.core.navigator.TopicNavView
 import com.dluvian.voyage.ui.views.nonMain.profile.ProfileView
 import com.dluvian.voyage.ui.views.nonMain.search.SearchView
@@ -47,7 +48,7 @@ fun NonMainView(
             onUpdate = core.onUpdate
         )
 
-        is ThreadNavView -> ThreadView(
+        is ThreadNavView, is ThreadRawNavView -> ThreadView(
             vm = core.vmContainer.threadVM,
             snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate

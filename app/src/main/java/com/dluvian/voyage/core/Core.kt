@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dluvian.nostr_kt.createNevent
 import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.voyage.AppContainer
 import com.dluvian.voyage.VMContainer
@@ -14,6 +15,7 @@ import com.dluvian.voyage.core.model.NprofileMention
 import com.dluvian.voyage.core.model.NpubMention
 import com.dluvian.voyage.core.navigator.Navigator
 import kotlinx.coroutines.launch
+import rust.nostr.protocol.Nip19Event
 import rust.nostr.protocol.Nip19Profile
 
 private const val TAG = "Core"
@@ -89,12 +91,19 @@ class Core(
             }
 
             is NpubMention -> {
-                val nip19 = createNprofile(hex = nostrMention.hex)
-                onUpdate(OpenProfile(nprofile = nip19))
+                val nprofile = createNprofile(hex = nostrMention.hex)
+                onUpdate(OpenProfile(nprofile = nprofile))
             }
 
-            is NeventMention -> {}
-            is NoteMention -> {}
+            is NeventMention -> {
+                onUpdate(OpenThreadRaw(nevent = Nip19Event.fromBech32(nostrMention.bech32)))
+            }
+
+            is NoteMention -> {
+                val nevent = createNevent(hex = nostrMention.hex)
+                onUpdate(OpenThreadRaw(nevent = nevent))
+            }
+
             null -> Log.w(TAG, "Unknown clickable string ${other.item}")
         }
     }

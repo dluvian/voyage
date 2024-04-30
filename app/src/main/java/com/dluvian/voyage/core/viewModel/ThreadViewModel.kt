@@ -22,7 +22,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import rust.nostr.protocol.Nip19Event
 
 class ThreadViewModel(
     private val threadProvider: ThreadProvider,
@@ -50,6 +52,26 @@ class ThreadViewModel(
         loadReplies(
             rootId = relevantId,
             parentId = relevantId,
+            isInit = true,
+            opPubkey = opPubkey
+        )
+    }
+
+    fun openThread(nevent: Nip19Event) {
+        val id = nevent.eventId().toHex()
+        if (id == root.value?.id) return
+
+        leveledReplies.value = MutableStateFlow(emptyList())
+        parentIds.value = setOf()
+        opPubkey = nevent.author()?.toHex()
+
+        root = threadProvider
+            .getRoot(scope = viewModelScope, nevent = nevent)
+            .onEach { opPubkey = it?.pubkey }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+        loadReplies(
+            rootId = id,
+            parentId = id,
             isInit = true,
             opPubkey = opPubkey
         )

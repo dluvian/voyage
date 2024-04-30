@@ -43,6 +43,7 @@ class Navigator(private val vmContainer: VMContainer, private val closeApp: Fn) 
             is AdvancedNonMainNavView -> {
                 when (navView) {
                     is ThreadNavView -> vmContainer.threadVM.openThread(rootPost = navView.rootPost)
+                    is ThreadRawNavView -> vmContainer.threadVM.openThread(nevent = navView.nevent)
                     is ProfileNavView -> vmContainer.profileVM.openProfile(profileNavView = navView)
                     is TopicNavView -> vmContainer.topicVM.openTopic(topicNavView = navView)
                     is ReplyCreationNavView -> vmContainer.createReplyVM.openParent(newParent = navView.parent)
