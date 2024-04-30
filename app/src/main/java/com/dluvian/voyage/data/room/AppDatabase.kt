@@ -40,7 +40,7 @@ import com.dluvian.voyage.data.room.view.RootPostView
 
 
 @Database(
-    version = 7,
+    version = 8,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -49,6 +49,7 @@ import com.dluvian.voyage.data.room.view.RootPostView
         AutoMigration(from = 4, to = 5),
         AutoMigration(from = 5, to = 6),
         AutoMigration(from = 6, to = 7),
+        AutoMigration(from = 7, to = 8),
     ],
     entities = [
         PostEntity::class,

@@ -82,13 +82,12 @@ class EventProcessor(
     }
 
     private fun processCrossPosts(crossPosts: Collection<ValidatedCrossPost>) {
-        Log.i("LOLOL", crossPosts.size.toString())
         if (crossPosts.isEmpty()) return
 
         scope.launch {
             room.postInsertDao().insertCrossPosts(crossPosts = crossPosts)
         }.invokeOnCompletion { exception ->
-            if (exception != null) Log.w(TAG, "Failed to process reposts", exception)
+            if (exception != null) Log.w(TAG, "Failed to process cross posts ", exception)
         }
     }
 

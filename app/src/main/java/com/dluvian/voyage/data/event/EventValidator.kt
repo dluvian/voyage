@@ -69,7 +69,6 @@ class EventValidator(
         val validatedEvent = if (event.isPostOrReply()) {
             createValidatedMainPost(event = event, relayUrl = relayUrl)
         } else if (event.isRepost()) {
-            Log.i("LOLOL", "repost: ${event.id().toHex()}")
             createValidatedRepost(event = event, relayUrl = relayUrl)
         } else if (event.isVote()) {
             val postId = event.eventIds().firstOrNull() ?: return null

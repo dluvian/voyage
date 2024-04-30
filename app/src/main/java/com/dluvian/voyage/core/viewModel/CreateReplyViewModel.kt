@@ -28,11 +28,13 @@ class CreateReplyViewModel(
     val parent: MutableState<IParentUI?> = mutableStateOf(null)
 
     fun openParent(newParent: IParentUI) {
-        if (newParent.id == this.parent.value?.id) return
+        val relevantId = newParent.getRelevantId()
+        if (relevantId == this.parent.value?.id) return
 
-        if (newParent.pubkey != this.parent.value?.pubkey) {
+        val relevantPubkey = newParent.getRelevantPubkey()
+        if (relevantPubkey != this.parent.value?.pubkey) {
             viewModelScope.launchIO {
-                lazyNostrSubscriber.lazySubNip65(nprofile = createNprofile(hex = newParent.pubkey))
+                lazyNostrSubscriber.lazySubNip65(nprofile = createNprofile(hex = relevantPubkey))
             }
         }
 
@@ -51,8 +53,8 @@ class CreateReplyViewModel(
         isSendingReply.value = true
         viewModelScope.launchIO {
             val result = postSender.sendReply(
-                parentId = action.parent.id,
-                recipient = action.parent.pubkey,
+                parentId = action.parent.getRelevantId(),
+                recipient = action.parent.getRelevantPubkey(),
                 body = action.body,
                 relayHint = eventRelayDao.getEventRelay(eventId = action.parent.id).orEmpty(),
                 signerLauncher = action.signerLauncher

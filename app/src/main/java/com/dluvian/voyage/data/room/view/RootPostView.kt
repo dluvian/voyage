@@ -23,10 +23,10 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             "(SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.pubkey)) AS authorIsOneself, " +
             "(SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.pubkey)) AS authorIsFriend, " +
             "(SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = post.pubkey)) AS authorIsTrusted, " +
-            "(SELECT isPositive FROM vote WHERE vote.postId = post.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)) AS myVote, " +
-            "(SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 1) AS upvoteCount, " +
-            "(SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 0) AS downvoteCount, " +
-            "(SELECT COUNT(*) FROM post AS post2 WHERE post2.parentId = post.id) AS replyCount, " +
+            "(SELECT isPositive FROM vote WHERE vote.postId = IFNULL(post.crossPostedId, post.id) AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)) AS myVote, " +
+            "(SELECT COUNT(*) FROM vote WHERE vote.postId = IFNULL(post.crossPostedId, post.id) AND vote.isPositive = 1) AS upvoteCount, " +
+            "(SELECT COUNT(*) FROM vote WHERE vote.postId = IFNULL(post.crossPostedId, post.id) AND vote.isPositive = 0) AS downvoteCount, " +
+            "(SELECT COUNT(*) FROM post AS post2 WHERE post2.parentId = IFNULL(post.crossPostedId, post.id)) AS replyCount, " +
             "(SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.crossPostedPubkey)) AS crossPostedAuthorIsOneself, " +
             "(SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.crossPostedPubkey)) AS crossPostedAuthorIsFriend, " +
             "(SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = post.crossPostedPubkey)) AS crossPostedAuthorIsTrusted " +

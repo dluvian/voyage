@@ -25,7 +25,7 @@ data class RootPostUI(
     override val relayUrl: RelayUrl,
     val crossPostedId: EventIdHex?,
     val crossPostedPubkey: PubkeyHex?,
-    val crossPostedTrustType: TrustType?
+    val crossPostedTrustType: TrustType?,
 ) : IParentUI {
     companion object {
         fun from(

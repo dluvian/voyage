@@ -69,8 +69,8 @@ fun PostRow(
         )
         Spacer(modifier = Modifier.height(spacing.large))
         PostRowActions(
-            id = post.id,
-            pubkey = post.pubkey,
+            id = post.getRelevantId(),
+            pubkey = post.getRelevantPubkey(),
             myVote = post.myVote,
             upvoteCount = post.upvoteCount,
             downvoteCount = post.downvoteCount,
