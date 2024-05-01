@@ -50,12 +50,13 @@ class Navigator(private val vmContainer: VMContainer, private val closeApp: Fn) 
 
                     is ThreadRawNavView -> vmContainer.threadVM.openThread(
                         nevent = navView.nevent,
-                        parentUi = null
+                        parentUi = navView.parent
                     )
 
                     is ProfileNavView -> vmContainer.profileVM.openProfile(profileNavView = navView)
                     is TopicNavView -> vmContainer.topicVM.openTopic(topicNavView = navView)
                     is ReplyCreationNavView -> vmContainer.createReplyVM.openParent(newParent = navView.parent)
+                    is CrossPostCreationNavView -> vmContainer.createCrossPostVM.prepareCrossPost(id = navView.id)
                 }
             }
 

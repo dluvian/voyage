@@ -12,10 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import com.dluvian.nostr_kt.createNevent
 import com.dluvian.voyage.core.ClickText
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenReplyCreation
 import com.dluvian.voyage.core.OpenThread
+import com.dluvian.voyage.core.OpenThreadRaw
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.ui.components.chip.CommentChip
 import com.dluvian.voyage.ui.components.text.AnnotatedText
@@ -28,7 +30,14 @@ fun PostRow(
     isThreadView: Boolean = false,
     onUpdate: OnUpdate
 ) {
-    val onOpenThread = { onUpdate(OpenThread(rootPost = post)) }
+    val onOpenThread = {
+        val action = if (post.crossPostedId != null) {
+            OpenThreadRaw(nevent = createNevent(hex = post.crossPostedId))
+        } else {
+            OpenThread(rootPost = post)
+        }
+        onUpdate(action)
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()

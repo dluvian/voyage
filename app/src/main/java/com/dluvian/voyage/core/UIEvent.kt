@@ -8,6 +8,7 @@ import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.core.model.IParentUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.navigator.CreatePostNavView
+import com.dluvian.voyage.core.navigator.CrossPostCreationNavView
 import com.dluvian.voyage.core.navigator.DiscoverNavView
 import com.dluvian.voyage.core.navigator.EditProfileNavView
 import com.dluvian.voyage.core.navigator.HomeNavView
@@ -51,7 +52,8 @@ sealed class PushNavEvent : NavEvent() {
             is OpenProfile -> ProfileNavView(nprofile = this.nprofile)
             is OpenTopic -> TopicNavView(topic = this.topic)
             is OpenReplyCreation -> ReplyCreationNavView(parent = this.parent)
-            is OpenThreadRaw -> ThreadRawNavView(nevent = this.nevent)
+            is OpenThreadRaw -> ThreadRawNavView(nevent = this.nevent, parent = this.parent)
+            is OpenCrossPostCreation -> CrossPostCreationNavView(id = this.id)
         }
     }
 }
@@ -68,10 +70,12 @@ data object ClickRelayEditor : PushNavEvent()
 
 sealed class AdvancedPushNavEvent : PushNavEvent()
 data class OpenThread(val rootPost: RootPostUI) : AdvancedPushNavEvent()
-data class OpenThreadRaw(val nevent: Nip19Event) : AdvancedPushNavEvent()
+data class OpenThreadRaw(val nevent: Nip19Event, val parent: IParentUI? = null) :
+    AdvancedPushNavEvent()
 data class OpenProfile(val nprofile: Nip19Profile) : AdvancedPushNavEvent()
 data class OpenTopic(val topic: Topic) : AdvancedPushNavEvent()
 data class OpenReplyCreation(val parent: IParentUI) : AdvancedPushNavEvent()
+data class OpenCrossPostCreation(val id: EventIdHex) : AdvancedPushNavEvent()
 
 
 sealed class VoteEvent(

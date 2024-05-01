@@ -11,9 +11,11 @@ import androidx.compose.ui.Modifier
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.core.OpenCrossPostCreation
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.interactor.Vote
 import com.dluvian.voyage.ui.components.VoteBox
+import com.dluvian.voyage.ui.components.chip.CrossPostChip
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
@@ -35,6 +37,7 @@ fun PostRowActions(
         additionalStartAction()
         Spacer(modifier = Modifier.width(spacing.tiny))
         Row(verticalAlignment = Alignment.CenterVertically) {
+            CrossPostChip(onClick = { onUpdate(OpenCrossPostCreation(id = id)) })
             additionalEndAction()
             VoteBox(
                 postId = id,

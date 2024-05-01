@@ -121,4 +121,5 @@
     <string name="cross_posted">cross posted</string>
     <string name="unfollow_cross_posted_author">Unfollow cross posted author</string>
     <string name="follow_cross_posted_author">Follow cross posted author</string>
+    <string name="cross_post">Cross post</string>
 </resources>

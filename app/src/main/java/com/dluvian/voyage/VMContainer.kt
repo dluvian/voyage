@@ -1,5 +1,6 @@
 package com.dluvian.voyage
 
+import com.dluvian.voyage.core.viewModel.CreateCrossPostViewModel
 import com.dluvian.voyage.core.viewModel.CreatePostViewModel
 import com.dluvian.voyage.core.viewModel.CreateReplyViewModel
 import com.dluvian.voyage.core.viewModel.DiscoverViewModel
@@ -23,5 +24,6 @@ data class VMContainer(
     val createPostVM: CreatePostViewModel,
     val createReplyVM: CreateReplyViewModel,
     val editProfileVM: EditProfileViewModel,
-    val relayEditorVM: RelayEditorViewModel
+    val relayEditorVM: RelayEditorViewModel,
+    val createCrossPostVM: CreateCrossPostViewModel,
 )

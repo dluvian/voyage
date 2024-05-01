@@ -44,7 +44,7 @@ class ThreadViewModel(
 
         leveledReplies.value = MutableStateFlow(emptyList())
         parentIds.value = setOf()
-        opPubkey = nevent.author()?.toHex() ?: parentUi?.pubkey
+        opPubkey = nevent.author()?.toHex() ?: parentUi?.getRelevantPubkey()
         this.nevent = nevent
 
         parent = threadProvider

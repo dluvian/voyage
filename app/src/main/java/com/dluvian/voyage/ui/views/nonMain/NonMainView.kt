@@ -3,6 +3,7 @@ package com.dluvian.voyage.ui.views.nonMain
 import androidx.compose.runtime.Composable
 import com.dluvian.voyage.core.Core
 import com.dluvian.voyage.core.navigator.CreatePostNavView
+import com.dluvian.voyage.core.navigator.CrossPostCreationNavView
 import com.dluvian.voyage.core.navigator.EditProfileNavView
 import com.dluvian.voyage.core.navigator.NonMainNavView
 import com.dluvian.voyage.core.navigator.ProfileNavView
@@ -75,6 +76,12 @@ fun NonMainView(
 
         RelayEditorNavView -> RelayEditorView(
             vm = core.vmContainer.relayEditorVM,
+            snackbar = core.appContainer.snackbar,
+            onUpdate = core.onUpdate
+        )
+
+        is CrossPostCreationNavView -> CreateCrossPostView(
+            vm = core.vmContainer.createCrossPostVM,
             snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate
         )

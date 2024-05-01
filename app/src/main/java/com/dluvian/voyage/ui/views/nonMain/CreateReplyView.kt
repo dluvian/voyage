@@ -88,7 +88,7 @@ fun CreateReplyView(
 }
 
 @Composable
-fun CreateResponseViewContent(
+private fun CreateResponseViewContent(
     parent: IParentUI?,
     response: MutableState<TextFieldValue>,
     searchSuggestions: List<AdvancedProfileView>,
