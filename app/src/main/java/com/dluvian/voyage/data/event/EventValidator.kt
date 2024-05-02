@@ -130,6 +130,7 @@ class EventValidator(
                 content = content,
                 createdAt = event.createdAt().secs(),
                 relayUrl = relayUrl,
+                json = event.asJson()
             )
         } else {
             if (content.isEmpty() || replyToId == event.id().toHex()) return null
@@ -140,6 +141,7 @@ class EventValidator(
                 content = content,
                 createdAt = event.createdAt().secs(),
                 relayUrl = relayUrl,
+                event.asJson()
             )
         }
     }
@@ -157,7 +159,7 @@ class EventValidator(
             topics = event.getNormalizedTopics(limited = true),
             createdAt = event.createdAt().secs(),
             relayUrl = relayUrl,
-            crossPost = validated
+            crossPosted = validated
         )
     }
 }

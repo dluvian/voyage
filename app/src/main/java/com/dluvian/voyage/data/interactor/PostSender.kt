@@ -57,7 +57,8 @@ class PostSender(
                 subject = event.getSubject(),
                 content = event.content(),
                 createdAt = event.createdAt().secs(),
-                relayUrl = "" // We don't know which relay accepted this note
+                relayUrl = "", // We don't know which relay accepted this note
+                json = event.asJson(),
             )
             postInsertDao.insertRootPosts(posts = listOf(validatedPost))
         }.onFailure {
@@ -89,7 +90,8 @@ class PostSender(
                 parentId = parentId,
                 content = event.content(),
                 createdAt = event.createdAt().secs(),
-                relayUrl = "" // We don't know which relay accepted this note
+                relayUrl = "", // We don't know which relay accepted this note
+                json = event.asJson(),
             )
             postInsertDao.insertReplies(replies = listOf(validatedReply))
         }.onFailure {

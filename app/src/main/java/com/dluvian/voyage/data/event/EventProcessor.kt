@@ -27,7 +27,9 @@ class EventProcessor(
     fun processEvents(events: Collection<ValidatedEvent>) {
         if (events.isEmpty()) return
 
-        val crossPosted = events.mapNotNull { if (it is ValidatedCrossPost) it.crossPost else null }
+        val crossPosted = events.mapNotNull {
+            if (it is ValidatedCrossPost) it.crossPosted else null
+        }
         val allEvents = (events + crossPosted).distinct()
 
         val rootPosts = mutableListOf<ValidatedRootPost>()

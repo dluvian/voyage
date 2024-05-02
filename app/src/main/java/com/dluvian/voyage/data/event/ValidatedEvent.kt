@@ -28,6 +28,7 @@ data class ValidatedRootPost(
     val content: String,
     val createdAt: Long,
     val relayUrl: RelayUrl,
+    val json: String,
 ) : ValidatedMainPost(id = id, pubkey = pubkey, topics = topics)
 data class ValidatedReply(
     override val id: EventIdHex,
@@ -35,7 +36,8 @@ data class ValidatedReply(
     val parentId: EventIdHex,
     val content: String,
     val createdAt: Long,
-    val relayUrl: RelayUrl
+    val relayUrl: RelayUrl,
+    val json: String,
 ) : ValidatedMainPost(id = id, pubkey = pubkey, topics = emptyList())
 
 data class ValidatedCrossPost(
@@ -44,7 +46,7 @@ data class ValidatedCrossPost(
     override val topics: List<String>,
     val createdAt: Long,
     val relayUrl: RelayUrl,
-    val crossPost: ValidatedMainPost,
+    val crossPosted: ValidatedMainPost,
 ) : ValidatedPost(id = id, pubkey = pubkey, topics = topics)
 
 data class ValidatedVote(

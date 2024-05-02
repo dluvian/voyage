@@ -60,7 +60,7 @@ class PostVoter(
             postId = action.postId,
             mention = action.mention,
             vote = newVote,
-            kind = 1u,
+            kind = 1u, // We currently only vote on kind 1. Reposts are dereferenced to their kind 1
             signerLauncher = action.signerLauncher,
         )
     }

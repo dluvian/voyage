@@ -30,7 +30,8 @@ data class PostEntity(
     val createdAt: Long,
     val relayUrl: RelayUrl,
     val crossPostedId: EventIdHex?,
-    val crossPostedPubkey: PubkeyHex?
+    val crossPostedPubkey: PubkeyHex?,
+    val json: String?
 ) {
     companion object {
 
@@ -46,6 +47,7 @@ data class PostEntity(
                     relayUrl = post.relayUrl,
                     crossPostedId = null,
                     crossPostedPubkey = null,
+                    json = post.json
                 )
 
                 is ValidatedReply -> PostEntity(
@@ -58,6 +60,7 @@ data class PostEntity(
                     relayUrl = post.relayUrl,
                     crossPostedId = null,
                     crossPostedPubkey = null,
+                    json = post.json
                 )
 
                 is ValidatedCrossPost -> PostEntity(
@@ -65,14 +68,17 @@ data class PostEntity(
                     pubkey = post.pubkey,
                     parentId = null,
                     subject = null,
-                    content = when (post.crossPost) {
-                        is ValidatedRootPost -> post.crossPost.content.trim().take(MAX_CONTENT_LEN)
-                        is ValidatedReply -> post.crossPost.content.trim().take(MAX_CONTENT_LEN)
+                    content = when (post.crossPosted) {
+                        is ValidatedRootPost -> post.crossPosted.content.trim()
+                            .take(MAX_CONTENT_LEN)
+
+                        is ValidatedReply -> post.crossPosted.content.trim().take(MAX_CONTENT_LEN)
                     },
                     createdAt = post.createdAt,
                     relayUrl = post.relayUrl,
-                    crossPostedId = post.crossPost.id,
-                    crossPostedPubkey = post.crossPost.pubkey,
+                    crossPostedId = post.crossPosted.id,
+                    crossPostedPubkey = post.crossPosted.pubkey,
+                    json = null
                 )
             }
         }
