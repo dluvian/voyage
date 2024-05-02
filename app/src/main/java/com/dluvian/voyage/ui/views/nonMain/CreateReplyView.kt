@@ -32,10 +32,10 @@ import com.dluvian.voyage.core.getSignerLauncher
 import com.dluvian.voyage.core.model.IParentUI
 import com.dluvian.voyage.core.viewModel.CreateReplyViewModel
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
-import com.dluvian.voyage.ui.components.TextInput
 import com.dluvian.voyage.ui.components.bottomSheet.FullPostBottomSheet
 import com.dluvian.voyage.ui.components.scaffold.ContentCreationScaffold
 import com.dluvian.voyage.ui.components.text.InputWithSuggestions
+import com.dluvian.voyage.ui.components.text.TextInput
 import com.dluvian.voyage.ui.theme.ExpandIcon
 import com.dluvian.voyage.ui.theme.spacing
 
@@ -75,7 +75,7 @@ fun CreateReplyView(
                 )
             }
         },
-        onUpdate = onUpdate
+        onUpdate = onUpdate,
     ) {
         CreateResponseViewContent(
             parent = parent,

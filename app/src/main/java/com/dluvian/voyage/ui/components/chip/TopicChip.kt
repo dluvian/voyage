@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.ui.theme.FancyBrush
@@ -25,7 +26,7 @@ fun TopicChip(
     SmallFilterChip(
         modifier = modifier,
         onClick = onClick,
-        label = { Text(text = "#$topic") },
+        label = { Text(text = "#$topic", maxLines = 1, overflow = TextOverflow.Ellipsis) },
         isSelected = isSelected,
         isEnabled = isEnabled,
         heightRatio = heightRatio,

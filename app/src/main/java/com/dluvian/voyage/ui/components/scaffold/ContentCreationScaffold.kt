@@ -15,7 +15,7 @@ fun ContentCreationScaffold(
     snackbar: SnackbarHostState,
     onSend: Fn,
     onUpdate: OnUpdate,
-    content: ComposableContent
+    content: ComposableContent,
 ) {
     VoyageScaffold(
         snackbar = snackbar,

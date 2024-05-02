@@ -164,7 +164,9 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             )
         },
         createCrossPostVM = viewModel {
-            CreateCrossPostViewModel()
+            CreateCrossPostViewModel(
+                topicProvider = appContainer.topicProvider
+            )
         }
     )
 }

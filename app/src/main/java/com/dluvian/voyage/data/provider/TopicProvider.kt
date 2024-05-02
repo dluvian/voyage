@@ -29,7 +29,7 @@ class TopicProvider(
     // Not named "getMaxCreatedAt" bc there should only be one createdAt available
     suspend fun getCreatedAt() = topicDao.getMaxCreatedAt()
 
-    val defaultTopics = listOf(
+    private val defaultTopics = listOf(
         "voyage",
         "nostr",
         "asknostr",

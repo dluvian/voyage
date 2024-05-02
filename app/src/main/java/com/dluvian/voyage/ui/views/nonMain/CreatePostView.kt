@@ -25,13 +25,14 @@ import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.SendPost
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.core.UpdatePostTopics
 import com.dluvian.voyage.core.getSignerLauncher
 import com.dluvian.voyage.core.viewModel.CreatePostViewModel
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
-import com.dluvian.voyage.ui.components.TextInput
 import com.dluvian.voyage.ui.components.row.TopicSelectionRow
 import com.dluvian.voyage.ui.components.scaffold.ContentCreationScaffold
 import com.dluvian.voyage.ui.components.text.InputWithSuggestions
+import com.dluvian.voyage.ui.components.text.TextInput
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
@@ -52,7 +53,7 @@ fun CreatePostView(
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(key1 = Unit) {
         focusRequester.requestFocus()
-        vm.updateMyTopics()
+        onUpdate(UpdatePostTopics)
     }
 
     val signerLauncher = getSignerLauncher(onUpdate = onUpdate)
@@ -72,7 +73,7 @@ fun CreatePostView(
                 ) { onUpdate(GoBack) }
             )
         },
-        onUpdate = onUpdate
+        onUpdate = onUpdate,
     ) {
         CreatePostContent(
             header = header,

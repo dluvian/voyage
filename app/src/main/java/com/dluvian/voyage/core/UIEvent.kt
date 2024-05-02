@@ -184,6 +184,7 @@ data class SendPost(
     val signerLauncher: SignerLauncher,
     val onGoBack: Fn
 ) : CreatePostViewAction()
+data object UpdatePostTopics : CreatePostViewAction()
 
 
 sealed class CreateReplyViewAction : UIEvent()
@@ -194,6 +195,17 @@ data class SendReply(
     val signerLauncher: SignerLauncher,
     val onGoBack: Fn
 ) : CreateReplyViewAction()
+
+
+sealed class CreateCrossPostViewAction : UIEvent()
+data class SendCrossPost(
+    val topics: List<Topic>,
+    val context: Context,
+    val signerLauncher: SignerLauncher,
+    val onGoBack: Fn
+) : CreateCrossPostViewAction()
+
+data object UpdateCrossPostTopics : CreateCrossPostViewAction()
 
 
 sealed class ProfileSuggestionAction : UIEvent()

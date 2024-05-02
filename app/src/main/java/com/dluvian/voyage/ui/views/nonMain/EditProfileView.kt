@@ -27,9 +27,9 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.SaveProfile
 import com.dluvian.voyage.core.getSignerLauncher
 import com.dluvian.voyage.core.viewModel.EditProfileViewModel
-import com.dluvian.voyage.ui.components.TextInput
 import com.dluvian.voyage.ui.components.button.ExpandToggleTextButton
 import com.dluvian.voyage.ui.components.scaffold.SaveableScaffold
+import com.dluvian.voyage.ui.components.text.TextInput
 import com.dluvian.voyage.ui.theme.spacing
 import rust.nostr.protocol.Metadata
 import rust.nostr.protocol.MetadataRecord

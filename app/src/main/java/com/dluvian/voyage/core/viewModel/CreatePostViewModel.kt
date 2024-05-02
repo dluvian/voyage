@@ -9,6 +9,7 @@ import com.dluvian.voyage.core.CreatePostViewAction
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.SendPost
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.core.UpdatePostTopics
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.interactor.PostSender
@@ -27,10 +28,11 @@ class CreatePostViewModel(
     fun handle(action: CreatePostViewAction) {
         when (action) {
             is SendPost -> sendPost(action = action)
+            is UpdatePostTopics -> updateMyTopics()
         }
     }
 
-    fun updateMyTopics() {
+    private fun updateMyTopics() {
         viewModelScope.launchIO {
             myTopics.value = topicProvider.getMyTopics()
         }
