@@ -61,10 +61,15 @@ fun PubkeyHex.toShortenedBech32(): String {
 
 fun Metadata.toRelevantMetadata(createdAt: Long): RelevantMetadata {
     return RelevantMetadata(
-        name = this.getName()?.trim(),
+        name = this.getRealName(),
         about = this.getAbout()?.trim(),
         createdAt = createdAt
     )
+}
+
+fun Metadata.getRealName(): String? {
+    val name = this.getName()?.trim()
+    return if (!name.isNullOrEmpty()) name else this.getDisplayName()?.trim()
 }
 
 fun SnackbarHostState.showToast(scope: CoroutineScope, msg: String) {

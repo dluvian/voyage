@@ -22,7 +22,7 @@ data class ProfileEntity(
         fun from(validatedProfile: ValidatedProfile): ProfileEntity {
             return ProfileEntity(
                 pubkey = validatedProfile.pubkey,
-                name = validatedProfile.metadata.getName()?.take(MAX_NAME_LEN).orEmpty(),
+                name = validatedProfile.metadata.getDisplayName()?.take(MAX_NAME_LEN).orEmpty(),
                 createdAt = validatedProfile.createdAt
             )
         }
