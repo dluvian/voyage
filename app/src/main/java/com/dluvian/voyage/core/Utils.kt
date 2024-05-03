@@ -128,7 +128,7 @@ fun <T> Collection<T>.takeRandom(n: Int): List<T> {
     return if (this.size <= n) return this.toList() else this.shuffled().take(n)
 }
 
-private val urlRegex = Regex(pattern = "https?://[^\\s]+")
+private val urlRegex = Regex(pattern = "https?://[^\\s]+[a-zA-Z0-9/]")
 fun extractUrls(extractFrom: String) = urlRegex.findAll(extractFrom).toList()
 
 
