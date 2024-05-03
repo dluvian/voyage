@@ -3,6 +3,7 @@ package com.dluvian.voyage.data.event
 import android.util.Log
 import com.dluvian.nostr_kt.Nip65Relay
 import com.dluvian.nostr_kt.RelayUrl
+import com.dluvian.nostr_kt.createCrossPostTags
 import com.dluvian.nostr_kt.createHashtagTag
 import com.dluvian.nostr_kt.createMentionTag
 import com.dluvian.nostr_kt.createReplyTag
@@ -17,6 +18,7 @@ import rust.nostr.protocol.EventBuilder
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Interests
 import rust.nostr.protocol.Kind
+import rust.nostr.protocol.KindEnum
 import rust.nostr.protocol.Metadata
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.RelayMetadata
@@ -59,6 +61,27 @@ class EventMaker(
         val unsignedEvent = EventBuilder
             .textNote(content = content, tags = tags)
             .toUnsignedEvent(accountManager.getPublicKey())
+
+        return accountManager.sign(signerLauncher = signerLauncher, unsignedEvent = unsignedEvent)
+    }
+
+    suspend fun buildCrossPost(
+        crossPostedEvent: Event,
+        topics: List<Topic>,
+        relayHint: RelayUrl,
+        signerLauncher: SignerLauncher,
+    ): Result<Event> {
+        val tags = createCrossPostTags(
+            crossPostedEvent = crossPostedEvent,
+            topics = topics,
+            relayHint = relayHint
+        )
+
+        val unsignedEvent = EventBuilder(
+            kind = Kind.fromEnum(KindEnum.Repost),
+            content = crossPostedEvent.asJson(),
+            tags = tags
+        ).toUnsignedEvent(accountManager.getPublicKey())
 
         return accountManager.sign(signerLauncher = signerLauncher, unsignedEvent = unsignedEvent)
     }

@@ -125,4 +125,6 @@
     <string name="cross_post_without_topics">Cross-post without topics</string>
     <string name="cross_post_to_n_topics">Cross-post to %d topics</string>
     <string name="select_topics_n_of_m">Select topics (%d of %d)</string>
+    <string name="cross_post_created">Cross-post created</string>
+    <string name="failed_to_create_cross_post">Failed to create cross-post</string>
 </resources>

@@ -19,6 +19,21 @@ fun createSubjectTag(subject: String) = Tag.fromEnum(TagEnum.Subject(subject))
 
 fun createHashtagTag(hashtag: String) = Tag.fromEnum(TagEnum.Hashtag(hashtag))
 
+fun createCrossPostTags(
+    crossPostedEvent: Event,
+    topics: List<String>,
+    relayHint: RelayUrl
+): List<Tag> {
+    val tags = mutableListOf<Tag>()
+    tags.add(Tag.parse(listOf("e", crossPostedEvent.id().toHex(), relayHint)))
+    tags.add(Tag.parse(listOf("p", crossPostedEvent.author().toHex())))
+    topics.forEach {
+        tags.add(createHashtagTag(it))
+    }
+
+    return tags
+}
+
 fun createMentionTag(pubkeys: Collection<String>): List<Tag> {
     return pubkeys.map { Tag.parse(listOf("p", it)) }
 }

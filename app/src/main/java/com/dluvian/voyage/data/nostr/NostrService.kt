@@ -120,6 +120,21 @@ class NostrService(
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
+    suspend fun publishCrossPost(
+        crossPostedEvent: Event,
+        topics: List<Topic>,
+        relayHint: RelayUrl,
+        relayUrls: Collection<RelayUrl>,
+        signerLauncher: SignerLauncher,
+    ): Result<Event> {
+        return eventMaker.buildCrossPost(
+            crossPostedEvent = crossPostedEvent,
+            topics = topics,
+            relayHint = relayHint,
+            signerLauncher = signerLauncher,
+        )
+            .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
+    }
 
     suspend fun publishVote(
         eventId: EventId,

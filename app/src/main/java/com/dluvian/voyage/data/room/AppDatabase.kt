@@ -11,6 +11,7 @@ import com.dluvian.voyage.data.room.dao.ExistsDao
 import com.dluvian.voyage.data.room.dao.FriendDao
 import com.dluvian.voyage.data.room.dao.FullProfileDao
 import com.dluvian.voyage.data.room.dao.Nip65Dao
+import com.dluvian.voyage.data.room.dao.PostDao
 import com.dluvian.voyage.data.room.dao.ProfileDao
 import com.dluvian.voyage.data.room.dao.ReplyDao
 import com.dluvian.voyage.data.room.dao.RootPostDao
@@ -84,6 +85,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun eventRelayDao(): EventRelayDao
     abstract fun replyDao(): ReplyDao
     abstract fun fullProfileDao(): FullProfileDao
+    abstract fun postDao(): PostDao
 
 
     // Util

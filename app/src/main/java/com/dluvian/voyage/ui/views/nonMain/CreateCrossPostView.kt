@@ -51,7 +51,7 @@ fun CreateCrossPostView(
         showSendButton = false,
         isSendingContent = isSending,
         snackbar = snackbar,
-        onSend = { },
+        onSend = { }, // We don't use top bar for sending
         onUpdate = onUpdate,
     ) {
         CreateCrossPostViewContent(

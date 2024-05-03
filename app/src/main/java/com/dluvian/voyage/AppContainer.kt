@@ -257,7 +257,8 @@ class AppContainer(context: Context) {
     val postSender = PostSender(
         nostrService = nostrService,
         relayProvider = relayProvider,
-        postInsertDao = roomDb.postInsertDao()
+        postInsertDao = roomDb.postInsertDao(),
+        postDao = roomDb.postDao()
     )
 
     val databasePreferences = DatabasePreferences(context = context)
