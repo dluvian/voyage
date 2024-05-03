@@ -5,12 +5,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import com.dluvian.nostr_kt.createNevent
 import com.dluvian.nostr_kt.createNeventStr
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.DeletePost
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.FollowProfile
 import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.core.OpenThreadRaw
 import com.dluvian.voyage.core.SignerLauncher
 import com.dluvian.voyage.core.UnfollowProfile
 import com.dluvian.voyage.core.copyAndToast
@@ -19,6 +21,7 @@ import com.dluvian.voyage.core.model.FriendTrust
 import com.dluvian.voyage.core.model.IParentUI
 import com.dluvian.voyage.core.model.NoTrust
 import com.dluvian.voyage.core.model.Oneself
+import com.dluvian.voyage.core.model.ReplyUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.model.WebTrust
 
@@ -46,6 +49,13 @@ fun ParentRowDropdown(
             onDismiss = onDismiss,
             onUpdate = onUpdate
         )
+
+        if (parent is ReplyUI) SimpleDropdownItem(text = stringResource(id = R.string.open_as_root),
+            onClick = {
+                onUpdate(OpenThreadRaw(nevent = createNevent(hex = parent.id)))
+                onDismiss()
+            })
+
         val clip = LocalClipboardManager.current
         val context = LocalContext.current
         val idCopiedToast = stringResource(id = R.string.note_id_copied)

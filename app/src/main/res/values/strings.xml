@@ -129,4 +129,5 @@
     <string name="failed_to_create_cross_post">Failed to create cross-post</string>
     <string name="authenticate_via_auth">Authenticate via AUTH</string>
     <string name="enable_to_authenticate_yourself_to_relays">Enable to authenticate yourself to relays</string>
+    <string name="open_as_root">Open as root</string>
 </resources>
