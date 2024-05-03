@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -75,9 +75,9 @@ fun Feed(
 
             if (hasMoreRecentPosts) item { MostRecentPostsTextButton(onClick = onRefresh) }
 
-            itemsIndexed(
+            items(
                 items = posts,
-                key = { i, item -> if (useIdAsKey.value) item.id else i }) { _, post ->
+                key = { item -> item.id }) { post ->
                 PostRow(post = post, onUpdate = onUpdate)
                 FullHorizontalDivider()
             }
