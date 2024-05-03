@@ -50,9 +50,10 @@ class ProfileProvider(
     }
 
     suspend fun getProfileByName(name: String, limit: Int): List<AdvancedProfileView> {
-        return profileDao.getProfilesByName(name = name, limit = limit)
+        return profileDao.getProfilesByName(name = name, limit = 2 * limit)
             .sortedByDescending { it.isFriend }
             .sortedBy { it.name.length }
+            .take(limit)
     }
 
     suspend fun getPopularUnfollowedProfiles(limit: Int): Flow<List<FullProfileUI>> {
