@@ -22,8 +22,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.OpenProfile
-import com.dluvian.voyage.core.OpenTopic
 import com.dluvian.voyage.core.SearchText
 import com.dluvian.voyage.core.UpdateSearchText
 import com.dluvian.voyage.ui.components.button.GoBackIconButton
@@ -62,12 +60,7 @@ fun SearchTopAppBar(focusRequester: FocusRequester, onUpdate: OnUpdate) {
                 keyboardActions = KeyboardActions(
                     onSearch = {
                         onUpdate(
-                            SearchText(
-                                text = text.value,
-                                context = context,
-                                onOpenTopic = { topic -> onUpdate(OpenTopic(topic = topic)) },
-                                onOpenProfile = { nip19 -> onUpdate(OpenProfile(nprofile = nip19)) }
-                            )
+                            SearchText(text = text.value, context = context, onUpdate = onUpdate)
                         )
                     },
                 ),

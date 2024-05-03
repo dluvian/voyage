@@ -168,6 +168,7 @@ data class SaveRelays(
     val context: Context,
     val onGoBack: Fn
 ) : RelayEditorViewAction()
+
 data object LoadRelays : RelayEditorViewAction()
 
 
@@ -184,6 +185,7 @@ data class SendPost(
     val signerLauncher: SignerLauncher,
     val onGoBack: Fn
 ) : CreatePostViewAction()
+
 data object UpdatePostTopics : CreatePostViewAction()
 
 
@@ -245,8 +247,7 @@ data class UpdateSearchText(val text: String) : SearchViewAction()
 data class SearchText(
     val text: String,
     val context: Context,
-    val onOpenTopic: (Topic) -> Unit,
-    val onOpenProfile: (Nip19Profile) -> Unit
+    val onUpdate: OnUpdate
 ) : SearchViewAction()
 
 
