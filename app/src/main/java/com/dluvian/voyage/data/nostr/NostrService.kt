@@ -6,6 +6,7 @@ import com.dluvian.nostr_kt.Nip65Relay
 import com.dluvian.nostr_kt.NostrClient
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
+import com.dluvian.voyage.core.AUTH_TIMEOUT
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SignerLauncher
@@ -212,10 +213,22 @@ class NostrService(
         nostrClient.close()
     }
 
+    private val lastAuths = mutableMapOf<RelayUrl, Long>()
     private suspend fun sendAuth(relayUrl: RelayUrl, challenge: String) {
         if (defaultLauncher == null) {
             Log.w(TAG, "Launcher is not yet initialized")
             return
+        }
+        val current = System.currentTimeMillis()
+        synchronized(lastAuths) {
+            val last = lastAuths.putIfAbsent(relayUrl, current)
+            if (last != null) {
+                lastAuths[relayUrl] = current
+                if (current - last < AUTH_TIMEOUT) {
+                    Log.i(TAG, "$relayUrl is spamming AUTH")
+                    return
+                }
+            }
         }
         defaultLauncher?.let {
             eventMaker.buildAuth(
