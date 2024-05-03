@@ -24,13 +24,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+private const val TAG = "Paginator"
 
 class Paginator(
     private val feedProvider: FeedProvider,
     private val subCreator: SubscriptionCreator,
     private val scope: CoroutineScope,
 ) : IPaginator {
-    private val tag = "Paginator"
     override val isRefreshing = mutableStateOf(false)
     override val isAppending = mutableStateOf(false)
     override val hasMoreRecentPosts = mutableStateOf(false)
@@ -48,7 +48,7 @@ class Paginator(
             is ProfileFeedSetting -> page.value.value.isNotEmpty() && feedSetting == setting
         }
         if (isSame) {
-            Log.i(tag, "Skip init. Settings are the same")
+            Log.i(TAG, "Skip init. Settings are the same")
             return
         }
 
