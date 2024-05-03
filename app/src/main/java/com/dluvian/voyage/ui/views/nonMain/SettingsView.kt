@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SnackbarHostState
@@ -32,6 +33,7 @@ import com.dluvian.voyage.core.MIN_RETAIN_ROOT
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.RequestExternalAccount
+import com.dluvian.voyage.core.SendAuth
 import com.dluvian.voyage.core.SignerLauncher
 import com.dluvian.voyage.core.UpdateRootPostThreshold
 import com.dluvian.voyage.core.UseDefaultAccount
@@ -65,6 +67,7 @@ private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: OnUpdate) {
     val seed by vm.seed
     val isLoadingAccount by vm.isLoadingAccount
     val rootPostThreshold by vm.rootPostThreshold
+    val sendAuth by vm.sendAuth
     val currentRootPostCount by vm.currentRootPostCount.collectAsState()
     val requestAccount = getAccountLauncher(onUpdate = onUpdate)
 
@@ -78,7 +81,7 @@ private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: OnUpdate) {
                 onUpdate = onUpdate
             )
         }
-        item { RelaySection(onUpdate = onUpdate) }
+        item { RelaySection(sendAuth = sendAuth, onUpdate = onUpdate) }
         item {
             DatabaseSection(
                 rootPostThreshold = rootPostThreshold,
@@ -134,12 +137,23 @@ private fun AccountSection(
 }
 
 @Composable
-private fun RelaySection(onUpdate: OnUpdate) {
+private fun RelaySection(sendAuth: Boolean, onUpdate: OnUpdate) {
     SettingsSection(header = stringResource(id = R.string.relays)) {
         ClickableRow(
             header = stringResource(id = R.string.relay_list),
             text = stringResource(id = R.string.click_to_edit_your_relay_list),
             onClick = { onUpdate(ClickRelayEditor) }
+        )
+        ClickableRow(
+            header = stringResource(id = R.string.authenticate_via_auth),
+            text = stringResource(id = R.string.enable_to_authenticate_yourself_to_relays),
+            onClick = { onUpdate(SendAuth(sendAuth = !sendAuth)) },
+            trailingContent = {
+                Checkbox(
+                    checked = sendAuth,
+                    onCheckedChange = { onUpdate(SendAuth(sendAuth = it)) },
+                )
+            }
         )
     }
 }

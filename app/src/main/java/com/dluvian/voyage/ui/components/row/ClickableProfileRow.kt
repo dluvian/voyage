@@ -11,7 +11,7 @@ import com.dluvian.voyage.ui.components.icon.TrustIcon
 fun ClickableProfileRow(profile: AdvancedProfileView, onClick: Fn) {
     ClickableRow(
         header = profile.name,
-        icon = {
+        leadingContent = {
             TrustIcon(
                 trustType = TrustType.from(
                     isOneself = profile.isMe,

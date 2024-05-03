@@ -92,9 +92,10 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 accountSwitcher = appContainer.accountSwitcher,
                 snackbar = appContainer.snackbar,
                 databasePreferences = appContainer.databasePreferences,
+                relayPreferences = appContainer.relayPreferences,
                 databaseStatProvider = appContainer.databaseStatProvider,
                 externalSignerHandler = appContainer.externalSignerHandler,
-                mnemonicSigner = appContainer.mnemonicSigner
+                mnemonicSigner = appContainer.mnemonicSigner,
             )
         },
         searchVM = viewModel {

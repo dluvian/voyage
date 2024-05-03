@@ -237,6 +237,7 @@ data class ProcessExternalAccount(
 
 data class UpdateRootPostThreshold(val threshold: Float) : SettingsViewAction()
 data object LoadSeed : SettingsViewAction()
+data class SendAuth(val sendAuth: Boolean) : SettingsViewAction()
 
 
 sealed class SearchViewAction : UIEvent()

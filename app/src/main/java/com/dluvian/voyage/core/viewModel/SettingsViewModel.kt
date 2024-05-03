@@ -14,6 +14,7 @@ import com.dluvian.voyage.core.ExternalSignerHandler
 import com.dluvian.voyage.core.LoadSeed
 import com.dluvian.voyage.core.ProcessExternalAccount
 import com.dluvian.voyage.core.RequestExternalAccount
+import com.dluvian.voyage.core.SendAuth
 import com.dluvian.voyage.core.SettingsViewAction
 import com.dluvian.voyage.core.UpdateRootPostThreshold
 import com.dluvian.voyage.core.UseDefaultAccount
@@ -25,6 +26,7 @@ import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.account.AccountSwitcher
 import com.dluvian.voyage.data.account.MnemonicSigner
 import com.dluvian.voyage.data.preferences.DatabasePreferences
+import com.dluvian.voyage.data.preferences.RelayPreferences
 import com.dluvian.voyage.data.provider.DatabaseStatProvider
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -36,6 +38,7 @@ class SettingsViewModel(
     private val accountSwitcher: AccountSwitcher,
     private val snackbar: SnackbarHostState,
     private val databasePreferences: DatabasePreferences,
+    private val relayPreferences: RelayPreferences,
     databaseStatProvider: DatabaseStatProvider,
     private val externalSignerHandler: ExternalSignerHandler,
     private val mnemonicSigner: MnemonicSigner,
@@ -45,6 +48,7 @@ class SettingsViewModel(
     val currentRootPostCount = databaseStatProvider.getRootPostCountFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
     val seed = mutableStateOf(emptyList<String>())
+    val sendAuth = mutableStateOf(relayPreferences.getSendAuth())
 
     val isLoadingAccount = mutableStateOf(false)
 
@@ -66,7 +70,13 @@ class SettingsViewModel(
             }
 
             is LoadSeed -> seed.value = mnemonicSigner.getSeed()
+            is SendAuth -> setSendAuth(sendAuth = action.sendAuth)
         }
+    }
+
+    private fun setSendAuth(sendAuth: Boolean) {
+        relayPreferences.setSendAuth(sendAuth = sendAuth)
+        this.sendAuth.value = sendAuth
     }
 
     private fun useDefaultAccount() {

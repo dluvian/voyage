@@ -13,6 +13,7 @@ import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.data.event.EventMaker
 import com.dluvian.voyage.data.event.EventQueue
+import com.dluvian.voyage.data.preferences.RelayPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import rust.nostr.protocol.Event
@@ -29,6 +30,7 @@ class NostrService(
     private val eventQueue: EventQueue,
     private val eventMaker: EventMaker,
     private val filterCache: MutableMap<SubId, List<Filter>>,
+    private val relayPreferences: RelayPreferences,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
     var defaultLauncher: SignerLauncher? = null
@@ -72,6 +74,12 @@ class NostrService(
 
         override fun onAuth(relayUrl: RelayUrl, challenge: String) {
             Log.d(TAG, "OnAuth($relayUrl): challenge=$challenge")
+
+            if (!relayPreferences.getSendAuth()) {
+                Log.i(TAG, "Reject AUTH from $relayUrl")
+                return
+            }
+
             scope.launchIO {
                 sendAuth(relayUrl = relayUrl, challenge = challenge)
             }

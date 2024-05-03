@@ -5,7 +5,7 @@ import com.dluvian.voyage.core.DEFAULT_RETAIN_ROOT
 import com.dluvian.voyage.core.MAX_RETAIN_ROOT
 import com.dluvian.voyage.core.MIN_RETAIN_ROOT
 
-const val SWEEP_THRESHOLD = "sweep_threshold"
+private const val SWEEP_THRESHOLD = "sweep_threshold"
 
 class DatabasePreferences(context: Context) {
     private val preferences = context.getSharedPreferences(DATABASE_FILE, Context.MODE_PRIVATE)

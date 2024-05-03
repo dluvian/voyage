@@ -32,6 +32,7 @@ import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.nostr.SubBatcher
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.preferences.DatabasePreferences
+import com.dluvian.voyage.data.preferences.RelayPreferences
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 import com.dluvian.voyage.data.provider.DatabaseStatProvider
 import com.dluvian.voyage.data.provider.FeedProvider
@@ -149,11 +150,17 @@ class AppContainer(context: Context) {
         eventProcessor = eventProcessor
     )
     private val eventMaker = EventMaker(accountManager = accountManager)
+
+    val relayPreferences = RelayPreferences(context = context)
+    val databasePreferences = DatabasePreferences(context = context)
+    val databaseStatProvider = DatabaseStatProvider(countDao = roomDb.countDao())
+
     val nostrService = NostrService(
         nostrClient = nostrClient,
         eventQueue = eventQueue,
         eventMaker = eventMaker,
-        filterCache = syncedFilterCache
+        filterCache = syncedFilterCache,
+        relayPreferences = relayPreferences
     )
 
     init {
@@ -260,9 +267,6 @@ class AppContainer(context: Context) {
         postInsertDao = roomDb.postInsertDao(),
         postDao = roomDb.postDao()
     )
-
-    val databasePreferences = DatabasePreferences(context = context)
-    val databaseStatProvider = DatabaseStatProvider(countDao = roomDb.countDao())
 
     val eventSweeper = EventSweeper(
         databasePreferences = databasePreferences,

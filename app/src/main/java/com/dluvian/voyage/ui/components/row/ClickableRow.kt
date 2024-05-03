@@ -1,6 +1,7 @@
 package com.dluvian.voyage.ui.components.row
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,7 +38,7 @@ fun ClickableRow(
     ClickableRow(
         header = header,
         text = text,
-        icon = if (imageVector == null) null else icon,
+        leadingContent = if (imageVector == null) null else icon,
         onClick = onClick,
         additionalContent = additionalContent
     )
@@ -47,12 +48,19 @@ fun ClickableRow(
 fun ClickableRow(
     header: String,
     text: String? = null,
-    icon: ComposableContent? = null,
+    leadingContent: ComposableContent? = null,
+    trailingContent: ComposableContent? = null,
     onClick: Fn = {},
     additionalContent: ComposableContent = {},
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        ClickableBaseRow(header = header, icon = icon, text = text, onClick = onClick)
+        ClickableBaseRow(
+            header = header,
+            leadingContent = leadingContent,
+            trailingContent = trailingContent,
+            text = text,
+            onClick = onClick
+        )
         additionalContent()
     }
 }
@@ -60,7 +68,8 @@ fun ClickableRow(
 @Composable
 private fun ClickableBaseRow(
     header: String,
-    icon: ComposableContent? = null,
+    leadingContent: ComposableContent? = null,
+    trailingContent: ComposableContent? = null,
     text: String? = null,
     onClick: Fn = {},
 ) {
@@ -69,23 +78,27 @@ private fun ClickableBaseRow(
             .fillMaxWidth()
             .clickable(onClick = onClick)
             .padding(horizontal = spacing.bigScreenEdge, vertical = spacing.large),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        if (icon != null) {
-            icon()
-            Spacer(modifier = Modifier.width(spacing.xl))
-        }
-        Column() {
-            Text(
-                text = header,
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            if (text != null) {
-                Spacer(modifier = Modifier.height(spacing.small))
-                Text(text = text, style = MaterialTheme.typography.bodyMedium)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (leadingContent != null) {
+                leadingContent()
+                Spacer(modifier = Modifier.width(spacing.xl))
+            }
+            Column {
+                Text(
+                    text = header,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                if (text != null) {
+                    Spacer(modifier = Modifier.height(spacing.small))
+                    Text(text = text, style = MaterialTheme.typography.bodyMedium)
+                }
             }
         }
+        if (trailingContent != null) trailingContent()
     }
 }
