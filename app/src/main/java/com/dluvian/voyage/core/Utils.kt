@@ -256,9 +256,9 @@ val textNoteAndRepostKinds = listOf(
 fun createValidatedMainPost(event: Event, relayUrl: RelayUrl): ValidatedMainPost? {
     if (!event.isPostOrReply()) return null
     val replyToId = event.getReplyToId()
-    val content = event.content().trim()
+    val content = event.content().trim().take(MAX_CONTENT_LEN)
     return if (replyToId == null) {
-        val subject = event.getSubject()?.trim()?.take(MAX_SUBJECT_LEN)
+        val subject = event.getTrimmedSubject()
         if (subject.isNullOrEmpty() && content.isEmpty()) return null
         ValidatedRootPost(
             id = event.id().toHex(),
@@ -282,4 +282,8 @@ fun createValidatedMainPost(event: Event, relayUrl: RelayUrl): ValidatedMainPost
             event.asJson()
         )
     }
+}
+
+fun Event.getTrimmedSubject(maxLen: Int = MAX_SUBJECT_LEN): String? {
+    return this.getSubject()?.trim()?.take(maxLen)
 }

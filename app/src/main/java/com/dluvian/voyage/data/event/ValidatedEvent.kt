@@ -18,18 +18,19 @@ sealed class ValidatedPost(
 sealed class ValidatedMainPost(
     override val id: EventIdHex,
     override val pubkey: PubkeyHex,
-    override val topics: List<Topic>
+    override val topics: List<Topic>,
+    open val subject: String?,
 ) : ValidatedPost(id = id, pubkey = pubkey, topics = topics)
 data class ValidatedRootPost(
     override val id: EventIdHex,
     override val pubkey: PubkeyHex,
     override val topics: List<String>,
-    val subject: String?,
+    override val subject: String?,
     val content: String,
     val createdAt: Long,
     val relayUrl: RelayUrl,
     val json: String,
-) : ValidatedMainPost(id = id, pubkey = pubkey, topics = topics)
+) : ValidatedMainPost(id = id, pubkey = pubkey, subject = subject, topics = topics)
 data class ValidatedReply(
     override val id: EventIdHex,
     override val pubkey: PubkeyHex,
@@ -38,7 +39,7 @@ data class ValidatedReply(
     val createdAt: Long,
     val relayUrl: RelayUrl,
     val json: String,
-) : ValidatedMainPost(id = id, pubkey = pubkey, topics = emptyList())
+) : ValidatedMainPost(id = id, pubkey = pubkey, subject = null, topics = emptyList())
 
 data class ValidatedCrossPost(
     override val id: EventIdHex,

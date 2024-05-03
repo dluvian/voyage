@@ -76,7 +76,6 @@ class EventMaker(
             topics = topics,
             relayHint = relayHint
         )
-
         val unsignedEvent = EventBuilder(
             kind = Kind.fromEnum(KindEnum.Repost),
             content = crossPostedEvent.asJson(),

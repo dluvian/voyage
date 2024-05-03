@@ -4,8 +4,6 @@ import androidx.room.Entity
 import androidx.room.Index
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.core.EventIdHex
-import com.dluvian.voyage.core.MAX_CONTENT_LEN
-import com.dluvian.voyage.core.MAX_SUBJECT_LEN
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.event.ValidatedCrossPost
 import com.dluvian.voyage.data.event.ValidatedPost
@@ -41,8 +39,8 @@ data class PostEntity(
                     id = post.id,
                     pubkey = post.pubkey,
                     parentId = null,
-                    subject = post.subject?.trim()?.take(MAX_SUBJECT_LEN),
-                    content = post.content.trim().take(MAX_CONTENT_LEN),
+                    subject = post.subject,
+                    content = post.content,
                     createdAt = post.createdAt,
                     relayUrl = post.relayUrl,
                     crossPostedId = null,
@@ -55,7 +53,7 @@ data class PostEntity(
                     pubkey = post.pubkey,
                     parentId = post.parentId,
                     subject = null,
-                    content = post.content.trim().take(MAX_CONTENT_LEN),
+                    content = post.content,
                     createdAt = post.createdAt,
                     relayUrl = post.relayUrl,
                     crossPostedId = null,
@@ -67,12 +65,10 @@ data class PostEntity(
                     id = post.id,
                     pubkey = post.pubkey,
                     parentId = null,
-                    subject = null,
+                    subject = post.crossPosted.subject,
                     content = when (post.crossPosted) {
-                        is ValidatedRootPost -> post.crossPosted.content.trim()
-                            .take(MAX_CONTENT_LEN)
-
-                        is ValidatedReply -> post.crossPosted.content.trim().take(MAX_CONTENT_LEN)
+                        is ValidatedRootPost -> post.crossPosted.content
+                        is ValidatedReply -> post.crossPosted.content
                     },
                     createdAt = post.createdAt,
                     relayUrl = post.relayUrl,
