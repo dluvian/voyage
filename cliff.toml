@@ -58,11 +58,14 @@ commit_preprocessors = [
 commit_parsers = [
     { message = "^feat", group = "<!-- 0 -->🌠 Features" },
     { message = "^perf", group = "<!-- 1 -->⚡️ Performance" },
-    { message = "^imp", group = "<!-- 2 -->🛠 Improvements" },
+    { message = "^imp|^adj", group = "<!-- 2 -->🛠 Improvements" },
     { message = "^style", group = "<!-- 3 -->🎨 Styling" },
     { message = "^fix", group = "<!-- 4 -->🐛 Bug Fixes" },
-    { message = "^doc", group = "<!-- 5 -->📚 Documentation" },
-    { message = "^chore|^ci", group = "<!-- 6 -->⚙️ Miscellaneous Tasks" },
+    { message = "^rmv", group = "<!-- 5 --> 🗑️ Removed" },
+    { message = "^doc", group = "<!-- 6 -->📚 Documentation" },
+    { message = "^chore|^ci", group = "<!-- 7 -->⚙️ Miscellaneous Tasks" },
+    { message = "^refac", group = "<!-- 8 --> Refactoring", skip = true },
+    { message = "^wip", group = "<!-- 8 --> Work in progress", skip = true },
 ]
 # protect breaking changes from being skipped due to matching a skipping commit_parser
 protect_breaking_commits = false
