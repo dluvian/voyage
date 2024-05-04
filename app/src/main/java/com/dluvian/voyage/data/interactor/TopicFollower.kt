@@ -6,12 +6,13 @@ import androidx.compose.material3.SnackbarHostState
 import com.dluvian.nostr_kt.getHashtags
 import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.FollowTopic
+import com.dluvian.voyage.core.LIST_CHANGE_DEBOUNCE
 import com.dluvian.voyage.core.SignerLauncher
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.TopicEvent
 import com.dluvian.voyage.core.UnfollowTopic
+import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.event.ValidatedTopicList
 import com.dluvian.voyage.data.nostr.NostrService
@@ -23,8 +24,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
-import kotlin.coroutines.cancellation.CancellationException
+
+private const val TAG = "TopicFollower"
 
 class TopicFollower(
     private val nostrService: NostrService,
@@ -35,7 +36,6 @@ class TopicFollower(
     private val context: Context,
     private val forcedFollowStates: MutableStateFlow<Map<Topic, Boolean>>
 ) {
-    private val tag = "TopicFollower"
     private val scope = CoroutineScope(Dispatchers.IO)
 
     fun handle(action: TopicEvent) {
@@ -54,21 +54,46 @@ class TopicFollower(
         }
     }
 
-    private val jobs: MutableMap<Topic, Job?> = mutableMapOf()
+    private var signerLauncher: SignerLauncher? = null
     private fun handleAction(topic: Topic, isFollowed: Boolean, signerLauncher: SignerLauncher) {
         updateForcedState(topic = topic, isFollowed = isFollowed)
+        this.signerLauncher = signerLauncher
+        handleFollowsInBackground()
+    }
 
-        jobs[topic]?.cancel(CancellationException("User clicks fast"))
-        jobs[topic] = scope.launch {
-            delay(DEBOUNCE)
+    private fun updateForcedState(topic: Topic, isFollowed: Boolean) {
+        synchronized(forcedFollowStates) {
+            val mutable = forcedFollowStates.value.toMutableMap()
+            mutable[topic] = isFollowed
+            forcedFollowStates.value = mutable
+        }
+    }
 
-            val allTopics = topicDao.getMyTopics().toMutableSet()
-            if (isFollowed) allTopics.add(topic) else allTopics.remove(topic)
+    private var job: Job? = null
+    private fun handleFollowsInBackground() {
+        val nonNullSignerLauncher = signerLauncher ?: return
+        if (job?.isActive == true) return
+
+        job = scope.launchIO {
+            delay(LIST_CHANGE_DEBOUNCE)
+
+            val toHandle: Map<Topic, Boolean>
+            synchronized(forcedFollowStates) {
+                toHandle = forcedFollowStates.value.toMap()
+            }
+            val topicsBefore = topicDao.getMyTopics().toSet()
+            val topicsAdjusted = topicsBefore.toMutableSet()
+            val toAdd = toHandle.filter { (_, bool) -> bool }.map { (topic, _) -> topic }
+            topicsAdjusted.addAll(toAdd)
+            val toRemove = toHandle.filter { (_, bool) -> !bool }.map { (topic, _) -> topic }
+            topicsAdjusted.removeAll(toRemove.toSet())
+
+            if (topicsAdjusted == topicsBefore) return@launchIO
 
             nostrService.publishTopicList(
-                topics = allTopics.toList(),
+                topics = topicsAdjusted.toList(),
                 relayUrls = relayProvider.getPublishRelays(),
-                signerLauncher = signerLauncher,
+                signerLauncher = nonNullSignerLauncher,
             ).onSuccess { event ->
                 val topicList = ValidatedTopicList(
                     myPubkey = event.author().toHex(),
@@ -78,20 +103,12 @@ class TopicFollower(
                 topicUpsertDao.upsertTopics(validatedTopicList = topicList)
             }
                 .onFailure {
-                    Log.w(tag, "Failed to publish topic list: ${it.message}", it)
+                    Log.w(TAG, "Failed to publish topic list: ${it.message}", it)
                     snackbar.showToast(
                         scope = scope,
                         msg = context.getString(R.string.failed_to_sign_topic_list)
                     )
                 }
-        }
-    }
-
-    private fun updateForcedState(topic: Topic, isFollowed: Boolean) {
-        synchronized(forcedFollowStates) {
-            val mutable = forcedFollowStates.value.toMutableMap()
-            mutable[topic] = isFollowed
-            forcedFollowStates.value = mutable
         }
     }
 }
