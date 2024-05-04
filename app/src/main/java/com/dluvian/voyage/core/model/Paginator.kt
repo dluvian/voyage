@@ -53,6 +53,7 @@ class Paginator(
         }
 
         hasPosts.value = getHasPosts(setting = setting)
+        hasMoreRecentPosts.value = false
         feedSetting = setting
         val now = getCurrentSecs()
 
