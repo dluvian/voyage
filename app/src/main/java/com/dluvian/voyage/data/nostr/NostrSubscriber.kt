@@ -2,6 +2,7 @@ package com.dluvian.voyage.data.nostr
 
 import com.dluvian.nostr_kt.removeTrailingSlashes
 import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.core.FEED_RESUB_SPAN_THRESHOLD_SECS
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.RESUB_TIMEOUT
 import com.dluvian.voyage.core.createReplyAndVoteFilters
@@ -49,19 +50,18 @@ class NostrSubscriber(
     )
 
     suspend fun subFeed(until: Long, limit: Int, setting: FeedSetting) {
-        val untilTimestamp = Timestamp.fromSecs(until.toULong())
         val adjustedLimit = (4 * limit).toULong() // We don't know if we receive enough root posts
 
         val subscriptions = when (setting) {
             is HomeFeedSetting -> feedSubscriber.getHomeFeedSubscriptions(
-                until = untilTimestamp,
+                until = until.toULong(),
                 since = getCachedSinceTimestamp(setting = setting, until = until, pageSize = limit),
                 limit = adjustedLimit
             )
 
             is TopicFeedSetting -> feedSubscriber.getTopicFeedSubscription(
                 topic = setting.topic,
-                until = untilTimestamp,
+                until = until.toULong(),
                 since = getCachedSinceTimestamp(setting = setting, until = until, pageSize = limit),
                 // Smaller than adjustedLimit, bc posts with topics tend to be root
                 limit = (2.5 * limit).toULong()
@@ -69,7 +69,7 @@ class NostrSubscriber(
 
             is ProfileFeedSetting -> feedSubscriber.getProfileFeedSubscription(
                 pubkey = setting.pubkey,
-                until = untilTimestamp,
+                until = until.toULong(),
                 since = getCachedSinceTimestamp(setting = setting, until = until, pageSize = limit),
                 limit = adjustedLimit
             )
@@ -177,7 +177,7 @@ class NostrSubscriber(
         setting: FeedSetting,
         until: Long,
         pageSize: Int
-    ): Timestamp {
+    ): ULong {
         val pageSizeAndHalfOfNext = pageSize.times(1.5).toInt()
 
         val timestamps = when (setting) {
@@ -199,9 +199,12 @@ class NostrSubscriber(
             )
         }
 
-        val bestTimestamp = if (timestamps.size < pageSizeAndHalfOfNext) 1L
-        else timestamps.min() + 1
+        if (timestamps.size < pageSizeAndHalfOfNext) return 1uL
 
-        return Timestamp.fromSecs(secs = bestTimestamp.toULong())
+        val min = timestamps.min()
+        val max = timestamps.max()
+        val selectedSince = if (max - min <= FEED_RESUB_SPAN_THRESHOLD_SECS) max else min
+
+        return (selectedSince + 1).toULong()
     }
 }

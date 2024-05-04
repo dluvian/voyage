@@ -21,13 +21,16 @@ class NostrFeedSubscriber(
     private val friendProvider: FriendProvider,
 ) {
     suspend fun getHomeFeedSubscriptions(
-        until: Timestamp,
-        since: Timestamp,
+        until: ULong,
+        since: ULong,
         limit: ULong
     ): Map<RelayUrl, List<Filter>> {
-        if (limit <= 0u) return emptyMap()
+        if (limit <= 0u || since >= until) return emptyMap()
 
         val result = mutableMapOf<RelayUrl, MutableList<Filter>>()
+
+        val sinceTimestamp = Timestamp.fromSecs(since)
+        val untilTimestamp = Timestamp.fromSecs(until)
 
         val friendJob = scope.launch {
             relayProvider
@@ -37,9 +40,9 @@ class NostrFeedSubscriber(
                     val friendsNoteFilter = Filter()
                         .kinds(kinds = textNoteAndRepostKinds)
                         .authors(authors = publicKeys)
-                        .until(timestamp = until)
+                        .since(timestamp = sinceTimestamp)
+                        .until(timestamp = untilTimestamp)
                         .limit(limit = limit)
-                        .since(timestamp = since)
                     val friendsNoteFilters = mutableListOf(friendsNoteFilter)
                     result.syncedPutOrAdd(relayUrl, friendsNoteFilters)
                 }
@@ -50,9 +53,9 @@ class NostrFeedSubscriber(
             val topicedNoteFilter = Filter()
                 .kinds(kinds = textNoteAndRepostKinds)
                 .hashtags(hashtags = topics)
-                .until(timestamp = until)
+                .since(timestamp = sinceTimestamp)
+                .until(timestamp = untilTimestamp)
                 .limit(limit = limit)
-                .since(timestamp = since)
             val topicedNoteFilters = mutableListOf(topicedNoteFilter)
 
             relayProvider.getReadRelays().forEach { relay ->
@@ -67,19 +70,19 @@ class NostrFeedSubscriber(
 
     fun getTopicFeedSubscription(
         topic: Topic,
-        until: Timestamp,
-        since: Timestamp,
+        until: ULong,
+        since: ULong,
         limit: ULong
     ): Map<RelayUrl, List<Filter>> {
-        if (limit <= 0u || topic.isBlank()) return emptyMap()
+        if (limit <= 0u || topic.isBlank() || since >= until) return emptyMap()
 
         val result = mutableMapOf<RelayUrl, MutableList<Filter>>()
 
         val topicedNoteFilter = Filter()
             .kinds(kinds = textNoteAndRepostKinds)
             .hashtag(hashtag = topic)
-            .until(timestamp = until)
-            .since(timestamp = since)
+            .since(timestamp = Timestamp.fromSecs(since))
+            .until(timestamp = Timestamp.fromSecs(until))
             .limit(limit = limit)
         val topicedNoteFilters = mutableListOf(topicedNoteFilter)
 
@@ -92,19 +95,19 @@ class NostrFeedSubscriber(
 
     suspend fun getProfileFeedSubscription(
         pubkey: PubkeyHex,
-        until: Timestamp,
-        since: Timestamp,
+        until: ULong,
+        since: ULong,
         limit: ULong
     ): Map<RelayUrl, List<Filter>> {
-        if (limit <= 0u || pubkey.isBlank()) return emptyMap()
+        if (limit <= 0u || pubkey.isBlank() || since >= until) return emptyMap()
 
         val result = mutableMapOf<RelayUrl, MutableList<Filter>>()
 
         val pubkeyNoteFilter = Filter()
             .kinds(kinds = textNoteAndRepostKinds)
             .author(PublicKey.fromHex(hex = pubkey))
-            .until(timestamp = until)
-            .since(timestamp = since)
+            .since(timestamp = Timestamp.fromSecs(since))
+            .until(timestamp = Timestamp.fromSecs(until))
             .limit(limit = limit)
         val pubkeyNoteFilters = mutableListOf(pubkeyNoteFilter)
 
