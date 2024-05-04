@@ -42,7 +42,7 @@ fun CreatePostView(
     snackbar: SnackbarHostState,
     onUpdate: OnUpdate
 ) {
-    val header = remember { mutableStateOf("") }
+    val header = remember { mutableStateOf(TextFieldValue()) }
     val body = remember { mutableStateOf(TextFieldValue()) }
     val topics = remember { mutableStateOf(emptyList<Topic>()) }
     val myTopics by vm.myTopics
@@ -65,7 +65,7 @@ fun CreatePostView(
         onSend = {
             onUpdate(
                 SendPost(
-                    header = header.value,
+                    header = header.value.text,
                     body = body.value.text,
                     topics = topics.value,
                     context = context,
@@ -89,7 +89,7 @@ fun CreatePostView(
 
 @Composable
 private fun CreatePostContent(
-    header: MutableState<String>,
+    header: MutableState<TextFieldValue>,
     body: MutableState<TextFieldValue>,
     topics: MutableState<List<Topic>>,
     myTopics: List<Topic>,
@@ -102,8 +102,8 @@ private fun CreatePostContent(
         Spacer(modifier = Modifier.height(spacing.medium))
         TextInput(
             modifier = Modifier.focusRequester(focusRequester),
-            value = TextFieldValue(header.value),
-            onValueChange = { str -> header.value = str.text },
+            value = header.value,
+            onValueChange = { txt -> header.value = txt },
             placeholder = stringResource(id = R.string.subject_optional),
             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
             imeAction = ImeAction.Next
