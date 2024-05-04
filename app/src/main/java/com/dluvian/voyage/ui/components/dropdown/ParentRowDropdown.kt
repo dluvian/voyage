@@ -18,9 +18,9 @@ import com.dluvian.voyage.core.UnfollowProfile
 import com.dluvian.voyage.core.copyAndToast
 import com.dluvian.voyage.core.getSignerLauncher
 import com.dluvian.voyage.core.model.FriendTrust
-import com.dluvian.voyage.core.model.IParentUI
 import com.dluvian.voyage.core.model.NoTrust
 import com.dluvian.voyage.core.model.Oneself
+import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.core.model.ReplyUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.model.WebTrust
@@ -28,7 +28,7 @@ import com.dluvian.voyage.core.model.WebTrust
 @Composable
 fun ParentRowDropdown(
     isOpen: Boolean,
-    parent: IParentUI,
+    parent: ParentUI,
     onDismiss: () -> Unit,
     onUpdate: OnUpdate
 ) {
@@ -50,11 +50,15 @@ fun ParentRowDropdown(
             onUpdate = onUpdate
         )
 
-        if (parent is ReplyUI) SimpleDropdownItem(text = stringResource(id = R.string.open_as_root),
-            onClick = {
-                onUpdate(OpenThreadRaw(nevent = createNevent(hex = parent.id)))
-                onDismiss()
-            })
+        when (parent) {
+            is ReplyUI -> SimpleDropdownItem(text = stringResource(id = R.string.open_as_root),
+                onClick = {
+                    onUpdate(OpenThreadRaw(nevent = createNevent(hex = parent.id)))
+                    onDismiss()
+                })
+
+            is RootPostUI -> {}
+        }
 
         val clip = LocalClipboardManager.current
         val context = LocalContext.current
@@ -101,7 +105,7 @@ fun ParentRowDropdown(
 
 @Composable
 private fun FollowItem(
-    parent: IParentUI,
+    parent: ParentUI,
     signerLauncher: SignerLauncher,
     onDismiss: Fn,
     onUpdate: OnUpdate
@@ -136,7 +140,7 @@ private fun FollowItem(
 
 @Composable
 private fun FollowCrossPostedItem(
-    parent: IParentUI,
+    parent: ParentUI,
     signerLauncher: SignerLauncher,
     onDismiss: Fn,
     onUpdate: OnUpdate

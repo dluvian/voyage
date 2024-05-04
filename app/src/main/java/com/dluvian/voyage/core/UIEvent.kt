@@ -5,7 +5,7 @@ import androidx.activity.result.ActivityResult
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.text.AnnotatedString
 import com.dluvian.nostr_kt.RelayUrl
-import com.dluvian.voyage.core.model.IParentUI
+import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.navigator.CreatePostNavView
 import com.dluvian.voyage.core.navigator.CrossPostCreationNavView
@@ -70,11 +70,11 @@ data object ClickRelayEditor : PushNavEvent()
 
 sealed class AdvancedPushNavEvent : PushNavEvent()
 data class OpenThread(val rootPost: RootPostUI) : AdvancedPushNavEvent()
-data class OpenThreadRaw(val nevent: Nip19Event, val parent: IParentUI? = null) :
+data class OpenThreadRaw(val nevent: Nip19Event, val parent: ParentUI? = null) :
     AdvancedPushNavEvent()
 data class OpenProfile(val nprofile: Nip19Profile) : AdvancedPushNavEvent()
 data class OpenTopic(val topic: Topic) : AdvancedPushNavEvent()
-data class OpenReplyCreation(val parent: IParentUI) : AdvancedPushNavEvent()
+data class OpenReplyCreation(val parent: ParentUI) : AdvancedPushNavEvent()
 data class OpenCrossPostCreation(val id: EventIdHex) : AdvancedPushNavEvent()
 
 
@@ -191,7 +191,7 @@ data object UpdatePostTopics : CreatePostViewAction()
 
 sealed class CreateReplyViewAction : UIEvent()
 data class SendReply(
-    val parent: IParentUI,
+    val parent: ParentUI,
     val body: String,
     val context: Context,
     val signerLauncher: SignerLauncher,

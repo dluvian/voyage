@@ -25,7 +25,7 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenTopic
 import com.dluvian.voyage.core.ThreadViewToggleCollapse
-import com.dluvian.voyage.core.model.IParentUI
+import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.ui.components.button.OptionsButton
@@ -40,7 +40,7 @@ import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
 fun ParentRowHeader(
-    parent: IParentUI,
+    parent: ParentUI,
     myTopic: String?,
     isOp: Boolean,
     collapsedText: AnnotatedString? = null,
@@ -80,7 +80,7 @@ fun ParentRowHeader(
 }
 
 @Composable
-private fun CrossPostedTrustIcons(parent: IParentUI, isOp: Boolean, onUpdate: OnUpdate) {
+private fun CrossPostedTrustIcons(parent: ParentUI, isOp: Boolean, onUpdate: OnUpdate) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         ClickableTrustIcon(
             trustType = parent.trustType,

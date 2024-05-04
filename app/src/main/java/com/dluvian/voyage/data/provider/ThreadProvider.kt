@@ -7,8 +7,8 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.firstThenDistinctDebounce
 import com.dluvian.voyage.core.launchIO
-import com.dluvian.voyage.core.model.IParentUI
 import com.dluvian.voyage.core.model.LeveledReplyUI
+import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.data.event.OldestUsedEvent
 import com.dluvian.voyage.data.interactor.Vote
 import com.dluvian.voyage.data.nostr.NostrSubscriber
@@ -35,7 +35,7 @@ class ThreadProvider(
     private val forcedFollows: Flow<Map<PubkeyHex, Boolean>>,
 ) {
 
-    fun getParent(scope: CoroutineScope, nevent: Nip19Event): Flow<IParentUI?> {
+    fun getParent(scope: CoroutineScope, nevent: Nip19Event): Flow<ParentUI?> {
         val id = nevent.eventId().toHex()
         scope.launchIO {
             if (!existsDao.postExists(id = id)) {

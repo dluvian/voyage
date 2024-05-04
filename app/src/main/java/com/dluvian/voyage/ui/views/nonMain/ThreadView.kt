@@ -34,8 +34,8 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.ThreadViewRefresh
 import com.dluvian.voyage.core.ThreadViewShowReplies
 import com.dluvian.voyage.core.ThreadViewToggleCollapse
-import com.dluvian.voyage.core.model.IParentUI
 import com.dluvian.voyage.core.model.LeveledReplyUI
+import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.core.model.ReplyUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.viewModel.ThreadViewModel
@@ -75,15 +75,17 @@ fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpd
 
 @Composable
 private fun ThreadViewContent(
-    parent: IParentUI,
+    parent: ParentUI,
     leveledReplies: List<LeveledReplyUI>,
     isRefreshing: Boolean,
     state: LazyListState,
     onUpdate: OnUpdate
 ) {
     val replies = remember(parent, leveledReplies) {
-        if (parent !is ReplyUI) leveledReplies
-        else leveledReplies.map { it.copy(level = it.level + 2) }
+        when (parent) {
+            is ReplyUI -> leveledReplies.map { it.copy(level = it.level + 2) }
+            is RootPostUI -> leveledReplies
+        }
     }
     PullRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(ThreadViewRefresh) }) {
         LazyColumn(
@@ -92,24 +94,30 @@ private fun ThreadViewContent(
             state = state
         ) {
             item {
-                if (parent is RootPostUI) {
-                    PostRow(
-                        post = parent,
-                        isOp = true,
-                        isThreadView = true,
-                        onUpdate = onUpdate
-                    )
-                    FullHorizontalDivider()
-                } else if (parent is ReplyUI) Reply(
-                    leveledReply = LeveledReplyUI(
-                        level = 1,
-                        reply = parent,
-                        isCollapsed = false,
-                        hasLoadedReplies = true,
-                        isOp = true
-                    ),
-                    onUpdate = onUpdate
-                )
+                when (parent) {
+                    is RootPostUI -> {
+                        PostRow(
+                            post = parent,
+                            isOp = true,
+                            isThreadView = true,
+                            onUpdate = onUpdate
+                        )
+                        FullHorizontalDivider()
+                    }
+
+                    is ReplyUI -> {
+                        Reply(
+                            leveledReply = LeveledReplyUI(
+                                level = 1,
+                                reply = parent,
+                                isCollapsed = false,
+                                hasLoadedReplies = true,
+                                isOp = true
+                            ),
+                            onUpdate = onUpdate
+                        )
+                    }
+                }
             }
             if (parent.replyCount > replies.size) item {
                 FullLinearProgressIndicator()

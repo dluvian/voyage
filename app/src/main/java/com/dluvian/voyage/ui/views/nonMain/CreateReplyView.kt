@@ -29,7 +29,7 @@ import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.SendReply
 import com.dluvian.voyage.core.getSignerLauncher
-import com.dluvian.voyage.core.model.IParentUI
+import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.core.viewModel.CreateReplyViewModel
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.ui.components.bottomSheet.FullPostBottomSheet
@@ -89,7 +89,7 @@ fun CreateReplyView(
 
 @Composable
 private fun CreateResponseViewContent(
-    parent: IParentUI?,
+    parent: ParentUI?,
     response: MutableState<TextFieldValue>,
     searchSuggestions: List<AdvancedProfileView>,
     focusRequester: FocusRequester,
@@ -121,7 +121,7 @@ private fun CreateResponseViewContent(
 }
 
 @Composable
-private fun Parent(parent: IParentUI) {
+private fun Parent(parent: ParentUI) {
     val showFullParent = remember { mutableStateOf(false) }
     if (showFullParent.value) FullPostBottomSheet(
         content = parent.content,

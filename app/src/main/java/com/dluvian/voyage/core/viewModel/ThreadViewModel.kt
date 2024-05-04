@@ -13,8 +13,8 @@ import com.dluvian.voyage.core.ThreadViewRefresh
 import com.dluvian.voyage.core.ThreadViewShowReplies
 import com.dluvian.voyage.core.ThreadViewToggleCollapse
 import com.dluvian.voyage.core.launchIO
-import com.dluvian.voyage.core.model.IParentUI
 import com.dluvian.voyage.core.model.LeveledReplyUI
+import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.data.interactor.ThreadCollapser
 import com.dluvian.voyage.data.provider.ThreadProvider
 import kotlinx.coroutines.delay
@@ -31,14 +31,14 @@ class ThreadViewModel(
     val threadState: LazyListState,
 ) : ViewModel() {
     val isRefreshing = mutableStateOf(false)
-    var parent: StateFlow<IParentUI?> = MutableStateFlow(null)
+    var parent: StateFlow<ParentUI?> = MutableStateFlow(null)
     val leveledReplies: MutableState<StateFlow<List<LeveledReplyUI>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
     private val parentIds = mutableStateOf(emptySet<EventIdHex>())
     private var opPubkey: PubkeyHex? = null
     private var nevent: Nip19Event? = null
 
-    fun openThread(nevent: Nip19Event, parentUi: IParentUI?) {
+    fun openThread(nevent: Nip19Event, parentUi: ParentUI?) {
         val id = nevent.eventId().toHex()
         if (id == parent.value?.id) return
 

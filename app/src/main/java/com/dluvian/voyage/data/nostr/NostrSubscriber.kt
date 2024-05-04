@@ -6,7 +6,7 @@ import com.dluvian.voyage.core.FEED_RESUB_SPAN_THRESHOLD_SECS
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.RESUB_TIMEOUT
 import com.dluvian.voyage.core.createReplyAndVoteFilters
-import com.dluvian.voyage.core.model.IParentUI
+import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.core.textNoteAndRepostKinds
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.model.FeedSetting
@@ -108,7 +108,7 @@ class NostrSubscriber(
     private val votesAndRepliesCache = mutableSetOf<EventIdHex>()
     private var lastUpdate = System.currentTimeMillis()
     private val isSubbingVotesAndReplies = AtomicBoolean(false)
-    suspend fun subVotesAndReplies(posts: Collection<IParentUI>) {
+    suspend fun subVotesAndReplies(posts: Collection<ParentUI>) {
         if (posts.isEmpty()) return
 
         if (isSubbingVotesAndReplies.compareAndSet(false, true)) {

@@ -11,7 +11,7 @@ import com.dluvian.voyage.core.CreateReplyViewAction
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.SendReply
 import com.dluvian.voyage.core.launchIO
-import com.dluvian.voyage.core.model.IParentUI
+import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.interactor.PostSender
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
@@ -25,9 +25,9 @@ class CreateReplyViewModel(
     private val eventRelayDao: EventRelayDao,
 ) : ViewModel() {
     val isSendingReply = mutableStateOf(false)
-    val parent: MutableState<IParentUI?> = mutableStateOf(null)
+    val parent: MutableState<ParentUI?> = mutableStateOf(null)
 
-    fun openParent(newParent: IParentUI) {
+    fun openParent(newParent: ParentUI) {
         val relevantId = newParent.getRelevantId()
         if (relevantId == this.parent.value?.id) return
 
