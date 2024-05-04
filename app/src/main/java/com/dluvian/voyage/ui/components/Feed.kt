@@ -21,7 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -62,9 +61,6 @@ fun Feed(
     val showProgressIndicator by remember {
         derivedStateOf { isAppending || (hasPosts && posts.isEmpty()) }
     }
-    val useIdAsKey = remember(isRefreshing) {
-        mutableStateOf(false)
-    }
 
     PullRefreshBox(isRefreshing = isRefreshing, onRefresh = onRefresh) {
         if (showProgressIndicator) FullLinearProgressIndicator()
@@ -84,7 +80,6 @@ fun Feed(
 
             if (posts.size >= FEED_PAGE_SIZE) item {
                 NextPageButton(onAppend = onAppend)
-                useIdAsKey.value = true
             }
         }
         if (state.showScrollButton()) {
