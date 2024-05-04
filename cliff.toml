@@ -63,8 +63,6 @@ commit_parsers = [
     { message = "^fix", group = "<!-- 4 -->🐛 Bug Fixes" },
     { message = "^doc", group = "<!-- 5 -->📚 Documentation" },
     { message = "^chore|^ci", group = "<!-- 6 -->⚙️ Miscellaneous Tasks" },
-    { message = "^refactor", group = "<!-- 7 -->🚜 Refactor", skip = true },
-    { message = "^test", group = "<!-- 8 -->🧪 Testing", skip = true },
 ]
 # protect breaking changes from being skipped due to matching a skipping commit_parser
 protect_breaking_commits = false
