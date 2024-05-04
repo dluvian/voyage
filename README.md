@@ -65,6 +65,7 @@ I don't plan to publish this app in the Google Play Store.
 - Our external signer of choice is [Amber](https://github.com/greenart7c3/Amber)
 - The project uses [rust-nostr](https://github.com/rust-nostr/nostr), a cross platform Nostr library
   written in Rust
+- Release notes are generated with [git-cliff](https://github.com/orhun/git-cliff)
 
 ## Nostr
 
