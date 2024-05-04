@@ -14,6 +14,8 @@ const val RESUB_TIMEOUT = 3 * DELAY_10SEC
 const val SHORT_DEBOUNCE = 300L
 const val DEBOUNCE = 600L
 
+const val LIST_CHANGE_DEBOUNCE = 3 * DELAY_1SEC
+
 const val MAX_VOTES_TO_SUB = 200uL
 const val MAX_REPLIES_TO_SUB = 150uL
 const val MAX_EVENTS_TO_SUB = 1000uL
