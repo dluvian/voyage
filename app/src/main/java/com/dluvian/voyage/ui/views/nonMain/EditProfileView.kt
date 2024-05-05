@@ -43,27 +43,45 @@ fun EditProfileView(
     val isSaving by vm.isSaving
     val fullProfile by vm.fullProfile
 
-    val name = remember(fullProfile) { mutableStateOf(fullProfile?.name.orEmpty()) }
-    val about = remember(fullProfile) { mutableStateOf(fullProfile?.about.orEmpty()) }
-    val picture = remember(fullProfile) { mutableStateOf(fullProfile?.picture.orEmpty()) }
-    val lud06 = remember(fullProfile) { mutableStateOf(fullProfile?.lud06.orEmpty()) }
-    val lud16 = remember(fullProfile) { mutableStateOf(fullProfile?.lud16.orEmpty()) }
-    val nip05 = remember(fullProfile) { mutableStateOf(fullProfile?.nip05.orEmpty()) }
-    val displayName = remember(fullProfile) { mutableStateOf(fullProfile?.displayName.orEmpty()) }
-    val website = remember(fullProfile) { mutableStateOf(fullProfile?.website.orEmpty()) }
-    val banner = remember(fullProfile) { mutableStateOf(fullProfile?.banner.orEmpty()) }
+    val name = remember(fullProfile) {
+        mutableStateOf(TextFieldValue(fullProfile?.name.orEmpty()))
+    }
+    val about = remember(fullProfile) {
+        mutableStateOf(TextFieldValue(fullProfile?.about.orEmpty()))
+    }
+    val picture = remember(fullProfile) {
+        mutableStateOf(TextFieldValue(fullProfile?.picture.orEmpty()))
+    }
+    val lud06 = remember(fullProfile) {
+        mutableStateOf(TextFieldValue(fullProfile?.lud06.orEmpty()))
+    }
+    val lud16 = remember(fullProfile) {
+        mutableStateOf(TextFieldValue(fullProfile?.lud16.orEmpty()))
+    }
+    val nip05 = remember(fullProfile) {
+        mutableStateOf(TextFieldValue(fullProfile?.nip05.orEmpty()))
+    }
+    val displayName = remember(fullProfile) {
+        mutableStateOf(TextFieldValue(fullProfile?.displayName.orEmpty()))
+    }
+    val website = remember(fullProfile) {
+        mutableStateOf(TextFieldValue(fullProfile?.website.orEmpty()))
+    }
+    val banner = remember(fullProfile) {
+        mutableStateOf(TextFieldValue(fullProfile?.banner.orEmpty()))
+    }
 
     val showSaveButton = remember {
         derivedStateOf {
-            name.value != fullProfile?.name.orEmpty() ||
-                    about.value != fullProfile?.about.orEmpty() ||
-                    picture.value != fullProfile?.picture.orEmpty() ||
-                    lud06.value != fullProfile?.lud06.orEmpty() ||
-                    lud16.value != fullProfile?.lud16.orEmpty() ||
-                    nip05.value != fullProfile?.nip05.orEmpty() ||
-                    displayName.value != fullProfile?.displayName.orEmpty() ||
-                    website.value != fullProfile?.website.orEmpty() ||
-                    banner.value != fullProfile?.banner.orEmpty()
+            name.value.text != fullProfile?.name.orEmpty() ||
+                    about.value.text != fullProfile?.about.orEmpty() ||
+                    picture.value.text != fullProfile?.picture.orEmpty() ||
+                    lud06.value.text != fullProfile?.lud06.orEmpty() ||
+                    lud16.value.text != fullProfile?.lud16.orEmpty() ||
+                    nip05.value.text != fullProfile?.nip05.orEmpty() ||
+                    displayName.value.text != fullProfile?.displayName.orEmpty() ||
+                    website.value.text != fullProfile?.website.orEmpty() ||
+                    banner.value.text != fullProfile?.banner.orEmpty()
         }
     }
 
@@ -81,15 +99,15 @@ fun EditProfileView(
         title = stringResource(id = R.string.edit),
         onSave = {
             val metadataRecord = MetadataRecord(
-                name = name.value,
-                about = about.value,
-                picture = picture.value,
-                lud06 = lud06.value,
-                lud16 = lud16.value,
-                nip05 = nip05.value,
-                displayName = displayName.value,
-                website = website.value,
-                banner = banner.value,
+                name = name.value.text,
+                about = about.value.text,
+                picture = picture.value.text,
+                lud06 = lud06.value.text,
+                lud16 = lud16.value.text,
+                nip05 = nip05.value.text,
+                displayName = displayName.value.text,
+                website = website.value.text,
+                banner = banner.value.text,
             )
             val metadata = Metadata.fromRecord(r = metadataRecord)
             onUpdate(
@@ -118,15 +136,15 @@ fun EditProfileView(
 
 @Composable
 private fun EditProfileViewContent(
-    name: MutableState<String>,
-    about: MutableState<String>,
-    picture: MutableState<String>,
-    lud06: MutableState<String>,
-    lud16: MutableState<String>,
-    nip05: MutableState<String>,
-    displayName: MutableState<String>,
-    website: MutableState<String>,
-    banner: MutableState<String>
+    name: MutableState<TextFieldValue>,
+    about: MutableState<TextFieldValue>,
+    picture: MutableState<TextFieldValue>,
+    lud06: MutableState<TextFieldValue>,
+    lud16: MutableState<TextFieldValue>,
+    nip05: MutableState<TextFieldValue>,
+    displayName: MutableState<TextFieldValue>,
+    website: MutableState<TextFieldValue>,
+    banner: MutableState<TextFieldValue>
 ) {
     val showAdvanced = remember { mutableStateOf(false) }
 
@@ -145,7 +163,7 @@ private fun EditProfileViewContent(
 }
 
 @Composable
-private fun Name(username: MutableState<String>) {
+private fun Name(username: MutableState<TextFieldValue>) {
     EditableField(
         isVisible = true,
         header = stringResource(id = R.string.name),
@@ -155,7 +173,7 @@ private fun Name(username: MutableState<String>) {
 }
 
 @Composable
-private fun About(about: MutableState<String>) {
+private fun About(about: MutableState<TextFieldValue>) {
     EditableField(
         isVisible = true,
         header = stringResource(id = R.string.about),
@@ -178,7 +196,7 @@ private fun ShowAdvancedButton(showAdvanced: MutableState<Boolean>) {
 }
 
 @Composable
-private fun DisplayName(isVisible: Boolean, displayName: MutableState<String>) {
+private fun DisplayName(isVisible: Boolean, displayName: MutableState<TextFieldValue>) {
     EditableField(
         isVisible = isVisible,
         header = stringResource(id = R.string.display_name),
@@ -188,7 +206,7 @@ private fun DisplayName(isVisible: Boolean, displayName: MutableState<String>) {
 }
 
 @Composable
-private fun Picture(isVisible: Boolean, picture: MutableState<String>) {
+private fun Picture(isVisible: Boolean, picture: MutableState<TextFieldValue>) {
     EditableField(
         isVisible = isVisible,
         header = stringResource(id = R.string.profile_picture_url),
@@ -199,7 +217,7 @@ private fun Picture(isVisible: Boolean, picture: MutableState<String>) {
 }
 
 @Composable
-private fun Lud06(isVisible: Boolean, lud06: MutableState<String>) {
+private fun Lud06(isVisible: Boolean, lud06: MutableState<TextFieldValue>) {
     EditableField(
         isVisible = isVisible,
         header = stringResource(id = R.string.lightning_pay_request_lud06),
@@ -209,7 +227,7 @@ private fun Lud06(isVisible: Boolean, lud06: MutableState<String>) {
 }
 
 @Composable
-private fun Lud16(isVisible: Boolean, lud16: MutableState<String>) {
+private fun Lud16(isVisible: Boolean, lud16: MutableState<TextFieldValue>) {
     EditableField(
         isVisible = isVisible,
         header = stringResource(id = R.string.lightning_address_lud16),
@@ -220,7 +238,7 @@ private fun Lud16(isVisible: Boolean, lud16: MutableState<String>) {
 }
 
 @Composable
-private fun Nip05(isVisible: Boolean, nip05: MutableState<String>) {
+private fun Nip05(isVisible: Boolean, nip05: MutableState<TextFieldValue>) {
     EditableField(
         isVisible = isVisible,
         header = stringResource(id = R.string.nip05),
@@ -231,7 +249,7 @@ private fun Nip05(isVisible: Boolean, nip05: MutableState<String>) {
 }
 
 @Composable
-private fun Website(isVisible: Boolean, website: MutableState<String>) {
+private fun Website(isVisible: Boolean, website: MutableState<TextFieldValue>) {
     EditableField(
         isVisible = isVisible,
         header = stringResource(id = R.string.website),
@@ -242,7 +260,7 @@ private fun Website(isVisible: Boolean, website: MutableState<String>) {
 }
 
 @Composable
-private fun Banner(isVisible: Boolean, banner: MutableState<String>) {
+private fun Banner(isVisible: Boolean, banner: MutableState<TextFieldValue>) {
     EditableField(
         isVisible = isVisible,
         header = stringResource(id = R.string.banner_url),
@@ -257,7 +275,7 @@ private fun Banner(isVisible: Boolean, banner: MutableState<String>) {
 private fun EditableField(
     isVisible: Boolean,
     header: String,
-    input: MutableState<String>,
+    input: MutableState<TextFieldValue>,
     placeholder: String,
     isSingleLine: Boolean = true,
     keyboardType: KeyboardType = KeyboardType.Text,
@@ -272,8 +290,8 @@ private fun EditableField(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = spacing.xxl, top = spacing.xl),
-            value = TextFieldValue(input.value),
-            onValueChange = { newText -> input.value = newText.text },
+            value = input.value,
+            onValueChange = { txt -> input.value = txt },
             placeholder = placeholder,
             isSingleLine = isSingleLine,
             keyboardType = keyboardType
