@@ -59,6 +59,7 @@ fun PostRow(
             parent = post,
             myTopic = post.myTopic,
             isOp = isOp,
+            isThreadView = isThreadView,
             onUpdate = onUpdate,
         )
         Spacer(modifier = Modifier.height(spacing.large))

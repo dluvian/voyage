@@ -45,6 +45,7 @@ fun ReplyRow(
             parent = reply,
             myTopic = null,
             isOp = isOp,
+            isThreadView = true,
             collapsedText = if (isCollapsed) reply.content else null,
             onUpdate = onUpdate
         )

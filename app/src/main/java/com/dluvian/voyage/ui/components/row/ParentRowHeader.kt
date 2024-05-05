@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Fn
@@ -43,6 +44,7 @@ fun ParentRowHeader(
     parent: ParentUI,
     myTopic: String?,
     isOp: Boolean,
+    isThreadView: Boolean,
     collapsedText: AnnotatedString? = null,
     onUpdate: OnUpdate
 ) {
@@ -55,7 +57,12 @@ fun ParentRowHeader(
             modifier = Modifier.weight(1f, fill = false),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            CrossPostedTrustIcons(parent = parent, isOp = isOp, onUpdate = onUpdate)
+            CrossPostedTrustIcons(
+                parent = parent,
+                isOp = isOp,
+                isThreadView = isThreadView,
+                onUpdate = onUpdate
+            )
             myTopic?.let { topic ->
                 TopicChip(
                     modifier = Modifier
@@ -80,11 +87,17 @@ fun ParentRowHeader(
 }
 
 @Composable
-private fun CrossPostedTrustIcons(parent: ParentUI, isOp: Boolean, onUpdate: OnUpdate) {
+private fun CrossPostedTrustIcons(
+    parent: ParentUI,
+    isOp: Boolean,
+    isThreadView: Boolean,
+    onUpdate: OnUpdate
+) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         ClickableTrustIcon(
             trustType = parent.trustType,
             isOp = isOp,
+            authorName = if (isThreadView) parent.authorName else null,
             onClick = { onUpdate(OpenProfile(nprofile = createNprofile(hex = parent.pubkey))) }
         )
         if (parent is RootPostUI &&
@@ -111,11 +124,21 @@ private fun CrossPostedTrustIcons(parent: ParentUI, isOp: Boolean, onUpdate: OnU
 private fun ClickableTrustIcon(
     trustType: TrustType,
     isOp: Boolean,
+    authorName: String? = null,
     onClick: Fn
 ) {
     Box(modifier = Modifier.clickable(onClick = onClick)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             TrustIcon(modifier = Modifier.size(sizing.smallIndicator), trustType = trustType)
+            if (authorName != null) {
+                Spacer(modifier = Modifier.width(spacing.small))
+                Text(
+                    text = authorName,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    fontWeight = FontWeight.Medium
+                )
+            }
             if (isOp) {
                 Spacer(modifier = Modifier.width(spacing.small))
                 Text(

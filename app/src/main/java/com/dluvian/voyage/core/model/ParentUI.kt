@@ -14,6 +14,7 @@ sealed class ParentUI(
     open val id: EventIdHex,
     open val content: AnnotatedString,
     open val pubkey: PubkeyHex,
+    open val authorName: String?,
     open val trustType: TrustType,
     open val relayUrl: RelayUrl,
     open val replyCount: Int,
@@ -34,6 +35,7 @@ sealed class ParentUI(
 data class RootPostUI(
     override val id: EventIdHex,
     override val pubkey: PubkeyHex,
+    override val authorName: String?,
     override val trustType: TrustType,
     val myTopic: String?,
     override val createdAt: Long,
@@ -51,6 +53,7 @@ data class RootPostUI(
     id = id,
     content = content,
     pubkey = pubkey,
+    authorName = authorName,
     trustType = trustType,
     relayUrl = relayUrl,
     replyCount = replyCount,
@@ -64,6 +67,7 @@ data class RootPostUI(
             return RootPostUI(
                 id = rootPostView.id,
                 pubkey = rootPostView.pubkey,
+                authorName = rootPostView.authorName,
                 trustType = TrustType.from(
                     isOneself = rootPostView.authorIsOneself,
                     isFriend = rootPostView.authorIsFriend,
@@ -95,6 +99,7 @@ data class ReplyUI(
     override val id: EventIdHex,
     val parentId: EventIdHex,
     override val pubkey: PubkeyHex,
+    override val authorName: String?,
     override val trustType: TrustType,
     override val createdAt: Long,
     override val content: AnnotatedString,
@@ -107,6 +112,7 @@ data class ReplyUI(
     id = id,
     content = content,
     pubkey = pubkey,
+    authorName = authorName,
     trustType = trustType,
     relayUrl = relayUrl,
     replyCount = replyCount,
@@ -118,6 +124,7 @@ data class ReplyUI(
                 id = replyView.id,
                 parentId = replyView.parentId,
                 pubkey = replyView.pubkey,
+                authorName = replyView.authorName,
                 trustType = TrustType.from(
                     isOneself = replyView.authorIsOneself,
                     isFriend = replyView.authorIsFriend,
