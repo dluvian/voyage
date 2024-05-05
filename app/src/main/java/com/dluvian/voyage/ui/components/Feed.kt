@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ComposableContent
+import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.FEED_PAGE_SIZE
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
@@ -57,6 +58,10 @@ fun Feed(
     val hasMoreRecentPosts by paginator.hasMoreRecentPosts
     val hasPosts by paginator.hasPosts.value.collectAsState()
     val posts by paginator.page.value.collectAsState()
+    val uniquePosts = remember(posts) {
+        val ids = mutableSetOf<EventIdHex>()
+        posts.mapNotNull { if (ids.add(it.getRelevantId())) it else null }
+    }
     val scope = rememberCoroutineScope()
     val showProgressIndicator by remember {
         derivedStateOf { isAppending || (hasPosts && posts.isEmpty()) }
@@ -72,7 +77,7 @@ fun Feed(
             if (hasMoreRecentPosts) item { MostRecentPostsTextButton(onClick = onRefresh) }
 
             items(
-                items = posts,
+                items = uniquePosts,
                 key = { item -> item.id }) { post ->
                 PostRow(post = post, onUpdate = onUpdate)
                 FullHorizontalDivider()
