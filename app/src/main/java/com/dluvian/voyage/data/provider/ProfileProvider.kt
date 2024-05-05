@@ -144,6 +144,8 @@ class ProfileProvider(
         // preston
         "85080d3bad70ccdcd7f74c29a44f55bb85cbcd3dd0cbb957da1d215bdb931204",
         // unclebob
-        "2ef93f01cd2493e04235a6b87b10d3c4a74e2a7eb7c3caf168268f6af73314b5"
+        "2ef93f01cd2493e04235a6b87b10d3c4a74e2a7eb7c3caf168268f6af73314b5",
+        // gsovereignty
+        "d91191e30e00444b942c0e82cad470b32af171764c2275bee0bd99377efd4075",
     )
 }

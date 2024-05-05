@@ -58,7 +58,7 @@ commit_preprocessors = [
 commit_parsers = [
     { message = "^feat", group = "<!-- 0 -->🌠 Features" },
     { message = "^perf", group = "<!-- 1 -->⚡️ Performance" },
-    { message = "^imp|^adj", group = "<!-- 2 -->🛠 Improvements" },
+    { message = "^imp|^adj|^add", group = "<!-- 2 -->🛠 Improvements" },
     { message = "^style", group = "<!-- 3 -->🎨 Styling" },
     { message = "^fix", group = "<!-- 4 -->🐛 Bug Fixes" },
     { message = "^rmv", group = "<!-- 5 --> 🗑️ Removed" },
