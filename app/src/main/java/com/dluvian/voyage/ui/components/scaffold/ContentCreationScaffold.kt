@@ -13,6 +13,7 @@ fun ContentCreationScaffold(
     showSendButton: Boolean,
     isSendingContent: Boolean,
     snackbar: SnackbarHostState,
+    title: String? = null,
     onSend: Fn,
     onUpdate: OnUpdate,
     content: ComposableContent,
@@ -23,6 +24,7 @@ fun ContentCreationScaffold(
             ContentCreationTopAppBar(
                 showSendButton = showSendButton,
                 isSendingContent = isSendingContent,
+                title = title,
                 onSend = onSend,
                 onUpdate = onUpdate
             )

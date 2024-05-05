@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -51,6 +50,10 @@ fun CreateCrossPostView(
         showSendButton = false,
         isSendingContent = isSending,
         snackbar = snackbar,
+        title = stringResource(
+            id = R.string.cross_post_to_topics_n_of_m,
+            selectedTopics.value.size, MAX_TOPICS
+        ),
         onSend = { }, // We don't use top bar for sending
         onUpdate = onUpdate,
     ) {
@@ -73,15 +76,6 @@ private fun CreateCrossPostViewContent(
     }
 
     Column(modifier = Modifier.padding(horizontal = spacing.screenEdge)) {
-        Text(
-            modifier = Modifier.padding(bottom = spacing.medium),
-            text = stringResource(
-                id = R.string.select_topics_n_of_m,
-                selectedTopics.value.size,
-                MAX_TOPICS
-            ),
-            style = MaterialTheme.typography.titleLarge
-        )
         TopicSelectionChips(
             modifier = Modifier.weight(1f, fill = false),
             myTopics = myTopics,
