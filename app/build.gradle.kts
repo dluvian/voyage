@@ -14,8 +14,8 @@ android {
         applicationId = "com.dluvian.voyage"
         minSdk = 24
         targetSdk = 34
-        versionCode = 4
-        versionName = "v0.3.1"
+        versionCode = 5
+        versionName = "v0.3.2"
 
         // Change versionCode, versionName and strings.xml when releasing new
 
