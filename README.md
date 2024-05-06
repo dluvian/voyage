@@ -36,6 +36,7 @@ I don't plan to publish this app in the Google Play Store.
 - [NIP-06: Basic key derivation from mnemonic seed phrase](https://github.com/nostr-protocol/nips/blob/master/06.md)
 - [NIP-09: Event Deletion](https://github.com/nostr-protocol/nips/blob/master/09.md)
 - [NIP-10: Conventions for clients' use of e and p tags in text events](https://github.com/nostr-protocol/nips/blob/master/10.md)
+- [NIP-11: Relay Information Document](https://github.com/nostr-protocol/nips/blob/master/11.md)
 - [NIP-14: Subject tag in text events](https://github.com/nostr-protocol/nips/blob/master/14.md)
 - [NIP-18: Reposts](https://github.com/nostr-protocol/nips/blob/master/18.md)
 - [NIP-19: bech32-encoded entities](https://github.com/nostr-protocol/nips/blob/master/19.md)

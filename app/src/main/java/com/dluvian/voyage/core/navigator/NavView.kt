@@ -3,6 +3,7 @@ package com.dluvian.voyage.core.navigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.res.stringResource
+import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.Topic
@@ -47,3 +48,4 @@ data class ProfileNavView(val nprofile: Nip19Profile) : AdvancedNonMainNavView()
 data class TopicNavView(val topic: Topic) : AdvancedNonMainNavView()
 data class ReplyCreationNavView(val parent: ParentUI) : AdvancedNonMainNavView()
 data class CrossPostCreationNavView(val id: EventIdHex) : AdvancedNonMainNavView()
+data class RelayProfileNavView(val relayUrl: RelayUrl) : AdvancedNonMainNavView()

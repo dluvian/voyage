@@ -8,6 +8,7 @@ import com.dluvian.voyage.core.navigator.EditProfileNavView
 import com.dluvian.voyage.core.navigator.NonMainNavView
 import com.dluvian.voyage.core.navigator.ProfileNavView
 import com.dluvian.voyage.core.navigator.RelayEditorNavView
+import com.dluvian.voyage.core.navigator.RelayProfileNavView
 import com.dluvian.voyage.core.navigator.ReplyCreationNavView
 import com.dluvian.voyage.core.navigator.SearchNavView
 import com.dluvian.voyage.core.navigator.SettingsNavView
@@ -82,6 +83,12 @@ fun NonMainView(
 
         is CrossPostCreationNavView -> CreateCrossPostView(
             vm = core.vmContainer.createCrossPostVM,
+            snackbar = core.appContainer.snackbar,
+            onUpdate = core.onUpdate
+        )
+
+        is RelayProfileNavView -> RelayProfileView(
+            vm = core.vmContainer.relayProfileVM,
             snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate
         )

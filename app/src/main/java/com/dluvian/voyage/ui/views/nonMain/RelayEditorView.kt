@@ -1,5 +1,6 @@
 package com.dluvian.voyage.ui.views.nonMain
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,6 +41,7 @@ import com.dluvian.voyage.core.AddRelay
 import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.LoadRelays
 import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.core.OpenRelayProfile
 import com.dluvian.voyage.core.RemoveRelay
 import com.dluvian.voyage.core.SaveRelays
 import com.dluvian.voyage.core.ToggleReadRelay
@@ -181,7 +183,7 @@ private fun PopularRelayRow(
     onUpdate: OnUpdate
 ) {
     val context = LocalContext.current
-    RelayRow(relayUrl = relayUrl) {
+    RelayRow(relayUrl = relayUrl, onUpdate = onUpdate) {
         if (isAddable) IconButton(
             modifier = Modifier.size(sizing.iconButton),
             onClick = { onUpdate(AddRelay(relayUrl = relayUrl, scope = scope, context = context)) }
@@ -202,6 +204,7 @@ private fun MyRelayRow(
 ) {
     RelayRow(
         relayUrl = relay.url,
+        onUpdate = onUpdate,
         secondRow = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -238,6 +241,7 @@ private fun MyRelayRow(
 @Composable
 private fun RelayRow(
     relayUrl: RelayUrl,
+    onUpdate: OnUpdate,
     secondRow: @Composable () -> Unit = {},
     trailingContent: @Composable () -> Unit = {},
 ) {
@@ -250,7 +254,10 @@ private fun RelayRow(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column(Modifier.weight(weight = 1f, fill = false)) {
-            Text(text = relayUrl)
+            Text(
+                modifier = Modifier.clickable { onUpdate(OpenRelayProfile(relayUrl = relayUrl)) },
+                text = relayUrl
+            )
             secondRow()
         }
         trailingContent()

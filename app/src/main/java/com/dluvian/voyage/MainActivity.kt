@@ -20,6 +20,7 @@ import com.dluvian.voyage.core.viewModel.EditProfileViewModel
 import com.dluvian.voyage.core.viewModel.HomeViewModel
 import com.dluvian.voyage.core.viewModel.ProfileViewModel
 import com.dluvian.voyage.core.viewModel.RelayEditorViewModel
+import com.dluvian.voyage.core.viewModel.RelayProfileViewModel
 import com.dluvian.voyage.core.viewModel.SearchViewModel
 import com.dluvian.voyage.core.viewModel.SettingsViewModel
 import com.dluvian.voyage.core.viewModel.ThreadViewModel
@@ -170,6 +171,11 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 postSender = appContainer.postSender,
                 snackbar = appContainer.snackbar
             )
-        }
+        },
+        relayProfileVM = viewModel {
+            RelayProfileViewModel(
+                relayProfileProvider = appContainer.relayProfileProvider
+            )
+        },
     )
 }
