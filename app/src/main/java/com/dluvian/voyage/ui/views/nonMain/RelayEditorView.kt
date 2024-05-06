@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -47,6 +48,7 @@ import com.dluvian.voyage.core.SaveRelays
 import com.dluvian.voyage.core.ToggleReadRelay
 import com.dluvian.voyage.core.ToggleWriteRelay
 import com.dluvian.voyage.core.getSignerLauncher
+import com.dluvian.voyage.core.model.Connected
 import com.dluvian.voyage.core.model.ConnectionStatus
 import com.dluvian.voyage.core.model.Waiting
 import com.dluvian.voyage.core.viewModel.RelayEditorViewModel
@@ -111,6 +113,10 @@ private fun RelayEditorViewContent(
     scope: CoroutineScope,
     onUpdate: OnUpdate,
 ) {
+    val connectedRelays = remember(connectionStatuses) {
+        connectionStatuses.filter { (_, status) -> status is Connected }.keys.toList()
+    }
+
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         item { SectionHeader(header = stringResource(id = R.string.my_relays)) }
 
@@ -126,26 +132,62 @@ private fun RelayEditorViewContent(
             }
         }
 
-
         if (addIsEnabled) item {
             AddRelayRow(scope = scope, onUpdate = onUpdate)
             Spacer(modifier = Modifier.height(spacing.xxl))
         }
 
-        if (popularRelays.isNotEmpty()) {
-            item { Spacer(modifier = Modifier.height(spacing.xxl)) }
-            item { SectionHeader(header = stringResource(id = R.string.popular_relays)) }
-            itemsIndexed(items = popularRelays) { index, relayUrl ->
-                PopularRelayRow(
-                    relayUrl = relayUrl,
-                    isAddable = addIsEnabled && myRelays.none { it.url == relayUrl },
-                    connectionStatus = connectionStatuses[relayUrl],
-                    scope = scope,
-                    onUpdate = onUpdate,
-                )
-                if (index != popularRelays.size - 1) {
-                    HorizontalDivider()
-                }
+        addSection(
+            titleId = R.string.connected_relays,
+            relays = connectedRelays,
+            addIsEnabled = addIsEnabled,
+            myRelays = myRelays,
+            connectionStatuses = connectionStatuses,
+            scope = scope,
+            showCount = true,
+            onUpdate = onUpdate
+        )
+
+        addSection(
+            titleId = R.string.popular_relays,
+            relays = popularRelays,
+            addIsEnabled = addIsEnabled,
+            myRelays = myRelays,
+            connectionStatuses = connectionStatuses,
+            scope = scope,
+            onUpdate = onUpdate
+        )
+    }
+}
+
+private fun LazyListScope.addSection(
+    titleId: Int,
+    relays: List<RelayUrl>,
+    addIsEnabled: Boolean,
+    myRelays: List<Nip65Relay>,
+    connectionStatuses: Map<RelayUrl, ConnectionStatus>,
+    scope: CoroutineScope,
+    showCount: Boolean = false,
+    onUpdate: OnUpdate
+) {
+    if (relays.isNotEmpty()) {
+        item { Spacer(modifier = Modifier.height(spacing.xxl)) }
+        item {
+            SectionHeader(
+                header = stringResource(id = titleId)
+                    .let { if (showCount) it + " (${relays.size})" else it }
+            )
+        }
+        itemsIndexed(items = relays) { index, relayUrl ->
+            NormalRelayRow(
+                relayUrl = relayUrl,
+                isAddable = addIsEnabled && myRelays.none { it.url == relayUrl },
+                connectionStatus = connectionStatuses[relayUrl],
+                scope = scope,
+                onUpdate = onUpdate,
+            )
+            if (index != relays.size - 1) {
+                HorizontalDivider()
             }
         }
     }
@@ -184,7 +226,7 @@ private fun AddRelayRow(scope: CoroutineScope, onUpdate: OnUpdate) {
 }
 
 @Composable
-private fun PopularRelayRow(
+private fun NormalRelayRow(
     relayUrl: RelayUrl,
     isAddable: Boolean,
     connectionStatus: ConnectionStatus?,
