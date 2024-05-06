@@ -47,7 +47,10 @@ import com.dluvian.voyage.core.SaveRelays
 import com.dluvian.voyage.core.ToggleReadRelay
 import com.dluvian.voyage.core.ToggleWriteRelay
 import com.dluvian.voyage.core.getSignerLauncher
+import com.dluvian.voyage.core.model.ConnectionStatus
+import com.dluvian.voyage.core.model.Waiting
 import com.dluvian.voyage.core.viewModel.RelayEditorViewModel
+import com.dluvian.voyage.ui.components.ConnectionDot
 import com.dluvian.voyage.ui.components.NamedCheckbox
 import com.dluvian.voyage.ui.components.scaffold.SaveableScaffold
 import com.dluvian.voyage.ui.components.text.SectionHeader
@@ -63,6 +66,7 @@ fun RelayEditorView(vm: RelayEditorViewModel, snackbar: SnackbarHostState, onUpd
     val popularRelays by vm.popularRelays
     val addIsEnabled by vm.addIsEnabled
     val isSaving by vm.isSaving
+    val onlineStatuses by vm.onlineStatuses
     val scope = rememberCoroutineScope()
     val signerLauncher = getSignerLauncher(onUpdate = onUpdate)
     val context = LocalContext.current
@@ -90,6 +94,7 @@ fun RelayEditorView(vm: RelayEditorViewModel, snackbar: SnackbarHostState, onUpd
         RelayEditorViewContent(
             myRelays = myRelays,
             popularRelays = popularRelays,
+            connectionStatuses = onlineStatuses,
             addIsEnabled = addIsEnabled,
             scope = scope,
             onUpdate = onUpdate
@@ -101,6 +106,7 @@ fun RelayEditorView(vm: RelayEditorViewModel, snackbar: SnackbarHostState, onUpd
 private fun RelayEditorViewContent(
     myRelays: List<Nip65Relay>,
     popularRelays: List<RelayUrl>,
+    connectionStatuses: Map<RelayUrl, ConnectionStatus>,
     addIsEnabled: Boolean,
     scope: CoroutineScope,
     onUpdate: OnUpdate,
@@ -111,6 +117,7 @@ private fun RelayEditorViewContent(
         itemsIndexed(items = myRelays) { index, relay ->
             MyRelayRow(
                 relay = relay,
+                connectionStatus = connectionStatuses[relay.url] ?: Waiting,
                 isDeletable = myRelays.size > 1,
                 onUpdate = onUpdate,
             )
@@ -132,6 +139,7 @@ private fun RelayEditorViewContent(
                 PopularRelayRow(
                     relayUrl = relayUrl,
                     isAddable = addIsEnabled && myRelays.none { it.url == relayUrl },
+                    connectionStatus = connectionStatuses[relayUrl],
                     scope = scope,
                     onUpdate = onUpdate,
                 )
@@ -179,11 +187,12 @@ private fun AddRelayRow(scope: CoroutineScope, onUpdate: OnUpdate) {
 private fun PopularRelayRow(
     relayUrl: RelayUrl,
     isAddable: Boolean,
+    connectionStatus: ConnectionStatus?,
     scope: CoroutineScope,
     onUpdate: OnUpdate
 ) {
     val context = LocalContext.current
-    RelayRow(relayUrl = relayUrl, onUpdate = onUpdate) {
+    RelayRow(relayUrl = relayUrl, connectionStatus = connectionStatus, onUpdate = onUpdate) {
         if (isAddable) IconButton(
             modifier = Modifier.size(sizing.iconButton),
             onClick = { onUpdate(AddRelay(relayUrl = relayUrl, scope = scope, context = context)) }
@@ -199,12 +208,14 @@ private fun PopularRelayRow(
 @Composable
 private fun MyRelayRow(
     relay: Nip65Relay,
+    connectionStatus: ConnectionStatus,
     isDeletable: Boolean,
     onUpdate: OnUpdate
 ) {
     RelayRow(
         relayUrl = relay.url,
         onUpdate = onUpdate,
+        connectionStatus = connectionStatus,
         secondRow = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -242,6 +253,7 @@ private fun MyRelayRow(
 private fun RelayRow(
     relayUrl: RelayUrl,
     onUpdate: OnUpdate,
+    connectionStatus: ConnectionStatus?,
     secondRow: @Composable () -> Unit = {},
     trailingContent: @Composable () -> Unit = {},
 ) {
@@ -254,10 +266,16 @@ private fun RelayRow(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column(Modifier.weight(weight = 1f, fill = false)) {
-            Text(
-                modifier = Modifier.clickable { onUpdate(OpenRelayProfile(relayUrl = relayUrl)) },
-                text = relayUrl
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (connectionStatus != null) {
+                    ConnectionDot(connectionStatus = connectionStatus)
+                    Spacer(modifier = Modifier.width(spacing.medium))
+                }
+                Text(
+                    modifier = Modifier.clickable { onUpdate(OpenRelayProfile(relayUrl = relayUrl)) },
+                    text = relayUrl
+                )
+            }
             secondRow()
         }
         trailingContent()

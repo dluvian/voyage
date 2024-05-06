@@ -7,6 +7,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 data class Sizing(
+    val dot: Dp = 8.dp,
     val smallIndicator: Dp = 18.dp,
     val iconButton: Dp = 32.dp,
     val smallIndicatorStrokeWidth: Dp = 3.dp,

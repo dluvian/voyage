@@ -39,6 +39,11 @@ class NostrClient {
             nostrListener?.onClose(relayUrl = url, reason = reason)
         }
 
+        override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
+            super.onClosed(webSocket, code, reason)
+            onClosing(webSocket = webSocket, code = code, reason = reason)
+        }
+
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
             val url = getRelayUrl(webSocket).orEmpty()
             removeSocket(socket = webSocket)
@@ -177,7 +182,7 @@ class NostrClient {
         socket.send(authMsg)
     }
 
-    private fun addRelay(relayUrl: RelayUrl) {
+    fun addRelay(relayUrl: RelayUrl) {
         if (sockets.containsKey(relayUrl)) return
         if (!relayUrl.startsWith(WEBSOCKET_PREFIX)) return
 

@@ -1,6 +1,7 @@
 package com.dluvian.voyage.data.nostr
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import com.dluvian.nostr_kt.INostrListener
 import com.dluvian.nostr_kt.Nip65Relay
 import com.dluvian.nostr_kt.NostrClient
@@ -12,6 +13,10 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SignerLauncher
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.launchIO
+import com.dluvian.voyage.core.model.Connected
+import com.dluvian.voyage.core.model.ConnectionStatus
+import com.dluvian.voyage.core.model.Disconnected
+import com.dluvian.voyage.core.model.Waiting
 import com.dluvian.voyage.data.event.EventMaker
 import com.dluvian.voyage.data.event.EventQueue
 import com.dluvian.voyage.data.preferences.RelayPreferences
@@ -33,12 +38,15 @@ class NostrService(
     private val filterCache: MutableMap<SubId, List<Filter>>,
     private val relayPreferences: RelayPreferences,
 ) {
+    val connectionStatuses = mutableStateOf(mapOf<RelayUrl, ConnectionStatus>())
     private val scope = CoroutineScope(Dispatchers.IO)
     var defaultLauncher: SignerLauncher? = null
+
 
     private val listener = object : INostrListener {
         override fun onOpen(relayUrl: RelayUrl, msg: String) {
             Log.i(TAG, "OnOpen($relayUrl): $msg")
+            addConnectionStatus(relayUrl = relayUrl, status = Connected)
         }
 
         override fun onEvent(subId: SubId, event: Event, relayUrl: RelayUrl?) {
@@ -60,10 +68,12 @@ class NostrService(
 
         override fun onClose(relayUrl: RelayUrl, reason: String) {
             Log.i(TAG, "OnClose($relayUrl): $reason")
+            addConnectionStatus(relayUrl = relayUrl, status = Disconnected)
         }
 
         override fun onFailure(relayUrl: RelayUrl, msg: String?, throwable: Throwable?) {
             Log.w(TAG, "OnFailure($relayUrl): $msg", throwable)
+            addConnectionStatus(relayUrl = relayUrl, status = Disconnected)
         }
 
         override fun onOk(relayUrl: RelayUrl, eventId: EventId, accepted: Boolean, msg: String) {
@@ -91,6 +101,9 @@ class NostrService(
         nostrClient.setListener(listener)
         Log.i(TAG, "Add ${initRelayUrls.size} relays: $initRelayUrls")
         nostrClient.addRelays(initRelayUrls)
+        initRelayUrls.forEach {
+            addConnectionStatus(relayUrl = it, status = Waiting)
+        }
     }
 
     suspend fun publishPost(
@@ -208,6 +221,10 @@ class NostrService(
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
+    fun addRelay(relayUrl: String) {
+        nostrClient.addRelay(relayUrl = relayUrl)
+    }
+
     fun close() {
         filterCache.clear()
         nostrClient.close()
@@ -240,6 +257,16 @@ class NostrService(
                     nostrClient.publishAuth(authEvent = event, relayUrl = relayUrl)
                 }
                 .onFailure { Log.w(TAG, "Failed to sign AUTH event for $relayUrl") }
+        }
+    }
+
+    private fun addConnectionStatus(relayUrl: RelayUrl, status: ConnectionStatus) {
+        synchronized(connectionStatuses) {
+            connectionStatuses.value = connectionStatuses.value.let {
+                val mutable = it.toMutableMap()
+                mutable[relayUrl] = status
+                mutable
+            }
         }
     }
 }

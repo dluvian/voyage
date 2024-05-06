@@ -41,6 +41,7 @@ class RelayEditorViewModel(
     val popularRelays = mutableStateOf(emptyList<RelayUrl>())
     val addIsEnabled = mutableStateOf(getAddIsEnabled(myRelays.value))
     val isSaving = mutableStateOf(false)
+    val onlineStatuses = nostrService.connectionStatuses
 
     fun handle(action: RelayEditorViewAction) {
         when (action) {
@@ -141,6 +142,7 @@ class RelayEditorViewModel(
             return
         }
 
+        nostrService.addRelay(relayUrl = checked)
         myRelays.value += Nip65Relay(url = checked)
         addIsEnabled.value = getAddIsEnabled(myRelays.value)
     }
