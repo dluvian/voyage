@@ -40,6 +40,7 @@ import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.NameProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.provider.ProfileSuggestionProvider
+import com.dluvian.voyage.data.provider.RelayProfileProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.SearchProvider
 import com.dluvian.voyage.data.provider.ThreadProvider
@@ -274,4 +275,6 @@ class AppContainer(context: Context) {
         deleteDao = roomDb.deleteDao(),
         oldestUsedEvent = oldestUsedEvent
     )
+
+    val relayProfileProvider = RelayProfileProvider()
 }

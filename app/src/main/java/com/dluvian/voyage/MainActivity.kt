@@ -173,7 +173,9 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             )
         },
         relayProfileVM = viewModel {
-            RelayProfileViewModel()
+            RelayProfileViewModel(
+                relayProfileProvider = appContainer.relayProfileProvider
+            )
         },
     )
 }
