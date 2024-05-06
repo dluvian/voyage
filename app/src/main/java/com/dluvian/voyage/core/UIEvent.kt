@@ -16,6 +16,7 @@ import com.dluvian.voyage.core.navigator.InboxNavView
 import com.dluvian.voyage.core.navigator.NavView
 import com.dluvian.voyage.core.navigator.ProfileNavView
 import com.dluvian.voyage.core.navigator.RelayEditorNavView
+import com.dluvian.voyage.core.navigator.RelayProfileNavView
 import com.dluvian.voyage.core.navigator.ReplyCreationNavView
 import com.dluvian.voyage.core.navigator.SearchNavView
 import com.dluvian.voyage.core.navigator.SettingsNavView
@@ -54,6 +55,7 @@ sealed class PushNavEvent : NavEvent() {
             is OpenReplyCreation -> ReplyCreationNavView(parent = this.parent)
             is OpenThreadRaw -> ThreadRawNavView(nevent = this.nevent, parent = this.parent)
             is OpenCrossPostCreation -> CrossPostCreationNavView(id = this.id)
+            is OpenRelayProfile -> RelayProfileNavView(relayUrl = this.relayUrl)
         }
     }
 }
@@ -76,6 +78,7 @@ data class OpenProfile(val nprofile: Nip19Profile) : AdvancedPushNavEvent()
 data class OpenTopic(val topic: Topic) : AdvancedPushNavEvent()
 data class OpenReplyCreation(val parent: ParentUI) : AdvancedPushNavEvent()
 data class OpenCrossPostCreation(val id: EventIdHex) : AdvancedPushNavEvent()
+data class OpenRelayProfile(val relayUrl: RelayUrl) : AdvancedPushNavEvent()
 
 
 sealed class VoteEvent(

@@ -8,6 +8,7 @@ import com.dluvian.voyage.core.viewModel.EditProfileViewModel
 import com.dluvian.voyage.core.viewModel.HomeViewModel
 import com.dluvian.voyage.core.viewModel.ProfileViewModel
 import com.dluvian.voyage.core.viewModel.RelayEditorViewModel
+import com.dluvian.voyage.core.viewModel.RelayProfileViewModel
 import com.dluvian.voyage.core.viewModel.SearchViewModel
 import com.dluvian.voyage.core.viewModel.SettingsViewModel
 import com.dluvian.voyage.core.viewModel.ThreadViewModel
@@ -26,4 +27,5 @@ data class VMContainer(
     val editProfileVM: EditProfileViewModel,
     val relayEditorVM: RelayEditorViewModel,
     val createCrossPostVM: CreateCrossPostViewModel,
+    val relayProfileVM: RelayProfileViewModel,
 )
