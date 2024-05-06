@@ -23,7 +23,7 @@ const val AUTH_TIMEOUT = DELAY_10SEC
 
 const val MAX_RELAYS = 5
 const val MAX_RELAYS_PER_PUBKEY = 2
-const val MAX_POPULAR_RELAYS = 50
+const val MAX_POPULAR_RELAYS = 75
 
 const val MAX_PUBKEYS = 750
 
