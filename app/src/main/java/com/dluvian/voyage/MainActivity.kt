@@ -46,6 +46,7 @@ class MainActivity : ComponentActivity() {
                     closeApp = closeApp
                 )
             }
+            core.handleDeeplink(intent = intent)
             val signerLauncher = getSignerLauncher(onUpdate = core.onUpdate)
             appContainer.nostrService.defaultLauncher = signerLauncher
 

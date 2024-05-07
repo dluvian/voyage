@@ -1,5 +1,6 @@
 package com.dluvian.voyage.core
 
+import android.content.Intent
 import android.util.Log
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.lifecycle.ViewModel
@@ -26,6 +27,15 @@ class Core(
     closeApp: Fn,
 ) : ViewModel() {
     val navigator = Navigator(vmContainer = vmContainer, closeApp = closeApp)
+
+    private var lastDeeplink = ""
+    fun handleDeeplink(intent: Intent) {
+        if (intent.scheme != "nostr") return
+        val nostrString = intent.data?.schemeSpecificPart ?: return
+        if (lastDeeplink == nostrString) return
+        lastDeeplink = nostrString
+        openNostrString(str = nostrString)
+    }
 
     val onUpdate: (UIEvent) -> Unit = { uiEvent ->
         when (uiEvent) {
@@ -85,7 +95,11 @@ class Core(
             return
         }
 
-        when (val nostrMention = NostrMention.from(other.item)) {
+        openNostrString(str = other.item)
+    }
+
+    private fun openNostrString(str: String) {
+        when (val nostrMention = NostrMention.from(str)) {
             is NprofileMention -> {
                 val nip19 = Nip19Profile.fromBech32(nostrMention.bech32)
                 onUpdate(OpenProfile(nprofile = nip19))
@@ -105,7 +119,7 @@ class Core(
                 onUpdate(OpenThreadRaw(nevent = nevent))
             }
 
-            null -> Log.w(TAG, "Unknown clickable string ${other.item}")
+            null -> Log.w(TAG, "Unknown clickable string $str")
         }
     }
 
