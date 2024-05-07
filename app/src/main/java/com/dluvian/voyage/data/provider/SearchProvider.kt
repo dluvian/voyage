@@ -31,9 +31,7 @@ class SearchProvider(
     suspend fun getPostSuggestions(text: String): List<SimplePostView> {
         val stripped = text.stripSearchText()
 
-        return postDao
-            .getPostsByContent(content = stripped, limit = 3 * maxSearchResult)
-            .sortedBy { it.subject?.length ?: Int.MAX_VALUE }
+        return postDao.getPostsByContent(content = stripped, limit = 3 * maxSearchResult)
     }
 
     fun getStrippedSearchText(text: String) = text.stripSearchText()
