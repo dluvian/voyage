@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.dluvian.voyage"
-        minSdk = 24
+        minSdk = 26 // Android Oreo (Aug 2017 - Jan 2021)
         targetSdk = 34
         versionCode = 5
         versionName = "v0.3.2"
