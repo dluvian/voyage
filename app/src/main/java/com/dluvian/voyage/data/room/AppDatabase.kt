@@ -39,16 +39,18 @@ import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.data.room.view.EventRelayAuthorView
 import com.dluvian.voyage.data.room.view.ReplyView
 import com.dluvian.voyage.data.room.view.RootPostView
+import com.dluvian.voyage.data.room.view.SimplePostView
 
 
 @Database(
-    version = 5,
+    version = 6,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
         AutoMigration(from = 3, to = 4),
         AutoMigration(from = 4, to = 5),
+        AutoMigration(from = 5, to = 6),
     ],
     entities = [
         PostEntity::class,
@@ -67,6 +69,7 @@ import com.dluvian.voyage.data.room.view.RootPostView
         AdvancedProfileView::class,
         EventRelayAuthorView::class,
         ReplyView::class,
+        SimplePostView::class,
     ]
 )
 abstract class AppDatabase : RoomDatabase() {

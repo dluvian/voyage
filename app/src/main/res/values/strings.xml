@@ -155,4 +155,5 @@
     <string name="value_copied">Value copied</string>
     <string name="relay_profile_not_found">Relay profile not found</string>
     <string name="connected_relays">Connected relays</string>
+    <string name="posts">Posts</string>
 </resources>

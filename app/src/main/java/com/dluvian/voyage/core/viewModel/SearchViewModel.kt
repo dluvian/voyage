@@ -28,6 +28,7 @@ import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.SearchProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
+import com.dluvian.voyage.data.room.view.SimplePostView
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import rust.nostr.protocol.EventId
@@ -44,6 +45,7 @@ class SearchViewModel(
 ) : ViewModel() {
     val topics = mutableStateOf<List<Topic>>(emptyList())
     val profiles = mutableStateOf<List<AdvancedProfileView>>(emptyList())
+    val posts = mutableStateOf<List<SimplePostView>>(emptyList())
 
     fun handle(action: SearchViewAction) {
         when (action) {
@@ -68,6 +70,7 @@ class SearchViewModel(
     private fun updateSearchText(text: String) {
         updateTopicSuggestions(text = text)
         updateProfileSuggestions(text = text)
+        updatePostSuggestions(text = text)
     }
 
     private var updateJobTopic: Job? = null
@@ -85,6 +88,15 @@ class SearchViewModel(
         updateJobProfile = viewModelScope.launchIO {
             delay(SHORT_DEBOUNCE)
             profiles.value = searchProvider.getProfileSuggestions(text = text)
+        }
+    }
+
+    private var updateJobPost: Job? = null
+    private fun updatePostSuggestions(text: String) {
+        updateJobPost?.cancel()
+        updateJobPost = viewModelScope.launchIO {
+            delay(SHORT_DEBOUNCE)
+            posts.value = searchProvider.getPostSuggestions(text = text)
         }
     }
 

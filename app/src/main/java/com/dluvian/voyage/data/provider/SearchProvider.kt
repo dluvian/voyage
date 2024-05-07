@@ -1,11 +1,14 @@
 package com.dluvian.voyage.data.provider
 
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.data.room.dao.PostDao
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
+import com.dluvian.voyage.data.room.view.SimplePostView
 
 class SearchProvider(
     private val topicProvider: TopicProvider,
-    private val profileProvider: ProfileProvider
+    private val profileProvider: ProfileProvider,
+    private val postDao: PostDao,
 ) {
     private val maxSearchResult = 5
 
@@ -23,6 +26,14 @@ class SearchProvider(
     suspend fun getProfileSuggestions(text: String): List<AdvancedProfileView> {
         val stripped = text.stripSearchText()
         return profileProvider.getProfileByName(name = stripped, limit = maxSearchResult)
+    }
+
+    suspend fun getPostSuggestions(text: String): List<SimplePostView> {
+        val stripped = text.stripSearchText()
+
+        return postDao
+            .getPostsByContent(content = stripped, limit = 3 * maxSearchResult)
+            .sortedBy { it.subject?.length ?: Int.MAX_VALUE }
     }
 
     fun getStrippedSearchText(text: String) = text.stripSearchText()

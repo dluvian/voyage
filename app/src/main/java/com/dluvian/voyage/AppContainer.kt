@@ -255,7 +255,8 @@ class AppContainer(context: Context) {
 
     val searchProvider = SearchProvider(
         topicProvider = topicProvider,
-        profileProvider = profileProvider
+        profileProvider = profileProvider,
+        postDao = roomDb.postDao()
     )
 
     val profileSuggestionProvider = ProfileSuggestionProvider(

@@ -95,7 +95,12 @@ private fun ClickableBaseRow(
                 )
                 if (text != null) {
                     Spacer(modifier = Modifier.height(spacing.small))
-                    Text(text = text, style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        text = text,
+                        style = MaterialTheme.typography.bodyMedium,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
                 }
             }
         }
