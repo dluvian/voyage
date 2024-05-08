@@ -16,31 +16,29 @@ interface DeleteDao {
 
     @Transaction
     suspend fun sweepPosts(threshold: Int, oldestCreatedAtInUse: Long) {
-        internalDeleteOldestRootPosts(
-            threshold = threshold,
-            oldestCreatedAtInUse = oldestCreatedAtInUse
-        )
-        internalDeleteOrphanedPosts(oldestCreatedAtInUse = oldestCreatedAtInUse)
+        val createdAtWithOffset = internalOldestCreatedAt(threshold = threshold) ?: return
+        val oldestCreatedAt = minOf(createdAtWithOffset, oldestCreatedAtInUse)
+
+        internalDeleteOldestPosts(oldestCreatedAt = oldestCreatedAt)
     }
 
     @Query(
-        "DELETE FROM post " +
-                "WHERE createdAt < :oldestCreatedAtInUse " +
-                "AND parentId IS NULL " +
-                "AND pubkey NOT IN (SELECT pubkey FROM account) " +
-                "AND id NOT IN (SELECT id FROM post WHERE parentId IS NULL ORDER BY createdAt DESC LIMIT :threshold) " +
-                "AND id NOT IN (SELECT crossPostedId FROM post WHERE parentId IS NULL AND crossPostedId IS NOT NULL ORDER BY createdAt DESC LIMIT :threshold) " +
-                "AND id NOT IN (SELECT crossPostedId FROM post WHERE pubkey IN (SELECT pubkey FROM account) AND crossPostedId IS NOT NULL) "
+        "SELECT createdAt " +
+                "FROM post " +
+                "WHERE parentId IS NULL " +
+                "ORDER BY createdAt DESC " +
+                "LIMIT 1 " +
+                "OFFSET :threshold"
     )
-    suspend fun internalDeleteOldestRootPosts(threshold: Int, oldestCreatedAtInUse: Long)
+    suspend fun internalOldestCreatedAt(threshold: Int): Long?
 
+    // I don't know why but it will not work without "crossPostedId IS NOT NULL"
     @Query(
         "DELETE FROM post " +
-                "WHERE createdAt < :oldestCreatedAtInUse " +
-                "AND parentId IS NOT NULL " +
-                "AND pubkey NOT IN (SELECT pubkey FROM account)" +
-                "AND parentId NOT IN (SELECT id FROM post) " +
-                "AND id NOT IN (SELECT crossPostedId FROM post WHERE crossPostedId IS NOT NULL) "
+                "WHERE createdAt < :oldestCreatedAt " +
+                "AND pubkey NOT IN (SELECT pubkey FROM account) " +
+                "AND id NOT IN (SELECT crossPostedId FROM post WHERE createdAt >= :oldestCreatedAt AND crossPostedId IS NOT NULL) " +
+                "AND id NOT IN (SELECT crossPostedId FROM post WHERE pubkey IN (SELECT pubkey FROM account) AND crossPostedId IS NOT NULL) "
     )
-    suspend fun internalDeleteOrphanedPosts(oldestCreatedAtInUse: Long)
+    suspend fun internalDeleteOldestPosts(oldestCreatedAt: Long)
 }
