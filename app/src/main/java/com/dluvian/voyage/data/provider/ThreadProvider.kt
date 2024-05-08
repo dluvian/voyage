@@ -113,6 +113,11 @@ class ThreadProvider(
 
             result
         }
-            .onEach { nostrSubscriber.subVotesAndReplies(posts = it.map { reply -> reply.reply }) }
+            .onEach {
+                nostrSubscriber.subVotesAndReplies(
+                    posts = it.map { reply -> reply.reply },
+                    onlyMyReadRelays = false
+                )
+            }
     }
 }
