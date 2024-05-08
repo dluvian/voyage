@@ -4,7 +4,6 @@ import android.util.Log
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.MAX_PUBKEYS
-import com.dluvian.voyage.core.MAX_RND_RESUB_PERCENTAGE
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.mergeRelayFilters
 import com.dluvian.voyage.core.takeRandom
@@ -131,14 +130,13 @@ class LazyNostrSubscriber(
     }
 
     private suspend fun semiLazySubFriendsNip65() {
-        val friendsWithMissingNip65 = friendProvider.getFriendsWithMissingNip65()
-        Log.d(TAG, "Missing nip65s of ${friendsWithMissingNip65.size} pubkeys")
+        val missingPubkeys = friendProvider.getFriendsWithMissingNip65()
+        Log.d(TAG, "Missing nip65s of ${missingPubkeys.size} pubkeys")
+        // Don't return early. We need to call lazySubNewestFriendNip65 later
 
         val timestamp = Timestamp.now()
-        val randomResub = friendProvider.getFriendPubkeys(maxPercentage = MAX_RND_RESUB_PERCENTAGE)
-        val nip65Resub = (friendsWithMissingNip65 + randomResub).distinct()
         val missingSubs = relayProvider
-            .getObserveRelays(pubkeys = nip65Resub)
+            .getObserveRelays(pubkeys = missingPubkeys)
             .mapValues { (_, pubkeys) ->
                 listOf(
                     Filter().kind(kind = Kind.fromEnum(KindEnum.RelayList))
@@ -174,6 +172,7 @@ class LazyNostrSubscriber(
     private suspend fun lazySubWebOfTrustPubkeys() {
         val friendsWithMissingContacts = friendProvider.getFriendsWithMissingContactList()
         Log.d(TAG, "Missing contact lists of ${friendsWithMissingContacts.size} pubkeys")
+        // Don't return early. We need to call lazySubNewestWotPubkeys later
 
         val timestamp = Timestamp.now()
         val missingSubs = relayProvider
