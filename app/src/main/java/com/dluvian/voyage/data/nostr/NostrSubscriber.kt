@@ -111,54 +111,53 @@ class NostrSubscriber(
     private val isSubbingVotesAndReplies = AtomicBoolean(false)
     suspend fun subVotesAndReplies(posts: Collection<ParentUI>, onlyMyReadRelays: Boolean) {
         if (posts.isEmpty()) return
+        if (!isSubbingVotesAndReplies.compareAndSet(false, true)) return
 
-        if (isSubbingVotesAndReplies.compareAndSet(false, true)) {
-            scope.launch(Dispatchers.Default) {
-                val currentMillis = System.currentTimeMillis()
-                if (currentMillis - lastUpdate > RESUB_TIMEOUT) {
-                    votesAndRepliesCache.clear()
-                    lastUpdate = currentMillis
-                }
-
-                val newIds = posts.map { it.getRelevantId() } - votesAndRepliesCache
-                if (newIds.isEmpty()) return@launch
-
-                votesAndRepliesCache.addAll(newIds)
-
-                val myReadRelays = relayProvider.getReadRelays().toSet()
-                val votePubkeys = getVotePubkeys()
-
-                if (onlyMyReadRelays) {
-                    myReadRelays.forEach { relay ->
-                        subBatcher.submitVotesAndReplies(
-                            relayUrl = relay,
-                            eventIds = newIds,
-                            votePubkeys = votePubkeys
-                        )
-                    }
-                    return@launch
-                }
-
-                // Repliers and voters publish to authors read relays
-                val newPostsByAuthor = posts
-                    .filter { newIds.contains(it.getRelevantId()) }
-                    .groupBy { it.pubkey }
-                val relaysByAuthor = relayProvider.getReadRelays(pubkeys = newPostsByAuthor.keys)
-                relaysByAuthor.forEach { (author, relays) ->
-                    val adjustedRelays = myReadRelays + relays
-                    adjustedRelays.forEach { relay ->
-                        subBatcher.submitVotesAndReplies(
-                            relayUrl = relay,
-                            eventIds = newPostsByAuthor[author]
-                                ?.map { it.getRelevantId() }
-                                ?: emptyList(),
-                            votePubkeys = votePubkeys
-                        )
-                    }
-                }
-            }.invokeOnCompletion {
-                isSubbingVotesAndReplies.set(false)
+        scope.launch(Dispatchers.Default) {
+            val currentMillis = System.currentTimeMillis()
+            if (currentMillis - lastUpdate > RESUB_TIMEOUT) {
+                votesAndRepliesCache.clear()
+                lastUpdate = currentMillis
             }
+
+            val newIds = posts.map { it.getRelevantId() } - votesAndRepliesCache
+            if (newIds.isEmpty()) return@launch
+
+            votesAndRepliesCache.addAll(newIds)
+
+            val myReadRelays = relayProvider.getReadRelays().toSet()
+            val votePubkeys = getVotePubkeys()
+
+            if (onlyMyReadRelays) {
+                myReadRelays.forEach { relay ->
+                    subBatcher.submitVotesAndReplies(
+                        relayUrl = relay,
+                        eventIds = newIds,
+                        votePubkeys = votePubkeys
+                    )
+                }
+                return@launch
+            }
+
+            // Repliers and voters publish to authors read relays
+            val newPostsByAuthor = posts
+                .filter { newIds.contains(it.getRelevantId()) }
+                .groupBy { it.pubkey }
+            val relaysByAuthor = relayProvider.getReadRelays(pubkeys = newPostsByAuthor.keys)
+            relaysByAuthor.forEach { (author, relays) ->
+                val adjustedRelays = myReadRelays + relays
+                adjustedRelays.forEach { relay ->
+                    subBatcher.submitVotesAndReplies(
+                        relayUrl = relay,
+                        eventIds = newPostsByAuthor[author]
+                            ?.map { it.getRelevantId() }
+                            ?: emptyList(),
+                        votePubkeys = votePubkeys
+                    )
+                }
+            }
+        }.invokeOnCompletion {
+            isSubbingVotesAndReplies.set(false)
         }
     }
 
