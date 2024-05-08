@@ -85,7 +85,7 @@ class AppContainer(context: Context) {
         nostrClient = nostrClient,
         connectionStatuses = connectionStatuses,
     )
-    val webOfTrustProvider = WebOfTrustProvider(webOfTrustDao = roomDb.webOfTrustDao())
+    private val webOfTrustProvider = WebOfTrustProvider(webOfTrustDao = roomDb.webOfTrustDao())
 
     private val forcedFollowTopicStates = MutableStateFlow(emptyMap<Topic, Boolean>())
 
@@ -100,7 +100,7 @@ class AppContainer(context: Context) {
         accountDao = roomDb.accountDao(),
     )
 
-    val friendProvider = FriendProvider(
+    private val friendProvider = FriendProvider(
         friendDao = roomDb.friendDao(),
         pubkeyProvider = accountManager,
     )
@@ -239,6 +239,7 @@ class AppContainer(context: Context) {
 
     val threadProvider = ThreadProvider(
         nostrSubscriber = nostrSubscriber,
+        lazyNostrSubscriber = lazyNostrSubscriber,
         rootPostDao = roomDb.rootPostDao(),
         replyDao = roomDb.replyDao(),
         existsDao = roomDb.existsDao(),

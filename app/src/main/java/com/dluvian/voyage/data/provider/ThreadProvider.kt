@@ -11,6 +11,7 @@ import com.dluvian.voyage.core.model.LeveledReplyUI
 import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.data.event.OldestUsedEvent
 import com.dluvian.voyage.data.interactor.Vote
+import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.room.dao.ExistsDao
 import com.dluvian.voyage.data.room.dao.ReplyDao
@@ -25,6 +26,7 @@ import java.util.LinkedList
 
 class ThreadProvider(
     private val nostrSubscriber: NostrSubscriber,
+    private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val rootPostDao: RootPostDao,
     private val replyDao: ReplyDao,
     private val existsDao: ExistsDao,
@@ -42,6 +44,7 @@ class ThreadProvider(
                 nostrSubscriber.subPost(nevent = nevent)
                 delay(DELAY_1SEC)
             }
+            lazyNostrSubscriber.lazySubUnknownProfiles()
             nostrSubscriber.subVotesAndReplies(nevent = nevent)
         }
 

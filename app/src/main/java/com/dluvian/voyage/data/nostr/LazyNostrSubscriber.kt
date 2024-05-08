@@ -60,6 +60,24 @@ class LazyNostrSubscriber(
         }
     }
 
+    suspend fun lazySubUnknownProfiles() {
+        val pubkeys = mutableListOf<PubkeyHex>()
+        pubkeys.addAll(friendProvider.getFriendsWithMissingProfile())
+        pubkeys.addAll(webOfTrustProvider.getWotWithMissingProfile())
+        val toSub = pubkeys.distinct().take(MAX_PUBKEYS)
+        if (toSub.isEmpty()) return
+
+        val timestamp = Timestamp.now()
+
+        relayProvider.getObserveRelays(pubkeys = toSub).forEach { (relay, pubkeyBatch) ->
+            val profileFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Metadata))
+                .authors(authors = pubkeyBatch.map { PublicKey.fromHex(it) })
+                .until(timestamp = timestamp)
+            val filters = listOf(profileFilter)
+            subCreator.subscribe(relayUrl = relay, filters = filters)
+        }
+    }
+
     suspend fun lazySubNip65(nprofile: Nip19Profile) {
         val since = relayProvider.getCreatedAt(pubkey = nprofile.publicKey().toHex()) ?: 1
         val nip65Filter = Filter().kind(kind = Kind.fromEnum(KindEnum.RelayList))

@@ -24,9 +24,7 @@ import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.normalizeTopic
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
-import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.SearchProvider
-import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.data.room.view.SimplePostView
 import kotlinx.coroutines.Job
@@ -40,8 +38,6 @@ class SearchViewModel(
     private val searchProvider: SearchProvider,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val snackbar: SnackbarHostState,
-    private val webOfTrustProvider: WebOfTrustProvider,
-    private val friendProvider: FriendProvider,
 ) : ViewModel() {
     val topics = mutableStateOf<List<Topic>>(emptyList())
     val profiles = mutableStateOf<List<AdvancedProfileView>>(emptyList())
@@ -59,10 +55,7 @@ class SearchViewModel(
         if (profileJob?.isActive == true) return
 
         profileJob = viewModelScope.launchIO {
-            lazyNostrSubscriber.lazySubUnknownProfiles(friendProvider.getFriendPubkeys())
-            lazyNostrSubscriber.lazySubUnknownProfiles(
-                webOfTrustProvider.getWebOfTrustPubkeys(max = null)
-            )
+            lazyNostrSubscriber.lazySubUnknownProfiles()
             delay(DELAY_10SEC)
         }
     }

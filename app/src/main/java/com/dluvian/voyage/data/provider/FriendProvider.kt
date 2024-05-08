@@ -29,6 +29,8 @@ class FriendProvider(
 
     suspend fun getFriendsWithMissingNip65() = friendDao.getFriendsWithMissingNip65()
 
+    suspend fun getFriendsWithMissingProfile() = friendDao.getFriendsWithMissingProfile()
+
     // Not named "getMaxCreatedAt" bc there should only be one createdAt available
     suspend fun getCreatedAt() = friendDao.getMaxCreatedAt()
 

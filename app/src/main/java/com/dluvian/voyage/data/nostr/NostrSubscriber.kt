@@ -3,6 +3,7 @@ package com.dluvian.voyage.data.nostr
 import com.dluvian.nostr_kt.removeTrailingSlashes
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.FEED_RESUB_SPAN_THRESHOLD_SECS
+import com.dluvian.voyage.core.MAX_PUBKEYS
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.RESUB_TIMEOUT
 import com.dluvian.voyage.core.createReplyAndVoteFilters
@@ -166,11 +167,11 @@ class NostrSubscriber(
     }
 
     private fun getVotePubkeys(): List<PubkeyHex> {
-        val pubkeys = mutableSetOf(pubkeyProvider.getPubkeyHex())
+        val pubkeys = mutableListOf(pubkeyProvider.getPubkeyHex())
         pubkeys.addAll(friendProvider.getFriendPubkeys())
-        pubkeys.addAll(webOfTrustProvider.getWebOfTrustPubkeys())
+        pubkeys.addAll(webOfTrustProvider.getWebOfTrustPubkeys(max = Int.MAX_VALUE))
 
-        return pubkeys.toList()
+        return pubkeys.distinct().take(MAX_PUBKEYS)
     }
 
     private suspend fun getCachedSinceTimestamp(

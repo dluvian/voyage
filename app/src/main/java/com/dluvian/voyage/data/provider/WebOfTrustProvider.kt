@@ -14,9 +14,11 @@ class WebOfTrustProvider(private val webOfTrustDao: WebOfTrustDao) {
     private val webOfTrust = webOfTrustDao.getWebOfTrustFlow()
         .stateIn(scope, SharingStarted.Eagerly, emptyList())
 
-    fun getWebOfTrustPubkeys(max: Int? = MAX_PUBKEYS): List<PubkeyHex> {
-        return webOfTrust.value.let { if (max != null) it.takeRandom(max) else it }
+    fun getWebOfTrustPubkeys(max: Int = MAX_PUBKEYS): List<PubkeyHex> {
+        return webOfTrust.value.takeRandom(max)
     }
+
+    suspend fun getWotWithMissingProfile() = webOfTrustDao.getWotWithMissingProfile()
 
     suspend fun getNewestCreatedAt(): Long? {
         return webOfTrustDao.getNewestCreatedAt()
