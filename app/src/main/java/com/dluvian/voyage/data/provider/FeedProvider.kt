@@ -60,7 +60,7 @@ class FeedProvider(
             .firstThenDistinctDebounce(SHORT_DEBOUNCE)
             .onEach { posts ->
                 oldestUsedEvent.updateOldestCreatedAt(posts.minOfOrNull { it.createdAt })
-                nostrSubscriber.subVotesAndReplies(posts = posts)
+                nostrSubscriber.subVotesAndReplies(posts = posts, onlyMyReadRelays = true)
             }
     }
 
