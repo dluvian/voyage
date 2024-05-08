@@ -1,7 +1,7 @@
 package com.dluvian.voyage.data.nostr
 
 import android.util.Log
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.MutableState
 import com.dluvian.nostr_kt.INostrListener
 import com.dluvian.nostr_kt.Nip65Relay
 import com.dluvian.nostr_kt.NostrClient
@@ -37,11 +37,10 @@ class NostrService(
     private val eventMaker: EventMaker,
     private val filterCache: MutableMap<SubId, List<Filter>>,
     private val relayPreferences: RelayPreferences,
+    private val connectionStatuses: MutableState<Map<RelayUrl, ConnectionStatus>>
 ) {
-    val connectionStatuses = mutableStateOf(mapOf<RelayUrl, ConnectionStatus>())
     private val scope = CoroutineScope(Dispatchers.IO)
     var defaultLauncher: SignerLauncher? = null
-
 
     private val listener = object : INostrListener {
         override fun onOpen(relayUrl: RelayUrl, msg: String) {

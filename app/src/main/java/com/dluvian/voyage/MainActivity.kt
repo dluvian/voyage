@@ -163,7 +163,8 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 relayProvider = appContainer.relayProvider,
                 snackbar = appContainer.snackbar,
                 nostrService = appContainer.nostrService,
-                nip65UpsertDao = appContainer.roomDb.nip65UpsertDao()
+                nip65UpsertDao = appContainer.roomDb.nip65UpsertDao(),
+                connectionStatuses = appContainer.connectionStatuses
             )
         },
         createCrossPostVM = viewModel {

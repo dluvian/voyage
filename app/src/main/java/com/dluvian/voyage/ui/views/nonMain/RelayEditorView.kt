@@ -68,7 +68,7 @@ fun RelayEditorView(vm: RelayEditorViewModel, snackbar: SnackbarHostState, onUpd
     val popularRelays by vm.popularRelays
     val addIsEnabled by vm.addIsEnabled
     val isSaving by vm.isSaving
-    val onlineStatuses by vm.onlineStatuses
+    val connectionStatuses by vm.connectionStatuses
     val scope = rememberCoroutineScope()
     val signerLauncher = getSignerLauncher(onUpdate = onUpdate)
     val context = LocalContext.current
@@ -96,7 +96,7 @@ fun RelayEditorView(vm: RelayEditorViewModel, snackbar: SnackbarHostState, onUpd
         RelayEditorViewContent(
             myRelays = myRelays,
             popularRelays = popularRelays,
-            connectionStatuses = onlineStatuses,
+            connectionStatuses = connectionStatuses,
             addIsEnabled = addIsEnabled,
             scope = scope,
             onUpdate = onUpdate

@@ -2,12 +2,15 @@ package com.dluvian.voyage
 
 import android.content.Context
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.mutableStateOf
 import androidx.room.Room
 import com.dluvian.nostr_kt.NostrClient
+import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
 import com.dluvian.voyage.core.ExternalSignerHandler
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.core.model.ConnectionStatus
 import com.dluvian.voyage.data.account.AccountManager
 import com.dluvian.voyage.data.account.AccountSwitcher
 import com.dluvian.voyage.data.account.ExternalSigner
@@ -74,10 +77,13 @@ class AppContainer(context: Context) {
         syncedIdCache = syncedIdCache,
     )
 
+    val connectionStatuses = mutableStateOf(mapOf<RelayUrl, ConnectionStatus>())
+
     val relayProvider = RelayProvider(
         nip65Dao = roomDb.nip65Dao(),
         eventRelayDao = roomDb.eventRelayDao(),
-        nostrClient = nostrClient
+        nostrClient = nostrClient,
+        connectionStatuses = connectionStatuses,
     )
     val webOfTrustProvider = WebOfTrustProvider(webOfTrustDao = roomDb.webOfTrustDao())
 
@@ -161,7 +167,8 @@ class AppContainer(context: Context) {
         eventQueue = eventQueue,
         eventMaker = eventMaker,
         filterCache = syncedFilterCache,
-        relayPreferences = relayPreferences
+        relayPreferences = relayPreferences,
+        connectionStatuses = connectionStatuses,
     )
 
     init {

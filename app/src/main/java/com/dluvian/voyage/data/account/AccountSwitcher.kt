@@ -20,6 +20,8 @@ import com.dluvian.voyage.data.room.entity.AccountEntity
 import kotlinx.coroutines.delay
 import rust.nostr.protocol.PublicKey
 
+private const val TAG = "AccountSwitcher"
+
 class AccountSwitcher(
     private val accountManager: AccountManager,
     private val accountDao: AccountDao,
@@ -27,7 +29,6 @@ class AccountSwitcher(
     private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val nostrSubscriber: NostrSubscriber,
 ) {
-    private val tag = "AccountSwitcher"
 
     val accountType: State<AccountType> = accountManager.accountType
 
@@ -42,7 +43,7 @@ class AccountSwitcher(
 
     suspend fun useDefaultAccount() {
         if (accountManager.accountType.value is DefaultAccount) return
-        Log.i(tag, "Use default account")
+        Log.i(TAG, "Use default account")
 
         val defaultPubkey = accountManager.mnemonicSigner.getPubkeyHex()
         updateAndReset(account = AccountEntity(pubkey = defaultPubkey))
@@ -53,7 +54,7 @@ class AccountSwitcher(
 
     suspend fun useExternalAccount(publicKey: PublicKey, packageName: String) {
         if (accountManager.accountType.value is ExternalAccount) return
-        Log.i(tag, "Use external account")
+        Log.i(TAG, "Use external account")
 
         val externalPubkey = publicKey.toHex()
         updateAndReset(account = AccountEntity(pubkey = externalPubkey, packageName = packageName))
@@ -61,7 +62,7 @@ class AccountSwitcher(
     }
 
     private suspend fun updateAndReset(account: AccountEntity) {
-        Log.i(tag, "Update account and reset caches")
+        Log.i(TAG, "Update account and reset caches")
         lazyNostrSubscriber.subCreator.unsubAll()
         idCacheClearer.clear()
         accountDao.updateAccount(account = account)

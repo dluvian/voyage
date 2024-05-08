@@ -2,6 +2,7 @@ package com.dluvian.voyage.core.viewModel
 
 import android.util.Log
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -22,6 +23,7 @@ import com.dluvian.voyage.core.SaveRelays
 import com.dluvian.voyage.core.ToggleReadRelay
 import com.dluvian.voyage.core.ToggleWriteRelay
 import com.dluvian.voyage.core.launchIO
+import com.dluvian.voyage.core.model.ConnectionStatus
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.event.ValidatedNip65
 import com.dluvian.voyage.data.nostr.NostrService
@@ -36,12 +38,12 @@ class RelayEditorViewModel(
     private val snackbar: SnackbarHostState,
     private val nostrService: NostrService,
     private val nip65UpsertDao: Nip65UpsertDao,
+    val connectionStatuses: MutableState<Map<RelayUrl, ConnectionStatus>>
 ) : ViewModel() {
     val myRelays = mutableStateOf(emptyList<Nip65Relay>())
     val popularRelays = mutableStateOf(emptyList<RelayUrl>())
     val addIsEnabled = mutableStateOf(getAddIsEnabled(myRelays.value))
     val isSaving = mutableStateOf(false)
-    val onlineStatuses = nostrService.connectionStatuses
 
     fun handle(action: RelayEditorViewAction) {
         when (action) {

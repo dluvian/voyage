@@ -1,6 +1,7 @@
 package com.dluvian.voyage.data.provider
 
 import android.util.Log
+import androidx.compose.runtime.State
 import com.dluvian.nostr_kt.Nip65Relay
 import com.dluvian.nostr_kt.NostrClient
 import com.dluvian.nostr_kt.RelayUrl
@@ -9,6 +10,8 @@ import com.dluvian.voyage.core.MAX_POPULAR_RELAYS
 import com.dluvian.voyage.core.MAX_RELAYS
 import com.dluvian.voyage.core.MAX_RELAYS_PER_PUBKEY
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.core.model.ConnectionStatus
+import com.dluvian.voyage.core.model.Disconnected
 import com.dluvian.voyage.core.putOrAdd
 import com.dluvian.voyage.data.room.dao.EventRelayDao
 import com.dluvian.voyage.data.room.dao.Nip65Dao
@@ -25,7 +28,8 @@ private const val TAG = "RelayProvider"
 class RelayProvider(
     private val nip65Dao: Nip65Dao,
     private val eventRelayDao: EventRelayDao,
-    private val nostrClient: NostrClient
+    private val nostrClient: NostrClient,
+    private val connectionStatuses: State<Map<RelayUrl, ConnectionStatus>>
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val myNip65 = nip65Dao.getMyNip65().stateIn(scope, SharingStarted.Eagerly, emptyList())
@@ -150,6 +154,7 @@ class RelayProvider(
             .sortedByDescending { (_, pubkeys) -> pubkeys.size }
             .sortedByDescending { (relay, _) -> eventRelays.contains(relay) }
             .sortedByDescending { (relay, _) -> connectedRelays.contains(relay) }
+            .sortedByDescending { (relay, _) -> connectionStatuses.value[relay] != Disconnected }
             .forEach { (relay, nip65Entities) ->
                 val newPubkeys = nip65Entities.map { it.pubkey }.toSet() - pubkeyCache
                 if (newPubkeys.isNotEmpty()) {
