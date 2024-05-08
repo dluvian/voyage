@@ -1,10 +1,10 @@
 package com.dluvian.voyage.ui.components
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,7 +16,6 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.ui.components.chip.TopicChip
-import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
@@ -34,16 +33,16 @@ fun TopicSelectionChips(
     } else {
         val isEnabled =
             remember(selectedTopics.value.size) { selectedTopics.value.size < MAX_TOPICS }
-        LazyVerticalStaggeredGrid(
+        LazyColumn(
             modifier = modifier,
-            columns = StaggeredGridCells.Adaptive(minSize = sizing.topicChipMinSize),
-            verticalItemSpacing = spacing.small,
             contentPadding = PaddingValues(bottom = spacing.xxl)
         ) {
             items(myTopics) { topic ->
                 val isSelected = selectedTopics.value.contains(topic)
                 TopicChip(
-                    modifier = Modifier.padding(spacing.medium),
+                    modifier = Modifier
+                        .padding(spacing.medium)
+                        .fillMaxWidth(),
                     isSelected = isSelected,
                     isEnabled = isEnabled || isSelected,
                     heightRatio = 0.85f,
