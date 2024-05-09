@@ -13,4 +13,7 @@ interface ReplyDao {
 
     @Query("SELECT * FROM ReplyView WHERE id = :id")
     fun getReplyFlow(id: EventIdHex): Flow<ReplyView?>
+
+    @Query("SELECT parentId FROM post WHERE id = :id")
+    suspend fun getParentId(id: EventIdHex): EventIdHex?
 }

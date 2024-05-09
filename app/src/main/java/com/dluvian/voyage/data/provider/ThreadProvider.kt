@@ -1,5 +1,7 @@
 package com.dluvian.voyage.data.provider
 
+import android.util.Log
+import com.dluvian.nostr_kt.createNevent
 import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.EventIdHex
@@ -24,6 +26,8 @@ import kotlinx.coroutines.flow.onEach
 import rust.nostr.protocol.Nip19Event
 import java.util.LinkedList
 
+private const val TAG = "ThreadProvider"
+
 class ThreadProvider(
     private val nostrSubscriber: NostrSubscriber,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
@@ -37,7 +41,7 @@ class ThreadProvider(
     private val forcedFollows: Flow<Map<PubkeyHex, Boolean>>,
 ) {
 
-    fun getParent(scope: CoroutineScope, nevent: Nip19Event): Flow<ParentUI?> {
+    fun getLocalRoot(scope: CoroutineScope, nevent: Nip19Event): Flow<ParentUI?> {
         val id = nevent.eventId().toHex()
         scope.launchIO {
             if (!existsDao.postExists(id = id)) {
@@ -69,6 +73,18 @@ class ThreadProvider(
         }.onEach {
             oldestUsedEvent.updateOldestCreatedAt(it?.createdAt)
         }
+    }
+
+    fun getParentIsAvailableFlow(scope: CoroutineScope, replyId: EventIdHex): Flow<Boolean> {
+        scope.launchIO {
+            val parentId = replyDao.getParentId(id = replyId) ?: return@launchIO
+            if (!existsDao.postExists(id = parentId)) {
+                Log.i(TAG, "Parent $parentId is not available yet. Subscribing to it")
+                nostrSubscriber.subPost(nevent = createNevent(hex = parentId))
+            }
+        }
+
+        return existsDao.parentExistsFlow(replyId = replyId)
     }
 
     // Don't update oldestCreatedAt in replies. They are always younger than root

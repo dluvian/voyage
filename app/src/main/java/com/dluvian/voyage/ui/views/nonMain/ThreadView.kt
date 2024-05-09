@@ -27,10 +27,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import com.dluvian.nostr_kt.createNevent
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ComposableContent
+import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.core.OpenThreadRaw
 import com.dluvian.voyage.core.ThreadViewRefresh
 import com.dluvian.voyage.core.ThreadViewShowReplies
 import com.dluvian.voyage.core.ThreadViewToggleCollapse
@@ -52,19 +55,21 @@ import com.dluvian.voyage.ui.theme.spacing
 @Composable
 fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
     val isRefreshing by vm.isRefreshing
-    val parent by vm.parent.collectAsState()
+    val localRoot by vm.localRoot.collectAsState()
     val leveledReplies by vm.leveledReplies.value.collectAsState()
+    val parentIsAvailable by vm.parentIsAvailable.collectAsState()
 
     SimpleGoBackScaffold(
         header = stringResource(id = R.string.thread),
         snackbar = snackbar,
         onUpdate = onUpdate
     ) {
-        if (parent == null) FullLinearProgressIndicator()
-        parent?.let {
+        if (localRoot == null) FullLinearProgressIndicator()
+        localRoot?.let {
             ThreadViewContent(
-                parent = it,
+                localRoot = it,
                 leveledReplies = leveledReplies,
+                parentIsAvailable = parentIsAvailable,
                 isRefreshing = isRefreshing,
                 state = vm.threadState,
                 onUpdate = onUpdate
@@ -75,14 +80,15 @@ fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpd
 
 @Composable
 private fun ThreadViewContent(
-    parent: ParentUI,
+    localRoot: ParentUI,
     leveledReplies: List<LeveledReplyUI>,
+    parentIsAvailable: Boolean,
     isRefreshing: Boolean,
     state: LazyListState,
     onUpdate: OnUpdate
 ) {
-    val replies = remember(parent, leveledReplies) {
-        when (parent) {
+    val replies = remember(localRoot, leveledReplies) {
+        when (localRoot) {
             is ReplyUI -> leveledReplies.map { it.copy(level = it.level + 2) }
             is RootPostUI -> leveledReplies
         }
@@ -93,11 +99,18 @@ private fun ThreadViewContent(
             contentPadding = PaddingValues(bottom = spacing.xxl),
             state = state
         ) {
+            if (parentIsAvailable && localRoot is ReplyUI) item {
+                OpenRootButton(
+                    modifier = Modifier.padding(start = spacing.medium),
+                    parentId = localRoot.parentId,
+                    onUpdate = onUpdate
+                )
+            }
             item {
-                when (parent) {
+                when (localRoot) {
                     is RootPostUI -> {
                         PostRow(
-                            post = parent,
+                            post = localRoot,
                             isOp = true,
                             isThreadView = true,
                             onUpdate = onUpdate
@@ -109,7 +122,7 @@ private fun ThreadViewContent(
                         Reply(
                             leveledReply = LeveledReplyUI(
                                 level = 1,
-                                reply = parent,
+                                reply = localRoot,
                                 isCollapsed = false,
                                 hasLoadedReplies = true,
                                 isOp = true
@@ -119,7 +132,7 @@ private fun ThreadViewContent(
                     }
                 }
             }
-            if (parent.replyCount > replies.size) item {
+            if (localRoot.replyCount > replies.size) item {
                 FullLinearProgressIndicator()
             }
             itemsIndexed(replies) { i, reply ->
@@ -127,7 +140,7 @@ private fun ThreadViewContent(
                 Reply(leveledReply = reply, onUpdate = onUpdate)
                 if (i == replies.size - 1) FullHorizontalDivider()
             }
-            if (parent.replyCount == 0 && replies.isEmpty()) item {
+            if (localRoot.replyCount == 0 && replies.isEmpty()) item {
                 Column(modifier = Modifier.fillParentMaxHeight(0.5f)) {
                     BaseHint(text = stringResource(id = R.string.no_comments_found))
                 }
@@ -199,5 +212,19 @@ fun MoreRepliesTextButton(replyCount: Int, onShowReplies: Fn) {
             modifier = Modifier.size(sizing.smallIndicator),
             strokeWidth = sizing.smallIndicatorStrokeWidth
         )
+    }
+}
+
+@Composable
+private fun OpenRootButton(
+    modifier: Modifier = Modifier,
+    parentId: EventIdHex,
+    onUpdate: OnUpdate
+) {
+    TextButton(
+        modifier = modifier,
+        onClick = { onUpdate(OpenThreadRaw(nevent = createNevent(hex = parentId))) }
+    ) {
+        Text(text = stringResource(id = R.string.open_parent))
     }
 }

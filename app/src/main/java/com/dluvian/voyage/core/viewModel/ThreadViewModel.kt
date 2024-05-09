@@ -15,6 +15,7 @@ import com.dluvian.voyage.core.ThreadViewToggleCollapse
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.LeveledReplyUI
 import com.dluvian.voyage.core.model.ParentUI
+import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.data.interactor.ThreadCollapser
 import com.dluvian.voyage.data.provider.ThreadProvider
 import kotlinx.coroutines.delay
@@ -31,7 +32,8 @@ class ThreadViewModel(
     val threadState: LazyListState,
 ) : ViewModel() {
     val isRefreshing = mutableStateOf(false)
-    var parent: StateFlow<ParentUI?> = MutableStateFlow(null)
+    var parentIsAvailable: StateFlow<Boolean> = MutableStateFlow(false)
+    var localRoot: StateFlow<ParentUI?> = MutableStateFlow(null)
     val leveledReplies: MutableState<StateFlow<List<LeveledReplyUI>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
     private val parentIds = mutableStateOf(emptySet<EventIdHex>())
@@ -40,17 +42,18 @@ class ThreadViewModel(
 
     fun openThread(nevent: Nip19Event, parentUi: ParentUI?) {
         val id = nevent.eventId().toHex()
-        if (id == parent.value?.id) return
+        if (id == localRoot.value?.id) return
 
         leveledReplies.value = MutableStateFlow(emptyList())
         parentIds.value = setOf()
         opPubkey = nevent.author()?.toHex() ?: parentUi?.getRelevantPubkey()
         this.nevent = nevent
 
-        parent = threadProvider
-            .getParent(scope = viewModelScope, nevent = nevent)
+        localRoot = threadProvider
+            .getLocalRoot(scope = viewModelScope, nevent = nevent)
             .onEach { if (opPubkey == null) opPubkey = it?.pubkey }
             .stateIn(viewModelScope, SharingStarted.Eagerly, parentUi)
+        checkParentAvailability(replyId = id, parentUi = parentUi)
         loadReplies(
             rootId = id,
             parentId = id,
@@ -64,7 +67,7 @@ class ThreadViewModel(
             is ThreadViewRefresh -> refresh()
             is ThreadViewToggleCollapse -> threadCollapser.toggleCollapse(id = action.id)
             is ThreadViewShowReplies -> loadReplies(
-                rootId = parent.value?.getRelevantId(),
+                rootId = localRoot.value?.getRelevantId(),
                 parentId = action.id,
                 isInit = false,
                 opPubkey = opPubkey,
@@ -76,13 +79,19 @@ class ThreadViewModel(
         if (isRefreshing.value) return
 
         val currentNevent = nevent ?: return
-        val currentRoot = parent.value
+        val currentRoot = localRoot.value
 
         isRefreshing.value = true
 
         viewModelScope.launchIO {
-            parent = threadProvider.getParent(scope = viewModelScope, nevent = currentNevent)
+            localRoot = threadProvider.getLocalRoot(scope = viewModelScope, nevent = currentNevent)
                 .stateIn(viewModelScope, SharingStarted.Eagerly, currentRoot)
+            parentIsAvailable = threadProvider
+                .getParentIsAvailableFlow(
+                    scope = viewModelScope,
+                    replyId = currentNevent.eventId().toHex()
+                )
+                .stateIn(viewModelScope, SharingStarted.Eagerly, parentIsAvailable.value)
             leveledReplies.value = threadProvider.getLeveledReplies(
                 rootId = currentNevent.eventId().toHex(),
                 parentIds = parentIds.value,
@@ -110,5 +119,13 @@ class ThreadViewModel(
         leveledReplies.value = threadProvider
             .getLeveledReplies(rootId = rootId, parentIds = parentIds.value, opPubkey = opPubkey)
             .stateIn(viewModelScope, SharingStarted.Eagerly, init)
+    }
+
+    private fun checkParentAvailability(replyId: EventIdHex, parentUi: ParentUI?) {
+        if (parentUi is RootPostUI) return
+
+        parentIsAvailable = threadProvider
+            .getParentIsAvailableFlow(scope = viewModelScope, replyId = replyId)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
     }
 }

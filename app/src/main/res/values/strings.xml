@@ -156,4 +156,5 @@
     <string name="relay_profile_not_found">Relay profile not found</string>
     <string name="connected_relays">Connected relays</string>
     <string name="posts">Posts</string>
+    <string name="open_parent">Open parent</string>
 </resources>

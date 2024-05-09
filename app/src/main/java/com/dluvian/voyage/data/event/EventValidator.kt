@@ -38,7 +38,7 @@ class EventValidator(
         if (syncedIdCache.contains(id)) return null
 
         if (!matchesFilter(subId = subId, event = event)) {
-            Log.v(TAG, "Discard event not matching filter, $id from $relayUrl")
+            Log.v(TAG, "Discard event not matching filter, ${id.toHex()} from $relayUrl")
             return null
         }
 
@@ -46,7 +46,7 @@ class EventValidator(
         syncedIdCache.add(id)
 
         if (validatedEvent == null) {
-            Log.w(TAG, "Discard invalid event $id from $relayUrl")
+            Log.w(TAG, "Discard invalid event ${id.toHex()} from $relayUrl")
             return null
         }
 
