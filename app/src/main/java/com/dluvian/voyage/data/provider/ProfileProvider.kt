@@ -125,8 +125,6 @@ class ProfileProvider(
         "6e468422dfb74a5738702a8823b9b28168abab8655faacb6853cd0ee15deee93",
         // kieran
         "63fe6318dc58583cfe16810f86dd09e18bfd76aabc24a0081ce2856f330504ed",
-        // nostreport
-        "2edbcea694d164629854a52583458fd6d965b161e3c48b57d3aff01940558884",
         // fishcake
         "8fb140b4e8ddef97ce4b821d247278a1a4353362623f64021484b372f948000c",
         // lynalden
@@ -147,5 +145,25 @@ class ProfileProvider(
         "2ef93f01cd2493e04235a6b87b10d3c4a74e2a7eb7c3caf168268f6af73314b5",
         // gsovereignty
         "d91191e30e00444b942c0e82cad470b32af171764c2275bee0bd99377efd4075",
+        // american_hodl
+        "1afe0c74e3d7784eba93a5e3fa554a6eeb01928d12739ae8ba4832786808e36d",
+        // semisol
+        "52b4a076bcbbbdc3a1aefa3735816cf74993b1b8db202b01c883c58be7fad8bd",
+        // nunyabidness
+        "6389be6491e7b693e9f368ece88fcd145f07c068d2c1bbae4247b9b5ef439d32",
+        // franzap
+        "726a1e261cc6474674e8285e3951b3bb139be9a773d1acf49dc868db861a1c11",
+        // max_hillebrand
+        "b7ed68b062de6b4a12e51fd5285c1e1e0ed0e5128cda93ab11b4150b55ed32fc",
+        // laeserin
+        "dd664d5e4016433a8cd69f005ae1480804351789b59de5af06276de65633d319",
+        // sommerfeld
+        "d0debf9fb12def81f43d7c69429bb784812ac1e4d2d53a202db6aac7ea4b466c",
+        // cyph3rp9nk
+        "fcf70a45cfa817eaa813b9ba8a375d713d3169f4a27f3dcac3d49112df67d37e",
+        // nvk
+        "e88a691e98d9987c964521dff60025f60700378a4879180dcbbb4a5027850411",
+        // alex_gleason
+        "79c2cae114ea28a981e7559b4fe7854a473521a8d22a66bbab9fa248eb820ff6"
     )
 }
