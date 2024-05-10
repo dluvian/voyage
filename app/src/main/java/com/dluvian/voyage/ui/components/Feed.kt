@@ -29,7 +29,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.FEED_PAGE_SIZE
 import com.dluvian.voyage.core.Fn
@@ -51,7 +50,6 @@ fun Feed(
     onRefresh: Fn,
     onAppend: Fn,
     onUpdate: OnUpdate,
-    header: ComposableContent = {},
 ) {
     val isRefreshing by paginator.isRefreshing
     val isAppending by paginator.isAppending
@@ -72,8 +70,6 @@ fun Feed(
         if (!hasPosts && posts.isEmpty()) BaseHint(stringResource(id = R.string.no_posts_found))
 
         LazyColumn(modifier = Modifier.fillMaxSize(), state = state) {
-            item { header() }
-
             if (hasMoreRecentPosts) item { MostRecentPostsTextButton(onClick = onRefresh) }
 
             items(
