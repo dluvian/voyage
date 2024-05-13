@@ -1,8 +1,11 @@
 package com.dluvian.voyage.ui.views.nonMain.profile
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
@@ -10,10 +13,13 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
@@ -30,50 +36,48 @@ import com.dluvian.voyage.ui.components.FullHorizontalDivider
 import com.dluvian.voyage.ui.components.indicator.ComingSoon
 import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.theme.spacing
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
     val profile by vm.profile.value.collectAsState()
+    val index = remember { mutableIntStateOf(0) }
+    val pagerState = rememberPagerState { 4 }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(key1 = pagerState.currentPage) {
+        index.intValue = pagerState.currentPage
+    }
 
     ProfileScaffold(profile = profile, snackbar = snackbar, onUpdate = onUpdate) {
-        val index = remember { mutableIntStateOf(0) }
         Column {
-            // Set higher zIndex to hide resting refresh indicator
-            PrimaryTabRow(modifier = Modifier.zIndex(2f), selectedTabIndex = index.intValue) {
-                Tab(
-                    selected = index.intValue == 0,
-                    onClick = { index.intValue = 0 },
-                    text = { Text("Posts") })
-                Tab(
-                    selected = index.intValue == 1,
-                    onClick = { index.intValue = 1 },
-                    text = { Text("Replies") })
-                Tab(
-                    selected = index.intValue == 2,
-                    onClick = { index.intValue = 2 },
-                    text = { Text("About") })
-                Tab(
-                    selected = index.intValue == 3,
-                    onClick = { index.intValue = 3 },
-                    text = { Text("Relays") })
-            }
-            when (index.intValue) {
-                0 -> Feed(
-                    paginator = vm.paginator,
-                    state = vm.feedState,
-                    onRefresh = { onUpdate(ProfileViewRefresh) },
-                    onAppend = { onUpdate(ProfileViewAppend) },
-                    onUpdate = onUpdate,
-                )
+            ProfileTabRow(
+                index = index,
+                onClickPage = { i -> scope.launch { pagerState.animateScrollToPage(i) } })
+            HorizontalPager(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                state = pagerState
+            ) { page ->
+                when (page) {
+                    0 -> Feed(
+                        paginator = vm.paginator,
+                        state = vm.feedState,
+                        onRefresh = { onUpdate(ProfileViewRefresh) },
+                        onAppend = { onUpdate(ProfileViewAppend) },
+                        onUpdate = onUpdate,
+                    )
 
-                2 -> About(
-                    about = profile.about ?: AnnotatedString(text = ""),
-                    onUpdate = onUpdate
-                )
+                    2 -> About(
+                        about = profile.about ?: AnnotatedString(text = ""),
+                        onUpdate = onUpdate
+                    )
 
-                else -> ComingSoon()
+                    else -> ComingSoon()
 
+                }
             }
         }
     }
@@ -101,5 +105,41 @@ private fun About(about: AnnotatedString, onUpdate: OnUpdate) {
             )
         }
         FullHorizontalDivider()
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ProfileTabRow(index: MutableIntState, onClickPage: (Int) -> Unit) {
+    // Set higher zIndex to hide resting refresh indicator
+    PrimaryTabRow(modifier = Modifier.zIndex(2f), selectedTabIndex = index.intValue) {
+        Tab(
+            selected = index.intValue == 0,
+            onClick = {
+                index.intValue = 0
+                onClickPage(0)
+            },
+            text = { Text("Posts") })
+        Tab(
+            selected = index.intValue == 1,
+            onClick = {
+                index.intValue = 1
+                onClickPage(1)
+            },
+            text = { Text("Replies") })
+        Tab(
+            selected = index.intValue == 2,
+            onClick = {
+                index.intValue = 2
+                onClickPage(2)
+            },
+            text = { Text("About") })
+        Tab(
+            selected = index.intValue == 3,
+            onClick = {
+                index.intValue = 3
+                onClickPage(3)
+            },
+            text = { Text("Relays") })
     }
 }
