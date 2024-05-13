@@ -8,5 +8,5 @@ interface IPaginator {
     val isAppending: State<Boolean>
     val hasMoreRecentPosts: State<Boolean>
     val hasPosts: State<StateFlow<Boolean>>
-    val page: State<StateFlow<List<RootPostUI>>>
+    val page: State<StateFlow<List<ParentUI>>>
 }

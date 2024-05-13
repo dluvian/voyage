@@ -69,8 +69,10 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun createVMContainer(appContainer: AppContainer): VMContainer {
+    // We define states in upper level so that it keeps the scroll position when popping the nav stack
     val homeFeedState = rememberLazyListState()
-    val profileFeedState = rememberLazyListState()
+    val profileRootFeedState = rememberLazyListState()
+    val profileReplyFeedState = rememberLazyListState()
     val topicFeedState = rememberLazyListState()
     val threadState = rememberLazyListState()
 
@@ -112,7 +114,8 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 feedProvider = appContainer.feedProvider,
                 subCreator = appContainer.nostrSubscriber.subCreator,
                 profileProvider = appContainer.profileProvider,
-                feedState = profileFeedState,
+                rootFeedState = profileRootFeedState,
+                replyFeedState = profileReplyFeedState,
             )
         },
         threadVM = viewModel {

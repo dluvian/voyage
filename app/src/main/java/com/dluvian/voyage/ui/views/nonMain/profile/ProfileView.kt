@@ -28,8 +28,9 @@ import androidx.compose.ui.zIndex
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ClickText
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.ProfileViewAppend
 import com.dluvian.voyage.core.ProfileViewRefresh
+import com.dluvian.voyage.core.ProfileViewReplyAppend
+import com.dluvian.voyage.core.ProfileViewRootAppend
 import com.dluvian.voyage.core.viewModel.ProfileViewModel
 import com.dluvian.voyage.ui.components.Feed
 import com.dluvian.voyage.ui.components.FullHorizontalDivider
@@ -63,10 +64,18 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
             ) { page ->
                 when (page) {
                     0 -> Feed(
-                        paginator = vm.paginator,
-                        state = vm.feedState,
+                        paginator = vm.rootPaginator,
+                        state = vm.rootFeedState,
                         onRefresh = { onUpdate(ProfileViewRefresh) },
-                        onAppend = { onUpdate(ProfileViewAppend) },
+                        onAppend = { onUpdate(ProfileViewRootAppend) },
+                        onUpdate = onUpdate,
+                    )
+
+                    1 -> Feed(
+                        paginator = vm.replyPaginator,
+                        state = vm.replyFeedState,
+                        onRefresh = { onUpdate(ProfileViewRefresh) },
+                        onAppend = { onUpdate(ProfileViewReplyAppend) },
                         onUpdate = onUpdate,
                     )
 

@@ -11,7 +11,8 @@ import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
-import com.dluvian.voyage.data.model.ProfileFeedSetting
+import com.dluvian.voyage.data.model.ProfileReplyFeedSetting
+import com.dluvian.voyage.data.model.ProfileRootFeedSetting
 import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.provider.FeedProvider
@@ -36,7 +37,7 @@ class Paginator(
     override val hasMoreRecentPosts = mutableStateOf(false)
     override val hasPosts: MutableState<StateFlow<Boolean>> =
         mutableStateOf(MutableStateFlow(true))
-    override val page: MutableState<StateFlow<List<RootPostUI>>> =
+    override val page: MutableState<StateFlow<List<ParentUI>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
 
     private lateinit var feedSetting: FeedSetting
@@ -44,8 +45,9 @@ class Paginator(
     fun init(setting: FeedSetting) {
         val isSame = when (setting) {
             is HomeFeedSetting -> page.value.value.isNotEmpty()
-            is TopicFeedSetting -> page.value.value.isNotEmpty() && feedSetting == setting
-            is ProfileFeedSetting -> page.value.value.isNotEmpty() && feedSetting == setting
+            is TopicFeedSetting,
+            is ProfileRootFeedSetting,
+            is ProfileReplyFeedSetting -> page.value.value.isNotEmpty() && feedSetting == setting
         }
         if (isSame) {
             Log.i(TAG, "Skip init. Settings are the same")
@@ -55,6 +57,7 @@ class Paginator(
         hasPosts.value = getHasPosts(setting = setting)
         hasMoreRecentPosts.value = false
         feedSetting = setting
+
         val now = getCurrentSecs()
 
         scope.launch {
@@ -67,10 +70,10 @@ class Paginator(
         if (isRefreshing.value) return
 
         isRefreshing.value = true
-        val now = getCurrentSecs()
         hasMoreRecentPosts.value = false
-
         hasPosts.value = getHasPosts(setting = feedSetting)
+
+        val now = getCurrentSecs()
 
         scope.launchIO {
             onSub()
@@ -101,7 +104,7 @@ class Paginator(
         }
     }
 
-    private suspend fun getFlow(until: Long, subUntil: Long): Flow<List<RootPostUI>> {
+    private suspend fun getFlow(until: Long, subUntil: Long): Flow<List<ParentUI>> {
         return feedProvider.getFeedFlow(
             until = until,
             subUntil = subUntil,
@@ -110,7 +113,7 @@ class Paginator(
         )
     }
 
-    private suspend fun getStaticFeed(until: Long): List<RootPostUI> {
+    private suspend fun getStaticFeed(until: Long): List<ParentUI> {
         return feedProvider.getStaticFeed(
             until = until,
             size = FEED_PAGE_SIZE.div(2),

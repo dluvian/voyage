@@ -4,6 +4,11 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 
 sealed class FeedSetting
-data object HomeFeedSetting : FeedSetting()
-data class TopicFeedSetting(val topic: Topic) : FeedSetting()
-data class ProfileFeedSetting(val pubkey: PubkeyHex) : FeedSetting()
+
+sealed class RootFeedSetting : FeedSetting()
+sealed class ReplyFeedSetting : FeedSetting()
+
+data object HomeFeedSetting : RootFeedSetting()
+data class TopicFeedSetting(val topic: Topic) : RootFeedSetting()
+data class ProfileRootFeedSetting(val pubkey: PubkeyHex) : RootFeedSetting()
+data class ProfileReplyFeedSetting(val pubkey: PubkeyHex) : ReplyFeedSetting()

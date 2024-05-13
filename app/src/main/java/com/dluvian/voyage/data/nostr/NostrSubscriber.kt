@@ -12,12 +12,14 @@ import com.dluvian.voyage.core.textNoteAndRepostKinds
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
-import com.dluvian.voyage.data.model.ProfileFeedSetting
+import com.dluvian.voyage.data.model.ProfileReplyFeedSetting
+import com.dluvian.voyage.data.model.ProfileRootFeedSetting
 import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
+import com.dluvian.voyage.data.room.dao.ReplyDao
 import com.dluvian.voyage.data.room.dao.RootPostDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,6 +42,7 @@ class NostrSubscriber(
     private val pubkeyProvider: IPubkeyProvider,
     private val subBatcher: SubBatcher,
     private val rootPostDao: RootPostDao,
+    private val replyDao: ReplyDao,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -68,12 +71,17 @@ class NostrSubscriber(
                 limit = (2.5 * limit).toULong()
             )
 
-            is ProfileFeedSetting -> feedSubscriber.getProfileFeedSubscription(
+            is ProfileRootFeedSetting -> feedSubscriber.getProfileFeedSubscription(
                 pubkey = setting.pubkey,
                 until = until.toULong(),
                 since = getCachedSinceTimestamp(setting = setting, until = until, pageSize = limit),
                 limit = adjustedLimit
             )
+
+            is ProfileReplyFeedSetting -> {
+                // Replies are a byproduct. Sub roots, not replies
+                return
+            }
         }
 
         subscriptions.forEach { (relay, filters) ->
@@ -197,16 +205,22 @@ class NostrSubscriber(
                 size = pageSizeAndHalfOfNext
             )
 
-            is ProfileFeedSetting -> rootPostDao.getProfileRootPostsCreatedAt(
+            is TopicFeedSetting -> rootPostDao.getTopicRootPostsCreatedAt(
+                topic = setting.topic,
+                until = until,
+                size = pageSizeAndHalfOfNext
+            )
+
+            is ProfileRootFeedSetting -> rootPostDao.getProfileRootPostsCreatedAt(
                 pubkey = setting.pubkey,
                 until = until,
                 size = pageSizeAndHalfOfNext,
             )
 
-            is TopicFeedSetting -> rootPostDao.getTopicRootPostsCreatedAt(
-                topic = setting.topic,
+            is ProfileReplyFeedSetting -> replyDao.getProfileRepliesCreatedAt(
+                pubkey = setting.pubkey,
                 until = until,
-                size = pageSizeAndHalfOfNext
+                size = pageSizeAndHalfOfNext,
             )
         }
 

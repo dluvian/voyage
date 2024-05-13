@@ -34,10 +34,13 @@ import com.dluvian.voyage.core.FEED_PAGE_SIZE
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.model.IPaginator
+import com.dluvian.voyage.core.model.ReplyUI
+import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.showScrollButton
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import com.dluvian.voyage.ui.components.row.PostRow
+import com.dluvian.voyage.ui.components.row.ReplyRow
 import com.dluvian.voyage.ui.theme.ScrollUpIcon
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
@@ -75,7 +78,17 @@ fun Feed(
             items(
                 items = uniquePosts,
                 key = { item -> item.id }) { post ->
-                PostRow(post = post, onUpdate = onUpdate)
+                when (post) {
+                    is RootPostUI -> PostRow(post = post, onUpdate = onUpdate)
+                    is ReplyUI -> ReplyRow(
+                        reply = post,
+                        isCollapsed = false,
+                        showDetailedReply = true,
+                        isOp = false,
+                        onUpdate = onUpdate
+                    )
+                }
+
                 FullHorizontalDivider()
             }
 

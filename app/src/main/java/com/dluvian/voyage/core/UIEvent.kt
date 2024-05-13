@@ -177,7 +177,8 @@ data object LoadRelays : RelayEditorViewAction()
 
 sealed class ProfileViewAction : UIEvent()
 data object ProfileViewRefresh : ProfileViewAction()
-data object ProfileViewAppend : ProfileViewAction()
+data object ProfileViewRootAppend : ProfileViewAction()
+data object ProfileViewReplyAppend : ProfileViewAction()
 
 sealed class CreatePostViewAction : UIEvent()
 data class SendPost(

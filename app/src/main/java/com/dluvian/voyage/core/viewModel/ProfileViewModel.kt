@@ -7,12 +7,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.voyage.core.ProfileViewAction
-import com.dluvian.voyage.core.ProfileViewAppend
 import com.dluvian.voyage.core.ProfileViewRefresh
+import com.dluvian.voyage.core.ProfileViewReplyAppend
+import com.dluvian.voyage.core.ProfileViewRootAppend
 import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.core.navigator.ProfileNavView
 import com.dluvian.voyage.data.model.FullProfileUI
-import com.dluvian.voyage.data.model.ProfileFeedSetting
+import com.dluvian.voyage.data.model.ProfileReplyFeedSetting
+import com.dluvian.voyage.data.model.ProfileRootFeedSetting
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
@@ -26,15 +28,21 @@ class ProfileViewModel(
     feedProvider: FeedProvider,
     private val subCreator: SubscriptionCreator,
     private val profileProvider: ProfileProvider,
-    val feedState: LazyListState,
+    val rootFeedState: LazyListState,
+    val replyFeedState: LazyListState,
 ) : ViewModel() {
-    val paginator = Paginator(
+    val profile: MutableState<StateFlow<FullProfileUI>> =
+        mutableStateOf(MutableStateFlow(FullProfileUI()))
+    val rootPaginator = Paginator(
         feedProvider = feedProvider,
         scope = viewModelScope,
         subCreator = subCreator
     )
-    val profile: MutableState<StateFlow<FullProfileUI>> =
-        mutableStateOf(MutableStateFlow(FullProfileUI()))
+    val replyPaginator = Paginator(
+        feedProvider = feedProvider,
+        scope = viewModelScope,
+        subCreator = subCreator
+    )
 
     fun openProfile(profileNavView: ProfileNavView) {
         val pubkeyHex = profileNavView.nprofile.publicKey().toHex()
@@ -47,13 +55,15 @@ class ProfileViewModel(
                 SharingStarted.Eagerly,
                 FullProfileUI(inner = AdvancedProfileView(pubkey = pubkeyHex))
             )
-        paginator.init(setting = ProfileFeedSetting(pubkey = pubkeyHex))
+        rootPaginator.init(setting = ProfileRootFeedSetting(pubkey = pubkeyHex))
+        replyPaginator.init(setting = ProfileReplyFeedSetting(pubkey = pubkeyHex))
     }
 
     fun handle(action: ProfileViewAction) {
         when (action) {
-            is ProfileViewRefresh -> refresh()
-            is ProfileViewAppend -> paginator.append()
+            ProfileViewRefresh -> refresh()
+            ProfileViewRootAppend -> rootPaginator.append()
+            ProfileViewReplyAppend -> replyPaginator.append()
         }
     }
 
@@ -66,6 +76,7 @@ class ProfileViewModel(
                 SharingStarted.Eagerly,
                 FullProfileUI(inner = profile.value.value.inner)
             )
-        paginator.refresh()
+        rootPaginator.refresh()
+        replyPaginator.refresh()
     }
 }
