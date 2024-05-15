@@ -2,6 +2,7 @@ package com.dluvian.voyage.ui.views.nonMain.profile
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
@@ -84,6 +85,8 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
                         onUpdate = onUpdate
                     )
 
+                    3 -> ComingSoon() // Relays
+
                     else -> ComingSoon()
 
                 }
@@ -95,7 +98,7 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
 @Composable
 private fun About(about: AnnotatedString, onUpdate: OnUpdate) {
     val uriHandler = LocalUriHandler.current
-    Column {
+    Column(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
