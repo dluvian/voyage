@@ -80,7 +80,7 @@ class AnnotatedStringProvider(
                             if (mentionedName == null) isCacheable = false
                             val name = "@${
                                 mentionedName.orEmpty()
-                                    .ifEmpty { shortenBech32(bech32 = nostrMention.bech32) }
+                                    .ifEmpty { nostrMention.bech32.shortenBech32() }
                             }"
                             pushAnnotatedString(
                                 tag = if (nostrMention is NpubMention) NPUB_TAG else NPROFILE_TAG,
@@ -95,7 +95,7 @@ class AnnotatedStringProvider(
                                 tag = if (nostrMention is NoteMention) NOTE1_TAG else NEVENT_TAG,
                                 annotation = nostrMention.bech32,
                                 style = MentionAndHashtagStyle,
-                                text = shortenBech32(bech32 = nostrMention.bech32)
+                                text = nostrMention.bech32.shortenBech32()
                             )
                         }
 

@@ -183,7 +183,10 @@ class EventProcessor(
         uniqueProfiles.forEach { profile ->
             metadataInMemory.submit(
                 pubkey = profile.pubkey,
-                metadata = profile.metadata.toRelevantMetadata(createdAt = profile.createdAt)
+                metadata = profile.metadata.toRelevantMetadata(
+                    pubkey = profile.pubkey,
+                    createdAt = profile.createdAt
+                )
             )
         }
 

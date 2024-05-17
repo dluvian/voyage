@@ -51,7 +51,8 @@
     <string name="reply">Reply</string>
     <string name="your_reply">Your reply</string>
     <string name="one_reply">1 reply</string>
-    <string name="replies">replies</string>
+    <string name="replies">Replies</string>
+    <string name="replies_lowercase">replies</string>
     <string name="show_original_post">Show original post</string>
     <string name="post_created">Post created</string>
     <string name="reply_created">Reply created</string>
@@ -157,4 +158,6 @@
     <string name="connected_relays">Connected relays</string>
     <string name="posts">Posts</string>
     <string name="open_parent">Open parent</string>
+    <string name="profile_identifier">Profile identifier</string>
+    <string name="lightning_address">Lightning address</string>
 </resources>

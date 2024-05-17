@@ -12,6 +12,7 @@ import com.dluvian.voyage.core.ProfileViewReplyAppend
 import com.dluvian.voyage.core.ProfileViewRootAppend
 import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.core.navigator.ProfileNavView
+import com.dluvian.voyage.core.toBech32
 import com.dluvian.voyage.data.model.FullProfileUI
 import com.dluvian.voyage.data.model.ProfileReplyFeedSetting
 import com.dluvian.voyage.data.model.ProfileRootFeedSetting
@@ -53,7 +54,10 @@ class ProfileViewModel(
             .stateIn(
                 viewModelScope,
                 SharingStarted.Eagerly,
-                FullProfileUI(inner = AdvancedProfileView(pubkey = pubkeyHex))
+                FullProfileUI(
+                    inner = AdvancedProfileView(pubkey = pubkeyHex),
+                    npub = pubkeyHex.toBech32()
+                )
             )
         rootPaginator.init(setting = ProfileRootFeedSetting(pubkey = pubkeyHex))
         replyPaginator.init(setting = ProfileReplyFeedSetting(pubkey = pubkeyHex))
@@ -74,7 +78,7 @@ class ProfileViewModel(
             .stateIn(
                 viewModelScope,
                 SharingStarted.Eagerly,
-                FullProfileUI(inner = profile.value.value.inner)
+                FullProfileUI(inner = profile.value.value.inner, npub = profile.value.value.npub)
             )
         rootPaginator.refresh()
         replyPaginator.refresh()

@@ -83,16 +83,19 @@ class EditProfileViewModel(
             return
         }
 
-            event.getMetadata()?.let { metadata ->
-                metadataInMemory.submit(
-                    pubkey = entity.pubkey,
-                    metadata = metadata.toRelevantMetadata(event.createdAt().secs())
+        event.getMetadata()?.let { metadata ->
+            metadataInMemory.submit(
+                pubkey = entity.pubkey,
+                metadata = metadata.toRelevantMetadata(
+                    pubkey = event.author().toHex(),
+                    createdAt = event.createdAt().secs()
                 )
-            }
-            profileUpsertDao.upsertProfiles(
-                profiles = listOf(ProfileEntity.from(fullProfileEntity = entity))
             )
-            fullProfileUpsertDao.upsertProfile(profile = entity)
-            fullProfile.value = entity
+        }
+        profileUpsertDao.upsertProfiles(
+            profiles = listOf(ProfileEntity.from(fullProfileEntity = entity))
+        )
+        fullProfileUpsertDao.upsertProfile(profile = entity)
+        fullProfile.value = entity
     }
 }

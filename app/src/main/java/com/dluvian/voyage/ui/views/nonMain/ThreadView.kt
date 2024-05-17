@@ -206,7 +206,7 @@ fun MoreRepliesTextButton(replyCount: Int, onShowReplies: Fn) {
             isLoading.value = true
         }) {
             if (replyCount == 1) Text(text = stringResource(id = R.string.one_reply))
-            else Text(text = "$replyCount ${stringResource(id = R.string.replies)}")
+            else Text(text = "$replyCount ${stringResource(id = R.string.replies_lowercase)}")
         }
         if (isLoading.value) CircularProgressIndicator(
             modifier = Modifier.size(sizing.smallIndicator),

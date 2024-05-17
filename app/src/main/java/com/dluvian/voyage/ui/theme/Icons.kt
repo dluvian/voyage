@@ -11,9 +11,11 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowUp
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.OfflineBolt
 import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material.icons.filled.RemoveCircle
 import androidx.compose.material.icons.filled.Repeat
@@ -61,6 +63,8 @@ val CollapseIcon = Icons.Default.ExpandLess
 val HorizMoreIcon = Icons.Default.MoreHoriz
 val DeleteIcon = Icons.Default.Delete
 val CrossPostIcon = Icons.Default.Repeat
+val KeyIcon = Icons.Default.Key
+val LightningIcon = Icons.Default.OfflineBolt
 
 @Stable
 @Composable

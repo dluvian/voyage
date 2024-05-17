@@ -48,10 +48,10 @@ import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Timestamp
 
 fun PublicKey.toShortenedNpub(): String {
-    return shortenBech32(bech32 = this.toBech32())
+    return this.toBech32().shortenBech32()
 }
 
-fun shortenBech32(bech32: Bech32) = "${bech32.take(10)}:${bech32.takeLast(5)}"
+fun Bech32.shortenBech32() = "${this.take(10)}:${this.takeLast(5)}"
 
 fun PubkeyHex.toShortenedBech32(): String {
     if (this.isEmpty()) return ""
@@ -59,10 +59,17 @@ fun PubkeyHex.toShortenedBech32(): String {
     return pubkey.toShortenedNpub()
 }
 
-fun Metadata.toRelevantMetadata(createdAt: Long): RelevantMetadata {
+fun PubkeyHex.toBech32(): String {
+    if (this.isEmpty()) return ""
+    return runCatching { PublicKey.fromHex(this).toBech32() }.getOrNull() ?: ""
+}
+
+fun Metadata.toRelevantMetadata(pubkey: PubkeyHex, createdAt: Long): RelevantMetadata {
     return RelevantMetadata(
+        npub = pubkey.toBech32(),
         name = this.getRealName(),
         about = this.getAbout()?.trim(),
+        lightning = this.getLud16().orEmpty().ifEmpty { this.getLud06() },
         createdAt = createdAt
     )
 }

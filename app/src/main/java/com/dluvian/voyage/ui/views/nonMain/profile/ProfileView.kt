@@ -1,13 +1,20 @@
 package com.dluvian.voyage.ui.views.nonMain.profile
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.SnackbarHostState
@@ -21,22 +28,33 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.zIndex
 import com.dluvian.voyage.R
+import com.dluvian.voyage.core.Bech32
 import com.dluvian.voyage.core.ClickText
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.ProfileViewRefresh
 import com.dluvian.voyage.core.ProfileViewReplyAppend
 import com.dluvian.voyage.core.ProfileViewRootAppend
+import com.dluvian.voyage.core.copyAndToast
+import com.dluvian.voyage.core.shortenBech32
 import com.dluvian.voyage.core.viewModel.ProfileViewModel
 import com.dluvian.voyage.ui.components.Feed
-import com.dluvian.voyage.ui.components.FullHorizontalDivider
+import com.dluvian.voyage.ui.components.PullRefreshBox
 import com.dluvian.voyage.ui.components.indicator.ComingSoon
 import com.dluvian.voyage.ui.components.text.AnnotatedText
+import com.dluvian.voyage.ui.theme.KeyIcon
+import com.dluvian.voyage.ui.theme.LightningIcon
+import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
 import kotlinx.coroutines.launch
 
@@ -47,6 +65,7 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
     val index = remember { mutableIntStateOf(0) }
     val pagerState = rememberPagerState { 4 }
     val scope = rememberCoroutineScope()
+    val isRefreshing by vm.rootPaginator.isRefreshing
 
     LaunchedEffect(key1 = pagerState.currentPage) {
         index.intValue = pagerState.currentPage
@@ -80,8 +99,11 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
                         onUpdate = onUpdate,
                     )
 
-                    2 -> About(
-                        about = profile.about ?: AnnotatedString(text = ""),
+                    2 -> AboutPage(
+                        isRefreshing = isRefreshing,
+                        npub = profile.npub,
+                        lightning = profile.lightning,
+                        about = profile.about,
                         onUpdate = onUpdate
                     )
 
@@ -96,27 +118,99 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
 }
 
 @Composable
-private fun About(about: AnnotatedString, onUpdate: OnUpdate) {
-    val uriHandler = LocalUriHandler.current
-    Column(modifier = Modifier.fillMaxSize()) {
-        Column(
+private fun AboutPage(
+    isRefreshing: Boolean,
+    npub: Bech32,
+    lightning: String?,
+    about: AnnotatedString?,
+    onUpdate: OnUpdate
+) {
+    PullRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(ProfileViewRefresh) }) {
+        LazyColumn(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = spacing.bigScreenEdge, vertical = spacing.screenEdge),
+                .fillMaxSize()
+                .padding(horizontal = spacing.bigScreenEdge, vertical = spacing.screenEdge)
         ) {
-
-            Text(
-                text = stringResource(id = R.string.about),
-                style = MaterialTheme.typography.titleMedium
-            )
-            AnnotatedText(
-                text = about,
-                onClick = { offset ->
-                    onUpdate(ClickText(text = about, offset = offset, uriHandler = uriHandler))
-                }
-            )
+            item {
+                AboutPageTextRow(
+                    modifier = Modifier.padding(vertical = spacing.medium),
+                    icon = KeyIcon,
+                    text = npub,
+                    shortenedText = npub.shortenBech32(),
+                    description = stringResource(id = R.string.profile_identifier)
+                )
+            }
+            if (!lightning.isNullOrEmpty()) item {
+                AboutPageTextRow(
+                    modifier = Modifier.padding(vertical = spacing.medium),
+                    icon = LightningIcon,
+                    text = lightning,
+                    description = stringResource(id = R.string.lightning_address)
+                )
+            }
+            if (about != null) item {
+                AboutSection(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = spacing.medium),
+                    about = about,
+                    onUpdate = onUpdate
+                )
+            }
         }
-        FullHorizontalDivider()
+    }
+}
+
+@Composable
+private fun AboutPageTextRow(
+    modifier: Modifier = Modifier,
+    icon: ImageVector,
+    text: String,
+    shortenedText: String = text,
+    description: String
+) {
+    val context = LocalContext.current
+    val clip = LocalClipboardManager.current
+    val toast = stringResource(id = R.string.value_copied)
+
+    Row(
+        modifier = modifier.clickable {
+            copyAndToast(text = text, toast = toast, context = context, clip = clip)
+        },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            modifier = Modifier.size(sizing.smallIndicator),
+            imageVector = icon,
+            contentDescription = description
+        )
+        Spacer(modifier = Modifier.width(spacing.small))
+        Text(
+            text = shortenedText,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
+private fun AboutSection(
+    modifier: Modifier = Modifier,
+    about: AnnotatedString,
+    onUpdate: OnUpdate
+) {
+    val uriHandler = LocalUriHandler.current
+    Column(modifier = modifier) {
+        Text(
+            text = stringResource(id = R.string.about),
+            style = MaterialTheme.typography.titleMedium
+        )
+        AnnotatedText(
+            text = about,
+            onClick = { offset ->
+                onUpdate(ClickText(text = about, offset = offset, uriHandler = uriHandler))
+            }
+        )
     }
 }
 
@@ -131,27 +225,27 @@ private fun ProfileTabRow(index: MutableIntState, onClickPage: (Int) -> Unit) {
                 index.intValue = 0
                 onClickPage(0)
             },
-            text = { Text("Posts") })
+            text = { Text(stringResource(id = R.string.posts)) })
         Tab(
             selected = index.intValue == 1,
             onClick = {
                 index.intValue = 1
                 onClickPage(1)
             },
-            text = { Text("Replies") })
+            text = { Text(stringResource(id = R.string.replies)) })
         Tab(
             selected = index.intValue == 2,
             onClick = {
                 index.intValue = 2
                 onClickPage(2)
             },
-            text = { Text("About") })
+            text = { Text(stringResource(id = R.string.about)) })
         Tab(
             selected = index.intValue == 3,
             onClick = {
                 index.intValue = 3
                 onClickPage(3)
             },
-            text = { Text("Relays") })
+            text = { Text(stringResource(id = R.string.relays)) })
     }
 }
