@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import com.dluvian.nostr_kt.WEBSOCKET_PREFIX
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.copyAndToast
@@ -40,12 +41,20 @@ fun RelayProfileView(vm: RelayProfileViewModel, snackbar: SnackbarHostState, onU
         snackbar = snackbar,
         onUpdate = onUpdate
     ) {
-        RelayProfileViewContent(profile = profile, isLoading = isLoading)
+        RelayProfileViewContent(
+            url = "${WEBSOCKET_PREFIX}$header",
+            profile = profile,
+            isLoading = isLoading
+        )
     }
 }
 
 @Composable
-private fun RelayProfileViewContent(profile: RelayInformationDocument?, isLoading: Boolean) {
+private fun RelayProfileViewContent(
+    url: String,
+    profile: RelayInformationDocument?,
+    isLoading: Boolean
+) {
     if (isLoading) FullLinearProgressIndicator()
     else if (profile == null) BaseHint(stringResource(id = R.string.relay_profile_not_found))
 
@@ -57,6 +66,9 @@ private fun RelayProfileViewContent(profile: RelayInformationDocument?, isLoadin
             bottom = spacing.bigScreenEdge
         )
     ) {
+        if (profile != null) item {
+            InfoRow(infoType = stringResource(id = R.string.url), value = url)
+        }
         profile?.name()?.let {
             item {
                 InfoRow(infoType = stringResource(id = R.string.name), value = it)
