@@ -3,16 +3,17 @@ package com.dluvian.voyage.ui.views.nonMain.profile
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -25,7 +26,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -36,12 +36,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.zIndex
+import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Bech32
 import com.dluvian.voyage.core.ClickText
+import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.core.OpenRelayProfile
 import com.dluvian.voyage.core.ProfileViewRefresh
 import com.dluvian.voyage.core.ProfileViewReplyAppend
 import com.dluvian.voyage.core.ProfileViewRootAppend
@@ -50,8 +54,10 @@ import com.dluvian.voyage.core.shortenBech32
 import com.dluvian.voyage.core.viewModel.ProfileViewModel
 import com.dluvian.voyage.ui.components.Feed
 import com.dluvian.voyage.ui.components.PullRefreshBox
+import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.ComingSoon
 import com.dluvian.voyage.ui.components.text.AnnotatedText
+import com.dluvian.voyage.ui.components.text.IndexedText
 import com.dluvian.voyage.ui.theme.KeyIcon
 import com.dluvian.voyage.ui.theme.LightningIcon
 import com.dluvian.voyage.ui.theme.sizing
@@ -62,8 +68,19 @@ import kotlinx.coroutines.launch
 @Composable
 fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
     val profile by vm.profile.value.collectAsState()
-    val index = remember { mutableIntStateOf(0) }
-    val pagerState = rememberPagerState { 4 }
+    val nip65Relays by vm.nip65Relays.value.collectAsState()
+    val nip65RelayUrls = remember(nip65Relays) {
+        nip65Relays.filter { it.isRead && it.isWrite }.map { it.url }
+    }
+    val readOnlyRelays = remember(nip65Relays) {
+        nip65Relays.filter { it.isRead && !it.isWrite }.map { it.url }
+    }
+    val writeOnlyRelays = remember(nip65Relays) {
+        nip65Relays.filter { it.isWrite && !it.isRead }.map { it.url }
+    }
+    val seenInRelays by vm.seenInRelays.value.collectAsState()
+    val index = vm.tabIndex
+    val pagerState = vm.pagerState
     val scope = rememberCoroutineScope()
     val isRefreshing by vm.rootPaginator.isRefreshing
 
@@ -100,14 +117,27 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
                     )
 
                     2 -> AboutPage(
-                        isRefreshing = isRefreshing,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = spacing.bigScreenEdge),
                         npub = profile.npub,
                         lightning = profile.lightning,
                         about = profile.about,
+                        isRefreshing = isRefreshing,
                         onUpdate = onUpdate
                     )
 
-                    3 -> ComingSoon() // Relays
+                    3 -> RelayPage(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = spacing.bigScreenEdge),
+                        nip65Relays = nip65RelayUrls,
+                        readOnlyRelays = readOnlyRelays,
+                        writeOnlyRelays = writeOnlyRelays,
+                        seenInRelays = seenInRelays,
+                        isRefreshing = isRefreshing,
+                        onUpdate = onUpdate
+                    )
 
                     else -> ComingSoon()
 
@@ -119,21 +149,20 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
 
 @Composable
 private fun AboutPage(
-    isRefreshing: Boolean,
     npub: Bech32,
     lightning: String?,
     about: AnnotatedString?,
+    isRefreshing: Boolean,
+    modifier: Modifier = Modifier,
     onUpdate: OnUpdate
 ) {
-    PullRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(ProfileViewRefresh) }) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = spacing.bigScreenEdge, vertical = spacing.screenEdge)
-        ) {
+    ProfileViewPage(isRefreshing = isRefreshing, onUpdate = onUpdate) {
+        LazyColumn(modifier = modifier) {
             item {
                 AboutPageTextRow(
-                    modifier = Modifier.padding(vertical = spacing.medium),
+                    modifier = Modifier
+                        .padding(vertical = spacing.medium)
+                        .padding(top = spacing.screenEdge),
                     icon = KeyIcon,
                     text = npub,
                     shortenedText = npub.shortenBech32(),
@@ -211,6 +240,87 @@ private fun AboutSection(
                 onUpdate(ClickText(text = about, offset = offset, uriHandler = uriHandler))
             }
         )
+    }
+}
+
+@Composable
+fun RelayPage(
+    nip65Relays: List<RelayUrl>,
+    readOnlyRelays: List<RelayUrl>,
+    writeOnlyRelays: List<RelayUrl>,
+    seenInRelays: List<RelayUrl>,
+    isRefreshing: Boolean,
+    modifier: Modifier = Modifier,
+    onUpdate: OnUpdate,
+) {
+    ProfileViewPage(isRefreshing = isRefreshing, onUpdate = onUpdate) {
+        if (nip65Relays.isEmpty() &&
+            readOnlyRelays.isEmpty() &&
+            writeOnlyRelays.isEmpty() &&
+            seenInRelays.isEmpty()
+        ) BaseHint(stringResource(id = R.string.no_relays_found))
+
+        LazyColumn(modifier = modifier, contentPadding = PaddingValues(top = spacing.screenEdge)) {
+            if (nip65Relays.isNotEmpty()) item {
+                RelaySection(
+                    header = stringResource(id = R.string.relay_list),
+                    relays = nip65Relays,
+                    onUpdate = onUpdate
+                )
+            }
+
+            if (readOnlyRelays.isNotEmpty()) item {
+                RelaySection(
+                    header = stringResource(id = R.string.relay_list_read_only),
+                    relays = readOnlyRelays,
+                    onUpdate = onUpdate
+                )
+            }
+
+            if (writeOnlyRelays.isNotEmpty()) item {
+                RelaySection(
+                    header = stringResource(id = R.string.relay_list_write_only),
+                    relays = writeOnlyRelays,
+                    onUpdate = onUpdate
+                )
+            }
+
+            if (seenInRelays.isNotEmpty()) item {
+                RelaySection(
+                    header = stringResource(id = R.string.seen_in),
+                    relays = seenInRelays,
+                    onUpdate = onUpdate
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun RelaySection(
+    header: String,
+    relays: List<RelayUrl>,
+    onUpdate: OnUpdate
+) {
+    Text(text = header, fontWeight = FontWeight.SemiBold)
+    Spacer(modifier = Modifier.height(spacing.small))
+    relays.forEachIndexed { i, relay ->
+        IndexedText(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onUpdate(OpenRelayProfile(relayUrl = relay)) },
+            index = i + 1,
+            text = relay,
+            fontWeight = FontWeight.Normal
+        )
+    }
+    Spacer(modifier = Modifier.height(spacing.xl))
+}
+
+@Composable
+private fun ProfileViewPage(isRefreshing: Boolean, onUpdate: OnUpdate, content: ComposableContent) {
+    PullRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(ProfileViewRefresh) }) {
+        content()
     }
 }
 

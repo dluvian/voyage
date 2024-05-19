@@ -32,7 +32,8 @@ class RelayProvider(
     private val connectionStatuses: State<Map<RelayUrl, ConnectionStatus>>
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
-    private val myNip65 = nip65Dao.getMyNip65().stateIn(scope, SharingStarted.Eagerly, emptyList())
+    private val myNip65 =
+        nip65Dao.getMyNip65Flow().stateIn(scope, SharingStarted.Eagerly, emptyList())
 
     fun getReadRelays(limit: Boolean = true, includeConnected: Boolean = false): List<RelayUrl> {
         return myNip65.value

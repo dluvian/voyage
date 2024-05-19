@@ -6,6 +6,7 @@ import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.room.view.EventRelayAuthorView
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface EventRelayDao {
@@ -17,4 +18,7 @@ interface EventRelayDao {
 
     @Query("SELECT DISTINCT(relayUrl) FROM post")
     suspend fun getAllEventRelays(): List<RelayUrl>
+
+    @Query("SELECT DISTINCT(relayUrl) FROM post WHERE pubkey = :pubkey")
+    fun getEventRelays(pubkey: PubkeyHex): Flow<List<RelayUrl>>
 }

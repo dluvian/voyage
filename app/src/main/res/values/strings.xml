@@ -119,6 +119,9 @@
     <string name="you_dont_have_any_read_relays_configured">You don\'t have any read-relays configured</string>
     <string name="you_dont_have_any_write_relays_configured">You don\'t have any write-relays configured</string>
     <string name="relay_list">Relay list</string>
+    <string name="relay_list_read_only">Relay list (read-only)</string>
+    <string name="relay_list_write_only">Relay list (write-only)</string>
+    <string name="seen_in">Seen in</string>
     <string name="cross_posted">cross-posted</string>
     <string name="unfollow_cross_posted_author">Unfollow cross-posted author</string>
     <string name="follow_cross_posted_author">Follow cross-posted author</string>
@@ -160,4 +163,5 @@
     <string name="open_parent">Open parent</string>
     <string name="profile_identifier">Profile identifier</string>
     <string name="lightning_address">Lightning address</string>
+    <string name="no_relays_found">No relays found</string>
 </resources>

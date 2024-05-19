@@ -2,6 +2,7 @@ package com.dluvian.voyage.data.room.dao
 
 import androidx.room.Dao
 import androidx.room.Query
+import com.dluvian.nostr_kt.Nip65Relay
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.room.entity.Nip65Entity
@@ -10,7 +11,14 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface Nip65Dao {
     @Query("SELECT * FROM nip65 WHERE pubkey = (SELECT pubkey FROM account LIMIT 1)")
-    fun getMyNip65(): Flow<List<Nip65Entity>>
+    fun getMyNip65Flow(): Flow<List<Nip65Entity>>
+
+    @Query(
+        "SELECT url, isRead, isWrite " +
+                "FROM nip65 " +
+                "WHERE pubkey = :pubkey"
+    )
+    fun getNip65Flow(pubkey: PubkeyHex): Flow<List<Nip65Relay>>
 
     @Query("SELECT * FROM nip65 WHERE pubkey IN (:pubkeys) AND isRead = 1")
     suspend fun getReadRelays(pubkeys: Collection<PubkeyHex>): List<Nip65Entity>

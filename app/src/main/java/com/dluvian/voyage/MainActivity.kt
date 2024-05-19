@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -67,6 +69,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun createVMContainer(appContainer: AppContainer): VMContainer {
     // We define states in upper level so that it keeps the scroll position when popping the nav stack
@@ -75,6 +78,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
     val profileReplyFeedState = rememberLazyListState()
     val topicFeedState = rememberLazyListState()
     val threadState = rememberLazyListState()
+    val profilePagerState = rememberPagerState { 4 }
 
     return VMContainer(
         homeVM = viewModel {
@@ -114,8 +118,11 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 feedProvider = appContainer.feedProvider,
                 subCreator = appContainer.nostrSubscriber.subCreator,
                 profileProvider = appContainer.profileProvider,
+                nip65Dao = appContainer.roomDb.nip65Dao(),
+                eventRelayDao = appContainer.roomDb.eventRelayDao(),
                 rootFeedState = profileRootFeedState,
                 replyFeedState = profileReplyFeedState,
+                pagerState = profilePagerState,
             )
         },
         threadVM = viewModel {
