@@ -21,4 +21,7 @@ interface EventRelayDao {
 
     @Query("SELECT DISTINCT(relayUrl) FROM post WHERE pubkey = :pubkey")
     fun getEventRelays(pubkey: PubkeyHex): Flow<List<RelayUrl>>
+
+    @Query("SELECT COUNT(*) FROM post WHERE relayUrl = :relayUrl")
+    fun countByRelay(relayUrl: RelayUrl): Flow<Int>
 }

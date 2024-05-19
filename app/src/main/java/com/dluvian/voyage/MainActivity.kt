@@ -184,7 +184,8 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         },
         relayProfileVM = viewModel {
             RelayProfileViewModel(
-                relayProfileProvider = appContainer.relayProfileProvider
+                relayProfileProvider = appContainer.relayProfileProvider,
+                eventRelayDao = appContainer.roomDb.eventRelayDao(),
             )
         },
     )

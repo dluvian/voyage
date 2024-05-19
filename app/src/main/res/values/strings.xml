@@ -165,4 +165,5 @@
     <string name="lightning_address">Lightning address</string>
     <string name="no_relays_found">No relays found</string>
     <string name="url">URL</string>
+    <string name="posts_in_db">Posts in database</string>
 </resources>

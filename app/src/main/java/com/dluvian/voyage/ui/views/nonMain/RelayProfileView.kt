@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +36,7 @@ fun RelayProfileView(vm: RelayProfileViewModel, snackbar: SnackbarHostState, onU
     val header by vm.header
     val profile by vm.profile
     val isLoading by vm.isLoading
+    val postsInDb by vm.postsInDb.value.collectAsState()
 
     SimpleGoBackScaffold(
         header = header,
@@ -44,6 +46,7 @@ fun RelayProfileView(vm: RelayProfileViewModel, snackbar: SnackbarHostState, onU
         RelayProfileViewContent(
             url = "${WEBSOCKET_PREFIX}$header",
             profile = profile,
+            postsInDb = postsInDb,
             isLoading = isLoading
         )
     }
@@ -53,6 +56,7 @@ fun RelayProfileView(vm: RelayProfileViewModel, snackbar: SnackbarHostState, onU
 private fun RelayProfileViewContent(
     url: String,
     profile: RelayInformationDocument?,
+    postsInDb: Int,
     isLoading: Boolean
 ) {
     if (isLoading) FullLinearProgressIndicator()
@@ -66,8 +70,14 @@ private fun RelayProfileViewContent(
             bottom = spacing.bigScreenEdge
         )
     ) {
-        if (profile != null) item {
+        item {
             InfoRow(infoType = stringResource(id = R.string.url), value = url)
+        }
+        item {
+            InfoRow(
+                infoType = stringResource(id = R.string.posts_in_db),
+                value = postsInDb.toString()
+            )
         }
         profile?.name()?.let {
             item {
