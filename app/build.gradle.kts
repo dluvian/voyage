@@ -97,5 +97,8 @@ dependencies {
     implementation("androidx.room:room-ktx:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
 
-    implementation("io.github.rust-nostr:nostr:0.11.0")
+    implementation("io.github.rust-nostr:nostr:0.12.0")
+
+    // R8 error: Missing class com.google.errorprone.annotations...
+    implementation("com.google.errorprone:error_prone_annotations:2.23.0")
 }

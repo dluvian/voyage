@@ -147,7 +147,7 @@ class EventMaker(
             else metadata[it.url] = RelayMetadata.WRITE
         }
 
-        val unsignedEvent = EventBuilder.relayList(list = metadata)
+        val unsignedEvent = EventBuilder.relayList(map = metadata)
             .toUnsignedEvent(accountManager.getPublicKey())
 
         return accountManager.sign(signerLauncher = signerLauncher, unsignedEvent = unsignedEvent)

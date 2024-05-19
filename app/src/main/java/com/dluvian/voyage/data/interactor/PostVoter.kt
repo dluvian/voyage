@@ -78,7 +78,7 @@ class PostVoter(
         postId: EventIdHex,
         mention: PubkeyHex,
         vote: Vote,
-        kind: ULong,
+        kind: UShort,
         signerLauncher: SignerLauncher
     ) {
         jobs[postId]?.cancel(CancellationException("User clicks fast"))
@@ -115,7 +115,7 @@ class PostVoter(
         postId: EventIdHex,
         mention: PubkeyHex,
         isPositive: Boolean,
-        kind: ULong,
+        kind: UShort,
         signerLauncher: SignerLauncher,
     ) {
         if (currentVote?.isPositive == isPositive) return

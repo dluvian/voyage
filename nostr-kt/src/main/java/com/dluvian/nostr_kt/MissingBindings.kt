@@ -9,15 +9,19 @@ import rust.nostr.protocol.Nip19Event
 import rust.nostr.protocol.Nip19Profile
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Tag
-import rust.nostr.protocol.TagEnum
 import rust.nostr.protocol.TagKind
+import rust.nostr.protocol.TagStandard
 import rust.nostr.protocol.Timestamp
 import java.security.SecureRandom
 
 
-fun createSubjectTag(subject: String) = Tag.fromEnum(TagEnum.Subject(subject))
+fun createSubjectTag(subject: String): Tag {
+    return Tag.fromStandardized(TagStandard.Subject(subject = subject))
+}
 
-fun createHashtagTag(hashtag: String) = Tag.fromEnum(TagEnum.Hashtag(hashtag))
+fun createHashtagTag(hashtag: String): Tag {
+    return Tag.fromStandardized(TagStandard.Hashtag(hashtag = hashtag))
+}
 
 fun createCrossPostTags(
     crossPostedEvent: Event,
@@ -67,11 +71,11 @@ fun Timestamp.secs(): Long {
 fun getCurrentSecs() = System.currentTimeMillis() / 1000
 
 fun Event.isRepost(): Boolean {
-    return this.kind().matchEnum(KindEnum.Repost)
+    return this.kind().asEnum() == KindEnum.Repost
 }
 
 fun Event.isPostOrReply(): Boolean {
-    return this.kind().matchEnum(KindEnum.TextNote)
+    return this.kind().asEnum() == KindEnum.TextNote
 }
 
 fun isValidEventId(hex: String): Boolean {
@@ -149,23 +153,23 @@ fun Event.getMetadata(): Metadata? {
 }
 
 fun Event.isContactList(): Boolean {
-    return this.kind().matchEnum(KindEnum.ContactList)
+    return this.kind().asEnum() == KindEnum.ContactList
 }
 
 fun Event.isTopicList(): Boolean {
-    return this.kind().matchEnum(KindEnum.Interests)
+    return this.kind().asEnum() == KindEnum.Interests
 }
 
 fun Event.isNip65(): Boolean {
-    return this.kind().matchEnum(KindEnum.RelayList)
+    return this.kind().asEnum() == KindEnum.RelayList
 }
 
 fun Event.isVote(): Boolean {
-    return this.kind().matchEnum(KindEnum.Reaction)
+    return this.kind().asEnum() == KindEnum.Reaction
 }
 
 fun Event.isProfile(): Boolean {
-    return this.kind().matchEnum(KindEnum.Metadata)
+    return this.kind().asEnum() == KindEnum.Metadata
 }
 
 fun createNprofile(hex: String, relays: List<String> = emptyList()): Nip19Profile {
