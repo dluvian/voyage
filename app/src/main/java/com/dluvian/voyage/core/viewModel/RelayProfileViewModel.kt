@@ -9,7 +9,7 @@ import com.dluvian.nostr_kt.WEBSOCKET_PREFIX
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.data.provider.RelayProfileProvider
-import com.dluvian.voyage.data.room.dao.EventRelayDao
+import com.dluvian.voyage.data.room.dao.CountDao
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +20,7 @@ import rust.nostr.protocol.RelayInformationDocument
 
 class RelayProfileViewModel(
     private val relayProfileProvider: RelayProfileProvider,
-    private val eventRelayDao: EventRelayDao,
+    private val countDao: CountDao,
 ) : ViewModel() {
     val header = mutableStateOf("")
     val profile = mutableStateOf<RelayInformationDocument?>(null)
@@ -37,7 +37,7 @@ class RelayProfileViewModel(
         profile.value = null
 
         isLoading.value = true
-        postsInDb.value = eventRelayDao.countByRelay(relayUrl = relayUrl)
+        postsInDb.value = countDao.countEventRelays(relayUrl = relayUrl)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
         job?.cancel()
         job = viewModelScope.launchIO {
