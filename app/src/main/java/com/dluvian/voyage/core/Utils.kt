@@ -75,8 +75,12 @@ fun Metadata.toRelevantMetadata(pubkey: PubkeyHex, createdAt: Long): RelevantMet
 }
 
 fun Metadata.getRealName(): String? {
-    val name = this.getName()?.trim()
-    return if (!name.isNullOrEmpty()) name else this.getDisplayName()?.trim()
+    return this.getName()
+        .orEmpty()
+        .ifBlank { this.getDisplayName() }
+        ?.filter { it != ' ' }
+        ?.trim()
+        ?.take(MAX_NAME_LEN)
 }
 
 fun SnackbarHostState.showToast(scope: CoroutineScope, msg: String) {
