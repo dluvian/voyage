@@ -49,7 +49,7 @@ class ThreadProvider(
                 delay(DELAY_1SEC)
             }
             lazyNostrSubscriber.lazySubUnknownProfiles()
-            nostrSubscriber.subVotesAndReplies(nevent = nevent)
+            nostrSubscriber.subVotesAndReplies(parentIds = listOf(id))
         }
 
         val rootFlow = rootPostDao.getRootPostFlow(id = id)
@@ -131,8 +131,7 @@ class ThreadProvider(
         }
             .onEach {
                 nostrSubscriber.subVotesAndReplies(
-                    posts = it.map { reply -> reply.reply },
-                    onlyMyReadRelays = false
+                    parentIds = it.map { reply -> reply.reply.getRelevantId() }
                 )
             }
     }

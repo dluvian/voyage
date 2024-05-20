@@ -1,13 +1,10 @@
 package com.dluvian.voyage.data.nostr
 
-import com.dluvian.nostr_kt.removeTrailingSlashes
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.FEED_RESUB_SPAN_THRESHOLD_SECS
 import com.dluvian.voyage.core.MAX_PUBKEYS
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.RESUB_TIMEOUT
-import com.dluvian.voyage.core.createReplyAndVoteFilters
-import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.core.textNoteAndRepostKinds
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.model.FeedSetting
@@ -29,7 +26,6 @@ import rust.nostr.protocol.Kind
 import rust.nostr.protocol.KindEnum
 import rust.nostr.protocol.Nip19Event
 import rust.nostr.protocol.Nip19Profile
-import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Timestamp
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -117,8 +113,9 @@ class NostrSubscriber(
     private val votesAndRepliesCache = mutableSetOf<EventIdHex>()
     private var lastUpdate = System.currentTimeMillis()
     private val isSubbingVotesAndReplies = AtomicBoolean(false)
-    suspend fun subVotesAndReplies(posts: Collection<ParentUI>, onlyMyReadRelays: Boolean) {
-        if (posts.isEmpty()) return
+
+    fun subVotesAndReplies(parentIds: Collection<EventIdHex>) {
+        if (parentIds.isEmpty()) return
         if (!isSubbingVotesAndReplies.compareAndSet(false, true)) return
 
         scope.launch(Dispatchers.Default) {
@@ -128,60 +125,22 @@ class NostrSubscriber(
                 lastUpdate = currentMillis
             }
 
-            val newIds = posts.map { it.getRelevantId() } - votesAndRepliesCache
+            val newIds = parentIds - votesAndRepliesCache
             if (newIds.isEmpty()) return@launch
 
             votesAndRepliesCache.addAll(newIds)
 
-            val myReadRelays = relayProvider.getReadRelays().toSet()
             val votePubkeys = getVotePubkeys()
-
-            if (onlyMyReadRelays) {
-                myReadRelays.forEach { relay ->
-                    subBatcher.submitVotesAndReplies(
-                        relayUrl = relay,
-                        eventIds = newIds,
-                        votePubkeys = votePubkeys
-                    )
-                }
-                return@launch
-            }
-
-            // Repliers and voters publish to authors read relays
-            val newPostsByAuthor = posts
-                .filter { newIds.contains(it.getRelevantId()) }
-                .groupBy { it.pubkey }
-            val relaysByAuthor = relayProvider.getReadRelays(pubkeys = newPostsByAuthor.keys)
-            relaysByAuthor.forEach { (author, relays) ->
-                val adjustedRelays = myReadRelays + relays
-                adjustedRelays.forEach { relay ->
-                    subBatcher.submitVotesAndReplies(
-                        relayUrl = relay,
-                        eventIds = newPostsByAuthor[author]
-                            ?.map { it.getRelevantId() }
-                            ?: emptyList(),
-                        votePubkeys = votePubkeys
-                    )
-                }
+            relayProvider.getReadRelays().forEach { relay ->
+                subBatcher.submitVotesAndReplies(
+                    relayUrl = relay,
+                    eventIds = newIds,
+                    votePubkeys = votePubkeys
+                )
             }
         }.invokeOnCompletion {
             isSubbingVotesAndReplies.set(false)
         }
-    }
-
-    fun subVotesAndReplies(nevent: Nip19Event) {
-        val filters = createReplyAndVoteFilters(
-            ids = listOf(nevent.eventId()),
-            votePubkeys = getVotePubkeys().map { PublicKey.fromHex(it) },
-            timestamp = Timestamp.now()
-        )
-
-        nevent.relays()
-            .map { it.removeTrailingSlashes() }
-            .toSet() + relayProvider.getReadRelays()
-            .forEach { relay ->
-                subCreator.subscribe(relayUrl = relay, filters = filters)
-            }
     }
 
     private fun getVotePubkeys(): List<PubkeyHex> {

@@ -41,13 +41,19 @@ class FeedProvider(
         // Sub only in getRootFeedFlow. Replies are a byproduct
 
         return when (setting) {
-            is RootFeedSetting -> getRootFeedFlow(until = until, subUntil, size, setting)
-            is ReplyFeedSetting -> getReplyFeedFlow(until, size, setting)
+            is RootFeedSetting -> getRootFeedFlow(
+                until = until,
+                subUntil = subUntil,
+                size = size,
+                setting = setting
+            )
+
+            is ReplyFeedSetting -> getReplyFeedFlow(until = until, size = size, setting = setting)
         }
             .firstThenDistinctDebounce(SHORT_DEBOUNCE)
             .onEach { posts ->
                 oldestUsedEvent.updateOldestCreatedAt(posts.minOfOrNull { it.createdAt })
-                nostrSubscriber.subVotesAndReplies(posts = posts, onlyMyReadRelays = true)
+                nostrSubscriber.subVotesAndReplies(parentIds = posts.map { it.getRelevantId() })
             }
     }
 

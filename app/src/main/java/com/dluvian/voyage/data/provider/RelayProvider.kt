@@ -40,7 +40,7 @@ class RelayProvider(
             .filter { it.nip65Relay.isRead }
             .map { it.nip65Relay.url }
             .ifEmpty { defaultRelays }
-            .let { if (limit) it.preferConnected(MAX_RELAYS) else it }
+            .preferConnected(limit = if (limit) MAX_RELAYS else Int.MAX_VALUE)
             .let {
                 if (includeConnected) (it + nostrClient.getAllConnectedUrls()).distinct() else it
             }
@@ -52,19 +52,6 @@ class RelayProvider(
             .map { it.nip65Relay.url }
             .ifEmpty { defaultRelays }
             .let { if (limit) it.preferConnected(MAX_RELAYS) else it }
-    }
-
-    suspend fun getReadRelays(
-        pubkeys: Collection<PubkeyHex>,
-        limitPerPubkey: Int = MAX_RELAYS_PER_PUBKEY
-    ): Map<PubkeyHex, List<RelayUrl>> {
-        val readRelays = nip65Dao.getReadRelays(pubkeys)
-            .groupBy { it.pubkey }
-            .mapValues { (_, nip65s) ->
-                nip65s.map { it.nip65Relay.url }.distinct().preferConnected(limitPerPubkey)
-            }
-
-        return pubkeys.associateWith { readRelays.getOrDefault(it, emptyList()) }
     }
 
     fun getPublishRelays(): List<RelayUrl> {
