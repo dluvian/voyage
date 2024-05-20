@@ -7,7 +7,9 @@ of [Nozzle](https://github.com/dluvian/Nozzle).
 
 ## Installation
 
-Install it via [Obtainium](https://github.com/ImranR98/Obtainium) or go to
+Install it
+via [zap.store](https://zap.store/download), [Obtainium](https://github.com/ImranR98/Obtainium) or
+go to
 the [release page](https://github.com/dluvian/voyage/releases) and download the latest apk file.
 
 I don't plan to publish this app in the Google Play Store.
