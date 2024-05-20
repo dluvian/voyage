@@ -26,6 +26,7 @@ import com.dluvian.voyage.core.LoadFullProfile
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.SaveProfile
 import com.dluvian.voyage.core.getSignerLauncher
+import com.dluvian.voyage.core.normalizeName
 import com.dluvian.voyage.core.viewModel.EditProfileViewModel
 import com.dluvian.voyage.ui.components.button.ExpandToggleTextButton
 import com.dluvian.voyage.ui.components.scaffold.SaveableScaffold
@@ -99,7 +100,7 @@ fun EditProfileView(
         title = stringResource(id = R.string.edit),
         onSave = {
             val metadataRecord = MetadataRecord(
-                name = name.value.text,
+                name = normalizeName(name.value.text),
                 about = about.value.text,
                 picture = picture.value.text,
                 lud06 = lud06.value.text,

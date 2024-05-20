@@ -5,7 +5,7 @@ import androidx.room.ForeignKey
 import com.dluvian.nostr_kt.getMetadata
 import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.getRealName
+import com.dluvian.voyage.core.getNormalizedName
 import com.dluvian.voyage.data.event.ValidatedProfile
 import rust.nostr.protocol.Event
 
@@ -37,7 +37,7 @@ data class FullProfileEntity(
         fun from(profile: ValidatedProfile): FullProfileEntity {
             return FullProfileEntity(
                 pubkey = profile.pubkey,
-                name = profile.metadata.getRealName().orEmpty(),
+                name = profile.metadata.getNormalizedName(),
                 createdAt = profile.createdAt,
                 about = profile.metadata.getAbout().orEmpty(),
                 picture = profile.metadata.getPicture().orEmpty(),
@@ -55,7 +55,7 @@ data class FullProfileEntity(
 
             return FullProfileEntity(
                 pubkey = event.author().toHex(),
-                name = metadata.getRealName().orEmpty(),
+                name = metadata.getNormalizedName(),
                 createdAt = event.createdAt().secs(),
                 about = metadata.getAbout().orEmpty().trim(),
                 picture = metadata.getPicture().orEmpty().trim(),

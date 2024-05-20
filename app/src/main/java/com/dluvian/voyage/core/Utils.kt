@@ -67,20 +67,25 @@ fun PubkeyHex.toBech32(): String {
 fun Metadata.toRelevantMetadata(pubkey: PubkeyHex, createdAt: Long): RelevantMetadata {
     return RelevantMetadata(
         npub = pubkey.toBech32(),
-        name = this.getRealName(),
+        name = this.getNormalizedName(),
         about = this.getAbout()?.trim(),
         lightning = this.getLud16().orEmpty().ifEmpty { this.getLud06() },
         createdAt = createdAt
     )
 }
 
-fun Metadata.getRealName(): String? {
-    return this.getName()
+fun Metadata.getNormalizedName(): String {
+    val name = this.getName()
         .orEmpty()
         .ifBlank { this.getDisplayName() }
-        ?.filter { it != ' ' }
-        ?.trim()
-        ?.take(MAX_NAME_LEN)
+        .orEmpty()
+    return normalizeName(str = name)
+}
+
+fun normalizeName(str: String): String {
+    return str.filter { it != ' ' }
+        .trim()
+        .take(MAX_NAME_LEN)
 }
 
 fun SnackbarHostState.showToast(scope: CoroutineScope, msg: String) {

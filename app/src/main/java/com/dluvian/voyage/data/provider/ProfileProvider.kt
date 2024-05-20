@@ -2,6 +2,7 @@ package com.dluvian.voyage.data.provider
 
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.launchIO
+import com.dluvian.voyage.core.normalizeName
 import com.dluvian.voyage.core.toBech32
 import com.dluvian.voyage.core.toShortenedBech32
 import com.dluvian.voyage.data.account.IPubkeyProvider
@@ -94,7 +95,7 @@ class ProfileProvider(
         forcedFollowState: Boolean?,
         metadata: RelevantMetadata?
     ): FullProfileUI {
-        val name = (metadata?.name ?: dbProfile?.name.orEmpty())
+        val name = normalizeName(metadata?.name.orEmpty().ifEmpty { dbProfile?.name.orEmpty() })
             .ifEmpty { pubkey.toShortenedBech32() }
         val advancedProfile = AdvancedProfileView(
             pubkey = pubkey,

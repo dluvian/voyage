@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.getRealName
+import com.dluvian.voyage.core.getNormalizedName
 import com.dluvian.voyage.data.event.ValidatedProfile
 
 @Entity(
@@ -22,7 +22,7 @@ data class ProfileEntity(
         fun from(validatedProfile: ValidatedProfile): ProfileEntity {
             return ProfileEntity(
                 pubkey = validatedProfile.pubkey,
-                name = validatedProfile.metadata.getRealName().orEmpty(),
+                name = validatedProfile.metadata.getNormalizedName(),
                 createdAt = validatedProfile.createdAt
             )
         }
