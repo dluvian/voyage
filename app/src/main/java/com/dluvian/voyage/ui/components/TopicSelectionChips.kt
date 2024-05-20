@@ -35,7 +35,7 @@ fun TopicSelectionChips(
             remember(selectedTopics.value.size) { selectedTopics.value.size < MAX_TOPICS }
         LazyColumn(
             modifier = modifier,
-            contentPadding = PaddingValues(bottom = spacing.xxl)
+            contentPadding = PaddingValues(bottom = spacing.bottomPadding)
         ) {
             items(myTopics) { topic ->
                 val isSelected = selectedTopics.value.contains(topic)
