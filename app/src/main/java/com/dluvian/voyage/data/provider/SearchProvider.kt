@@ -10,7 +10,7 @@ class SearchProvider(
     private val profileProvider: ProfileProvider,
     private val postDao: PostDao,
 ) {
-    private val maxSearchResult = 5
+    private val maxSearchResult = 10
 
     suspend fun getTopicSuggestions(text: String): List<Topic> {
         val stripped = text.stripSearchText()
