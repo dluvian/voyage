@@ -128,6 +128,7 @@ class NostrService(
         parentId: EventIdHex,
         mentions: List<PubkeyHex>,
         relayHint: RelayUrl,
+        pubkeyHint: PubkeyHex,
         relayUrls: Collection<RelayUrl>,
         signerLauncher: SignerLauncher,
     ): Result<Event> {
@@ -135,6 +136,7 @@ class NostrService(
             parentId = EventId.fromHex(parentId),
             mentions = mentions.map { PublicKey.fromHex(it) },
             relayHint = relayHint,
+            pubkeyHint = pubkeyHint,
             content = content,
             signerLauncher = signerLauncher,
         )

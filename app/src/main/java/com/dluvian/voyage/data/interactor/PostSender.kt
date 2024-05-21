@@ -85,6 +85,7 @@ class PostSender(
             parentId = parentId,
             mentions = mentions,
             relayHint = relayHint,
+            pubkeyHint = recipient,
             relayUrls = relayProvider.getPublishRelays(publishTo = mentions),
             signerLauncher = signerLauncher,
         ).onSuccess { event ->

@@ -50,10 +50,13 @@ class EventMaker(
         parentId: EventId,
         mentions: Collection<PublicKey>,
         relayHint: RelayUrl,
+        pubkeyHint: PubkeyHex,
         content: String,
         signerLauncher: SignerLauncher,
     ): Result<Event> {
-        val tags = mutableListOf(createReplyTag(parentEventId = parentId, relayHint = relayHint))
+        val tags = mutableListOf(
+            createReplyTag(parentEventId = parentId, relayHint = relayHint, pubkeyHint = pubkeyHint)
+        )
         mentions.forEach { tags.add(Tag.publicKey(publicKey = it)) }
 
         val unsignedEvent = EventBuilder

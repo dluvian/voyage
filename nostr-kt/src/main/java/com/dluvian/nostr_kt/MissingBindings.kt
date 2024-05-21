@@ -37,8 +37,12 @@ fun extractMentions(content: String) = nostrMentionPattern.findAll(content)
     }
     .toList()
 
-fun createReplyTag(parentEventId: EventId, relayHint: RelayUrl): Tag {
-    return Tag.parse(listOf("e", parentEventId.toHex(), relayHint, "reply"))
+fun createReplyTag(
+    parentEventId: EventId,
+    relayHint: RelayUrl,
+    pubkeyHint: String,
+): Tag {
+    return Tag.parse(listOf("e", parentEventId.toHex(), relayHint, "reply", pubkeyHint))
 }
 
 fun generateMnemonic(): String {
