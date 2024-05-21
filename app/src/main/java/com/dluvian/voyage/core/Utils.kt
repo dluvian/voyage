@@ -156,20 +156,21 @@ fun shortenUrl(url: String) = url.removePrefix("https://").removePrefix("http://
 fun createReplyAndVoteFilters(
     ids: List<EventId>,
     votePubkeys: List<PublicKey>,
-    timestamp: Timestamp,
+    until: Timestamp,
 ): List<Filter> {
-    val voteLimit = minOf(MAX_EVENTS_TO_SUB, ids.size.toULong() * MAX_VOTES_TO_SUB)
-    val voteFilter = Filter().kind(Kind.fromEnum(KindEnum.Reaction))
+    val voteFilter = Filter()
+        .kind(kind = Kind.fromEnum(KindEnum.Reaction))
         .events(ids = ids)
         .authors(authors = votePubkeys)
-        .until(timestamp = timestamp)
-        .limit(limit = voteLimit)
+        .until(timestamp = until)
+        .limitRestricted(limit = MAX_EVENTS_TO_SUB)
 
-    val replyLimit = minOf(MAX_EVENTS_TO_SUB, ids.size.toULong() * MAX_REPLIES_TO_SUB)
-    val replyFilter = Filter().kind(Kind.fromEnum(KindEnum.TextNote))
+    val replyLimit = minOf(MAX_EVENTS_TO_SUB, ids.size.toULong() * MAX_EVENTS_TO_SUB)
+    val replyFilter = Filter()
+        .kind(kind = Kind.fromEnum(KindEnum.TextNote))
         .events(ids = ids)
-        .until(timestamp = timestamp)
-        .limit(limit = replyLimit)
+        .until(timestamp = until)
+        .limitRestricted(limit = replyLimit, ids.size.toULong() * MAX_EVENTS_TO_SUB)
 
     return listOf(voteFilter, replyFilter)
 }
@@ -302,4 +303,8 @@ fun createValidatedMainPost(event: Event, relayUrl: RelayUrl): ValidatedMainPost
 
 fun Event.getTrimmedSubject(maxLen: Int = MAX_SUBJECT_LEN): String? {
     return this.getSubject()?.trim()?.take(maxLen)
+}
+
+fun Filter.limitRestricted(limit: ULong, upperLimit: ULong = MAX_EVENTS_TO_SUB): Filter {
+    return this.limit(minOf(limit, upperLimit))
 }

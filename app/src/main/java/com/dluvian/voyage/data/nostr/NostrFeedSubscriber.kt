@@ -1,9 +1,12 @@
 package com.dluvian.voyage.data.nostr
 
 import com.dluvian.nostr_kt.RelayUrl
+import com.dluvian.voyage.core.MAX_PUBKEYS
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.core.limitRestricted
 import com.dluvian.voyage.core.syncedPutOrAdd
+import com.dluvian.voyage.core.takeRandom
 import com.dluvian.voyage.core.textNoteAndRepostKinds
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
@@ -36,13 +39,13 @@ class NostrFeedSubscriber(
             relayProvider
                 .getObserveRelays(pubkeys = friendProvider.getFriendPubkeys())
                 .forEach { (relayUrl, pubkeys) ->
-                    val publicKeys = pubkeys.map { PublicKey.fromHex(it) }
+                    val publicKeys = pubkeys.takeRandom(MAX_PUBKEYS).map { PublicKey.fromHex(it) }
                     val friendsNoteFilter = Filter()
                         .kinds(kinds = textNoteAndRepostKinds)
                         .authors(authors = publicKeys)
                         .since(timestamp = sinceTimestamp)
                         .until(timestamp = untilTimestamp)
-                        .limit(limit = limit)
+                        .limitRestricted(limit = limit)
                     val friendsNoteFilters = mutableListOf(friendsNoteFilter)
                     result.syncedPutOrAdd(relayUrl, friendsNoteFilters)
                 }
@@ -55,7 +58,7 @@ class NostrFeedSubscriber(
                 .hashtags(hashtags = topics)
                 .since(timestamp = sinceTimestamp)
                 .until(timestamp = untilTimestamp)
-                .limit(limit = limit)
+                .limitRestricted(limit = limit)
             val topicedNoteFilters = mutableListOf(topicedNoteFilter)
 
             relayProvider.getReadRelays().forEach { relay ->
@@ -83,7 +86,7 @@ class NostrFeedSubscriber(
             .hashtag(hashtag = topic)
             .since(timestamp = Timestamp.fromSecs(since))
             .until(timestamp = Timestamp.fromSecs(until))
-            .limit(limit = limit)
+            .limitRestricted(limit = limit)
         val topicedNoteFilters = mutableListOf(topicedNoteFilter)
 
         relayProvider.getReadRelays().forEach { relay ->
@@ -108,7 +111,7 @@ class NostrFeedSubscriber(
             .author(PublicKey.fromHex(hex = pubkey))
             .since(timestamp = Timestamp.fromSecs(since))
             .until(timestamp = Timestamp.fromSecs(until))
-            .limit(limit = limit)
+            .limitRestricted(limit = limit)
         val pubkeyNoteFilters = mutableListOf(pubkeyNoteFilter)
 
         relayProvider.getObserveRelays(pubkey = pubkey).forEach { relay ->

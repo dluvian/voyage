@@ -17,12 +17,8 @@ class FriendProvider(
     private val friends = friendDao.getFriendsFlow()
         .stateIn(scope, SharingStarted.Eagerly, emptyList())
 
-    fun getFriendPubkeys(maxPercentage: Float? = null): List<PubkeyHex> {
-        val adjustedMax = if (maxPercentage == null) null
-        else maxOf(1, (maxPercentage * friends.value.size).toInt())
-
-        return (friends.value - pubkeyProvider.getPubkeyHex())
-            .let { if (adjustedMax != null) it.takeRandom(adjustedMax) else it }
+    fun getFriendPubkeys(max: Int = Int.MAX_VALUE): List<PubkeyHex> {
+        return (friends.value - pubkeyProvider.getPubkeyHex()).takeRandom(max)
     }
 
     suspend fun getFriendsWithMissingContactList() = friendDao.getFriendsWithMissingContactList()
@@ -35,6 +31,6 @@ class FriendProvider(
     suspend fun getCreatedAt() = friendDao.getMaxCreatedAt()
 
     fun isFriend(pubkey: PubkeyHex): Boolean {
-        return getFriendPubkeys(maxPercentage = null).contains(pubkey)
+        return getFriendPubkeys().contains(pubkey)
     }
 }

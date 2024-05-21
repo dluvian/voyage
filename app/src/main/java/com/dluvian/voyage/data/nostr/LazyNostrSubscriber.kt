@@ -5,6 +5,7 @@ import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.MAX_PUBKEYS
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.core.limitRestricted
 import com.dluvian.voyage.core.mergeRelayFilters
 import com.dluvian.voyage.core.takeRandom
 import com.dluvian.voyage.data.account.IPubkeyProvider
@@ -46,14 +47,15 @@ class LazyNostrSubscriber(
         val unknownPubkeys = pubkeys - profileDao.filterKnownProfiles(pubkeys = pubkeys).toSet()
         if (unknownPubkeys.isEmpty()) return
 
-        val limitedPubkeys = unknownPubkeys.takeRandom(MAX_PUBKEYS)
-
         val timestamp = Timestamp.now()
 
-        relayProvider.getObserveRelays(pubkeys = limitedPubkeys).forEach { (relay, pubkeyBatch) ->
-            val profileFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Metadata))
-                .authors(authors = pubkeyBatch.map { PublicKey.fromHex(it) })
+        relayProvider.getObserveRelays(pubkeys = unknownPubkeys).forEach { (relay, pubkeyBatch) ->
+            val limitedPubkeys = pubkeyBatch.takeRandom(MAX_PUBKEYS)
+            val profileFilter = Filter()
+                .kind(kind = Kind.fromEnum(KindEnum.Metadata))
+                .authors(authors = limitedPubkeys.map { PublicKey.fromHex(it) })
                 .until(timestamp = timestamp)
+                .limitRestricted(limit = limitedPubkeys.size.toULong())
             val filters = listOf(profileFilter)
             subCreator.subscribe(relayUrl = relay, filters = filters)
         }
@@ -69,9 +71,11 @@ class LazyNostrSubscriber(
         val timestamp = Timestamp.now()
 
         relayProvider.getObserveRelays(pubkeys = toSub).forEach { (relay, pubkeyBatch) ->
-            val profileFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Metadata))
+            val profileFilter = Filter()
+                .kind(kind = Kind.fromEnum(KindEnum.Metadata))
                 .authors(authors = pubkeyBatch.map { PublicKey.fromHex(it) })
                 .until(timestamp = timestamp)
+                .limitRestricted(limit = pubkeyBatch.size.toULong())
             val filters = listOf(profileFilter)
             subCreator.subscribe(relayUrl = relay, filters = filters)
         }
@@ -79,7 +83,8 @@ class LazyNostrSubscriber(
 
     suspend fun lazySubNip65(nprofile: Nip19Profile) {
         val since = relayProvider.getCreatedAt(pubkey = nprofile.publicKey().toHex()) ?: 1
-        val nip65Filter = Filter().kind(kind = Kind.fromEnum(KindEnum.RelayList))
+        val nip65Filter = Filter()
+            .kind(kind = Kind.fromEnum(KindEnum.RelayList))
             .author(author = nprofile.publicKey())
             .until(timestamp = Timestamp.now())
             .since(timestamp = Timestamp.fromSecs((since + 1).toULong()))
@@ -95,7 +100,8 @@ class LazyNostrSubscriber(
         val hex = pubkey.toHex()
 
         val contactSince = friendProvider.getCreatedAt()?.toULong() ?: 1uL
-        val myContactFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.ContactList))
+        val myContactFilter = Filter()
+            .kind(kind = Kind.fromEnum(KindEnum.ContactList))
             .author(author = pubkey)
             .until(timestamp = timestamp)
             .since(timestamp = Timestamp.fromSecs(secs = contactSince + 1u))
@@ -138,11 +144,13 @@ class LazyNostrSubscriber(
         val missingSubs = relayProvider
             .getObserveRelays(pubkeys = missingPubkeys)
             .mapValues { (_, pubkeys) ->
+                val limitedPubkeys = pubkeys.takeRandom(MAX_PUBKEYS)
                 listOf(
-                    Filter().kind(kind = Kind.fromEnum(KindEnum.RelayList))
-                        .authors(authors = pubkeys.map { PublicKey.fromHex(it) })
+                    Filter()
+                        .kind(kind = Kind.fromEnum(KindEnum.RelayList))
+                        .authors(authors = limitedPubkeys.map { PublicKey.fromHex(it) })
                         .until(timestamp = timestamp)
-                        .limit(pubkeys.size.toULong())
+                        .limitRestricted(limit = limitedPubkeys.size.toULong())
                 )
             }
         val newestSubs = lazySubNewestFriendNip65(until = timestamp)
@@ -156,13 +164,17 @@ class LazyNostrSubscriber(
         val newestCreatedAt = relayProvider.getNewestCreatedAt()?.toULong() ?: return emptyMap()
         if (newestCreatedAt >= until.asSecs()) return emptyMap()
 
-        val friendPubkeys = friendProvider.getFriendPubkeys().map { PublicKey.fromHex(it) }
+        val friendPubkeys = friendProvider
+            .getFriendPubkeys(max = MAX_PUBKEYS)
+            .map { PublicKey.fromHex(it) }
+
         val newNip65Filter = listOf(
-            Filter().kind(kind = Kind.fromEnum(KindEnum.RelayList))
+            Filter()
+                .kind(kind = Kind.fromEnum(KindEnum.RelayList))
                 .authors(authors = friendPubkeys)
                 .until(timestamp = until)
                 .since(timestamp = Timestamp.fromSecs(newestCreatedAt + 1u))
-                .limit(friendPubkeys.size.toULong())
+                .limitRestricted(limit = friendPubkeys.size.toULong())
         )
 
         return relayProvider.getReadRelays(includeConnected = true)
@@ -178,11 +190,13 @@ class LazyNostrSubscriber(
         val missingSubs = relayProvider
             .getObserveRelays(pubkeys = friendsWithMissingContacts)
             .mapValues { (_, pubkeys) ->
+                val limitedPubkeys = pubkeys.takeRandom(MAX_PUBKEYS)
                 listOf(
-                    Filter().kind(kind = Kind.fromEnum(KindEnum.ContactList))
-                        .authors(authors = pubkeys.map { PublicKey.fromHex(it) })
+                    Filter()
+                        .kind(kind = Kind.fromEnum(KindEnum.ContactList))
+                        .authors(authors = limitedPubkeys.map { PublicKey.fromHex(it) })
                         .until(timestamp = timestamp)
-                        .limit(pubkeys.size.toULong())
+                        .limitRestricted(limit = limitedPubkeys.size.toULong())
                 )
             }
         val newestSubs = lazySubNewestWotPubkeys(until = timestamp)
@@ -197,13 +211,16 @@ class LazyNostrSubscriber(
             ?: return emptyMap()
         if (newestCreatedAt >= until.asSecs()) return emptyMap()
 
-        val friendPubkeys = friendProvider.getFriendPubkeys().map { PublicKey.fromHex(it) }
+        val friendPubkeys = friendProvider
+            .getFriendPubkeys(max = MAX_PUBKEYS)
+            .map { PublicKey.fromHex(it) }
         val newWotFilter = listOf(
-            Filter().kind(kind = Kind.fromEnum(KindEnum.ContactList))
+            Filter()
+                .kind(kind = Kind.fromEnum(KindEnum.ContactList))
                 .authors(authors = friendPubkeys)
                 .until(timestamp = until)
                 .since(timestamp = Timestamp.fromSecs(newestCreatedAt + 1u))
-                .limit(friendPubkeys.size.toULong())
+                .limitRestricted(limit = friendPubkeys.size.toULong())
         )
         return relayProvider.getReadRelays().associateWith { newWotFilter }
     }

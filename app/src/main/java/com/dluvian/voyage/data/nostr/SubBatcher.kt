@@ -60,12 +60,12 @@ class SubBatcher(private val subCreator: SubscriptionCreator) {
                     votePubkeyQueue.clear()
                 }
 
-                val timestamp = Timestamp.now()
+                val until = Timestamp.now()
 
                 val replyAndVoteFilters = getReplyAndVoteFilters(
                     idsByRelay = idsByRelay,
                     votePubkeys = votePubkeys,
-                    timestamp = timestamp
+                    until = until
                 )
                 replyAndVoteFilters.forEach { (relay, filters) ->
                     Log.d(TAG, "Sub ${filters.size} filters in $relay")
@@ -81,7 +81,7 @@ class SubBatcher(private val subCreator: SubscriptionCreator) {
     private fun getReplyAndVoteFilters(
         idsByRelay: Map<RelayUrl, Set<EventIdHex>>,
         votePubkeys: Map<RelayUrl, Set<PubkeyHex>>,
-        timestamp: Timestamp,
+        until: Timestamp,
     ): Map<RelayUrl, List<Filter>> {
         val convertedIds = mutableMapOf<EventIdHex, EventId>()
         val convertedPubkeys = mutableMapOf<EventIdHex, PublicKey>()
@@ -98,7 +98,7 @@ class SubBatcher(private val subCreator: SubscriptionCreator) {
             createReplyAndVoteFilters(
                 ids = eventIds,
                 votePubkeys = publicKeys,
-                timestamp = timestamp
+                until = until
             )
         }
     }

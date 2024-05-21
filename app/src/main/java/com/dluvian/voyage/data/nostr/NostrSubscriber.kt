@@ -50,7 +50,7 @@ class NostrSubscriber(
     )
 
     suspend fun subFeed(until: Long, limit: Int, setting: FeedSetting) {
-        val adjustedLimit = (4 * limit).toULong() // We don't know if we receive enough root posts
+        val adjustedLimit = (3 * limit).toULong() // We don't know if we receive enough root posts
 
         val subscriptions = when (setting) {
             is HomeFeedSetting -> feedSubscriber.getHomeFeedSubscriptions(
@@ -64,7 +64,7 @@ class NostrSubscriber(
                 until = until.toULong(),
                 since = getCachedSinceTimestamp(setting = setting, until = until, pageSize = limit),
                 // Smaller than adjustedLimit, bc posts with topics tend to be root
-                limit = (2.5 * limit).toULong()
+                limit = (2 * limit).toULong()
             )
 
             is ProfileRootFeedSetting -> feedSubscriber.getProfileFeedSubscription(
@@ -87,7 +87,8 @@ class NostrSubscriber(
 
     // No lazySubProfile bc we always don't save fields in db
     suspend fun subProfile(nprofile: Nip19Profile) {
-        val profileFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Metadata))
+        val profileFilter = Filter()
+            .kind(kind = Kind.fromEnum(KindEnum.Metadata))
             .author(author = nprofile.publicKey())
             .until(timestamp = Timestamp.now())
             .limit(1u)
@@ -102,6 +103,7 @@ class NostrSubscriber(
         val postFilter = Filter()
             .kinds(kinds = textNoteAndRepostKinds)
             .id(id = nevent.eventId())
+            .until(timestamp = Timestamp.now())
             .limit(limit = 1u)
         val filters = listOf(postFilter)
 
@@ -145,8 +147,8 @@ class NostrSubscriber(
 
     private fun getVotePubkeys(): List<PubkeyHex> {
         val pubkeys = mutableListOf(pubkeyProvider.getPubkeyHex())
-        pubkeys.addAll(friendProvider.getFriendPubkeys())
-        pubkeys.addAll(webOfTrustProvider.getWebOfTrustPubkeys(max = Int.MAX_VALUE))
+        pubkeys.addAll(friendProvider.getFriendPubkeys(max = MAX_PUBKEYS))
+        pubkeys.addAll(webOfTrustProvider.getWebOfTrustPubkeys(max = MAX_PUBKEYS))
 
         return pubkeys.distinct().take(MAX_PUBKEYS)
     }
