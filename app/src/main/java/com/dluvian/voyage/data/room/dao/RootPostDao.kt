@@ -26,7 +26,6 @@ private const val HOME_FEED_EXISTS_QUERY = "SELECT EXISTS(SELECT * " +
 private const val TOPIC_FEED_BASE_QUERY = "FROM RootPostView " +
         "WHERE createdAt <= :until " +
         "AND id IN (SELECT postId FROM hashtag WHERE hashtag = :topic) " +
-        "AND authorIsOneself = 0 " +
         "ORDER BY createdAt DESC " +
         "LIMIT :size"
 
