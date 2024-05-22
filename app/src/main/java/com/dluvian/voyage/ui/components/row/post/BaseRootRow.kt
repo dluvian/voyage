@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.components.row
+package com.dluvian.voyage.ui.components.row.post
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -24,10 +24,10 @@ import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
-fun PostRow(
+fun BaseRootRow(
     post: RootPostUI,
-    isOp: Boolean = false,
-    isThreadView: Boolean = false,
+    isOp: Boolean,
+    isThread: Boolean,
     onUpdate: OnUpdate
 ) {
     val onOpenThread = {
@@ -59,7 +59,7 @@ fun PostRow(
             parent = post,
             myTopic = post.myTopic,
             isOp = isOp,
-            isThreadView = isThreadView,
+            isThreadView = isThread,
             onUpdate = onUpdate,
         )
         Spacer(modifier = Modifier.height(spacing.large))
@@ -67,14 +67,14 @@ fun PostRow(
             AnnotatedText(
                 text = post.subject,
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
-                maxLines = if (isThreadView) Int.MAX_VALUE else 3,
+                maxLines = if (isThread) Int.MAX_VALUE else 3,
                 onClick = { onClickText(it, post.subject) }
             )
             Spacer(modifier = Modifier.height(spacing.large))
         }
         AnnotatedText(
             text = post.content,
-            maxLines = if (isThreadView) Int.MAX_VALUE else 21,
+            maxLines = if (isThread) Int.MAX_VALUE else 21,
             onClick = { onClickText(it, post.content) }
         )
         Spacer(modifier = Modifier.height(spacing.large))

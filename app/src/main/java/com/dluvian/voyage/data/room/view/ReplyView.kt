@@ -51,7 +51,6 @@ data class ReplyView(
         forcedFollows: Map<PubkeyHex, Boolean>,
         collapsedIds: Set<EventIdHex>,
         parentIds: Set<EventIdHex>,
-        isOp: Boolean,
         annotatedStringProvider: AnnotatedStringProvider,
     ): LeveledReplyUI {
         return LeveledReplyUI(
@@ -61,7 +60,6 @@ data class ReplyView(
                 forcedFollows = forcedFollows,
                 annotatedStringProvider = annotatedStringProvider
             ),
-            isOp = isOp,
             isCollapsed = collapsedIds.contains(this.id),
             hasLoadedReplies = parentIds.contains(this.id)
         )

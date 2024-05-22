@@ -39,8 +39,8 @@ import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.showScrollButton
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
-import com.dluvian.voyage.ui.components.row.PostRow
-import com.dluvian.voyage.ui.components.row.ReplyRow
+import com.dluvian.voyage.ui.components.row.post.FeedReplyRow
+import com.dluvian.voyage.ui.components.row.post.FeedRootRow
 import com.dluvian.voyage.ui.theme.ScrollUpIcon
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
@@ -79,14 +79,8 @@ fun Feed(
                 items = uniquePosts,
                 key = { item -> item.id }) { post ->
                 when (post) {
-                    is RootPostUI -> PostRow(post = post, onUpdate = onUpdate)
-                    is ReplyUI -> ReplyRow(
-                        reply = post,
-                        isCollapsed = false,
-                        showDetailedReply = true,
-                        isOp = false,
-                        onUpdate = onUpdate
-                    )
+                    is RootPostUI -> FeedRootRow(post = post, onUpdate = onUpdate)
+                    is ReplyUI -> FeedReplyRow(reply = post, onUpdate = onUpdate)
                 }
 
                 FullHorizontalDivider()

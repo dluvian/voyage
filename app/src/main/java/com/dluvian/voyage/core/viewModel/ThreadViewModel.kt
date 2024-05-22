@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.EventIdHex
-import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.ThreadViewAction
 import com.dluvian.voyage.core.ThreadViewRefresh
 import com.dluvian.voyage.core.ThreadViewShowReplies
@@ -22,7 +21,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import rust.nostr.protocol.Nip19Event
 
@@ -37,7 +35,6 @@ class ThreadViewModel(
     val leveledReplies: MutableState<StateFlow<List<LeveledReplyUI>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
     private val parentIds = mutableStateOf(emptySet<EventIdHex>())
-    private var opPubkey: PubkeyHex? = null
     private var nevent: Nip19Event? = null
 
     fun openThread(nevent: Nip19Event, parentUi: ParentUI?) {
@@ -45,19 +42,16 @@ class ThreadViewModel(
         if (id == localRoot.value?.id) return
 
         leveledReplies.value = MutableStateFlow(emptyList())
-        opPubkey = nevent.author()?.toHex() ?: parentUi?.getRelevantPubkey()
         this.nevent = nevent
 
         localRoot = threadProvider
             .getLocalRoot(scope = viewModelScope, nevent = nevent)
-            .onEach { if (opPubkey == null) opPubkey = it?.pubkey }
             .stateIn(viewModelScope, SharingStarted.Eagerly, parentUi)
         checkParentAvailability(replyId = id, parentUi = parentUi)
         loadReplies(
             rootId = id,
             parentId = id,
             isInit = true,
-            opPubkey = opPubkey
         )
     }
 
@@ -69,7 +63,6 @@ class ThreadViewModel(
                 rootId = localRoot.value?.getRelevantId(),
                 parentId = action.id,
                 isInit = false,
-                opPubkey = opPubkey,
             )
         }
     }
@@ -94,7 +87,6 @@ class ThreadViewModel(
             leveledReplies.value = threadProvider.getLeveledReplies(
                 rootId = currentNevent.eventId().toHex(),
                 parentIds = parentIds.value,
-                opPubkey = opPubkey,
             )
                 .stateIn(
                     viewModelScope,
@@ -109,7 +101,6 @@ class ThreadViewModel(
         rootId: EventIdHex?,
         parentId: EventIdHex,
         isInit: Boolean,
-        opPubkey: PubkeyHex?,
     ) {
         if (rootId == null) return
 
@@ -117,7 +108,7 @@ class ThreadViewModel(
         parentIds.value += rootId
         parentIds.value += parentId
         leveledReplies.value = threadProvider
-            .getLeveledReplies(rootId = rootId, parentIds = parentIds.value, opPubkey = opPubkey)
+            .getLeveledReplies(rootId = rootId, parentIds = parentIds.value)
             .stateIn(viewModelScope, SharingStarted.Eagerly, init)
     }
 

@@ -91,7 +91,6 @@ class ThreadProvider(
     fun getLeveledReplies(
         rootId: EventIdHex,
         parentIds: Set<EventIdHex>,
-        opPubkey: PubkeyHex?
     ): Flow<List<LeveledReplyUI>> {
         val replyFlow = replyDao.getRepliesFlow(parentIds = parentIds + rootId)
             .firstThenDistinctDebounce(DEBOUNCE)
@@ -116,7 +115,6 @@ class ThreadProvider(
                     forcedFollows = follows,
                     collapsedIds = collapsed,
                     parentIds = parentIds,
-                    isOp = opPubkey == reply.pubkey,
                     annotatedStringProvider = annotatedStringProvider
                 )
 

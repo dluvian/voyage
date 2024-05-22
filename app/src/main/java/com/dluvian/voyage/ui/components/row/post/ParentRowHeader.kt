@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.components.row
+package com.dluvian.voyage.ui.components.row.post
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

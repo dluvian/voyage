@@ -1,8 +1,9 @@
-package com.dluvian.voyage.ui.components.row
+package com.dluvian.voyage.ui.components.row.post
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,36 +17,48 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
+import com.dluvian.nostr_kt.createNevent
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ClickText
 import com.dluvian.voyage.core.ComposableContent
+import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenReplyCreation
-import com.dluvian.voyage.core.ThreadViewToggleCollapse
+import com.dluvian.voyage.core.OpenThreadRaw
 import com.dluvian.voyage.core.model.ReplyUI
 import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.theme.ReplyIcon
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
-fun ReplyRow(
+fun BaseReplyRow(
     reply: ReplyUI,
     isCollapsed: Boolean,
-    showDetailedReply: Boolean,
+    showFullReplyButton: Boolean,
     isOp: Boolean,
+    isThread: Boolean,
     onUpdate: OnUpdate,
+    onToggleCollapse: Fn = {},
     additionalStartAction: ComposableContent = {},
 ) {
+    val onClick = {
+        if (isThread) {
+            onToggleCollapse()
+        } else {
+            onUpdate(OpenThreadRaw(nevent = createNevent(hex = reply.getRelevantId())))
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onClick() }
             .padding(spacing.screenEdge)
     ) {
         ParentRowHeader(
             parent = reply,
             myTopic = null,
             isOp = isOp,
-            isThreadView = true,
+            isThreadView = isThread,
             collapsedText = if (isCollapsed) reply.content else null,
             onUpdate = onUpdate
         )
@@ -64,7 +77,7 @@ fun ReplyRow(
                             text = reply.content,
                             offset = offset,
                             uriHandler = uriHandler,
-                            onNoneClick = { onUpdate(ThreadViewToggleCollapse(id = reply.id)) }
+                            onNoneClick = onClick
                         )
                     )
                 }
@@ -87,7 +100,7 @@ fun ReplyRow(
                         imageVector = ReplyIcon,
                         contentDescription = stringResource(id = R.string.reply)
                     )
-                    if (showDetailedReply) Text(text = stringResource(id = R.string.reply))
+                    if (showFullReplyButton) Text(text = stringResource(id = R.string.reply))
                 }
             }
         )
