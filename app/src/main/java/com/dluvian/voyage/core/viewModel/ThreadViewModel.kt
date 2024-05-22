@@ -45,7 +45,6 @@ class ThreadViewModel(
         if (id == localRoot.value?.id) return
 
         leveledReplies.value = MutableStateFlow(emptyList())
-        parentIds.value = setOf()
         opPubkey = nevent.author()?.toHex() ?: parentUi?.getRelevantPubkey()
         this.nevent = nevent
 
@@ -112,9 +111,10 @@ class ThreadViewModel(
         isInit: Boolean,
         opPubkey: PubkeyHex?,
     ) {
-        if (rootId == null || parentIds.value.contains(parentId)) return
+        if (rootId == null) return
 
         val init = if (isInit) emptyList() else leveledReplies.value.value
+        parentIds.value += rootId
         parentIds.value += parentId
         leveledReplies.value = threadProvider
             .getLeveledReplies(rootId = rootId, parentIds = parentIds.value, opPubkey = opPubkey)
