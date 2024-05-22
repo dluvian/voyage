@@ -1,9 +1,8 @@
-import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
@@ -18,8 +17,6 @@ android {
         versionName = "v0.4.0"
 
         // Change versionCode, versionName and strings.xml when releasing new
-
-        archivesName = "voyage-$versionName"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -51,10 +48,6 @@ android {
     }
     buildFeatures {
         compose = true
-    }
-    composeOptions {
-        // https://developer.android.com/jetpack/androidx/releases/compose-compiler
-        kotlinCompilerExtensionVersion = "1.5.11"
     }
     packaging {
         resources {
