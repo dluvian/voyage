@@ -39,6 +39,6 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("io.github.rust-nostr:nostr:0.12.0")
+    implementation("io.github.rust-nostr:nostr:0.12.1")
     implementation("cash.z.ecc.android:kotlin-bip39:1.0.7")
 }
