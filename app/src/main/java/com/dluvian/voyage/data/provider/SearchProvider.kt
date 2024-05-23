@@ -10,7 +10,9 @@ class SearchProvider(
     private val profileProvider: ProfileProvider,
     private val postDao: PostDao,
 ) {
-    private val maxSearchResult = 10
+    private val maxTopicSearchResult = 5
+    private val maxProfileSearchResult = 10
+    private val maxPostSearchResult = 15
 
     suspend fun getTopicSuggestions(text: String): List<Topic> {
         val stripped = text.stripSearchText()
@@ -19,19 +21,19 @@ class SearchProvider(
             .filter { it.contains(other = stripped, ignoreCase = true) }
             .sortedBy { it.length }
             .distinctBy { it.lowercase() }
-            .take(maxSearchResult)
+            .take(maxTopicSearchResult)
             .toList()
     }
 
     suspend fun getProfileSuggestions(text: String): List<AdvancedProfileView> {
         val stripped = text.stripSearchText()
-        return profileProvider.getProfileByName(name = stripped, limit = maxSearchResult)
+        return profileProvider.getProfileByName(name = stripped, limit = maxProfileSearchResult)
     }
 
     suspend fun getPostSuggestions(text: String): List<SimplePostView> {
         val stripped = text.stripSearchText()
 
-        return postDao.getPostsByContent(content = stripped, limit = 3 * maxSearchResult)
+        return postDao.getPostsByContent(content = stripped, limit = maxPostSearchResult)
     }
 
     fun getStrippedSearchText(text: String) = text.stripSearchText()
