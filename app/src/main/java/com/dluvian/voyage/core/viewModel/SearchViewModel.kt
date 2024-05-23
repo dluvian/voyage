@@ -9,12 +9,12 @@ import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.nostr_kt.removeMentionChar
 import com.dluvian.nostr_kt.removeNostrUri
 import com.dluvian.voyage.R
+import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.DELAY_10SEC
 import com.dluvian.voyage.core.MAX_TOPIC_LEN
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenThreadRaw
 import com.dluvian.voyage.core.OpenTopic
-import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.SearchText
 import com.dluvian.voyage.core.SearchViewAction
 import com.dluvian.voyage.core.Topic
@@ -60,35 +60,13 @@ class SearchViewModel(
         }
     }
 
+    private var updateJob: Job? = null
     private fun updateSearchText(text: String) {
-        updateTopicSuggestions(text = text)
-        updateProfileSuggestions(text = text)
-        updatePostSuggestions(text = text)
-    }
-
-    private var updateJobTopic: Job? = null
-    private fun updateTopicSuggestions(text: String) {
-        updateJobTopic?.cancel()
-        updateJobTopic = viewModelScope.launchIO {
-            delay(SHORT_DEBOUNCE)
+        updateJob?.cancel()
+        updateJob = viewModelScope.launchIO {
+            delay(DEBOUNCE)
             topics.value = searchProvider.getTopicSuggestions(text = text)
-        }
-    }
-
-    private var updateJobProfile: Job? = null
-    private fun updateProfileSuggestions(text: String) {
-        updateJobProfile?.cancel()
-        updateJobProfile = viewModelScope.launchIO {
-            delay(SHORT_DEBOUNCE)
             profiles.value = searchProvider.getProfileSuggestions(text = text)
-        }
-    }
-
-    private var updateJobPost: Job? = null
-    private fun updatePostSuggestions(text: String) {
-        updateJobPost?.cancel()
-        updateJobPost = viewModelScope.launchIO {
-            delay(SHORT_DEBOUNCE)
             posts.value = searchProvider.getPostSuggestions(text = text)
         }
     }
@@ -114,7 +92,7 @@ class SearchViewModel(
             return
         }
 
-        val note1 = kotlin.runCatching { EventId.fromBech32(stripped) }.getOrNull()
+        val note1 = runCatching { EventId.fromBech32(stripped) }.getOrNull()
         if (note1 != null) {
             action.onUpdate(OpenThreadRaw(nevent = createNevent(hex = note1.toHex())))
             return
