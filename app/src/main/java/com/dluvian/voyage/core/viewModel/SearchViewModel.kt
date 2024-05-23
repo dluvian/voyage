@@ -9,12 +9,12 @@ import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.nostr_kt.removeMentionChar
 import com.dluvian.nostr_kt.removeNostrUri
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.DELAY_10SEC
 import com.dluvian.voyage.core.MAX_TOPIC_LEN
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenThreadRaw
 import com.dluvian.voyage.core.OpenTopic
+import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.SearchText
 import com.dluvian.voyage.core.SearchViewAction
 import com.dluvian.voyage.core.Topic
@@ -64,7 +64,7 @@ class SearchViewModel(
     private fun updateSearchText(text: String) {
         updateJob?.cancel()
         updateJob = viewModelScope.launchIO {
-            delay(DEBOUNCE)
+            delay(SHORT_DEBOUNCE)
             topics.value = searchProvider.getTopicSuggestions(text = text)
             profiles.value = searchProvider.getProfileSuggestions(text = text)
             posts.value = searchProvider.getPostSuggestions(text = text)
