@@ -17,6 +17,7 @@ import com.dluvian.voyage.core.model.Connected
 import com.dluvian.voyage.core.model.ConnectionStatus
 import com.dluvian.voyage.core.model.Disconnected
 import com.dluvian.voyage.core.model.Waiting
+import com.dluvian.voyage.data.event.EventCounter
 import com.dluvian.voyage.data.event.EventMaker
 import com.dluvian.voyage.data.event.EventQueue
 import com.dluvian.voyage.data.preferences.RelayPreferences
@@ -37,7 +38,8 @@ class NostrService(
     private val eventMaker: EventMaker,
     private val filterCache: MutableMap<SubId, List<Filter>>,
     private val relayPreferences: RelayPreferences,
-    private val connectionStatuses: MutableState<Map<RelayUrl, ConnectionStatus>>
+    private val connectionStatuses: MutableState<Map<RelayUrl, ConnectionStatus>>,
+    private val eventCounter: EventCounter
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
     var defaultLauncher: SignerLauncher? = null
@@ -49,6 +51,12 @@ class NostrService(
         }
 
         override fun onEvent(subId: SubId, event: Event, relayUrl: RelayUrl?) {
+            if (!eventCounter.isNotSpam(subId = subId)) {
+                Log.w(TAG, "$relayUrl sends more events than requested in $subId")
+                nostrClient.closeConnection(relayUrl = relayUrl.orEmpty())
+                return
+            }
+
             eventQueue.submit(event = event, subId = subId, relayUrl = relayUrl)
         }
 
@@ -228,6 +236,7 @@ class NostrService(
 
     fun close() {
         filterCache.clear()
+        eventCounter.clear()
         nostrClient.close()
     }
 

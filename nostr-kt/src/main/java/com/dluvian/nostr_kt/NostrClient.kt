@@ -124,7 +124,7 @@ class NostrClient {
         val subId = UUID.randomUUID().toString()
         subscriptions[subId] = socket
         val request = ClientMessage.req(subscriptionId = subId, filters = filters).asJson()
-        Log.d(TAG, "Subscribe in $relayUrl: $request")
+        Log.d(TAG, "Subscribe $subId in $relayUrl: $request")
         socket.send(request)
 
         return subId
@@ -193,6 +193,13 @@ class NostrClient {
             sockets[relayUrl] = socket
         }.onFailure {
             Log.e(TAG, "Failed to connect to $relayUrl", it)
+        }
+    }
+
+    fun closeConnection(relayUrl: RelayUrl) {
+        Log.i(TAG, "Close $relayUrl connection")
+        synchronized(sockets) {
+            sockets[relayUrl]?.close(1000, "Normal closure")
         }
     }
 

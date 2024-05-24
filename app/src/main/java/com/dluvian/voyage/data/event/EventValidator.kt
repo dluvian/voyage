@@ -46,7 +46,7 @@ class EventValidator(
         syncedIdCache.add(id)
 
         if (validatedEvent == null) {
-            Log.w(TAG, "Discard invalid event ${id.toHex()} from $relayUrl")
+            Log.w(TAG, "Discard invalid event ${id.toHex()} from $relayUrl: ${event.asJson()}")
             return null
         }
 

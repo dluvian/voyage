@@ -15,6 +15,7 @@ import com.dluvian.voyage.data.account.AccountManager
 import com.dluvian.voyage.data.account.AccountSwitcher
 import com.dluvian.voyage.data.account.ExternalSigner
 import com.dluvian.voyage.data.account.MnemonicSigner
+import com.dluvian.voyage.data.event.EventCounter
 import com.dluvian.voyage.data.event.EventDeletor
 import com.dluvian.voyage.data.event.EventMaker
 import com.dluvian.voyage.data.event.EventProcessor
@@ -105,9 +106,12 @@ class AppContainer(context: Context) {
         pubkeyProvider = accountManager,
     )
 
+    private val eventCounter = EventCounter()
+
     val subCreator = SubscriptionCreator(
         nostrClient = nostrClient,
         syncedFilterCache = syncedFilterCache,
+        eventCounter = eventCounter
     )
 
     val lazyNostrSubscriber = LazyNostrSubscriber(
@@ -170,6 +174,7 @@ class AppContainer(context: Context) {
         filterCache = syncedFilterCache,
         relayPreferences = relayPreferences,
         connectionStatuses = connectionStatuses,
+        eventCounter = eventCounter,
     )
 
     init {

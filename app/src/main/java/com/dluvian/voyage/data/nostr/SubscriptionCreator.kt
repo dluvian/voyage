@@ -4,6 +4,7 @@ import android.util.Log
 import com.dluvian.nostr_kt.NostrClient
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
+import com.dluvian.voyage.data.event.EventCounter
 import rust.nostr.protocol.Filter
 
 private const val TAG = "SubscriptionCreator"
@@ -11,6 +12,7 @@ private const val TAG = "SubscriptionCreator"
 class SubscriptionCreator(
     private val nostrClient: NostrClient,
     private val syncedFilterCache: MutableMap<SubId, List<Filter>>,
+    private val eventCounter: EventCounter,
 ) {
     fun subscribe(relayUrl: RelayUrl, filters: List<Filter>): SubId? {
         if (filters.isEmpty()) return null
@@ -22,6 +24,7 @@ class SubscriptionCreator(
             return null
         }
         syncedFilterCache[subId] = filters
+        eventCounter.registerSubscription(subId = subId, filters = filters)
 
         return subId
     }
