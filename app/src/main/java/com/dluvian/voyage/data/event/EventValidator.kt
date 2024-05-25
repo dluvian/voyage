@@ -5,6 +5,7 @@ import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
 import com.dluvian.nostr_kt.getMetadata
 import com.dluvian.nostr_kt.getNip65s
+import com.dluvian.nostr_kt.getReactToId
 import com.dluvian.nostr_kt.isContactList
 import com.dluvian.nostr_kt.isNip65
 import com.dluvian.nostr_kt.isPostOrReply
@@ -69,10 +70,10 @@ class EventValidator(
         } else if (event.isRepost()) {
             createValidatedRepost(event = event, relayUrl = relayUrl)
         } else if (event.isVote()) {
-            val postId = event.eventIds().firstOrNull() ?: return null
+            val postId = event.getReactToId() ?: return null
             ValidatedVote(
                 id = event.id().toHex(),
-                postId = postId.toHex(),
+                postId = postId,
                 pubkey = event.author().toHex(),
                 isPositive = event.content() != "-",
                 createdAt = event.createdAt().secs()

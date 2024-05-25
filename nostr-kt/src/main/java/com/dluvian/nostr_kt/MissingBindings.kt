@@ -1,6 +1,7 @@
 package com.dluvian.nostr_kt
 
 import cash.z.ecc.android.bip39.Mnemonics
+import rust.nostr.protocol.Alphabet
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.KindEnum
@@ -8,6 +9,7 @@ import rust.nostr.protocol.Metadata
 import rust.nostr.protocol.Nip19Event
 import rust.nostr.protocol.Nip19Profile
 import rust.nostr.protocol.PublicKey
+import rust.nostr.protocol.SingleLetterTag
 import rust.nostr.protocol.Tag
 import rust.nostr.protocol.TagKind
 import rust.nostr.protocol.TagStandard
@@ -61,6 +63,15 @@ fun getCurrentSecs() = System.currentTimeMillis() / 1000
 
 fun Event.isRepost(): Boolean {
     return this.kind().asEnum() == KindEnum.Repost
+}
+
+private val eTagKind = TagKind.SingleLetter(SingleLetterTag.lowercase(Alphabet.E))
+
+fun Event.getReactToId(): String? {
+    return this.tags()
+        .filter { it.kind() == eTagKind }
+        .mapNotNull { it.asVec().getOrNull(1) }
+        .firstOrNull { isValidEventId(hex = it) }
 }
 
 fun Event.isPostOrReply(): Boolean {
