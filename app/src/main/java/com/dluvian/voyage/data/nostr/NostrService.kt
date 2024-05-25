@@ -51,9 +51,10 @@ class NostrService(
         }
 
         override fun onEvent(subId: SubId, event: Event, relayUrl: RelayUrl?) {
-            if (!eventCounter.isNotSpam(subId = subId)) {
+            if (eventCounter.isExceedingLimit(subId = subId) && !relayUrl.isNullOrEmpty()) {
+                nostrClient.removeRelay(relayUrl = relayUrl)
+                addConnectionStatus(relayUrl = relayUrl, status = Disconnected)
                 Log.w(TAG, "$relayUrl sends more events than requested in $subId")
-                nostrClient.closeConnection(relayUrl = relayUrl.orEmpty())
                 return
             }
 
@@ -66,6 +67,7 @@ class NostrService(
 
         override fun onEOSE(relayUrl: RelayUrl, subId: SubId) {
             Log.d(TAG, "OnEOSE($relayUrl): $subId")
+            eventCounter.finish(subId = subId)
             nostrClient.unsubscribe(subId)
         }
 

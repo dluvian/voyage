@@ -196,11 +196,10 @@ class NostrClient {
         }
     }
 
-    fun closeConnection(relayUrl: RelayUrl) {
-        Log.i(TAG, "Close $relayUrl connection")
-        synchronized(sockets) {
-            sockets[relayUrl]?.close(1000, "Normal closure")
-        }
+    fun removeRelay(relayUrl: RelayUrl) {
+        Log.i(TAG, "Remove relay $relayUrl")
+        val removedSocket = sockets.remove(relayUrl)
+        removedSocket?.close(1000, "Normal closure")
     }
 
     fun close() {
@@ -208,12 +207,6 @@ class NostrClient {
         val sockets = sockets.keys.toSet()
         sockets.forEach { removeRelay(it) }
         httpClient.dispatcher.executorService.shutdown()
-    }
-
-    private fun removeRelay(relayUrl: RelayUrl) {
-        Log.i(TAG, "Remove relay $relayUrl")
-        val removedSocket = sockets.remove(relayUrl)
-        removedSocket?.close(1000, "Normal closure")
     }
 
     private fun getRelayUrl(webSocket: WebSocket): RelayUrl? {

@@ -34,15 +34,21 @@ class EventCounter {
         }
     }
 
-    fun isNotSpam(subId: SubId): Boolean {
+    fun isExceedingLimit(subId: SubId): Boolean {
         synchronized(countdownCache) {
             val currentCount = countdownCache[subId]
-            if (currentCount == null || currentCount <= 0) return false
+            if (currentCount == null || currentCount <= 0) return true
 
             countdownCache[subId] = currentCount - 1
         }
 
-        return true
+        return false
+    }
+
+    fun finish(subId: SubId) {
+        synchronized(countdownCache) {
+            countdownCache[subId] = 0
+        }
     }
 
     fun clear() {
