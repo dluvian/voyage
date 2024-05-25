@@ -70,10 +70,9 @@ class EventValidator(
         } else if (event.isRepost()) {
             createValidatedRepost(event = event, relayUrl = relayUrl)
         } else if (event.isVote()) {
-            val postId = event.getReactToId() ?: return null
             ValidatedVote(
                 id = event.id().toHex(),
-                postId = postId,
+                postId = event.getReactToId() ?: return null,
                 pubkey = event.author().toHex(),
                 isPositive = event.content() != "-",
                 createdAt = event.createdAt().secs()
