@@ -6,13 +6,7 @@ import com.dluvian.nostr_kt.SubId
 import com.dluvian.nostr_kt.getMetadata
 import com.dluvian.nostr_kt.getNip65s
 import com.dluvian.nostr_kt.getReactToId
-import com.dluvian.nostr_kt.isContactList
-import com.dluvian.nostr_kt.isNip65
 import com.dluvian.nostr_kt.isPostOrReply
-import com.dluvian.nostr_kt.isProfile
-import com.dluvian.nostr_kt.isRepost
-import com.dluvian.nostr_kt.isTopicList
-import com.dluvian.nostr_kt.isVote
 import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.core.createValidatedMainPost
 import com.dluvian.voyage.core.getNormalizedTopics
@@ -20,6 +14,7 @@ import com.dluvian.voyage.data.account.IPubkeyProvider
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
+import rust.nostr.protocol.KindEnum
 
 
 private const val TAG = "EventValidator"
@@ -65,48 +60,60 @@ class EventValidator(
     }
 
     private fun validate(event: Event, relayUrl: RelayUrl): ValidatedEvent? {
-        val validatedEvent = if (event.isPostOrReply()) {
-            createValidatedMainPost(event = event, relayUrl = relayUrl)
-        } else if (event.isRepost()) {
-            createValidatedRepost(event = event, relayUrl = relayUrl)
-        } else if (event.isVote()) {
-            ValidatedVote(
-                id = event.id().toHex(),
-                postId = event.getReactToId() ?: return null,
-                pubkey = event.author().toHex(),
-                isPositive = event.content() != "-",
-                createdAt = event.createdAt().secs()
-            )
-        } else if (event.isContactList()) {
-            ValidatedContactList(
+        val validatedEvent = when (event.kind().asEnum()) {
+            is KindEnum.TextNote -> createValidatedMainPost(event = event, relayUrl = relayUrl)
+            is KindEnum.Repost -> createValidatedRepost(event = event, relayUrl = relayUrl)
+            is KindEnum.Reaction -> {
+                val postId = event.getReactToId() ?: return null
+                ValidatedVote(
+                    id = event.id().toHex(),
+                    postId = postId,
+                    pubkey = event.author().toHex(),
+                    isPositive = event.content() != "-",
+                    createdAt = event.createdAt().secs()
+                )
+            }
+
+            is KindEnum.ContactList -> ValidatedContactList(
                 pubkey = event.author().toHex(),
                 friendPubkeys = event.publicKeys().map { it.toHex() }.toSet(),
                 createdAt = event.createdAt().secs()
             )
-        } else if (event.isTopicList()) {
-            if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) return null
-            ValidatedTopicList(
-                myPubkey = event.author().toHex(),
-                topics = event.getNormalizedTopics(limited = false).toSet(),
-                createdAt = event.createdAt().secs()
-            )
-        } else if (event.isNip65()) {
-            val relays = event.getNip65s()
-            if (relays.isEmpty()) return null
-            ValidatedNip65(
-                pubkey = event.author().toHex(),
-                relays = relays,
-                createdAt = event.createdAt().secs()
-            )
-        } else if (event.isProfile()) {
-            val metadata = event.getMetadata() ?: return null
-            ValidatedProfile(
-                id = event.id().toHex(),
-                pubkey = event.author().toHex(),
-                metadata = metadata,
-                createdAt = event.createdAt().secs()
-            )
-        } else null
+
+            is KindEnum.Interests -> {
+                if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) null
+                else ValidatedTopicList(
+                    myPubkey = event.author().toHex(),
+                    topics = event.getNormalizedTopics(limited = false).toSet(),
+                    createdAt = event.createdAt().secs()
+                )
+            }
+
+            is KindEnum.RelayList -> {
+                val relays = event.getNip65s()
+                if (relays.isEmpty()) return null
+                ValidatedNip65(
+                    pubkey = event.author().toHex(),
+                    relays = relays,
+                    createdAt = event.createdAt().secs()
+                )
+            }
+
+            is KindEnum.Metadata -> {
+                val metadata = event.getMetadata() ?: return null
+                ValidatedProfile(
+                    id = event.id().toHex(),
+                    pubkey = event.author().toHex(),
+                    metadata = metadata,
+                    createdAt = event.createdAt().secs()
+                )
+            }
+
+            else -> {
+                Log.w(TAG, "Invalid event kind ${event.asJson()}")
+                return null
+            }
+        }
 
         if (validatedEvent == null) return null
         if (!event.verify()) return null

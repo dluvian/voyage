@@ -61,10 +61,6 @@ fun Timestamp.secs(): Long {
 
 fun getCurrentSecs() = System.currentTimeMillis() / 1000
 
-fun Event.isRepost(): Boolean {
-    return this.kind().asEnum() == KindEnum.Repost
-}
-
 private val eTagKind = TagKind.SingleLetter(SingleLetterTag.lowercase(Alphabet.E))
 
 fun Event.getReactToId(): String? {
@@ -150,22 +146,6 @@ fun Event.getMetadata(): Metadata? {
     if (!this.isProfile()) return null
 
     return runCatching { Metadata.fromJson(json = this.content()) }.getOrNull()
-}
-
-fun Event.isContactList(): Boolean {
-    return this.kind().asEnum() == KindEnum.ContactList
-}
-
-fun Event.isTopicList(): Boolean {
-    return this.kind().asEnum() == KindEnum.Interests
-}
-
-fun Event.isNip65(): Boolean {
-    return this.kind().asEnum() == KindEnum.RelayList
-}
-
-fun Event.isVote(): Boolean {
-    return this.kind().asEnum() == KindEnum.Reaction
 }
 
 fun Event.isProfile(): Boolean {
