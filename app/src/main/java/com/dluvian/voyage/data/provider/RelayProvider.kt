@@ -13,6 +13,7 @@ import com.dluvian.voyage.core.MAX_RELAY_CONNECTIONS
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.model.ConnectionStatus
 import com.dluvian.voyage.core.model.Disconnected
+import com.dluvian.voyage.core.model.Spam
 import com.dluvian.voyage.core.putOrAdd
 import com.dluvian.voyage.data.room.dao.EventRelayDao
 import com.dluvian.voyage.data.room.dao.Nip65Dao
@@ -139,11 +140,12 @@ class RelayProvider(
         nip65Dao
             .getWriteRelays(pubkeys = pubkeys)
             .groupBy { it.nip65Relay.url }
-            .toList()
+            .asSequence()
+            .filter { (relay, _) -> connectionStatuses.value[relay] !is Spam }
             .sortedByDescending { (_, pubkeys) -> pubkeys.size }
             .sortedByDescending { (relay, _) -> eventRelays.contains(relay) }
             .sortedByDescending { (relay, _) -> connectedRelays.contains(relay) }
-            .sortedByDescending { (relay, _) -> connectionStatuses.value[relay] != Disconnected }
+            .sortedByDescending { (relay, _) -> connectionStatuses.value[relay] !is Disconnected }
             .take(MAX_RELAY_CONNECTIONS)
             .forEach { (relay, nip65Entities) ->
                 val newPubkeys = nip65Entities.map { it.pubkey }.toSet() - pubkeyCache
@@ -156,7 +158,7 @@ class RelayProvider(
         // Cover most useful relays
         eventRelayDao.getEventRelayAuthorView(authors = pubkeys)
             .asSequence()
-            .filter { connectionStatuses.value[it.relayUrl] != Disconnected }
+            .filter { connectionStatuses.value[it.relayUrl] !is Disconnected }
             .sortedByDescending { it.relayCount }
             .sortedByDescending { connectedRelays.contains(it.relayUrl) }
             .distinctBy { it.pubkey }

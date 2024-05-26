@@ -13,9 +13,10 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SignerLauncher
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.launchIO
+import com.dluvian.voyage.core.model.BadConnection
 import com.dluvian.voyage.core.model.Connected
 import com.dluvian.voyage.core.model.ConnectionStatus
-import com.dluvian.voyage.core.model.Disconnected
+import com.dluvian.voyage.core.model.Spam
 import com.dluvian.voyage.core.model.Waiting
 import com.dluvian.voyage.data.event.EventCounter
 import com.dluvian.voyage.data.event.EventMaker
@@ -53,7 +54,7 @@ class NostrService(
         override fun onEvent(subId: SubId, event: Event, relayUrl: RelayUrl?) {
             if (!relayUrl.isNullOrEmpty() && eventCounter.isExceedingLimit(subId = subId)) {
                 nostrClient.removeRelay(relayUrl = relayUrl)
-                addConnectionStatus(relayUrl = relayUrl, status = Disconnected)
+                addConnectionStatus(relayUrl = relayUrl, status = Spam)
                 Log.w(TAG, "$relayUrl sends more events than requested in $subId")
                 return
             }
@@ -77,12 +78,12 @@ class NostrService(
 
         override fun onClose(relayUrl: RelayUrl, reason: String) {
             Log.i(TAG, "OnClose($relayUrl): $reason")
-            addConnectionStatus(relayUrl = relayUrl, status = Disconnected)
+            addConnectionStatus(relayUrl = relayUrl, status = BadConnection)
         }
 
         override fun onFailure(relayUrl: RelayUrl, msg: String?, throwable: Throwable?) {
             Log.w(TAG, "OnFailure($relayUrl): $msg", throwable)
-            addConnectionStatus(relayUrl = relayUrl, status = Disconnected)
+            addConnectionStatus(relayUrl = relayUrl, status = BadConnection)
         }
 
         override fun onOk(relayUrl: RelayUrl, eventId: EventId, accepted: Boolean, msg: String) {
