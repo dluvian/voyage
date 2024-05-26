@@ -9,6 +9,7 @@ import com.dluvian.nostr_kt.removeTrailingSlashes
 import com.dluvian.voyage.core.MAX_POPULAR_RELAYS
 import com.dluvian.voyage.core.MAX_RELAYS
 import com.dluvian.voyage.core.MAX_RELAYS_PER_PUBKEY
+import com.dluvian.voyage.core.MAX_RELAY_CONNECTIONS
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.model.ConnectionStatus
 import com.dluvian.voyage.core.model.Disconnected
@@ -143,6 +144,7 @@ class RelayProvider(
             .sortedByDescending { (relay, _) -> eventRelays.contains(relay) }
             .sortedByDescending { (relay, _) -> connectedRelays.contains(relay) }
             .sortedByDescending { (relay, _) -> connectionStatuses.value[relay] != Disconnected }
+            .take(MAX_RELAY_CONNECTIONS)
             .forEach { (relay, nip65Entities) ->
                 val newPubkeys = nip65Entities.map { it.pubkey }.toSet() - pubkeyCache
                 if (newPubkeys.isNotEmpty()) {
@@ -153,13 +155,17 @@ class RelayProvider(
 
         // Cover most useful relays
         eventRelayDao.getEventRelayAuthorView(authors = pubkeys)
+            .asSequence()
+            .filter { connectionStatuses.value[it.relayUrl] != Disconnected }
             .sortedByDescending { it.relayCount }
             .sortedByDescending { connectedRelays.contains(it.relayUrl) }
             .distinctBy { it.pubkey }
             .groupBy(keySelector = { it.relayUrl }, valueTransform = { it.pubkey })
             .forEach { (relay, pubkeys) ->
-                if (pubkeys.isNotEmpty()) result.putOrAdd(relay, pubkeys)
-                pubkeyCache.addAll(pubkeys)
+                if (pubkeys.isNotEmpty() && (result.containsKey(relay) || result.size < MAX_RELAY_CONNECTIONS)) {
+                    result.putOrAdd(relay, pubkeys)
+                    pubkeyCache.addAll(pubkeys)
+                }
             }
 
         // Cover rest with already selected relays and read relays for initial start up

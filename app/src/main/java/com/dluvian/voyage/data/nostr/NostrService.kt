@@ -51,7 +51,7 @@ class NostrService(
         }
 
         override fun onEvent(subId: SubId, event: Event, relayUrl: RelayUrl?) {
-            if (eventCounter.isExceedingLimit(subId = subId) && !relayUrl.isNullOrEmpty()) {
+            if (!relayUrl.isNullOrEmpty() && eventCounter.isExceedingLimit(subId = subId)) {
                 nostrClient.removeRelay(relayUrl = relayUrl)
                 addConnectionStatus(relayUrl = relayUrl, status = Disconnected)
                 Log.w(TAG, "$relayUrl sends more events than requested in $subId")
