@@ -7,6 +7,7 @@ import com.dluvian.nostr_kt.NostrClient
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.removeTrailingSlashes
 import com.dluvian.voyage.core.MAX_POPULAR_RELAYS
+import com.dluvian.voyage.core.MAX_PUBKEYS
 import com.dluvian.voyage.core.MAX_RELAYS
 import com.dluvian.voyage.core.MAX_RELAYS_PER_PUBKEY
 import com.dluvian.voyage.core.MAX_RELAY_CONNECTIONS
@@ -15,6 +16,7 @@ import com.dluvian.voyage.core.model.ConnectionStatus
 import com.dluvian.voyage.core.model.Disconnected
 import com.dluvian.voyage.core.model.Spam
 import com.dluvian.voyage.core.putOrAdd
+import com.dluvian.voyage.core.takeRandom
 import com.dluvian.voyage.data.room.dao.EventRelayDao
 import com.dluvian.voyage.data.room.dao.Nip65Dao
 import kotlinx.coroutines.CoroutineScope
@@ -146,7 +148,10 @@ class RelayProvider(
             .sortedByDescending { (relay, _) -> connectionStatuses.value[relay] !is Disconnected }
             .take(MAX_RELAY_CONNECTIONS)
             .forEach { (relay, nip65Entities) ->
-                val newPubkeys = nip65Entities.map { it.pubkey }.toSet() - pubkeyCache
+                val maxToAdd = maxOf(0, MAX_PUBKEYS - result[relay].orEmpty().size)
+                val newPubkeys = nip65Entities.map { it.pubkey }.toSet()
+                    .minus(pubkeyCache)
+                    .takeRandom(maxToAdd)
                 if (newPubkeys.isNotEmpty()) {
                     result.putIfAbsent(relay, newPubkeys.toMutableSet())
                     pubkeyCache.addAll(newPubkeys)
