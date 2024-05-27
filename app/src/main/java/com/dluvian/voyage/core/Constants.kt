@@ -16,6 +16,8 @@ const val DEBOUNCE = 600L
 
 const val LIST_CHANGE_DEBOUNCE = DELAY_1SEC
 
+const val LAZY_RND_RESUB_LIMIT = 10uL
+
 const val MAX_EVENTS_TO_SUB = 250uL
 const val AUTH_TIMEOUT = DELAY_10SEC
 

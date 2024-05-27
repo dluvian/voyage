@@ -3,6 +3,7 @@ package com.dluvian.voyage.data.nostr
 import android.util.Log
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.core.DELAY_1SEC
+import com.dluvian.voyage.core.LAZY_RND_RESUB_LIMIT
 import com.dluvian.voyage.core.MAX_PUBKEYS
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.limitRestricted
@@ -220,7 +221,7 @@ class LazyNostrSubscriber(
                 .authors(authors = friendPubkeys)
                 .until(timestamp = until)
                 .since(timestamp = Timestamp.fromSecs(newestCreatedAt + 1u))
-                .limitRestricted(limit = friendPubkeys.size.toULong())
+                .limitRestricted(limit = LAZY_RND_RESUB_LIMIT)
         )
         return relayProvider.getReadRelays().associateWith { newWotFilter }
     }
