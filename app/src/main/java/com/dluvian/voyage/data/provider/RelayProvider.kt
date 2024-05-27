@@ -37,23 +37,23 @@ class RelayProvider(
     private val myNip65 =
         nip65Dao.getMyNip65Flow().stateIn(scope, SharingStarted.Eagerly, emptyList())
 
-    fun getReadRelays(limit: Boolean = true, includeConnected: Boolean = false): List<RelayUrl> {
+    fun getReadRelays(limit: Int = MAX_RELAYS, includeConnected: Boolean = false): List<RelayUrl> {
         return myNip65.value
             .filter { it.nip65Relay.isRead }
             .map { it.nip65Relay.url }
             .ifEmpty { defaultRelays }
-            .preferConnected(limit = if (limit) MAX_RELAYS else Int.MAX_VALUE)
+            .preferConnected(limit = limit)
             .let {
                 if (includeConnected) (it + nostrClient.getAllConnectedUrls()).distinct() else it
             }
     }
 
-    private fun getWriteRelays(limit: Boolean = true): List<RelayUrl> {
+    private fun getWriteRelays(limit: Int = MAX_RELAYS): List<RelayUrl> {
         return myNip65.value
             .filter { it.nip65Relay.isWrite }
             .map { it.nip65Relay.url }
             .ifEmpty { defaultRelays }
-            .let { if (limit) it.preferConnected(MAX_RELAYS) else it }
+            .preferConnected(limit)
     }
 
     fun getPublishRelays(): List<RelayUrl> {
@@ -77,12 +77,12 @@ class RelayProvider(
 
     suspend fun getObserveRelays(
         pubkey: PubkeyHex,
-        limit: Boolean = true,
+        limit: Int = MAX_RELAYS,
         includeConnected: Boolean = false
     ): List<RelayUrl> {
         val relays = nip65Dao.getWriteRelays(pubkeys = listOf(pubkey))
             .map { it.nip65Relay.url }
-            .let { if (limit) it.preferConnected(MAX_RELAYS) else it }
+            .preferConnected(limit)
             .toMutableSet()
         relays.addAll(getReadRelays(limit = limit))
         if (includeConnected) relays.addAll(nostrClient.getAllConnectedUrls())
@@ -92,11 +92,10 @@ class RelayProvider(
 
     suspend fun getObserveRelays(
         nprofile: Nip19Profile,
-        limit: Boolean = true,
+        limit: Int = MAX_RELAYS,
         includeConnected: Boolean = false
     ): List<RelayUrl> {
-        val foreignRelays = nprofile.relays()
-            .normalize(limit = if (limit) MAX_RELAYS else Int.MAX_VALUE)
+        val foreignRelays = nprofile.relays().normalize(limit = limit)
         val nip65 = getObserveRelays(
             pubkey = nprofile.publicKey().toHex(),
             limit = limit,
@@ -108,11 +107,10 @@ class RelayProvider(
 
     suspend fun getObserveRelays(
         nevent: Nip19Event,
-        limit: Boolean = true,
+        limit: Int = MAX_RELAYS,
         includeConnected: Boolean = false
     ): List<RelayUrl> {
-        val foreignRelays = nevent.relays()
-            .normalize(limit = if (limit) MAX_RELAYS else Int.MAX_VALUE)
+        val foreignRelays = nevent.relays().normalize(limit = limit)
         val pubkey = nevent.author()?.toHex()
         val nip65 = if (pubkey != null) getObserveRelays(
             pubkey = pubkey,
