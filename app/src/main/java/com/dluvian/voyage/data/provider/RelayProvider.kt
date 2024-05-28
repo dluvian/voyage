@@ -149,9 +149,10 @@ class RelayProvider(
             .take(MAX_RELAY_CONNECTIONS)
             .forEach { (relay, nip65Entities) ->
                 val maxToAdd = maxOf(0, MAX_PUBKEYS - result[relay].orEmpty().size)
-                val newPubkeys = nip65Entities.map { it.pubkey }.toSet()
-                    .minus(pubkeyCache)
+                val newPubkeys = nip65Entities
+                    .filterNot { pubkeyCache.contains(it.pubkey) }
                     .takeRandom(maxToAdd)
+                    .map { it.pubkey }
                 if (newPubkeys.isNotEmpty()) {
                     result.putIfAbsent(relay, newPubkeys.toMutableSet())
                     pubkeyCache.addAll(newPubkeys)

@@ -68,7 +68,6 @@ class NostrService(
 
         override fun onEOSE(relayUrl: RelayUrl, subId: SubId) {
             Log.d(TAG, "OnEOSE($relayUrl): $subId")
-            eventCounter.finish(subId = subId)
             nostrClient.unsubscribe(subId)
         }
 

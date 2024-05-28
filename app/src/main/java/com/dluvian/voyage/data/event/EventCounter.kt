@@ -45,12 +45,6 @@ class EventCounter {
         return false
     }
 
-    fun finish(subId: SubId) {
-        synchronized(countdownCache) {
-            countdownCache[subId] = 0
-        }
-    }
-
     fun clear() {
         synchronized(countdownCache) {
             countdownCache.clear()
