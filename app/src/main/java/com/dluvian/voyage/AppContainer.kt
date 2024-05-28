@@ -247,9 +247,7 @@ class AppContainer(context: Context) {
     val threadProvider = ThreadProvider(
         nostrSubscriber = nostrSubscriber,
         lazyNostrSubscriber = lazyNostrSubscriber,
-        rootPostDao = roomDb.rootPostDao(),
-        replyDao = roomDb.replyDao(),
-        existsDao = roomDb.existsDao(),
+        room = roomDb,
         forcedVotes = postVoter.forcedVotes,
         collapsedIds = threadCollapser.collapsedIds,
         annotatedStringProvider = annotatedStringProvider,

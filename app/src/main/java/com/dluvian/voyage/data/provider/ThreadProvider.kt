@@ -15,9 +15,7 @@ import com.dluvian.voyage.data.event.OldestUsedEvent
 import com.dluvian.voyage.data.interactor.Vote
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.nostr.NostrSubscriber
-import com.dluvian.voyage.data.room.dao.ExistsDao
-import com.dluvian.voyage.data.room.dao.ReplyDao
-import com.dluvian.voyage.data.room.dao.RootPostDao
+import com.dluvian.voyage.data.room.AppDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -31,9 +29,7 @@ private const val TAG = "ThreadProvider"
 class ThreadProvider(
     private val nostrSubscriber: NostrSubscriber,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
-    private val rootPostDao: RootPostDao,
-    private val replyDao: ReplyDao,
-    private val existsDao: ExistsDao,
+    private val room: AppDatabase,
     private val forcedVotes: Flow<Map<EventIdHex, Vote>>,
     private val collapsedIds: Flow<Set<EventIdHex>>,
     private val annotatedStringProvider: AnnotatedStringProvider,
@@ -44,18 +40,22 @@ class ThreadProvider(
     fun getLocalRoot(scope: CoroutineScope, nevent: Nip19Event, isInit: Boolean): Flow<ParentUI?> {
         val id = nevent.eventId().toHex()
         scope.launchIO {
-            if (!existsDao.postExists(id = id)) {
+            if (!room.existsDao().postExists(id = id)) {
                 nostrSubscriber.subPost(nevent = nevent)
                 delay(DELAY_1SEC)
             }
+            val author = nevent.author()?.toHex() ?: room.postDao().getAuthor(id = id)
+            if (author != null) {
+                lazyNostrSubscriber.lazySubUnknownProfiles(pubkeys = listOf(author))
+            }
+
             if (!isInit) {
-                lazyNostrSubscriber.lazySubUnknownProfiles()
                 nostrSubscriber.subVotesAndReplies(parentIds = listOf(id))
             }
         }
 
-        val rootFlow = rootPostDao.getRootPostFlow(id = id)
-        val replyFlow = replyDao.getReplyFlow(id = id)
+        val rootFlow = room.rootPostDao().getRootPostFlow(id = id)
+        val replyFlow = room.replyDao().getReplyFlow(id = id)
 
         return combine(
             rootFlow.firstThenDistinctDebounce(SHORT_DEBOUNCE),
@@ -79,14 +79,14 @@ class ThreadProvider(
 
     fun getParentIsAvailableFlow(scope: CoroutineScope, replyId: EventIdHex): Flow<Boolean> {
         scope.launchIO {
-            val parentId = replyDao.getParentId(id = replyId) ?: return@launchIO
-            if (!existsDao.postExists(id = parentId)) {
+            val parentId = room.replyDao().getParentId(id = replyId) ?: return@launchIO
+            if (!room.existsDao().postExists(id = parentId)) {
                 Log.i(TAG, "Parent $parentId is not available yet. Subscribing to it")
                 nostrSubscriber.subPost(nevent = createNevent(hex = parentId))
             }
         }
 
-        return existsDao.parentExistsFlow(replyId = replyId)
+        return room.existsDao().parentExistsFlow(replyId = replyId)
     }
 
     // Don't update oldestCreatedAt in replies. They are always younger than root
@@ -94,7 +94,7 @@ class ThreadProvider(
         rootId: EventIdHex,
         parentIds: Set<EventIdHex>,
     ): Flow<List<LeveledReplyUI>> {
-        val replyFlow = replyDao.getRepliesFlow(parentIds = parentIds + rootId)
+        val replyFlow = room.replyDao().getRepliesFlow(parentIds = parentIds + rootId)
             .firstThenDistinctDebounce(DEBOUNCE)
 
         return combine(
