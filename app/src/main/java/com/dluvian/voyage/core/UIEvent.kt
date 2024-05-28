@@ -247,6 +247,7 @@ data class SendAuth(val sendAuth: Boolean) : SettingsViewAction()
 
 
 sealed class SearchViewAction : UIEvent()
+data object SubUnknownProfiles : SearchViewAction()
 data class UpdateSearchText(val text: String) : SearchViewAction()
 data class SearchText(
     val text: String,

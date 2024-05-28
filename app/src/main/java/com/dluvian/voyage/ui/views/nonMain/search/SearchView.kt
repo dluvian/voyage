@@ -17,6 +17,7 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenThreadRaw
 import com.dluvian.voyage.core.OpenTopic
+import com.dluvian.voyage.core.SubUnknownProfiles
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.core.viewModel.SearchViewModel
@@ -36,7 +37,7 @@ fun SearchView(vm: SearchViewModel, snackbar: SnackbarHostState, onUpdate: OnUpd
     val posts by vm.posts
 
     LaunchedEffect(key1 = Unit) {
-        vm.subProfiles()
+        onUpdate(SubUnknownProfiles)
     }
 
     SearchScaffold(snackbar = snackbar, onUpdate = onUpdate) {

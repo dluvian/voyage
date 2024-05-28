@@ -1,6 +1,6 @@
 package com.dluvian.voyage.data.provider
 
-import com.dluvian.voyage.core.MAX_PUBKEYS
+import com.dluvian.voyage.core.MAX_KEYS
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.takeRandom
 import com.dluvian.voyage.data.room.dao.WebOfTrustDao
@@ -14,7 +14,7 @@ class WebOfTrustProvider(private val webOfTrustDao: WebOfTrustDao) {
     private val webOfTrust = webOfTrustDao.getWebOfTrustFlow()
         .stateIn(scope, SharingStarted.Eagerly, emptyList())
 
-    fun getWebOfTrustPubkeys(max: Int = MAX_PUBKEYS): List<PubkeyHex> {
+    fun getWebOfTrustPubkeys(max: Int = MAX_KEYS): List<PubkeyHex> {
         return webOfTrust.value.takeRandom(max)
     }
 

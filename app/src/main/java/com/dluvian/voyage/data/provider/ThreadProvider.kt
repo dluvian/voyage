@@ -41,15 +41,17 @@ class ThreadProvider(
     private val forcedFollows: Flow<Map<PubkeyHex, Boolean>>,
 ) {
 
-    fun getLocalRoot(scope: CoroutineScope, nevent: Nip19Event): Flow<ParentUI?> {
+    fun getLocalRoot(scope: CoroutineScope, nevent: Nip19Event, isInit: Boolean): Flow<ParentUI?> {
         val id = nevent.eventId().toHex()
         scope.launchIO {
             if (!existsDao.postExists(id = id)) {
                 nostrSubscriber.subPost(nevent = nevent)
                 delay(DELAY_1SEC)
             }
-            lazyNostrSubscriber.lazySubUnknownProfiles()
-            nostrSubscriber.subVotesAndReplies(parentIds = listOf(id))
+            if (!isInit) {
+                lazyNostrSubscriber.lazySubUnknownProfiles()
+                nostrSubscriber.subVotesAndReplies(parentIds = listOf(id))
+            }
         }
 
         val rootFlow = rootPostDao.getRootPostFlow(id = id)

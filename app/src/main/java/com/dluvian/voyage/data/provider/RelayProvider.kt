@@ -6,8 +6,8 @@ import com.dluvian.nostr_kt.Nip65Relay
 import com.dluvian.nostr_kt.NostrClient
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.removeTrailingSlashes
+import com.dluvian.voyage.core.MAX_KEYS
 import com.dluvian.voyage.core.MAX_POPULAR_RELAYS
-import com.dluvian.voyage.core.MAX_PUBKEYS
 import com.dluvian.voyage.core.MAX_RELAYS
 import com.dluvian.voyage.core.MAX_RELAYS_PER_PUBKEY
 import com.dluvian.voyage.core.MAX_RELAY_CONNECTIONS
@@ -148,7 +148,7 @@ class RelayProvider(
             .sortedByDescending { (relay, _) -> connectionStatuses.value[relay] !is Disconnected }
             .take(MAX_RELAY_CONNECTIONS)
             .forEach { (relay, nip65Entities) ->
-                val maxToAdd = maxOf(0, MAX_PUBKEYS - result[relay].orEmpty().size)
+                val maxToAdd = maxOf(0, MAX_KEYS - result[relay].orEmpty().size)
                 val newPubkeys = nip65Entities
                     .filterNot { pubkeyCache.contains(it.pubkey) }
                     .takeRandom(maxToAdd)

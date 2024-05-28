@@ -41,7 +41,6 @@ class HomeViewModel(
     }
 
     private var job: Job? = null
-
     private fun subMyAccountAndTrustData() {
         if (job?.isActive == true) return
         job = viewModelScope.launchIO {

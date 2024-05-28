@@ -17,6 +17,7 @@ import com.dluvian.voyage.core.OpenTopic
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.SearchText
 import com.dluvian.voyage.core.SearchViewAction
+import com.dluvian.voyage.core.SubUnknownProfiles
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.UpdateSearchText
 import com.dluvian.voyage.core.isBareTopicStr
@@ -47,11 +48,12 @@ class SearchViewModel(
         when (action) {
             is UpdateSearchText -> updateSearchText(text = action.text)
             is SearchText -> searchText(action)
+            is SubUnknownProfiles -> subProfiles()
         }
     }
 
     private var profileJob: Job? = null
-    fun subProfiles() {
+    private fun subProfiles() {
         if (profileJob?.isActive == true) return
 
         profileJob = viewModelScope.launchIO {

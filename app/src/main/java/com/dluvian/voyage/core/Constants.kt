@@ -18,7 +18,6 @@ const val LIST_CHANGE_DEBOUNCE = DELAY_1SEC
 
 const val LAZY_RND_RESUB_LIMIT = 10uL
 
-const val MAX_EVENTS_TO_SUB = 250uL
 const val AUTH_TIMEOUT = DELAY_10SEC
 
 const val MAX_RELAY_CONNECTIONS = 12
@@ -26,7 +25,8 @@ const val MAX_RELAYS = 5
 const val MAX_RELAYS_PER_PUBKEY = 2
 const val MAX_POPULAR_RELAYS = 50
 
-const val MAX_PUBKEYS = 750
+const val MAX_KEYS = 750 // Filter requests might get too long for most relays. Limit to 750
+const val MAX_EVENTS_TO_SUB = 250uL
 
 const val FEED_PAGE_SIZE = 35
 const val FEED_OFFSET = 7

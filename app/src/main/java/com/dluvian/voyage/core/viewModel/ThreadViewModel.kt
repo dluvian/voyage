@@ -45,7 +45,7 @@ class ThreadViewModel(
         this.nevent = nevent
 
         localRoot = threadProvider
-            .getLocalRoot(scope = viewModelScope, nevent = nevent)
+            .getLocalRoot(scope = viewModelScope, nevent = nevent, isInit = true)
             .stateIn(viewModelScope, SharingStarted.Eagerly, parentUi)
         checkParentAvailability(replyId = id, parentUi = parentUi)
         loadReplies(
@@ -76,7 +76,8 @@ class ThreadViewModel(
         isRefreshing.value = true
 
         viewModelScope.launchIO {
-            localRoot = threadProvider.getLocalRoot(scope = viewModelScope, nevent = currentNevent)
+            localRoot = threadProvider
+                .getLocalRoot(scope = viewModelScope, nevent = currentNevent, isInit = false)
                 .stateIn(viewModelScope, SharingStarted.Eagerly, currentRoot)
             parentIsAvailable = threadProvider
                 .getParentIsAvailableFlow(

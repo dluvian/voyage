@@ -1,7 +1,7 @@
 package com.dluvian.voyage.data.nostr
 
 import com.dluvian.nostr_kt.RelayUrl
-import com.dluvian.voyage.core.MAX_PUBKEYS
+import com.dluvian.voyage.core.MAX_KEYS
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.limitRestricted
@@ -39,7 +39,7 @@ class NostrFeedSubscriber(
             relayProvider
                 .getObserveRelays(pubkeys = friendProvider.getFriendPubkeys())
                 .forEach { (relayUrl, pubkeys) ->
-                    val publicKeys = pubkeys.takeRandom(MAX_PUBKEYS).map { PublicKey.fromHex(it) }
+                    val publicKeys = pubkeys.takeRandom(MAX_KEYS).map { PublicKey.fromHex(it) }
                     val friendsNoteFilter = Filter()
                         .kinds(kinds = textNoteAndRepostKinds)
                         .authors(authors = publicKeys)
