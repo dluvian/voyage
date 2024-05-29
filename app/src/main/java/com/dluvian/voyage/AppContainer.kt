@@ -86,7 +86,6 @@ class AppContainer(context: Context) {
         nostrClient = nostrClient,
         connectionStatuses = connectionStatuses,
     )
-    private val webOfTrustProvider = WebOfTrustProvider(webOfTrustDao = roomDb.webOfTrustDao())
 
     private val forcedFollowTopicStates = MutableStateFlow(emptyMap<Topic, Boolean>())
 
@@ -101,11 +100,6 @@ class AppContainer(context: Context) {
         accountDao = roomDb.accountDao(),
     )
 
-    private val friendProvider = FriendProvider(
-        friendDao = roomDb.friendDao(),
-        pubkeyProvider = accountManager,
-    )
-
     private val eventCounter = EventCounter()
 
     val subCreator = SubscriptionCreator(
@@ -114,8 +108,19 @@ class AppContainer(context: Context) {
         eventCounter = eventCounter
     )
 
+    private val friendProvider = FriendProvider(
+        friendDao = roomDb.friendDao(),
+        pubkeyProvider = accountManager,
+    )
+
+    private val webOfTrustProvider = WebOfTrustProvider(
+        pubkeyProvider = accountManager,
+        friendProvider = friendProvider,
+        webOfTrustDao = roomDb.webOfTrustDao()
+    )
+
     val lazyNostrSubscriber = LazyNostrSubscriber(
-        profileDao = roomDb.profileDao(),
+        room = roomDb,
         relayProvider = relayProvider,
         subCreator = subCreator,
         webOfTrustProvider = webOfTrustProvider,
@@ -128,11 +133,10 @@ class AppContainer(context: Context) {
 
     val nostrSubscriber = NostrSubscriber(
         topicProvider = topicProvider,
-        subCreator = subCreator,
         friendProvider = friendProvider,
+        subCreator = subCreator,
         relayProvider = relayProvider,
         webOfTrustProvider = webOfTrustProvider,
-        pubkeyProvider = accountManager,
         subBatcher = subBatcher,
         rootPostDao = roomDb.rootPostDao(),
         replyDao = roomDb.replyDao()

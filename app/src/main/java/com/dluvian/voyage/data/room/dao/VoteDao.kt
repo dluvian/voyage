@@ -17,4 +17,7 @@ interface VoteDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrReplaceVote(voteEntity: VoteEntity)
+
+    @Query("SELECT MAX(createdAt) FROM vote WHERE postId = :postId")
+    suspend fun getNewestVoteCreatedAt(postId: EventIdHex): Long?
 }

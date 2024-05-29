@@ -165,12 +165,11 @@ fun createReplyAndVoteFilters(
         .until(timestamp = until)
         .limitRestricted(limit = MAX_EVENTS_TO_SUB)
 
-    val replyLimit = minOf(MAX_EVENTS_TO_SUB, ids.size.toULong() * MAX_EVENTS_TO_SUB)
     val replyFilter = Filter()
         .kind(kind = Kind.fromEnum(KindEnum.TextNote))
         .events(ids = ids)
         .until(timestamp = until)
-        .limitRestricted(limit = replyLimit, ids.size.toULong() * MAX_EVENTS_TO_SUB)
+        .limitRestricted(limit = MAX_EVENTS_TO_SUB)
 
     return listOf(voteFilter, replyFilter)
 }

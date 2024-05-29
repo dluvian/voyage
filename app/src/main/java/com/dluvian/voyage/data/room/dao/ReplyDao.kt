@@ -24,6 +24,9 @@ private const val PROFILE_REPLY_FEED_EXISTS_QUERY = "SELECT EXISTS(SELECT * " +
 
 @Dao
 interface ReplyDao {
+    @Query("SELECT MAX(createdAt) FROM post WHERE parentId = :parentId")
+    suspend fun getNewestReplyCreatedAt(parentId: EventIdHex): Long?
+
     @Query("SELECT * FROM ReplyView WHERE parentId IN (:parentIds) ORDER BY createdAt ASC")
     fun getRepliesFlow(parentIds: Collection<EventIdHex>): Flow<List<ReplyView>>
 

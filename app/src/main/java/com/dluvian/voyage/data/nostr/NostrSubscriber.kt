@@ -3,10 +3,8 @@ package com.dluvian.voyage.data.nostr
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.FEED_RESUB_SPAN_THRESHOLD_SECS
 import com.dluvian.voyage.core.MAX_KEYS
-import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.RESUB_TIMEOUT
 import com.dluvian.voyage.core.textNoteAndRepostKinds
-import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.ProfileReplyFeedSetting
@@ -31,11 +29,10 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class NostrSubscriber(
     topicProvider: TopicProvider,
+    friendProvider: FriendProvider,
     val subCreator: SubscriptionCreator,
-    private val friendProvider: FriendProvider,
     private val relayProvider: RelayProvider,
     private val webOfTrustProvider: WebOfTrustProvider,
-    private val pubkeyProvider: IPubkeyProvider,
     private val subBatcher: SubBatcher,
     private val rootPostDao: RootPostDao,
     private val replyDao: ReplyDao,
@@ -132,7 +129,8 @@ class NostrSubscriber(
 
             votesAndRepliesCache.addAll(newIds)
 
-            val votePubkeys = getVotePubkeys()
+            val votePubkeys = webOfTrustProvider
+                .getFriendsAndWebOfTrustPubkeys(includeMyself = true, max = MAX_KEYS)
             relayProvider.getReadRelays().forEach { relay ->
                 subBatcher.submitVotesAndReplies(
                     relayUrl = relay,
@@ -143,14 +141,6 @@ class NostrSubscriber(
         }.invokeOnCompletion {
             isSubbingVotesAndReplies.set(false)
         }
-    }
-
-    private fun getVotePubkeys(): List<PubkeyHex> {
-        val pubkeys = mutableListOf(pubkeyProvider.getPubkeyHex())
-        pubkeys.addAll(friendProvider.getFriendPubkeys(max = MAX_KEYS))
-        pubkeys.addAll(webOfTrustProvider.getWebOfTrustPubkeys(max = MAX_KEYS))
-
-        return pubkeys.distinct().take(MAX_KEYS)
     }
 
     private suspend fun getCachedSinceTimestamp(

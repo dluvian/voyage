@@ -3,7 +3,9 @@ package com.dluvian.voyage.data.nostr
 import android.util.Log
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.core.DELAY_1SEC
+import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.LAZY_RND_RESUB_LIMIT
+import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
 import com.dluvian.voyage.core.MAX_KEYS
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.limitRestricted
@@ -14,8 +16,9 @@ import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
-import com.dluvian.voyage.data.room.dao.ProfileDao
+import com.dluvian.voyage.data.room.AppDatabase
 import kotlinx.coroutines.delay
+import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
 import rust.nostr.protocol.Kind
 import rust.nostr.protocol.KindEnum
@@ -26,7 +29,7 @@ import rust.nostr.protocol.Timestamp
 private const val TAG = "LazyNostrSubscriber"
 
 class LazyNostrSubscriber(
-    private val profileDao: ProfileDao,
+    private val room: AppDatabase,
     private val relayProvider: RelayProvider,
     val subCreator: SubscriptionCreator,
     private val webOfTrustProvider: WebOfTrustProvider,
@@ -43,9 +46,39 @@ class LazyNostrSubscriber(
         lazySubWebOfTrustPubkeys()
     }
 
+    suspend fun lazySubRepliesAndVotes(parentId: EventIdHex) {
+        Log.d(TAG, "lazySubRepliesAndVotes for parent $parentId")
+        val ids = listOf(EventId.fromHex(hex = parentId))
+        val now = Timestamp.now()
+        val newestReplyTime = room.replyDao().getNewestReplyCreatedAt(parentId = parentId) ?: 0L
+        val newestVoteTime = room.voteDao().getNewestVoteCreatedAt(postId = parentId) ?: 0L
+        val votePubkeys = webOfTrustProvider
+            .getFriendsAndWebOfTrustPubkeys(includeMyself = true, max = MAX_KEYS)
+
+        val replyFilter = Filter()
+            .kind(kind = Kind.fromEnum(KindEnum.TextNote))
+            .events(ids = ids)
+            .since(timestamp = Timestamp.fromSecs((newestReplyTime + 1).toULong()))
+            .until(timestamp = now)
+            .limitRestricted(limit = MAX_EVENTS_TO_SUB)
+        val voteFilter = Filter()
+            .kind(kind = Kind.fromEnum(KindEnum.Reaction))
+            .events(ids = ids)
+            .authors(authors = votePubkeys.map { PublicKey.fromHex(hex = it) })
+            .since(timestamp = Timestamp.fromSecs((newestVoteTime + 1).toULong()))
+            .until(timestamp = now)
+            .limitRestricted(limit = MAX_EVENTS_TO_SUB)
+        val filters = listOf(replyFilter, voteFilter)
+
+        relayProvider.getReadRelays().forEach { relay ->
+            subCreator.subscribe(relayUrl = relay, filters = filters)
+        }
+    }
+
     suspend fun lazySubUnknownProfiles(pubkeys: Collection<PubkeyHex>) {
         if (pubkeys.isEmpty()) return
-        val unknownPubkeys = pubkeys - profileDao.filterKnownProfiles(pubkeys = pubkeys).toSet()
+        val unknownPubkeys =
+            pubkeys - room.profileDao().filterKnownProfiles(pubkeys = pubkeys).toSet()
         if (unknownPubkeys.isEmpty()) return
 
         val timestamp = Timestamp.now()
@@ -124,7 +157,7 @@ class LazyNostrSubscriber(
             .since(timestamp = Timestamp.fromSecs(secs = nip65Since + 1u))
             .limit(1u)
 
-        val profileSince = profileDao.getMaxCreatedAt(pubkey = hex)?.toULong() ?: 1uL
+        val profileSince = room.profileDao().getMaxCreatedAt(pubkey = hex)?.toULong() ?: 1uL
         val myProfileFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Metadata))
             .author(author = pubkey)
             .until(timestamp = timestamp)

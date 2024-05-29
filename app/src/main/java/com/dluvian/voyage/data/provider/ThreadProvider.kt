@@ -49,9 +49,8 @@ class ThreadProvider(
                 lazyNostrSubscriber.lazySubUnknownProfiles(pubkeys = listOf(author))
             }
 
-            if (!isInit) {
-                nostrSubscriber.subVotesAndReplies(parentIds = listOf(id))
-            }
+            if (isInit) lazyNostrSubscriber.lazySubRepliesAndVotes(parentId = id)
+            else nostrSubscriber.subVotesAndReplies(parentIds = listOf(id))
         }
 
         val rootFlow = room.rootPostDao().getRootPostFlow(id = id)

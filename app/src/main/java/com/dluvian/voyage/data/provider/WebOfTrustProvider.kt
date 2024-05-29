@@ -1,21 +1,34 @@
 package com.dluvian.voyage.data.provider
 
-import com.dluvian.voyage.core.MAX_KEYS
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.takeRandom
+import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.room.dao.WebOfTrustDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 
-class WebOfTrustProvider(private val webOfTrustDao: WebOfTrustDao) {
+class WebOfTrustProvider(
+    private val pubkeyProvider: IPubkeyProvider,
+    private val friendProvider: FriendProvider,
+    private val webOfTrustDao: WebOfTrustDao
+) {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val webOfTrust = webOfTrustDao.getWebOfTrustFlow()
         .stateIn(scope, SharingStarted.Eagerly, emptyList())
 
-    fun getWebOfTrustPubkeys(max: Int = MAX_KEYS): List<PubkeyHex> {
-        return webOfTrust.value.takeRandom(max)
+    fun getFriendsAndWebOfTrustPubkeys(
+        includeMyself: Boolean,
+        max: Int = Int.MAX_VALUE
+    ): List<PubkeyHex> {
+        val result = if (includeMyself) mutableListOf(pubkeyProvider.getPubkeyHex())
+        else mutableListOf()
+
+        result.addAll(friendProvider.getFriendPubkeys(max = max))
+        result.addAll(webOfTrust.value.takeRandom(max))
+
+        return result.take(max)
     }
 
     suspend fun getWotWithMissingProfile() = webOfTrustDao.getWotWithMissingProfile()
