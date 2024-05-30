@@ -10,7 +10,6 @@ import com.dluvian.voyage.core.ClickEditProfile
 import com.dluvian.voyage.core.FollowProfile
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.UnfollowProfile
-import com.dluvian.voyage.core.getSignerLauncher
 import com.dluvian.voyage.data.model.FullProfileUI
 import com.dluvian.voyage.ui.components.bar.GoBackTopAppBar
 import com.dluvian.voyage.ui.components.button.FollowButton
@@ -18,7 +17,6 @@ import com.dluvian.voyage.ui.components.button.FollowButton
 
 @Composable
 fun ProfileTopAppBar(profile: FullProfileUI, onUpdate: OnUpdate) {
-    val signerLauncher = getSignerLauncher(onUpdate = onUpdate)
     GoBackTopAppBar(
         title = {
             Text(
@@ -31,20 +29,10 @@ fun ProfileTopAppBar(profile: FullProfileUI, onUpdate: OnUpdate) {
             if (!profile.inner.isMe) FollowButton(
                 isFollowed = profile.inner.isFriend,
                 onFollow = {
-                    onUpdate(
-                        FollowProfile(
-                            pubkey = profile.inner.pubkey,
-                            signerLauncher = signerLauncher
-                        )
-                    )
+                    onUpdate(FollowProfile(pubkey = profile.inner.pubkey))
                 },
                 onUnfollow = {
-                    onUpdate(
-                        UnfollowProfile(
-                            pubkey = profile.inner.pubkey,
-                            signerLauncher = signerLauncher
-                        )
-                    )
+                    onUpdate(UnfollowProfile(pubkey = profile.inner.pubkey))
                 })
             else Button(onClick = { onUpdate(ClickEditProfile) }) {
                 Text(text = stringResource(id = R.string.edit))

@@ -2,6 +2,7 @@ package com.dluvian.voyage.core
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import androidx.activity.result.ActivityResult
 import androidx.core.app.ActivityOptionsCompat
 import kotlinx.coroutines.channels.Channel
@@ -28,22 +29,33 @@ private const val PERMISSIONS = """
     ]
 """
 
+private const val TAG = "ExternalSignerHandler"
+
 class ExternalSignerHandler {
+    private var signerLauncher: SignerLauncher? = null
+    private var reqAccountLauncher: SignerLauncher? = null
     private val signatureChannel = Channel<String?>()
-    fun requestExternalAccount(reqAccountLauncher: SignerLauncher): Throwable? {
+
+    fun setSignerLauncher(launcher: SignerLauncher) {
+        Log.i(TAG, "Set signer launcher $launcher")
+        signerLauncher = launcher
+    }
+
+    fun setAccountLauncher(launcher: SignerLauncher) {
+        Log.i(TAG, "Set account launcher $launcher")
+        reqAccountLauncher = launcher
+    }
+
+    fun requestExternalAccount(): Throwable? {
         return runCatching {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse("nostrsigner:"))
             intent.putExtra("permissions", PERMISSIONS)
             intent.putExtra("type", "get_public_key")
-            reqAccountLauncher.launch(intent)
+            reqAccountLauncher?.launch(intent) ?: throw IllegalStateException("Signer is null")
         }.exceptionOrNull()
     }
 
-    suspend fun sign(
-        signerLauncher: SignerLauncher,
-        unsignedEvent: UnsignedEvent,
-        packageName: String
-    ): Result<Event> {
+    suspend fun sign(unsignedEvent: UnsignedEvent, packageName: String): Result<Event> {
         val err = runCatching {
             val intent = Intent(
                 Intent.ACTION_VIEW, Uri.parse("nostrsigner:${unsignedEvent.asJson()}")
@@ -52,10 +64,10 @@ class ExternalSignerHandler {
             intent.putExtra("type", "sign_event")
             intent.putExtra("id", unsignedEvent.id()?.toHex())
             intent.putExtra("current_user", unsignedEvent.author().toBech32())
-            signerLauncher.launch(
+            signerLauncher?.launch(
                 input = intent,
                 options = ActivityOptionsCompat.makeBasic()
-            )
+            ) ?: throw IllegalStateException("Signer is null")
         }.exceptionOrNull()
         if (err != null) return Result.failure(err)
 

@@ -28,7 +28,6 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.SendCrossPost
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.UpdateCrossPostTopics
-import com.dluvian.voyage.core.getSignerLauncher
 import com.dluvian.voyage.core.viewModel.CreateCrossPostViewModel
 import com.dluvian.voyage.ui.components.TopicSelectionChips
 import com.dluvian.voyage.ui.components.scaffold.ContentCreationScaffold
@@ -98,7 +97,6 @@ private fun CrossPostButton(
     onUpdate: OnUpdate
 ) {
     val context = LocalContext.current
-    val signerLauncher = getSignerLauncher(onUpdate = onUpdate)
 
     Button(
         modifier = modifier,
@@ -107,7 +105,6 @@ private fun CrossPostButton(
                 SendCrossPost(
                     topics = selectedTopics.value,
                     context = context,
-                    signerLauncher = signerLauncher,
                     onGoBack = { onUpdate(GoBack) })
             )
         }) {

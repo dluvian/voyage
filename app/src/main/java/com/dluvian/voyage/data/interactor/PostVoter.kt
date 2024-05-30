@@ -11,7 +11,6 @@ import com.dluvian.voyage.core.ClickUpvote
 import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.SignerLauncher
 import com.dluvian.voyage.core.VoteEvent
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.event.EventDeletor
@@ -61,7 +60,6 @@ class PostVoter(
             mention = action.mention,
             vote = newVote,
             kind = 1u, // We currently only vote on kind 1. Reposts are dereferenced to their kind 1
-            signerLauncher = action.signerLauncher,
         )
     }
 
@@ -79,7 +77,6 @@ class PostVoter(
         mention: PubkeyHex,
         vote: Vote,
         kind: UShort,
-        signerLauncher: SignerLauncher
     ) {
         jobs[postId]?.cancel(CancellationException("User clicks fast"))
         jobs[postId] = scope.launch {
@@ -92,15 +89,11 @@ class PostVoter(
                     mention = mention,
                     isPositive = vote.isPositive(),
                     kind = kind,
-                    signerLauncher = signerLauncher,
                 )
 
                 NoVote -> {
                     if (currentVote == null) return@launch
-                    eventDeletor.deleteVote(
-                        voteId = currentVote.id,
-                        signerLauncher = signerLauncher
-                    )
+                    eventDeletor.deleteVote(voteId = currentVote.id)
                 }
             }
         }
@@ -116,11 +109,10 @@ class PostVoter(
         mention: PubkeyHex,
         isPositive: Boolean,
         kind: UShort,
-        signerLauncher: SignerLauncher,
     ) {
         if (currentVote?.isPositive == isPositive) return
         if (currentVote != null) {
-            eventDeletor.deleteVote(voteId = currentVote.id, signerLauncher = signerLauncher)
+            eventDeletor.deleteVote(voteId = currentVote.id)
         }
         nostrService.publishVote(
             eventId = EventId.fromHex(postId),
@@ -128,7 +120,6 @@ class PostVoter(
             isPositive = isPositive,
             kind = Kind(kind),
             relayUrls = relayProvider.getPublishRelays(publishTo = listOf(mention)),
-            signerLauncher = signerLauncher,
         )
             .onSuccess { event ->
                 val entity = VoteEntity(

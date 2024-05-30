@@ -8,7 +8,6 @@ import com.dluvian.nostr_kt.createMentionTag
 import com.dluvian.nostr_kt.createReplyTag
 import com.dluvian.nostr_kt.createSubjectTag
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.SignerLauncher
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.account.AccountManager
 import rust.nostr.protocol.Contact
@@ -28,11 +27,9 @@ class EventMaker(
     private val accountManager: AccountManager,
 ) {
     suspend fun buildPost(
-        subject: String,
-        content: String,
+        subject: String, content: String,
         topics: List<Topic>,
-        mentions: List<PubkeyHex>,
-        signerLauncher: SignerLauncher,
+        mentions: List<PubkeyHex>
     ): Result<Event> {
         val tags = mutableListOf<Tag>()
         if (subject.isNotEmpty()) tags.add(createSubjectTag(subject = subject))
@@ -43,19 +40,21 @@ class EventMaker(
             .textNote(content = content, tags = tags)
             .toUnsignedEvent(accountManager.getPublicKey())
 
-        return accountManager.sign(signerLauncher = signerLauncher, unsignedEvent = unsignedEvent)
+        return accountManager.sign(unsignedEvent = unsignedEvent)
     }
 
     suspend fun buildReply(
-        parentId: EventId,
-        mentions: Collection<PublicKey>,
+        parentId: EventId, mentions: Collection<PublicKey>,
         relayHint: RelayUrl,
         pubkeyHint: PubkeyHex,
-        content: String,
-        signerLauncher: SignerLauncher,
+        content: String
     ): Result<Event> {
         val tags = mutableListOf(
-            createReplyTag(parentEventId = parentId, relayHint = relayHint, pubkeyHint = pubkeyHint)
+            createReplyTag(
+                parentEventId = parentId,
+                relayHint = relayHint,
+                pubkeyHint = pubkeyHint
+            )
         )
         mentions.forEach { tags.add(Tag.publicKey(publicKey = it)) }
 
@@ -63,77 +62,60 @@ class EventMaker(
             .textNote(content = content, tags = tags)
             .toUnsignedEvent(accountManager.getPublicKey())
 
-        return accountManager.sign(signerLauncher = signerLauncher, unsignedEvent = unsignedEvent)
+        return accountManager.sign(unsignedEvent = unsignedEvent)
     }
 
     suspend fun buildCrossPost(
-        crossPostedEvent: Event,
-        topics: List<Topic>,
-        relayHint: RelayUrl,
-        signerLauncher: SignerLauncher,
+        crossPostedEvent: Event, topics: List<Topic>,
+        relayHint: RelayUrl
     ): Result<Event> {
         val unsignedEvent = EventBuilder
             .repost(event = crossPostedEvent, relayUrl = relayHint)
             .addTags(tags = topics.map { createHashtagTag(hashtag = it) })
             .toUnsignedEvent(accountManager.getPublicKey())
 
-        return accountManager.sign(signerLauncher = signerLauncher, unsignedEvent = unsignedEvent)
+        return accountManager.sign(unsignedEvent = unsignedEvent)
     }
 
     suspend fun buildVote(
-        eventId: EventId,
-        mention: PublicKey,
+        eventId: EventId, mention: PublicKey,
         isPositive: Boolean,
-        kind: Kind,
-        signerLauncher: SignerLauncher,
+        kind: Kind
     ): Result<Event> {
         val unsignedEvent = EventBuilder.reactionExtended(
-            eventId = eventId,
-            publicKey = mention,
+            eventId = eventId, publicKey = mention,
             kind = kind,
             reaction = if (isPositive) "+" else "-",
         ).toUnsignedEvent(publicKey = accountManager.getPublicKey())
 
-        return accountManager.sign(signerLauncher = signerLauncher, unsignedEvent = unsignedEvent)
+        return accountManager.sign(unsignedEvent = unsignedEvent)
     }
 
-    suspend fun buildDelete(
-        eventId: EventId,
-        signerLauncher: SignerLauncher,
-    ): Result<Event> {
+    suspend fun buildDelete(eventId: EventId): Result<Event> {
         val unsignedEvent = EventBuilder.delete(ids = listOf(eventId), reason = null)
             .toUnsignedEvent(accountManager.getPublicKey())
 
-        return accountManager.sign(signerLauncher = signerLauncher, unsignedEvent = unsignedEvent)
+        return accountManager.sign(unsignedEvent = unsignedEvent)
     }
 
-    suspend fun buildTopicList(
-        topics: List<Topic>,
-        signerLauncher: SignerLauncher,
-    ): Result<Event> {
+    suspend fun buildTopicList(topics: List<Topic>): Result<Event> {
         val interests = Interests(hashtags = topics, coordinate = emptyList())
         val unsignedEvent = EventBuilder.interests(list = interests)
             .toUnsignedEvent(accountManager.getPublicKey())
 
-        return accountManager.sign(signerLauncher = signerLauncher, unsignedEvent = unsignedEvent)
+        return accountManager.sign(unsignedEvent = unsignedEvent)
     }
 
-    suspend fun buildContactList(
-        pubkeys: List<PubkeyHex>,
-        signerLauncher: SignerLauncher,
-    ): Result<Event> {
+    suspend fun buildContactList(pubkeys: List<PubkeyHex>): Result<Event> {
         val contacts = pubkeys
             .map { Contact(pk = PublicKey.fromHex(it), relayUrl = null, alias = null) }
         val unsignedEvent = EventBuilder.contactList(list = contacts)
             .toUnsignedEvent(accountManager.getPublicKey())
 
-        return accountManager.sign(signerLauncher = signerLauncher, unsignedEvent = unsignedEvent)
+        return accountManager.sign(unsignedEvent = unsignedEvent)
     }
 
-    suspend fun buildNip65(
-        relays: List<Nip65Relay>,
-        signerLauncher: SignerLauncher,
-    ): Result<Event> {
+    suspend fun buildNip65(relays: List<Nip65Relay>): Result<Event> {
         val metadata = mutableMapOf<RelayUrl, RelayMetadata?>()
 
         relays.forEach {
@@ -145,24 +127,17 @@ class EventMaker(
         val unsignedEvent = EventBuilder.relayList(map = metadata)
             .toUnsignedEvent(accountManager.getPublicKey())
 
-        return accountManager.sign(signerLauncher = signerLauncher, unsignedEvent = unsignedEvent)
+        return accountManager.sign(unsignedEvent = unsignedEvent)
     }
 
-    suspend fun buildProfile(
-        metadata: Metadata,
-        signerLauncher: SignerLauncher,
-    ): Result<Event> {
+    suspend fun buildProfile(metadata: Metadata): Result<Event> {
         val unsignedEvent = EventBuilder.metadata(metadata)
             .toUnsignedEvent(publicKey = accountManager.getPublicKey())
 
-        return accountManager.sign(signerLauncher = signerLauncher, unsignedEvent = unsignedEvent)
+        return accountManager.sign(unsignedEvent = unsignedEvent)
     }
 
-    suspend fun buildAuth(
-        relayUrl: RelayUrl,
-        challenge: String,
-        signerLauncher: SignerLauncher,
-    ): Result<Event> {
+    suspend fun buildAuth(relayUrl: RelayUrl, challenge: String): Result<Event> {
         Log.d(TAG, "Build AUTH for $relayUrl")
         val unsignedEvent = runCatching {
             EventBuilder.auth(challenge = challenge, relayUrl = relayUrl)
@@ -170,10 +145,7 @@ class EventMaker(
         }
 
         return if (unsignedEvent.isSuccess) {
-            accountManager.sign(
-                signerLauncher = signerLauncher,
-                unsignedEvent = unsignedEvent.getOrThrow()
-            )
+            accountManager.sign(unsignedEvent = unsignedEvent.getOrThrow())
         } else {
             Log.w(TAG, "EventBuilder.auth for $relayUrl failed")
             Result.failure(

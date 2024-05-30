@@ -8,7 +8,6 @@ import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.SignerLauncher
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.createValidatedMainPost
 import com.dluvian.voyage.core.extractCleanHashtags
@@ -36,7 +35,6 @@ class PostSender(
         header: String,
         body: String,
         topics: List<Topic>,
-        signerLauncher: SignerLauncher
     ): Result<Event> {
         val trimmedHeader = header.trim()
         val trimmedBody = body.trim()
@@ -52,7 +50,6 @@ class PostSender(
             topics = allTopics.distinct().take(MAX_TOPICS),
             mentions = mentions,
             relayUrls = relayProvider.getPublishRelays(publishTo = mentions),
-            signerLauncher = signerLauncher,
         ).onSuccess { event ->
             val validatedPost = ValidatedRootPost(
                 id = event.id().toHex(),
@@ -75,7 +72,6 @@ class PostSender(
         recipient: PubkeyHex,
         body: String,
         relayHint: RelayUrl,
-        signerLauncher: SignerLauncher,
     ): Result<Event> {
         val trimmedBody = body.trim()
         val mentions = (extractMentionPubkeys(content = trimmedBody) + recipient).distinct()
@@ -87,7 +83,6 @@ class PostSender(
             relayHint = relayHint,
             pubkeyHint = recipient,
             relayUrls = relayProvider.getPublishRelays(publishTo = mentions),
-            signerLauncher = signerLauncher,
         ).onSuccess { event ->
             val validatedReply = ValidatedReply(
                 id = event.id().toHex(),
@@ -107,7 +102,6 @@ class PostSender(
     suspend fun sendCrossPost(
         id: EventIdHex,
         topics: List<Topic>,
-        signerLauncher: SignerLauncher
     ): Result<Event> {
         val post = postDao.getPost(id = id)
             ?: return Result.failure(IllegalStateException("Post not found"))
@@ -130,7 +124,6 @@ class PostSender(
             topics = topics,
             relayHint = post.relayUrl,
             relayUrls = relayProvider.getPublishRelays(),
-            signerLauncher = signerLauncher,
         ).onSuccess { event ->
             val validatedCrossPost = ValidatedCrossPost(
                 id = event.id().toHex(),

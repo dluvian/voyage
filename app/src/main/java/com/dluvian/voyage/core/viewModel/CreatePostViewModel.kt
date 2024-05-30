@@ -47,7 +47,6 @@ class CreatePostViewModel(
                 header = action.header,
                 body = action.body,
                 topics = action.topics,
-                signerLauncher = action.signerLauncher
             )
 
             delay(DELAY_1SEC)

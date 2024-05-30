@@ -26,7 +26,6 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.SendPost
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.UpdatePostTopics
-import com.dluvian.voyage.core.getSignerLauncher
 import com.dluvian.voyage.core.viewModel.CreatePostViewModel
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.ui.components.row.TopicSelectionRow
@@ -56,7 +55,6 @@ fun CreatePostView(
         onUpdate(UpdatePostTopics)
     }
 
-    val signerLauncher = getSignerLauncher(onUpdate = onUpdate)
 
     ContentCreationScaffold(
         showSendButton = body.value.text.isNotBlank(),
@@ -69,7 +67,6 @@ fun CreatePostView(
                     body = body.value.text,
                     topics = topics.value,
                     context = context,
-                    signerLauncher = signerLauncher
                 ) { onUpdate(GoBack) }
             )
         },

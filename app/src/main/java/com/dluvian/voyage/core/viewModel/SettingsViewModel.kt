@@ -103,9 +103,7 @@ class SettingsViewModel(
             return
         }
 
-        val result = externalSignerHandler.requestExternalAccount(
-            reqAccountLauncher = action.reqAccountLauncher
-        )
+        val result = externalSignerHandler.requestExternalAccount()
         if (result != null) {
             isLoadingAccount.value = false
             snackbar.showToast(

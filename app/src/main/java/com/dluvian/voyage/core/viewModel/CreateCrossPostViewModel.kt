@@ -47,11 +47,7 @@ class CreateCrossPostViewModel(
 
         isSending.value = true
         viewModelScope.launchIO {
-            val result = postSender.sendCrossPost(
-                id = nonNullId,
-                topics = action.topics,
-                signerLauncher = action.signerLauncher
-            )
+            val result = postSender.sendCrossPost(id = nonNullId, topics = action.topics)
 
             delay(DELAY_1SEC)
             action.onGoBack()

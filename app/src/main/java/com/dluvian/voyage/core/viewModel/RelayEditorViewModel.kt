@@ -88,7 +88,6 @@ class RelayEditorViewModel(
             val result = nostrService.publishNip65(
                 relays = myRelays.value,
                 relayUrls = relayProvider.getPublishRelays(),
-                signerLauncher = action.signerLauncher
             )
             if (result.isSuccess) {
                 val event = result.getOrThrow()

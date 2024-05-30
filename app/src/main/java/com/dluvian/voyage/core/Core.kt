@@ -45,10 +45,7 @@ class Core(
             is ProfileEvent -> appContainer.profileFollower.handle(action = uiEvent)
             is TopicEvent -> appContainer.topicFollower.handle(action = uiEvent)
             is DeletePost -> viewModelScope.launchIO {
-                appContainer.eventDeletor.deletePost(
-                    postId = uiEvent.id,
-                    signerLauncher = uiEvent.signerLauncher
-                )
+                appContainer.eventDeletor.deletePost(postId = uiEvent.id)
             }
 
             is HomeViewAction -> vmContainer.homeVM.handle(action = uiEvent)
@@ -73,6 +70,13 @@ class Core(
             is ClickText -> clickText(action = uiEvent)
 
             is ProfileSuggestionAction -> appContainer.profileSuggestionProvider.handle(action = uiEvent)
+            is RegisterAccountLauncher -> appContainer.externalSignerHandler.setAccountLauncher(
+                launcher = uiEvent.launcher
+            )
+
+            is RegisterSignerLauncher -> appContainer.externalSignerHandler.setSignerLauncher(
+                launcher = uiEvent.launcher
+            )
         }
     }
 

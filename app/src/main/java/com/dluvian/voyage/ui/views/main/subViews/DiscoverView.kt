@@ -40,7 +40,6 @@ import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenTopic
 import com.dluvian.voyage.core.UnfollowProfile
 import com.dluvian.voyage.core.UnfollowTopic
-import com.dluvian.voyage.core.getSignerLauncher
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.core.viewModel.DiscoverViewModel
 import com.dluvian.voyage.ui.components.PullRefreshBox
@@ -69,7 +68,6 @@ fun DiscoverView(vm: DiscoverViewModel, onUpdate: OnUpdate) {
             profileState.scrollToItem(0)
         }
     }
-    val signerLauncher = getSignerLauncher(onUpdate = onUpdate)
 
     val followableTopics = remember(topics) {
         topics.map {
@@ -83,12 +81,8 @@ fun DiscoverView(vm: DiscoverViewModel, onUpdate: OnUpdate) {
                         contentDescription = it.topic
                     )
                 },
-                onFollow = {
-                    onUpdate(FollowTopic(topic = it.topic, signerLauncher = signerLauncher))
-                },
-                onUnfollow = {
-                    onUpdate(UnfollowTopic(topic = it.topic, signerLauncher = signerLauncher))
-                }
+                onFollow = { onUpdate(FollowTopic(topic = it.topic)) },
+                onUnfollow = { onUpdate(UnfollowTopic(topic = it.topic)) }
             ) { onUpdate(OpenTopic(topic = it.topic)) }
         }
     }
@@ -114,16 +108,8 @@ fun DiscoverView(vm: DiscoverViewModel, onUpdate: OnUpdate) {
                         )
                     }
                 },
-                onFollow = {
-                    onUpdate(
-                        FollowProfile(pubkey = it.inner.pubkey, signerLauncher = signerLauncher)
-                    )
-                },
-                onUnfollow = {
-                    onUpdate(
-                        UnfollowProfile(pubkey = it.inner.pubkey, signerLauncher = signerLauncher)
-                    )
-                }
+                onFollow = { onUpdate(FollowProfile(pubkey = it.inner.pubkey)) },
+                onUnfollow = { onUpdate(UnfollowProfile(pubkey = it.inner.pubkey)) }
             ) { onUpdate(OpenProfile(nprofile = it.inner.toNip19())) }
         }
     }

@@ -47,7 +47,6 @@ import com.dluvian.voyage.core.RemoveRelay
 import com.dluvian.voyage.core.SaveRelays
 import com.dluvian.voyage.core.ToggleReadRelay
 import com.dluvian.voyage.core.ToggleWriteRelay
-import com.dluvian.voyage.core.getSignerLauncher
 import com.dluvian.voyage.core.model.Connected
 import com.dluvian.voyage.core.model.ConnectionStatus
 import com.dluvian.voyage.core.model.Waiting
@@ -70,7 +69,6 @@ fun RelayEditorView(vm: RelayEditorViewModel, snackbar: SnackbarHostState, onUpd
     val isSaving by vm.isSaving
     val connectionStatuses by vm.connectionStatuses
     val scope = rememberCoroutineScope()
-    val signerLauncher = getSignerLauncher(onUpdate = onUpdate)
     val context = LocalContext.current
 
     LaunchedEffect(key1 = Unit) {
@@ -85,7 +83,6 @@ fun RelayEditorView(vm: RelayEditorViewModel, snackbar: SnackbarHostState, onUpd
         onSave = {
             onUpdate(
                 SaveRelays(
-                    signerLauncher = signerLauncher,
                     context = context,
                     onGoBack = { onUpdate(GoBack) },
                 )

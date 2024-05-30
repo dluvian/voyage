@@ -13,7 +13,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.dluvian.voyage.core.Core
 import com.dluvian.voyage.core.Fn
-import com.dluvian.voyage.core.getSignerLauncher
 import com.dluvian.voyage.core.viewModel.CreateCrossPostViewModel
 import com.dluvian.voyage.core.viewModel.CreatePostViewModel
 import com.dluvian.voyage.core.viewModel.CreateReplyViewModel
@@ -49,8 +48,6 @@ class MainActivity : ComponentActivity() {
                 )
             }
             core.handleDeeplink(intent = intent)
-            val signerLauncher = getSignerLauncher(onUpdate = core.onUpdate)
-            appContainer.nostrService.defaultLauncher = signerLauncher
 
             VoyageApp(core)
         }

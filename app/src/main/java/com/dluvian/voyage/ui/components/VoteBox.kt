@@ -26,7 +26,6 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.getSignerLauncher
 import com.dluvian.voyage.data.interactor.Downvote
 import com.dluvian.voyage.data.interactor.NoVote
 import com.dluvian.voyage.data.interactor.Upvote
@@ -72,7 +71,6 @@ private fun VoteButtonsAndTally(
     downvoteCount: Int,
     onUpdate: OnUpdate,
 ) {
-    val signerLauncher = getSignerLauncher(onUpdate = onUpdate)
     Row(
         modifier = Modifier
             .padding(horizontal = spacing.medium)
@@ -96,22 +94,11 @@ private fun VoteButtonsAndTally(
             tint = if (myVote is Upvote) Orange else MaterialTheme.colorScheme.onSurfaceVariant,
             description = stringResource(id = R.string.upvote),
             onClick = {
-                if (myVote is Upvote)
-                    onUpdate(
-                        ClickNeutralizeVote(
-                            postId = postId,
-                            mention = authorPubkey,
-                            signerLauncher = signerLauncher
-                        )
-                    )
-                else
-                    onUpdate(
-                        ClickUpvote(
-                            postId = postId,
-                            mention = authorPubkey,
-                            signerLauncher = signerLauncher
-                        )
-                    )
+                if (myVote is Upvote) {
+                    onUpdate(ClickNeutralizeVote(postId = postId, mention = authorPubkey))
+                } else {
+                    onUpdate(ClickUpvote(postId = postId, mention = authorPubkey))
+                }
             }
         )
         val tally = remember(upvoteCount, downvoteCount) { upvoteCount - downvoteCount }
@@ -125,22 +112,11 @@ private fun VoteButtonsAndTally(
             tint = if (myVote is Downvote) DenimBlue else MaterialTheme.colorScheme.onSurfaceVariant,
             description = stringResource(id = R.string.downvote),
             onClick = {
-                if (myVote is Downvote)
-                    onUpdate(
-                        ClickNeutralizeVote(
-                            postId = postId,
-                            mention = authorPubkey,
-                            signerLauncher = signerLauncher
-                        )
-                    )
-                else
-                    onUpdate(
-                        ClickDownvote(
-                            postId = postId,
-                            mention = authorPubkey,
-                            signerLauncher = signerLauncher
-                        )
-                    )
+                if (myVote is Downvote) {
+                    onUpdate(ClickNeutralizeVote(postId = postId, mention = authorPubkey))
+                } else {
+                    onUpdate(ClickDownvote(postId = postId, mention = authorPubkey))
+                }
             })
     }
 }

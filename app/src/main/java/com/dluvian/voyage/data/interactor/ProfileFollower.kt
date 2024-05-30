@@ -9,7 +9,6 @@ import com.dluvian.voyage.core.FollowProfile
 import com.dluvian.voyage.core.LIST_CHANGE_DEBOUNCE
 import com.dluvian.voyage.core.ProfileEvent
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.SignerLauncher
 import com.dluvian.voyage.core.UnfollowProfile
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.showToast
@@ -49,26 +48,20 @@ class ProfileFollower(
             is FollowProfile -> handleAction(
                 pubkey = action.pubkey,
                 isFollowed = true,
-                signerLauncher = action.signerLauncher
             )
 
             is UnfollowProfile -> handleAction(
                 pubkey = action.pubkey,
                 isFollowed = false,
-                signerLauncher = action.signerLauncher
             )
         }
     }
 
-    private var signerLauncher: SignerLauncher? = null
-
     private fun handleAction(
         pubkey: PubkeyHex,
         isFollowed: Boolean,
-        signerLauncher: SignerLauncher
     ) {
         updateForcedFollows(pubkey = pubkey, isFollowed = isFollowed)
-        this.signerLauncher = signerLauncher
         handleFollowsInBackground()
     }
 
@@ -82,7 +75,6 @@ class ProfileFollower(
 
     private var job: Job? = null
     private fun handleFollowsInBackground() {
-        val nonNullSignerLauncher = signerLauncher ?: return
         if (job?.isActive == true) return
         job = scope.launchIO {
             delay(LIST_CHANGE_DEBOUNCE)
@@ -104,7 +96,6 @@ class ProfileFollower(
             nostrService.publishContactList(
                 pubkeys = friendsAdjusted.toList(),
                 relayUrls = relayProvider.getPublishRelays(),
-                signerLauncher = nonNullSignerLauncher,
             ).onSuccess { event ->
                 val friendList = ValidatedContactList(
                     pubkey = event.author().toHex(),

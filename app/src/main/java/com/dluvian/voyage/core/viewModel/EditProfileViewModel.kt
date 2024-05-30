@@ -61,7 +61,6 @@ class EditProfileViewModel(
             val result = nostrService.publishProfile(
                 metadata = action.metadata,
                 relayUrls = relayProvider.getPublishRelays(),
-                signerLauncher = action.signerLauncher
             )
 
             if (result.isSuccess) saveInDb(event = result.getOrThrow())

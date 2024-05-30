@@ -28,7 +28,6 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.SendReply
-import com.dluvian.voyage.core.getSignerLauncher
 import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.core.viewModel.CreateReplyViewModel
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
@@ -57,8 +56,6 @@ fun CreateReplyView(
         focusRequester.requestFocus()
     }
 
-    val signerLauncher = getSignerLauncher(onUpdate = onUpdate)
-
     ContentCreationScaffold(
         showSendButton = response.value.text.isNotBlank(),
         isSendingContent = isSendingResponse,
@@ -70,7 +67,6 @@ fun CreateReplyView(
                         parent = it,
                         body = response.value.text,
                         context = context,
-                        signerLauncher = signerLauncher,
                         onGoBack = { onUpdate(GoBack) })
                 )
             }

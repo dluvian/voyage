@@ -8,7 +8,6 @@ import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.FollowTopic
 import com.dluvian.voyage.core.LIST_CHANGE_DEBOUNCE
-import com.dluvian.voyage.core.SignerLauncher
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.TopicEvent
 import com.dluvian.voyage.core.UnfollowTopic
@@ -43,21 +42,17 @@ class TopicFollower(
             is FollowTopic -> handleAction(
                 topic = action.topic,
                 isFollowed = true,
-                signerLauncher = action.signerLauncher
             )
 
             is UnfollowTopic -> handleAction(
                 topic = action.topic,
                 isFollowed = false,
-                signerLauncher = action.signerLauncher
             )
         }
     }
 
-    private var signerLauncher: SignerLauncher? = null
-    private fun handleAction(topic: Topic, isFollowed: Boolean, signerLauncher: SignerLauncher) {
+    private fun handleAction(topic: Topic, isFollowed: Boolean) {
         updateForcedState(topic = topic, isFollowed = isFollowed)
-        this.signerLauncher = signerLauncher
         handleFollowsInBackground()
     }
 
@@ -71,7 +66,6 @@ class TopicFollower(
 
     private var job: Job? = null
     private fun handleFollowsInBackground() {
-        val nonNullSignerLauncher = signerLauncher ?: return
         if (job?.isActive == true) return
 
         job = scope.launchIO {
@@ -93,7 +87,6 @@ class TopicFollower(
             nostrService.publishTopicList(
                 topics = topicsAdjusted.toList(),
                 relayUrls = relayProvider.getPublishRelays(),
-                signerLauncher = nonNullSignerLauncher,
             ).onSuccess { event ->
                 val topicList = ValidatedTopicList(
                     myPubkey = event.author().toHex(),

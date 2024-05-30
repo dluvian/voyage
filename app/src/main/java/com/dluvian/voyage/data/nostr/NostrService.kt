@@ -10,7 +10,6 @@ import com.dluvian.nostr_kt.SubId
 import com.dluvian.voyage.core.AUTH_TIMEOUT
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.SignerLauncher
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.BadConnection
@@ -43,7 +42,6 @@ class NostrService(
     private val eventCounter: EventCounter
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
-    var defaultLauncher: SignerLauncher? = null
 
     private val listener = object : INostrListener {
         override fun onOpen(relayUrl: RelayUrl, msg: String) {
@@ -121,14 +119,12 @@ class NostrService(
         topics: List<Topic>,
         mentions: List<PubkeyHex>,
         relayUrls: Collection<RelayUrl>,
-        signerLauncher: SignerLauncher,
     ): Result<Event> {
         return eventMaker.buildPost(
             subject = subject,
             content = content,
             topics = topics,
             mentions = mentions,
-            signerLauncher = signerLauncher,
         )
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
@@ -140,7 +136,6 @@ class NostrService(
         relayHint: RelayUrl,
         pubkeyHint: PubkeyHex,
         relayUrls: Collection<RelayUrl>,
-        signerLauncher: SignerLauncher,
     ): Result<Event> {
         return eventMaker.buildReply(
             parentId = EventId.fromHex(parentId),
@@ -148,7 +143,6 @@ class NostrService(
             relayHint = relayHint,
             pubkeyHint = pubkeyHint,
             content = content,
-            signerLauncher = signerLauncher,
         )
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
@@ -158,13 +152,11 @@ class NostrService(
         topics: List<Topic>,
         relayHint: RelayUrl,
         relayUrls: Collection<RelayUrl>,
-        signerLauncher: SignerLauncher,
     ): Result<Event> {
         return eventMaker.buildCrossPost(
             crossPostedEvent = crossPostedEvent,
             topics = topics,
             relayHint = relayHint,
-            signerLauncher = signerLauncher,
         )
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
@@ -175,14 +167,12 @@ class NostrService(
         isPositive: Boolean,
         kind: Kind,
         relayUrls: Collection<RelayUrl>,
-        signerLauncher: SignerLauncher,
     ): Result<Event> {
         return eventMaker.buildVote(
             eventId = eventId,
             mention = mention,
             isPositive = isPositive,
             kind = kind,
-            signerLauncher = signerLauncher,
         )
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
@@ -190,45 +180,40 @@ class NostrService(
     suspend fun publishDelete(
         eventId: EventId,
         relayUrls: Collection<RelayUrl>,
-        signerLauncher: SignerLauncher
     ): Result<Event> {
-        return eventMaker.buildDelete(eventId = eventId, signerLauncher = signerLauncher)
+        return eventMaker.buildDelete(eventId = eventId)
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
     suspend fun publishTopicList(
         topics: List<Topic>,
         relayUrls: Collection<RelayUrl>,
-        signerLauncher: SignerLauncher,
     ): Result<Event> {
-        return eventMaker.buildTopicList(topics = topics, signerLauncher = signerLauncher)
+        return eventMaker.buildTopicList(topics = topics)
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
     suspend fun publishContactList(
         pubkeys: List<PubkeyHex>,
         relayUrls: Collection<RelayUrl>,
-        signerLauncher: SignerLauncher,
     ): Result<Event> {
-        return eventMaker.buildContactList(pubkeys = pubkeys, signerLauncher = signerLauncher)
+        return eventMaker.buildContactList(pubkeys = pubkeys)
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
     suspend fun publishNip65(
         relays: List<Nip65Relay>,
         relayUrls: Collection<RelayUrl>,
-        signerLauncher: SignerLauncher,
     ): Result<Event> {
-        return eventMaker.buildNip65(relays = relays, signerLauncher = signerLauncher)
+        return eventMaker.buildNip65(relays = relays)
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
     suspend fun publishProfile(
         metadata: Metadata,
         relayUrls: Collection<RelayUrl>,
-        signerLauncher: SignerLauncher,
     ): Result<Event> {
-        return eventMaker.buildProfile(metadata = metadata, signerLauncher = signerLauncher)
+        return eventMaker.buildProfile(metadata = metadata)
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
@@ -244,10 +229,6 @@ class NostrService(
 
     private val lastAuths = mutableMapOf<RelayUrl, Long>()
     private suspend fun sendAuth(relayUrl: RelayUrl, challenge: String) {
-        if (defaultLauncher == null) {
-            Log.w(TAG, "Launcher is not yet initialized")
-            return
-        }
         val current = System.currentTimeMillis()
         synchronized(lastAuths) {
             val last = lastAuths.putIfAbsent(relayUrl, current)
@@ -259,17 +240,11 @@ class NostrService(
                 }
             }
         }
-        defaultLauncher?.let {
-            eventMaker.buildAuth(
-                relayUrl = relayUrl,
-                challenge = challenge,
-                signerLauncher = it
-            )
-                .onSuccess { event ->
-                    nostrClient.publishAuth(authEvent = event, relayUrl = relayUrl)
-                }
-                .onFailure { Log.w(TAG, "Failed to sign AUTH event for $relayUrl") }
-        }
+        eventMaker.buildAuth(relayUrl = relayUrl, challenge = challenge)
+            .onSuccess { event ->
+                nostrClient.publishAuth(authEvent = event, relayUrl = relayUrl)
+            }
+            .onFailure { Log.w(TAG, "Failed to sign AUTH event for $relayUrl") }
     }
 
     private fun addConnectionStatus(relayUrl: RelayUrl, status: ConnectionStatus) {

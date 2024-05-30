@@ -81,57 +81,39 @@ data class OpenCrossPostCreation(val id: EventIdHex) : AdvancedPushNavEvent()
 data class OpenRelayProfile(val relayUrl: RelayUrl) : AdvancedPushNavEvent()
 
 
-sealed class VoteEvent(
-    open val postId: EventIdHex,
-    open val mention: PubkeyHex,
-    open val signerLauncher: SignerLauncher
-) : UIEvent()
+sealed class VoteEvent(open val postId: EventIdHex, open val mention: PubkeyHex) : UIEvent()
 
 data class ClickUpvote(
     override val postId: EventIdHex,
     override val mention: PubkeyHex,
-    override val signerLauncher: SignerLauncher,
-) : VoteEvent(postId = postId, mention = mention, signerLauncher = signerLauncher)
+) : VoteEvent(postId = postId, mention = mention)
 
 data class ClickDownvote(
     override val postId: EventIdHex,
     override val mention: PubkeyHex,
-    override val signerLauncher: SignerLauncher,
-) : VoteEvent(postId = postId, mention = mention, signerLauncher = signerLauncher)
+) : VoteEvent(postId = postId, mention = mention)
 
 data class ClickNeutralizeVote(
     override val postId: EventIdHex,
     override val mention: PubkeyHex,
-    override val signerLauncher: SignerLauncher,
-) : VoteEvent(postId = postId, mention = mention, signerLauncher = signerLauncher)
+) : VoteEvent(postId = postId, mention = mention)
 
 
-sealed class TopicEvent(open val topic: Topic, open val signerLauncher: SignerLauncher) : UIEvent()
-data class FollowTopic(override val topic: Topic, override val signerLauncher: SignerLauncher) :
-    TopicEvent(topic = topic, signerLauncher = signerLauncher)
+sealed class TopicEvent(open val topic: Topic) : UIEvent()
+data class FollowTopic(override val topic: Topic) : TopicEvent(topic = topic)
 
-data class UnfollowTopic(override val topic: Topic, override val signerLauncher: SignerLauncher) :
-    TopicEvent(topic = topic, signerLauncher = signerLauncher)
+data class UnfollowTopic(override val topic: Topic) : TopicEvent(topic = topic)
 
 
-sealed class ProfileEvent(open val pubkey: PubkeyHex, open val signerLauncher: SignerLauncher) :
-    UIEvent()
+sealed class ProfileEvent(open val pubkey: PubkeyHex) : UIEvent()
 
-data class FollowProfile(
-    override val pubkey: PubkeyHex,
-    override val signerLauncher: SignerLauncher
-) :
-    ProfileEvent(pubkey = pubkey, signerLauncher = signerLauncher)
+data class FollowProfile(override val pubkey: PubkeyHex) : ProfileEvent(pubkey = pubkey)
 
-data class UnfollowProfile(
-    override val pubkey: PubkeyHex,
-    override val signerLauncher: SignerLauncher
-) :
-    ProfileEvent(pubkey = pubkey, signerLauncher = signerLauncher)
+data class UnfollowProfile(override val pubkey: PubkeyHex) : ProfileEvent(pubkey = pubkey)
 
 
 sealed class PostEvent : UIEvent()
-data class DeletePost(val id: EventIdHex, val signerLauncher: SignerLauncher) : PostEvent()
+data class DeletePost(val id: EventIdHex) : PostEvent()
 
 
 sealed class HomeViewAction : UIEvent()
@@ -166,11 +148,7 @@ data class AddRelay(
 data class RemoveRelay(val relayUrl: RelayUrl) : RelayEditorViewAction()
 data class ToggleReadRelay(val relayUrl: RelayUrl) : RelayEditorViewAction()
 data class ToggleWriteRelay(val relayUrl: RelayUrl) : RelayEditorViewAction()
-data class SaveRelays(
-    val signerLauncher: SignerLauncher,
-    val context: Context,
-    val onGoBack: Fn
-) : RelayEditorViewAction()
+data class SaveRelays(val context: Context, val onGoBack: Fn) : RelayEditorViewAction()
 
 data object LoadRelays : RelayEditorViewAction()
 
@@ -186,7 +164,6 @@ data class SendPost(
     val body: String,
     val topics: List<Topic>,
     val context: Context,
-    val signerLauncher: SignerLauncher,
     val onGoBack: Fn
 ) : CreatePostViewAction()
 
@@ -198,7 +175,6 @@ data class SendReply(
     val parent: ParentUI,
     val body: String,
     val context: Context,
-    val signerLauncher: SignerLauncher,
     val onGoBack: Fn
 ) : CreateReplyViewAction()
 
@@ -207,7 +183,6 @@ sealed class CreateCrossPostViewAction : UIEvent()
 data class SendCrossPost(
     val topics: List<Topic>,
     val context: Context,
-    val signerLauncher: SignerLauncher,
     val onGoBack: Fn
 ) : CreateCrossPostViewAction()
 
@@ -223,7 +198,6 @@ sealed class EditProfileViewAction : UIEvent()
 data object LoadFullProfile : EditProfileViewAction()
 data class SaveProfile(
     val metadata: Metadata,
-    val signerLauncher: SignerLauncher,
     val context: Context,
     val onGoBack: Fn,
 ) : EditProfileViewAction()
@@ -231,10 +205,7 @@ data class SaveProfile(
 
 sealed class SettingsViewAction : UIEvent()
 data object UseDefaultAccount : SettingsViewAction()
-data class RequestExternalAccount(
-    val reqAccountLauncher: SignerLauncher,
-    val context: Context
-) : SettingsViewAction()
+data class RequestExternalAccount(val context: Context) : SettingsViewAction()
 
 data class ProcessExternalAccount(
     val activityResult: ActivityResult,
@@ -263,3 +234,6 @@ data class ClickText(
     val uriHandler: UriHandler,
     val onNoneClick: Fn = {},
 ) : UIEvent()
+
+data class RegisterSignerLauncher(val launcher: SignerLauncher) : UIEvent()
+data class RegisterAccountLauncher(val launcher: SignerLauncher) : UIEvent()

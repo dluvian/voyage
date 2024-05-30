@@ -3,7 +3,6 @@ package com.dluvian.voyage.data.account
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import com.dluvian.voyage.core.SignerLauncher
 import com.dluvian.voyage.core.model.AccountType
 import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
@@ -18,20 +17,21 @@ import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.UnsignedEvent
 
 
+private const val TAG = "AccountManager"
+
 class AccountManager(
     val mnemonicSigner: MnemonicSigner,
     private val externalSigner: ExternalSigner,
     private val accountDao: AccountDao,
 ) : IPubkeyProvider {
     private val scope = CoroutineScope(Dispatchers.Main)
-    private val tag = "AccountManager"
 
     val accountType: MutableState<AccountType>
 
     init {
         val dbAccount = runBlocking { accountDao.getAccount() }
         if (dbAccount == null) {
-            Log.i(tag, "No acc pubkey found in database. Initialize new.")
+            Log.i(TAG, "No acc pubkey found in database. Initialize new.")
             val pubkey = mnemonicSigner.getPublicKey()
             val hex = pubkey.toHex()
             accountType = mutableStateOf(DefaultAccount(pubkey))
@@ -39,8 +39,8 @@ class AccountManager(
             scope.launch {
                 accountDao.updateAccount(account = account)
             }.invokeOnCompletion {
-                if (it != null) Log.w(tag, "Failed to save new acc pubkey $hex in database")
-                else Log.i(tag, "Successfully saved new acc pubkey $hex in database")
+                if (it != null) Log.w(TAG, "Failed to save new acc pubkey $hex in database")
+                else Log.i(TAG, "Successfully saved new acc pubkey $hex in database")
             }
         } else {
             val publicKey = PublicKey.fromHex(dbAccount.pubkey)
@@ -54,7 +54,7 @@ class AccountManager(
         return accountType.value.publicKey
     }
 
-    suspend fun sign(signerLauncher: SignerLauncher, unsignedEvent: UnsignedEvent): Result<Event> {
+    suspend fun sign(unsignedEvent: UnsignedEvent): Result<Event> {
         return when (accountType.value) {
             is DefaultAccount -> {
                 mnemonicSigner.sign(unsignedEvent = unsignedEvent)
@@ -62,20 +62,21 @@ class AccountManager(
 
             is ExternalAccount -> {
                 externalSigner.sign(
-                    signerLauncher = signerLauncher,
                     unsignedEvent = unsignedEvent,
                     packageName = accountDao.getPackageName()
                 )
                     .onSuccess {
                         Log.i(
-                            tag,
-                            "Externally signed event of kind ${unsignedEvent.kind()}"
+                            TAG,
+                            "Externally signed event of kind ${unsignedEvent.kind().asU64()}"
                         )
                     }
                     .onFailure {
                         Log.w(
-                            tag,
-                            "Failed to externally sign event of kind ${unsignedEvent.kind()}"
+                            TAG,
+                            "Failed to externally sign event of kind ${
+                                unsignedEvent.kind().asU64()
+                            }"
                         )
                     }
             }

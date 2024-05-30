@@ -25,7 +25,6 @@ import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.LoadFullProfile
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.SaveProfile
-import com.dluvian.voyage.core.getSignerLauncher
 import com.dluvian.voyage.core.normalizeName
 import com.dluvian.voyage.core.viewModel.EditProfileViewModel
 import com.dluvian.voyage.ui.components.button.ExpandToggleTextButton
@@ -90,7 +89,6 @@ fun EditProfileView(
         onUpdate(LoadFullProfile)
     }
 
-    val signerLauncher = getSignerLauncher(onUpdate = onUpdate)
     val context = LocalContext.current
 
     SaveableScaffold(
@@ -114,7 +112,6 @@ fun EditProfileView(
             onUpdate(
                 SaveProfile(
                     metadata = metadata,
-                    signerLauncher = signerLauncher,
                     context = context,
                     onGoBack = { onUpdate(GoBack) })
             )

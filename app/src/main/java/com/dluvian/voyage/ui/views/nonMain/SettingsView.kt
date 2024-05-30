@@ -34,10 +34,8 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.RequestExternalAccount
 import com.dluvian.voyage.core.SendAuth
-import com.dluvian.voyage.core.SignerLauncher
 import com.dluvian.voyage.core.UpdateRootPostThreshold
 import com.dluvian.voyage.core.UseDefaultAccount
-import com.dluvian.voyage.core.getAccountLauncher
 import com.dluvian.voyage.core.model.AccountType
 import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
@@ -69,14 +67,12 @@ private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: OnUpdate) {
     val rootPostThreshold by vm.rootPostThreshold
     val sendAuth by vm.sendAuth
     val currentRootPostCount by vm.currentRootPostCount.collectAsState()
-    val requestAccount = getAccountLauncher(onUpdate = onUpdate)
 
     LazyColumn {
         if (isLoadingAccount) item { FullLinearProgressIndicator() }
         item {
             AccountSection(
                 accountType = accountType,
-                requestAccount = requestAccount,
                 seed = seed,
                 onUpdate = onUpdate
             )
@@ -98,7 +94,6 @@ private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: OnUpdate) {
 @Composable
 private fun AccountSection(
     accountType: AccountType,
-    requestAccount: SignerLauncher,
     seed: List<String>,
     onUpdate: OnUpdate
 ) {
@@ -115,11 +110,7 @@ private fun AccountSection(
                 onUpdate(OpenProfile(nprofile = createNprofile(pubkey = accountType.publicKey)))
             }
         ) {
-            AccountRowButton(
-                accountType = accountType,
-                requestAccount = requestAccount,
-                onUpdate = onUpdate
-            )
+            AccountRowButton(accountType = accountType, onUpdate = onUpdate)
         }
         if (accountType is DefaultAccount) {
             val showSeed = remember { mutableStateOf(false) }
@@ -201,7 +192,6 @@ private fun AppSection() {
 @Composable
 private fun AccountRowButton(
     accountType: AccountType,
-    requestAccount: SignerLauncher,
     onUpdate: OnUpdate
 ) {
     val context = LocalContext.current
@@ -212,9 +202,7 @@ private fun AccountRowButton(
             }
 
             is DefaultAccount -> TextButton(onClick = {
-                onUpdate(
-                    RequestExternalAccount(reqAccountLauncher = requestAccount, context = context)
-                )
+                onUpdate(RequestExternalAccount(context = context))
             }) {
                 Text(text = stringResource(id = R.string.login_with_external_signer))
             }

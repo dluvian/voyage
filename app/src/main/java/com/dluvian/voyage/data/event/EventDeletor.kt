@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.compose.material3.SnackbarHostState
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.EventIdHex
-import com.dluvian.voyage.core.SignerLauncher
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.provider.RelayProvider
@@ -26,8 +25,8 @@ class EventDeletor(
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    suspend fun deletePost(postId: EventIdHex, signerLauncher: SignerLauncher) {
-        deleteEvent(eventId = postId, signerLauncher = signerLauncher)
+    suspend fun deletePost(postId: EventIdHex) {
+        deleteEvent(eventId = postId)
             .onFailure {
                 Log.w(TAG, "Failed to sign post deletion: ${it.message}", it)
                 snackbar.showToast(
@@ -40,8 +39,8 @@ class EventDeletor(
             }
     }
 
-    suspend fun deleteVote(voteId: EventIdHex, signerLauncher: SignerLauncher) {
-        deleteEvent(eventId = voteId, signerLauncher = signerLauncher)
+    suspend fun deleteVote(voteId: EventIdHex) {
+        deleteEvent(eventId = voteId)
             .onFailure {
                 Log.w(TAG, "Failed to sign vote deletion: ${it.message}", it)
                 snackbar.showToast(
@@ -54,14 +53,10 @@ class EventDeletor(
             }
     }
 
-    private suspend fun deleteEvent(
-        eventId: EventIdHex,
-        signerLauncher: SignerLauncher
-    ): Result<Event> {
+    private suspend fun deleteEvent(eventId: EventIdHex): Result<Event> {
         return nostrService.publishDelete(
             eventId = EventId.fromHex(eventId),
             relayUrls = relayProvider.getPublishRelays(),
-            signerLauncher = signerLauncher,
         )
     }
 }
