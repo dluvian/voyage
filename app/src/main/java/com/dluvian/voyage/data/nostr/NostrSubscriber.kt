@@ -47,13 +47,17 @@ class NostrSubscriber(
     )
 
     suspend fun subFeed(until: Long, limit: Int, setting: FeedSetting) {
-        val adjustedLimit = (3 * limit).toULong() // We don't know if we receive enough root posts
-
         val subscriptions = when (setting) {
             is HomeFeedSetting -> feedSubscriber.getHomeFeedSubscriptions(
                 until = until.toULong(),
                 since = getCachedSinceTimestamp(setting = setting, until = until, pageSize = limit),
-                limit = adjustedLimit
+                limit = (3 * limit).toULong() // We don't know if we receive enough root posts
+            )
+
+            is ProfileReplyFeedSetting -> feedSubscriber.getHomeFeedSubscriptions(
+                until = until.toULong(),
+                since = getCachedSinceTimestamp(setting = setting, until = until, pageSize = limit),
+                limit = (2 * limit).toULong()
             )
 
             is TopicFeedSetting -> feedSubscriber.getTopicFeedSubscription(
@@ -68,13 +72,8 @@ class NostrSubscriber(
                 pubkey = setting.pubkey,
                 until = until.toULong(),
                 since = getCachedSinceTimestamp(setting = setting, until = until, pageSize = limit),
-                limit = adjustedLimit
+                limit = (3 * limit).toULong()
             )
-
-            is ProfileReplyFeedSetting -> {
-                // Replies are a byproduct. Sub roots, not replies
-                return
-            }
         }
 
         subscriptions.forEach { (relay, filters) ->

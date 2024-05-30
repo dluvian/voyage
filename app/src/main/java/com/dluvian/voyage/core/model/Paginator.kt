@@ -13,6 +13,7 @@ import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.ProfileReplyFeedSetting
 import com.dluvian.voyage.data.model.ProfileRootFeedSetting
+import com.dluvian.voyage.data.model.ReplyFeedSetting
 import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.provider.FeedProvider
@@ -61,7 +62,8 @@ class Paginator(
         val now = getCurrentSecs()
 
         scope.launch {
-            page.value = getFlow(until = now, subUntil = now)
+            page.value =
+                getFlow(until = now, subUntil = now, subscribe = feedSetting !is ReplyFeedSetting)
                 .stateIn(scope, SharingStarted.Eagerly, getStaticFeed(until = now))
         }
     }
@@ -78,7 +80,8 @@ class Paginator(
         scope.launchIO {
             onSub()
             delay(DELAY_1SEC)
-            page.value = getFlow(until = now, subUntil = now)
+            page.value =
+                getFlow(until = now, subUntil = now, subscribe = feedSetting !is ReplyFeedSetting)
                 .stateIn(scope, SharingStarted.Eagerly, getStaticFeed(until = now))
         }.invokeOnCompletion {
             isRefreshing.value = false
@@ -104,12 +107,17 @@ class Paginator(
         }
     }
 
-    private suspend fun getFlow(until: Long, subUntil: Long): Flow<List<ParentUI>> {
+    private suspend fun getFlow(
+        until: Long,
+        subUntil: Long,
+        subscribe: Boolean = true
+    ): Flow<List<ParentUI>> {
         return feedProvider.getFeedFlow(
             until = until,
             subUntil = subUntil,
             size = FEED_PAGE_SIZE,
             setting = feedSetting,
+            subscribe = subscribe
         )
     }
 

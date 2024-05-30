@@ -37,13 +37,15 @@ class FeedProvider(
         subUntil: Long,
         size: Int,
         setting: FeedSetting,
+        subscribe: Boolean = true,
     ): Flow<List<ParentUI>> {
-        // Sub only in getRootFeedFlow. Replies are a byproduct
+        if (subscribe) {
+            nostrSubscriber.subFeed(until = subUntil, limit = size, setting = setting)
+        }
 
         return when (setting) {
             is RootFeedSetting -> getRootFeedFlow(
                 until = until,
-                subUntil = subUntil,
                 size = size,
                 setting = setting
             )
@@ -57,14 +59,11 @@ class FeedProvider(
             }
     }
 
-    private suspend fun getRootFeedFlow(
+    private fun getRootFeedFlow(
         until: Long,
-        subUntil: Long,
         size: Int,
         setting: RootFeedSetting,
     ): Flow<List<RootPostUI>> {
-        nostrSubscriber.subFeed(until = subUntil, limit = size, setting = setting)
-
         val flow = when (setting) {
             is HomeFeedSetting -> rootPostDao.getHomeRootPostFlow(until = until, size = size)
             is TopicFeedSetting -> rootPostDao.getTopicRootPostFlow(
@@ -96,8 +95,6 @@ class FeedProvider(
         size: Int,
         setting: ReplyFeedSetting,
     ): Flow<List<ReplyUI>> {
-        // Replies are a byproduct of fetching root posts. Don't subscribe it again
-
         val flow = when (setting) {
             is ProfileReplyFeedSetting -> replyDao.getProfileReplyFlow(
                 pubkey = setting.pubkey,
