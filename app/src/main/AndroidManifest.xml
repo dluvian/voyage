@@ -8,6 +8,10 @@
             <category android:name="android.intent.category.BROWSABLE" />
             <data android:scheme="nostrsigner" />
         </intent>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT" />
+            <data android:mimeType="text/plain" />
+        </intent>
     </queries>
 
     <application
@@ -18,7 +22,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.Voyage"
-        tools:targetApi="31">
+        tools:targetApi="34">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -30,10 +34,8 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <data android:scheme="nostr" />
             </intent-filter>
         </activity>

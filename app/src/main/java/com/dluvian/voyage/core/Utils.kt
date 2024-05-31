@@ -1,6 +1,9 @@
 package com.dluvian.voyage.core
 
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -306,4 +309,25 @@ fun Event.getTrimmedSubject(maxLen: Int = MAX_SUBJECT_LEN): String? {
 
 fun Filter.limitRestricted(limit: ULong, upperLimit: ULong = MAX_EVENTS_TO_SUB): Filter {
     return this.limit(minOf(limit, upperLimit))
+}
+
+fun getTranslators(packageManager: PackageManager): List<ResolveInfo> {
+    return packageManager
+        .queryIntentActivities(createBaseProcessTextIntent(), 0)
+        .filter { it.activityInfo.name.contains("translate") } // lmao
+}
+
+private fun createBaseProcessTextIntent(): Intent {
+    return Intent()
+        .setAction(Intent.ACTION_PROCESS_TEXT)
+        .setType("text/plain")
+}
+
+fun createProcessTextIntent(text: String, info: ResolveInfo): Intent {
+    return createBaseProcessTextIntent()
+        .putExtra(Intent.EXTRA_PROCESS_TEXT, text)
+        .setClassName(
+            info.activityInfo.packageName,
+            info.activityInfo.name
+        )
 }

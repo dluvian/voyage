@@ -1,5 +1,8 @@
 package com.dluvian.voyage.ui.components.dropdown
 
+
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -15,6 +18,8 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenThreadRaw
 import com.dluvian.voyage.core.UnfollowProfile
 import com.dluvian.voyage.core.copyAndToast
+import com.dluvian.voyage.core.createProcessTextIntent
+import com.dluvian.voyage.core.getTranslators
 import com.dluvian.voyage.core.model.FriendTrust
 import com.dluvian.voyage.core.model.NoTrust
 import com.dluvian.voyage.core.model.Oneself
@@ -91,6 +96,22 @@ fun ParentRowDropdown(
                 text = stringResource(id = R.string.attempt_deletion),
                 onClick = {
                     onUpdate(DeletePost(id = parent.id))
+                    onDismiss()
+                }
+            )
+        }
+
+        val launcher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartActivityForResult()
+        ) { _ -> }
+        val packageManager = LocalContext.current.packageManager
+        for (translator in getTranslators(packageManager = packageManager)) {
+            SimpleDropdownItem(
+                text = translator.loadLabel(packageManager).toString(),
+                onClick = {
+                    launcher.launch(
+                        createProcessTextIntent(text = parent.content.text, info = translator)
+                    )
                     onDismiss()
                 }
             )
