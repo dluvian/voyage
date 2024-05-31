@@ -11,7 +11,7 @@ import com.dluvian.voyage.data.event.OldestUsedEvent
 import com.dluvian.voyage.data.interactor.Vote
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
-import com.dluvian.voyage.data.model.ProfileReplyFeedSetting
+import com.dluvian.voyage.data.model.InboxFeedSetting
 import com.dluvian.voyage.data.model.ProfileRootFeedSetting
 import com.dluvian.voyage.data.model.ReplyFeedSetting
 import com.dluvian.voyage.data.model.RootFeedSetting
@@ -51,6 +51,7 @@ class FeedProvider(
             )
 
             is ReplyFeedSetting -> getReplyFeedFlow(until = until, size = size, setting = setting)
+            InboxFeedSetting -> TODO()
         }
             .firstThenDistinctDebounce(SHORT_DEBOUNCE)
             .onEach { posts ->
@@ -95,13 +96,11 @@ class FeedProvider(
         size: Int,
         setting: ReplyFeedSetting,
     ): Flow<List<ReplyUI>> {
-        val flow = when (setting) {
-            is ProfileReplyFeedSetting -> replyDao.getProfileReplyFlow(
-                pubkey = setting.pubkey,
-                until = until,
-                size = size
-            )
-        }
+        val flow = replyDao.getProfileReplyFlow(
+            pubkey = setting.pubkey,
+            until = until,
+            size = size
+        )
 
         return combine(flow, forcedVotes, forcedFollows) { posts, votes, follows ->
             posts.map {
@@ -122,6 +121,7 @@ class FeedProvider(
         return when (setting) {
             is RootFeedSetting -> getStaticRootFeed(until = until, size = size, setting = setting)
             is ReplyFeedSetting -> getStaticReplyFeed(until = until, size = size, setting = setting)
+            InboxFeedSetting -> TODO()
         }
     }
 
@@ -157,19 +157,18 @@ class FeedProvider(
         size: Int,
         setting: ReplyFeedSetting,
     ): List<ReplyUI> {
-        return when (setting) {
-            is ProfileReplyFeedSetting -> replyDao.getProfileReplies(
-                pubkey = setting.pubkey,
-                until = until,
-                size = size
-            )
-        }.map {
-            it.mapToReplyUI(
-                forcedVotes = emptyMap(),
-                forcedFollows = emptyMap(),
-                annotatedStringProvider = annotatedStringProvider
-            )
-        }
+        return replyDao.getProfileReplies(
+            pubkey = setting.pubkey,
+            until = until,
+            size = size
+        )
+            .map {
+                it.mapToReplyUI(
+                    forcedVotes = emptyMap(),
+                    forcedFollows = emptyMap(),
+                    annotatedStringProvider = annotatedStringProvider
+                )
+            }
     }
 
     fun settingHasPostsFlow(setting: FeedSetting): Flow<Boolean> {
@@ -177,7 +176,8 @@ class FeedProvider(
             is HomeFeedSetting -> rootPostDao.hasHomeRootPostsFlow()
             is TopicFeedSetting -> rootPostDao.hasTopicRootPostsFlow(topic = setting.topic)
             is ProfileRootFeedSetting -> rootPostDao.hasProfileRootPostsFlow(pubkey = setting.pubkey)
-            is ProfileReplyFeedSetting -> replyDao.hasProfileRepliesFlow(pubkey = setting.pubkey)
+            is ReplyFeedSetting -> replyDao.hasProfileRepliesFlow(pubkey = setting.pubkey)
+            InboxFeedSetting -> TODO()
         }
     }
 }

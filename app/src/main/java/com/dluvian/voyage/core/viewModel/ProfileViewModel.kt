@@ -19,8 +19,8 @@ import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.core.navigator.ProfileNavView
 import com.dluvian.voyage.core.toBech32
 import com.dluvian.voyage.data.model.FullProfileUI
-import com.dluvian.voyage.data.model.ProfileReplyFeedSetting
 import com.dluvian.voyage.data.model.ProfileRootFeedSetting
+import com.dluvian.voyage.data.model.ReplyFeedSetting
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
@@ -80,7 +80,7 @@ class ProfileViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
         tabIndex.intValue = 0
         viewModelScope.launch { pagerState.scrollToPage(0) }
         rootPaginator.init(setting = ProfileRootFeedSetting(pubkey = pubkeyHex))
-        replyPaginator.init(setting = ProfileReplyFeedSetting(pubkey = pubkeyHex))
+        replyPaginator.init(setting = ReplyFeedSetting(pubkey = pubkeyHex))
         nip65Relays.value = nip65Dao.getNip65Flow(pubkey = pubkeyHex)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
         seenInRelays.value = eventRelayDao.getEventRelays(pubkey = pubkeyHex)

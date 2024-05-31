@@ -19,6 +19,7 @@ import com.dluvian.voyage.core.viewModel.CreateReplyViewModel
 import com.dluvian.voyage.core.viewModel.DiscoverViewModel
 import com.dluvian.voyage.core.viewModel.EditProfileViewModel
 import com.dluvian.voyage.core.viewModel.HomeViewModel
+import com.dluvian.voyage.core.viewModel.InboxViewModel
 import com.dluvian.voyage.core.viewModel.ProfileViewModel
 import com.dluvian.voyage.core.viewModel.RelayEditorViewModel
 import com.dluvian.voyage.core.viewModel.RelayProfileViewModel
@@ -75,6 +76,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
     val profileReplyFeedState = rememberLazyListState()
     val topicFeedState = rememberLazyListState()
     val threadState = rememberLazyListState()
+    val inboxFeedState = rememberLazyListState()
     val profilePagerState = rememberPagerState { 4 }
 
     return VMContainer(
@@ -185,5 +187,12 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 countDao = appContainer.roomDb.countDao(),
             )
         },
+        inboxVM = viewModel {
+            InboxViewModel(
+                feedProvider = appContainer.feedProvider,
+                lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
+                feedState = inboxFeedState,
+            )
+        }
     )
 }

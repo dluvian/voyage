@@ -28,7 +28,8 @@ fun MainView(
                 vm = core.vmContainer.discoverVM,
                 onUpdate = core.onUpdate
             )
-            InboxNavView -> InboxView()
+
+            InboxNavView -> InboxView(vm = core.vmContainer.inboxVM, onUpdate = core.onUpdate)
         }
     }
 }

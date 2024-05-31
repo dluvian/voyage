@@ -7,8 +7,9 @@ import com.dluvian.voyage.core.RESUB_TIMEOUT
 import com.dluvian.voyage.core.textNoteAndRepostKinds
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
-import com.dluvian.voyage.data.model.ProfileReplyFeedSetting
+import com.dluvian.voyage.data.model.InboxFeedSetting
 import com.dluvian.voyage.data.model.ProfileRootFeedSetting
+import com.dluvian.voyage.data.model.ReplyFeedSetting
 import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
@@ -54,7 +55,7 @@ class NostrSubscriber(
                 limit = (3 * limit).toULong() // We don't know if we receive enough root posts
             )
 
-            is ProfileReplyFeedSetting -> feedSubscriber.getHomeFeedSubscriptions(
+            is ReplyFeedSetting -> feedSubscriber.getHomeFeedSubscriptions(
                 until = until.toULong(),
                 since = getCachedSinceTimestamp(setting = setting, until = until, pageSize = limit),
                 limit = (2 * limit).toULong()
@@ -74,6 +75,8 @@ class NostrSubscriber(
                 since = getCachedSinceTimestamp(setting = setting, until = until, pageSize = limit),
                 limit = (3 * limit).toULong()
             )
+
+            InboxFeedSetting -> TODO()
         }
 
         subscriptions.forEach { (relay, filters) ->
@@ -167,11 +170,13 @@ class NostrSubscriber(
                 size = pageSizeAndHalfOfNext,
             )
 
-            is ProfileReplyFeedSetting -> replyDao.getProfileRepliesCreatedAt(
+            is ReplyFeedSetting -> replyDao.getProfileRepliesCreatedAt(
                 pubkey = setting.pubkey,
                 until = until,
                 size = pageSizeAndHalfOfNext,
             )
+
+            InboxFeedSetting -> TODO()
         }
 
         if (timestamps.size < pageSizeAndHalfOfNext) return 1uL

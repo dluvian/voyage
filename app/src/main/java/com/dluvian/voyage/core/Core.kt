@@ -60,6 +60,7 @@ class Core(
             is SearchViewAction -> vmContainer.searchVM.handle(action = uiEvent)
             is EditProfileViewAction -> vmContainer.editProfileVM.handle(action = uiEvent)
             is RelayEditorViewAction -> vmContainer.relayEditorVM.handle(action = uiEvent)
+            is InboxViewAction -> vmContainer.inboxVM.handle(action = uiEvent)
 
             is ProcessExternalSignature -> viewModelScope.launch {
                 appContainer.externalSignerHandler.processExternalSignature(

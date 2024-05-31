@@ -128,6 +128,12 @@ data class ThreadViewToggleCollapse(val id: EventIdHex) : ThreadViewAction()
 data class ThreadViewShowReplies(val id: EventIdHex) : ThreadViewAction()
 
 
+sealed class InboxViewAction : UIEvent()
+data object InboxViewInit : InboxViewAction()
+data object InboxViewRefresh : InboxViewAction()
+data object InboxViewAppend : InboxViewAction()
+
+
 sealed class DiscoverViewAction : UIEvent()
 data object DiscoverViewInit : DiscoverViewAction()
 data object DiscoverViewRefresh : DiscoverViewAction()
