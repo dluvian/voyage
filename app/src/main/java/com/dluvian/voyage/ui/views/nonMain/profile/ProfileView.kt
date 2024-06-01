@@ -177,7 +177,7 @@ private fun AboutPage(
                     description = stringResource(id = R.string.lightning_address)
                 )
             }
-            if (about != null) item {
+            if (!about.isNullOrEmpty()) item {
                 AboutSection(
                     modifier = Modifier
                         .fillMaxWidth()
