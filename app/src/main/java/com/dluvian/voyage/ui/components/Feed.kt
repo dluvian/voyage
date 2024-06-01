@@ -29,7 +29,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.FEED_PAGE_SIZE
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
@@ -60,8 +59,7 @@ fun Feed(
     val hasPosts by paginator.hasPosts.value.collectAsState()
     val posts by paginator.page.value.collectAsState()
     val uniquePosts = remember(posts) {
-        val ids = mutableSetOf<EventIdHex>()
-        posts.mapNotNull { if (ids.add(it.getRelevantId())) it else null }
+        posts.distinctBy { it.getRelevantId() }
     }
     val scope = rememberCoroutineScope()
     val showProgressIndicator by remember {
