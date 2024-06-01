@@ -11,28 +11,63 @@ import com.dluvian.voyage.data.interactor.Vote
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 
 @DatabaseView(
-    "SELECT post.id, " +
-            "post.pubkey, " +
-            "post.subject, " +
-            "post.content, " +
-            "post.createdAt, " +
-            "post.relayUrl, " +
-            "post.crossPostedId, " +
-            "post.crossPostedPubkey, " +
-            "(SELECT name FROM profile WHERE profile.pubkey = post.pubkey) AS authorName, " +
-            "(SELECT hashtag FROM hashtag WHERE hashtag.postId = post.id AND hashtag IN (SELECT topic FROM topic WHERE myPubkey = (SELECT pubkey FROM account LIMIT 1)) LIMIT 1) AS myTopic, " +
-            "(SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.pubkey)) AS authorIsOneself, " +
-            "(SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.pubkey)) AS authorIsFriend, " +
-            "(SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = post.pubkey)) AS authorIsTrusted, " +
-            "(SELECT isPositive FROM vote WHERE vote.postId = IFNULL(post.crossPostedId, post.id) AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)) AS myVote, " +
-            "(SELECT COUNT(*) FROM vote WHERE vote.postId = IFNULL(post.crossPostedId, post.id) AND vote.isPositive = 1) AS upvoteCount, " +
-            "(SELECT COUNT(*) FROM vote WHERE vote.postId = IFNULL(post.crossPostedId, post.id) AND vote.isPositive = 0) AS downvoteCount, " +
-            "(SELECT COUNT(*) FROM post AS post2 WHERE post2.parentId = IFNULL(post.crossPostedId, post.id)) AS replyCount, " +
-            "(SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.crossPostedPubkey)) AS crossPostedAuthorIsOneself, " +
-            "(SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.crossPostedPubkey)) AS crossPostedAuthorIsFriend, " +
-            "(SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = post.crossPostedPubkey)) AS crossPostedAuthorIsTrusted " +
-            "FROM post " +
-            "WHERE post.parentId IS NULL"
+    """
+        SELECT 
+            post.id, 
+            post.pubkey, 
+            post.subject, 
+            post.content, 
+            post.createdAt, 
+            post.relayUrl, 
+            post.crossPostedId, 
+            post.crossPostedPubkey, 
+            profile.name AS authorName,
+            ht.hashtag AS myTopic,
+            CASE WHEN account.pubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsOneself,
+            CASE WHEN friend.friendPubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsFriend,
+            CASE WHEN weboftrust.webOfTrustPubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsTrusted,
+            vote.isPositive AS myVote,
+            upvotes.upvoteCount,
+            downvotes.downvoteCount,
+            replies.replyCount,
+            CASE WHEN cross_posted_account.pubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsOneself,
+            CASE WHEN cross_posted_friend.friendPubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsFriend,
+            CASE WHEN cross_posted_wot.webOfTrustPubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsTrusted
+        FROM post
+        LEFT JOIN profile ON profile.pubkey = post.pubkey
+        LEFT JOIN (
+            SELECT hashtag.postId, hashtag.hashtag 
+            FROM hashtag 
+            JOIN topic ON hashtag.hashtag = topic.topic
+            WHERE topic.myPubkey = (SELECT pubkey FROM account LIMIT 1)
+        ) AS ht ON ht.postId = post.id
+        LEFT JOIN account ON account.pubkey = post.pubkey
+        LEFT JOIN friend ON friend.friendPubkey = post.pubkey
+        LEFT JOIN weboftrust ON weboftrust.webOfTrustPubkey = post.pubkey
+        LEFT JOIN vote ON vote.postId = IFNULL(post.crossPostedId, post.id) AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)
+        LEFT JOIN (
+            SELECT vote.postId, COUNT(*) AS upvoteCount 
+            FROM vote 
+            WHERE vote.isPositive = 1 
+            GROUP BY vote.postId
+        ) AS upvotes ON upvotes.postId = IFNULL(post.crossPostedId, post.id)
+        LEFT JOIN (
+            SELECT vote.postId, COUNT(*) AS downvoteCount 
+            FROM vote 
+            WHERE vote.isPositive = 0 
+            GROUP BY vote.postId
+        ) AS downvotes ON downvotes.postId = IFNULL(post.crossPostedId, post.id)
+        LEFT JOIN (
+            SELECT post2.parentId, COUNT(*) AS replyCount 
+            FROM post AS post2 
+            WHERE post2.parentId IS NOT NULL 
+            GROUP BY post2.parentId
+        ) AS replies ON replies.parentId = IFNULL(post.crossPostedId, post.id)
+        LEFT JOIN account AS cross_posted_account ON cross_posted_account.pubkey = post.crossPostedPubkey
+        LEFT JOIN friend AS cross_posted_friend ON cross_posted_friend.friendPubkey = post.crossPostedPubkey
+        LEFT JOIN weboftrust AS cross_posted_wot ON cross_posted_wot.webOfTrustPubkey = post.crossPostedPubkey
+        WHERE post.parentId IS NULL
+"""
 )
 data class RootPostView(
     val id: EventIdHex,

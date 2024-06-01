@@ -17,6 +17,8 @@ import com.dluvian.voyage.data.event.ValidatedRootPost
         Index(value = ["parentId"], unique = false),
         Index(value = ["createdAt"], unique = false),
         Index(value = ["pubkey"], unique = false),
+        Index(value = ["crossPostedId"], unique = false),
+        Index(value = ["crossPostedPubkey"], unique = false),
     ],
 )
 data class PostEntity(
