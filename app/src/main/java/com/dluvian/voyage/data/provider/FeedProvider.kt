@@ -81,7 +81,11 @@ class FeedProvider(
             )
         }
 
-        return combine(flow, forcedVotes, forcedFollows) { posts, votes, follows ->
+        return combine(
+            flow.firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            forcedVotes,
+            forcedFollows
+        ) { posts, votes, follows ->
             posts.map {
                 it.mapToRootPostUI(
                     forcedVotes = votes,
@@ -103,7 +107,11 @@ class FeedProvider(
             size = size
         )
 
-        return combine(flow, forcedVotes, forcedFollows) { posts, votes, follows ->
+        return combine(
+            flow.firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            forcedVotes,
+            forcedFollows
+        ) { posts, votes, follows ->
             posts.map {
                 it.mapToReplyUI(
                     forcedVotes = votes,

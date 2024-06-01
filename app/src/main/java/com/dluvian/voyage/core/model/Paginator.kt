@@ -64,7 +64,7 @@ class Paginator(
         scope.launch {
             page.value =
                 getFlow(until = now, subUntil = now, subscribe = feedSetting !is ReplyFeedSetting)
-                .stateIn(scope, SharingStarted.Eagerly, getStaticFeed(until = now))
+                    .stateIn(scope, SharingStarted.WhileSubscribed(), getStaticFeed(until = now))
         }
     }
 
@@ -82,7 +82,7 @@ class Paginator(
             delay(DELAY_1SEC)
             page.value =
                 getFlow(until = now, subUntil = now, subscribe = feedSetting !is ReplyFeedSetting)
-                .stateIn(scope, SharingStarted.Eagerly, getStaticFeed(until = now))
+                    .stateIn(scope, SharingStarted.WhileSubscribed(), getStaticFeed(until = now))
             delay(DELAY_1SEC)
         }.invokeOnCompletion {
             isRefreshing.value = false
@@ -101,7 +101,7 @@ class Paginator(
             val newUntil = page.value.value.takeLast(FEED_OFFSET).first().createdAt
             val subUntil = page.value.value.last().createdAt - 1
             page.value = getFlow(until = newUntil, subUntil = subUntil)
-                .stateIn(scope, SharingStarted.Eagerly, getStaticFeed(until = newUntil))
+                .stateIn(scope, SharingStarted.WhileSubscribed(), getStaticFeed(until = newUntil))
             delay(DELAY_1SEC)
         }.invokeOnCompletion {
             isAppending.value = false
