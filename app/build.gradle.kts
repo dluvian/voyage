@@ -13,8 +13,8 @@ android {
         applicationId = "com.dluvian.voyage"
         minSdk = 26 // Android Oreo (Aug 2017 - Jan 2021)
         targetSdk = 34
-        versionCode = 7
-        versionName = "v0.5.0"
+        versionCode = 8
+        versionName = "v0.5.1"
 
         // Change versionCode, versionName and strings.xml when releasing new
 
