@@ -5,6 +5,7 @@ import com.dluvian.voyage.core.FEED_RESUB_SPAN_THRESHOLD_SECS
 import com.dluvian.voyage.core.MAX_KEYS
 import com.dluvian.voyage.core.RESUB_TIMEOUT
 import com.dluvian.voyage.core.textNoteAndRepostKinds
+import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.InboxFeedSetting
@@ -15,8 +16,7 @@ import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
-import com.dluvian.voyage.data.room.dao.ReplyDao
-import com.dluvian.voyage.data.room.dao.RootPostDao
+import com.dluvian.voyage.data.room.AppDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,12 +31,12 @@ import java.util.concurrent.atomic.AtomicBoolean
 class NostrSubscriber(
     topicProvider: TopicProvider,
     friendProvider: FriendProvider,
+    pubkeyProvider: IPubkeyProvider,
     val subCreator: SubscriptionCreator,
     private val relayProvider: RelayProvider,
     private val webOfTrustProvider: WebOfTrustProvider,
     private val subBatcher: SubBatcher,
-    private val rootPostDao: RootPostDao,
-    private val replyDao: ReplyDao,
+    private val room: AppDatabase
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -44,27 +44,30 @@ class NostrSubscriber(
         scope = scope,
         relayProvider = relayProvider,
         topicProvider = topicProvider,
-        friendProvider = friendProvider
+        friendProvider = friendProvider,
+        pubkeyProvider = pubkeyProvider,
     )
 
     suspend fun subFeed(until: Long, limit: Int, setting: FeedSetting) {
+        val since = getCachedSinceTimestamp(setting = setting, until = until, pageSize = limit)
+
         val subscriptions = when (setting) {
             is HomeFeedSetting -> feedSubscriber.getHomeFeedSubscriptions(
                 until = until.toULong(),
-                since = getCachedSinceTimestamp(setting = setting, until = until, pageSize = limit),
+                since = since,
                 limit = (3 * limit).toULong() // We don't know if we receive enough root posts
             )
 
             is ReplyFeedSetting -> feedSubscriber.getHomeFeedSubscriptions(
                 until = until.toULong(),
-                since = getCachedSinceTimestamp(setting = setting, until = until, pageSize = limit),
+                since = since,
                 limit = (2 * limit).toULong()
             )
 
             is TopicFeedSetting -> feedSubscriber.getTopicFeedSubscription(
                 topic = setting.topic,
                 until = until.toULong(),
-                since = getCachedSinceTimestamp(setting = setting, until = until, pageSize = limit),
+                since = since,
                 // Smaller than adjustedLimit, bc posts with topics tend to be root
                 limit = (2 * limit).toULong()
             )
@@ -72,11 +75,15 @@ class NostrSubscriber(
             is ProfileRootFeedSetting -> feedSubscriber.getProfileFeedSubscription(
                 pubkey = setting.pubkey,
                 until = until.toULong(),
-                since = getCachedSinceTimestamp(setting = setting, until = until, pageSize = limit),
+                since = since,
                 limit = (3 * limit).toULong()
             )
 
-            InboxFeedSetting -> TODO()
+            InboxFeedSetting -> feedSubscriber.getInboxFeedSubscription(
+                until = until.toULong(),
+                since = since,
+                limit = limit.toULong()
+            )
         }
 
         subscriptions.forEach { (relay, filters) ->
@@ -153,30 +160,33 @@ class NostrSubscriber(
         val pageSizeAndHalfOfNext = pageSize.times(1.5).toInt()
 
         val timestamps = when (setting) {
-            HomeFeedSetting -> rootPostDao.getHomeRootPostsCreatedAt(
+            HomeFeedSetting -> room.rootPostDao().getHomeRootPostsCreatedAt(
                 until = until,
                 size = pageSizeAndHalfOfNext
             )
 
-            is TopicFeedSetting -> rootPostDao.getTopicRootPostsCreatedAt(
+            is TopicFeedSetting -> room.rootPostDao().getTopicRootPostsCreatedAt(
                 topic = setting.topic,
                 until = until,
                 size = pageSizeAndHalfOfNext
             )
 
-            is ProfileRootFeedSetting -> rootPostDao.getProfileRootPostsCreatedAt(
+            is ProfileRootFeedSetting -> room.rootPostDao().getProfileRootPostsCreatedAt(
                 pubkey = setting.pubkey,
                 until = until,
                 size = pageSizeAndHalfOfNext,
             )
 
-            is ReplyFeedSetting -> replyDao.getProfileRepliesCreatedAt(
+            is ReplyFeedSetting -> room.replyDao().getProfileRepliesCreatedAt(
                 pubkey = setting.pubkey,
                 until = until,
                 size = pageSizeAndHalfOfNext,
             )
 
-            InboxFeedSetting -> TODO()
+            InboxFeedSetting -> room.postDao().getInboxPostsCreatedAt(
+                until = until,
+                size = pageSizeAndHalfOfNext
+            )
         }
 
         if (timestamps.size < pageSizeAndHalfOfNext) return 1uL

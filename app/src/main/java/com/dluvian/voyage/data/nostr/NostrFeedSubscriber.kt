@@ -1,6 +1,8 @@
 package com.dluvian.voyage.data.nostr
 
+import android.util.Log
 import com.dluvian.nostr_kt.RelayUrl
+import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
 import com.dluvian.voyage.core.MAX_KEYS
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
@@ -8,6 +10,7 @@ import com.dluvian.voyage.core.limitRestricted
 import com.dluvian.voyage.core.syncedPutOrAdd
 import com.dluvian.voyage.core.takeRandom
 import com.dluvian.voyage.core.textNoteAndRepostKinds
+import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
@@ -17,11 +20,13 @@ import rust.nostr.protocol.Filter
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Timestamp
 
+private const val TAG = "NostrFeedSubscriber"
 class NostrFeedSubscriber(
     private val scope: CoroutineScope,
     private val relayProvider: RelayProvider,
     private val topicProvider: TopicProvider,
     private val friendProvider: FriendProvider,
+    private val pubkeyProvider: IPubkeyProvider,
 ) {
     suspend fun getHomeFeedSubscriptions(
         until: ULong,
@@ -120,5 +125,24 @@ class NostrFeedSubscriber(
         }
 
         return result
+    }
+
+    fun getInboxFeedSubscription(
+        until: ULong,
+        since: ULong,
+        limit: ULong
+    ): Map<RelayUrl, List<Filter>> {
+        if (limit <= 0u || since >= until) return emptyMap()
+        Log.d(TAG, "getInboxFeedSubscription")
+
+        val mentionFilter = Filter()
+            .kinds(kinds = textNoteAndRepostKinds)
+            .pubkey(pubkey = pubkeyProvider.getPublicKey())
+            .since(timestamp = Timestamp.fromSecs(since))
+            .until(timestamp = Timestamp.fromSecs(until))
+            .limitRestricted(limit = MAX_EVENTS_TO_SUB)
+        val filters = listOf(mentionFilter)
+
+        return relayProvider.getReadRelays().associateWith { filters }
     }
 }

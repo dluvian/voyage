@@ -134,12 +134,12 @@ class AppContainer(context: Context) {
     val nostrSubscriber = NostrSubscriber(
         topicProvider = topicProvider,
         friendProvider = friendProvider,
+        pubkeyProvider = accountManager,
         subCreator = subCreator,
         relayProvider = relayProvider,
         webOfTrustProvider = webOfTrustProvider,
         subBatcher = subBatcher,
-        rootPostDao = roomDb.rootPostDao(),
-        replyDao = roomDb.replyDao()
+        room = roomDb,
     )
 
     val accountSwitcher = AccountSwitcher(
@@ -240,8 +240,7 @@ class AppContainer(context: Context) {
 
     val feedProvider = FeedProvider(
         nostrSubscriber = nostrSubscriber,
-        rootPostDao = roomDb.rootPostDao(),
-        replyDao = roomDb.replyDao(),
+        room = roomDb,
         forcedVotes = postVoter.forcedVotes,
         oldestUsedEvent = oldestUsedEvent,
         annotatedStringProvider = annotatedStringProvider,

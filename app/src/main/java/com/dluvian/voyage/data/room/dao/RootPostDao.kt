@@ -59,11 +59,11 @@ interface RootPostDao {
     @Query(HOME_FEED_QUERY)
     fun getHomeRootPostFlow(until: Long, size: Int): Flow<List<RootPostView>>
 
-    @Query(HOME_FEED_EXISTS_QUERY)
-    fun hasHomeRootPostsFlow(): Flow<Boolean>
-
     @Query(HOME_FEED_QUERY)
     suspend fun getHomeRootPosts(until: Long, size: Int): List<RootPostView>
+
+    @Query(HOME_FEED_EXISTS_QUERY)
+    fun hasHomeRootPostsFlow(): Flow<Boolean>
 
     @Query(HOME_FEED_CREATED_AT_QUERY)
     suspend fun getHomeRootPostsCreatedAt(until: Long, size: Int): List<Long>

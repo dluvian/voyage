@@ -190,7 +190,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         inboxVM = viewModel {
             InboxViewModel(
                 feedProvider = appContainer.feedProvider,
-                lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
+                subCreator = appContainer.lazyNostrSubscriber.subCreator,
                 feedState = inboxFeedState,
             )
         }

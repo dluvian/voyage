@@ -9,37 +9,32 @@ import com.dluvian.voyage.core.InboxViewInit
 import com.dluvian.voyage.core.InboxViewRefresh
 import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.data.model.InboxFeedSetting
-import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
+import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.provider.FeedProvider
+import java.util.concurrent.atomic.AtomicBoolean
 
 class InboxViewModel(
     feedProvider: FeedProvider,
-    lazyNostrSubscriber: LazyNostrSubscriber,
+    subCreator: SubscriptionCreator,
     val feedState: LazyListState,
 ) : ViewModel() {
     val paginator = Paginator(
         feedProvider = feedProvider,
         scope = viewModelScope,
-        subCreator = lazyNostrSubscriber.subCreator
+        subCreator = subCreator
     )
-
-    init {
-        paginator.init(setting = InboxFeedSetting)
-    }
 
     fun handle(action: InboxViewAction) {
         when (action) {
             is InboxViewInit -> init()
-            is InboxViewRefresh -> refresh()
+            is InboxViewRefresh -> paginator.refresh()
             is InboxViewAppend -> paginator.append()
         }
     }
 
+    private val isInitialized = AtomicBoolean(false)
     private fun init() {
-        TODO()
-    }
-
-    private fun refresh() {
-        TODO()
+        if (!isInitialized.compareAndSet(false, true)) return
+        paginator.init(InboxFeedSetting)
     }
 }

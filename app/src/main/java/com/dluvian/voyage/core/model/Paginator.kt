@@ -45,12 +45,10 @@ class Paginator(
 
     fun init(setting: FeedSetting) {
         val isSame = when (setting) {
-            is HomeFeedSetting -> page.value.value.isNotEmpty()
+            HomeFeedSetting, InboxFeedSetting -> page.value.value.isNotEmpty()
             is TopicFeedSetting,
             is ProfileRootFeedSetting,
             is ReplyFeedSetting -> page.value.value.isNotEmpty() && feedSetting == setting
-
-            InboxFeedSetting -> TODO()
         }
         if (isSame) {
             Log.i(TAG, "Skip init. Settings are the same")
@@ -85,6 +83,7 @@ class Paginator(
             page.value =
                 getFlow(until = now, subUntil = now, subscribe = feedSetting !is ReplyFeedSetting)
                 .stateIn(scope, SharingStarted.Eagerly, getStaticFeed(until = now))
+            delay(DELAY_1SEC)
         }.invokeOnCompletion {
             isRefreshing.value = false
         }
