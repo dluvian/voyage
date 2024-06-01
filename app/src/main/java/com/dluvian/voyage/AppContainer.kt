@@ -134,7 +134,6 @@ class AppContainer(context: Context) {
 
     val nostrSubscriber = NostrSubscriber(
         topicProvider = topicProvider,
-        friendProvider = friendProvider,
         pubkeyProvider = accountManager,
         subCreator = subCreator,
         relayProvider = relayProvider,

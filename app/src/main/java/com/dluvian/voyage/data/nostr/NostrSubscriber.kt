@@ -12,7 +12,6 @@ import com.dluvian.voyage.data.model.InboxFeedSetting
 import com.dluvian.voyage.data.model.ProfileRootFeedSetting
 import com.dluvian.voyage.data.model.ReplyFeedSetting
 import com.dluvian.voyage.data.model.TopicFeedSetting
-import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
@@ -30,7 +29,6 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class NostrSubscriber(
     topicProvider: TopicProvider,
-    friendProvider: FriendProvider,
     pubkeyProvider: IPubkeyProvider,
     val subCreator: SubscriptionCreator,
     private val relayProvider: RelayProvider,
@@ -54,13 +52,7 @@ class NostrSubscriber(
             is HomeFeedSetting -> feedSubscriber.getHomeFeedSubscriptions(
                 until = until.toULong(),
                 since = since,
-                limit = (3 * limit).toULong() // We don't know if we receive enough root posts
-            )
-
-            is ReplyFeedSetting -> feedSubscriber.getHomeFeedSubscriptions(
-                until = until.toULong(),
-                since = since,
-                limit = (2 * limit).toULong()
+                limit = (4 * limit).toULong() // We don't know if we receive enough root posts
             )
 
             is TopicFeedSetting -> feedSubscriber.getTopicFeedSubscription(
@@ -71,11 +63,18 @@ class NostrSubscriber(
                 limit = (2 * limit).toULong()
             )
 
-            is ProfileRootFeedSetting -> feedSubscriber.getProfileFeedSubscription(
+            is ReplyFeedSetting -> feedSubscriber.getProfileFeedSubscription(
                 pubkey = setting.pubkey,
                 until = until.toULong(),
                 since = since,
                 limit = (3 * limit).toULong()
+            )
+
+            is ProfileRootFeedSetting -> feedSubscriber.getProfileFeedSubscription(
+                pubkey = setting.pubkey,
+                until = until.toULong(),
+                since = since,
+                limit = (4 * limit).toULong()
             )
 
             InboxFeedSetting -> feedSubscriber.getInboxFeedSubscription(
