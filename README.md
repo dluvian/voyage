@@ -48,7 +48,7 @@ I don't plan to publish this app in the Google Play Store.
 - [NIP-42: Authentication of clients to relays](https://github.com/nostr-protocol/nips/blob/master/42.md)
 - [NIP-51: Lists](https://github.com/nostr-protocol/nips/blob/master/51.md)
 - [NIP-65: Relay List Metadata](https://github.com/nostr-protocol/nips/blob/master/65.md)
-- [NIP-100: Android Signer Application (Pull Request)](https://github.com/nostr-protocol/nips/pull/868)
+- [NIP-100: Android Signer Application](https://github.com/nostr-protocol/nips/blob/master/100.md)
 
 ## Screenshots
 
