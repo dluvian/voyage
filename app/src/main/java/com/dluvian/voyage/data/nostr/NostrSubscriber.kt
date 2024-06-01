@@ -44,7 +44,6 @@ class NostrSubscriber(
         scope = scope,
         relayProvider = relayProvider,
         topicProvider = topicProvider,
-        friendProvider = friendProvider,
         pubkeyProvider = pubkeyProvider,
     )
 

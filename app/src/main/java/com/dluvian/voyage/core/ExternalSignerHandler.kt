@@ -2,7 +2,6 @@ package com.dluvian.voyage.core
 
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.activity.result.ActivityResult
 import androidx.core.app.ActivityOptionsCompat
 import kotlinx.coroutines.channels.Channel
@@ -29,20 +28,16 @@ private const val PERMISSIONS = """
     ]
 """
 
-private const val TAG = "ExternalSignerHandler"
-
 class ExternalSignerHandler {
     private var signerLauncher: SignerLauncher? = null
     private var reqAccountLauncher: SignerLauncher? = null
     private val signatureChannel = Channel<String?>()
 
     fun setSignerLauncher(launcher: SignerLauncher) {
-        Log.i(TAG, "Set signer launcher $launcher")
         signerLauncher = launcher
     }
 
     fun setAccountLauncher(launcher: SignerLauncher) {
-        Log.i(TAG, "Set account launcher $launcher")
         reqAccountLauncher = launcher
     }
 

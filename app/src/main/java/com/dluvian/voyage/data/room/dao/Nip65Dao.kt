@@ -26,6 +26,9 @@ interface Nip65Dao {
     @Query("SELECT DISTINCT * FROM nip65 WHERE pubkey IN (:pubkeys) AND isWrite = 1")
     suspend fun getWriteRelays(pubkeys: Collection<PubkeyHex>): List<Nip65Entity>
 
+    @Query("SELECT DISTINCT * FROM nip65 WHERE pubkey IN (SELECT friendPubkey FROM friend) AND isWrite = 1")
+    suspend fun getFriendsWriteRelays(): List<Nip65Entity>
+
     @Query("SELECT MAX(createdAt) FROM nip65")
     suspend fun getNewestCreatedAt(): Long?
 

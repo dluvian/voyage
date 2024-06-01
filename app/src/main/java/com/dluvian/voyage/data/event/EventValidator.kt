@@ -8,8 +8,10 @@ import com.dluvian.nostr_kt.getNip65s
 import com.dluvian.nostr_kt.getReactToId
 import com.dluvian.nostr_kt.isPostOrReply
 import com.dluvian.nostr_kt.secs
+import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.createValidatedMainPost
 import com.dluvian.voyage.core.getNormalizedTopics
+import com.dluvian.voyage.core.takeRandom
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
@@ -76,7 +78,11 @@ class EventValidator(
 
             is KindEnum.ContactList -> ValidatedContactList(
                 pubkey = event.author().toHex(),
-                friendPubkeys = event.publicKeys().map { it.toHex() }.toSet(),
+                friendPubkeys = event.publicKeys()
+                    .map { it.toHex() }
+                    .distinct()
+                    .takeRandom(MAX_KEYS_SQL)
+                    .toSet(),
                 createdAt = event.createdAt().secs()
             )
 

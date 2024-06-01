@@ -7,6 +7,7 @@ import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.FollowProfile
 import com.dluvian.voyage.core.LIST_CHANGE_DEBOUNCE
+import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.ProfileEvent
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.UnfollowProfile
@@ -92,6 +93,19 @@ class ProfileFollower(
             friendsAdjusted.removeAll(toRemove.toSet())
 
             if (friendsAdjusted == friendsBefore) return@launchIO
+
+            if (friendsAdjusted.size > MAX_KEYS_SQL && friendsAdjusted.size > friendsBefore.size) {
+                Log.w(TAG, "New friend list is too large (${friendsAdjusted.size})")
+                friendsAdjusted
+                    .minus(friendsBefore)
+                    .forEach { updateForcedFollows(pubkey = it, isFollowed = false) }
+                val msg = context.getString(
+                    R.string.following_more_than_n_is_not_allowed,
+                    MAX_KEYS_SQL
+                )
+                snackbar.showToast(scope = scope, msg = msg)
+                return@launchIO
+            }
 
             nostrService.publishContactList(
                 pubkeys = friendsAdjusted.toList(),

@@ -12,6 +12,7 @@ import com.dluvian.voyage.core.limitRestricted
 import com.dluvian.voyage.core.mergeRelayFilters
 import com.dluvian.voyage.core.takeRandom
 import com.dluvian.voyage.data.account.IPubkeyProvider
+import com.dluvian.voyage.data.model.CustomPubkeys
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
@@ -83,16 +84,17 @@ class LazyNostrSubscriber(
 
         val timestamp = Timestamp.now()
 
-        relayProvider.getObserveRelays(pubkeys = unknownPubkeys).forEach { (relay, pubkeyBatch) ->
-            val limitedPubkeys = pubkeyBatch.takeRandom(MAX_KEYS)
-            val profileFilter = Filter()
-                .kind(kind = Kind.fromEnum(KindEnum.Metadata))
-                .authors(authors = limitedPubkeys.map { PublicKey.fromHex(it) })
-                .until(timestamp = timestamp)
-                .limitRestricted(limit = limitedPubkeys.size.toULong())
-            val filters = listOf(profileFilter)
-            subCreator.subscribe(relayUrl = relay, filters = filters)
-        }
+        relayProvider.getObserveRelays(selection = CustomPubkeys(pubkeys = unknownPubkeys))
+            .forEach { (relay, pubkeyBatch) ->
+                val limitedPubkeys = pubkeyBatch.takeRandom(MAX_KEYS)
+                val profileFilter = Filter()
+                    .kind(kind = Kind.fromEnum(KindEnum.Metadata))
+                    .authors(authors = limitedPubkeys.map { PublicKey.fromHex(it) })
+                    .until(timestamp = timestamp)
+                    .limitRestricted(limit = limitedPubkeys.size.toULong())
+                val filters = listOf(profileFilter)
+                subCreator.subscribe(relayUrl = relay, filters = filters)
+            }
     }
 
     suspend fun lazySubUnknownProfiles() {
@@ -105,16 +107,17 @@ class LazyNostrSubscriber(
 
         val timestamp = Timestamp.now()
 
-        relayProvider.getObserveRelays(pubkeys = toSub).forEach { (relay, pubkeyBatch) ->
-            val limitedBatch = pubkeyBatch.takeRandom(MAX_KEYS)
-            val profileFilter = Filter()
-                .kind(kind = Kind.fromEnum(KindEnum.Metadata))
-                .authors(authors = limitedBatch.map { PublicKey.fromHex(it) })
-                .until(timestamp = timestamp)
-                .limitRestricted(limit = limitedBatch.size.toULong())
-            val filters = listOf(profileFilter)
-            subCreator.subscribe(relayUrl = relay, filters = filters)
-        }
+        relayProvider.getObserveRelays(selection = CustomPubkeys(pubkeys = toSub))
+            .forEach { (relay, pubkeyBatch) ->
+                val limitedBatch = pubkeyBatch.takeRandom(MAX_KEYS)
+                val profileFilter = Filter()
+                    .kind(kind = Kind.fromEnum(KindEnum.Metadata))
+                    .authors(authors = limitedBatch.map { PublicKey.fromHex(it) })
+                    .until(timestamp = timestamp)
+                    .limitRestricted(limit = limitedBatch.size.toULong())
+                val filters = listOf(profileFilter)
+                subCreator.subscribe(relayUrl = relay, filters = filters)
+            }
     }
 
     suspend fun lazySubNip65(nprofile: Nip19Profile) {
@@ -178,7 +181,7 @@ class LazyNostrSubscriber(
 
         val timestamp = Timestamp.now()
         val missingSubs = relayProvider
-            .getObserveRelays(pubkeys = missingPubkeys)
+            .getObserveRelays(selection = CustomPubkeys(pubkeys = missingPubkeys))
             .mapValues { (_, pubkeys) ->
                 val limitedPubkeys = pubkeys.takeRandom(MAX_KEYS)
                 listOf(
@@ -224,7 +227,7 @@ class LazyNostrSubscriber(
 
         val timestamp = Timestamp.now()
         val missingSubs = relayProvider
-            .getObserveRelays(pubkeys = friendsWithMissingContacts)
+            .getObserveRelays(selection = CustomPubkeys(pubkeys = friendsWithMissingContacts))
             .mapValues { (_, pubkeys) ->
                 val limitedPubkeys = pubkeys.takeRandom(MAX_KEYS)
                 listOf(

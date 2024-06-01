@@ -11,7 +11,7 @@ import com.dluvian.voyage.core.syncedPutOrAdd
 import com.dluvian.voyage.core.takeRandom
 import com.dluvian.voyage.core.textNoteAndRepostKinds
 import com.dluvian.voyage.data.account.IPubkeyProvider
-import com.dluvian.voyage.data.provider.FriendProvider
+import com.dluvian.voyage.data.model.FriendPubkeys
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import kotlinx.coroutines.CoroutineScope
@@ -25,7 +25,6 @@ class NostrFeedSubscriber(
     private val scope: CoroutineScope,
     private val relayProvider: RelayProvider,
     private val topicProvider: TopicProvider,
-    private val friendProvider: FriendProvider,
     private val pubkeyProvider: IPubkeyProvider,
 ) {
     suspend fun getHomeFeedSubscriptions(
@@ -42,7 +41,7 @@ class NostrFeedSubscriber(
 
         val friendJob = scope.launch {
             relayProvider
-                .getObserveRelays(pubkeys = friendProvider.getFriendPubkeys())
+                .getObserveRelays(selection = FriendPubkeys)
                 .forEach { (relayUrl, pubkeys) ->
                     val publicKeys = pubkeys.takeRandom(MAX_KEYS).map { PublicKey.fromHex(it) }
                     val friendsNoteFilter = Filter()

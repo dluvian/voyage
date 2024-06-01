@@ -7,6 +7,7 @@ import com.dluvian.nostr_kt.NostrClient
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.removeTrailingSlashes
 import com.dluvian.voyage.core.MAX_KEYS
+import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.MAX_POPULAR_RELAYS
 import com.dluvian.voyage.core.MAX_RELAYS
 import com.dluvian.voyage.core.MAX_RELAYS_PER_PUBKEY
@@ -17,6 +18,9 @@ import com.dluvian.voyage.core.model.Disconnected
 import com.dluvian.voyage.core.model.Spam
 import com.dluvian.voyage.core.putOrAdd
 import com.dluvian.voyage.core.takeRandom
+import com.dluvian.voyage.data.model.CustomPubkeys
+import com.dluvian.voyage.data.model.FriendPubkeys
+import com.dluvian.voyage.data.model.PubkeySelection
 import com.dluvian.voyage.data.room.dao.EventRelayDao
 import com.dluvian.voyage.data.room.dao.Nip65Dao
 import kotlinx.coroutines.CoroutineScope
@@ -33,7 +37,8 @@ class RelayProvider(
     private val nip65Dao: Nip65Dao,
     private val eventRelayDao: EventRelayDao,
     private val nostrClient: NostrClient,
-    private val connectionStatuses: State<Map<RelayUrl, ConnectionStatus>>
+    private val connectionStatuses: State<Map<RelayUrl, ConnectionStatus>>,
+    private val friendProvider: FriendProvider,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val myNip65 =
@@ -123,22 +128,41 @@ class RelayProvider(
         return (foreignRelays + nip65).distinct()
     }
 
-    suspend fun getObserveRelays(pubkeys: Collection<PubkeyHex>): Map<RelayUrl, Set<PubkeyHex>> {
-        if (pubkeys.isEmpty()) return emptyMap()
-
-        if (pubkeys.size == 1) {
-            val pubkey = pubkeys.first()
-            return getObserveRelays(pubkey = pubkey).associateWith { setOf(pubkey) }
+    suspend fun getObserveRelays(selection: PubkeySelection): Map<RelayUrl, Set<PubkeyHex>> {
+        when (selection) {
+            is FriendPubkeys -> {}
+            is CustomPubkeys -> {
+                val pubkeys = selection.pubkeys
+                if (pubkeys.isEmpty()) {
+                    return emptyMap()
+                } else if (pubkeys.size == 1) {
+                    val pubkey = pubkeys.first()
+                    return getObserveRelays(pubkey = pubkey).associateWith { setOf(pubkey) }
+                }
+            }
         }
 
         val result = mutableMapOf<RelayUrl, MutableSet<PubkeyHex>>()
         val connectedRelays = nostrClient.getAllConnectedUrls().toSet()
-        val eventRelays = eventRelayDao.getAllEventRelays()
+
+        val eventRelaysView = when (selection) {
+            is FriendPubkeys -> eventRelayDao.getFriendsEventRelayAuthorView()
+            is CustomPubkeys -> eventRelayDao.getEventRelayAuthorView(
+                authors = selection.pubkeys.takeRandom(MAX_KEYS_SQL)
+            )
+        }
+        val eventRelays = eventRelaysView.map { it.relayUrl }.toSet()
+
+        val writeRelays = when (selection) {
+            is FriendPubkeys -> nip65Dao.getFriendsWriteRelays()
+            is CustomPubkeys -> nip65Dao.getWriteRelays(
+                pubkeys = selection.pubkeys.takeRandom(MAX_KEYS_SQL)
+            )
+        }
 
         // Cover pubkey-write-relay pairing
         val pubkeyCache = mutableSetOf<PubkeyHex>()
-        nip65Dao
-            .getWriteRelays(pubkeys = pubkeys)
+        writeRelays
             .groupBy { it.nip65Relay.url }
             .asSequence()
             .filter { (relay, _) -> connectionStatuses.value[relay] !is Spam }
@@ -160,7 +184,7 @@ class RelayProvider(
             }
 
         // Cover most useful relays
-        eventRelayDao.getEventRelayAuthorView(authors = pubkeys)
+        eventRelaysView
             .asSequence()
             .filter { connectionStatuses.value[it.relayUrl] !is Disconnected }
             .sortedByDescending { it.relayCount }
@@ -175,11 +199,20 @@ class RelayProvider(
             }
 
         // Cover rest with already selected relays and read relays for initial start up
-        val restPubkeys = pubkeys - pubkeyCache
+        val restPubkeys = when (selection) {
+            is FriendPubkeys -> friendProvider.getFriendPubkeys()
+            is CustomPubkeys -> selection.pubkeys
+        } - pubkeyCache
         if (restPubkeys.isNotEmpty()) {
-            Log.w(TAG, "Default to read relays for ${restPubkeys.size}/${pubkeys.size} pubkeys")
-            result.keys.forEach { relay -> result.putOrAdd(relay, restPubkeys) }
-            getReadRelays().forEach { relay -> result.putOrAdd(relay, restPubkeys) }
+            Log.w(TAG, "Default to read relays for ${restPubkeys.size} pubkeys")
+            getReadRelays()
+                .plus(result.keys)
+                .distinct()
+                .forEach { relay ->
+                    val present = result[relay].orEmpty()
+                    val maxKeys = MAX_KEYS - present.size
+                    result.putOrAdd(relay, restPubkeys.takeRandom(maxKeys))
+                }
         }
 
         Log.i(TAG, "Selected ${result.size} autopilot relays ${result.keys}")

@@ -26,6 +26,7 @@ const val MAX_RELAYS_PER_PUBKEY = 2
 const val MAX_POPULAR_RELAYS = 50
 
 const val MAX_KEYS = 750 // Filter requests might get too long for most relays. Limit to 750
+const val MAX_KEYS_SQL = 4 * MAX_KEYS // Exception when query gets too long
 const val MAX_EVENTS_TO_SUB = 250uL
 
 const val FEED_PAGE_SIZE = 35

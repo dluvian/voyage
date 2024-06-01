@@ -166,4 +166,5 @@
     <string name="no_relays_found">No relays found</string>
     <string name="url">URL</string>
     <string name="posts_in_db">Posts in database</string>
+    <string name="following_more_than_n_is_not_allowed">Following more than %d profiles is not allowed</string>
 </resources>

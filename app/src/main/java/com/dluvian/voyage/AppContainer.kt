@@ -80,13 +80,6 @@ class AppContainer(context: Context) {
 
     val connectionStatuses = mutableStateOf(mapOf<RelayUrl, ConnectionStatus>())
 
-    val relayProvider = RelayProvider(
-        nip65Dao = roomDb.nip65Dao(),
-        eventRelayDao = roomDb.eventRelayDao(),
-        nostrClient = nostrClient,
-        connectionStatuses = connectionStatuses,
-    )
-
     private val forcedFollowTopicStates = MutableStateFlow(emptyMap<Topic, Boolean>())
 
     val topicProvider = TopicProvider(
@@ -100,17 +93,25 @@ class AppContainer(context: Context) {
         accountDao = roomDb.accountDao(),
     )
 
+    private val friendProvider = FriendProvider(
+        friendDao = roomDb.friendDao(),
+        pubkeyProvider = accountManager,
+    )
+
+    val relayProvider = RelayProvider(
+        nip65Dao = roomDb.nip65Dao(),
+        eventRelayDao = roomDb.eventRelayDao(),
+        nostrClient = nostrClient,
+        connectionStatuses = connectionStatuses,
+        friendProvider = friendProvider,
+    )
+
     private val eventCounter = EventCounter()
 
     val subCreator = SubscriptionCreator(
         nostrClient = nostrClient,
         syncedFilterCache = syncedFilterCache,
         eventCounter = eventCounter
-    )
-
-    private val friendProvider = FriendProvider(
-        friendDao = roomDb.friendDao(),
-        pubkeyProvider = accountManager,
     )
 
     private val webOfTrustProvider = WebOfTrustProvider(
