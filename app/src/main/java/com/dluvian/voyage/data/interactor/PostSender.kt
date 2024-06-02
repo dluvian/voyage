@@ -23,14 +23,14 @@ import rust.nostr.protocol.Event
 import rust.nostr.protocol.Nip19Profile
 import rust.nostr.protocol.PublicKey
 
+private const val TAG = "PostSender"
+
 class PostSender(
     private val nostrService: NostrService,
     private val relayProvider: RelayProvider,
     private val postInsertDao: PostInsertDao,
     private val postDao: PostDao,
 ) {
-    private val tag = "PostSender"
-
     suspend fun sendPost(
         header: String,
         body: String,
@@ -63,7 +63,7 @@ class PostSender(
             )
             postInsertDao.insertRootPosts(posts = listOf(validatedPost))
         }.onFailure {
-            Log.w(tag, "Failed to create post event", it)
+            Log.w(TAG, "Failed to create post event", it)
         }
     }
 
@@ -95,7 +95,7 @@ class PostSender(
             )
             postInsertDao.insertReplies(replies = listOf(validatedReply))
         }.onFailure {
-            Log.w(tag, "Failed to create reply event", it)
+            Log.w(TAG, "Failed to create reply event", it)
         }
     }
 
@@ -135,7 +135,7 @@ class PostSender(
             )
             postInsertDao.insertCrossPosts(crossPosts = listOf(validatedCrossPost))
         }.onFailure {
-            Log.w(tag, "Failed to create cross-post event", it)
+            Log.w(TAG, "Failed to create cross-post event", it)
         }
     }
 

@@ -16,6 +16,7 @@ import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.FollowProfile
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenThreadRaw
+import com.dluvian.voyage.core.RebroadcastNote
 import com.dluvian.voyage.core.UnfollowProfile
 import com.dluvian.voyage.core.copyAndToast
 import com.dluvian.voyage.core.createProcessTextIntent
@@ -88,6 +89,14 @@ fun ParentRowDropdown(
                     context = context,
                     clip = clip
                 )
+                onDismiss()
+            }
+        )
+        SimpleDropdownItem(
+            text = stringResource(id = R.string.rebroadcast),
+            onClick = {
+                // RelevantId bc repost json is not saved in db
+                onUpdate(RebroadcastNote(noteId = parent.getRelevantId(), context = context))
                 onDismiss()
             }
         )

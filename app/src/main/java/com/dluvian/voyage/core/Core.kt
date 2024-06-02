@@ -71,6 +71,7 @@ class Core(
             is ClickText -> clickText(action = uiEvent)
 
             is ProfileSuggestionAction -> appContainer.profileSuggestionProvider.handle(action = uiEvent)
+
             is RegisterAccountLauncher -> appContainer.externalSignerHandler.setAccountLauncher(
                 launcher = uiEvent.launcher
             )
@@ -78,6 +79,14 @@ class Core(
             is RegisterSignerLauncher -> appContainer.externalSignerHandler.setSignerLauncher(
                 launcher = uiEvent.launcher
             )
+
+            is RebroadcastNote -> viewModelScope.launchIO {
+                appContainer.eventRebroadcaster.rebroadcast(
+                    noteId = uiEvent.noteId,
+                    context = uiEvent.context,
+                    scope = viewModelScope
+                )
+            }
         }
     }
 

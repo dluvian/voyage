@@ -243,3 +243,5 @@ data class ClickText(
 
 data class RegisterSignerLauncher(val launcher: SignerLauncher) : UIEvent()
 data class RegisterAccountLauncher(val launcher: SignerLauncher) : UIEvent()
+
+data class RebroadcastNote(val noteId: EventIdHex, val context: Context) : UIEvent()

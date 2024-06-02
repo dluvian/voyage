@@ -113,6 +113,16 @@ class NostrService(
         }
     }
 
+    fun publishJson(eventJson: String, relayUrls: Collection<RelayUrl>): Result<Event> {
+        return runCatching { Event.fromJson(json = eventJson) }
+            .onSuccess { event ->
+                nostrClient.publishToRelays(event = event, relayUrls = relayUrls)
+            }
+            .onFailure {
+                Log.w(TAG, "Failed to deserialize $eventJson")
+            }
+    }
+
     suspend fun publishPost(
         subject: String,
         content: String,

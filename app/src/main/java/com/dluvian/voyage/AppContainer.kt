@@ -20,6 +20,7 @@ import com.dluvian.voyage.data.event.EventDeletor
 import com.dluvian.voyage.data.event.EventMaker
 import com.dluvian.voyage.data.event.EventProcessor
 import com.dluvian.voyage.data.event.EventQueue
+import com.dluvian.voyage.data.event.EventRebroadcaster
 import com.dluvian.voyage.data.event.EventSweeper
 import com.dluvian.voyage.data.event.EventValidator
 import com.dluvian.voyage.data.event.IdCacheClearer
@@ -294,4 +295,11 @@ class AppContainer(context: Context) {
     )
 
     val relayProfileProvider = RelayProfileProvider()
+
+    val eventRebroadcaster = EventRebroadcaster(
+        nostrService = nostrService,
+        postDao = roomDb.postDao(),
+        relayProvider = relayProvider,
+        snackbar = snackbar,
+    )
 }

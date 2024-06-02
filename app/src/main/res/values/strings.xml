@@ -167,4 +167,8 @@
     <string name="url">URL</string>
     <string name="posts_in_db">Posts in database</string>
     <string name="following_more_than_n_is_not_allowed">Following more than %d profiles is not allowed</string>
+    <string name="rebroadcast">Rebroadcast</string>
+    <string name="event_json_is_not_available">Event json is not available</string>
+    <string name="rebroadcasted_to_n_relays">Rebroadcasted to %d relays</string>
+    <string name="failed_to_rebroadcast">Failed to rebroadcast</string>
 </resources>
