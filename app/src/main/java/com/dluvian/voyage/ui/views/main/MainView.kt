@@ -11,10 +11,13 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
+import com.dluvian.voyage.R
+import com.dluvian.voyage.core.ClickRelayEditor
 import com.dluvian.voyage.core.Core
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.navigator.DiscoverNavView
@@ -58,12 +61,12 @@ fun MainView(
                     onClick = closeDrawer
                 )
                 NavigationDrawerItem(
-                    label = { Text(text = "Topics") },
+                    label = { Text(text = "Contacts") },
                     selected = false,
                     onClick = closeDrawer
                 )
                 NavigationDrawerItem(
-                    label = { Text(text = "Contacts") },
+                    label = { Text(text = "Topics") },
                     selected = false,
                     onClick = closeDrawer
                 )
@@ -73,9 +76,12 @@ fun MainView(
                     onClick = closeDrawer
                 )
                 NavigationDrawerItem(
-                    label = { Text(text = "Likes") },
+                    label = { Text(text = stringResource(id = R.string.relays)) },
                     selected = false,
-                    onClick = closeDrawer
+                    onClick = {
+                        core.onUpdate(ClickRelayEditor)
+                        closeDrawer()
+                    }
                 )
                 FullHorizontalDivider()
                 NavigationDrawerItem(

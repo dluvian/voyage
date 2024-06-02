@@ -25,7 +25,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.ClickRelayEditor
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.LoadSeed
 import com.dluvian.voyage.core.MAX_RETAIN_ROOT
@@ -130,11 +129,6 @@ private fun AccountSection(
 @Composable
 private fun RelaySection(sendAuth: Boolean, onUpdate: OnUpdate) {
     SettingsSection(header = stringResource(id = R.string.relays)) {
-        ClickableRow(
-            header = stringResource(id = R.string.relay_list),
-            text = stringResource(id = R.string.click_to_edit_your_relay_list),
-            onClick = { onUpdate(ClickRelayEditor) }
-        )
         ClickableRow(
             header = stringResource(id = R.string.authenticate_via_auth),
             text = stringResource(id = R.string.enable_to_authenticate_yourself_to_relays),
