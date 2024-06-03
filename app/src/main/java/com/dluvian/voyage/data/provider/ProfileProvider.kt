@@ -12,6 +12,7 @@ import com.dluvian.voyage.data.model.RelevantMetadata
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.room.dao.ProfileDao
+import com.dluvian.voyage.data.room.entity.ProfileEntity
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -49,6 +50,28 @@ class ProfileProvider(
                 metadata = metadata
             )
         }
+    }
+
+    fun getPersonalProfileFlow(): Flow<ProfileEntity> {
+        return combine(
+            profileDao.getPersonalProfileFlow(),
+            metadataInMemory.getMetadataFlow()
+        ) { profile, meta ->
+            val nonNull = profile ?: getDefaultProfile()
+            val name = nonNull.name
+                .ifEmpty { meta[nonNull.pubkey]?.name.orEmpty() }
+                .ifEmpty { nonNull.pubkey.toShortenedBech32() }
+            nonNull.copy(name = name)
+        }
+    }
+
+    fun getDefaultProfile(): ProfileEntity {
+        val hex = pubkeyProvider.getPubkeyHex()
+        return ProfileEntity(
+            pubkey = hex,
+            name = hex.toShortenedBech32(),
+            createdAt = 0L
+        )
     }
 
     suspend fun getProfileByName(name: String, limit: Int): List<AdvancedProfileView> {

@@ -37,4 +37,14 @@ class MetadataInMemory {
             }
         }
     }
+
+
+    fun getMetadataFlow(): Flow<Map<PubkeyHex, RelevantMetadata>> {
+        return flow {
+            while (true) {
+                emit(map)
+                delay(DEBOUNCE)
+            }
+        }
+    }
 }

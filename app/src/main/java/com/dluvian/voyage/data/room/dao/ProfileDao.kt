@@ -3,6 +3,7 @@ package com.dluvian.voyage.data.room.dao
 import androidx.room.Dao
 import androidx.room.Query
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.data.room.entity.ProfileEntity
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import kotlinx.coroutines.flow.Flow
 
@@ -10,6 +11,15 @@ import kotlinx.coroutines.flow.Flow
 interface ProfileDao {
     @Query("SELECT * FROM AdvancedProfileView WHERE pubkey = :pubkey")
     fun getAdvancedProfileFlow(pubkey: PubkeyHex): Flow<AdvancedProfileView?>
+
+    // From account table in case we switch the account during a session
+    @Query(
+        "SELECT account.pubkey, IFNULL(profile.name, '') name, IFNULL(profile.createdAt, 0) createdAt " +
+                "FROM account " +
+                "LEFT JOIN profile ON account.pubkey = profile.pubkey " +
+                "LIMIT 1"
+    )
+    fun getPersonalProfileFlow(): Flow<ProfileEntity?>
 
     @Query("SELECT * FROM AdvancedProfileView WHERE pubkey IN (:pubkeys)")
     fun getAdvancedProfilesFlow(pubkeys: Collection<PubkeyHex>): Flow<List<AdvancedProfileView>>

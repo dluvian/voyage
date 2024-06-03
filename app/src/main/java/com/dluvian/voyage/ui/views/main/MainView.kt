@@ -9,6 +9,8 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -16,10 +18,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
+import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ClickRelayEditor
 import com.dluvian.voyage.core.Core
 import com.dluvian.voyage.core.Fn
+import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.navigator.DiscoverNavView
 import com.dluvian.voyage.core.navigator.HomeNavView
 import com.dluvian.voyage.core.navigator.InboxNavView
@@ -39,6 +43,7 @@ fun MainView(
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val personalProfile by core.vmContainer.drawerVM.personalProfile.collectAsState()
     val closeDrawer: Fn = { scope.launch { drawerState.close() } }
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -48,7 +53,7 @@ fun MainView(
                 NavigationDrawerItem(
                     label = {
                         Text(
-                            text = "dluvian",
+                            text = personalProfile.name,
                             style = TextStyle(
                                 fontSize = 25.sp,
                                 fontWeight = FontWeight.SemiBold
@@ -58,15 +63,15 @@ fun MainView(
                         )
                     },
                     selected = false,
-                    onClick = closeDrawer
+                    onClick = {
+                        core.onUpdate(
+                            OpenProfile(nprofile = createNprofile(hex = personalProfile.pubkey))
+                        )
+                        closeDrawer()
+                    }
                 )
                 NavigationDrawerItem(
-                    label = { Text(text = "Contacts") },
-                    selected = false,
-                    onClick = closeDrawer
-                )
-                NavigationDrawerItem(
-                    label = { Text(text = "Topics") },
+                    label = { Text(text = "Follow lists") },
                     selected = false,
                     onClick = closeDrawer
                 )

@@ -17,6 +17,7 @@ import com.dluvian.voyage.core.viewModel.CreateCrossPostViewModel
 import com.dluvian.voyage.core.viewModel.CreatePostViewModel
 import com.dluvian.voyage.core.viewModel.CreateReplyViewModel
 import com.dluvian.voyage.core.viewModel.DiscoverViewModel
+import com.dluvian.voyage.core.viewModel.DrawerViewModel
 import com.dluvian.voyage.core.viewModel.EditProfileViewModel
 import com.dluvian.voyage.core.viewModel.HomeViewModel
 import com.dluvian.voyage.core.viewModel.InboxViewModel
@@ -192,6 +193,11 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 feedProvider = appContainer.feedProvider,
                 subCreator = appContainer.lazyNostrSubscriber.subCreator,
                 feedState = inboxFeedState,
+            )
+        },
+        drawerVM = viewModel {
+            DrawerViewModel(
+                profileProvider = appContainer.profileProvider,
             )
         }
     )
