@@ -38,6 +38,7 @@ data object SettingsNavView : SimpleNonMainNavView()
 data object SearchNavView : SimpleNonMainNavView()
 data object EditProfileNavView : SimpleNonMainNavView()
 data object RelayEditorNavView : SimpleNonMainNavView()
+data object FollowListsNavView : SimpleNonMainNavView()
 
 
 sealed class AdvancedNonMainNavView : NonMainNavView()

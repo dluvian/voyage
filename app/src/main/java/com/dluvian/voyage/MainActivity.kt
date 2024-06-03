@@ -19,6 +19,7 @@ import com.dluvian.voyage.core.viewModel.CreateReplyViewModel
 import com.dluvian.voyage.core.viewModel.DiscoverViewModel
 import com.dluvian.voyage.core.viewModel.DrawerViewModel
 import com.dluvian.voyage.core.viewModel.EditProfileViewModel
+import com.dluvian.voyage.core.viewModel.FollowListsViewModel
 import com.dluvian.voyage.core.viewModel.HomeViewModel
 import com.dluvian.voyage.core.viewModel.InboxViewModel
 import com.dluvian.voyage.core.viewModel.ProfileViewModel
@@ -78,7 +79,11 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
     val topicFeedState = rememberLazyListState()
     val threadState = rememberLazyListState()
     val inboxFeedState = rememberLazyListState()
+    val contactListState = rememberLazyListState()
+    val topicListState = rememberLazyListState()
+
     val profilePagerState = rememberPagerState { 4 }
+    val followListsPagerState = rememberPagerState { 2 }
 
     return VMContainer(
         homeVM = viewModel {
@@ -198,6 +203,13 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         drawerVM = viewModel {
             DrawerViewModel(
                 profileProvider = appContainer.profileProvider,
+            )
+        },
+        followListsVM = viewModel {
+            FollowListsViewModel(
+                contactListState = contactListState,
+                topicListState = topicListState,
+                pagerState = followListsPagerState
             )
         }
     )

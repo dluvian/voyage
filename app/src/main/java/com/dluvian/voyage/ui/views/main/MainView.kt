@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.voyage.R
+import com.dluvian.voyage.core.ClickFollowLists
 import com.dluvian.voyage.core.ClickRelayEditor
 import com.dluvian.voyage.core.Core
 import com.dluvian.voyage.core.Fn
@@ -83,9 +84,12 @@ fun MainView(
                     }
                 )
                 NavigationDrawerItem(
-                    label = { Text(text = "Follow lists") },
+                    label = { Text(text = stringResource(id = R.string.follow_lists)) },
                     selected = false,
-                    onClick = closeDrawer
+                    onClick = {
+                        core.onUpdate(ClickFollowLists)
+                        closeDrawer()
+                    }
                 )
                 NavigationDrawerItem(
                     label = { Text(text = "Bookmarks") },

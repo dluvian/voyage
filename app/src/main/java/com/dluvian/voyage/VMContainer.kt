@@ -6,6 +6,7 @@ import com.dluvian.voyage.core.viewModel.CreateReplyViewModel
 import com.dluvian.voyage.core.viewModel.DiscoverViewModel
 import com.dluvian.voyage.core.viewModel.DrawerViewModel
 import com.dluvian.voyage.core.viewModel.EditProfileViewModel
+import com.dluvian.voyage.core.viewModel.FollowListsViewModel
 import com.dluvian.voyage.core.viewModel.HomeViewModel
 import com.dluvian.voyage.core.viewModel.InboxViewModel
 import com.dluvian.voyage.core.viewModel.ProfileViewModel
@@ -31,5 +32,6 @@ data class VMContainer(
     val createCrossPostVM: CreateCrossPostViewModel,
     val relayProfileVM: RelayProfileViewModel,
     val inboxVM: InboxViewModel,
-    val drawerVM: DrawerViewModel
+    val drawerVM: DrawerViewModel,
+    val followListsVM: FollowListsViewModel,
 )

@@ -5,6 +5,7 @@ import com.dluvian.voyage.core.Core
 import com.dluvian.voyage.core.navigator.CreatePostNavView
 import com.dluvian.voyage.core.navigator.CrossPostCreationNavView
 import com.dluvian.voyage.core.navigator.EditProfileNavView
+import com.dluvian.voyage.core.navigator.FollowListsNavView
 import com.dluvian.voyage.core.navigator.NonMainNavView
 import com.dluvian.voyage.core.navigator.ProfileNavView
 import com.dluvian.voyage.core.navigator.RelayEditorNavView
@@ -89,6 +90,12 @@ fun NonMainView(
 
         is RelayProfileNavView -> RelayProfileView(
             vm = core.vmContainer.relayProfileVM,
+            snackbar = core.appContainer.snackbar,
+            onUpdate = core.onUpdate
+        )
+
+        FollowListsNavView -> FollowListsView(
+            vm = core.vmContainer.followListsVM,
             snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate
         )

@@ -13,21 +13,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -38,7 +31,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.zIndex
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Bech32
@@ -54,6 +46,7 @@ import com.dluvian.voyage.core.shortenBech32
 import com.dluvian.voyage.core.viewModel.ProfileViewModel
 import com.dluvian.voyage.ui.components.Feed
 import com.dluvian.voyage.ui.components.PullRefreshBox
+import com.dluvian.voyage.ui.components.SimplePager
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.ComingSoon
 import com.dluvian.voyage.ui.components.text.AnnotatedText
@@ -62,7 +55,6 @@ import com.dluvian.voyage.ui.theme.KeyIcon
 import com.dluvian.voyage.ui.theme.LightningIcon
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -80,68 +72,58 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
     }
     val seenInRelays by vm.seenInRelays.value.collectAsState()
     val index = vm.tabIndex
-    val pagerState = vm.pagerState
-    val scope = rememberCoroutineScope()
     val isRefreshing by vm.rootPaginator.isRefreshing
-
-    LaunchedEffect(key1 = pagerState.currentPage) {
-        index.intValue = pagerState.currentPage
-    }
+    val headers = listOf(
+        stringResource(id = R.string.posts),
+        stringResource(id = R.string.replies),
+        stringResource(id = R.string.about),
+        stringResource(id = R.string.relays),
+    )
 
     ProfileScaffold(profile = profile, snackbar = snackbar, onUpdate = onUpdate) {
-        Column {
-            ProfileTabRow(
-                index = index,
-                onClickPage = { i -> scope.launch { pagerState.animateScrollToPage(i) } })
-            HorizontalPager(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                state = pagerState
-            ) { page ->
-                when (page) {
-                    0 -> Feed(
-                        paginator = vm.rootPaginator,
-                        state = vm.rootFeedState,
-                        onRefresh = { onUpdate(ProfileViewRefresh) },
-                        onAppend = { onUpdate(ProfileViewRootAppend) },
-                        onUpdate = onUpdate,
-                    )
+        SimplePager(headers = headers, index = index, pagerState = vm.pagerState) {
+            when (it) {
+                0 -> Feed(
+                    paginator = vm.rootPaginator,
+                    state = vm.rootFeedState,
+                    onRefresh = { onUpdate(ProfileViewRefresh) },
+                    onAppend = { onUpdate(ProfileViewRootAppend) },
+                    onUpdate = onUpdate,
+                )
 
-                    1 -> Feed(
-                        paginator = vm.replyPaginator,
-                        state = vm.replyFeedState,
-                        onRefresh = { onUpdate(ProfileViewRefresh) },
-                        onAppend = { onUpdate(ProfileViewReplyAppend) },
-                        onUpdate = onUpdate,
-                    )
+                1 -> Feed(
+                    paginator = vm.replyPaginator,
+                    state = vm.replyFeedState,
+                    onRefresh = { onUpdate(ProfileViewRefresh) },
+                    onAppend = { onUpdate(ProfileViewReplyAppend) },
+                    onUpdate = onUpdate,
+                )
 
-                    2 -> AboutPage(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = spacing.bigScreenEdge),
-                        npub = profile.npub,
-                        lightning = profile.lightning,
-                        about = profile.about,
-                        isRefreshing = isRefreshing,
-                        onUpdate = onUpdate
-                    )
+                2 -> AboutPage(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = spacing.bigScreenEdge),
+                    npub = profile.npub,
+                    lightning = profile.lightning,
+                    about = profile.about,
+                    isRefreshing = isRefreshing,
+                    onUpdate = onUpdate
+                )
 
-                    3 -> RelayPage(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = spacing.bigScreenEdge),
-                        nip65Relays = nip65RelayUrls,
-                        readOnlyRelays = readOnlyRelays,
-                        writeOnlyRelays = writeOnlyRelays,
-                        seenInRelays = seenInRelays,
-                        isRefreshing = isRefreshing,
-                        onUpdate = onUpdate
-                    )
+                3 -> RelayPage(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = spacing.bigScreenEdge),
+                    nip65Relays = nip65RelayUrls,
+                    readOnlyRelays = readOnlyRelays,
+                    writeOnlyRelays = writeOnlyRelays,
+                    seenInRelays = seenInRelays,
+                    isRefreshing = isRefreshing,
+                    onUpdate = onUpdate
+                )
 
-                    else -> ComingSoon()
+                else -> ComingSoon()
 
-                }
             }
         }
     }
@@ -321,41 +303,5 @@ private fun RelaySection(
 private fun ProfileViewPage(isRefreshing: Boolean, onUpdate: OnUpdate, content: ComposableContent) {
     PullRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(ProfileViewRefresh) }) {
         content()
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun ProfileTabRow(index: MutableIntState, onClickPage: (Int) -> Unit) {
-    // Set higher zIndex to hide resting refresh indicator
-    PrimaryTabRow(modifier = Modifier.zIndex(2f), selectedTabIndex = index.intValue) {
-        Tab(
-            selected = index.intValue == 0,
-            onClick = {
-                index.intValue = 0
-                onClickPage(0)
-            },
-            text = { Text(stringResource(id = R.string.posts)) })
-        Tab(
-            selected = index.intValue == 1,
-            onClick = {
-                index.intValue = 1
-                onClickPage(1)
-            },
-            text = { Text(stringResource(id = R.string.replies)) })
-        Tab(
-            selected = index.intValue == 2,
-            onClick = {
-                index.intValue = 2
-                onClickPage(2)
-            },
-            text = { Text(stringResource(id = R.string.about)) })
-        Tab(
-            selected = index.intValue == 3,
-            onClick = {
-                index.intValue = 3
-                onClickPage(3)
-            },
-            text = { Text(stringResource(id = R.string.relays)) })
     }
 }

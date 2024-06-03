@@ -171,4 +171,6 @@
     <string name="rebroadcasted_to_n_relays">Rebroadcasted to %d relays</string>
     <string name="failed_to_rebroadcast">Failed to rebroadcast</string>
     <string name="open_my_profile">Open my profile</string>
+    <string name="follow_lists">Follow lists</string>
+    <string name="contacts">Contacts</string>
 </resources>
