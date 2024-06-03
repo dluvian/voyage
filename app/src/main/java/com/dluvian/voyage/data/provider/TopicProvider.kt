@@ -1,9 +1,11 @@
 package com.dluvian.voyage.data.provider
 
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.core.model.TopicFollowState
 import com.dluvian.voyage.data.room.dao.TopicDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 
 class TopicProvider(
     private val topicDao: TopicDao,
@@ -15,6 +17,20 @@ class TopicProvider(
     suspend fun getPopularUnfollowedTopics(limit: Int): List<Topic> {
         return topicDao.getUnfollowedTopics(limit = limit)
             .ifEmpty { (defaultTopics - topicDao.getMyTopics().toSet()).shuffled() }
+    }
+
+    suspend fun getMyTopicsFlow(): Flow<List<TopicFollowState>> {
+        // We want to be able to unfollow on the same list
+        val myTopics = getMyTopics()
+
+        return forcedFollowStates.map { forcedFollows ->
+            myTopics.map { topic ->
+                TopicFollowState(
+                    topic = topic,
+                    isFollowed = forcedFollows[topic] ?: true
+                )
+            }
+        }
     }
 
     fun getIsFollowedFlow(topic: Topic): Flow<Boolean> {

@@ -209,7 +209,10 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             FollowListsViewModel(
                 contactListState = contactListState,
                 topicListState = topicListState,
-                pagerState = followListsPagerState
+                pagerState = followListsPagerState,
+                lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
+                profileProvider = appContainer.profileProvider,
+                topicProvider = appContainer.topicProvider
             )
         }
     )

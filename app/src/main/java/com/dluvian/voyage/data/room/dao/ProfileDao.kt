@@ -24,6 +24,9 @@ interface ProfileDao {
     @Query("SELECT * FROM AdvancedProfileView WHERE pubkey IN (:pubkeys)")
     fun getAdvancedProfilesFlow(pubkeys: Collection<PubkeyHex>): Flow<List<AdvancedProfileView>>
 
+    @Query("SELECT * FROM AdvancedProfileView WHERE pubkey IN (SELECT friendPubkey FROM friend)")
+    suspend fun getAdvancedProfilesOfFriends(): List<AdvancedProfileView>
+
     @Query("SELECT name FROM profile WHERE pubkey = :pubkey")
     suspend fun getName(pubkey: PubkeyHex): String?
 

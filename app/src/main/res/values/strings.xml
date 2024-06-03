@@ -173,4 +173,6 @@
     <string name="open_my_profile">Open my profile</string>
     <string name="follow_lists">Follow lists</string>
     <string name="contacts">Contacts</string>
+    <string name="your_contact_list_is_empty">Your contact list is empty</string>
+    <string name="your_topic_list_is_empty">Your topic list is empty</string>
 </resources>

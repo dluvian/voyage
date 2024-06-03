@@ -19,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import rust.nostr.protocol.Nip19Profile
 
 class ProfileProvider(
@@ -92,6 +93,22 @@ class ProfileProvider(
         lazyNostrSubscriber.lazySubUnknownProfiles(pubkeys = unfollowedPubkeys)
 
         return getProfilesFlow(pubkeys = unfollowedPubkeys)
+    }
+
+    suspend fun getMyFriendsFlow(): Flow<List<FullProfileUI>> {
+        // We want to be able to unfollow on the same list
+        val friends = profileDao.getAdvancedProfilesOfFriends()
+
+        return forcedFollowFlow.map { forcedFollows ->
+            friends.map { friend ->
+                createFullProfile(
+                    pubkey = friend.pubkey,
+                    dbProfile = friend,
+                    forcedFollowState = forcedFollows[friend.pubkey],
+                    metadata = null
+                )
+            }
+        }
     }
 
     private fun getProfilesFlow(pubkeys: Collection<PubkeyHex>): Flow<List<FullProfileUI>> {

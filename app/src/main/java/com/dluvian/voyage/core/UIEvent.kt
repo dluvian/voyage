@@ -142,6 +142,11 @@ data object DiscoverViewInit : DiscoverViewAction()
 data object DiscoverViewRefresh : DiscoverViewAction()
 
 
+sealed class FollowListsViewAction : UIEvent()
+data object FollowListsViewInit : FollowListsViewAction()
+data object FollowListsViewRefresh : FollowListsViewAction()
+
+
 sealed class TopicViewAction : UIEvent()
 data object TopicViewRefresh : TopicViewAction()
 data object TopicViewAppend : TopicViewAction()
