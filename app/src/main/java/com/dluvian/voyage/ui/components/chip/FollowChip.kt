@@ -4,8 +4,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -20,11 +18,9 @@ import com.dluvian.voyage.ui.model.Followable
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
-fun FollowChip(item: Followable, fillWidth: Boolean = false) {
+fun FollowChip(item: Followable) {
     Row(
         modifier = Modifier
-            .height(ButtonDefaults.MinHeight)
-            .let { if (fillWidth) it.fillMaxWidth() else it }
             .padding(spacing.medium)
             .clip(ButtonDefaults.outlinedShape)
             .clickable(onClick = item.onOpen)

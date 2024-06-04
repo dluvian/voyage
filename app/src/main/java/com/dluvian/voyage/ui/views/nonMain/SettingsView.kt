@@ -104,7 +104,7 @@ private fun AccountSection(
                 is DefaultAccount -> stringResource(id = R.string.default_account)
             },
             text = shortenedNpub,
-            imageVector = AccountIcon,
+            leadingIcon = AccountIcon,
             onClick = {
                 onUpdate(OpenProfile(nprofile = createNprofile(pubkey = accountType.publicKey)))
             }

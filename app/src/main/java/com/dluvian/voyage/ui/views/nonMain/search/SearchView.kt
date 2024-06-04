@@ -67,7 +67,7 @@ private fun SearchViewContent(
             }
             items(topics) { topic ->
                 ClickableRow(header = topic,
-                    imageVector = HashtagIcon,
+                    leadingIcon = HashtagIcon,
                     onClick = { onUpdate(OpenTopic(topic = topic)) })
             }
         }

@@ -29,10 +29,11 @@ import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.core.viewModel.FollowListsViewModel
 import com.dluvian.voyage.ui.components.PullRefreshBox
 import com.dluvian.voyage.ui.components.SimplePager
-import com.dluvian.voyage.ui.components.chip.FollowChip
+import com.dluvian.voyage.ui.components.button.FollowButton
 import com.dluvian.voyage.ui.components.icon.TrustIcon
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.ComingSoon
+import com.dluvian.voyage.ui.components.row.ClickableRow
 import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.ui.model.Followable
 import com.dluvian.voyage.ui.theme.HashtagIcon
@@ -151,7 +152,18 @@ private fun GenericList(
         if (followable.isEmpty()) BaseHint(text = hintIfEmpty)
         LazyColumn(modifier = Modifier.fillMaxSize(), state = state) {
             items(followable) {
-                FollowChip(item = it, fillWidth = true)
+                ClickableRow(
+                    header = it.label,
+                    leadingContent = it.icon,
+                    trailingContent = {
+                        FollowButton(
+                            isFollowed = it.isFollowed,
+                            onFollow = it.onFollow,
+                            onUnfollow = it.onUnfollow
+                        )
+                    },
+                    onClick = it.onOpen
+                )
             }
         }
     }

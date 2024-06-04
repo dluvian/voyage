@@ -25,20 +25,20 @@ import com.dluvian.voyage.ui.theme.spacing
 fun ClickableRow(
     header: String,
     text: String? = null,
-    imageVector: ImageVector?,
+    leadingIcon: ImageVector?,
     onClick: Fn = {},
     additionalContent: ComposableContent = {},
 ) {
     val icon = @Composable {
-        if (imageVector != null) Icon(
-            imageVector = imageVector,
+        if (leadingIcon != null) Icon(
+            imageVector = leadingIcon,
             contentDescription = header
         )
     }
     ClickableRow(
         header = header,
         text = text,
-        leadingContent = if (imageVector == null) null else icon,
+        leadingContent = if (leadingIcon == null) null else icon,
         onClick = onClick,
         additionalContent = additionalContent
     )
