@@ -41,6 +41,8 @@ class Core(
         when (uiEvent) {
             is NavEvent -> navigator.handle(action = uiEvent)
 
+            is DrawerAction -> vmContainer.drawerVM.handle(action = uiEvent)
+
             is VoteEvent -> appContainer.postVoter.handle(action = uiEvent)
             is ProfileEvent -> appContainer.profileFollower.handle(action = uiEvent)
             is TopicEvent -> appContainer.topicFollower.handle(action = uiEvent)

@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowUp
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.OfflineBolt
@@ -39,6 +40,7 @@ import com.dluvian.voyage.core.model.Oneself
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.core.model.WebTrust
 
+val MenuIcon = Icons.Default.Menu
 val HomeIcon = Icons.Default.Home
 val DiscoverIcon = Icons.Default.TravelExplore
 val AddIcon = Icons.Default.Add

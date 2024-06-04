@@ -22,6 +22,7 @@ fun MainScaffold(
         topBar = {
             VoyageTopAppBar(
                 title = currentView.getTitle(),
+                showMenu = true,
                 hasSearch = true,
                 onUpdate = onUpdate
             )

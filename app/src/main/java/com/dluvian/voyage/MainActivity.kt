@@ -8,6 +8,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -84,6 +86,8 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
 
     val profilePagerState = rememberPagerState { 4 }
     val followListsPagerState = rememberPagerState { 2 }
+
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
 
     return VMContainer(
         homeVM = viewModel {
@@ -203,6 +207,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         drawerVM = viewModel {
             DrawerViewModel(
                 profileProvider = appContainer.profileProvider,
+                drawerState = drawerState,
             )
         },
         followListsVM = viewModel {

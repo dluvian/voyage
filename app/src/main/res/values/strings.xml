@@ -175,4 +175,5 @@
     <string name="contacts">Contacts</string>
     <string name="your_contact_list_is_empty">Your contact list is empty</string>
     <string name="your_topic_list_is_empty">Your topic list is empty</string>
+    <string name="open_menu">Open menu</string>
 </resources>

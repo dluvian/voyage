@@ -147,6 +147,11 @@ data object FollowListsViewInit : FollowListsViewAction()
 data object FollowListsViewRefresh : FollowListsViewAction()
 
 
+sealed class DrawerAction : UIEvent()
+data class OpenDrawer(val scope: CoroutineScope) : DrawerAction()
+data class CloseDrawer(val scope: CoroutineScope) : DrawerAction()
+
+
 sealed class TopicViewAction : UIEvent()
 data object TopicViewRefresh : TopicViewAction()
 data object TopicViewAppend : TopicViewAction()

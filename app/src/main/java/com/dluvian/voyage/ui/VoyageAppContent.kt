@@ -1,6 +1,7 @@
 package com.dluvian.voyage.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import com.dluvian.voyage.core.Core
 import com.dluvian.voyage.core.RegisterAccountLauncher
 import com.dluvian.voyage.core.RegisterSignerLauncher
@@ -19,9 +20,13 @@ fun VoyageAppContent(core: Core) {
     core.onUpdate(RegisterSignerLauncher(launcher = signerLauncher))
     core.onUpdate(RegisterAccountLauncher(launcher = reqAccountLauncher))
 
+    // Scope for closing drawer
+    val scope = rememberCoroutineScope()
+
     when (val currentView = core.navigator.stack.value.last()) {
         is MainNavView -> MainView(
             core = core,
+            scope = scope,
             currentView = currentView,
         )
 

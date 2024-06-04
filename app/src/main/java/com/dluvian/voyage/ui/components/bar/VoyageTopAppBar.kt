@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.style.TextOverflow
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.ui.components.button.GoBackIconButton
+import com.dluvian.voyage.ui.components.button.MenuIconButton
 import com.dluvian.voyage.ui.components.iconButton.SearchIconButton
 import com.dluvian.voyage.ui.components.indicator.TopBarCircleProgressIndicator
 
@@ -15,6 +16,7 @@ import com.dluvian.voyage.ui.components.indicator.TopBarCircleProgressIndicator
 fun VoyageTopAppBar(
     title: String? = null,
     showGoBack: Boolean = false,
+    showMenu: Boolean = false,
     isLoading: Boolean = false,
     hasSearch: Boolean = false,
     onUpdate: OnUpdate = {}
@@ -30,7 +32,8 @@ fun VoyageTopAppBar(
             }
         },
         navigationIcon = {
-            if (showGoBack) GoBackIconButton(onUpdate = onUpdate)
+            if (showMenu) MenuIconButton(onUpdate = onUpdate)
+            else if (showGoBack) GoBackIconButton(onUpdate = onUpdate)
         },
         actions = {
             if (hasSearch) SearchIconButton(onUpdate = onUpdate)
