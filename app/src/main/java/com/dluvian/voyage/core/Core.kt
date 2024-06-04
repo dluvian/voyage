@@ -64,6 +64,7 @@ class Core(
             is RelayEditorViewAction -> vmContainer.relayEditorVM.handle(action = uiEvent)
             is InboxViewAction -> vmContainer.inboxVM.handle(action = uiEvent)
             is FollowListsViewAction -> vmContainer.followListsVM.handle(action = uiEvent)
+            is BookmarksViewAction -> vmContainer.bookmarksVM.handle(action = uiEvent)
 
             is ProcessExternalSignature -> viewModelScope.launch {
                 appContainer.externalSignerHandler.processExternalSignature(

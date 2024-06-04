@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.dluvian.voyage.core.Core
 import com.dluvian.voyage.core.Fn
+import com.dluvian.voyage.core.viewModel.BookmarksViewModel
 import com.dluvian.voyage.core.viewModel.CreateCrossPostViewModel
 import com.dluvian.voyage.core.viewModel.CreatePostViewModel
 import com.dluvian.voyage.core.viewModel.CreateReplyViewModel
@@ -83,6 +84,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
     val inboxFeedState = rememberLazyListState()
     val contactListState = rememberLazyListState()
     val topicListState = rememberLazyListState()
+    val bookmarksFeedState = rememberLazyListState()
 
     val profilePagerState = rememberPagerState { 4 }
     val followListsPagerState = rememberPagerState { 2 }
@@ -218,6 +220,13 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
                 profileProvider = appContainer.profileProvider,
                 topicProvider = appContainer.topicProvider
+            )
+        },
+        bookmarksVM = viewModel {
+            BookmarksViewModel(
+                feedProvider = appContainer.feedProvider,
+                feedState = bookmarksFeedState,
+                lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
             )
         }
     )

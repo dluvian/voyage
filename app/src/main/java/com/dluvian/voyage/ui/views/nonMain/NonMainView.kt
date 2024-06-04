@@ -17,7 +17,6 @@ import com.dluvian.voyage.core.navigator.SettingsNavView
 import com.dluvian.voyage.core.navigator.ThreadNavView
 import com.dluvian.voyage.core.navigator.ThreadRawNavView
 import com.dluvian.voyage.core.navigator.TopicNavView
-import com.dluvian.voyage.ui.components.indicator.ComingSoon
 import com.dluvian.voyage.ui.views.nonMain.profile.ProfileView
 import com.dluvian.voyage.ui.views.nonMain.search.SearchView
 import com.dluvian.voyage.ui.views.nonMain.topic.TopicView
@@ -102,6 +101,10 @@ fun NonMainView(
             onUpdate = core.onUpdate
         )
 
-        BookmarksNavView -> ComingSoon()
+        BookmarksNavView -> BookmarksView(
+            vm = core.vmContainer.bookmarksVM,
+            snackbar = core.appContainer.snackbar,
+            onUpdate = core.onUpdate
+        )
     }
 }

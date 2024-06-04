@@ -167,7 +167,20 @@ class LazyNostrSubscriber(
             .since(timestamp = Timestamp.fromSecs(secs = profileSince + 1u))
             .limit(1u)
 
-        val filters = listOf(myContactFilter, myTopicsFilter, myNip65Filter, myProfileFilter)
+        val bookmarksSince = TODO()
+        val myBookmarksFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Bookmarks))
+            .author(author = pubkey)
+            .until(timestamp = timestamp)
+            .since(timestamp = Timestamp.fromSecs(secs = profileSince + 1u))
+            .limit(1u)
+
+        val filters = listOf(
+            myContactFilter,
+            myTopicsFilter,
+            myNip65Filter,
+            myProfileFilter,
+            myBookmarksFilter
+        )
 
         relayProvider.getReadRelays().forEach { relay ->
             subCreator.subscribe(relayUrl = relay, filters = filters)

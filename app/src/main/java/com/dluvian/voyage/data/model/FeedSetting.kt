@@ -6,6 +6,7 @@ import com.dluvian.voyage.core.Topic
 sealed class FeedSetting
 
 data object InboxFeedSetting : FeedSetting()
+data object BookmarksFeedSetting : FeedSetting()
 data class ReplyFeedSetting(val pubkey: PubkeyHex) : FeedSetting()
 
 

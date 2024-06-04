@@ -6,6 +6,7 @@ import com.dluvian.voyage.core.MAX_KEYS
 import com.dluvian.voyage.core.RESUB_TIMEOUT
 import com.dluvian.voyage.core.textNoteAndRepostKinds
 import com.dluvian.voyage.data.account.IPubkeyProvider
+import com.dluvian.voyage.data.model.BookmarksFeedSetting
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.InboxFeedSetting
@@ -78,6 +79,12 @@ class NostrSubscriber(
             )
 
             InboxFeedSetting -> feedSubscriber.getInboxFeedSubscription(
+                until = until.toULong(),
+                since = since,
+                limit = limit.toULong()
+            )
+
+            BookmarksFeedSetting -> feedSubscriber.getBookmarksFeedSubscription(
                 until = until.toULong(),
                 since = since,
                 limit = limit.toULong()
@@ -185,6 +192,8 @@ class NostrSubscriber(
                 until = until,
                 size = pageSizeAndHalfOfNext
             )
+
+            BookmarksFeedSetting -> TODO()
         }
 
         if (timestamps.size < pageSizeAndHalfOfNext) return 1uL

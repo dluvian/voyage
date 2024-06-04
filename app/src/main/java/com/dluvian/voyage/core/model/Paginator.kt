@@ -9,6 +9,7 @@ import com.dluvian.voyage.core.FEED_OFFSET
 import com.dluvian.voyage.core.FEED_PAGE_SIZE
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.launchIO
+import com.dluvian.voyage.data.model.BookmarksFeedSetting
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.InboxFeedSetting
@@ -33,6 +34,7 @@ class Paginator(
     private val subCreator: SubscriptionCreator,
     private val scope: CoroutineScope,
 ) : IPaginator {
+    override val isInitialized = mutableStateOf(false)
     override val isRefreshing = mutableStateOf(false)
     override val isAppending = mutableStateOf(false)
     override val hasMoreRecentPosts = mutableStateOf(false)
@@ -44,8 +46,10 @@ class Paginator(
     private lateinit var feedSetting: FeedSetting
 
     fun init(setting: FeedSetting) {
+        if (isInitialized.value) return
+
         val isSame = when (setting) {
-            HomeFeedSetting, InboxFeedSetting -> page.value.value.isNotEmpty()
+            HomeFeedSetting, InboxFeedSetting, BookmarksFeedSetting -> page.value.value.isNotEmpty()
             is TopicFeedSetting,
             is ProfileRootFeedSetting,
             is ReplyFeedSetting -> page.value.value.isNotEmpty() && feedSetting == setting
@@ -65,6 +69,8 @@ class Paginator(
             page.value =
                 getFlow(until = now, subUntil = now, subscribe = feedSetting !is ReplyFeedSetting)
                     .stateIn(scope, SharingStarted.WhileSubscribed(), getStaticFeed(until = now))
+        }.invokeOnCompletion {
+            isInitialized.value = true
         }
     }
 

@@ -1,5 +1,6 @@
 package com.dluvian.voyage
 
+import com.dluvian.voyage.core.viewModel.BookmarksViewModel
 import com.dluvian.voyage.core.viewModel.CreateCrossPostViewModel
 import com.dluvian.voyage.core.viewModel.CreatePostViewModel
 import com.dluvian.voyage.core.viewModel.CreateReplyViewModel
@@ -34,4 +35,5 @@ data class VMContainer(
     val inboxVM: InboxViewModel,
     val drawerVM: DrawerViewModel,
     val followListsVM: FollowListsViewModel,
+    val bookmarksVM: BookmarksViewModel,
 )

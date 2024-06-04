@@ -150,6 +150,11 @@ data object FollowListsViewInit : FollowListsViewAction()
 data object FollowListsViewRefresh : FollowListsViewAction()
 
 
+sealed class BookmarksViewAction : UIEvent()
+data object BookmarksViewInit : BookmarksViewAction()
+data object BookmarksViewRefresh : BookmarksViewAction()
+data object BookmarksViewAppend : BookmarksViewAction()
+
 sealed class DrawerAction : UIEvent()
 data class OpenDrawer(val scope: CoroutineScope) : DrawerAction()
 data class CloseDrawer(val scope: CoroutineScope) : DrawerAction()

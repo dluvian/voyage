@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import kotlinx.coroutines.flow.StateFlow
 
 interface IPaginator {
+    val isInitialized: State<Boolean>
     val isRefreshing: State<Boolean>
     val isAppending: State<Boolean>
     val hasMoreRecentPosts: State<Boolean>

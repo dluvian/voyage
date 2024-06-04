@@ -144,4 +144,25 @@ class NostrFeedSubscriber(
 
         return relayProvider.getReadRelays().associateWith { filters }
     }
+
+    suspend fun getBookmarksFeedSubscription(
+        until: ULong,
+        since: ULong,
+        limit: ULong
+    ): Map<RelayUrl, List<Filter>> {
+        if (limit <= 0u) return emptyMap()
+        Log.d(TAG, "getBookmarksFeedSubscription")
+
+        val ids = TODO() // Take random max keys
+
+        val bookedMarkedNotesFilter = Filter()
+            .kinds(kinds = textNoteAndRepostKinds)
+            .events(ids = ids)
+            .since(timestamp = Timestamp.fromSecs(since))
+            .until(timestamp = Timestamp.fromSecs(until))
+            .limitRestricted(limit = limit)
+        val filters = mutableListOf(bookedMarkedNotesFilter)
+
+        return relayProvider.getReadRelays().associateWith { filters }
+    }
 }

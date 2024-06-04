@@ -25,10 +25,15 @@ import com.dluvian.nostr_kt.getReplyToId
 import com.dluvian.nostr_kt.getSubject
 import com.dluvian.nostr_kt.isPostOrReply
 import com.dluvian.nostr_kt.secs
+import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.data.event.ValidatedMainPost
 import com.dluvian.voyage.data.event.ValidatedReply
 import com.dluvian.voyage.data.event.ValidatedRootPost
+import com.dluvian.voyage.data.interactor.Vote
 import com.dluvian.voyage.data.model.RelevantMetadata
+import com.dluvian.voyage.data.provider.AnnotatedStringProvider
+import com.dluvian.voyage.data.room.view.ReplyView
+import com.dluvian.voyage.data.room.view.RootPostView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -330,4 +335,41 @@ fun createProcessTextIntent(text: String, info: ResolveInfo): Intent {
             info.activityInfo.packageName,
             info.activityInfo.name
         )
+}
+
+
+fun mergeToParentUIList(
+    replies: Collection<ReplyView>,
+    crossPosts: Collection<RootPostView>,
+    votes: Map<EventIdHex, Vote>,
+    follows: Map<PubkeyHex, Boolean>,
+    size: Int,
+    annotatedStringProvider: AnnotatedStringProvider,
+): List<ParentUI> {
+    val applicableTimestamps = replies.map { it.createdAt }
+        .plus(crossPosts.map { it.createdAt })
+        .sortedDescending()
+        .take(size)
+        .toSet()
+
+    val result = mutableListOf<ParentUI>()
+    for (reply in replies) {
+        if (!applicableTimestamps.contains(reply.createdAt)) continue
+        val mapped = reply.mapToReplyUI(
+            forcedVotes = votes,
+            forcedFollows = follows,
+            annotatedStringProvider = annotatedStringProvider
+        )
+        result.add(mapped)
+    }
+    for (crossPost in crossPosts) {
+        if (!applicableTimestamps.contains(crossPost.createdAt)) continue
+        val mapped = crossPost.mapToRootPostUI(
+            forcedVotes = votes,
+            forcedFollows = follows,
+            annotatedStringProvider = annotatedStringProvider
+        )
+        result.add(mapped)
+    }
+    return result.sortedByDescending { it.createdAt }.take(size)
 }
