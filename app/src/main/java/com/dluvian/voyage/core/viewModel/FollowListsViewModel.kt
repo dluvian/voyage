@@ -12,7 +12,6 @@ import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.FollowListsViewAction
 import com.dluvian.voyage.core.FollowListsViewInit
 import com.dluvian.voyage.core.FollowListsViewRefresh
-import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.TopicFollowState
 import com.dluvian.voyage.data.model.FullProfileUI
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
@@ -43,22 +42,26 @@ class FollowListsViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
     fun handle(action: FollowListsViewAction) {
         when (action) {
             is FollowListsViewInit -> init()
-            is FollowListsViewRefresh -> refresh()
+            is FollowListsViewRefresh -> refresh(isInit = false)
         }
     }
 
+    private var isInitialized = false
     private fun init() {
-        viewModelScope.launchIO {
-            lazyNostrSubscriber.lazySubMyAccount()
-            refresh()
-        }
+        if (isInitialized) return
+        refresh(isInit = true)
+        isInitialized = true
     }
 
-    private fun refresh() {
+    private fun refresh(isInit: Boolean) {
         if (isRefreshing.value) return
         isRefreshing.value = true
 
         viewModelScope.launch {
+            if (!isInit) {
+                lazyNostrSubscriber.lazySubMyAccount()
+                delay(DEBOUNCE)
+            }
             contacts.value = profileProvider.getMyFriendsFlow()
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), contacts.value.value)
             topics.value = topicProvider.getMyTopicsFlow()
