@@ -2,6 +2,7 @@ package com.dluvian.voyage.ui.views.nonMain
 
 import androidx.compose.runtime.Composable
 import com.dluvian.voyage.core.Core
+import com.dluvian.voyage.core.navigator.BookmarksNavView
 import com.dluvian.voyage.core.navigator.CreatePostNavView
 import com.dluvian.voyage.core.navigator.CrossPostCreationNavView
 import com.dluvian.voyage.core.navigator.EditProfileNavView
@@ -16,6 +17,7 @@ import com.dluvian.voyage.core.navigator.SettingsNavView
 import com.dluvian.voyage.core.navigator.ThreadNavView
 import com.dluvian.voyage.core.navigator.ThreadRawNavView
 import com.dluvian.voyage.core.navigator.TopicNavView
+import com.dluvian.voyage.ui.components.indicator.ComingSoon
 import com.dluvian.voyage.ui.views.nonMain.profile.ProfileView
 import com.dluvian.voyage.ui.views.nonMain.search.SearchView
 import com.dluvian.voyage.ui.views.nonMain.topic.TopicView
@@ -99,5 +101,7 @@ fun NonMainView(
             snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate
         )
+
+        BookmarksNavView -> ComingSoon()
     }
 }

@@ -3,10 +3,13 @@ package com.dluvian.voyage.ui.theme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Comment
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.filled.Reply
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Bookmarks
+import androidx.compose.material.icons.filled.CellTower
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
@@ -67,6 +70,9 @@ val DeleteIcon = Icons.Default.Delete
 val CrossPostIcon = Icons.Default.Repeat
 val KeyIcon = Icons.Default.Key
 val LightningIcon = Icons.Default.OfflineBolt
+val ListIcon = Icons.AutoMirrored.Filled.List
+val BookmarksIcon = Icons.Default.Bookmarks
+val RelayIcon = Icons.Default.CellTower
 
 @Stable
 @Composable
