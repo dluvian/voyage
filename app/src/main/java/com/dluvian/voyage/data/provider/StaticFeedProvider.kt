@@ -83,7 +83,7 @@ class StaticFeedProvider(
 
         return mergeToParentUIList(
             replies = replies,
-            crossPosts = crossPosts,
+            roots = crossPosts,
             votes = emptyMap(),
             follows = emptyMap(),
             size = size,
@@ -92,13 +92,12 @@ class StaticFeedProvider(
     }
 
     private suspend fun getStaticBooksmarksFeed(until: Long, size: Int): List<ParentUI> {
-        TODO()
-        val replies = room.directReplyDao().getDirectReplies(until = until, size = size)
-        val crossPosts = room.directCrossPostDao().getDirectCrossPosts(until = until, size = size)
+        val roots = room.bookmarkDao().getRootPosts(until = until, size = size)
+        val replies = room.bookmarkDao().getReplies(until = until, size = size)
 
         return mergeToParentUIList(
             replies = replies,
-            crossPosts = crossPosts,
+            roots = roots,
             votes = emptyMap(),
             follows = emptyMap(),
             size = size,

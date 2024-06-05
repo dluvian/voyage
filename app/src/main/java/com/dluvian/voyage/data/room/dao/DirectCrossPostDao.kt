@@ -6,14 +6,13 @@ import com.dluvian.voyage.data.room.view.RootPostView
 import kotlinx.coroutines.flow.Flow
 
 
-private const val DIRECT_CROSS_POST_FEED_BASE_QUERY = "FROM RootPostView " +
+private const val DIRECT_CROSS_POST_FEED_QUERY = "SELECT * " +
+        "FROM RootPostView " +
         "WHERE createdAt <= :until " +
         "AND authorIsOneself = 0 " +
         "AND crossPostedAuthorIsOneself = 1 " +
         "ORDER BY createdAt DESC " +
         "LIMIT :size"
-
-private const val DIRECT_CROSS_POST_FEED_QUERY = "SELECT * $DIRECT_CROSS_POST_FEED_BASE_QUERY"
 
 private const val DIRECT_CROSS_POSTS_EXISTS_QUERY = "SELECT EXISTS(SELECT * " +
         "FROM RootPostView " +

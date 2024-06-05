@@ -76,6 +76,11 @@ data class ValidatedTopicList(
     val topics: Set<Topic>,
     override val createdAt: Long
 ) : ValidatedList(owner = myPubkey, createdAt = createdAt)
+data class ValidatedBookmarkList(
+    val myPubkey: PubkeyHex,
+    val postIds: Set<EventIdHex>,
+    override val createdAt: Long
+) : ValidatedList(owner = myPubkey, createdAt = createdAt)
 
 data class ValidatedNip65(
     val pubkey: PubkeyHex,

@@ -154,7 +154,7 @@ class FeedProvider(
         ) { replies, crossPosts, votes, follows ->
             mergeToParentUIList(
                 replies = replies,
-                crossPosts = crossPosts,
+                roots = crossPosts,
                 votes = votes,
                 follows = follows,
                 size = size,
@@ -164,20 +164,19 @@ class FeedProvider(
     }
 
     private fun getBookmarksFeedFlow(until: Long, size: Int): Flow<List<ParentUI>> {
-        TODO()
         return combine(
-            room.directReplyDao()
-                .getDirectReplyFlow(until = until, size = size)
+            room.bookmarkDao()
+                .getReplyFlow(until = until, size = size)
                 .firstThenDistinctDebounce(SHORT_DEBOUNCE),
-            room.directCrossPostDao()
-                .getDirectCrossPostFlow(until = until, size = size)
+            room.bookmarkDao()
+                .getRootPostsFlow(until = until, size = size)
                 .firstThenDistinctDebounce(SHORT_DEBOUNCE),
             forcedVotes,
             forcedFollows
-        ) { replies, crossPosts, votes, follows ->
+        ) { replies, rootPosts, votes, follows ->
             mergeToParentUIList(
                 replies = replies,
-                crossPosts = crossPosts,
+                roots = rootPosts,
                 votes = votes,
                 follows = follows,
                 size = size,
@@ -202,7 +201,7 @@ class FeedProvider(
                 hasReplies || hasCrossPosts
             }
 
-            BookmarksFeedSetting -> TODO()
+            BookmarksFeedSetting -> room.bookmarkDao().hasBookmarkedPostsFlow()
         }
     }
 }

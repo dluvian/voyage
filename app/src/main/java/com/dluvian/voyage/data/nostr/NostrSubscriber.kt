@@ -44,6 +44,7 @@ class NostrSubscriber(
         relayProvider = relayProvider,
         topicProvider = topicProvider,
         pubkeyProvider = pubkeyProvider,
+        bookmarkDao = room.bookmarkDao(),
     )
 
     suspend fun subFeed(until: Long, limit: Int, setting: FeedSetting) {
@@ -193,7 +194,10 @@ class NostrSubscriber(
                 size = pageSizeAndHalfOfNext
             )
 
-            BookmarksFeedSetting -> TODO()
+            BookmarksFeedSetting -> room.bookmarkDao().getBookmarkedPostsCreatedAt(
+                until = until,
+                size = pageSizeAndHalfOfNext
+            )
         }
 
         if (timestamps.size < pageSizeAndHalfOfNext) return 1uL

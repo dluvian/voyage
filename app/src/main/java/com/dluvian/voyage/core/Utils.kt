@@ -340,14 +340,14 @@ fun createProcessTextIntent(text: String, info: ResolveInfo): Intent {
 
 fun mergeToParentUIList(
     replies: Collection<ReplyView>,
-    crossPosts: Collection<RootPostView>,
+    roots: Collection<RootPostView>,
     votes: Map<EventIdHex, Vote>,
     follows: Map<PubkeyHex, Boolean>,
     size: Int,
     annotatedStringProvider: AnnotatedStringProvider,
 ): List<ParentUI> {
     val applicableTimestamps = replies.map { it.createdAt }
-        .plus(crossPosts.map { it.createdAt })
+        .plus(roots.map { it.createdAt })
         .sortedDescending()
         .take(size)
         .toSet()
@@ -362,9 +362,9 @@ fun mergeToParentUIList(
         )
         result.add(mapped)
     }
-    for (crossPost in crossPosts) {
-        if (!applicableTimestamps.contains(crossPost.createdAt)) continue
-        val mapped = crossPost.mapToRootPostUI(
+    for (post in roots) {
+        if (!applicableTimestamps.contains(post.createdAt)) continue
+        val mapped = post.mapToRootPostUI(
             forcedVotes = votes,
             forcedFollows = follows,
             annotatedStringProvider = annotatedStringProvider

@@ -37,9 +37,10 @@ class EventProcessor(
         val crossPosts = mutableListOf<ValidatedCrossPost>()
         val votes = mutableListOf<ValidatedVote>()
         val contactLists = mutableListOf<ValidatedContactList>()
-        val topicLists = mutableListOf<ValidatedTopicList>()
         val nip65s = mutableListOf<ValidatedNip65>()
         val profiles = mutableListOf<ValidatedProfile>()
+        val topicLists = mutableListOf<ValidatedTopicList>()
+        val bookmarkLists = mutableListOf<ValidatedBookmarkList>()
 
         allEvents.forEach { event ->
             when (event) {
@@ -48,9 +49,10 @@ class EventProcessor(
                 is ValidatedCrossPost -> crossPosts.add(event)
                 is ValidatedVote -> votes.add(event)
                 is ValidatedContactList -> contactLists.add(event)
-                is ValidatedTopicList -> topicLists.add(event)
                 is ValidatedNip65 -> nip65s.add(event)
                 is ValidatedProfile -> profiles.add(event)
+                is ValidatedTopicList -> topicLists.add(event)
+                is ValidatedBookmarkList -> bookmarkLists.add(event)
             }
         }
         processRootPosts(rootPosts = rootPosts)
@@ -58,9 +60,10 @@ class EventProcessor(
         processCrossPosts(crossPosts = crossPosts)
         processVotes(votes = votes)
         processContactLists(contactLists = contactLists)
-        processTopicLists(topicLists = topicLists)
         processNip65s(nip65s = nip65s)
         processProfiles(profiles = profiles)
+        processTopicLists(topicLists = topicLists)
+        processBookmarkLists(bookmarkLists = bookmarkLists)
     }
 
     private fun processRootPosts(rootPosts: Collection<ValidatedRootPost>) {
@@ -153,8 +156,18 @@ class EventProcessor(
         scope.launch {
             Log.d(TAG, "Upsert topic list of ${myNewestList.topics.size} topics")
             room.topicUpsertDao().upsertTopics(validatedTopicList = myNewestList)
-        }.invokeOnCompletion { ex ->
-            if (ex != null) Log.w(TAG, "Failed to process topic list", ex)
+        }
+    }
+
+    private fun processBookmarkLists(bookmarkLists: Collection<ValidatedBookmarkList>) {
+        if (bookmarkLists.isEmpty()) return
+
+        val myNewestList = filterNewestLists(lists = bookmarkLists)
+            .firstOrNull { it.myPubkey == pubkeyProvider.getPubkeyHex() } ?: return
+
+        scope.launch {
+            Log.d(TAG, "Upsert bookmark list of ${myNewestList.postIds.size} postIds")
+            room.bookmarkUpsertDao().upsertBookmarks(validatedBookmarkList = myNewestList)
         }
     }
 

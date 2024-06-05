@@ -167,11 +167,11 @@ class LazyNostrSubscriber(
             .since(timestamp = Timestamp.fromSecs(secs = profileSince + 1u))
             .limit(1u)
 
-        val bookmarksSince = TODO()
+        val bookmarksSince = room.bookmarkDao().getMaxCreatedAt()?.toULong() ?: 1uL
         val myBookmarksFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Bookmarks))
             .author(author = pubkey)
             .until(timestamp = timestamp)
-            .since(timestamp = Timestamp.fromSecs(secs = profileSince + 1u))
+            .since(timestamp = Timestamp.fromSecs(secs = bookmarksSince + 1u))
             .limit(1u)
 
         val filters = listOf(

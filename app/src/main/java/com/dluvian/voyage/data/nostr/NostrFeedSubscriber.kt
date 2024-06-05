@@ -14,8 +14,10 @@ import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.model.FriendPubkeys
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
+import com.dluvian.voyage.data.room.dao.BookmarkDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Timestamp
@@ -26,6 +28,7 @@ class NostrFeedSubscriber(
     private val relayProvider: RelayProvider,
     private val topicProvider: TopicProvider,
     private val pubkeyProvider: IPubkeyProvider,
+    private val bookmarkDao: BookmarkDao,
 ) {
     suspend fun getHomeFeedSubscriptions(
         until: ULong,
@@ -153,7 +156,11 @@ class NostrFeedSubscriber(
         if (limit <= 0u) return emptyMap()
         Log.d(TAG, "getBookmarksFeedSubscription")
 
-        val ids = TODO() // Take random max keys
+        val ids = bookmarkDao.getUnknownBookmarks()
+            .takeRandom(MAX_KEYS)
+            .map { EventId.fromHex(it) }
+
+        if (ids.isEmpty()) return emptyMap()
 
         val bookedMarkedNotesFilter = Filter()
             .kinds(kinds = textNoteAndRepostKinds)

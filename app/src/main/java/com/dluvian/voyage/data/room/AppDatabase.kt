@@ -4,6 +4,7 @@ import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.dluvian.voyage.data.room.dao.AccountDao
+import com.dluvian.voyage.data.room.dao.BookmarkDao
 import com.dluvian.voyage.data.room.dao.CountDao
 import com.dluvian.voyage.data.room.dao.DeleteDao
 import com.dluvian.voyage.data.room.dao.DirectCrossPostDao
@@ -20,6 +21,7 @@ import com.dluvian.voyage.data.room.dao.RootPostDao
 import com.dluvian.voyage.data.room.dao.TopicDao
 import com.dluvian.voyage.data.room.dao.VoteDao
 import com.dluvian.voyage.data.room.dao.WebOfTrustDao
+import com.dluvian.voyage.data.room.dao.tx.BookmarkUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.FriendUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.FullProfileUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.Nip65UpsertDao
@@ -28,6 +30,7 @@ import com.dluvian.voyage.data.room.dao.tx.ProfileUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.TopicUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.WebOfTrustUpsertDao
 import com.dluvian.voyage.data.room.entity.AccountEntity
+import com.dluvian.voyage.data.room.entity.BookmarkEntity
 import com.dluvian.voyage.data.room.entity.FriendEntity
 import com.dluvian.voyage.data.room.entity.FullProfileEntity
 import com.dluvian.voyage.data.room.entity.HashtagEntity
@@ -45,7 +48,7 @@ import com.dluvian.voyage.data.room.view.SimplePostView
 
 
 @Database(
-    version = 7,
+    version = 8,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -54,6 +57,7 @@ import com.dluvian.voyage.data.room.view.SimplePostView
         AutoMigration(from = 4, to = 5),
         AutoMigration(from = 5, to = 6),
         AutoMigration(from = 6, to = 7),
+        AutoMigration(from = 7, to = 8),
     ],
     entities = [
         PostEntity::class,
@@ -66,6 +70,7 @@ import com.dluvian.voyage.data.room.view.SimplePostView
         Nip65Entity::class,
         ProfileEntity::class,
         FullProfileEntity::class,
+        BookmarkEntity::class
     ],
     views = [
         RootPostView::class,
@@ -90,6 +95,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun directReplyDao(): DirectReplyDao
     abstract fun fullProfileDao(): FullProfileDao
     abstract fun postDao(): PostDao
+    abstract fun bookmarkDao(): BookmarkDao
 
 
     // Util
@@ -102,6 +108,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun friendUpsertDao(): FriendUpsertDao
     abstract fun webOfTrustUpsertDao(): WebOfTrustUpsertDao
     abstract fun topicUpsertDao(): TopicUpsertDao
+    abstract fun bookmarkUpsertDao(): BookmarkUpsertDao
     abstract fun nip65UpsertDao(): Nip65UpsertDao
     abstract fun profileUpsertDao(): ProfileUpsertDao
     abstract fun fullProfileUpsertDao(): FullProfileUpsertDao

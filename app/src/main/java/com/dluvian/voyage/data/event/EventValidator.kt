@@ -86,15 +86,6 @@ class EventValidator(
                 createdAt = event.createdAt().secs()
             )
 
-            is KindEnum.Interests -> {
-                if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) null
-                else ValidatedTopicList(
-                    myPubkey = event.author().toHex(),
-                    topics = event.getNormalizedTopics(limited = false).toSet(),
-                    createdAt = event.createdAt().secs()
-                )
-            }
-
             is KindEnum.RelayList -> {
                 val relays = event.getNip65s()
                 if (relays.isEmpty()) return null
@@ -111,6 +102,31 @@ class EventValidator(
                     id = event.id().toHex(),
                     pubkey = event.author().toHex(),
                     metadata = metadata,
+                    createdAt = event.createdAt().secs()
+                )
+            }
+
+            is KindEnum.Interests -> {
+                if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) null
+                else ValidatedTopicList(
+                    myPubkey = event.author().toHex(),
+                    topics = event.getNormalizedTopics(limited = false)
+                        .distinct()
+                        .takeRandom(MAX_KEYS_SQL)
+                        .toSet(),
+                    createdAt = event.createdAt().secs()
+                )
+            }
+
+            is KindEnum.Bookmarks -> {
+                if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) null
+                else ValidatedBookmarkList(
+                    myPubkey = event.author().toHex(),
+                    postIds = event.eventIds()
+                        .map { it.toHex() }
+                        .distinct()
+                        .takeRandom(MAX_KEYS_SQL)
+                        .toSet(),
                     createdAt = event.createdAt().secs()
                 )
             }
