@@ -1,6 +1,7 @@
 package com.dluvian.voyage.core.viewModel
 
 import android.util.Log
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +35,7 @@ import kotlinx.coroutines.delay
 private const val TAG = "RelayEditorViewModel"
 
 class RelayEditorViewModel(
+    val lazyListState: LazyListState,
     private val relayProvider: RelayProvider,
     private val snackbar: SnackbarHostState,
     private val nostrService: NostrService,

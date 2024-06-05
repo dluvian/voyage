@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -95,6 +96,7 @@ fun RelayEditorView(vm: RelayEditorViewModel, snackbar: SnackbarHostState, onUpd
             popularRelays = popularRelays,
             connectionStatuses = connectionStatuses,
             addIsEnabled = addIsEnabled,
+            state = vm.lazyListState,
             scope = scope,
             onUpdate = onUpdate
         )
@@ -107,6 +109,7 @@ private fun RelayEditorViewContent(
     popularRelays: List<RelayUrl>,
     connectionStatuses: Map<RelayUrl, ConnectionStatus>,
     addIsEnabled: Boolean,
+    state: LazyListState,
     scope: CoroutineScope,
     onUpdate: OnUpdate,
 ) {
@@ -114,7 +117,7 @@ private fun RelayEditorViewContent(
         connectionStatuses.filter { (_, status) -> status is Connected }.keys.toList()
     }
 
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
+    LazyColumn(modifier = Modifier.fillMaxSize(), state = state) {
         item { SectionHeader(header = stringResource(id = R.string.my_relays)) }
 
         itemsIndexed(items = myRelays) { index, relay ->

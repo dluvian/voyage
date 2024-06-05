@@ -87,6 +87,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
     val contactListState = rememberLazyListState()
     val topicListState = rememberLazyListState()
     val bookmarksFeedState = rememberLazyListState()
+    val relayEditorState = rememberLazyListState()
 
     val profilePagerState = rememberPagerState { 4 }
     val followListsPagerState = rememberPagerState { 2 }
@@ -183,6 +184,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         },
         relayEditorVM = viewModel {
             RelayEditorViewModel(
+                lazyListState = relayEditorState,
                 relayProvider = appContainer.relayProvider,
                 snackbar = appContainer.snackbar,
                 nostrService = appContainer.nostrService,
