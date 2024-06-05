@@ -80,8 +80,8 @@ class StaticFeedProvider(
     }
 
     private suspend fun getStaticInboxFeed(until: Long, size: Int): List<ParentUI> {
-        val replies = room.directReplyDao().getDirectReplies(until = until, size = size)
-        val crossPosts = room.directCrossPostDao().getDirectCrossPosts(until = until, size = size)
+        val replies = room.inboxDao().getDirectReplies(until = until, size = size)
+        val crossPosts = room.inboxDao().getDirectCrossPosts(until = until, size = size)
 
         return mergeToParentUIList(
             replies = replies,

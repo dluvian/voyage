@@ -7,12 +7,11 @@ import com.dluvian.voyage.data.room.dao.AccountDao
 import com.dluvian.voyage.data.room.dao.BookmarkDao
 import com.dluvian.voyage.data.room.dao.CountDao
 import com.dluvian.voyage.data.room.dao.DeleteDao
-import com.dluvian.voyage.data.room.dao.DirectCrossPostDao
-import com.dluvian.voyage.data.room.dao.DirectReplyDao
 import com.dluvian.voyage.data.room.dao.EventRelayDao
 import com.dluvian.voyage.data.room.dao.ExistsDao
 import com.dluvian.voyage.data.room.dao.FriendDao
 import com.dluvian.voyage.data.room.dao.FullProfileDao
+import com.dluvian.voyage.data.room.dao.InboxDao
 import com.dluvian.voyage.data.room.dao.Nip65Dao
 import com.dluvian.voyage.data.room.dao.PostDao
 import com.dluvian.voyage.data.room.dao.ProfileDao
@@ -85,7 +84,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun accountDao(): AccountDao
     abstract fun voteDao(): VoteDao
     abstract fun rootPostDao(): RootPostDao
-    abstract fun directCrossPostDao(): DirectCrossPostDao
     abstract fun topicDao(): TopicDao
     abstract fun friendDao(): FriendDao
     abstract fun webOfTrustDao(): WebOfTrustDao
@@ -93,9 +91,9 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun profileDao(): ProfileDao
     abstract fun eventRelayDao(): EventRelayDao
     abstract fun replyDao(): ReplyDao
-    abstract fun directReplyDao(): DirectReplyDao
     abstract fun fullProfileDao(): FullProfileDao
     abstract fun postDao(): PostDao
+    abstract fun inboxDao(): InboxDao
     abstract fun bookmarkDao(): BookmarkDao
 
 

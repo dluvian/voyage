@@ -148,10 +148,10 @@ class FeedProvider(
 
     private fun getInboxFeedFlow(until: Long, size: Int): Flow<List<ParentUI>> {
         return combine(
-            room.directReplyDao()
+            room.inboxDao()
                 .getDirectReplyFlow(until = until, size = size)
                 .firstThenDistinctDebounce(SHORT_DEBOUNCE),
-            room.directCrossPostDao()
+            room.inboxDao()
                 .getDirectCrossPostFlow(until = until, size = size)
                 .firstThenDistinctDebounce(SHORT_DEBOUNCE),
             forcedVotes,
@@ -203,12 +203,7 @@ class FeedProvider(
 
             is ReplyFeedSetting -> room.replyDao().hasProfileRepliesFlow(pubkey = setting.pubkey)
 
-            InboxFeedSetting -> combine(
-                room.directReplyDao().hasDirectRepliesFlow(),
-                room.directCrossPostDao().hasDirectCrossPostsFlow()
-            ) { hasReplies, hasCrossPosts ->
-                hasReplies || hasCrossPosts
-            }
+            InboxFeedSetting -> room.inboxDao().hasInboxFlow()
 
             BookmarksFeedSetting -> room.bookmarkDao().hasBookmarkedPostsFlow()
         }
