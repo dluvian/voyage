@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
@@ -21,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -55,6 +57,7 @@ import com.dluvian.voyage.ui.theme.KeyIcon
 import com.dluvian.voyage.ui.theme.LightningIcon
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -79,9 +82,23 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
         stringResource(id = R.string.about),
         stringResource(id = R.string.relays),
     )
+    val scope = rememberCoroutineScope()
 
     ProfileScaffold(profile = profile, snackbar = snackbar, onUpdate = onUpdate) {
-        SimplePager(headers = headers, index = index, pagerState = vm.pagerState) {
+        SimplePager(
+            headers = headers,
+            index = index,
+            pagerState = vm.pagerState,
+            onScrollUp = {
+                when (it) {
+                    0 -> scope.launch { vm.rootFeedState.scrollToItem(0) }
+                    1 -> scope.launch { vm.replyFeedState.scrollToItem(0) }
+                    3 -> scope.launch { vm.profileAboutState.scrollToItem(0) }
+                    4 -> scope.launch { vm.profileRelayState.scrollToItem(0) }
+                    else -> {}
+                }
+            },
+        ) {
             when (it) {
                 0 -> Feed(
                     paginator = vm.rootPaginator,
@@ -107,6 +124,7 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
                     lightning = profile.lightning,
                     about = profile.about,
                     isRefreshing = isRefreshing,
+                    state = vm.profileAboutState,
                     onUpdate = onUpdate
                 )
 
@@ -119,6 +137,7 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
                     writeOnlyRelays = writeOnlyRelays,
                     seenInRelays = seenInRelays,
                     isRefreshing = isRefreshing,
+                    state = vm.profileRelayState,
                     onUpdate = onUpdate
                 )
 
@@ -135,11 +154,12 @@ private fun AboutPage(
     lightning: String?,
     about: AnnotatedString?,
     isRefreshing: Boolean,
+    state: LazyListState,
     modifier: Modifier = Modifier,
     onUpdate: OnUpdate
 ) {
     ProfileViewPage(isRefreshing = isRefreshing, onUpdate = onUpdate) {
-        LazyColumn(modifier = modifier) {
+        LazyColumn(modifier = modifier, state = state) {
             item {
                 AboutPageTextRow(
                     modifier = Modifier
@@ -232,6 +252,7 @@ fun RelayPage(
     writeOnlyRelays: List<RelayUrl>,
     seenInRelays: List<RelayUrl>,
     isRefreshing: Boolean,
+    state: LazyListState,
     modifier: Modifier = Modifier,
     onUpdate: OnUpdate,
 ) {
@@ -242,7 +263,11 @@ fun RelayPage(
             seenInRelays.isEmpty()
         ) BaseHint(stringResource(id = R.string.no_relays_found))
 
-        LazyColumn(modifier = modifier, contentPadding = PaddingValues(top = spacing.screenEdge)) {
+        LazyColumn(
+            modifier = modifier,
+            state = state,
+            contentPadding = PaddingValues(top = spacing.screenEdge)
+        ) {
             if (nip65Relays.isNotEmpty()) item {
                 RelaySection(
                     header = stringResource(id = R.string.relay_list),

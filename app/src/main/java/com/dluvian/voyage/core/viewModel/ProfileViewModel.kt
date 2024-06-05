@@ -42,6 +42,8 @@ class ProfileViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
     private val eventRelayDao: EventRelayDao,
     val rootFeedState: LazyListState,
     val replyFeedState: LazyListState,
+    val profileAboutState: LazyListState,
+    val profileRelayState: LazyListState,
     val pagerState: PagerState,
 ) : ViewModel() {
     val tabIndex = mutableIntStateOf(0)

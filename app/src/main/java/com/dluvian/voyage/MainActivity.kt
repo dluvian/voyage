@@ -79,6 +79,8 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
     val homeFeedState = rememberLazyListState()
     val profileRootFeedState = rememberLazyListState()
     val profileReplyFeedState = rememberLazyListState()
+    val profileAboutState = rememberLazyListState()
+    val profileRelayState = rememberLazyListState()
     val topicFeedState = rememberLazyListState()
     val threadState = rememberLazyListState()
     val inboxFeedState = rememberLazyListState()
@@ -133,6 +135,8 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 eventRelayDao = appContainer.roomDb.eventRelayDao(),
                 rootFeedState = profileRootFeedState,
                 replyFeedState = profileReplyFeedState,
+                profileAboutState = profileAboutState,
+                profileRelayState = profileRelayState,
                 pagerState = profilePagerState,
             )
         },

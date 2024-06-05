@@ -13,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
@@ -38,6 +39,7 @@ import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.ui.model.Followable
 import com.dluvian.voyage.ui.theme.HashtagIcon
 import com.dluvian.voyage.ui.theme.spacing
+import kotlinx.coroutines.launch
 
 @Composable
 fun FollowListsView(vm: FollowListsViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
@@ -117,7 +119,19 @@ private fun ScreenContent(
     vm: FollowListsViewModel,
     onUpdate: OnUpdate
 ) {
-    SimplePager(headers = headers, index = vm.tabIndex, pagerState = vm.pagerState) {
+    val scope = rememberCoroutineScope()
+    SimplePager(
+        headers = headers,
+        index = vm.tabIndex,
+        pagerState = vm.pagerState,
+        onScrollUp = {
+            when (it) {
+                0 -> scope.launch { vm.contactListState.scrollToItem(0) }
+                1 -> scope.launch { vm.topicListState.scrollToItem(0) }
+                else -> {}
+            }
+        },
+    ) {
         when (it) {
             0 -> GenericList(
                 followable = contacts,

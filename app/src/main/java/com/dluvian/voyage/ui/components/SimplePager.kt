@@ -26,6 +26,7 @@ fun SimplePager(
     index: MutableIntState,
     pagerState: PagerState,
     scope: CoroutineScope = rememberCoroutineScope(),
+    onScrollUp: (Int) -> Unit,
     pageContent: @Composable PagerScope.(page: Int) -> Unit
 ) {
     require(headers.size == pagerState.pageCount)
@@ -37,7 +38,10 @@ fun SimplePager(
         PagerTabRow(
             headers = headers,
             index = index,
-            onClickPage = { i -> scope.launch { pagerState.animateScrollToPage(i) } })
+            onClickTab = { i ->
+                scope.launch { pagerState.animateScrollToPage(i) }
+                if (pagerState.currentPage == i) onScrollUp(i)
+            })
         HorizontalPager(
             modifier = Modifier
                 .fillMaxWidth()
@@ -54,7 +58,7 @@ fun SimplePager(
 private fun PagerTabRow(
     headers: List<String>,
     index: MutableIntState,
-    onClickPage: (Int) -> Unit
+    onClickTab: (Int) -> Unit
 ) {
     // Set higher zIndex to hide resting refresh indicator
     PrimaryTabRow(modifier = Modifier.zIndex(2f), selectedTabIndex = index.intValue) {
@@ -63,7 +67,7 @@ private fun PagerTabRow(
                 selected = index.intValue == i,
                 onClick = {
                     index.intValue = i
-                    onClickPage(i)
+                    onClickTab(i)
                 },
                 text = { Text(header) }
             )
