@@ -100,7 +100,7 @@ class TopicFollower(
 
             nostrService.publishTopicList(
                 topics = topicsAdjusted.toList(),
-                relayUrls = relayProvider.getPublishRelays(),
+                relayUrls = relayProvider.getWriteRelays(),
             ).onSuccess { event ->
                 val topicList = ValidatedTopicList(
                     myPubkey = event.author().toHex(),

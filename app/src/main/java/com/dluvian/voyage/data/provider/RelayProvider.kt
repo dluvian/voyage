@@ -55,7 +55,7 @@ class RelayProvider(
             }
     }
 
-    private fun getWriteRelays(limit: Int = MAX_RELAYS): List<RelayUrl> {
+    fun getWriteRelays(limit: Int = MAX_RELAYS): List<RelayUrl> {
         return myNip65.value
             .filter { it.nip65Relay.isWrite }
             .map { it.nip65Relay.url }
