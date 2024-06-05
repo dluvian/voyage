@@ -19,6 +19,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
+import rust.nostr.protocol.Kind
+import rust.nostr.protocol.KindEnum
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Timestamp
 
@@ -163,7 +165,7 @@ class NostrFeedSubscriber(
         if (ids.isEmpty()) return emptyMap()
 
         val bookedMarkedNotesFilter = Filter()
-            .kinds(kinds = textNoteAndRepostKinds)
+            .kind(kind = Kind.fromEnum(KindEnum.TextNote)) // We don't support bookmarking the repost itself
             .events(ids = ids)
             .since(timestamp = Timestamp.fromSecs(since))
             .until(timestamp = Timestamp.fromSecs(until))
