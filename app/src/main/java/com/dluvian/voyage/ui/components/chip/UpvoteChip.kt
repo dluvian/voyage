@@ -24,7 +24,11 @@ fun UpvoteChip(
     ActionChip(
         icon = if (isUpvoted) UpvoteIcon else UpvoteOffIcon,
         count = upvoteCount,
-        description = stringResource(id = R.string.upvote),
+        description = if (isUpvoted) {
+            stringResource(id = R.string.remove_upvote)
+        } else {
+            stringResource(id = R.string.upvote)
+        },
         tint = if (isUpvoted) UpvoteColor else MaterialTheme.colorScheme.primary,
         onClick = {
             if (isUpvoted) {
