@@ -49,6 +49,7 @@ class Core(
             is DeletePost -> viewModelScope.launchIO {
                 appContainer.eventDeletor.deletePost(postId = uiEvent.id)
             }
+            is BookmarkEvent -> appContainer.bookmarker.handle(action = uiEvent)
 
             is HomeViewAction -> vmContainer.homeVM.handle(action = uiEvent)
             is DiscoverViewAction -> vmContainer.discoverVM.handle(action = uiEvent)
@@ -84,9 +85,9 @@ class Core(
                 launcher = uiEvent.launcher
             )
 
-            is RebroadcastNote -> viewModelScope.launchIO {
+            is RebroadcastPost -> viewModelScope.launchIO {
                 appContainer.eventRebroadcaster.rebroadcast(
-                    noteId = uiEvent.noteId,
+                    noteId = uiEvent.postId,
                     context = uiEvent.context,
                     scope = viewModelScope
                 )

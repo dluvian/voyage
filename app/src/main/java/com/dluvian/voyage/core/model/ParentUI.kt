@@ -19,6 +19,7 @@ sealed class ParentUI(
     open val relayUrl: RelayUrl,
     open val replyCount: Int,
     open val createdAt: Long,
+    open val isBookmarked: Boolean,
 ) {
     fun getRelevantId() = when (this) {
         is RootPostUI -> this.crossPostedId ?: this.id
@@ -49,6 +50,7 @@ data class RootPostUI(
     val crossPostedId: EventIdHex?,
     val crossPostedPubkey: PubkeyHex?,
     val crossPostedTrustType: TrustType?,
+    override val isBookmarked: Boolean,
 ) : ParentUI(
     id = id,
     content = content,
@@ -58,6 +60,7 @@ data class RootPostUI(
     relayUrl = relayUrl,
     replyCount = replyCount,
     createdAt = createdAt,
+    isBookmarked = isBookmarked
 ) {
     companion object {
         fun from(
@@ -89,6 +92,7 @@ data class RootPostUI(
                     isFriend = rootPostView.crossPostedAuthorIsFriend,
                     isWebOfTrust = rootPostView.crossPostedAuthorIsTrusted,
                 ),
+                isBookmarked = rootPostView.isBookmarked,
             )
         }
     }
@@ -108,6 +112,7 @@ data class ReplyUI(
     val downvoteCount: Int,
     override val replyCount: Int,
     override val relayUrl: RelayUrl,
+    override val isBookmarked: Boolean,
 ) : ParentUI(
     id = id,
     content = content,
@@ -117,6 +122,7 @@ data class ReplyUI(
     relayUrl = relayUrl,
     replyCount = replyCount,
     createdAt = createdAt,
+    isBookmarked = isBookmarked,
 ) {
     companion object {
         fun from(replyView: ReplyView, annotatedStringProvider: AnnotatedStringProvider): ReplyUI {
@@ -136,7 +142,8 @@ data class ReplyUI(
                 upvoteCount = replyView.upvoteCount,
                 downvoteCount = replyView.downvoteCount,
                 replyCount = replyView.replyCount,
-                relayUrl = replyView.relayUrl
+                relayUrl = replyView.relayUrl,
+                isBookmarked = replyView.isBookmarked
             )
         }
     }

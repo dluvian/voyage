@@ -100,7 +100,7 @@ class ProfileFollower(
                     .minus(friendsBefore)
                     .forEach { updateForcedFollows(pubkey = it, isFollowed = false) }
                 val msg = context.getString(
-                    R.string.following_more_than_n_is_not_allowed,
+                    R.string.following_more_than_n_profiles_is_not_allowed,
                     MAX_KEYS_SQL
                 )
                 snackbar.showToast(scope = scope, msg = msg)

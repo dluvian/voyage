@@ -203,6 +203,14 @@ class NostrService(
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
+    suspend fun publishBookmarkList(
+        postIds: List<EventIdHex>,
+        relayUrls: Collection<RelayUrl>,
+    ): Result<Event> {
+        return eventMaker.buildBookmarkList(postIds = postIds)
+            .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
+    }
+
     suspend fun publishContactList(
         pubkeys: List<PubkeyHex>,
         relayUrls: Collection<RelayUrl>,

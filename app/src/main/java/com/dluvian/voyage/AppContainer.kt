@@ -26,6 +26,7 @@ import com.dluvian.voyage.data.event.EventValidator
 import com.dluvian.voyage.data.event.IdCacheClearer
 import com.dluvian.voyage.data.event.OldestUsedEvent
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
+import com.dluvian.voyage.data.interactor.Bookmarker
 import com.dluvian.voyage.data.interactor.PostSender
 import com.dluvian.voyage.data.interactor.PostVoter
 import com.dluvian.voyage.data.interactor.ProfileFollower
@@ -215,6 +216,15 @@ class AppContainer(context: Context) {
         forcedFollowStates = forcedFollowTopicStates
     )
 
+    val bookmarker = Bookmarker(
+        nostrService = nostrService,
+        relayProvider = relayProvider,
+        bookmarkUpsertDao = roomDb.bookmarkUpsertDao(),
+        bookmarkDao = roomDb.bookmarkDao(),
+        snackbar = snackbar,
+        context = context,
+    )
+
     private val oldestUsedEvent = OldestUsedEvent()
 
     private val nameCache = Collections.synchronizedMap(mutableMapOf<PubkeyHex, String?>())
@@ -242,21 +252,23 @@ class AppContainer(context: Context) {
     val feedProvider = FeedProvider(
         nostrSubscriber = nostrSubscriber,
         room = roomDb,
-        forcedVotes = postVoter.forcedVotes,
         oldestUsedEvent = oldestUsedEvent,
         annotatedStringProvider = annotatedStringProvider,
-        forcedFollows = profileFollower.forcedFollowsFlow
+        forcedVotes = postVoter.forcedVotes,
+        forcedFollows = profileFollower.forcedFollowsFlow,
+        forcedBookmarks = bookmarker.forcedBookmarksFlow
     )
 
     val threadProvider = ThreadProvider(
         nostrSubscriber = nostrSubscriber,
         lazyNostrSubscriber = lazyNostrSubscriber,
         room = roomDb,
-        forcedVotes = postVoter.forcedVotes,
         collapsedIds = threadCollapser.collapsedIds,
         annotatedStringProvider = annotatedStringProvider,
         oldestUsedEvent = oldestUsedEvent,
+        forcedVotes = postVoter.forcedVotes,
         forcedFollows = profileFollower.forcedFollowsFlow,
+        forcedBookmarks = bookmarker.forcedBookmarksFlow,
     )
 
     val profileProvider = ProfileProvider(

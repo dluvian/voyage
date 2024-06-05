@@ -7,9 +7,11 @@ import com.dluvian.nostr_kt.createHashtagTag
 import com.dluvian.nostr_kt.createMentionTag
 import com.dluvian.nostr_kt.createReplyTag
 import com.dluvian.nostr_kt.createSubjectTag
+import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.account.AccountManager
+import rust.nostr.protocol.Bookmarks
 import rust.nostr.protocol.Contact
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventBuilder
@@ -101,6 +103,19 @@ class EventMaker(
     suspend fun buildTopicList(topics: List<Topic>): Result<Event> {
         val interests = Interests(hashtags = topics, coordinate = emptyList())
         val unsignedEvent = EventBuilder.interests(list = interests)
+            .toUnsignedEvent(accountManager.getPublicKey())
+
+        return accountManager.sign(unsignedEvent = unsignedEvent)
+    }
+
+    suspend fun buildBookmarkList(postIds: List<EventIdHex>): Result<Event> {
+        val bookmarks = Bookmarks(
+            eventIds = postIds.map { EventId.fromHex(it) },
+            coordinate = emptyList(),
+            hashtags = emptyList(),
+            urls = emptyList()
+        )
+        val unsignedEvent = EventBuilder.bookmarks(list = bookmarks)
             .toUnsignedEvent(accountManager.getPublicKey())
 
         return accountManager.sign(unsignedEvent = unsignedEvent)

@@ -107,8 +107,12 @@ data class ClickNeutralizeVote(
 
 sealed class TopicEvent(open val topic: Topic) : UIEvent()
 data class FollowTopic(override val topic: Topic) : TopicEvent(topic = topic)
-
 data class UnfollowTopic(override val topic: Topic) : TopicEvent(topic = topic)
+
+
+sealed class BookmarkEvent(open val postId: EventIdHex) : UIEvent()
+data class BookmarkPost(override val postId: EventIdHex) : BookmarkEvent(postId = postId)
+data class UnbookmarkPost(override val postId: EventIdHex) : BookmarkEvent(postId = postId)
 
 
 sealed class ProfileEvent(open val pubkey: PubkeyHex) : UIEvent()
@@ -265,4 +269,4 @@ data class ClickText(
 data class RegisterSignerLauncher(val launcher: SignerLauncher) : UIEvent()
 data class RegisterAccountLauncher(val launcher: SignerLauncher) : UIEvent()
 
-data class RebroadcastNote(val noteId: EventIdHex, val context: Context) : UIEvent()
+data class RebroadcastPost(val postId: EventIdHex, val context: Context) : UIEvent()

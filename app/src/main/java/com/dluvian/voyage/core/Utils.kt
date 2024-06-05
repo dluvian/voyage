@@ -343,6 +343,7 @@ fun mergeToParentUIList(
     roots: Collection<RootPostView>,
     votes: Map<EventIdHex, Vote>,
     follows: Map<PubkeyHex, Boolean>,
+    bookmarks: Map<EventIdHex, Boolean>,
     size: Int,
     annotatedStringProvider: AnnotatedStringProvider,
 ): List<ParentUI> {
@@ -358,6 +359,7 @@ fun mergeToParentUIList(
         val mapped = reply.mapToReplyUI(
             forcedVotes = votes,
             forcedFollows = follows,
+            forcedBookmarks = bookmarks,
             annotatedStringProvider = annotatedStringProvider
         )
         result.add(mapped)
@@ -367,6 +369,7 @@ fun mergeToParentUIList(
         val mapped = post.mapToRootPostUI(
             forcedVotes = votes,
             forcedFollows = follows,
+            forcedBookmarks = bookmarks,
             annotatedStringProvider = annotatedStringProvider
         )
         result.add(mapped)

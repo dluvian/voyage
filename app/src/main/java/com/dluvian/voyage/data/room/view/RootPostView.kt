@@ -32,7 +32,8 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             replies.replyCount,
             CASE WHEN cross_posted_account.pubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsOneself,
             CASE WHEN cross_posted_friend.friendPubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsFriend,
-            CASE WHEN cross_posted_wot.webOfTrustPubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsTrusted
+            CASE WHEN cross_posted_wot.webOfTrustPubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsTrusted,
+            (SELECT EXISTS(SELECT * FROM bookmark WHERE bookmark.postId = IFNULL(post.crossPostedId, post.id))) AS isBookmarked 
         FROM post
         LEFT JOIN profile ON profile.pubkey = post.pubkey
         LEFT JOIN (
@@ -90,10 +91,12 @@ data class RootPostView(
     val crossPostedAuthorIsOneself: Boolean,
     val crossPostedAuthorIsFriend: Boolean,
     val crossPostedAuthorIsTrusted: Boolean,
+    val isBookmarked: Boolean,
 ) {
     fun mapToRootPostUI(
         forcedVotes: Map<EventIdHex, Vote>,
         forcedFollows: Map<PubkeyHex, Boolean>,
+        forcedBookmarks: Map<EventIdHex, Boolean>,
         annotatedStringProvider: AnnotatedStringProvider,
     ): RootPostUI {
         val rootPostUI = RootPostUI.from(
@@ -102,13 +105,15 @@ data class RootPostView(
         )
         val vote = forcedVotes.getOrDefault(this.id, null)
         val follow = forcedFollows.getOrDefault(this.pubkey, null)
-        return if (vote != null || follow != null) rootPostUI.copy(
+        val bookmark = forcedBookmarks.getOrDefault(this.id, null)
+        return if (vote != null || follow != null || bookmark != null) rootPostUI.copy(
             myVote = vote ?: rootPostUI.myVote,
             trustType = TrustType.from(
                 isOneself = this.authorIsOneself,
                 isFriend = follow ?: this.authorIsFriend,
                 isWebOfTrust = this.authorIsTrusted
-            )
+            ),
+            isBookmarked = bookmark ?: rootPostUI.isBookmarked
         )
         else rootPostUI
     }

@@ -27,10 +27,11 @@ import kotlinx.coroutines.flow.onEach
 class FeedProvider(
     private val nostrSubscriber: NostrSubscriber,
     private val room: AppDatabase,
-    private val forcedVotes: Flow<Map<EventIdHex, Vote>>,
     private val oldestUsedEvent: OldestUsedEvent,
     private val annotatedStringProvider: AnnotatedStringProvider,
-    private val forcedFollows: Flow<Map<PubkeyHex, Boolean>>
+    private val forcedVotes: Flow<Map<EventIdHex, Vote>>,
+    private val forcedFollows: Flow<Map<PubkeyHex, Boolean>>,
+    private val forcedBookmarks: Flow<Map<EventIdHex, Boolean>>
 ) {
     private val staticFeedProvider = StaticFeedProvider(
         room = room,
@@ -103,12 +104,14 @@ class FeedProvider(
         return combine(
             flow.firstThenDistinctDebounce(SHORT_DEBOUNCE),
             forcedVotes,
-            forcedFollows
-        ) { posts, votes, follows ->
+            forcedFollows,
+            forcedBookmarks,
+        ) { posts, votes, follows, bookmarks ->
             posts.map {
                 it.mapToRootPostUI(
                     forcedVotes = votes,
                     forcedFollows = follows,
+                    forcedBookmarks = bookmarks,
                     annotatedStringProvider = annotatedStringProvider
                 )
             }
@@ -129,12 +132,14 @@ class FeedProvider(
         return combine(
             flow.firstThenDistinctDebounce(SHORT_DEBOUNCE),
             forcedVotes,
-            forcedFollows
-        ) { posts, votes, follows ->
+            forcedFollows,
+            forcedBookmarks,
+        ) { posts, votes, follows, bookmarks ->
             posts.map {
                 it.mapToReplyUI(
                     forcedVotes = votes,
                     forcedFollows = follows,
+                    forcedBookmarks = bookmarks,
                     annotatedStringProvider = annotatedStringProvider
                 )
             }
@@ -150,13 +155,15 @@ class FeedProvider(
                 .getDirectCrossPostFlow(until = until, size = size)
                 .firstThenDistinctDebounce(SHORT_DEBOUNCE),
             forcedVotes,
-            forcedFollows
-        ) { replies, crossPosts, votes, follows ->
+            forcedFollows,
+            forcedBookmarks,
+        ) { replies, crossPosts, votes, follows, bookmarks ->
             mergeToParentUIList(
                 replies = replies,
                 roots = crossPosts,
                 votes = votes,
                 follows = follows,
+                bookmarks = bookmarks,
                 size = size,
                 annotatedStringProvider = annotatedStringProvider
             )
@@ -172,13 +179,15 @@ class FeedProvider(
                 .getRootPostsFlow(until = until, size = size)
                 .firstThenDistinctDebounce(SHORT_DEBOUNCE),
             forcedVotes,
-            forcedFollows
-        ) { replies, rootPosts, votes, follows ->
+            forcedFollows,
+            forcedBookmarks,
+        ) { replies, rootPosts, votes, follows, bookmarks ->
             mergeToParentUIList(
                 replies = replies,
                 roots = rootPosts,
                 votes = votes,
                 follows = follows,
+                bookmarks = bookmarks,
                 size = size,
                 annotatedStringProvider = annotatedStringProvider
             )

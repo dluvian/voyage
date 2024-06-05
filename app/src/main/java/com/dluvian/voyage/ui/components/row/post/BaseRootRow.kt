@@ -84,6 +84,7 @@ fun BaseRootRow(
             myVote = post.myVote,
             upvoteCount = post.upvoteCount,
             downvoteCount = post.downvoteCount,
+            isBookmarked = post.isBookmarked,
             onUpdate = onUpdate,
             additionalEndAction = {
                 CommentChip(

@@ -53,6 +53,7 @@ class StaticFeedProvider(
             it.mapToRootPostUI(
                 forcedVotes = emptyMap(),
                 forcedFollows = emptyMap(),
+                forcedBookmarks = emptyMap(),
                 annotatedStringProvider = annotatedStringProvider
             )
         }
@@ -72,6 +73,7 @@ class StaticFeedProvider(
                 it.mapToReplyUI(
                     forcedVotes = emptyMap(),
                     forcedFollows = emptyMap(),
+                    forcedBookmarks = emptyMap(),
                     annotatedStringProvider = annotatedStringProvider
                 )
             }
@@ -86,6 +88,7 @@ class StaticFeedProvider(
             roots = crossPosts,
             votes = emptyMap(),
             follows = emptyMap(),
+            bookmarks = emptyMap(),
             size = size,
             annotatedStringProvider = annotatedStringProvider
         )
@@ -100,6 +103,7 @@ class StaticFeedProvider(
             roots = roots,
             votes = emptyMap(),
             follows = emptyMap(),
+            bookmarks = emptyMap(),
             size = size,
             annotatedStringProvider = annotatedStringProvider
         )

@@ -30,11 +30,12 @@ class ThreadProvider(
     private val nostrSubscriber: NostrSubscriber,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val room: AppDatabase,
-    private val forcedVotes: Flow<Map<EventIdHex, Vote>>,
     private val collapsedIds: Flow<Set<EventIdHex>>,
     private val annotatedStringProvider: AnnotatedStringProvider,
     private val oldestUsedEvent: OldestUsedEvent,
+    private val forcedVotes: Flow<Map<EventIdHex, Vote>>,
     private val forcedFollows: Flow<Map<PubkeyHex, Boolean>>,
+    private val forcedBookmarks: Flow<Map<EventIdHex, Boolean>>,
 ) {
 
     fun getLocalRoot(scope: CoroutineScope, nevent: Nip19Event, isInit: Boolean): Flow<ParentUI?> {
@@ -61,14 +62,17 @@ class ThreadProvider(
             replyFlow.firstThenDistinctDebounce(SHORT_DEBOUNCE),
             forcedVotes,
             forcedFollows,
-        ) { post, reply, votes, follows ->
+            forcedBookmarks,
+        ) { post, reply, votes, follows, bookmarks ->
             post?.mapToRootPostUI(
                 forcedVotes = votes,
                 forcedFollows = follows,
+                forcedBookmarks = bookmarks,
                 annotatedStringProvider = annotatedStringProvider
             ) ?: reply?.mapToReplyUI(
                 forcedFollows = follows,
                 forcedVotes = votes,
+                forcedBookmarks = bookmarks,
                 annotatedStringProvider = annotatedStringProvider
             )
         }.onEach {
@@ -100,8 +104,9 @@ class ThreadProvider(
             replyFlow,
             forcedVotes,
             forcedFollows,
+            forcedBookmarks,
             collapsedIds,
-        ) { replies, votes, follows, collapsed ->
+        ) { replies, votes, follows, bookmarks, collapsed ->
             val result = LinkedList<LeveledReplyUI>()
 
             for (reply in replies) {
@@ -116,6 +121,7 @@ class ThreadProvider(
                     forcedFollows = follows,
                     collapsedIds = collapsed,
                     parentIds = parentIds,
+                    forcedBookmarks = bookmarks,
                     annotatedStringProvider = annotatedStringProvider
                 )
 

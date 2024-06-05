@@ -11,12 +11,13 @@ import androidx.compose.ui.res.stringResource
 import com.dluvian.nostr_kt.createNevent
 import com.dluvian.nostr_kt.createNeventStr
 import com.dluvian.voyage.R
+import com.dluvian.voyage.core.BookmarkPost
 import com.dluvian.voyage.core.DeletePost
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.FollowProfile
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenThreadRaw
-import com.dluvian.voyage.core.RebroadcastNote
+import com.dluvian.voyage.core.RebroadcastPost
 import com.dluvian.voyage.core.UnfollowProfile
 import com.dluvian.voyage.core.copyAndToast
 import com.dluvian.voyage.core.createProcessTextIntent
@@ -92,11 +93,20 @@ fun ParentRowDropdown(
                 onDismiss()
             }
         )
+        if (!parent.isBookmarked) {
+            SimpleDropdownItem(
+                text = stringResource(id = R.string.bookmark),
+                onClick = {
+                    onUpdate(BookmarkPost(postId = parent.getRelevantId()))
+                    onDismiss()
+                }
+            )
+        }
         SimpleDropdownItem(
             text = stringResource(id = R.string.rebroadcast),
             onClick = {
                 // RelevantId bc repost json is not saved in db
-                onUpdate(RebroadcastNote(noteId = parent.getRelevantId(), context = context))
+                onUpdate(RebroadcastPost(postId = parent.getRelevantId(), context = context))
                 onDismiss()
             }
         )

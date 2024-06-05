@@ -90,6 +90,7 @@ fun BaseReplyRow(
             myVote = reply.myVote,
             upvoteCount = reply.upvoteCount,
             downvoteCount = reply.downvoteCount,
+            isBookmarked = reply.isBookmarked,
             onUpdate = onUpdate,
             additionalStartAction = additionalStartAction,
             additionalEndAction = {

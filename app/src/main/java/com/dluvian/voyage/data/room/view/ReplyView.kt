@@ -25,7 +25,8 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             "(SELECT isPositive FROM vote WHERE vote.postId = post.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)) AS myVote, " +
             "(SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 1) AS upvoteCount, " +
             "(SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 0) AS downvoteCount, " +
-            "(SELECT COUNT(*) FROM post AS post2 WHERE post2.parentId = post.id) AS replyCount " +
+            "(SELECT COUNT(*) FROM post AS post2 WHERE post2.parentId = post.id) AS replyCount, " +
+            "(SELECT EXISTS(SELECT * FROM bookmark WHERE bookmark.postId = IFNULL(post.crossPostedId, post.id))) AS isBookmarked " +
             "FROM post " +
             "WHERE post.parentId IS NOT NULL"
 )
@@ -44,11 +45,13 @@ data class ReplyView(
     val downvoteCount: Int,
     val replyCount: Int,
     val relayUrl: RelayUrl,
+    val isBookmarked: Boolean,
 ) {
     fun mapToLeveledReplyUI(
         level: Int,
         forcedVotes: Map<EventIdHex, Vote>,
         forcedFollows: Map<PubkeyHex, Boolean>,
+        forcedBookmarks: Map<EventIdHex, Boolean>,
         collapsedIds: Set<EventIdHex>,
         parentIds: Set<EventIdHex>,
         annotatedStringProvider: AnnotatedStringProvider,
@@ -58,6 +61,7 @@ data class ReplyView(
             reply = this.mapToReplyUI(
                 forcedVotes = forcedVotes,
                 forcedFollows = forcedFollows,
+                forcedBookmarks = forcedBookmarks,
                 annotatedStringProvider = annotatedStringProvider
             ),
             isCollapsed = collapsedIds.contains(this.id),
@@ -68,6 +72,7 @@ data class ReplyView(
     fun mapToReplyUI(
         forcedVotes: Map<EventIdHex, Vote>,
         forcedFollows: Map<PubkeyHex, Boolean>,
+        forcedBookmarks: Map<EventIdHex, Boolean>,
         annotatedStringProvider: AnnotatedStringProvider
     ): ReplyUI {
         val reply = ReplyUI.from(
@@ -76,13 +81,15 @@ data class ReplyView(
         )
         val vote = forcedVotes.getOrDefault(this.id, null)
         val follow = forcedFollows.getOrDefault(this.pubkey, null)
-        return if (vote != null || follow != null) reply.copy(
+        val bookmark = forcedBookmarks.getOrDefault(this.id, null)
+        return if (vote != null || follow != null || bookmark != null) reply.copy(
             myVote = vote ?: reply.myVote,
             trustType = TrustType.from(
                 isOneself = this.authorIsOneself,
                 isFriend = follow ?: this.authorIsFriend,
                 isWebOfTrust = this.authorIsTrusted
-            )
+            ),
+            isBookmarked = bookmark ?: reply.isBookmarked
         ) else reply
     }
 }

@@ -31,6 +31,9 @@ interface BookmarkDao {
     @Query("SELECT MAX(createdAt) FROM bookmark")
     suspend fun getMaxCreatedAt(): Long?
 
+    @Query("SELECT postId FROM bookmark")
+    suspend fun getMyBookmarks(): List<EventIdHex>
+
     @Query("SELECT postId FROM bookmark WHERE postId NOT IN (SELECT id FROM post)")
     suspend fun getUnknownBookmarks(): List<EventIdHex>
 

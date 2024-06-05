@@ -13,8 +13,10 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenCrossPostCreation
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.core.UnbookmarkPost
 import com.dluvian.voyage.data.interactor.Vote
 import com.dluvian.voyage.ui.components.VoteBox
+import com.dluvian.voyage.ui.components.chip.BookmarkChip
 import com.dluvian.voyage.ui.components.chip.CrossPostChip
 import com.dluvian.voyage.ui.theme.spacing
 
@@ -25,6 +27,7 @@ fun PostRowActions(
     myVote: Vote,
     upvoteCount: Int,
     downvoteCount: Int,
+    isBookmarked: Boolean,
     onUpdate: OnUpdate,
     additionalStartAction: ComposableContent = {},
     additionalEndAction: ComposableContent = {},
@@ -37,6 +40,7 @@ fun PostRowActions(
         additionalStartAction()
         Spacer(modifier = Modifier.width(spacing.tiny))
         Row(verticalAlignment = Alignment.CenterVertically) {
+            if (isBookmarked) BookmarkChip(onClick = { onUpdate(UnbookmarkPost(postId = id)) })
             CrossPostChip(onClick = { onUpdate(OpenCrossPostCreation(id = id)) })
             additionalEndAction()
             VoteBox(

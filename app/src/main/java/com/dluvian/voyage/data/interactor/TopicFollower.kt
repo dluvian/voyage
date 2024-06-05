@@ -8,6 +8,7 @@ import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.FollowTopic
 import com.dluvian.voyage.core.LIST_CHANGE_DEBOUNCE
+import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.TopicEvent
 import com.dluvian.voyage.core.UnfollowTopic
@@ -83,6 +84,19 @@ class TopicFollower(
             topicsAdjusted.removeAll(toRemove.toSet())
 
             if (topicsAdjusted == topicsBefore) return@launchIO
+
+            if (topicsAdjusted.size > MAX_KEYS_SQL && topicsAdjusted.size > topicsBefore.size) {
+                Log.w(TAG, "New topic list is too large (${topicsAdjusted.size})")
+                topicsAdjusted
+                    .minus(topicsBefore)
+                    .forEach { updateForcedState(topic = it, isFollowed = false) }
+                val msg = context.getString(
+                    R.string.following_more_than_n_topics_is_not_allowed,
+                    MAX_KEYS_SQL
+                )
+                snackbar.showToast(scope = scope, msg = msg)
+                return@launchIO
+            }
 
             nostrService.publishTopicList(
                 topics = topicsAdjusted.toList(),
