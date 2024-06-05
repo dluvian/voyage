@@ -14,19 +14,17 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenCrossPostCreation
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.UnbookmarkPost
-import com.dluvian.voyage.data.interactor.Vote
-import com.dluvian.voyage.ui.components.VoteBox
 import com.dluvian.voyage.ui.components.chip.BookmarkChip
 import com.dluvian.voyage.ui.components.chip.CrossPostChip
+import com.dluvian.voyage.ui.components.chip.UpvoteChip
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
 fun PostRowActions(
-    id: EventIdHex,
-    pubkey: PubkeyHex,
-    myVote: Vote,
+    postId: EventIdHex,
+    authorPubkey: PubkeyHex,
+    isUpvoted: Boolean,
     upvoteCount: Int,
-    downvoteCount: Int,
     isBookmarked: Boolean,
     onUpdate: OnUpdate,
     additionalStartAction: ComposableContent = {},
@@ -40,15 +38,14 @@ fun PostRowActions(
         additionalStartAction()
         Spacer(modifier = Modifier.width(spacing.tiny))
         Row(verticalAlignment = Alignment.CenterVertically) {
-            if (isBookmarked) BookmarkChip(onClick = { onUpdate(UnbookmarkPost(postId = id)) })
-            CrossPostChip(onClick = { onUpdate(OpenCrossPostCreation(id = id)) })
+            if (isBookmarked) BookmarkChip(onClick = { onUpdate(UnbookmarkPost(postId = postId)) })
+            CrossPostChip(onClick = { onUpdate(OpenCrossPostCreation(id = postId)) })
             additionalEndAction()
-            VoteBox(
-                postId = id,
-                authorPubkey = pubkey,
-                myVote = myVote,
+            UpvoteChip(
                 upvoteCount = upvoteCount,
-                downvoteCount = downvoteCount,
+                isUpvoted = isUpvoted,
+                postId = postId,
+                authorPubkey = authorPubkey,
                 onUpdate = onUpdate
             )
         }

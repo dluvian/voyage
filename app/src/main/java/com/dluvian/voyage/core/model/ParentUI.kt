@@ -5,7 +5,6 @@ import androidx.compose.ui.text.AnnotatedString
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.data.interactor.Vote
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 import com.dluvian.voyage.data.room.view.ReplyView
 import com.dluvian.voyage.data.room.view.RootPostView
@@ -42,9 +41,8 @@ data class RootPostUI(
     override val createdAt: Long,
     val subject: AnnotatedString,
     override val content: AnnotatedString,
-    val myVote: Vote,
+    val isUpvoted: Boolean,
     val upvoteCount: Int,
-    val downvoteCount: Int,
     override val replyCount: Int,
     override val relayUrl: RelayUrl,
     val crossPostedId: EventIdHex?,
@@ -80,9 +78,8 @@ data class RootPostUI(
                 createdAt = rootPostView.createdAt,
                 subject = annotatedStringProvider.annotate(rootPostView.subject.orEmpty()),
                 content = annotatedStringProvider.annotate(rootPostView.content),
-                myVote = Vote.from(vote = rootPostView.myVote),
+                isUpvoted = rootPostView.isUpvoted,
                 upvoteCount = rootPostView.upvoteCount,
-                downvoteCount = rootPostView.downvoteCount,
                 replyCount = rootPostView.replyCount,
                 relayUrl = rootPostView.relayUrl,
                 crossPostedId = rootPostView.crossPostedId,
@@ -107,9 +104,8 @@ data class ReplyUI(
     override val trustType: TrustType,
     override val createdAt: Long,
     override val content: AnnotatedString,
-    val myVote: Vote,
+    val isUpvoted: Boolean,
     val upvoteCount: Int,
-    val downvoteCount: Int,
     override val replyCount: Int,
     override val relayUrl: RelayUrl,
     override val isBookmarked: Boolean,
@@ -138,9 +134,8 @@ data class ReplyUI(
                 ),
                 createdAt = replyView.createdAt,
                 content = annotatedStringProvider.annotate(replyView.content),
-                myVote = Vote.from(vote = replyView.myVote),
+                isUpvoted = replyView.isUpvoted,
                 upvoteCount = replyView.upvoteCount,
-                downvoteCount = replyView.downvoteCount,
                 replyCount = replyView.replyCount,
                 relayUrl = replyView.relayUrl,
                 isBookmarked = replyView.isBookmarked

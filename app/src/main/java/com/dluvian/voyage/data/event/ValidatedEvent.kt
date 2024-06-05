@@ -54,7 +54,6 @@ data class ValidatedVote(
     val id: EventIdHex,
     val postId: EventIdHex,
     val pubkey: PubkeyHex,
-    val isPositive: Boolean,
     val createdAt: Long
 ) : ValidatedEvent()
 

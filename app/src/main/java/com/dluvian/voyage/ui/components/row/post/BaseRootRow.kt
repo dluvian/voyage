@@ -79,11 +79,10 @@ fun BaseRootRow(
         )
         Spacer(modifier = Modifier.height(spacing.large))
         PostRowActions(
-            id = post.getRelevantId(),
-            pubkey = post.getRelevantPubkey(),
-            myVote = post.myVote,
+            postId = post.getRelevantId(),
+            authorPubkey = post.getRelevantPubkey(),
+            isUpvoted = post.isUpvoted,
             upvoteCount = post.upvoteCount,
-            downvoteCount = post.downvoteCount,
             isBookmarked = post.isBookmarked,
             onUpdate = onUpdate,
             additionalEndAction = {

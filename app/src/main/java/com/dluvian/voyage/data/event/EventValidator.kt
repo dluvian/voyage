@@ -66,12 +66,12 @@ class EventValidator(
             is KindEnum.TextNote -> createValidatedMainPost(event = event, relayUrl = relayUrl)
             is KindEnum.Repost -> createValidatedRepost(event = event, relayUrl = relayUrl)
             is KindEnum.Reaction -> {
+                if (event.content() == "-") return null
                 val postId = event.getReactToId() ?: return null
                 ValidatedVote(
                     id = event.id().toHex(),
                     postId = postId,
                     pubkey = event.author().toHex(),
-                    isPositive = event.content() != "-",
                     createdAt = event.createdAt().secs()
                 )
             }

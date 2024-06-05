@@ -29,8 +29,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Tag
-import androidx.compose.material.icons.filled.ThumbDownAlt
-import androidx.compose.material.icons.filled.ThumbDownOffAlt
 import androidx.compose.material.icons.filled.ThumbUpAlt
 import androidx.compose.material.icons.filled.ThumbUpOffAlt
 import androidx.compose.material.icons.filled.TravelExplore
@@ -55,10 +53,8 @@ val BackIcon = Icons.AutoMirrored.Filled.ArrowBack
 val CommentIcon = Icons.AutoMirrored.Filled.Comment
 val AccountIcon = Icons.Default.AccountCircle
 val HashtagIcon = Icons.Default.Tag
-val UpvoteOffIcon = Icons.Default.ThumbUpOffAlt
-val DownvoteOffIcon = Icons.Default.ThumbDownOffAlt
 val UpvoteIcon = Icons.Default.ThumbUpAlt
-val DownvoteIcon = Icons.Default.ThumbDownAlt
+val UpvoteOffIcon = Icons.Default.ThumbUpOffAlt
 val SearchIcon = Icons.Default.Search
 val SendIcon = Icons.AutoMirrored.Filled.Send
 val ReplyIcon = Icons.AutoMirrored.Filled.Reply

@@ -21,7 +21,6 @@ data class VoteEntity(
     val id: EventIdHex,
     val postId: EventIdHex,
     val pubkey: PubkeyHex,
-    val isPositive: Boolean,
     val createdAt: Long
 ) {
     companion object {
@@ -30,7 +29,6 @@ data class VoteEntity(
                 id = validatedVote.id,
                 postId = validatedVote.postId,
                 pubkey = validatedVote.pubkey,
-                isPositive = validatedVote.isPositive,
                 createdAt = validatedVote.createdAt,
             )
         }

@@ -105,7 +105,7 @@ class Bookmarker(
 
             nostrService.publishBookmarkList(
                 postIds = adjusted.toList(),
-                relayUrls = relayProvider.getWriteRelays(),
+                relayUrls = relayProvider.getPublishRelays(addConnected = false),
             ).onSuccess { event ->
                 val bookmarks = ValidatedBookmarkList(
                     myPubkey = event.author().toHex(),

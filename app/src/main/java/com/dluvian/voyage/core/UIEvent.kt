@@ -94,11 +94,6 @@ data class ClickUpvote(
     override val mention: PubkeyHex,
 ) : VoteEvent(postId = postId, mention = mention)
 
-data class ClickDownvote(
-    override val postId: EventIdHex,
-    override val mention: PubkeyHex,
-) : VoteEvent(postId = postId, mention = mention)
-
 data class ClickNeutralizeVote(
     override val postId: EventIdHex,
     override val mention: PubkeyHex,

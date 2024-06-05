@@ -2,7 +2,9 @@ package com.dluvian.voyage.data.room
 
 import androidx.room.AutoMigration
 import androidx.room.Database
+import androidx.room.DeleteColumn
 import androidx.room.RoomDatabase
+import androidx.room.migration.AutoMigrationSpec
 import com.dluvian.voyage.data.room.dao.AccountDao
 import com.dluvian.voyage.data.room.dao.BookmarkDao
 import com.dluvian.voyage.data.room.dao.CountDao
@@ -45,9 +47,11 @@ import com.dluvian.voyage.data.room.view.ReplyView
 import com.dluvian.voyage.data.room.view.RootPostView
 import com.dluvian.voyage.data.room.view.SimplePostView
 
+@DeleteColumn(tableName = "vote", columnName = "isPositive")
+class V10DeleteVoteIsPositiveColumn : AutoMigrationSpec
 
 @Database(
-    version = 9,
+    version = 10,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -58,6 +62,7 @@ import com.dluvian.voyage.data.room.view.SimplePostView
         AutoMigration(from = 6, to = 7),
         AutoMigration(from = 7, to = 8),
         AutoMigration(from = 8, to = 9),
+        AutoMigration(from = 9, to = 10, spec = V10DeleteVoteIsPositiveColumn::class),
     ],
     entities = [
         PostEntity::class,

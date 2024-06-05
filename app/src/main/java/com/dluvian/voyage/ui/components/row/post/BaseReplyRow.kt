@@ -85,11 +85,10 @@ fun BaseReplyRow(
             Spacer(modifier = Modifier.height(spacing.large))
         }
         if (!isCollapsed) PostRowActions(
-            id = reply.id,
-            pubkey = reply.pubkey,
-            myVote = reply.myVote,
+            postId = reply.id,
+            authorPubkey = reply.pubkey,
+            isUpvoted = reply.isUpvoted,
             upvoteCount = reply.upvoteCount,
-            downvoteCount = reply.downvoteCount,
             isBookmarked = reply.isBookmarked,
             onUpdate = onUpdate,
             additionalStartAction = additionalStartAction,

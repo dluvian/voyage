@@ -12,7 +12,6 @@ import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.LeveledReplyUI
 import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.data.event.OldestUsedEvent
-import com.dluvian.voyage.data.interactor.Vote
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.room.AppDatabase
@@ -33,7 +32,7 @@ class ThreadProvider(
     private val collapsedIds: Flow<Set<EventIdHex>>,
     private val annotatedStringProvider: AnnotatedStringProvider,
     private val oldestUsedEvent: OldestUsedEvent,
-    private val forcedVotes: Flow<Map<EventIdHex, Vote>>,
+    private val forcedVotes: Flow<Map<EventIdHex, Boolean>>,
     private val forcedFollows: Flow<Map<PubkeyHex, Boolean>>,
     private val forcedBookmarks: Flow<Map<EventIdHex, Boolean>>,
 ) {

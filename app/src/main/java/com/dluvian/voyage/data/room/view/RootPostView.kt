@@ -7,7 +7,6 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.model.TrustType
-import com.dluvian.voyage.data.interactor.Vote
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 
 @DatabaseView(
@@ -26,9 +25,8 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             CASE WHEN account.pubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsOneself,
             CASE WHEN friend.friendPubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsFriend,
             CASE WHEN weboftrust.webOfTrustPubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsTrusted,
-            vote.isPositive AS myVote,
+            CASE WHEN vote.postId IS NOT NULL THEN 1 ELSE 0 END isUpvoted,
             upvotes.upvoteCount,
-            downvotes.downvoteCount,
             replies.replyCount,
             CASE WHEN cross_posted_account.pubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsOneself,
             CASE WHEN cross_posted_friend.friendPubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsFriend,
@@ -49,15 +47,8 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
         LEFT JOIN (
             SELECT vote.postId, COUNT(*) AS upvoteCount 
             FROM vote 
-            WHERE vote.isPositive = 1 
             GROUP BY vote.postId
         ) AS upvotes ON upvotes.postId = IFNULL(post.crossPostedId, post.id)
-        LEFT JOIN (
-            SELECT vote.postId, COUNT(*) AS downvoteCount 
-            FROM vote 
-            WHERE vote.isPositive = 0 
-            GROUP BY vote.postId
-        ) AS downvotes ON downvotes.postId = IFNULL(post.crossPostedId, post.id)
         LEFT JOIN (
             SELECT post2.parentId, COUNT(*) AS replyCount 
             FROM post AS post2 
@@ -81,9 +72,8 @@ data class RootPostView(
     val subject: String?,
     val content: String,
     val createdAt: Long,
-    val myVote: Boolean?,
+    val isUpvoted: Boolean,
     val upvoteCount: Int,
-    val downvoteCount: Int,
     val replyCount: Int,
     val relayUrl: RelayUrl,
     val crossPostedId: EventIdHex?,
@@ -94,7 +84,7 @@ data class RootPostView(
     val isBookmarked: Boolean,
 ) {
     fun mapToRootPostUI(
-        forcedVotes: Map<EventIdHex, Vote>,
+        forcedVotes: Map<EventIdHex, Boolean>,
         forcedFollows: Map<PubkeyHex, Boolean>,
         forcedBookmarks: Map<EventIdHex, Boolean>,
         annotatedStringProvider: AnnotatedStringProvider,
@@ -107,7 +97,7 @@ data class RootPostView(
         val follow = forcedFollows.getOrDefault(this.pubkey, null)
         val bookmark = forcedBookmarks.getOrDefault(this.id, null)
         return if (vote != null || follow != null || bookmark != null) rootPostUI.copy(
-            myVote = vote ?: rootPostUI.myVote,
+            isUpvoted = vote ?: rootPostUI.isUpvoted,
             trustType = TrustType.from(
                 isOneself = this.authorIsOneself,
                 isFriend = follow ?: this.authorIsFriend,

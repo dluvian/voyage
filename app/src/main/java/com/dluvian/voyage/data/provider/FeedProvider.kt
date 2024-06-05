@@ -9,7 +9,6 @@ import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.core.model.ReplyUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.data.event.OldestUsedEvent
-import com.dluvian.voyage.data.interactor.Vote
 import com.dluvian.voyage.data.model.BookmarksFeedSetting
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
@@ -29,7 +28,7 @@ class FeedProvider(
     private val room: AppDatabase,
     private val oldestUsedEvent: OldestUsedEvent,
     private val annotatedStringProvider: AnnotatedStringProvider,
-    private val forcedVotes: Flow<Map<EventIdHex, Vote>>,
+    private val forcedVotes: Flow<Map<EventIdHex, Boolean>>,
     private val forcedFollows: Flow<Map<PubkeyHex, Boolean>>,
     private val forcedBookmarks: Flow<Map<EventIdHex, Boolean>>
 ) {

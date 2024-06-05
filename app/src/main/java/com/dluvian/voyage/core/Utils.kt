@@ -29,7 +29,6 @@ import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.data.event.ValidatedMainPost
 import com.dluvian.voyage.data.event.ValidatedReply
 import com.dluvian.voyage.data.event.ValidatedRootPost
-import com.dluvian.voyage.data.interactor.Vote
 import com.dluvian.voyage.data.model.RelevantMetadata
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 import com.dluvian.voyage.data.room.view.ReplyView
@@ -341,7 +340,7 @@ fun createProcessTextIntent(text: String, info: ResolveInfo): Intent {
 fun mergeToParentUIList(
     replies: Collection<ReplyView>,
     roots: Collection<RootPostView>,
-    votes: Map<EventIdHex, Vote>,
+    votes: Map<EventIdHex, Boolean>,
     follows: Map<PubkeyHex, Boolean>,
     bookmarks: Map<EventIdHex, Boolean>,
     size: Int,

@@ -7,7 +7,6 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.model.LeveledReplyUI
 import com.dluvian.voyage.core.model.ReplyUI
 import com.dluvian.voyage.core.model.TrustType
-import com.dluvian.voyage.data.interactor.Vote
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 
 
@@ -22,9 +21,8 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             "(SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.pubkey)) AS authorIsOneself, " +
             "(SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.pubkey)) AS authorIsFriend, " +
             "(SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = post.pubkey)) AS authorIsTrusted, " +
-            "(SELECT isPositive FROM vote WHERE vote.postId = post.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)) AS myVote, " +
-            "(SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 1) AS upvoteCount, " +
-            "(SELECT COUNT(*) FROM vote WHERE vote.postId = post.id AND vote.isPositive = 0) AS downvoteCount, " +
+            "(SELECT EXISTS(SELECT* FROM vote WHERE vote.postId = post.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1))) AS isUpvoted, " +
+            "(SELECT COUNT(*) FROM vote WHERE vote.postId = post.id) AS upvoteCount, " +
             "(SELECT COUNT(*) FROM post AS post2 WHERE post2.parentId = post.id) AS replyCount, " +
             "(SELECT EXISTS(SELECT * FROM bookmark WHERE bookmark.postId = IFNULL(post.crossPostedId, post.id))) AS isBookmarked " +
             "FROM post " +
@@ -40,16 +38,15 @@ data class ReplyView(
     val authorIsOneself: Boolean,
     val authorIsFriend: Boolean,
     val authorIsTrusted: Boolean,
-    val myVote: Boolean?,
+    val isUpvoted: Boolean,
     val upvoteCount: Int,
-    val downvoteCount: Int,
     val replyCount: Int,
     val relayUrl: RelayUrl,
     val isBookmarked: Boolean,
 ) {
     fun mapToLeveledReplyUI(
         level: Int,
-        forcedVotes: Map<EventIdHex, Vote>,
+        forcedVotes: Map<EventIdHex, Boolean>,
         forcedFollows: Map<PubkeyHex, Boolean>,
         forcedBookmarks: Map<EventIdHex, Boolean>,
         collapsedIds: Set<EventIdHex>,
@@ -70,7 +67,7 @@ data class ReplyView(
     }
 
     fun mapToReplyUI(
-        forcedVotes: Map<EventIdHex, Vote>,
+        forcedVotes: Map<EventIdHex, Boolean>,
         forcedFollows: Map<PubkeyHex, Boolean>,
         forcedBookmarks: Map<EventIdHex, Boolean>,
         annotatedStringProvider: AnnotatedStringProvider
@@ -83,7 +80,7 @@ data class ReplyView(
         val follow = forcedFollows.getOrDefault(this.pubkey, null)
         val bookmark = forcedBookmarks.getOrDefault(this.id, null)
         return if (vote != null || follow != null || bookmark != null) reply.copy(
-            myVote = vote ?: reply.myVote,
+            isUpvoted = vote ?: reply.isUpvoted,
             trustType = TrustType.from(
                 isOneself = this.authorIsOneself,
                 isFriend = follow ?: this.authorIsFriend,

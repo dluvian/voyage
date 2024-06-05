@@ -26,7 +26,6 @@ import kotlinx.coroutines.Dispatchers
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
-import rust.nostr.protocol.Kind
 import rust.nostr.protocol.Metadata
 import rust.nostr.protocol.PublicKey
 
@@ -171,18 +170,14 @@ class NostrService(
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
-    suspend fun publishVote(
+    suspend fun publishUpvote(
         eventId: EventId,
         mention: PublicKey,
-        isPositive: Boolean,
-        kind: Kind,
         relayUrls: Collection<RelayUrl>,
     ): Result<Event> {
         return eventMaker.buildVote(
             eventId = eventId,
             mention = mention,
-            isPositive = isPositive,
-            kind = kind,
         )
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }

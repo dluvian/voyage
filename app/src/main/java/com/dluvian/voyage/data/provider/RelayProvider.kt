@@ -55,7 +55,7 @@ class RelayProvider(
             }
     }
 
-    fun getWriteRelays(limit: Int = MAX_RELAYS): List<RelayUrl> {
+    private fun getWriteRelays(limit: Int = MAX_RELAYS): List<RelayUrl> {
         return myNip65.value
             .filter { it.nip65Relay.isWrite }
             .map { it.nip65Relay.url }
@@ -63,21 +63,24 @@ class RelayProvider(
             .preferConnected(limit)
     }
 
-    fun getPublishRelays(): List<RelayUrl> {
-        val relays = nostrClient.getAllConnectedUrls().toMutableSet()
-        relays.addAll(getWriteRelays())
+    fun getPublishRelays(addConnected: Boolean = true): List<RelayUrl> {
+        val relays = getWriteRelays().toMutableList()
+        if (addConnected) relays.addAll(nostrClient.getAllConnectedUrls())
 
         return relays.toList()
     }
 
-    suspend fun getPublishRelays(publishTo: List<PubkeyHex>): List<RelayUrl> {
+    suspend fun getPublishRelays(
+        publishTo: List<PubkeyHex>,
+        addConnected: Boolean = true
+    ): List<RelayUrl> {
         val relays = if (publishTo.isEmpty()) mutableSetOf()
         else nip65Dao.getReadRelays(pubkeys = publishTo)
             .groupBy { it.pubkey }
             .flatMap { (_, nip65s) ->
                 nip65s.map { it.nip65Relay.url }.preferConnected(MAX_RELAYS_PER_PUBKEY)
             }.toMutableSet()
-        relays.addAll(getPublishRelays())
+        relays.addAll(getPublishRelays(addConnected = addConnected))
 
         return relays.toList()
     }
