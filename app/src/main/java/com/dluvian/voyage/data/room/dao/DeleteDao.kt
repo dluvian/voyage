@@ -37,6 +37,7 @@ interface DeleteDao {
         "DELETE FROM post " +
                 "WHERE createdAt < :oldestCreatedAt " +
                 "AND pubkey NOT IN (SELECT pubkey FROM account) " +
+                "AND id NOT IN (SELECT postId FROM bookmark) " +
                 "AND id NOT IN (SELECT crossPostedId FROM post WHERE createdAt >= :oldestCreatedAt AND crossPostedId IS NOT NULL) " +
                 "AND id NOT IN (SELECT crossPostedId FROM post WHERE pubkey IN (SELECT pubkey FROM account) AND crossPostedId IS NOT NULL) "
     )
