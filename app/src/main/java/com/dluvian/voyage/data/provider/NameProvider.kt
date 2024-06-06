@@ -1,57 +1,55 @@
 package com.dluvian.voyage.data.provider
 
 import android.util.Log
-import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.room.dao.ProfileDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Job
+import rust.nostr.protocol.Nip19Profile
+import rust.nostr.protocol.PublicKey
 import java.util.Collections
-import java.util.concurrent.atomic.AtomicBoolean
 
 private const val TAG = "NameProvider"
 
 class NameProvider(
     private val profileDao: ProfileDao,
-    private val nameCache: MutableMap<PubkeyHex, String?>,
     private val nostrSubscriber: NostrSubscriber,
     private val metadataInMemory: MetadataInMemory,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
+    private val nameCache = Collections.synchronizedMap(mutableMapOf<PublicKey, String?>())
     private val subCache = Collections.synchronizedSet(mutableSetOf<PubkeyHex>())
-    private val isActive = AtomicBoolean(false)
+    private val jobs = Collections.synchronizedMap(mutableMapOf<PublicKey, Job>())
 
-    fun getName(pubkey: PubkeyHex): String? {
-        val name = nameCache[pubkey]
+    fun getName(nprofile: Nip19Profile): String? {
+        val name = nameCache[nprofile.publicKey()]
         if (!name.isNullOrEmpty()) return name
 
-        if (isActive.compareAndSet(false, true)) {
-            scope.launchIO {
-                val inMemoryName = metadataInMemory.getMetadata(pubkey = pubkey)?.name
-                if (!inMemoryName.isNullOrEmpty()) {
-                    Log.d(TAG, "Found profile $pubkey in memory")
-                    nameCache[pubkey] = inMemoryName
-                    return@launchIO
-                }
+        val hex = nprofile.publicKey().toHex()
+        val inMemoryName = metadataInMemory.getMetadata(pubkey = hex)?.name
+        if (!inMemoryName.isNullOrEmpty()) {
+            Log.d(TAG, "Found profile $hex in memory")
+            nameCache[nprofile.publicKey()] = inMemoryName
+            return inMemoryName
+        }
 
-                val dbName = profileDao.getName(pubkey = pubkey)
-                if (!dbName.isNullOrEmpty()) {
-                    Log.d(TAG, "Found profile $pubkey in database")
-                    nameCache[pubkey] = dbName
-                    return@launchIO
-                }
+        if (jobs[nprofile.publicKey()]?.isActive == true) return name
+        jobs[nprofile.publicKey()] = scope.launchIO {
+            val dbName = profileDao.getName(pubkey = hex)
+            if (!dbName.isNullOrEmpty()) {
+                Log.d(TAG, "Found profile $hex in database")
+                nameCache[nprofile.publicKey()] = dbName
+                return@launchIO
+            }
 
-                if (subCache.add(pubkey)) {
-                    Log.d(TAG, "Sub unknown profile $pubkey")
-                    nostrSubscriber.subProfile(nprofile = createNprofile(hex = pubkey))
-                    delay(SHORT_DEBOUNCE)
-                }
-            }.invokeOnCompletion { isActive.set(false) }
+            if (subCache.add(hex)) {
+                Log.d(TAG, "Sub unknown profile $hex")
+                nostrSubscriber.subProfile(nprofile = nprofile)
+            }
         }
 
         return name

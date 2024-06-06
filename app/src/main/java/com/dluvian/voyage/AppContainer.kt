@@ -8,7 +8,6 @@ import com.dluvian.nostr_kt.NostrClient
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
 import com.dluvian.voyage.core.ExternalSignerHandler
-import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.ConnectionStatus
 import com.dluvian.voyage.data.account.AccountManager
@@ -227,11 +226,9 @@ class AppContainer(context: Context) {
 
     private val oldestUsedEvent = OldestUsedEvent()
 
-    private val nameCache = Collections.synchronizedMap(mutableMapOf<PubkeyHex, String?>())
 
     private val nameProvider = NameProvider(
         profileDao = roomDb.profileDao(),
-        nameCache = nameCache,
         nostrSubscriber = nostrSubscriber,
         metadataInMemory = metadataInMemory,
     )

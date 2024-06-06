@@ -6,6 +6,7 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.UrlAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
+import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.voyage.core.extractHashtags
 import com.dluvian.voyage.core.extractNostrMentions
 import com.dluvian.voyage.core.extractUrls
@@ -76,7 +77,12 @@ class AnnotatedStringProvider(
                 } else {
                     when (val nostrMention = NostrMention.from(token.value)) {
                         is NpubMention, is NprofileMention -> {
-                            val mentionedName = nameProvider.getName(pubkey = nostrMention.hex)
+                            val nprofile = if (nostrMention is NprofileMention) {
+                                nostrMention.nprofile
+                            } else {
+                                createNprofile(hex = nostrMention.hex)
+                            }
+                            val mentionedName = nameProvider.getName(nprofile = nprofile)
                             if (mentionedName == null) isCacheable = false
                             val name = "@${
                                 mentionedName.orEmpty()

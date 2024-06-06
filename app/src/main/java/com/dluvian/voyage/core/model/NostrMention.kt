@@ -18,7 +18,11 @@ sealed class NostrMention(open val bech32: Bech32, open val hex: String) {
                 val result = runCatching {
                     Nip19Profile.fromBech32(bech32 = trimmed)
                 }.getOrNull() ?: return null
-                NprofileMention(bech32 = trimmed, hex = result.publicKey().toHex())
+                NprofileMention(
+                    bech32 = trimmed,
+                    hex = result.publicKey().toHex(),
+                    nprofile = result
+                )
             } else if (trimmed.startsWith("nevent1")) {
                 val result = runCatching {
                     Nip19Event.fromBech32(bech32 = trimmed)
@@ -42,7 +46,11 @@ sealed class NostrMention(open val bech32: Bech32, open val hex: String) {
 data class NpubMention(override val bech32: Bech32, override val hex: PubkeyHex) :
     NostrMention(bech32 = bech32, hex = hex)
 
-data class NprofileMention(override val bech32: Bech32, override val hex: PubkeyHex) :
+data class NprofileMention(
+    override val bech32: Bech32,
+    override val hex: PubkeyHex,
+    val nprofile: Nip19Profile
+) :
     NostrMention(bech32 = bech32, hex = hex)
 
 data class NoteMention(override val bech32: Bech32, override val hex: EventIdHex) :
