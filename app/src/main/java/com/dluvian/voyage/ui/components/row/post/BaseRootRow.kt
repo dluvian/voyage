@@ -74,7 +74,7 @@ fun BaseRootRow(
         }
         AnnotatedText(
             text = post.content,
-            maxLines = if (isThread) Int.MAX_VALUE else 21,
+            maxLines = if (isThread) Int.MAX_VALUE else 12,
             onClick = { onClickText(it, post.content) }
         )
         Spacer(modifier = Modifier.height(spacing.large))
