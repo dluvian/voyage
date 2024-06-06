@@ -20,6 +20,7 @@ interface DeleteDao {
         val oldestCreatedAt = minOf(createdAtWithOffset, oldestCreatedAtInUse)
 
         internalDeleteOldestPosts(oldestCreatedAt = oldestCreatedAt)
+        internalDeleteOldVotes(oldestCreatedAt = oldestCreatedAt)
     }
 
     @Query(
@@ -42,4 +43,11 @@ interface DeleteDao {
                 "AND id NOT IN (SELECT crossPostedId FROM post WHERE pubkey IN (SELECT pubkey FROM account) AND crossPostedId IS NOT NULL) "
     )
     suspend fun internalDeleteOldestPosts(oldestCreatedAt: Long)
+
+    @Query(
+        "DELETE FROM vote " +
+                "WHERE pubkey NOT IN (SELECT pubkey FROM account) " +
+                "AND postId IN (SELECT id FROM post WHERE createdAt < :oldestCreatedAt)"
+    )
+    suspend fun internalDeleteOldVotes(oldestCreatedAt: Long)
 }
