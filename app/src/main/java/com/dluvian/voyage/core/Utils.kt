@@ -157,6 +157,7 @@ fun extractUrls(extractFrom: String) = urlRegex.findAll(extractFrom).toList()
 
 private val nostrMentionRegex =
     Regex("(nostr:|@)(npub1|note1|nevent1|nprofile1|naddr1)[a-zA-Z0-9]+")
+
 fun extractNostrMentions(extractFrom: String) = nostrMentionRegex.findAll(extractFrom).toList()
 
 fun shortenUrl(url: String) = url.removePrefix("https://").removePrefix("http://")
@@ -230,6 +231,14 @@ fun LazyListState.showScrollButton(): Boolean {
             }
         }
     }.value && hasScrolled && hasOffset
+}
+
+@Composable
+fun getSimpleLauncher(): ManagedLauncher {
+    return rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = {}
+    )
 }
 
 @Composable

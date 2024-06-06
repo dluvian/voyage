@@ -39,11 +39,13 @@ import com.dluvian.voyage.core.Bech32
 import com.dluvian.voyage.core.ClickText
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.core.OpenLightningWallet
 import com.dluvian.voyage.core.OpenRelayProfile
 import com.dluvian.voyage.core.ProfileViewRefresh
 import com.dluvian.voyage.core.ProfileViewReplyAppend
 import com.dluvian.voyage.core.ProfileViewRootAppend
 import com.dluvian.voyage.core.copyAndToast
+import com.dluvian.voyage.core.getSimpleLauncher
 import com.dluvian.voyage.core.shortenBech32
 import com.dluvian.voyage.core.viewModel.ProfileViewModel
 import com.dluvian.voyage.ui.components.Feed
@@ -55,6 +57,7 @@ import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.components.text.IndexedText
 import com.dluvian.voyage.ui.theme.KeyIcon
 import com.dluvian.voyage.ui.theme.LightningIcon
+import com.dluvian.voyage.ui.theme.OpenIcon
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
 import kotlinx.coroutines.launch
@@ -176,7 +179,30 @@ private fun AboutPage(
                     modifier = Modifier.padding(vertical = spacing.medium),
                     icon = LightningIcon,
                     text = lightning,
-                    description = stringResource(id = R.string.lightning_address)
+                    description = stringResource(id = R.string.lightning_address),
+                    trailingIcon = {
+                        val launcher = getSimpleLauncher()
+                        val scope = rememberCoroutineScope()
+                        val err =
+                            stringResource(id = R.string.you_dont_have_a_lightning_wallet_installed)
+                        Icon(
+                            modifier = Modifier
+                                .padding(start = spacing.medium)
+                                .size(sizing.smallIndicator)
+                                .clickable {
+                                    onUpdate(
+                                        OpenLightningWallet(
+                                            address = lightning,
+                                            launcher = launcher,
+                                            scope = scope,
+                                            err = err
+                                        )
+                                    )
+                                },
+                            imageVector = OpenIcon,
+                            contentDescription = stringResource(id = R.string.open_lightning_address_in_wallet)
+                        )
+                    }
                 )
             }
             if (!about.isNullOrEmpty()) item {
@@ -198,7 +224,8 @@ private fun AboutPageTextRow(
     icon: ImageVector,
     text: String,
     shortenedText: String = text,
-    description: String
+    description: String,
+    trailingIcon: ComposableContent = {},
 ) {
     val context = LocalContext.current
     val clip = LocalClipboardManager.current
@@ -217,10 +244,12 @@ private fun AboutPageTextRow(
         )
         Spacer(modifier = Modifier.width(spacing.small))
         Text(
+            modifier = Modifier.weight(1f, fill = false),
             text = shortenedText,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
+        trailingIcon()
     }
 }
 

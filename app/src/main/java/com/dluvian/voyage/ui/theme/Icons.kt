@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Comment
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.automirrored.filled.Reply
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.AccountCircle
@@ -71,6 +72,7 @@ val ListIcon = Icons.AutoMirrored.Filled.List
 val BookmarksIcon = Icons.Default.Bookmarks
 val BookmarkIcon = Icons.Filled.Bookmark
 val RelayIcon = Icons.Default.CellTower
+val OpenIcon = Icons.AutoMirrored.Filled.OpenInNew
 
 @Stable
 @Composable

@@ -80,6 +80,7 @@ sealed class AdvancedPushNavEvent : PushNavEvent()
 data class OpenThread(val rootPost: RootPostUI) : AdvancedPushNavEvent()
 data class OpenThreadRaw(val nevent: Nip19Event, val parent: ParentUI? = null) :
     AdvancedPushNavEvent()
+
 data class OpenProfile(val nprofile: Nip19Profile) : AdvancedPushNavEvent()
 data class OpenTopic(val topic: Topic) : AdvancedPushNavEvent()
 data class OpenReplyCreation(val parent: ParentUI) : AdvancedPushNavEvent()
@@ -265,3 +266,10 @@ data class RegisterSignerLauncher(val launcher: ManagedLauncher) : UIEvent()
 data class RegisterAccountLauncher(val launcher: ManagedLauncher) : UIEvent()
 
 data class RebroadcastPost(val postId: EventIdHex, val context: Context) : UIEvent()
+
+data class OpenLightningWallet(
+    val address: String,
+    val launcher: ManagedLauncher,
+    val scope: CoroutineScope,
+    val err: String
+) : UIEvent()

@@ -1,6 +1,7 @@
 package com.dluvian.voyage.core
 
 import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -51,6 +52,7 @@ class Core(
             is DeletePost -> viewModelScope.launchIO {
                 appContainer.eventDeletor.deletePost(postId = uiEvent.id)
             }
+
             is BookmarkEvent -> appContainer.bookmarker.handle(action = uiEvent)
 
             is HomeViewAction -> vmContainer.homeVM.handle(action = uiEvent)
@@ -93,6 +95,17 @@ class Core(
                     context = uiEvent.context,
                     scope = viewModelScope
                 )
+            }
+
+            is OpenLightningWallet -> {
+                val intent = Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("lightning:${uiEvent.address}")
+                )
+                runCatching { uiEvent.launcher.launch(intent) }
+                    .onFailure {
+                        appContainer.snackbar.showToast(scope = uiEvent.scope, msg = uiEvent.err)
+                    }
             }
         }
     }
