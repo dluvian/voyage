@@ -91,10 +91,10 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
             pagerState = vm.pagerState,
             onScrollUp = {
                 when (it) {
-                    0 -> scope.launch { vm.rootFeedState.scrollToItem(0) }
-                    1 -> scope.launch { vm.replyFeedState.scrollToItem(0) }
-                    3 -> scope.launch { vm.profileAboutState.scrollToItem(0) }
-                    4 -> scope.launch { vm.profileRelayState.scrollToItem(0) }
+                    0 -> scope.launch { vm.rootFeedState.animateScrollToItem(0) }
+                    1 -> scope.launch { vm.replyFeedState.animateScrollToItem(0) }
+                    3 -> scope.launch { vm.profileAboutState.animateScrollToItem(0) }
+                    4 -> scope.launch { vm.profileRelayState.animateScrollToItem(0) }
                     else -> {}
                 }
             },

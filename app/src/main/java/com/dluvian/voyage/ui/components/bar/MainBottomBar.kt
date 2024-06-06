@@ -49,7 +49,7 @@ fun MainBottomBar(
                 onClick = {
                     onUpdate(ClickHome)
                     if (currentView is HomeNavView) {
-                        scope.launch { homeFeedState.scrollToItem(index = 0) }
+                        scope.launch { homeFeedState.animateScrollToItem(index = 0) }
                     }
                 })
             MainBottomBarItem(

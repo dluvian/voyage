@@ -126,8 +126,8 @@ private fun ScreenContent(
         pagerState = vm.pagerState,
         onScrollUp = {
             when (it) {
-                0 -> scope.launch { vm.contactListState.scrollToItem(0) }
-                1 -> scope.launch { vm.topicListState.scrollToItem(0) }
+                0 -> scope.launch { vm.contactListState.animateScrollToItem(0) }
+                1 -> scope.launch { vm.topicListState.animateScrollToItem(0) }
                 else -> {}
             }
         },

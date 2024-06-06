@@ -89,7 +89,7 @@ fun Feed(
             }
         }
         if (state.showScrollButton()) {
-            ScrollUpButton(onScrollToTop = { scope.launch { state.scrollToItem(index = 0) } })
+            ScrollUpButton(onScrollToTop = { scope.launch { state.animateScrollToItem(index = 0) } })
         }
     }
 }
