@@ -47,8 +47,18 @@ class NostrSubscriber(
         bookmarkDao = room.bookmarkDao(),
     )
 
-    suspend fun subFeed(until: Long, limit: Int, setting: FeedSetting) {
-        val since = getCachedSinceTimestamp(setting = setting, until = until, pageSize = limit)
+    suspend fun subFeed(
+        until: Long,
+        limit: Int,
+        setting: FeedSetting,
+        forceSubscription: Boolean = false
+    ) {
+        val since = getCachedSinceTimestamp(
+            setting = setting,
+            until = until,
+            pageSize = limit,
+            forceSubscription = forceSubscription
+        )
 
         val subscriptions = when (setting) {
             is HomeFeedSetting -> feedSubscriber.getHomeFeedSubscriptions(
@@ -161,7 +171,8 @@ class NostrSubscriber(
     private suspend fun getCachedSinceTimestamp(
         setting: FeedSetting,
         until: Long,
-        pageSize: Int
+        pageSize: Int,
+        forceSubscription: Boolean,
     ): ULong {
         val pageSizeAndHalfOfNext = pageSize.times(1.5).toInt()
 
@@ -204,7 +215,9 @@ class NostrSubscriber(
 
         val min = timestamps.min()
         val max = timestamps.max()
-        val selectedSince = if (max - min <= FEED_RESUB_SPAN_THRESHOLD_SECS) max else min
+        val selectedSince = if (forceSubscription) min
+        else if (max - min <= FEED_RESUB_SPAN_THRESHOLD_SECS) max
+        else min
 
         return (selectedSince + 1).toULong()
     }

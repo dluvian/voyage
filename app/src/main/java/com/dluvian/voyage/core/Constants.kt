@@ -31,7 +31,8 @@ const val MAX_EVENTS_TO_SUB = 200uL
 
 const val FEED_PAGE_SIZE = 30
 const val FEED_OFFSET = 6
-const val FEED_RESUB_SPAN_THRESHOLD_SECS = 4 * 60 * 60
+const val FEED_RESUB_SPAN_THRESHOLD_SECS =
+    4 * 60 * 60 // Dont resub page's time span if it covers less than 4h
 
 const val MIN_RETAIN_ROOT = 500f
 const val MAX_RETAIN_ROOT = 5_000f

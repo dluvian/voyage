@@ -89,7 +89,12 @@ class Paginator(
             onSub()
             delay(DELAY_1SEC)
             page.value =
-                getFlow(until = now, subUntil = now, subscribe = feedSetting !is ReplyFeedSetting)
+                getFlow(
+                    until = now,
+                    subUntil = now,
+                    subscribe = feedSetting !is ReplyFeedSetting,
+                    forceSubscription = true
+                )
                     .stateIn(scope, SharingStarted.WhileSubscribed(), getStaticFeed(until = now))
             delay(DELAY_1SEC)
         }.invokeOnCompletion {
@@ -119,13 +124,15 @@ class Paginator(
     private suspend fun getFlow(
         until: Long,
         subUntil: Long,
-        subscribe: Boolean = true
+        subscribe: Boolean = true,
+        forceSubscription: Boolean = false
     ): Flow<List<ParentUI>> {
         return feedProvider.getFeedFlow(
             until = until,
             subUntil = subUntil,
             size = FEED_PAGE_SIZE,
             setting = feedSetting,
+            forceSubscription = forceSubscription,
             subscribe = subscribe
         )
     }

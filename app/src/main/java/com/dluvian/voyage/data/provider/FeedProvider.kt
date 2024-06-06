@@ -54,10 +54,16 @@ class FeedProvider(
         subUntil: Long,
         size: Int,
         setting: FeedSetting,
+        forceSubscription: Boolean,
         subscribe: Boolean = true,
     ): Flow<List<ParentUI>> {
         if (subscribe) {
-            nostrSubscriber.subFeed(until = subUntil, limit = size, setting = setting)
+            nostrSubscriber.subFeed(
+                until = subUntil,
+                limit = size,
+                setting = setting,
+                forceSubscription = forceSubscription
+            )
         }
 
         return when (setting) {
