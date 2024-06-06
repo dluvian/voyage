@@ -261,7 +261,7 @@ data class ClickText(
     val onNoneClick: Fn = {},
 ) : UIEvent()
 
-data class RegisterSignerLauncher(val launcher: SignerLauncher) : UIEvent()
-data class RegisterAccountLauncher(val launcher: SignerLauncher) : UIEvent()
+data class RegisterSignerLauncher(val launcher: ManagedLauncher) : UIEvent()
+data class RegisterAccountLauncher(val launcher: ManagedLauncher) : UIEvent()
 
 data class RebroadcastPost(val postId: EventIdHex, val context: Context) : UIEvent()

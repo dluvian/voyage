@@ -14,4 +14,4 @@ typealias OnUpdate = (UIEvent) -> Unit
 typealias ComposableContent = @Composable () -> Unit
 typealias ComposableRowContent = @Composable RowScope.() -> Unit
 typealias Fn = () -> Unit
-typealias SignerLauncher = ManagedActivityResultLauncher<Intent, ActivityResult>
+typealias ManagedLauncher = ManagedActivityResultLauncher<Intent, ActivityResult>

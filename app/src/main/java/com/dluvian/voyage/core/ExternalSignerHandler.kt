@@ -29,15 +29,15 @@ private const val PERMISSIONS = """
 """
 
 class ExternalSignerHandler {
-    private var signerLauncher: SignerLauncher? = null
-    private var reqAccountLauncher: SignerLauncher? = null
+    private var signerLauncher: ManagedLauncher? = null
+    private var reqAccountLauncher: ManagedLauncher? = null
     private val signatureChannel = Channel<String?>()
 
-    fun setSignerLauncher(launcher: SignerLauncher) {
+    fun setSignerLauncher(launcher: ManagedLauncher) {
         signerLauncher = launcher
     }
 
-    fun setAccountLauncher(launcher: SignerLauncher) {
+    fun setAccountLauncher(launcher: ManagedLauncher) {
         reqAccountLauncher = launcher
     }
 

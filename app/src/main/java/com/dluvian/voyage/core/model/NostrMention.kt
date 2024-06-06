@@ -5,6 +5,7 @@ import com.dluvian.nostr_kt.removeNostrUri
 import com.dluvian.voyage.core.Bech32
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
+import rust.nostr.protocol.Coordinate
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Nip19Event
 import rust.nostr.protocol.Nip19Profile
@@ -38,6 +39,15 @@ sealed class NostrMention(open val bech32: Bech32, open val hex: String) {
                     EventId.fromBech32(bech32 = trimmed)
                 }.getOrNull() ?: return null
                 NoteMention(bech32 = trimmed, hex = result.toHex())
+            } else if (trimmed.startsWith("naddr1")) {
+                val result = runCatching {
+                    Coordinate.fromBech32(bech32 = trimmed)
+                }.getOrNull() ?: return null
+                CoordinateMention(
+                    bech32 = trimmed,
+                    hex = result.publicKey().toHex(),
+                    identifier = result.identifier()
+                )
             } else null
         }
     }
@@ -58,3 +68,9 @@ data class NoteMention(override val bech32: Bech32, override val hex: EventIdHex
 
 data class NeventMention(override val bech32: Bech32, override val hex: EventIdHex) :
     NostrMention(bech32 = bech32, hex = hex)
+
+data class CoordinateMention(
+    override val bech32: Bech32,
+    override val hex: EventIdHex,
+    val identifier: String
+) : NostrMention(bech32 = bech32, hex = hex)

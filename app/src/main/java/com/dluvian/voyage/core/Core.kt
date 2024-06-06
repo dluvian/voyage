@@ -2,6 +2,7 @@ package com.dluvian.voyage.core
 
 import android.content.Intent
 import android.util.Log
+import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,6 +10,7 @@ import com.dluvian.nostr_kt.createNevent
 import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.voyage.AppContainer
 import com.dluvian.voyage.VMContainer
+import com.dluvian.voyage.core.model.CoordinateMention
 import com.dluvian.voyage.core.model.NeventMention
 import com.dluvian.voyage.core.model.NostrMention
 import com.dluvian.voyage.core.model.NoteMention
@@ -114,10 +116,10 @@ class Core(
             return
         }
 
-        openNostrString(str = other.item)
+        openNostrString(str = other.item, uriHandler = action.uriHandler)
     }
 
-    private fun openNostrString(str: String) {
+    private fun openNostrString(str: String, uriHandler: UriHandler? = null) {
         when (val nostrMention = NostrMention.from(str)) {
             is NprofileMention -> {
                 val nip19 = Nip19Profile.fromBech32(nostrMention.bech32)
@@ -136,6 +138,10 @@ class Core(
             is NoteMention -> {
                 val nevent = createNevent(hex = nostrMention.hex)
                 onUpdate(OpenThreadRaw(nevent = nevent))
+            }
+
+            is CoordinateMention -> {
+                uriHandler?.openUri("https://nostter.app/${nostrMention.bech32}")
             }
 
             null -> Log.w(TAG, "Unknown clickable string $str")

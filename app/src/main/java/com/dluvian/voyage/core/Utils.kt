@@ -155,7 +155,8 @@ private val urlRegex = Regex(pattern = "https?://[^\\s]+[a-zA-Z0-9/]")
 fun extractUrls(extractFrom: String) = urlRegex.findAll(extractFrom).toList()
 
 
-private val nostrMentionRegex = Regex("(nostr:|@)(npub1|note1|nevent1|nprofile1)[a-zA-Z0-9]+")
+private val nostrMentionRegex =
+    Regex("(nostr:|@)(npub1|note1|nevent1|nprofile1|naddr1)[a-zA-Z0-9]+")
 fun extractNostrMentions(extractFrom: String) = nostrMentionRegex.findAll(extractFrom).toList()
 
 fun shortenUrl(url: String) = url.removePrefix("https://").removePrefix("http://")
@@ -232,7 +233,7 @@ fun LazyListState.showScrollButton(): Boolean {
 }
 
 @Composable
-fun getSignerLauncher(onUpdate: OnUpdate): SignerLauncher {
+fun getSignerLauncher(onUpdate: OnUpdate): ManagedLauncher {
     return rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { activityResult ->
@@ -241,7 +242,7 @@ fun getSignerLauncher(onUpdate: OnUpdate): SignerLauncher {
 }
 
 @Composable
-fun getAccountLauncher(onUpdate: OnUpdate): SignerLauncher {
+fun getAccountLauncher(onUpdate: OnUpdate): ManagedLauncher {
     val context = LocalContext.current
     return rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()

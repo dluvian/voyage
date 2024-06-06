@@ -10,6 +10,7 @@ import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.voyage.core.extractHashtags
 import com.dluvian.voyage.core.extractNostrMentions
 import com.dluvian.voyage.core.extractUrls
+import com.dluvian.voyage.core.model.CoordinateMention
 import com.dluvian.voyage.core.model.NeventMention
 import com.dluvian.voyage.core.model.NostrMention
 import com.dluvian.voyage.core.model.NoteMention
@@ -32,6 +33,7 @@ class AnnotatedStringProvider(
         const val NPROFILE_TAG = "NPROFILE"
         const val NPUB_TAG = "NPUB"
         const val HASHTAG = "HASHTAG"
+        const val COORDINATE = "COORDINATE"
     }
 
     private val cache: MutableMap<String, AnnotatedString> =
@@ -102,6 +104,15 @@ class AnnotatedStringProvider(
                                 annotation = nostrMention.bech32,
                                 style = MentionAndHashtagStyle,
                                 text = nostrMention.bech32.shortenBech32()
+                            )
+                        }
+
+                        is CoordinateMention -> {
+                            pushAnnotatedString(
+                                tag = COORDINATE,
+                                annotation = nostrMention.bech32,
+                                style = MentionAndHashtagStyle,
+                                text = nostrMention.identifier
                             )
                         }
 
