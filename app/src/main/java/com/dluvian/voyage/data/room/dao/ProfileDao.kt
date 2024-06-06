@@ -59,6 +59,13 @@ interface ProfileDao {
     suspend fun filterKnownProfiles(pubkeys: Collection<PubkeyHex>): List<PubkeyHex>
 
     @Query(
+        "SELECT friendPubkey " +
+                "FROM friend " +
+                "WHERE friendPubkey NOT IN (SELECT pubkey FROM profile)"
+    )
+    suspend fun getUnknownFriends(): List<PubkeyHex>
+
+    @Query(
         "SELECT * FROM AdvancedProfileView WHERE name = :name AND name != ''" +
                 "UNION " +
                 "SELECT * FROM AdvancedProfileView WHERE name LIKE :somewhere AND name != ''" +

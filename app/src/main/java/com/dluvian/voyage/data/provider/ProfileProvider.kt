@@ -98,6 +98,7 @@ class ProfileProvider(
     suspend fun getMyFriendsFlow(): Flow<List<FullProfileUI>> {
         // We want to be able to unfollow on the same list
         val friends = profileDao.getAdvancedProfilesOfFriends()
+        val friendsWithoutProfile = profileDao.getUnknownFriends()
 
         return forcedFollowFlow.map { forcedFollows ->
             friends.map { friend ->
@@ -105,6 +106,13 @@ class ProfileProvider(
                     pubkey = friend.pubkey,
                     dbProfile = friend,
                     forcedFollowState = forcedFollows[friend.pubkey],
+                    metadata = null
+                )
+            } + friendsWithoutProfile.map { pubkey ->
+                createFullProfile(
+                    pubkey = pubkey,
+                    dbProfile = null,
+                    forcedFollowState = forcedFollows[pubkey],
                     metadata = null
                 )
             }
