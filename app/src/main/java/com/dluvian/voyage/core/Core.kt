@@ -141,7 +141,7 @@ class Core(
             }
 
             is CoordinateMention -> {
-                uriHandler?.openUri("https://nostter.app/${nostrMention.bech32}")
+                uriHandler?.openUri("https://njump.me/${nostrMention.bech32}")
             }
 
             null -> Log.w(TAG, "Unknown clickable string $str")
