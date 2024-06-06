@@ -50,7 +50,10 @@ class NostrService(
 
         override fun onEvent(subId: SubId, event: Event, relayUrl: RelayUrl?) {
             if (!relayUrl.isNullOrEmpty() && eventCounter.isExceedingLimit(subId = subId)) {
-                nostrClient.removeRelay(relayUrl = relayUrl)
+                nostrClient.removeRelay(
+                    relayUrl = relayUrl,
+                    reason = "You're sending me more than I requested"
+                )
                 addConnectionStatus(relayUrl = relayUrl, status = Spam)
                 Log.w(TAG, "$relayUrl sends more events than requested in $subId")
                 return

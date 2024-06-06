@@ -196,10 +196,10 @@ class NostrClient {
         }
     }
 
-    fun removeRelay(relayUrl: RelayUrl) {
+    fun removeRelay(relayUrl: RelayUrl, reason: String = "Normal closure") {
         Log.i(TAG, "Remove relay $relayUrl")
         val removedSocket = sockets.remove(relayUrl)
-        removedSocket?.close(1000, "Normal closure")
+        removedSocket?.close(code = 1000, reason = reason)
     }
 
     fun close() {
