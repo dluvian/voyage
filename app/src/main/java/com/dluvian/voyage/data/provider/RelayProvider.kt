@@ -105,7 +105,7 @@ class RelayProvider(
         limit: Int = MAX_RELAYS,
         includeConnected: Boolean = false
     ): List<RelayUrl> {
-        val foreignRelays = nprofile.relays().normalize(limit = limit)
+        val foreignRelays = nprofile.relays().normalize().preferConnected(limit = limit)
         val nip65 = getObserveRelays(
             pubkey = nprofile.publicKey().toHex(),
             limit = limit,

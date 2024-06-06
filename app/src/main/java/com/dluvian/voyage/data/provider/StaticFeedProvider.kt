@@ -45,7 +45,7 @@ class StaticFeedProvider(
             )
 
             is ProfileRootFeedSetting -> room.rootPostDao().getProfileRootPosts(
-                pubkey = setting.pubkey,
+                pubkey = setting.nprofile.publicKey().toHex(),
                 until = until,
                 size = size
             )
@@ -65,7 +65,7 @@ class StaticFeedProvider(
         setting: ReplyFeedSetting,
     ): List<ReplyUI> {
         return room.replyDao().getProfileReplies(
-            pubkey = setting.pubkey,
+            pubkey = setting.nprofile.publicKey().toHex(),
             until = until,
             size = size
         )

@@ -4,7 +4,6 @@ import android.util.Log
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
 import com.dluvian.voyage.core.MAX_KEYS
-import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.limitRestricted
 import com.dluvian.voyage.core.syncedPutOrAdd
@@ -21,6 +20,7 @@ import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
 import rust.nostr.protocol.Kind
 import rust.nostr.protocol.KindEnum
+import rust.nostr.protocol.Nip19Profile
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Timestamp
 
@@ -106,24 +106,24 @@ class NostrFeedSubscriber(
     }
 
     suspend fun getProfileFeedSubscription(
-        pubkey: PubkeyHex,
+        nprofile: Nip19Profile,
         until: ULong,
         since: ULong,
         limit: ULong
     ): Map<RelayUrl, List<Filter>> {
-        if (limit <= 0u || pubkey.isBlank() || since >= until) return emptyMap()
+        if (limit <= 0u || since >= until) return emptyMap()
 
         val result = mutableMapOf<RelayUrl, MutableList<Filter>>()
 
         val pubkeyNoteFilter = Filter()
             .kinds(kinds = textNoteAndRepostKinds)
-            .author(PublicKey.fromHex(hex = pubkey))
+            .author(author = nprofile.publicKey())
             .since(timestamp = Timestamp.fromSecs(since))
             .until(timestamp = Timestamp.fromSecs(until))
             .limitRestricted(limit = limit)
         val pubkeyNoteFilters = mutableListOf(pubkeyNoteFilter)
 
-        relayProvider.getObserveRelays(pubkey = pubkey).forEach { relay ->
+        relayProvider.getObserveRelays(nprofile = nprofile).forEach { relay ->
             val present = result.putIfAbsent(relay, pubkeyNoteFilters)
             present?.addAll(pubkeyNoteFilters)
         }

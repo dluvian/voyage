@@ -66,14 +66,14 @@ class NostrSubscriber(
             )
 
             is ReplyFeedSetting -> feedSubscriber.getProfileFeedSubscription(
-                pubkey = setting.pubkey,
+                nprofile = setting.nprofile,
                 until = until.toULong(),
                 since = since,
                 limit = (3 * limit).toULong()
             )
 
             is ProfileRootFeedSetting -> feedSubscriber.getProfileFeedSubscription(
-                pubkey = setting.pubkey,
+                nprofile = setting.nprofile,
                 until = until.toULong(),
                 since = since,
                 limit = (4 * limit).toULong()
@@ -178,13 +178,13 @@ class NostrSubscriber(
             )
 
             is ProfileRootFeedSetting -> room.rootPostDao().getProfileRootPostsCreatedAt(
-                pubkey = setting.pubkey,
+                pubkey = setting.nprofile.publicKey().toHex(),
                 until = until,
                 size = pageSizeAndHalfOfNext,
             )
 
             is ReplyFeedSetting -> room.replyDao().getProfileRepliesCreatedAt(
-                pubkey = setting.pubkey,
+                pubkey = setting.nprofile.publicKey().toHex(),
                 until = until,
                 size = pageSizeAndHalfOfNext,
             )

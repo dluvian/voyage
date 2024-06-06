@@ -94,7 +94,7 @@ class FeedProvider(
             )
 
             is ProfileRootFeedSetting -> room.rootPostDao().getProfileRootPostFlow(
-                pubkey = setting.pubkey,
+                pubkey = setting.nprofile.publicKey().toHex(),
                 until = until,
                 size = size
             )
@@ -123,7 +123,7 @@ class FeedProvider(
         setting: ReplyFeedSetting,
     ): Flow<List<ReplyUI>> {
         val flow = room.replyDao().getProfileReplyFlow(
-            pubkey = setting.pubkey,
+            pubkey = setting.nprofile.publicKey().toHex(),
             until = until,
             size = size
         )
@@ -198,9 +198,10 @@ class FeedProvider(
             is HomeFeedSetting -> room.rootPostDao().hasHomeRootPostsFlow()
             is TopicFeedSetting -> room.rootPostDao().hasTopicRootPostsFlow(topic = setting.topic)
             is ProfileRootFeedSetting -> room.rootPostDao()
-                .hasProfileRootPostsFlow(pubkey = setting.pubkey)
+                .hasProfileRootPostsFlow(pubkey = setting.nprofile.publicKey().toHex())
 
-            is ReplyFeedSetting -> room.replyDao().hasProfileRepliesFlow(pubkey = setting.pubkey)
+            is ReplyFeedSetting -> room.replyDao()
+                .hasProfileRepliesFlow(pubkey = setting.nprofile.publicKey().toHex())
 
             InboxFeedSetting -> room.inboxDao().hasInboxFlow()
 
