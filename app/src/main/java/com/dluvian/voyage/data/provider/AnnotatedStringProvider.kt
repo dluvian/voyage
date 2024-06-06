@@ -112,7 +112,7 @@ class AnnotatedStringProvider(
                                 tag = COORDINATE,
                                 annotation = nostrMention.bech32,
                                 style = MentionAndHashtagStyle,
-                                text = nostrMention.identifier
+                                text = nostrMention.identifier.ifEmpty { nostrMention.bech32.shortenBech32() }
                             )
                         }
 

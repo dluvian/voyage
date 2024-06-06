@@ -46,7 +46,7 @@ sealed class NostrMention(open val bech32: Bech32, open val hex: String) {
                 CoordinateMention(
                     bech32 = trimmed,
                     hex = result.publicKey().toHex(),
-                    identifier = result.identifier()
+                    identifier = result.identifier().trim()
                 )
             } else null
         }
