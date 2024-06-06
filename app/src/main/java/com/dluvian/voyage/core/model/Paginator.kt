@@ -47,7 +47,11 @@ class Paginator(
 
     fun init(setting: FeedSetting) {
         if (isInitialized.value) return
+        reinit(setting = setting)
+    }
 
+    fun reinit(setting: FeedSetting) {
+        isInitialized.value = true
         val isSame = when (setting) {
             HomeFeedSetting, InboxFeedSetting, BookmarksFeedSetting -> page.value.value.isNotEmpty()
             is TopicFeedSetting,
@@ -69,8 +73,6 @@ class Paginator(
             page.value =
                 getFlow(until = now, subUntil = now, subscribe = feedSetting !is ReplyFeedSetting)
                     .stateIn(scope, SharingStarted.WhileSubscribed(), getStaticFeed(until = now))
-        }.invokeOnCompletion {
-            isInitialized.value = true
         }
     }
 

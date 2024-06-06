@@ -11,7 +11,6 @@ import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.data.model.InboxFeedSetting
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.provider.FeedProvider
-import java.util.concurrent.atomic.AtomicBoolean
 
 class InboxViewModel(
     feedProvider: FeedProvider,
@@ -26,15 +25,9 @@ class InboxViewModel(
 
     fun handle(action: InboxViewAction) {
         when (action) {
-            is InboxViewInit -> init()
+            is InboxViewInit -> paginator.init(InboxFeedSetting)
             is InboxViewRefresh -> paginator.refresh()
             is InboxViewAppend -> paginator.append()
         }
-    }
-
-    private val isInitialized = AtomicBoolean(false)
-    private fun init() {
-        if (!isInitialized.compareAndSet(false, true)) return
-        paginator.init(InboxFeedSetting)
     }
 }

@@ -37,7 +37,7 @@ class TopicViewModel(
     fun openTopic(topicNavView: TopicNavView) {
         val stripped = topicNavView.topic.normalizeTopic()
         subCreator.unsubAll()
-        paginator.init(setting = TopicFeedSetting(topic = stripped))
+        paginator.reinit(setting = TopicFeedSetting(topic = stripped))
         val initVal = if (currentTopic.value == stripped) isFollowed.value else false
         currentTopic.value = stripped
         isFollowed = topicProvider.getIsFollowedFlow(topic = topicNavView.topic)
