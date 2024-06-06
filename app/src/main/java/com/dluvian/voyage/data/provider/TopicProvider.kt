@@ -2,6 +2,7 @@ package com.dluvian.voyage.data.provider
 
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.TopicFollowState
+import com.dluvian.voyage.core.takeRandom
 import com.dluvian.voyage.data.room.dao.TopicDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -11,7 +12,7 @@ class TopicProvider(
     private val topicDao: TopicDao,
     val forcedFollowStates: Flow<Map<Topic, Boolean>>,
 ) {
-    suspend fun getMyTopics() = topicDao.getMyTopics()
+    suspend fun getMyTopics(limit: Int = Int.MAX_VALUE) = topicDao.getMyTopics().takeRandom(limit)
     suspend fun getAllTopics() = topicDao.getAllTopics()
 
     suspend fun getPopularUnfollowedTopics(limit: Int): List<Topic> {

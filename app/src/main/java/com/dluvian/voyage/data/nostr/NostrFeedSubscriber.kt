@@ -60,7 +60,7 @@ class NostrFeedSubscriber(
                 }
         }
 
-        val topics = topicProvider.getMyTopics()
+        val topics = topicProvider.getMyTopics(limit = MAX_KEYS)
         if (topics.isNotEmpty()) {
             val topicedNoteFilter = Filter()
                 .kinds(kinds = textNoteAndRepostKinds)
