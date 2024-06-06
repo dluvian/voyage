@@ -1,5 +1,6 @@
 package com.dluvian.voyage.ui.views.nonMain
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -152,6 +153,7 @@ private fun DatabaseSection(
     val localRootPostThreshold = remember(rootPostThreshold) {
         mutableFloatStateOf(rootPostThreshold.toFloat())
     }
+    val showSlider = remember { mutableStateOf(false) }
     SettingsSection(header = stringResource(id = R.string.database)) {
         ClickableRow(
             header = stringResource(
@@ -159,16 +161,19 @@ private fun DatabaseSection(
                 localRootPostThreshold.floatValue.toInt()
             ),
             text = stringResource(id = R.string.currently_n_root_posts_in_db, currentRootPostCount),
+            onClick = { showSlider.value = !showSlider.value }
         ) {
-            Slider(
-                modifier = Modifier.padding(horizontal = spacing.bigScreenEdge),
-                value = localRootPostThreshold.floatValue,
-                onValueChange = { localRootPostThreshold.floatValue = it },
-                onValueChangeFinished = {
-                    onUpdate(UpdateRootPostThreshold(threshold = localRootPostThreshold.floatValue))
-                },
-                valueRange = MIN_RETAIN_ROOT..MAX_RETAIN_ROOT
-            )
+            AnimatedVisibility(visible = showSlider.value) {
+                Slider(
+                    modifier = Modifier.padding(horizontal = spacing.bigScreenEdge),
+                    value = localRootPostThreshold.floatValue,
+                    onValueChange = { localRootPostThreshold.floatValue = it },
+                    onValueChangeFinished = {
+                        onUpdate(UpdateRootPostThreshold(threshold = localRootPostThreshold.floatValue))
+                    },
+                    valueRange = MIN_RETAIN_ROOT..MAX_RETAIN_ROOT
+                )
+            }
         }
     }
 }
