@@ -66,9 +66,11 @@ interface ProfileDao {
     suspend fun getUnknownFriends(): List<PubkeyHex>
 
     @Query(
-        "SELECT * FROM AdvancedProfileView WHERE name = :name AND name != ''" +
-                "UNION " +
-                "SELECT * FROM AdvancedProfileView WHERE name LIKE :somewhere AND name != ''" +
+        "SELECT * " +
+                "FROM AdvancedProfileView " +
+                "WHERE (name = :name OR name LIKE :somewhere) " +
+                "AND name != '' " +
+                "ORDER BY length(name) ASC " +
                 "LIMIT :limit"
     )
     suspend fun internalGetProfilesWithNameLike(
