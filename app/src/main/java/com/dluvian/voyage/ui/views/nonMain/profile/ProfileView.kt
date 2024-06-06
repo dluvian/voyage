@@ -48,7 +48,7 @@ import com.dluvian.voyage.core.shortenBech32
 import com.dluvian.voyage.core.viewModel.ProfileViewModel
 import com.dluvian.voyage.ui.components.Feed
 import com.dluvian.voyage.ui.components.PullRefreshBox
-import com.dluvian.voyage.ui.components.SimplePager
+import com.dluvian.voyage.ui.components.SimpleTabPager
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.ComingSoon
 import com.dluvian.voyage.ui.components.text.AnnotatedText
@@ -85,7 +85,7 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
     val scope = rememberCoroutineScope()
 
     ProfileScaffold(profile = profile, snackbar = snackbar, onUpdate = onUpdate) {
-        SimplePager(
+        SimpleTabPager(
             headers = headers,
             index = index,
             pagerState = vm.pagerState,

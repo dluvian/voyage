@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SimplePager(
+fun SimpleTabPager(
     headers: List<String>,
     index: MutableIntState,
     pagerState: PagerState,

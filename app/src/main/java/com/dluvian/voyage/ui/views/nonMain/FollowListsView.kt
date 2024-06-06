@@ -29,7 +29,7 @@ import com.dluvian.voyage.core.UnfollowTopic
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.core.viewModel.FollowListsViewModel
 import com.dluvian.voyage.ui.components.PullRefreshBox
-import com.dluvian.voyage.ui.components.SimplePager
+import com.dluvian.voyage.ui.components.SimpleTabPager
 import com.dluvian.voyage.ui.components.button.FollowButton
 import com.dluvian.voyage.ui.components.icon.TrustIcon
 import com.dluvian.voyage.ui.components.indicator.BaseHint
@@ -120,7 +120,7 @@ private fun ScreenContent(
     onUpdate: OnUpdate
 ) {
     val scope = rememberCoroutineScope()
-    SimplePager(
+    SimpleTabPager(
         headers = headers,
         index = vm.tabIndex,
         pagerState = vm.pagerState,
