@@ -138,7 +138,7 @@ class EventValidator(
         }
 
         if (validatedEvent == null) return null
-        if (!event.verify()) return null
+        if (validatedEvent !is ValidatedVote && !event.verify()) return null
 
         return validatedEvent
     }
