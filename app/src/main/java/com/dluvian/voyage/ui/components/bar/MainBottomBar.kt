@@ -37,6 +37,7 @@ import kotlinx.coroutines.launch
 fun MainBottomBar(
     currentView: MainNavView,
     homeFeedState: LazyListState,
+    inboxFeedState: LazyListState,
     onUpdate: (UIEvent) -> Unit
 ) {
     NavigationBar {
@@ -66,7 +67,12 @@ fun MainBottomBar(
                 selected = currentView is InboxNavView,
                 label = stringResource(id = R.string.inbox),
                 icon = InboxIcon,
-                onClick = { onUpdate(ClickInbox) })
+                onClick = {
+                    onUpdate(ClickInbox)
+                    if (currentView is InboxNavView) {
+                        scope.launch { inboxFeedState.animateScrollToItem(index = 0) }
+                    }
+                })
             MainBottomBarItem(
                 selected = false,
                 label = stringResource(id = R.string.settings),

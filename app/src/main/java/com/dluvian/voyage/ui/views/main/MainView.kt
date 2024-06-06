@@ -137,6 +137,7 @@ private fun ScreenContent(currentView: MainNavView, core: Core) {
         currentView = currentView,
         snackbar = core.appContainer.snackbar,
         homeFeedState = core.vmContainer.homeVM.feedState,
+        inboxFeedState = core.vmContainer.inboxVM.feedState,
         onUpdate = core.onUpdate
     ) {
         when (currentView) {

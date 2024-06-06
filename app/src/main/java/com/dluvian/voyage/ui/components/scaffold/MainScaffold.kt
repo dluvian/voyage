@@ -14,6 +14,7 @@ fun MainScaffold(
     currentView: MainNavView,
     snackbar: SnackbarHostState,
     homeFeedState: LazyListState,
+    inboxFeedState: LazyListState,
     onUpdate: OnUpdate,
     content: ComposableContent
 ) {
@@ -31,6 +32,7 @@ fun MainScaffold(
             MainBottomBar(
                 currentView = currentView,
                 homeFeedState = homeFeedState,
+                inboxFeedState = inboxFeedState,
                 onUpdate = onUpdate
             )
         }
