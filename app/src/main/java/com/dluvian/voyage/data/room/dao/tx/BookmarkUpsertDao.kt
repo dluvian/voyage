@@ -16,12 +16,12 @@ private const val TAG = "BookmarkUpsertDao"
 interface BookmarkUpsertDao {
     @Transaction
     suspend fun upsertBookmarks(validatedBookmarkList: ValidatedBookmarkList) {
-        val list = BookmarkEntity.from(validatedBookmarkList = validatedBookmarkList)
         val myPubkey = validatedBookmarkList.myPubkey
 
         val newestCreatedAt = internalGetNewestCreatedAt(myPubkey = myPubkey) ?: 0L
         if (validatedBookmarkList.createdAt <= newestCreatedAt) return
 
+        val list = BookmarkEntity.from(validatedBookmarkList = validatedBookmarkList)
         if (list.isEmpty()) {
             internalDeleteList(myPubkey = myPubkey)
             return

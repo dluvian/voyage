@@ -18,12 +18,12 @@ private const val TAG = "TopicUpsertDao"
 interface TopicUpsertDao {
     @Transaction
     suspend fun upsertTopics(validatedTopicList: ValidatedTopicList) {
-        val list = TopicEntity.from(validatedTopicList = validatedTopicList)
         val myPubkey = validatedTopicList.myPubkey
 
         val newestCreatedAt = internalGetNewestCreatedAt(myPubkey = myPubkey) ?: 0L
         if (validatedTopicList.createdAt <= newestCreatedAt) return
 
+        val list = TopicEntity.from(validatedTopicList = validatedTopicList)
         if (list.isEmpty()) {
             internalDeleteList(myPubkey = myPubkey)
             return

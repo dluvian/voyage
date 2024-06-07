@@ -41,6 +41,8 @@ class EventProcessor(
         val profiles = mutableListOf<ValidatedProfile>()
         val topicLists = mutableListOf<ValidatedTopicList>()
         val bookmarkLists = mutableListOf<ValidatedBookmarkList>()
+        val profileSets = mutableListOf<ValidatedProfileSet>()
+        val topicSets = mutableListOf<ValidatedTopicSet>()
 
         allEvents.forEach { event ->
             when (event) {
@@ -53,6 +55,8 @@ class EventProcessor(
                 is ValidatedProfile -> profiles.add(event)
                 is ValidatedTopicList -> topicLists.add(event)
                 is ValidatedBookmarkList -> bookmarkLists.add(event)
+                is ValidatedProfileSet -> profileSets.add(event)
+                is ValidatedTopicSet -> topicSets.add(event)
             }
         }
         processRootPosts(rootPosts = rootPosts)
@@ -64,6 +68,8 @@ class EventProcessor(
         processProfiles(profiles = profiles)
         processTopicLists(topicLists = topicLists)
         processBookmarkLists(bookmarkLists = bookmarkLists)
+        processProfileSets(sets = profileSets)
+        processTopicSets(sets = topicSets)
     }
 
     private fun processRootPosts(rootPosts: Collection<ValidatedRootPost>) {
@@ -171,6 +177,36 @@ class EventProcessor(
         }
     }
 
+    private fun processProfileSets(sets: Collection<ValidatedProfileSet>) {
+        if (sets.isEmpty()) return
+
+        val myNewestSets = filterNewestSets(sets = sets)
+            .filter { it.myPubkey == pubkeyProvider.getPubkeyHex() }
+        if (myNewestSets.isEmpty()) return
+
+        scope.launch {
+            myNewestSets.forEach {
+                Log.d(TAG, "Upsert set with ${it.pubkeys.size} pubkeys")
+                room.profileSetUpsertDao().upsertSet(set = it)
+            }
+        }
+    }
+
+    private fun processTopicSets(sets: Collection<ValidatedTopicSet>) {
+        if (sets.isEmpty()) return
+
+        val myNewestSets = filterNewestSets(sets = sets)
+            .filter { it.myPubkey == pubkeyProvider.getPubkeyHex() }
+        if (myNewestSets.isEmpty()) return
+
+        scope.launch {
+            myNewestSets.forEach {
+                Log.d(TAG, "Upsert set with ${it.topics.size} topics")
+                room.topicSetUpsertDao().upsertSet(set = it)
+            }
+        }
+    }
+
     private fun processNip65s(nip65s: Collection<ValidatedNip65>) {
         if (nip65s.isEmpty()) return
 
@@ -235,13 +271,10 @@ class EventProcessor(
     }
 
     private fun <T : ValidatedList> filterNewestLists(lists: Collection<T>): List<T> {
-        val cache = mutableSetOf<PubkeyHex>()
-        val newest = mutableListOf<T>()
-        for (list in lists.sortedByDescending { it.createdAt }) {
-            val isNew = cache.add(list.owner)
-            if (isNew) newest.add(list)
-        }
+        return lists.sortedByDescending { it.createdAt }.distinctBy { it.owner }
+    }
 
-        return newest
+    private fun <T : ValidatedSet> filterNewestSets(sets: Collection<T>): List<T> {
+        return sets.sortedByDescending { it.createdAt }.distinctBy { it.identifier }
     }
 }

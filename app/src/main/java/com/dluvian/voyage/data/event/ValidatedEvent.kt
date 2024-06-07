@@ -21,6 +21,7 @@ sealed class ValidatedMainPost(
     override val topics: List<Topic>,
     open val subject: String?,
 ) : ValidatedPost(id = id, pubkey = pubkey, topics = topics)
+
 data class ValidatedRootPost(
     override val id: EventIdHex,
     override val pubkey: PubkeyHex,
@@ -31,6 +32,7 @@ data class ValidatedRootPost(
     val relayUrl: RelayUrl,
     val json: String,
 ) : ValidatedMainPost(id = id, pubkey = pubkey, subject = subject, topics = topics)
+
 data class ValidatedReply(
     override val id: EventIdHex,
     override val pubkey: PubkeyHex,
@@ -70,16 +72,47 @@ data class ValidatedContactList(
     val friendPubkeys: Set<PubkeyHex>,
     override val createdAt: Long
 ) : ValidatedList(owner = pubkey, createdAt = createdAt)
+
 data class ValidatedTopicList(
     val myPubkey: PubkeyHex,
     val topics: Set<Topic>,
     override val createdAt: Long
 ) : ValidatedList(owner = myPubkey, createdAt = createdAt)
+
 data class ValidatedBookmarkList(
     val myPubkey: PubkeyHex,
     val postIds: Set<EventIdHex>,
     override val createdAt: Long
 ) : ValidatedList(owner = myPubkey, createdAt = createdAt)
+
+
+sealed class ValidatedSet(
+    open val identifier: String,
+    open val createdAt: Long
+) : ValidatedEvent()
+
+data class ValidatedProfileSet(
+    override val identifier: String,
+    val myPubkey: PubkeyHex,
+    val title: String,
+    val pubkeys: Set<PubkeyHex>,
+    override val createdAt: Long
+) : ValidatedSet(
+    identifier = identifier,
+    createdAt = createdAt
+)
+
+data class ValidatedTopicSet(
+    override val identifier: String,
+    val myPubkey: PubkeyHex,
+    val title: String,
+    val topics: Set<Topic>,
+    override val createdAt: Long
+) : ValidatedSet(
+    identifier = identifier,
+    createdAt = createdAt
+)
+
 
 data class ValidatedNip65(
     val pubkey: PubkeyHex,

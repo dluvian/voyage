@@ -3,9 +3,10 @@ package com.dluvian.voyage.data.event
 import android.util.Log
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
+import com.dluvian.nostr_kt.getHashtags
 import com.dluvian.nostr_kt.getMetadata
 import com.dluvian.nostr_kt.getNip65s
-import com.dluvian.nostr_kt.getReactToId
+import com.dluvian.nostr_kt.getTitle
 import com.dluvian.nostr_kt.isPostOrReply
 import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.core.MAX_KEYS_SQL
@@ -67,10 +68,10 @@ class EventValidator(
             is KindEnum.Repost -> createValidatedRepost(event = event, relayUrl = relayUrl)
             is KindEnum.Reaction -> {
                 if (event.content() == "-") return null
-                val postId = event.getReactToId() ?: return null
+                val postId = event.eventIds().firstOrNull() ?: return null
                 ValidatedVote(
                     id = event.id().toHex(),
-                    postId = postId,
+                    postId = postId.toHex(),
                     pubkey = event.author().toHex(),
                     createdAt = event.createdAt().secs()
                 )
@@ -106,9 +107,39 @@ class EventValidator(
                 )
             }
 
+            is KindEnum.FollowSets -> {
+                if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) return null
+                val identifier = event.identifier() ?: return null
+
+                ValidatedProfileSet(
+                    identifier = identifier,
+                    myPubkey = event.author().toHex(),
+                    title = event.getTitle() ?: identifier,
+                    pubkeys = event.publicKeys()
+                        .distinct()
+                        .takeRandom(MAX_KEYS_SQL)
+                        .map { it.toHex() }
+                        .toSet(),
+                    createdAt = event.createdAt().secs()
+                )
+            }
+
+            is KindEnum.InterestSets -> {
+                if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) return null
+                val identifier = event.identifier() ?: return null
+
+                ValidatedTopicSet(
+                    identifier = identifier,
+                    myPubkey = event.author().toHex(),
+                    title = event.getTitle() ?: identifier,
+                    topics = event.getHashtags().takeRandom(MAX_KEYS_SQL).toSet(),
+                    createdAt = event.createdAt().secs()
+                )
+            }
+
             is KindEnum.Interests -> {
-                if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) null
-                else ValidatedTopicList(
+                if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) return null
+                ValidatedTopicList(
                     myPubkey = event.author().toHex(),
                     topics = event.getNormalizedTopics(limited = false)
                         .distinct()
@@ -119,8 +150,8 @@ class EventValidator(
             }
 
             is KindEnum.Bookmarks -> {
-                if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) null
-                else ValidatedBookmarkList(
+                if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) return null
+                ValidatedBookmarkList(
                     myPubkey = event.author().toHex(),
                     postIds = event.eventIds()
                         .map { it.toHex() }

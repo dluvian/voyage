@@ -41,6 +41,7 @@ class LazyNostrSubscriber(
     suspend fun lazySubMyAccountAndTrustData() {
         Log.d(TAG, "subMyAccountAndTrustData")
         lazySubMyAccount()
+        lazySubMySets()
         delay(DELAY_1SEC)
         semiLazySubFriendsNip65()
         delay(DELAY_1SEC)
@@ -167,6 +168,22 @@ class LazyNostrSubscriber(
             .since(timestamp = Timestamp.fromSecs(secs = profileSince + 1u))
             .limit(1u)
 
+        val filters = listOf(
+            myContactFilter,
+            myTopicsFilter,
+            myNip65Filter,
+            myProfileFilter,
+        )
+
+        relayProvider.getReadRelays().forEach { relay ->
+            subCreator.subscribe(relayUrl = relay, filters = filters)
+        }
+    }
+
+    suspend fun lazySubMySets() {
+        val timestamp = Timestamp.now()
+        val pubkey = pubkeyProvider.getPublicKey()
+
         val bookmarksSince = room.bookmarkDao().getMaxCreatedAt()?.toULong() ?: 1uL
         val myBookmarksFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Bookmarks))
             .author(author = pubkey)
@@ -174,12 +191,24 @@ class LazyNostrSubscriber(
             .since(timestamp = Timestamp.fromSecs(secs = bookmarksSince + 1u))
             .limit(1u)
 
+        val profileSetsSince = TODO() ?: 1uL
+        val myProfileSetsFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.FollowSets))
+            .author(author = pubkey)
+            .until(timestamp = timestamp)
+            .since(timestamp = Timestamp.fromSecs(secs = profileSetsSince + 1u))
+            .limitRestricted(limit = MAX_EVENTS_TO_SUB)
+
+        val topicSetsSince = TODO() ?: 1uL
+        val myTopicSetsFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.InterestSets))
+            .author(author = pubkey)
+            .until(timestamp = timestamp)
+            .since(timestamp = Timestamp.fromSecs(secs = topicSetsSince + 1u))
+            .limitRestricted(limit = MAX_EVENTS_TO_SUB)
+
         val filters = listOf(
-            myContactFilter,
-            myTopicsFilter,
-            myNip65Filter,
-            myProfileFilter,
-            myBookmarksFilter
+            myBookmarksFilter,
+            myProfileSetsFilter,
+            myTopicSetsFilter,
         )
 
         relayProvider.getReadRelays().forEach { relay ->

@@ -27,7 +27,9 @@ import com.dluvian.voyage.data.room.dao.tx.FriendUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.FullProfileUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.Nip65UpsertDao
 import com.dluvian.voyage.data.room.dao.tx.PostInsertDao
+import com.dluvian.voyage.data.room.dao.tx.ProfileSetUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.ProfileUpsertDao
+import com.dluvian.voyage.data.room.dao.tx.TopicSetUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.TopicUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.WebOfTrustUpsertDao
 import com.dluvian.voyage.data.room.entity.AccountEntity
@@ -41,6 +43,10 @@ import com.dluvian.voyage.data.room.entity.ProfileEntity
 import com.dluvian.voyage.data.room.entity.TopicEntity
 import com.dluvian.voyage.data.room.entity.VoteEntity
 import com.dluvian.voyage.data.room.entity.WebOfTrustEntity
+import com.dluvian.voyage.data.room.entity.sets.ProfileSetEntity
+import com.dluvian.voyage.data.room.entity.sets.ProfileSetItemEntity
+import com.dluvian.voyage.data.room.entity.sets.TopicSetEntity
+import com.dluvian.voyage.data.room.entity.sets.TopicSetItemEntity
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.data.room.view.EventRelayAuthorView
 import com.dluvian.voyage.data.room.view.ReplyView
@@ -51,7 +57,7 @@ import com.dluvian.voyage.data.room.view.SimplePostView
 class V10DeleteVoteIsPositiveColumn : AutoMigrationSpec
 
 @Database(
-    version = 10,
+    version = 11,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -63,6 +69,7 @@ class V10DeleteVoteIsPositiveColumn : AutoMigrationSpec
         AutoMigration(from = 7, to = 8),
         AutoMigration(from = 8, to = 9),
         AutoMigration(from = 9, to = 10, spec = V10DeleteVoteIsPositiveColumn::class),
+        AutoMigration(from = 10, to = 11),
     ],
     entities = [
         PostEntity::class,
@@ -75,7 +82,11 @@ class V10DeleteVoteIsPositiveColumn : AutoMigrationSpec
         Nip65Entity::class,
         ProfileEntity::class,
         FullProfileEntity::class,
-        BookmarkEntity::class
+        BookmarkEntity::class,
+        ProfileSetEntity::class,
+        ProfileSetItemEntity::class,
+        TopicSetEntity::class,
+        TopicSetItemEntity::class,
     ],
     views = [
         RootPostView::class,
@@ -116,4 +127,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun nip65UpsertDao(): Nip65UpsertDao
     abstract fun profileUpsertDao(): ProfileUpsertDao
     abstract fun fullProfileUpsertDao(): FullProfileUpsertDao
+    abstract fun profileSetUpsertDao(): ProfileSetUpsertDao
+    abstract fun topicSetUpsertDao(): TopicSetUpsertDao
 }
