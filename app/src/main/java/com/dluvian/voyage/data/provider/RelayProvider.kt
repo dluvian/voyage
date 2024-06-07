@@ -64,7 +64,7 @@ class RelayProvider(
     }
 
     fun getPublishRelays(addConnected: Boolean = true): List<RelayUrl> {
-        val relays = getWriteRelays().toMutableList()
+        val relays = getWriteRelays().toMutableSet()
         if (addConnected) relays.addAll(nostrClient.getAllConnectedUrls())
 
         return relays.toList()
