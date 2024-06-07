@@ -1,9 +1,7 @@
 package com.dluvian.voyage.ui.views.main
 
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.ModalDrawerSheet
@@ -13,7 +11,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -34,7 +31,6 @@ import com.dluvian.voyage.core.navigator.DiscoverNavView
 import com.dluvian.voyage.core.navigator.HomeNavView
 import com.dluvian.voyage.core.navigator.InboxNavView
 import com.dluvian.voyage.core.navigator.MainNavView
-import com.dluvian.voyage.ui.components.FullHorizontalDivider
 import com.dluvian.voyage.ui.components.scaffold.MainScaffold
 import com.dluvian.voyage.ui.theme.AccountIcon
 import com.dluvian.voyage.ui.theme.BookmarksIcon
@@ -83,7 +79,6 @@ fun MainView(
                 DrawerItem(
                     label = stringResource(id = R.string.bookmarks),
                     icon = BookmarksIcon,
-//                    iconSize = sizing.smallIndicator,
                     onClick = {
                         core.onUpdate(ClickBookmarks)
                         core.onUpdate(CloseDrawer(scope = scope))
@@ -97,8 +92,6 @@ fun MainView(
                         core.onUpdate(CloseDrawer(scope = scope))
                     }
                 )
-                FullHorizontalDivider()
-                // TODO: Custom lists
             }
         }
     ) {
@@ -114,17 +107,11 @@ private fun DrawerItem(
     onClick: Fn
 ) {
     NavigationDrawerItem(
+        icon = {
+            Icon(imageVector = icon, contentDescription = null)
+        },
         label = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(imageVector = icon, contentDescription = null)
-                Spacer(modifier = Modifier.width(spacing.large))
-                Text(
-                    text = label,
-                    style = style,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
+            Text(text = label, style = style, maxLines = 1, overflow = TextOverflow.Ellipsis)
         },
         selected = false,
         onClick = onClick
