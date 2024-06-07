@@ -70,7 +70,8 @@ class ProfileViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
         if (profile.value.value.inner.pubkey == pubkeyHex) return
 
         subCreator.unsubAll()
-        profile.value = profileProvider.getProfileFlow(nprofile = profileNavView.nprofile)
+        profile.value = profileProvider
+            .getProfileFlow(nprofile = profileNavView.nprofile, isInit = true)
             .stateIn(
                 viewModelScope,
                 SharingStarted.Eagerly,
@@ -101,7 +102,7 @@ class ProfileViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
     private fun refresh() {
         subCreator.unsubAll()
         val nprofile = createNprofile(hex = profile.value.value.inner.pubkey)
-        profile.value = profileProvider.getProfileFlow(nprofile = nprofile)
+        profile.value = profileProvider.getProfileFlow(nprofile = nprofile, isInit = false)
             .stateIn(
                 viewModelScope,
                 SharingStarted.Eagerly,

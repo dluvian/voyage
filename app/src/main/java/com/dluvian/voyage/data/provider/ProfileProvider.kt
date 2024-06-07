@@ -33,12 +33,14 @@ class ProfileProvider(
     private val annotatedStringProvider: AnnotatedStringProvider,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
-    fun getProfileFlow(nprofile: Nip19Profile): Flow<FullProfileUI> {
+    fun getProfileFlow(nprofile: Nip19Profile, isInit: Boolean): Flow<FullProfileUI> {
+        val hex = nprofile.publicKey().toHex()
         scope.launchIO {
             lazyNostrSubscriber.lazySubNip65(nprofile = nprofile)
-            nostrSubscriber.subProfile(nprofile = nprofile)
+            if (!isInit || metadataInMemory.getMetadata(pubkey = hex) == null) {
+                nostrSubscriber.subProfile(nprofile = nprofile)
+            }
         }
-        val hex = nprofile.publicKey().toHex()
         return combine(
             profileDao.getAdvancedProfileFlow(pubkey = hex),
             forcedFollowFlow,

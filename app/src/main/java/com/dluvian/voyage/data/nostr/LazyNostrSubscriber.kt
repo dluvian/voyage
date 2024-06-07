@@ -49,13 +49,13 @@ class LazyNostrSubscriber(
 
     suspend fun lazySubRepliesAndVotes(parentId: EventIdHex) {
         Log.d(TAG, "lazySubRepliesAndVotes for parent $parentId")
-        val ids = listOf(EventId.fromHex(hex = parentId))
-        val now = Timestamp.now()
         val newestReplyTime = room.replyDao().getNewestReplyCreatedAt(parentId = parentId) ?: 0L
         val newestVoteTime = room.voteDao().getNewestVoteCreatedAt(postId = parentId) ?: 0L
         val votePubkeys = webOfTrustProvider
             .getFriendsAndWebOfTrustPubkeys(includeMyself = true, max = MAX_KEYS)
 
+        val now = Timestamp.now()
+        val ids = listOf(EventId.fromHex(hex = parentId))
         val replyFilter = Filter()
             .kind(kind = Kind.fromEnum(KindEnum.TextNote))
             .events(ids = ids)
