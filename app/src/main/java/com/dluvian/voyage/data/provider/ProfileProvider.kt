@@ -11,6 +11,7 @@ import com.dluvian.voyage.data.model.FullProfileUI
 import com.dluvian.voyage.data.model.RelevantMetadata
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.nostr.NostrSubscriber
+import com.dluvian.voyage.data.room.dao.FullProfileDao
 import com.dluvian.voyage.data.room.dao.ProfileDao
 import com.dluvian.voyage.data.room.entity.ProfileEntity
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
@@ -27,6 +28,7 @@ class ProfileProvider(
     private val pubkeyProvider: IPubkeyProvider,
     private val metadataInMemory: MetadataInMemory,
     private val profileDao: ProfileDao,
+    private val fullProfileDao: FullProfileDao,
     private val friendProvider: FriendProvider,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val nostrSubscriber: NostrSubscriber,
@@ -37,7 +39,15 @@ class ProfileProvider(
         val hex = nprofile.publicKey().toHex()
         scope.launchIO {
             lazyNostrSubscriber.lazySubNip65(nprofile = nprofile)
-            if (!isInit || metadataInMemory.getMetadata(pubkey = hex) == null) {
+            var isNotInMemory = metadataInMemory.getMetadata(pubkey = hex) == null
+            if (isNotInMemory && hex == pubkeyProvider.getPubkeyHex()) {
+                val dbMeta = fullProfileDao.getFullProfile()?.toRelevantMetadata()
+                if (dbMeta != null) {
+                    metadataInMemory.submit(pubkey = hex, metadata = dbMeta)
+                    isNotInMemory = false
+                }
+            }
+            if (!isInit || isNotInMemory) {
                 nostrSubscriber.subProfile(nprofile = nprofile)
             }
         }

@@ -273,6 +273,7 @@ class AppContainer(context: Context) {
         pubkeyProvider = accountManager,
         metadataInMemory = metadataInMemory,
         profileDao = roomDb.profileDao(),
+        fullProfileDao = roomDb.fullProfileDao(),
         friendProvider = friendProvider,
         lazyNostrSubscriber = lazyNostrSubscriber,
         nostrSubscriber = nostrSubscriber,

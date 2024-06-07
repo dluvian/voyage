@@ -7,7 +7,9 @@ import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.getNormalizedName
 import com.dluvian.voyage.data.event.ValidatedProfile
+import com.dluvian.voyage.data.model.RelevantMetadata
 import rust.nostr.protocol.Event
+import rust.nostr.protocol.PublicKey
 
 @Entity(
     tableName = "fullProfile",
@@ -33,6 +35,16 @@ data class FullProfileEntity(
     val website: String,
     val banner: String,
 ) {
+    fun toRelevantMetadata(): RelevantMetadata {
+        return RelevantMetadata(
+            npub = PublicKey.fromHex(this.pubkey).toBech32(),
+            name = this.name,
+            about = this.about,
+            lightning = this.lud16.ifEmpty { this.lud06 },
+            createdAt = this.createdAt
+        )
+    }
+
     companion object {
         fun from(profile: ValidatedProfile): FullProfileEntity {
             return FullProfileEntity(
