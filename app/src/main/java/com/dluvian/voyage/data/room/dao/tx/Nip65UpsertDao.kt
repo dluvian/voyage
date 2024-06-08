@@ -21,7 +21,7 @@ interface Nip65UpsertDao {
         )
 
         val toInsert = validatedNip65s
-            .filter { it.createdAt > newestCreatedAt.getOrDefault(it.pubkey, 0L) }
+            .filter { it.createdAt > newestCreatedAt.getOrDefault(it.pubkey, 1L) }
         if (toInsert.isEmpty()) return
 
         internalUpsert(nip65Entities = toInsert.flatMap { Nip65Entity.from(validatedNip65 = it) })

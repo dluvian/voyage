@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.AutoMigrationSpec
 import com.dluvian.voyage.data.room.dao.AccountDao
 import com.dluvian.voyage.data.room.dao.BookmarkDao
+import com.dluvian.voyage.data.room.dao.ContentSetDao
 import com.dluvian.voyage.data.room.dao.CountDao
 import com.dluvian.voyage.data.room.dao.DeleteDao
 import com.dluvian.voyage.data.room.dao.EventRelayDao
@@ -111,6 +112,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun postDao(): PostDao
     abstract fun inboxDao(): InboxDao
     abstract fun bookmarkDao(): BookmarkDao
+    abstract fun contentSetDao(): ContentSetDao
 
 
     // Util

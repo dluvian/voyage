@@ -18,7 +18,7 @@ private const val TAG = "TopicSetUpsertDao"
 interface TopicSetUpsertDao {
     @Transaction
     suspend fun upsertSet(set: ValidatedTopicSet) {
-        val newestCreatedAt = internalGetNewestCreatedAt(identifier = set.identifier) ?: 0L
+        val newestCreatedAt = internalGetNewestCreatedAt(identifier = set.identifier) ?: 1L
         if (set.createdAt <= newestCreatedAt) return
 
         val setEntity = TopicSetEntity.from(set = set)

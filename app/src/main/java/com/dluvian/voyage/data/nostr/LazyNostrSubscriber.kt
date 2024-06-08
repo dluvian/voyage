@@ -49,8 +49,8 @@ class LazyNostrSubscriber(
 
     suspend fun lazySubRepliesAndVotes(parentId: EventIdHex) {
         Log.d(TAG, "lazySubRepliesAndVotes for parent $parentId")
-        val newestReplyTime = room.replyDao().getNewestReplyCreatedAt(parentId = parentId) ?: 0L
-        val newestVoteTime = room.voteDao().getNewestVoteCreatedAt(postId = parentId) ?: 0L
+        val newestReplyTime = room.replyDao().getNewestReplyCreatedAt(parentId = parentId) ?: 1L
+        val newestVoteTime = room.voteDao().getNewestVoteCreatedAt(postId = parentId) ?: 1L
         val votePubkeys = webOfTrustProvider
             .getFriendsAndWebOfTrustPubkeys(includeMyself = true, max = MAX_KEYS)
 
@@ -180,6 +180,7 @@ class LazyNostrSubscriber(
     }
 
     suspend fun lazySubMyBookmarks() {
+        Log.d(TAG, "lazySubMyBookmarks")
         val timestamp = Timestamp.now()
         val pubkey = pubkeyProvider.getPublicKey()
 
@@ -197,16 +198,18 @@ class LazyNostrSubscriber(
     }
 
     suspend fun lazySubMySets() {
+        Log.d(TAG, "lazySubMySets")
         val timestamp = Timestamp.now()
         val pubkey = pubkeyProvider.getPublicKey()
 
-        val profileSetsSince = TODO() ?: 1uL
+        val profileSetsSince = room.contentSetDao().getProfileSetMaxCreatedAt()?.toULong() ?: 1uL
         val myProfileSetsFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.FollowSets))
             .author(author = pubkey)
             .until(timestamp = timestamp)
             .since(timestamp = Timestamp.fromSecs(secs = profileSetsSince + 1u))
             .limitRestricted(limit = MAX_EVENTS_TO_SUB)
-        val topicSetsSince = TODO() ?: 1uL
+
+        val topicSetsSince = room.contentSetDao().getTopicSetMaxCreatedAt()?.toULong() ?: 1uL
         val myTopicSetsFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.InterestSets))
             .author(author = pubkey)
             .until(timestamp = timestamp)

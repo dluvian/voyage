@@ -18,7 +18,7 @@ interface BookmarkUpsertDao {
     suspend fun upsertBookmarks(validatedBookmarkList: ValidatedBookmarkList) {
         val myPubkey = validatedBookmarkList.myPubkey
 
-        val newestCreatedAt = internalGetNewestCreatedAt(myPubkey = myPubkey) ?: 0L
+        val newestCreatedAt = internalGetNewestCreatedAt(myPubkey = myPubkey) ?: 1L
         if (validatedBookmarkList.createdAt <= newestCreatedAt) return
 
         val list = BookmarkEntity.from(validatedBookmarkList = validatedBookmarkList)

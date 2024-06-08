@@ -83,7 +83,7 @@ class ProfileProvider(
         return ProfileEntity(
             pubkey = hex,
             name = hex.toShortenedBech32(),
-            createdAt = 0L
+            createdAt = 1L
         )
     }
 

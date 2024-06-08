@@ -12,7 +12,7 @@ import com.dluvian.voyage.data.room.entity.FullProfileEntity
 interface FullProfileUpsertDao {
     @Transaction
     suspend fun upsertProfile(profile: FullProfileEntity) {
-        val newestCreatedAt = internalGetNewestCreatedAt() ?: 0L
+        val newestCreatedAt = internalGetNewestCreatedAt() ?: 1L
         if (profile.createdAt <= newestCreatedAt) return
 
         internalUpsertProfile(profile = profile)

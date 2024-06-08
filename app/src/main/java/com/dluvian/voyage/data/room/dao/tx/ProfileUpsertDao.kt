@@ -18,7 +18,7 @@ interface ProfileUpsertDao {
 
         val newestCreatedAt = internalGetNewestCreatedAt(pubkeys = profiles.map { it.pubkey })
         val toInsert = profiles.filter {
-            it.createdAt > newestCreatedAt.getOrDefault(it.pubkey, 0L)
+            it.createdAt > newestCreatedAt.getOrDefault(it.pubkey, 1L)
         }
 
         if (toInsert.isEmpty()) return

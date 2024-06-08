@@ -163,9 +163,10 @@ sealed class EditListViewAction : UIEvent()
 data object EditListViewSave : EditListViewAction()
 
 
-sealed class DrawerAction : UIEvent()
-data class OpenDrawer(val scope: CoroutineScope) : DrawerAction()
-data class CloseDrawer(val scope: CoroutineScope) : DrawerAction()
+sealed class DrawerViewAction : UIEvent()
+data object DrawerViewSubscribeSets : DrawerViewAction()
+data class OpenDrawer(val scope: CoroutineScope) : DrawerViewAction()
+data class CloseDrawer(val scope: CoroutineScope) : DrawerViewAction()
 
 
 sealed class TopicViewAction : UIEvent()

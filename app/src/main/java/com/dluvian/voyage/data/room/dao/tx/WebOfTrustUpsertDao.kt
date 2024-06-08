@@ -26,7 +26,7 @@ interface WebOfTrustUpsertDao {
         )
 
         val toInsert = validatedWoTs.filter { list ->
-            list.createdAt > newestCreatedAt.getOrDefault(list.pubkey, 0L)
+            list.createdAt > newestCreatedAt.getOrDefault(list.pubkey, 1L)
         }
         if (toInsert.isEmpty()) return
 

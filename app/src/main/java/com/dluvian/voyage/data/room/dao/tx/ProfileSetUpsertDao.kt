@@ -18,7 +18,7 @@ private const val TAG = "ProfileSetUpsertDao"
 interface ProfileSetUpsertDao {
     @Transaction
     suspend fun upsertSet(set: ValidatedProfileSet) {
-        val newestCreatedAt = internalGetNewestCreatedAt(identifier = set.identifier) ?: 0L
+        val newestCreatedAt = internalGetNewestCreatedAt(identifier = set.identifier) ?: 1L
         if (set.createdAt <= newestCreatedAt) return
 
         val setEntity = ProfileSetEntity.from(set = set)

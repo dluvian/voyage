@@ -12,6 +12,7 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -29,9 +30,11 @@ import com.dluvian.voyage.core.ClickListEditor
 import com.dluvian.voyage.core.ClickRelayEditor
 import com.dluvian.voyage.core.CloseDrawer
 import com.dluvian.voyage.core.ComposableContent
-import com.dluvian.voyage.core.Core
+import com.dluvian.voyage.core.DrawerViewSubscribeSets
 import com.dluvian.voyage.core.Fn
+import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
+import com.dluvian.voyage.core.viewModel.DrawerViewModel
 import com.dluvian.voyage.ui.theme.AccountIcon
 import com.dluvian.voyage.ui.theme.AddIcon
 import com.dluvian.voyage.ui.theme.BookmarksIcon
@@ -42,15 +45,19 @@ import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun MainDrawer(
-    core: Core,
+    vm: DrawerViewModel,
     scope: CoroutineScope,
+    onUpdate: OnUpdate,
     content: ComposableContent
 ) {
-    val personalProfile by core.vmContainer.drawerVM.personalProfile.collectAsState()
+    val personalProfile by vm.personalProfile.collectAsState()
     ModalNavigationDrawer(
-        drawerState = core.vmContainer.drawerVM.drawerState,
+        drawerState = vm.drawerState,
         drawerContent = {
             ModalDrawerSheet {
+                LaunchedEffect(key1 = vm.drawerState.isOpen) {
+                    if (vm.drawerState.isOpen) onUpdate(DrawerViewSubscribeSets)
+                }
                 Spacer(modifier = Modifier.height(spacing.screenEdge))
                 DrawerItem(
                     label = personalProfile.name,
@@ -60,34 +67,34 @@ fun MainDrawer(
                         fontWeight = FontWeight.SemiBold
                     ),
                     onClick = {
-                        core.onUpdate(
+                        onUpdate(
                             OpenProfile(nprofile = createNprofile(hex = personalProfile.pubkey))
                         )
-                        core.onUpdate(CloseDrawer(scope = scope))
+                        onUpdate(CloseDrawer(scope = scope))
                     }
                 )
                 DrawerItem(
                     label = stringResource(id = R.string.follow_lists),
                     icon = ListIcon,
                     onClick = {
-                        core.onUpdate(ClickFollowLists)
-                        core.onUpdate(CloseDrawer(scope = scope))
+                        onUpdate(ClickFollowLists)
+                        onUpdate(CloseDrawer(scope = scope))
                     }
                 )
                 DrawerItem(
                     label = stringResource(id = R.string.bookmarks),
                     icon = BookmarksIcon,
                     onClick = {
-                        core.onUpdate(ClickBookmarks)
-                        core.onUpdate(CloseDrawer(scope = scope))
+                        onUpdate(ClickBookmarks)
+                        onUpdate(CloseDrawer(scope = scope))
                     }
                 )
                 DrawerItem(
                     label = stringResource(id = R.string.relays),
                     icon = RelayIcon,
                     onClick = {
-                        core.onUpdate(ClickRelayEditor)
-                        core.onUpdate(CloseDrawer(scope = scope))
+                        onUpdate(ClickRelayEditor)
+                        onUpdate(CloseDrawer(scope = scope))
                     }
                 )
                 HorizontalDivider(
@@ -99,8 +106,8 @@ fun MainDrawer(
                     label = stringResource(id = R.string.create_a_list),
                     icon = AddIcon,
                     onClick = {
-                        core.onUpdate(ClickListEditor)
-                        core.onUpdate(CloseDrawer(scope = scope))
+                        onUpdate(ClickListEditor)
+                        onUpdate(CloseDrawer(scope = scope))
                     }
                 )
             }

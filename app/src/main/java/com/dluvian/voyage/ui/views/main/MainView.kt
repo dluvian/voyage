@@ -18,7 +18,7 @@ fun MainView(
     scope: CoroutineScope,
     currentView: MainNavView,
 ) {
-    MainDrawer(core = core, scope = scope) {
+    MainDrawer(vm = core.vmContainer.drawerVM, scope = scope, onUpdate = core.onUpdate) {
         MainScaffold(
             currentView = currentView,
             snackbar = core.appContainer.snackbar,
