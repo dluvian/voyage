@@ -34,7 +34,7 @@ class BookmarksViewModel(
 
     private fun refresh() {
         viewModelScope.launchIO {
-            lazyNostrSubscriber.lazySubMySets()
+            lazyNostrSubscriber.lazySubMyBookmarks()
         }
         paginator.refresh()
     }

@@ -7,6 +7,7 @@ import com.dluvian.voyage.core.navigator.CreatePostNavView
 import com.dluvian.voyage.core.navigator.CrossPostCreationNavView
 import com.dluvian.voyage.core.navigator.EditProfileNavView
 import com.dluvian.voyage.core.navigator.FollowListsNavView
+import com.dluvian.voyage.core.navigator.ListEditorNavView
 import com.dluvian.voyage.core.navigator.NonMainNavView
 import com.dluvian.voyage.core.navigator.ProfileNavView
 import com.dluvian.voyage.core.navigator.RelayEditorNavView
@@ -103,6 +104,11 @@ fun NonMainView(
 
         BookmarksNavView -> BookmarksView(
             vm = core.vmContainer.bookmarksVM,
+            snackbar = core.appContainer.snackbar,
+            onUpdate = core.onUpdate
+        )
+
+        ListEditorNavView -> EditListView(
             snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate
         )

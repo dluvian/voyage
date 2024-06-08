@@ -107,6 +107,8 @@ class Core(
                         appContainer.snackbar.showToast(scope = uiEvent.scope, msg = uiEvent.err)
                     }
             }
+
+            is EditListViewAction -> TODO()
         }
     }
 
