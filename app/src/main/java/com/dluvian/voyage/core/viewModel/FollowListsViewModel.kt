@@ -13,10 +13,10 @@ import com.dluvian.voyage.core.FollowListsViewAction
 import com.dluvian.voyage.core.FollowListsViewInit
 import com.dluvian.voyage.core.FollowListsViewRefresh
 import com.dluvian.voyage.core.model.TopicFollowState
-import com.dluvian.voyage.data.model.FullProfileUI
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.provider.TopicProvider
+import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -34,7 +34,7 @@ class FollowListsViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
 ) : ViewModel() {
     val tabIndex = mutableIntStateOf(0)
     val isRefreshing = mutableStateOf(false)
-    val contacts: MutableState<StateFlow<List<FullProfileUI>>> =
+    val contacts: MutableState<StateFlow<List<AdvancedProfileView>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
     val topics: MutableState<StateFlow<List<TopicFollowState>>> =
         mutableStateOf(MutableStateFlow(emptyList()))

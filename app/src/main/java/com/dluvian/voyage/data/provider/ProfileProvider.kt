@@ -106,21 +106,14 @@ class ProfileProvider(
         return getProfilesFlow(pubkeys = unfollowedPubkeys)
     }
 
-    suspend fun getMyFriendsFlow(): Flow<List<FullProfileUI>> {
+    suspend fun getMyFriendsFlow(): Flow<List<AdvancedProfileView>> {
         // We want to be able to unfollow on the same list
         val friends = profileDao.getAdvancedProfilesOfFriends()
         val friendsWithoutProfile = profileDao.getUnknownFriends()
 
         return forcedFollowFlow.map { forcedFollows ->
-            friends.map { friend ->
-                createFullProfile(
-                    pubkey = friend.pubkey,
-                    dbProfile = friend,
-                    forcedFollowState = forcedFollows[friend.pubkey],
-                    metadata = null
-                )
-            } + friendsWithoutProfile.map { pubkey ->
-                createFullProfile(
+            friends + friendsWithoutProfile.map { pubkey ->
+                createAdvancedProfile(
                     pubkey = pubkey,
                     dbProfile = null,
                     forcedFollowState = forcedFollows[pubkey],
@@ -148,23 +141,37 @@ class ProfileProvider(
         }
     }
 
-    private fun createFullProfile(
+    private fun createAdvancedProfile(
         pubkey: PubkeyHex,
         dbProfile: AdvancedProfileView?,
         forcedFollowState: Boolean?,
         metadata: RelevantMetadata?
-    ): FullProfileUI {
+    ): AdvancedProfileView {
         val name = normalizeName(metadata?.name.orEmpty().ifEmpty { dbProfile?.name.orEmpty() })
             .ifEmpty { pubkey.toShortenedBech32() }
-        val advancedProfile = AdvancedProfileView(
+        return AdvancedProfileView(
             pubkey = pubkey,
             name = name,
             isMe = dbProfile?.isMe ?: (pubkeyProvider.getPubkeyHex() == pubkey),
             isFriend = forcedFollowState ?: dbProfile?.isFriend ?: friendProvider.isFriend(pubkey),
             isWebOfTrust = dbProfile?.isWebOfTrust ?: false
         )
+    }
+
+    private fun createFullProfile(
+        pubkey: PubkeyHex,
+        dbProfile: AdvancedProfileView?,
+        forcedFollowState: Boolean?,
+        metadata: RelevantMetadata?
+    ): FullProfileUI {
+        val inner = createAdvancedProfile(
+            pubkey = pubkey,
+            dbProfile = dbProfile,
+            forcedFollowState = forcedFollowState,
+            metadata = metadata
+        )
         return FullProfileUI(
-            inner = advancedProfile,
+            inner = inner,
             npub = pubkey.toBech32(),
             about = metadata?.about?.let { annotatedStringProvider.annotate(it) },
             lightning = metadata?.lightning,

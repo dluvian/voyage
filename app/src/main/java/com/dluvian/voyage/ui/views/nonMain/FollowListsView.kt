@@ -2,7 +2,6 @@ package com.dluvian.voyage.ui.views.nonMain
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -38,7 +37,6 @@ import com.dluvian.voyage.ui.components.row.ClickableRow
 import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.ui.model.Followable
 import com.dluvian.voyage.ui.theme.HashtagIcon
-import com.dluvian.voyage.ui.theme.spacing
 import kotlinx.coroutines.launch
 
 @Composable
@@ -49,20 +47,20 @@ fun FollowListsView(vm: FollowListsViewModel, snackbar: SnackbarHostState, onUpd
     val contacts = remember(contactsRaw) {
         contactsRaw.map {
             Followable(
-                label = it.inner.name,
-                isFollowed = it.inner.isFriend,
+                label = it.name,
+                isFollowed = it.isFriend,
                 icon = {
                     TrustIcon(
                         trustType = TrustType.from(
-                            isOneself = it.inner.isMe,
-                            isFriend = it.inner.isFriend,
-                            isWebOfTrust = it.inner.isWebOfTrust
+                            isOneself = it.isMe,
+                            isFriend = it.isFriend,
+                            isWebOfTrust = it.isWebOfTrust
                         )
                     )
                 },
-                onFollow = { onUpdate(FollowProfile(pubkey = it.inner.pubkey)) },
-                onUnfollow = { onUpdate(UnfollowProfile(pubkey = it.inner.pubkey)) },
-                onOpen = { onUpdate(OpenProfile(nprofile = it.inner.toNip19())) }
+                onFollow = { onUpdate(FollowProfile(pubkey = it.pubkey)) },
+                onUnfollow = { onUpdate(UnfollowProfile(pubkey = it.pubkey)) },
+                onOpen = { onUpdate(OpenProfile(nprofile = it.toNip19())) }
             )
         }
     }
@@ -72,11 +70,7 @@ fun FollowListsView(vm: FollowListsViewModel, snackbar: SnackbarHostState, onUpd
                 label = it.topic,
                 isFollowed = it.isFollowed,
                 icon = {
-                    Icon(
-                        modifier = Modifier.padding(start = spacing.large),
-                        imageVector = HashtagIcon,
-                        contentDescription = it.topic
-                    )
+                    Icon(imageVector = HashtagIcon, contentDescription = null)
                 },
                 onFollow = { onUpdate(FollowTopic(topic = it.topic)) },
                 onUnfollow = { onUpdate(UnfollowTopic(topic = it.topic)) },
