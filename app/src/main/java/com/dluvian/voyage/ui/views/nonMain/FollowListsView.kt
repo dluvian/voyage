@@ -42,10 +42,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun FollowListsView(vm: FollowListsViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
     val isRefreshing by vm.isRefreshing
-    val contactsRaw by vm.contacts.value.collectAsState()
+    val profilesRaw by vm.profiles.value.collectAsState()
     val topicsRaw by vm.topics.value.collectAsState()
-    val contacts = remember(contactsRaw) {
-        contactsRaw.map {
+    val contacts = remember(profilesRaw) {
+        profilesRaw.map {
             Followable(
                 label = it.name,
                 isFollowed = it.isFriend,
@@ -79,7 +79,7 @@ fun FollowListsView(vm: FollowListsViewModel, snackbar: SnackbarHostState, onUpd
         }
     }
     val headers = listOf(
-        stringResource(id = R.string.contacts) + " (${contactsRaw.size})",
+        stringResource(id = R.string.profiles) + " (${profilesRaw.size})",
         stringResource(id = R.string.topics) + " (${topicsRaw.size})"
     )
 

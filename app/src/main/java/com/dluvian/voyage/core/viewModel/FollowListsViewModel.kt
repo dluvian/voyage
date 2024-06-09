@@ -34,7 +34,7 @@ class FollowListsViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
 ) : ViewModel() {
     val tabIndex = mutableIntStateOf(0)
     val isRefreshing = mutableStateOf(false)
-    val contacts: MutableState<StateFlow<List<AdvancedProfileView>>> =
+    val profiles: MutableState<StateFlow<List<AdvancedProfileView>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
     val topics: MutableState<StateFlow<List<TopicFollowState>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
@@ -62,8 +62,8 @@ class FollowListsViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
                 lazyNostrSubscriber.lazySubMyAccount()
                 delay(DEBOUNCE)
             }
-            contacts.value = profileProvider.getMyFriendsFlow()
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), contacts.value.value)
+            profiles.value = profileProvider.getMyFriendsFlow()
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), profiles.value.value)
             topics.value = topicProvider.getMyTopicsFlow()
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), topics.value.value)
             delay(DEBOUNCE)

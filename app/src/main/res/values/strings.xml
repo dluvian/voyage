@@ -173,8 +173,7 @@
     <string name="event_json_is_not_available">Event json is not available</string>
     <string name="rebroadcasted_to_n_relays">Rebroadcasted to %d relays</string>
     <string name="failed_to_rebroadcast">Failed to rebroadcast</string>
-    <string name="follow_lists">Follow lists</string>
-    <string name="contacts">Contacts</string>
+    <string name="follow_lists">Follow Lists</string>
     <string name="your_contact_list_is_empty">Your contact list is empty</string>
     <string name="your_topic_list_is_empty">Your topic list is empty</string>
     <string name="open_menu">Open menu</string>
@@ -184,4 +183,5 @@
     <string name="open_lightning_address_in_wallet">Open lightning address in wallet</string>
     <string name="you_dont_have_a_lightning_wallet_installed">You don\'t have a lightning wallet installed</string>
     <string name="create_a_list">Create a list</string>
+    <string name="title">Title</string>
 </resources>
