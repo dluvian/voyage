@@ -8,7 +8,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.ui.components.button.GoBackIconButton
 import com.dluvian.voyage.ui.components.button.MenuIconButton
-import com.dluvian.voyage.ui.components.iconButton.SearchIconButton
+import com.dluvian.voyage.ui.components.button.SearchIconButton
 import com.dluvian.voyage.ui.components.indicator.TopBarCircleProgressIndicator
 
 @OptIn(ExperimentalMaterial3Api::class)

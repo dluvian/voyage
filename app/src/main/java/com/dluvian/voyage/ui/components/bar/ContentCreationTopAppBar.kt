@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.ui.components.iconButton.SendIconButton
+import com.dluvian.voyage.ui.components.button.SendIconButton
 import com.dluvian.voyage.ui.components.indicator.TopBarCircleProgressIndicator
 
 @OptIn(ExperimentalFoundationApi::class)

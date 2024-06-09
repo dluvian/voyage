@@ -25,8 +25,8 @@ import androidx.compose.ui.unit.sp
 import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ClickBookmarks
+import com.dluvian.voyage.core.ClickCreateList
 import com.dluvian.voyage.core.ClickFollowLists
-import com.dluvian.voyage.core.ClickListEditor
 import com.dluvian.voyage.core.ClickRelayEditor
 import com.dluvian.voyage.core.CloseDrawer
 import com.dluvian.voyage.core.ComposableContent
@@ -106,7 +106,7 @@ fun MainDrawer(
                     label = stringResource(id = R.string.create_a_list),
                     icon = AddIcon,
                     onClick = {
-                        onUpdate(ClickListEditor)
+                        onUpdate(ClickCreateList)
                         onUpdate(CloseDrawer(scope = scope))
                     }
                 )

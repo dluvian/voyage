@@ -40,7 +40,6 @@ data object EditProfileNavView : SimpleNonMainNavView()
 data object RelayEditorNavView : SimpleNonMainNavView()
 data object FollowListsNavView : SimpleNonMainNavView()
 data object BookmarksNavView : SimpleNonMainNavView()
-data object ListEditorNavView : SimpleNonMainNavView()
 
 
 sealed class AdvancedNonMainNavView : NonMainNavView()
@@ -52,3 +51,4 @@ data class TopicNavView(val topic: Topic) : AdvancedNonMainNavView()
 data class ReplyCreationNavView(val parent: ParentUI) : AdvancedNonMainNavView()
 data class CrossPostCreationNavView(val id: EventIdHex) : AdvancedNonMainNavView()
 data class RelayProfileNavView(val relayUrl: RelayUrl) : AdvancedNonMainNavView()
+data object EditNewListNavView : AdvancedNonMainNavView()

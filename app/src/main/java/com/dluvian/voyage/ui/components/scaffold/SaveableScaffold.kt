@@ -7,7 +7,7 @@ import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.ui.components.bar.GoBackTopAppBar
-import com.dluvian.voyage.ui.components.iconButton.SaveIconButton
+import com.dluvian.voyage.ui.components.button.SaveIconButton
 import com.dluvian.voyage.ui.components.indicator.TopBarCircleProgressIndicator
 
 @Composable

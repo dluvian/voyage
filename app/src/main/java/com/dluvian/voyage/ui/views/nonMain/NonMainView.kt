@@ -5,9 +5,9 @@ import com.dluvian.voyage.core.Core
 import com.dluvian.voyage.core.navigator.BookmarksNavView
 import com.dluvian.voyage.core.navigator.CreatePostNavView
 import com.dluvian.voyage.core.navigator.CrossPostCreationNavView
+import com.dluvian.voyage.core.navigator.EditNewListNavView
 import com.dluvian.voyage.core.navigator.EditProfileNavView
 import com.dluvian.voyage.core.navigator.FollowListsNavView
-import com.dluvian.voyage.core.navigator.ListEditorNavView
 import com.dluvian.voyage.core.navigator.NonMainNavView
 import com.dluvian.voyage.core.navigator.ProfileNavView
 import com.dluvian.voyage.core.navigator.RelayEditorNavView
@@ -18,6 +18,7 @@ import com.dluvian.voyage.core.navigator.SettingsNavView
 import com.dluvian.voyage.core.navigator.ThreadNavView
 import com.dluvian.voyage.core.navigator.ThreadRawNavView
 import com.dluvian.voyage.core.navigator.TopicNavView
+import com.dluvian.voyage.ui.views.nonMain.editList.EditListView
 import com.dluvian.voyage.ui.views.nonMain.profile.ProfileView
 import com.dluvian.voyage.ui.views.nonMain.search.SearchView
 import com.dluvian.voyage.ui.views.nonMain.topic.TopicView
@@ -108,7 +109,8 @@ fun NonMainView(
             onUpdate = core.onUpdate
         )
 
-        ListEditorNavView -> EditListView(
+        EditNewListNavView -> EditListView(
+            vm = core.vmContainer.editListVM,
             snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate
         )

@@ -6,6 +6,7 @@ import com.dluvian.voyage.core.viewModel.CreatePostViewModel
 import com.dluvian.voyage.core.viewModel.CreateReplyViewModel
 import com.dluvian.voyage.core.viewModel.DiscoverViewModel
 import com.dluvian.voyage.core.viewModel.DrawerViewModel
+import com.dluvian.voyage.core.viewModel.EditListViewModel
 import com.dluvian.voyage.core.viewModel.EditProfileViewModel
 import com.dluvian.voyage.core.viewModel.FollowListsViewModel
 import com.dluvian.voyage.core.viewModel.HomeViewModel
@@ -36,4 +37,5 @@ data class VMContainer(
     val drawerVM: DrawerViewModel,
     val followListsVM: FollowListsViewModel,
     val bookmarksVM: BookmarksViewModel,
+    val editListVM: EditListViewModel,
 )

@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.filled.CellTower
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
@@ -65,6 +66,7 @@ val ExpandIcon = Icons.Default.ExpandMore
 val CollapseIcon = Icons.Default.ExpandLess
 val HorizMoreIcon = Icons.Default.MoreHoriz
 val DeleteIcon = Icons.Default.Delete
+val RemoveIcon = Icons.Default.Close
 val CrossPostIcon = Icons.Default.Repeat
 val KeyIcon = Icons.Default.Key
 val LightningIcon = Icons.Default.OfflineBolt

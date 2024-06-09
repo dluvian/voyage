@@ -58,6 +58,7 @@ class Navigator(private val vmContainer: VMContainer, private val closeApp: Fn) 
                     is ReplyCreationNavView -> vmContainer.createReplyVM.openParent(newParent = navView.parent)
                     is CrossPostCreationNavView -> vmContainer.createCrossPostVM.prepareCrossPost(id = navView.id)
                     is RelayProfileNavView -> vmContainer.relayProfileVM.openProfile(relayUrl = navView.relayUrl)
+                    EditNewListNavView -> vmContainer.editListVM.createNew()
                 }
             }
 

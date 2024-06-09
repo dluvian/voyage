@@ -11,11 +11,11 @@ import com.dluvian.voyage.core.navigator.BookmarksNavView
 import com.dluvian.voyage.core.navigator.CreatePostNavView
 import com.dluvian.voyage.core.navigator.CrossPostCreationNavView
 import com.dluvian.voyage.core.navigator.DiscoverNavView
+import com.dluvian.voyage.core.navigator.EditNewListNavView
 import com.dluvian.voyage.core.navigator.EditProfileNavView
 import com.dluvian.voyage.core.navigator.FollowListsNavView
 import com.dluvian.voyage.core.navigator.HomeNavView
 import com.dluvian.voyage.core.navigator.InboxNavView
-import com.dluvian.voyage.core.navigator.ListEditorNavView
 import com.dluvian.voyage.core.navigator.NavView
 import com.dluvian.voyage.core.navigator.ProfileNavView
 import com.dluvian.voyage.core.navigator.RelayEditorNavView
@@ -54,7 +54,7 @@ sealed class PushNavEvent : NavEvent() {
             ClickRelayEditor -> RelayEditorNavView
             ClickFollowLists -> FollowListsNavView
             ClickBookmarks -> BookmarksNavView
-            ClickListEditor -> ListEditorNavView
+            ClickCreateList -> EditNewListNavView
             is OpenThread -> ThreadNavView(rootPost = this.rootPost)
             is OpenProfile -> ProfileNavView(nprofile = this.nprofile)
             is OpenTopic -> TopicNavView(topic = this.topic)
@@ -76,7 +76,7 @@ data object ClickEditProfile : PushNavEvent()
 data object ClickRelayEditor : PushNavEvent()
 data object ClickFollowLists : PushNavEvent()
 data object ClickBookmarks : PushNavEvent()
-data object ClickListEditor : PushNavEvent()
+data object ClickCreateList : PushNavEvent()
 
 
 sealed class AdvancedPushNavEvent : PushNavEvent()
