@@ -6,17 +6,22 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.window.Dialog
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.Fn
@@ -89,14 +94,10 @@ private fun ScreenContent(
     val showProfileDialog = remember { mutableStateOf(false) }
     val showTopicDialog = remember { mutableStateOf(false) }
     if (showProfileDialog.value) {
-        Dialog(onDismissRequest = { showProfileDialog.value = false }) {
-            Text("lol")
-        }
+        AddProfileDialog(onDismiss = { showProfileDialog.value = false }, onConfirm = {})
     }
     if (showTopicDialog.value) {
-        Dialog(onDismissRequest = { showTopicDialog.value = false }) {
-            Text("lmao")
-        }
+        AddTopicDialog(onDismiss = { showProfileDialog.value = false }, onConfirm = {})
     }
     SimpleTabPager(
         headers = headers,
@@ -160,5 +161,51 @@ private fun AddRow(header: String, onClick: Fn) {
             Icon(imageVector = AddIcon, contentDescription = null)
         },
         onClick = onClick
+    )
+}
+
+@Composable
+private fun AddProfileDialog(onDismiss: Fn, onConfirm: Fn) {
+    AddDialog(
+        header = stringResource(id = R.string.add_profile),
+        onDismiss = onDismiss,
+        onConfirm = onConfirm
+    )
+}
+
+@Composable
+private fun AddTopicDialog(onDismiss: Fn, onConfirm: Fn) {
+    AddDialog(
+        header = stringResource(id = R.string.add_topic),
+        onDismiss = onDismiss,
+        onConfirm = onConfirm
+    )
+}
+
+@Composable
+private fun AddDialog(header: String, onDismiss: Fn, onConfirm: Fn) {
+    val focusRequester = remember { FocusRequester() }
+    LaunchedEffect(key1 = Unit) {
+        focusRequester.requestFocus()
+    }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = header) },
+        text = {
+            TextField(
+                modifier = Modifier.focusRequester(focusRequester = focusRequester),
+                value = "lmao",
+                onValueChange = {})
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(text = stringResource(id = R.string.add))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = stringResource(id = R.string.cancel))
+            }
+        }
     )
 }

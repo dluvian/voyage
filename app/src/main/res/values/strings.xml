@@ -186,4 +186,6 @@
     <string name="title">Title</string>
     <string name="add_profile">Add profile</string>
     <string name="add_topic">Add topic</string>
+    <string name="add">Add</string>
+    <string name="cancel">Cancel</string>
 </resources>
