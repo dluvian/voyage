@@ -42,6 +42,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 import com.dluvian.voyage.data.provider.DatabaseStatProvider
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.FriendProvider
+import com.dluvian.voyage.data.provider.ItemSetProvider
 import com.dluvian.voyage.data.provider.NameProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.provider.ProfileSuggestionProvider
@@ -312,4 +313,6 @@ class AppContainer(context: Context) {
         relayProvider = relayProvider,
         snackbar = snackbar,
     )
+
+    val itemSetProvider = ItemSetProvider(itemSetDao = roomDb.itemSetDao())
 }

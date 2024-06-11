@@ -33,6 +33,7 @@ import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.DrawerViewSubscribeSets
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.core.OpenList
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.viewModel.DrawerViewModel
 import com.dluvian.voyage.ui.theme.AccountIcon
@@ -40,6 +41,7 @@ import com.dluvian.voyage.ui.theme.AddIcon
 import com.dluvian.voyage.ui.theme.BookmarksIcon
 import com.dluvian.voyage.ui.theme.ListIcon
 import com.dluvian.voyage.ui.theme.RelayIcon
+import com.dluvian.voyage.ui.theme.ViewListIcon
 import com.dluvian.voyage.ui.theme.spacing
 import kotlinx.coroutines.CoroutineScope
 
@@ -51,6 +53,7 @@ fun MainDrawer(
     content: ComposableContent
 ) {
     val personalProfile by vm.personalProfile.collectAsState()
+    val itemSets by vm.itemSetMetas.collectAsState()
     ModalNavigationDrawer(
         drawerState = vm.drawerState,
         drawerContent = {
@@ -102,6 +105,16 @@ fun MainDrawer(
                         .fillMaxWidth()
                         .padding(vertical = spacing.medium)
                 )
+                for (itemSet in itemSets) {
+                    DrawerItem(
+                        label = itemSet.title,
+                        icon = ViewListIcon,
+                        onClick = {
+                            onUpdate(OpenList(identifier = itemSet.identifier))
+                            onUpdate(CloseDrawer(scope = scope))
+                        }
+                    )
+                }
                 DrawerItem(
                     label = stringResource(id = R.string.create_a_list),
                     icon = AddIcon,

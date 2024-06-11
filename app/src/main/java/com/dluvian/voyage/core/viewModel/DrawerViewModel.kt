@@ -10,6 +10,7 @@ import com.dluvian.voyage.core.DrawerViewSubscribeSets
 import com.dluvian.voyage.core.OpenDrawer
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
+import com.dluvian.voyage.data.provider.ItemSetProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -19,12 +20,15 @@ import kotlinx.coroutines.launch
 
 class DrawerViewModel(
     profileProvider: ProfileProvider,
+    itemSetProvider: ItemSetProvider,
     val drawerState: DrawerState,
-    private val lazyNostrSubscriber: LazyNostrSubscriber
+    private val lazyNostrSubscriber: LazyNostrSubscriber,
 ) :
     ViewModel() {
     val personalProfile = profileProvider.getPersonalProfileFlow()
         .stateIn(viewModelScope, SharingStarted.Eagerly, profileProvider.getDefaultProfile())
+    val itemSetMetas = itemSetProvider.getMySetsFlow()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     fun handle(action: DrawerViewAction) {
         when (action) {

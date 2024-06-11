@@ -217,6 +217,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         drawerVM = viewModel {
             DrawerViewModel(
                 profileProvider = appContainer.profileProvider,
+                itemSetProvider = appContainer.itemSetProvider,
                 drawerState = drawerState,
                 lazyNostrSubscriber = appContainer.lazyNostrSubscriber
             )

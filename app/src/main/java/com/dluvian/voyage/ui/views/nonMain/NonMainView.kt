@@ -9,6 +9,7 @@ import com.dluvian.voyage.core.navigator.EditNewListNavView
 import com.dluvian.voyage.core.navigator.EditProfileNavView
 import com.dluvian.voyage.core.navigator.FollowListsNavView
 import com.dluvian.voyage.core.navigator.NonMainNavView
+import com.dluvian.voyage.core.navigator.OpenListNavView
 import com.dluvian.voyage.core.navigator.ProfileNavView
 import com.dluvian.voyage.core.navigator.RelayEditorNavView
 import com.dluvian.voyage.core.navigator.RelayProfileNavView
@@ -114,5 +115,11 @@ fun NonMainView(
             snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate
         )
+
+        is OpenListNavView -> TODO() // ListNavView(
+//            vm = core.vmContainer.listVM,
+//            snackbar = core.appContainer.snackbar,
+//            onUpdate = core.onUpdate
+//        )
     }
 }
