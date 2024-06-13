@@ -14,6 +14,7 @@ data class Sizing(
     val baseHint: Dp = 48.dp,
     val bigDivider: Dp = 8.dp,
     val topicChipMinSize: Dp = 128.dp,
+    val dialogLazyListHeight: Dp = 210.dp,
 )
 
 val LocalSizing = compositionLocalOf { Sizing() }

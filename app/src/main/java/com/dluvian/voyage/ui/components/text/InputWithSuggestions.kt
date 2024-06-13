@@ -14,10 +14,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
-import com.dluvian.voyage.core.ClickSuggestion
+import com.dluvian.voyage.core.ClickProfileSuggestion
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.SearchSuggestion
+import com.dluvian.voyage.core.SearchProfileSuggestion
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.ui.components.row.ClickableProfileRow
 import rust.nostr.protocol.PublicKey
@@ -39,7 +39,7 @@ fun InputWithSuggestions(
             return@remember false
         }
         showSuggestions.value = stringUntilCursor.contains("@")
-        if (showSuggestions.value) onUpdate(SearchSuggestion(name = mentionedName))
+        if (showSuggestions.value) onUpdate(SearchProfileSuggestion(name = mentionedName))
         true
     }
 
@@ -53,7 +53,7 @@ fun InputWithSuggestions(
                 suggestions = searchSuggestions,
                 onReplaceSuggestion = { profile ->
                     body.value = body.value.replaceWithSuggestion(pubkey = profile.pubkey)
-                    onUpdate(ClickSuggestion)
+                    onUpdate(ClickProfileSuggestion)
                 }
             )
         }

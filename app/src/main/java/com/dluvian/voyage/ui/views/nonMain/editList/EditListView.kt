@@ -23,6 +23,7 @@ import com.dluvian.voyage.core.EditListViewAddProfile
 import com.dluvian.voyage.core.EditListViewAddTopic
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.core.viewModel.EditListViewModel
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
@@ -41,11 +42,11 @@ import kotlinx.coroutines.launch
 
 private typealias ItemProps = Triple<ComposableContent, String, Fn>
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun EditListView(
     vm: EditListViewModel,
     profileSuggestions: State<List<AdvancedProfileView>>,
+    topicSuggestions: State<List<Topic>>,
     snackbar: SnackbarHostState,
     onUpdate: OnUpdate
 ) {
@@ -100,6 +101,7 @@ fun EditListView(
             profiles = profiles,
             profileSuggestions = profileSuggestions.value,
             topics = topics,
+            topicSuggestions = topicSuggestions.value,
             vm = vm,
             onUpdate = onUpdate
         )
@@ -113,6 +115,7 @@ private fun ScreenContent(
     profiles: List<ItemProps>,
     profileSuggestions: List<AdvancedProfileView>,
     topics: List<ItemProps>,
+    topicSuggestions: List<Topic>,
     vm: EditListViewModel,
     onUpdate: OnUpdate
 ) {
@@ -134,7 +137,7 @@ private fun ScreenContent(
     }
     if (showTopicDialog.value) {
         AddTopicDialog(
-            topicSuggestions = emptyList(), // TODO: Real suggestions
+            topicSuggestions = topicSuggestions,
             onAdd = {
                 onUpdate(EditListViewAddTopic(topic = it))
                 showTopicDialog.value = false

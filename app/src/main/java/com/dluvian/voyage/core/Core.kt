@@ -80,7 +80,7 @@ class Core(
 
             is ClickText -> clickText(action = uiEvent)
 
-            is ProfileSuggestionAction -> appContainer.profileSuggestionProvider.handle(action = uiEvent)
+            is SuggestionAction -> appContainer.suggestionProvider.handle(action = uiEvent)
 
             is RegisterAccountLauncher -> appContainer.externalSignerHandler.setAccountLauncher(
                 launcher = uiEvent.launcher

@@ -231,9 +231,10 @@ data class SendCrossPost(
 data object UpdateCrossPostTopics : CreateCrossPostViewAction()
 
 
-sealed class ProfileSuggestionAction : UIEvent()
-data class SearchSuggestion(val name: String) : ProfileSuggestionAction()
-data object ClickSuggestion : ProfileSuggestionAction()
+sealed class SuggestionAction : UIEvent()
+data class SearchProfileSuggestion(val name: String) : SuggestionAction()
+data object ClickProfileSuggestion : SuggestionAction()
+data class SearchTopicSuggestion(val topic: Topic) : SuggestionAction()
 
 
 sealed class EditProfileViewAction : UIEvent()

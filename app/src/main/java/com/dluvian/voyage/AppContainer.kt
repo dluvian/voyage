@@ -45,10 +45,10 @@ import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.ItemSetProvider
 import com.dluvian.voyage.data.provider.NameProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
-import com.dluvian.voyage.data.provider.ProfileSuggestionProvider
 import com.dluvian.voyage.data.provider.RelayProfileProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.SearchProvider
+import com.dluvian.voyage.data.provider.SuggestionProvider
 import com.dluvian.voyage.data.provider.ThreadProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
@@ -287,7 +287,7 @@ class AppContainer(context: Context) {
         postDao = roomDb.postDao()
     )
 
-    val profileSuggestionProvider = ProfileSuggestionProvider(
+    val suggestionProvider = SuggestionProvider(
         searchProvider = searchProvider
     )
 

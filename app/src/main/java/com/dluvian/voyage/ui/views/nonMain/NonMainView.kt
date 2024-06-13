@@ -33,7 +33,7 @@ fun NonMainView(
         CreatePostNavView -> CreatePostView(
             vm = core.vmContainer.createPostVM,
             snackbar = core.appContainer.snackbar,
-            searchSuggestions = core.appContainer.profileSuggestionProvider.suggestions,
+            searchSuggestions = core.appContainer.suggestionProvider.profileSuggestions,
             onUpdate = core.onUpdate
         )
 
@@ -70,7 +70,7 @@ fun NonMainView(
         is ReplyCreationNavView -> CreateReplyView(
             vm = core.vmContainer.createReplyVM,
             snackbar = core.appContainer.snackbar,
-            searchSuggestions = core.appContainer.profileSuggestionProvider.suggestions,
+            searchSuggestions = core.appContainer.suggestionProvider.profileSuggestions,
             onUpdate = core.onUpdate
         )
 
@@ -112,7 +112,8 @@ fun NonMainView(
 
         EditNewListNavView -> EditListView(
             vm = core.vmContainer.editListVM,
-            profileSuggestions = core.appContainer.profileSuggestionProvider.suggestions,
+            profileSuggestions = core.appContainer.suggestionProvider.profileSuggestions,
+            topicSuggestions = core.appContainer.suggestionProvider.topicSuggestions,
             snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate
         )
