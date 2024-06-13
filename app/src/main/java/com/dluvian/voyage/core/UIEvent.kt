@@ -166,6 +166,7 @@ data object BookmarksViewAppend : BookmarksViewAction()
 sealed class EditListViewAction : UIEvent()
 data object EditListViewSave : EditListViewAction()
 data class EditListViewAddProfile(val profile: AdvancedProfileView) : EditListViewAction()
+data class EditListViewAddTopic(val topic: Topic) : EditListViewAction()
 
 
 sealed class DrawerViewAction : UIEvent()

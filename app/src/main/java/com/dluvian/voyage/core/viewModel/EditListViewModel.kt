@@ -7,8 +7,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.dluvian.voyage.core.EditListViewAction
 import com.dluvian.voyage.core.EditListViewAddProfile
+import com.dluvian.voyage.core.EditListViewAddTopic
 import com.dluvian.voyage.core.EditListViewSave
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.core.isBareTopicStr
+import com.dluvian.voyage.core.normalizeTopic
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import java.util.UUID
 
@@ -33,9 +36,15 @@ class EditListViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
         when (action) {
             is EditListViewSave -> {}
             is EditListViewAddProfile -> {
-                if (profiles.value.none { it.pubkey == action.profile.pubkey }) {
-                    profiles.value += action.profile
-                }
+                if (profiles.value.any { it.pubkey == action.profile.pubkey }) return
+                profiles.value += action.profile
+            }
+
+            is EditListViewAddTopic -> {
+                val normalized = action.topic.normalizeTopic()
+                if (!normalized.isBareTopicStr()) return
+                if (topics.value.any { it == normalized }) return
+                topics.value += normalized
             }
         }
     }

@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.EditListViewAddProfile
+import com.dluvian.voyage.core.EditListViewAddTopic
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.model.TrustType
@@ -28,6 +29,7 @@ import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.ui.components.SimpleTabPager
 import com.dluvian.voyage.ui.components.button.RemoveIconButton
 import com.dluvian.voyage.ui.components.dialog.AddProfileDialog
+import com.dluvian.voyage.ui.components.dialog.AddTopicDialog
 import com.dluvian.voyage.ui.components.icon.TrustIcon
 import com.dluvian.voyage.ui.components.indicator.ComingSoon
 import com.dluvian.voyage.ui.components.row.ClickableRow
@@ -54,7 +56,7 @@ fun EditListView(
     val headers = remember(profilesRaw.size, topicsRaw.size) {
         listOf(
             profileHeader + if (profilesRaw.isEmpty()) "" else " (${profilesRaw.size})",
-            topicHeader
+            topicHeader + if (topicsRaw.isEmpty()) "" else " (${topicsRaw.size})"
         )
     }
     val profiles = remember(profilesRaw) {
@@ -83,7 +85,11 @@ fun EditListView(
             ItemProps(
                 first = { Icon(imageVector = HashtagIcon, contentDescription = null) },
                 second = topic,
-                third = { vm.topics.value = vm.topics.value.drop(i) }
+                third = {
+                    vm.topics.value = vm.topics.value
+                        .toMutableList()
+                        .apply { removeAt(i) }
+                }
             )
         }
     }
@@ -127,7 +133,15 @@ private fun ScreenContent(
         )
     }
     if (showTopicDialog.value) {
-//        AddTopicDialog(onDismiss = { showProfileDialog.value = false }, onConfirm = {})
+        AddTopicDialog(
+            topicSuggestions = emptyList(), // TODO: Real suggestions
+            onAdd = {
+                onUpdate(EditListViewAddTopic(topic = it))
+                showTopicDialog.value = false
+            },
+            onDismiss = { showTopicDialog.value = false },
+            onUpdate = onUpdate
+        )
     }
     SimpleTabPager(
         headers = headers,

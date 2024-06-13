@@ -24,13 +24,14 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.SearchSuggestion
-import com.dluvian.voyage.data.room.view.AdvancedProfileView
-import com.dluvian.voyage.ui.components.row.ClickableProfileRow
+import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.ui.components.row.ClickableRow
+import com.dluvian.voyage.ui.theme.HashtagIcon
 
 @Composable
-fun AddProfileDialog(
-    profileSuggestions: List<AdvancedProfileView>,
-    onAdd: (AdvancedProfileView) -> Unit,
+fun AddTopicDialog(
+    topicSuggestions: List<Topic>,
+    onAdd: (Topic) -> Unit,
     onDismiss: Fn,
     onUpdate: OnUpdate
 ) {
@@ -40,17 +41,23 @@ fun AddProfileDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(text = stringResource(id = R.string.add_profile)) },
+        title = { Text(text = stringResource(id = R.string.add_topic)) },
         text = {
             Input(
                 input = input,
-                profileSuggestions = profileSuggestions,
+                topicSuggestions = topicSuggestions,
                 focusRequester = focusRequester,
                 onAdd = onAdd,
                 onUpdate = onUpdate
             )
         },
-        confirmButton = {},
+        confirmButton = {
+            if (input.value.text.isNotEmpty()) {
+                TextButton(onClick = { onAdd(input.value.text) }) {
+                    Text(text = stringResource(id = R.string.add))
+                }
+            }
+        },
         dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text(text = stringResource(id = R.string.cancel))
@@ -62,9 +69,9 @@ fun AddProfileDialog(
 @Composable
 private fun Input(
     input: MutableState<TextFieldValue>,
-    profileSuggestions: List<AdvancedProfileView>,
+    topicSuggestions: List<Topic>,
     focusRequester: FocusRequester,
-    onAdd: (AdvancedProfileView) -> Unit,
+    onAdd: (Topic) -> Unit,
     onUpdate: OnUpdate
 ) {
     Column {
@@ -77,9 +84,9 @@ private fun Input(
             },
             placeholder = { Text(text = stringResource(id = R.string.search_)) })
         if (input.value.text.isNotEmpty()) {
-            ProfileSuggestions(
+            TopicSuggestions(
                 modifier = Modifier.weight(1f, fill = false),
-                suggestions = profileSuggestions,
+                suggestions = topicSuggestions,
                 onClickSuggestion = onAdd
             )
         }
@@ -87,20 +94,20 @@ private fun Input(
 }
 
 @Composable
-private fun ProfileSuggestions(
-    suggestions: List<AdvancedProfileView>,
-    onClickSuggestion: (AdvancedProfileView) -> Unit,
+private fun TopicSuggestions(
+    suggestions: List<Topic>,
+    onClickSuggestion: (Topic) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.Bottom
     ) {
-        items(suggestions) { profile ->
+        items(suggestions) { topic ->
             Row(modifier = Modifier.fillMaxWidth()) {
-                ClickableProfileRow(
-                    profile = profile,
-                    onClick = { onClickSuggestion(profile) })
+                ClickableRow(header = topic,
+                    leadingIcon = HashtagIcon,
+                    onClick = { onClickSuggestion(topic) })
             }
         }
     }
