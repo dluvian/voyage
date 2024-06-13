@@ -47,13 +47,14 @@ fun ClickableRow(
 @Composable
 fun ClickableRow(
     header: String,
+    modifier: Modifier = Modifier,
     text: String? = null,
     leadingContent: ComposableContent? = null,
     trailingContent: ComposableContent? = null,
     onClick: Fn = {},
     additionalContent: ComposableContent = {},
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = modifier.fillMaxWidth()) {
         ClickableBaseRow(
             header = header,
             leadingContent = leadingContent,
@@ -81,7 +82,10 @@ private fun ClickableBaseRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.weight(1f, fill = false)
+        ) {
             if (leadingContent != null) {
                 leadingContent()
                 Spacer(modifier = Modifier.width(spacing.xl))
@@ -104,6 +108,8 @@ private fun ClickableBaseRow(
                 }
             }
         }
-        if (trailingContent != null) trailingContent()
+        if (trailingContent != null) {
+            trailingContent()
+        }
     }
 }

@@ -112,6 +112,7 @@ fun NonMainView(
 
         EditNewListNavView -> EditListView(
             vm = core.vmContainer.editListVM,
+            profileSuggestions = core.appContainer.profileSuggestionProvider.suggestions,
             snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate
         )

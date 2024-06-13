@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.dluvian.voyage.core.EditListViewAction
+import com.dluvian.voyage.core.EditListViewAddProfile
 import com.dluvian.voyage.core.EditListViewSave
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
@@ -31,6 +32,11 @@ class EditListViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
     fun handle(action: EditListViewAction) {
         when (action) {
             is EditListViewSave -> {}
+            is EditListViewAddProfile -> {
+                if (profiles.value.none { it.pubkey == action.profile.pubkey }) {
+                    profiles.value += action.profile
+                }
+            }
         }
     }
 }

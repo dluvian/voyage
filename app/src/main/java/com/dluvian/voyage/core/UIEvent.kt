@@ -27,6 +27,7 @@ import com.dluvian.voyage.core.navigator.SettingsNavView
 import com.dluvian.voyage.core.navigator.ThreadNavView
 import com.dluvian.voyage.core.navigator.ThreadRawNavView
 import com.dluvian.voyage.core.navigator.TopicNavView
+import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import kotlinx.coroutines.CoroutineScope
 import rust.nostr.protocol.Metadata
 import rust.nostr.protocol.Nip19Event
@@ -164,6 +165,7 @@ data object BookmarksViewAppend : BookmarksViewAction()
 
 sealed class EditListViewAction : UIEvent()
 data object EditListViewSave : EditListViewAction()
+data class EditListViewAddProfile(val profile: AdvancedProfileView) : EditListViewAction()
 
 
 sealed class DrawerViewAction : UIEvent()
