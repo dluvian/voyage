@@ -26,6 +26,7 @@ import com.dluvian.voyage.data.event.IdCacheClearer
 import com.dluvian.voyage.data.event.OldestUsedEvent
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
 import com.dluvian.voyage.data.interactor.Bookmarker
+import com.dluvian.voyage.data.interactor.ItemSetEditor
 import com.dluvian.voyage.data.interactor.PostSender
 import com.dluvian.voyage.data.interactor.PostVoter
 import com.dluvian.voyage.data.interactor.ProfileFollower
@@ -315,4 +316,5 @@ class AppContainer(context: Context) {
     )
 
     val itemSetProvider = ItemSetProvider(itemSetDao = roomDb.itemSetDao())
+    val itemSetEditor = ItemSetEditor()
 }

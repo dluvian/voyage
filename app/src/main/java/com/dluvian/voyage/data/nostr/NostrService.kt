@@ -225,6 +225,24 @@ class NostrService(
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
+    suspend fun publishProfileSet(
+        identifier: String,
+        title: String,
+        profiles: List<PublicKey>,
+        relayUrls: Collection<RelayUrl>,
+    ): Result<Event> {
+        TODO()
+    }
+
+    suspend fun publishTopicSet(
+        identifier: String,
+        title: String,
+        topics: List<Topic>,
+        relayUrls: Collection<RelayUrl>,
+    ): Result<Event> {
+        TODO()
+    }
+
     suspend fun publishProfile(
         metadata: Metadata,
         relayUrls: Collection<RelayUrl>,
