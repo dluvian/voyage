@@ -12,6 +12,7 @@ import com.dluvian.nostr_kt.isPostOrReply
 import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.core.MAX_CONTENT_LEN
 import com.dluvian.voyage.core.MAX_KEYS_SQL
+import com.dluvian.voyage.core.MAX_SUBJECT_LEN
 import com.dluvian.voyage.core.getNormalizedTopics
 import com.dluvian.voyage.core.getTrimmedSubject
 import com.dluvian.voyage.core.takeRandom
@@ -211,7 +212,7 @@ class EventValidator(
             return ValidatedProfileSet(
                 identifier = identifier,
                 myPubkey = event.author().toHex(),
-                title = event.getTitle() ?: identifier,
+                title = event.getNormalizedTitle(default = identifier),
                 pubkeys = event.publicKeys()
                     .distinct()
                     .takeRandom(MAX_KEYS_SQL)
@@ -227,10 +228,18 @@ class EventValidator(
             return ValidatedTopicSet(
                 identifier = identifier,
                 myPubkey = event.author().toHex(),
-                title = event.getTitle() ?: identifier,
+                title = event.getNormalizedTitle(default = identifier),
                 topics = event.getHashtags().takeRandom(MAX_KEYS_SQL).toSet(),
                 createdAt = event.createdAt().secs()
             )
+        }
+
+        private fun Event.getNormalizedTitle(default: String): String {
+            return this.getTitle()
+                .orEmpty()
+                .ifEmpty { default }
+                .trim()
+                .take(MAX_SUBJECT_LEN)
         }
     }
 }

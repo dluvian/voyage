@@ -178,7 +178,7 @@ fun Event.getSubject(): String? {
 
 fun Event.getTitle(): String? {
     return this.tags()
-        .firstOrNull { it.kind() == TagKind.Subject }
+        .firstOrNull { it.kind() == TagKind.Title }
         ?.asVec()
         ?.getOrNull(1)
 }

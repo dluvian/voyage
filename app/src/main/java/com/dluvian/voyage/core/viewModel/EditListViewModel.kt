@@ -48,6 +48,7 @@ class EditListViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
     fun handle(action: EditListViewAction) {
         when (action) {
             is EditListViewSave -> saveLists(action = action)
+
             is EditListViewAddProfile -> {
                 if (profiles.value.any { it.pubkey == action.profile.pubkey }) return
                 profiles.value += action.profile
