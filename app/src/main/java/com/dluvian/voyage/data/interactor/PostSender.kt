@@ -9,9 +9,9 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.createValidatedMainPost
 import com.dluvian.voyage.core.extractCleanHashtags
 import com.dluvian.voyage.core.getNormalizedTopics
+import com.dluvian.voyage.data.event.EventValidator
 import com.dluvian.voyage.data.event.ValidatedCrossPost
 import com.dluvian.voyage.data.event.ValidatedReply
 import com.dluvian.voyage.data.event.ValidatedRootPost
@@ -113,7 +113,7 @@ class PostSender(
         if (post.crossPostedId != null) {
             return Result.failure(IllegalStateException("Can't cross-post a cross-post"))
         }
-        val validatedMainPost = createValidatedMainPost(
+        val validatedMainPost = EventValidator.createValidatedMainPost(
             event = crossPostedEvent,
             relayUrl = post.relayUrl
         )

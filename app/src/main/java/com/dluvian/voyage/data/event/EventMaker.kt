@@ -7,6 +7,8 @@ import com.dluvian.nostr_kt.createHashtagTag
 import com.dluvian.nostr_kt.createMentionTag
 import com.dluvian.nostr_kt.createReplyTag
 import com.dluvian.nostr_kt.createSubjectTag
+import com.dluvian.nostr_kt.createUnsignedProfileSet
+import com.dluvian.nostr_kt.createUnsignedTopicSet
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
@@ -138,6 +140,36 @@ class EventMaker(
 
         val unsignedEvent = EventBuilder.relayList(map = metadata)
             .toUnsignedEvent(accountManager.getPublicKey())
+
+        return accountManager.sign(unsignedEvent = unsignedEvent)
+    }
+
+    suspend fun buildProfileSet(
+        identifier: String,
+        title: String,
+        pubkeys: List<PublicKey>
+    ): Result<Event> {
+        val unsignedEvent = createUnsignedProfileSet(
+            identifier = identifier,
+            title = title,
+            pubkeys = pubkeys,
+            author = accountManager.getPublicKey()
+        )
+
+        return accountManager.sign(unsignedEvent = unsignedEvent)
+    }
+
+    suspend fun buildTopicSet(
+        identifier: String,
+        title: String,
+        topics: List<Topic>
+    ): Result<Event> {
+        val unsignedEvent = createUnsignedTopicSet(
+            identifier = identifier,
+            title = title,
+            topics = topics,
+            author = accountManager.getPublicKey()
+        )
 
         return accountManager.sign(unsignedEvent = unsignedEvent)
     }

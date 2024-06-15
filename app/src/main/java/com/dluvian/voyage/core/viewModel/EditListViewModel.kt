@@ -2,23 +2,31 @@ package com.dluvian.voyage.core.viewModel
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.dluvian.voyage.R
+import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.EditListViewAction
 import com.dluvian.voyage.core.EditListViewAddProfile
 import com.dluvian.voyage.core.EditListViewAddTopic
 import com.dluvian.voyage.core.EditListViewSave
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.isBareTopicStr
+import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.normalizeTopic
+import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.interactor.ItemSetEditor
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
+import kotlinx.coroutines.delay
 import java.util.UUID
 
 class EditListViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
     val pagerState: PagerState,
     private val itemSetEditor: ItemSetEditor,
+    private val snackbar: SnackbarHostState,
 ) : ViewModel() {
     private val _identifier = mutableStateOf("")
 
@@ -36,7 +44,6 @@ class EditListViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
         profiles.value = emptyList()
         topics.value = emptyList()
     }
-
 
     fun handle(action: EditListViewAction) {
         when (action) {
@@ -58,11 +65,32 @@ class EditListViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
     private fun saveLists(action: EditListViewSave) {
         if (isSaving.value) return
         isSaving.value = true
-        val profileIsSuccess = itemSetEditor.editProfileSet()
-        if (profileIsSuccess) {
-            itemSetEditor.editTopicSet()
-        }
 
-        isSaving.value = false
+        viewModelScope.launchIO {
+            val profileSet = itemSetEditor.editProfileSet(
+                identifier = _identifier.value,
+                title = title.value,
+                pubkeys = profiles.value.map { it.pubkey })
+            val topicSet = itemSetEditor.editTopicSet(
+                identifier = _identifier.value,
+                title = title.value,
+                topics = topics.value
+            )
+
+            delay(DELAY_1SEC)
+            action.onGoBack()
+
+            val msgId = when {
+                profileSet.isSuccess && topicSet.isSuccess -> R.string.custom_list_updated
+                profileSet.isFailure -> R.string.failed_to_sign_profile_list
+                topicSet.isFailure -> R.string.failed_to_sign_topic_list
+                else -> null
+            }
+            if (msgId != null) {
+                snackbar.showToast(viewModelScope, action.context.getString(msgId))
+            }
+        }.invokeOnCompletion {
+            isSaving.value = false
+        }
     }
 }

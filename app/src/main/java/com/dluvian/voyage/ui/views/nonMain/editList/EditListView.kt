@@ -95,7 +95,12 @@ fun EditListView(
         }
     }
 
-    EditListScaffold(title = vm.title, snackbar = snackbar, onUpdate = onUpdate) {
+    EditListScaffold(
+        title = vm.title,
+        isSaving = vm.isSaving.value,
+        snackbar = snackbar,
+        onUpdate = onUpdate
+    ) {
         ScreenContent(
             headers = headers,
             profiles = profiles,

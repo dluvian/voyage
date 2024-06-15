@@ -316,5 +316,10 @@ class AppContainer(context: Context) {
     )
 
     val itemSetProvider = ItemSetProvider(itemSetDao = roomDb.itemSetDao())
-    val itemSetEditor = ItemSetEditor()
+    val itemSetEditor = ItemSetEditor(
+        nostrService = nostrService,
+        relayProvider = relayProvider,
+        profileSetUpsertDao = roomDb.profileSetUpsertDao(),
+        topicSetUpsertDao = roomDb.topicSetUpsertDao(),
+    )
 }

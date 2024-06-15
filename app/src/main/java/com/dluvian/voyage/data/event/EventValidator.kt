@@ -6,12 +6,14 @@ import com.dluvian.nostr_kt.SubId
 import com.dluvian.nostr_kt.getHashtags
 import com.dluvian.nostr_kt.getMetadata
 import com.dluvian.nostr_kt.getNip65s
+import com.dluvian.nostr_kt.getReplyToId
 import com.dluvian.nostr_kt.getTitle
 import com.dluvian.nostr_kt.isPostOrReply
 import com.dluvian.nostr_kt.secs
+import com.dluvian.voyage.core.MAX_CONTENT_LEN
 import com.dluvian.voyage.core.MAX_KEYS_SQL
-import com.dluvian.voyage.core.createValidatedMainPost
 import com.dluvian.voyage.core.getNormalizedTopics
+import com.dluvian.voyage.core.getTrimmedSubject
 import com.dluvian.voyage.core.takeRandom
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import rust.nostr.protocol.Event
@@ -109,32 +111,12 @@ class EventValidator(
 
             is KindEnum.FollowSets -> {
                 if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) return null
-                val identifier = event.identifier() ?: return null
-
-                ValidatedProfileSet(
-                    identifier = identifier,
-                    myPubkey = event.author().toHex(),
-                    title = event.getTitle() ?: identifier,
-                    pubkeys = event.publicKeys()
-                        .distinct()
-                        .takeRandom(MAX_KEYS_SQL)
-                        .map { it.toHex() }
-                        .toSet(),
-                    createdAt = event.createdAt().secs()
-                )
+                createValidatedProfileSet(event = event)
             }
 
             is KindEnum.InterestSets -> {
                 if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) return null
-                val identifier = event.identifier() ?: return null
-
-                ValidatedTopicSet(
-                    identifier = identifier,
-                    myPubkey = event.author().toHex(),
-                    title = event.getTitle() ?: identifier,
-                    topics = event.getHashtags().takeRandom(MAX_KEYS_SQL).toSet(),
-                    createdAt = event.createdAt().secs()
-                )
+                createValidatedTopicSet(event = event)
             }
 
             is KindEnum.Interests -> {
@@ -189,5 +171,66 @@ class EventValidator(
             relayUrl = relayUrl,
             crossPosted = validated
         )
+    }
+
+    companion object {
+        fun createValidatedMainPost(event: Event, relayUrl: RelayUrl): ValidatedMainPost? {
+            if (!event.isPostOrReply()) return null
+            val replyToId = event.getReplyToId()
+            val content = event.content().trim().take(MAX_CONTENT_LEN)
+            return if (replyToId == null) {
+                val subject = event.getTrimmedSubject()
+                if (subject.isNullOrEmpty() && content.isEmpty()) return null
+                ValidatedRootPost(
+                    id = event.id().toHex(),
+                    pubkey = event.author().toHex(),
+                    topics = event.getNormalizedTopics(limited = true),
+                    subject = subject,
+                    content = content,
+                    createdAt = event.createdAt().secs(),
+                    relayUrl = relayUrl,
+                    json = event.asJson()
+                )
+            } else {
+                if (content.isEmpty() || replyToId == event.id().toHex()) return null
+                ValidatedReply(
+                    id = event.id().toHex(),
+                    pubkey = event.author().toHex(),
+                    parentId = replyToId,
+                    content = content,
+                    createdAt = event.createdAt().secs(),
+                    relayUrl = relayUrl,
+                    event.asJson()
+                )
+            }
+        }
+
+        fun createValidatedProfileSet(event: Event): ValidatedProfileSet? {
+            val identifier = event.identifier() ?: return null
+
+            return ValidatedProfileSet(
+                identifier = identifier,
+                myPubkey = event.author().toHex(),
+                title = event.getTitle() ?: identifier,
+                pubkeys = event.publicKeys()
+                    .distinct()
+                    .takeRandom(MAX_KEYS_SQL)
+                    .map { it.toHex() }
+                    .toSet(),
+                createdAt = event.createdAt().secs()
+            )
+        }
+
+        fun createValidatedTopicSet(event: Event): ValidatedTopicSet? {
+            val identifier = event.identifier() ?: return null
+
+            return ValidatedTopicSet(
+                identifier = identifier,
+                myPubkey = event.author().toHex(),
+                title = event.getTitle() ?: identifier,
+                topics = event.getHashtags().takeRandom(MAX_KEYS_SQL).toSet(),
+                createdAt = event.createdAt().secs()
+            )
+        }
     }
 }

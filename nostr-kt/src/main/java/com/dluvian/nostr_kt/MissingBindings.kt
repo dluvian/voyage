@@ -2,7 +2,9 @@ package com.dluvian.nostr_kt
 
 import cash.z.ecc.android.bip39.Mnemonics
 import rust.nostr.protocol.Event
+import rust.nostr.protocol.EventBuilder
 import rust.nostr.protocol.EventId
+import rust.nostr.protocol.Kind
 import rust.nostr.protocol.KindEnum
 import rust.nostr.protocol.Metadata
 import rust.nostr.protocol.Nip19Event
@@ -12,6 +14,7 @@ import rust.nostr.protocol.Tag
 import rust.nostr.protocol.TagKind
 import rust.nostr.protocol.TagStandard
 import rust.nostr.protocol.Timestamp
+import rust.nostr.protocol.UnsignedEvent
 import java.security.SecureRandom
 
 
@@ -23,8 +26,50 @@ fun createHashtagTag(hashtag: String): Tag {
     return Tag.fromStandardized(TagStandard.Hashtag(hashtag = hashtag))
 }
 
+fun createIdentifierTag(identifier: String): Tag {
+    return Tag.fromStandardized(TagStandard.Identifier(identifier = identifier))
+}
+
+fun createTitleTag(title: String): Tag {
+    return Tag.fromStandardized(TagStandard.Title(title = title))
+}
+
 fun createMentionTag(pubkeys: Collection<String>): List<Tag> {
     return pubkeys.map { Tag.parse(listOf("p", it)) }
+}
+
+fun createUnsignedProfileSet(
+    identifier: String,
+    title: String,
+    pubkeys: List<PublicKey>,
+    author: PublicKey
+): UnsignedEvent {
+    val tags = mutableListOf(createIdentifierTag(identifier = identifier))
+    tags.add(createTitleTag(title = title))
+    tags.addAll(pubkeys.map { Tag.parse(listOf("p", it.toHex())) })
+
+    return EventBuilder(
+        kind = Kind.fromEnum(e = KindEnum.FollowSets),
+        content = "",
+        tags = tags
+    ).toUnsignedEvent(publicKey = author)
+}
+
+fun createUnsignedTopicSet(
+    identifier: String,
+    title: String,
+    topics: List<String>,
+    author: PublicKey
+): UnsignedEvent {
+    val tags = mutableListOf(createIdentifierTag(identifier = identifier))
+    tags.add(createTitleTag(title = title))
+    tags.addAll(topics.map { createHashtagTag(it) })
+
+    return EventBuilder(
+        kind = Kind.fromEnum(e = KindEnum.InterestSets),
+        content = "",
+        tags = tags
+    ).toUnsignedEvent(publicKey = author)
 }
 
 private val nostrMentionPattern = Regex("(nostr:|@)(npub1|nprofile1)[a-zA-Z0-9]+")

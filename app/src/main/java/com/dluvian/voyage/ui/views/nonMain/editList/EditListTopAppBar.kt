@@ -14,19 +14,23 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.EditListViewSave
+import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.ui.components.button.GoBackIconButton
 import com.dluvian.voyage.ui.components.button.SaveIconButton
+import com.dluvian.voyage.ui.components.indicator.TopBarCircleProgressIndicator
 import com.dluvian.voyage.ui.theme.RoundedChip
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditListTopAppBar(
     title: MutableState<String>,
+    isSaving: Boolean,
     focusRequester: FocusRequester,
     onUpdate: OnUpdate
 ) {
@@ -51,7 +55,14 @@ fun EditListTopAppBar(
             )
         },
         actions = {
-            SaveIconButton(onSave = { onUpdate(EditListViewSave) })
+            if (isSaving) {
+                TopBarCircleProgressIndicator()
+            } else {
+                val context = LocalContext.current
+                SaveIconButton(onSave = {
+                    onUpdate(EditListViewSave(context = context, onGoBack = { onUpdate(GoBack) }))
+                })
+            }
         },
         navigationIcon = {
             GoBackIconButton(onUpdate = onUpdate)

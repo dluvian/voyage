@@ -188,4 +188,6 @@
     <string name="add_topic">Add topic</string>
     <string name="add">Add</string>
     <string name="cancel">Cancel</string>
+    <string name="custom_list_updated">Custom list updated</string>
+    <string name="failed_to_sign_profile_list">Failed to sign profile list</string>
 </resources>

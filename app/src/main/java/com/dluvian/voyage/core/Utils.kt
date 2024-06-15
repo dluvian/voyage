@@ -21,14 +21,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.getHashtags
-import com.dluvian.nostr_kt.getReplyToId
 import com.dluvian.nostr_kt.getSubject
-import com.dluvian.nostr_kt.isPostOrReply
-import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.core.model.ParentUI
-import com.dluvian.voyage.data.event.ValidatedMainPost
-import com.dluvian.voyage.data.event.ValidatedReply
-import com.dluvian.voyage.data.event.ValidatedRootPost
 import com.dluvian.voyage.data.model.RelevantMetadata
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 import com.dluvian.voyage.data.room.view.ReplyView
@@ -285,37 +279,6 @@ val textNoteAndRepostKinds = listOf(
     Kind.fromEnum(KindEnum.TextNote),
     Kind.fromEnum(KindEnum.Repost)
 )
-
-fun createValidatedMainPost(event: Event, relayUrl: RelayUrl): ValidatedMainPost? {
-    if (!event.isPostOrReply()) return null
-    val replyToId = event.getReplyToId()
-    val content = event.content().trim().take(MAX_CONTENT_LEN)
-    return if (replyToId == null) {
-        val subject = event.getTrimmedSubject()
-        if (subject.isNullOrEmpty() && content.isEmpty()) return null
-        ValidatedRootPost(
-            id = event.id().toHex(),
-            pubkey = event.author().toHex(),
-            topics = event.getNormalizedTopics(limited = true),
-            subject = subject,
-            content = content,
-            createdAt = event.createdAt().secs(),
-            relayUrl = relayUrl,
-            json = event.asJson()
-        )
-    } else {
-        if (content.isEmpty() || replyToId == event.id().toHex()) return null
-        ValidatedReply(
-            id = event.id().toHex(),
-            pubkey = event.author().toHex(),
-            parentId = replyToId,
-            content = content,
-            createdAt = event.createdAt().secs(),
-            relayUrl = relayUrl,
-            event.asJson()
-        )
-    }
-}
 
 fun Event.getTrimmedSubject(maxLen: Int = MAX_SUBJECT_LEN): String? {
     return this.getSubject()?.trim()?.take(maxLen)

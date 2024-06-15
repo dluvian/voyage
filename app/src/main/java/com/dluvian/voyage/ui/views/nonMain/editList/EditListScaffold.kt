@@ -13,6 +13,7 @@ import com.dluvian.voyage.ui.components.scaffold.VoyageScaffold
 @Composable
 fun EditListScaffold(
     title: MutableState<String>,
+    isSaving: Boolean,
     snackbar: SnackbarHostState,
     onUpdate: OnUpdate,
     content: ComposableContent
@@ -27,6 +28,7 @@ fun EditListScaffold(
         topBar = {
             EditListTopAppBar(
                 title = title,
+                isSaving = isSaving,
                 focusRequester = focusRequester,
                 onUpdate = onUpdate
             )

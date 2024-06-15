@@ -228,10 +228,11 @@ class NostrService(
     suspend fun publishProfileSet(
         identifier: String,
         title: String,
-        profiles: List<PublicKey>,
+        pubkeys: List<PublicKey>,
         relayUrls: Collection<RelayUrl>,
     ): Result<Event> {
-        TODO()
+        return eventMaker.buildProfileSet(identifier = identifier, title = title, pubkeys = pubkeys)
+            .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
     suspend fun publishTopicSet(
@@ -240,7 +241,8 @@ class NostrService(
         topics: List<Topic>,
         relayUrls: Collection<RelayUrl>,
     ): Result<Event> {
-        TODO()
+        return eventMaker.buildTopicSet(identifier = identifier, title = title, topics = topics)
+            .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
     suspend fun publishProfile(

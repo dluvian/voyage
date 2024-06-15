@@ -242,7 +242,8 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         editListVM = viewModel {
             EditListViewModel(
                 pagerState = ediListPagerState,
-                itemSetEditor = appContainer.itemSetEditor
+                itemSetEditor = appContainer.itemSetEditor,
+                snackbar = appContainer.snackbar
             )
         }
     )
