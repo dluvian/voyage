@@ -100,14 +100,15 @@ class EventMaker(
         return accountManager.sign(unsignedEvent = unsignedEvent)
     }
 
-    suspend fun buildListDelete(kind: Kind, identifier: String): Result<Event> {
+    suspend fun buildListDelete(identifier: String): Result<Event> {
         val pubkey = accountManager.getPublicKey()
-        val coordinate = "${kind.asU64()}:${pubkey.toHex()}:$identifier"
-        val aTag = Tag.parse(listOf("a", coordinate))
+        val tags = listOf(Kind.fromEnum(KindEnum.FollowSets), Kind.fromEnum(KindEnum.InterestSets))
+            .map { kind -> "${kind.asU64()}:${pubkey.toHex()}:$identifier" }
+            .map { coordinate -> Tag.parse(listOf("a", coordinate)) }
         val unsignedEvent = EventBuilder(
             kind = Kind.fromEnum(KindEnum.EventDeletion),
             content = "",
-            tags = listOf(aTag)
+            tags = tags
         ).toUnsignedEvent(pubkey)
 
         return accountManager.sign(unsignedEvent = unsignedEvent)

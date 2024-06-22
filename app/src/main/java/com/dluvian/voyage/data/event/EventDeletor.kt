@@ -14,8 +14,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
-import rust.nostr.protocol.Kind
-import rust.nostr.protocol.KindEnum
 
 private const val TAG = "EventDeletor"
 
@@ -57,26 +55,18 @@ class EventDeletor(
     }
 
     suspend fun deleteList(identifier: String, onCloseDrawer: Fn) {
-        val profileListResult = deleteListEvent(
-            kind = Kind.fromEnum(KindEnum.FollowSets),
-            identifier = identifier
-        )
-        val topicListResult = deleteListEvent(
-            kind = Kind.fromEnum(KindEnum.InterestSets),
-            identifier = identifier
-        )
-
-        if (profileListResult.isFailure || topicListResult.isFailure) {
-            val fail = profileListResult.exceptionOrNull() ?: topicListResult.exceptionOrNull()
-            Log.w(TAG, "Failed to sign list deletion: ${fail?.message}", fail)
-            snackbar.showToast(
-                scope = scope,
-                msg = context.getString(R.string.failed_to_sign_list_deletion)
-            )
-            onCloseDrawer()
-        } else {
-            deleteDao.deleteList(identifier = identifier)
-        }
+        deleteListEvent(identifier = identifier)
+            .onFailure {
+                Log.w(TAG, "Failed to sign list deletion: ${it.message}", it)
+                snackbar.showToast(
+                    scope = scope,
+                    msg = context.getString(R.string.failed_to_sign_list_deletion)
+                )
+                onCloseDrawer()
+            }
+            .onSuccess {
+                deleteDao.deleteList(identifier = identifier)
+            }
     }
 
     private suspend fun deleteEvent(eventId: EventIdHex): Result<Event> {
@@ -86,9 +76,8 @@ class EventDeletor(
         )
     }
 
-    private suspend fun deleteListEvent(kind: Kind, identifier: String): Result<Event> {
+    private suspend fun deleteListEvent(identifier: String): Result<Event> {
         return nostrService.publishListDeletion(
-            kind = kind,
             identifier = identifier,
             relayUrls = relayProvider.getPublishRelays(),
         )

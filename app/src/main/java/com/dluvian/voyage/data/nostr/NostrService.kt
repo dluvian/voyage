@@ -26,7 +26,6 @@ import kotlinx.coroutines.Dispatchers
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
-import rust.nostr.protocol.Kind
 import rust.nostr.protocol.Metadata
 import rust.nostr.protocol.PublicKey
 
@@ -195,11 +194,10 @@ class NostrService(
     }
 
     suspend fun publishListDeletion(
-        kind: Kind,
         identifier: String,
         relayUrls: Collection<RelayUrl>,
     ): Result<Event> {
-        return eventMaker.buildListDelete(kind = kind, identifier = identifier)
+        return eventMaker.buildListDelete(identifier = identifier)
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
