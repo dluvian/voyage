@@ -1,6 +1,7 @@
 package com.dluvian.voyage.ui.components.row
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -52,6 +53,7 @@ fun ClickableRow(
     leadingContent: ComposableContent? = null,
     trailingContent: ComposableContent? = null,
     onClick: Fn = {},
+    onLongClick: Fn = {},
     additionalContent: ComposableContent = {},
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -60,12 +62,14 @@ fun ClickableRow(
             leadingContent = leadingContent,
             trailingContent = trailingContent,
             text = text,
-            onClick = onClick
+            onClick = onClick,
+            onLongClick = onLongClick,
         )
         additionalContent()
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ClickableBaseRow(
     header: String,
@@ -73,11 +77,15 @@ private fun ClickableBaseRow(
     trailingContent: ComposableContent? = null,
     text: String? = null,
     onClick: Fn = {},
+    onLongClick: Fn = {},
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick,
+            )
             .padding(horizontal = spacing.bigScreenEdge, vertical = spacing.large),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween

@@ -3,7 +3,6 @@ package com.dluvian.voyage.ui.views.main
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -40,6 +39,7 @@ import com.dluvian.voyage.core.ClickFollowLists
 import com.dluvian.voyage.core.ClickRelayEditor
 import com.dluvian.voyage.core.CloseDrawer
 import com.dluvian.voyage.core.ComposableContent
+import com.dluvian.voyage.core.DeleteList
 import com.dluvian.voyage.core.DrawerViewSubscribeSets
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
@@ -47,6 +47,7 @@ import com.dluvian.voyage.core.OpenList
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.viewModel.DrawerViewModel
 import com.dluvian.voyage.data.model.ItemSetMeta
+import com.dluvian.voyage.ui.components.row.ClickableRow
 import com.dluvian.voyage.ui.theme.AccountIcon
 import com.dluvian.voyage.ui.theme.AddIcon
 import com.dluvian.voyage.ui.theme.BookmarksIcon
@@ -151,7 +152,6 @@ private fun DrawerItem(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun DrawerListItem(itemSetMeta: ItemSetMeta, scope: CoroutineScope, onUpdate: OnUpdate) {
     val showMenu = remember { mutableStateOf(false) }
@@ -159,32 +159,39 @@ private fun DrawerListItem(itemSetMeta: ItemSetMeta, scope: CoroutineScope, onUp
         ItemSetOptionsMenu(
             isExpanded = showMenu.value,
             onDismiss = { showMenu.value = false },
-            onClick = {} // TODO
+            onClick = {
+                onUpdate(
+                    DeleteList(
+                        identifier = itemSetMeta.identifier,
+                        onCloseDrawer = { onUpdate(CloseDrawer(scope = scope)) })
+                )
+                showMenu.value = false
+            }
         )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .combinedClickable(
-                    onLongClick = { showMenu.value = true },
-                    onClick = {
-                        onUpdate(OpenList(identifier = itemSetMeta.identifier))
-                        onUpdate(CloseDrawer(scope = scope))
-                    }
-                ),
-        ) {
-            Icon(imageVector = ViewListIcon, contentDescription = null)
-            Text(text = itemSetMeta.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
-        }
+        ClickableRow(
+            modifier = Modifier.fillMaxWidth(),
+            header = itemSetMeta.title,
+            leadingContent = {
+                Icon(imageVector = ViewListIcon, contentDescription = null)
+            },
+            onClick = {
+                onUpdate(OpenList(identifier = itemSetMeta.identifier))
+                onUpdate(CloseDrawer(scope = scope))
+            },
+            onLongClick = { showMenu.value = true }
+        )
     }
 }
 
 @Composable
 private fun ItemSetOptionsMenu(
     isExpanded: Boolean,
+    modifier: Modifier = Modifier,
     onDismiss: Fn,
     onClick: Fn
 ) {
     DropdownMenu(
+        modifier = modifier,
         expanded = isExpanded,
         onDismissRequest = onDismiss
     ) {

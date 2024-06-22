@@ -125,10 +125,6 @@ data class FollowProfile(override val pubkey: PubkeyHex) : ProfileEvent(pubkey =
 data class UnfollowProfile(override val pubkey: PubkeyHex) : ProfileEvent(pubkey = pubkey)
 
 
-sealed class PostEvent : UIEvent()
-data class DeletePost(val id: EventIdHex) : PostEvent()
-
-
 sealed class HomeViewAction : UIEvent()
 data object HomeViewRefresh : HomeViewAction()
 data object HomeViewAppend : HomeViewAction()
@@ -191,7 +187,6 @@ data class RemoveRelay(val relayUrl: RelayUrl) : RelayEditorViewAction()
 data class ToggleReadRelay(val relayUrl: RelayUrl) : RelayEditorViewAction()
 data class ToggleWriteRelay(val relayUrl: RelayUrl) : RelayEditorViewAction()
 data class SaveRelays(val context: Context, val onGoBack: Fn) : RelayEditorViewAction()
-
 data object LoadRelays : RelayEditorViewAction()
 
 
@@ -199,6 +194,7 @@ sealed class ProfileViewAction : UIEvent()
 data object ProfileViewRefresh : ProfileViewAction()
 data object ProfileViewRootAppend : ProfileViewAction()
 data object ProfileViewReplyAppend : ProfileViewAction()
+
 
 sealed class CreatePostViewAction : UIEvent()
 data class SendPost(
@@ -280,8 +276,9 @@ data class ClickText(
 
 data class RegisterSignerLauncher(val launcher: ManagedLauncher) : UIEvent()
 data class RegisterAccountLauncher(val launcher: ManagedLauncher) : UIEvent()
-
 data class RebroadcastPost(val postId: EventIdHex, val context: Context) : UIEvent()
+data class DeleteList(val identifier: String, val onCloseDrawer: Fn) : UIEvent()
+data class DeletePost(val id: EventIdHex) : UIEvent()
 
 data class OpenLightningWallet(
     val address: String,

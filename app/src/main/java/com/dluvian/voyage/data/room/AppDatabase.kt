@@ -59,7 +59,7 @@ import com.dluvian.voyage.data.room.view.SimplePostView
 class V10DeleteVoteIsPositiveColumn : AutoMigrationSpec
 
 @Database(
-    version = 11,
+    version = 12,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -72,6 +72,7 @@ class V10DeleteVoteIsPositiveColumn : AutoMigrationSpec
         AutoMigration(from = 8, to = 9),
         AutoMigration(from = 9, to = 10, spec = V10DeleteVoteIsPositiveColumn::class),
         AutoMigration(from = 10, to = 11),
+        AutoMigration(from = 11, to = 12),
     ],
     entities = [
         PostEntity::class,

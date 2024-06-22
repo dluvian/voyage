@@ -1,5 +1,6 @@
 package com.dluvian.voyage.data.room.entity.sets
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -24,6 +25,7 @@ data class TopicSetEntity(
     val myPubkey: PubkeyHex,
     val title: String,
     val createdAt: Long,
+    @ColumnInfo(defaultValue = "0") val deleted: Boolean,
 ) {
     companion object {
         fun from(set: ValidatedTopicSet): TopicSetEntity {
@@ -31,7 +33,8 @@ data class TopicSetEntity(
                 identifier = set.identifier,
                 myPubkey = set.myPubkey,
                 title = set.title,
-                createdAt = set.createdAt
+                createdAt = set.createdAt,
+                deleted = false
             )
         }
     }

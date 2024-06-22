@@ -52,6 +52,12 @@ class Core(
             is DeletePost -> viewModelScope.launchIO {
                 appContainer.eventDeletor.deletePost(postId = uiEvent.id)
             }
+            is DeleteList -> viewModelScope.launchIO {
+                appContainer.eventDeletor.deleteList(
+                    identifier = uiEvent.identifier,
+                    onCloseDrawer = uiEvent.onCloseDrawer
+                )
+            }
 
             is BookmarkEvent -> appContainer.bookmarker.handle(action = uiEvent)
 

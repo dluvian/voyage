@@ -7,9 +7,17 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ItemSetDao {
-    @Query("SELECT identifier, title FROM profileSet WHERE myPubkey = (SELECT pubkey FROM account)")
+    @Query(
+        "SELECT identifier, title " +
+                "FROM profileSet " +
+                "WHERE myPubkey = (SELECT pubkey FROM account) AND deleted = 0"
+    )
     fun getMyProfileSetMetasFlow(): Flow<List<ItemSetMeta>>
 
-    @Query("SELECT identifier, title FROM topicSet WHERE myPubkey = (SELECT pubkey FROM account)")
+    @Query(
+        "SELECT identifier, title " +
+                "FROM topicSet " +
+                "WHERE myPubkey = (SELECT pubkey FROM account) AND deleted = 0"
+    )
     fun getMyTopicSetMetasFlow(): Flow<List<ItemSetMeta>>
 }

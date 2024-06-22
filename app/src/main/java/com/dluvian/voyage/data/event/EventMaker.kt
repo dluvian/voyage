@@ -20,6 +20,7 @@ import rust.nostr.protocol.EventBuilder
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Interests
 import rust.nostr.protocol.Kind
+import rust.nostr.protocol.KindEnum
 import rust.nostr.protocol.Metadata
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.RelayMetadata
@@ -95,6 +96,19 @@ class EventMaker(
     suspend fun buildDelete(eventId: EventId): Result<Event> {
         val unsignedEvent = EventBuilder.delete(ids = listOf(eventId), reason = null)
             .toUnsignedEvent(accountManager.getPublicKey())
+
+        return accountManager.sign(unsignedEvent = unsignedEvent)
+    }
+
+    suspend fun buildListDelete(kind: Kind, identifier: String): Result<Event> {
+        val pubkey = accountManager.getPublicKey()
+        val coordinate = "${kind.asU64()}:${pubkey.toHex()}:$identifier"
+        val aTag = Tag.parse(listOf("a", coordinate))
+        val unsignedEvent = EventBuilder(
+            kind = Kind.fromEnum(KindEnum.EventDeletion),
+            content = "",
+            tags = listOf(aTag)
+        ).toUnsignedEvent(pubkey)
 
         return accountManager.sign(unsignedEvent = unsignedEvent)
     }

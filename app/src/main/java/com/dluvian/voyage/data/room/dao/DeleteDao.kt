@@ -15,6 +15,14 @@ interface DeleteDao {
     suspend fun deletePost(postId: EventIdHex)
 
     @Transaction
+    suspend fun deleteList(identifier: String) {
+        internalEmptyProfileList(identifier = identifier)
+        internalEmptyTopicList(identifier = identifier)
+        internalSoftDeleteProfileList(identifier = identifier)
+        internalSoftDeleteTopicList(identifier = identifier)
+    }
+
+    @Transaction
     suspend fun sweepPosts(threshold: Int, oldestCreatedAtInUse: Long) {
         val createdAtWithOffset = internalOldestCreatedAt(threshold = threshold) ?: return
         val oldestCreatedAt = minOf(createdAtWithOffset, oldestCreatedAtInUse)
@@ -50,4 +58,16 @@ interface DeleteDao {
                 "AND postId IN (SELECT id FROM post WHERE createdAt < :oldestCreatedAt)"
     )
     suspend fun internalDeleteOldVotes(oldestCreatedAt: Long)
+
+    @Query("DELETE FROM profileSetItem WHERE identifier = :identifier")
+    suspend fun internalEmptyProfileList(identifier: String)
+
+    @Query("DELETE FROM topicSetItem WHERE identifier = :identifier")
+    suspend fun internalEmptyTopicList(identifier: String)
+
+    @Query("UPDATE profileSet SET deleted = 1 WHERE identifier = :identifier")
+    suspend fun internalSoftDeleteProfileList(identifier: String)
+
+    @Query("UPDATE topicSet SET deleted = 1 WHERE identifier = :identifier")
+    suspend fun internalSoftDeleteTopicList(identifier: String)
 }
