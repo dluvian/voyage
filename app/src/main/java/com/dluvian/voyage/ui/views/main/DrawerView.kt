@@ -41,6 +41,7 @@ import com.dluvian.voyage.core.CloseDrawer
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.DeleteList
 import com.dluvian.voyage.core.DrawerViewSubscribeSets
+import com.dluvian.voyage.core.EditList
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenList
@@ -158,15 +159,10 @@ private fun DrawerListItem(itemSetMeta: ItemSetMeta, scope: CoroutineScope, onUp
     Box {
         ItemSetOptionsMenu(
             isExpanded = showMenu.value,
+            identifier = itemSetMeta.identifier,
+            scope = scope,
             onDismiss = { showMenu.value = false },
-            onClick = {
-                onUpdate(
-                    DeleteList(
-                        identifier = itemSetMeta.identifier,
-                        onCloseDrawer = { onUpdate(CloseDrawer(scope = scope)) })
-                )
-                showMenu.value = false
-            }
+            onUpdate = onUpdate
         )
         ClickableRow(
             modifier = Modifier.fillMaxWidth(),
@@ -186,17 +182,32 @@ private fun DrawerListItem(itemSetMeta: ItemSetMeta, scope: CoroutineScope, onUp
 @Composable
 private fun ItemSetOptionsMenu(
     isExpanded: Boolean,
+    identifier: String,
+    scope: CoroutineScope,
     modifier: Modifier = Modifier,
     onDismiss: Fn,
-    onClick: Fn
+    onUpdate: OnUpdate,
 ) {
+    val onCloseDrawer = { onUpdate(CloseDrawer(scope = scope)) }
     DropdownMenu(
         modifier = modifier,
         expanded = isExpanded,
         onDismissRequest = onDismiss
     ) {
         DropdownMenuItem(
-            text = { Text(text = stringResource(R.string.delete_list)) }, onClick = onClick
+            text = { Text(text = stringResource(R.string.edit_list)) },
+            onClick = {
+                onUpdate(EditList(identifier = identifier))
+                onCloseDrawer()
+                onDismiss()
+            }
+        )
+        DropdownMenuItem(
+            text = { Text(text = stringResource(R.string.delete_list)) },
+            onClick = {
+                onUpdate(DeleteList(identifier = identifier, onCloseDrawer = onCloseDrawer))
+                onDismiss()
+            }
         )
     }
 }
