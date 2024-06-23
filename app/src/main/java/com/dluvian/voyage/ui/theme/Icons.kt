@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.filled.CellTower
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Home
@@ -77,6 +78,7 @@ val BookmarksIcon = Icons.Default.Bookmarks
 val BookmarkIcon = Icons.Filled.Bookmark
 val RelayIcon = Icons.Default.CellTower
 val OpenIcon = Icons.AutoMirrored.Filled.OpenInNew
+val EditIcon = Icons.Default.Edit
 
 @Stable
 @Composable

@@ -11,6 +11,7 @@ import com.dluvian.voyage.core.navigator.BookmarksNavView
 import com.dluvian.voyage.core.navigator.CreatePostNavView
 import com.dluvian.voyage.core.navigator.CrossPostCreationNavView
 import com.dluvian.voyage.core.navigator.DiscoverNavView
+import com.dluvian.voyage.core.navigator.EditExistingListNavView
 import com.dluvian.voyage.core.navigator.EditNewListNavView
 import com.dluvian.voyage.core.navigator.EditProfileNavView
 import com.dluvian.voyage.core.navigator.FollowListsNavView
@@ -65,6 +66,7 @@ sealed class PushNavEvent : NavEvent() {
             is OpenCrossPostCreation -> CrossPostCreationNavView(id = this.id)
             is OpenRelayProfile -> RelayProfileNavView(relayUrl = this.relayUrl)
             is OpenList -> OpenListNavView(identifier = this.identifier)
+            is EditList -> EditExistingListNavView(identifier = this.identifier)
         }
     }
 }
@@ -93,6 +95,7 @@ data class OpenReplyCreation(val parent: ParentUI) : AdvancedPushNavEvent()
 data class OpenCrossPostCreation(val id: EventIdHex) : AdvancedPushNavEvent()
 data class OpenRelayProfile(val relayUrl: RelayUrl) : AdvancedPushNavEvent()
 data class OpenList(val identifier: String) : AdvancedPushNavEvent()
+data class EditList(val identifier: String) : AdvancedPushNavEvent()
 
 
 sealed class VoteEvent(open val postId: EventIdHex, open val mention: PubkeyHex) : UIEvent()

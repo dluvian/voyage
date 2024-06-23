@@ -5,6 +5,7 @@ import com.dluvian.voyage.core.Core
 import com.dluvian.voyage.core.navigator.BookmarksNavView
 import com.dluvian.voyage.core.navigator.CreatePostNavView
 import com.dluvian.voyage.core.navigator.CrossPostCreationNavView
+import com.dluvian.voyage.core.navigator.EditExistingListNavView
 import com.dluvian.voyage.core.navigator.EditNewListNavView
 import com.dluvian.voyage.core.navigator.EditProfileNavView
 import com.dluvian.voyage.core.navigator.FollowListsNavView
@@ -20,6 +21,7 @@ import com.dluvian.voyage.core.navigator.ThreadNavView
 import com.dluvian.voyage.core.navigator.ThreadRawNavView
 import com.dluvian.voyage.core.navigator.TopicNavView
 import com.dluvian.voyage.ui.views.nonMain.editList.EditListView
+import com.dluvian.voyage.ui.views.nonMain.list.ListView
 import com.dluvian.voyage.ui.views.nonMain.profile.ProfileView
 import com.dluvian.voyage.ui.views.nonMain.search.SearchView
 import com.dluvian.voyage.ui.views.nonMain.topic.TopicView
@@ -110,7 +112,7 @@ fun NonMainView(
             onUpdate = core.onUpdate
         )
 
-        EditNewListNavView -> EditListView(
+        EditNewListNavView, is EditExistingListNavView -> EditListView(
             vm = core.vmContainer.editListVM,
             profileSuggestions = core.appContainer.suggestionProvider.profileSuggestions,
             topicSuggestions = core.appContainer.suggestionProvider.topicSuggestions,
@@ -118,10 +120,10 @@ fun NonMainView(
             onUpdate = core.onUpdate
         )
 
-        is OpenListNavView -> TODO() // ListNavView(
-//            vm = core.vmContainer.listVM,
-//            snackbar = core.appContainer.snackbar,
-//            onUpdate = core.onUpdate
-//        )
+        is OpenListNavView -> ListView(
+            vm = core.vmContainer.listVM,
+            snackbar = core.appContainer.snackbar,
+            onUpdate = core.onUpdate
+        )
     }
 }

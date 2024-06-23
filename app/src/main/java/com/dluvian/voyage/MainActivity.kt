@@ -26,6 +26,7 @@ import com.dluvian.voyage.core.viewModel.EditProfileViewModel
 import com.dluvian.voyage.core.viewModel.FollowListsViewModel
 import com.dluvian.voyage.core.viewModel.HomeViewModel
 import com.dluvian.voyage.core.viewModel.InboxViewModel
+import com.dluvian.voyage.core.viewModel.ListViewModel
 import com.dluvian.voyage.core.viewModel.ProfileViewModel
 import com.dluvian.voyage.core.viewModel.RelayEditorViewModel
 import com.dluvian.voyage.core.viewModel.RelayProfileViewModel
@@ -245,6 +246,9 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 itemSetEditor = appContainer.itemSetEditor,
                 snackbar = appContainer.snackbar
             )
+        },
+        listVM = viewModel {
+            ListViewModel()
         }
     )
 }

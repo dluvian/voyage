@@ -53,3 +53,4 @@ data class CrossPostCreationNavView(val id: EventIdHex) : AdvancedNonMainNavView
 data class RelayProfileNavView(val relayUrl: RelayUrl) : AdvancedNonMainNavView()
 data class OpenListNavView(val identifier: String) : AdvancedNonMainNavView()
 data object EditNewListNavView : AdvancedNonMainNavView()
+data class EditExistingListNavView(val identifier: String) : AdvancedNonMainNavView()

@@ -45,6 +45,11 @@ class EditListViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
         topics.value = emptyList()
     }
 
+    fun editExisting(identifier: String) {
+        title.value = identifier
+        _identifier.value = identifier
+    }
+
     fun handle(action: EditListViewAction) {
         when (action) {
             is EditListViewSave -> saveLists(action = action)
