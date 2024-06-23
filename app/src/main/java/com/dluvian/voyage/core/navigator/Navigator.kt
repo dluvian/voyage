@@ -58,17 +58,8 @@ class Navigator(private val vmContainer: VMContainer, private val closeApp: Fn) 
                     is ReplyCreationNavView -> vmContainer.createReplyVM.openParent(newParent = navView.parent)
                     is CrossPostCreationNavView -> vmContainer.createCrossPostVM.prepareCrossPost(id = navView.id)
                     is RelayProfileNavView -> vmContainer.relayProfileVM.openProfile(relayUrl = navView.relayUrl)
-                    is OpenListNavView -> vmContainer.listVM.openList(
-                        identifier = navView.identifier,
-                        cachedTitle = navView.cachedTitle
-                    )
-
-                    is EditExistingListNavView -> vmContainer.editListVM.editExisting(
-                        identifier = navView.identifier,
-                        cachedTitle = navView.cachedTitle,
-                        cachedProfiles = navView.cachedProfiles,
-                        cachedTopics = navView.cachedTopics
-                    )
+                    is OpenListNavView -> vmContainer.listVM.openList(identifier = navView.identifier)
+                    is EditExistingListNavView -> vmContainer.editListVM.editExisting(identifier = navView.identifier)
 
                     EditNewListNavView -> vmContainer.editListVM.createNew()
                 }

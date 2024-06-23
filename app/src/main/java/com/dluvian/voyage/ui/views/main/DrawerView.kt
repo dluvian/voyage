@@ -159,7 +159,7 @@ private fun DrawerListItem(meta: ItemSetMeta, scope: CoroutineScope, onUpdate: O
     Box {
         ItemSetOptionsMenu(
             isExpanded = showMenu.value,
-            meta = meta,
+            identifier = meta.identifier,
             scope = scope,
             onDismiss = { showMenu.value = false },
             onUpdate = onUpdate
@@ -171,7 +171,7 @@ private fun DrawerListItem(meta: ItemSetMeta, scope: CoroutineScope, onUpdate: O
                 Icon(imageVector = ViewListIcon, contentDescription = null)
             },
             onClick = {
-                onUpdate(OpenList(identifier = meta.identifier, cachedTitle = meta.title))
+                onUpdate(OpenList(identifier = meta.identifier))
                 onUpdate(CloseDrawer(scope = scope))
             },
             onLongClick = { showMenu.value = true }
@@ -182,7 +182,7 @@ private fun DrawerListItem(meta: ItemSetMeta, scope: CoroutineScope, onUpdate: O
 @Composable
 private fun ItemSetOptionsMenu(
     isExpanded: Boolean,
-    meta: ItemSetMeta,
+    identifier: String,
     scope: CoroutineScope,
     modifier: Modifier = Modifier,
     onDismiss: Fn,
@@ -197,7 +197,7 @@ private fun ItemSetOptionsMenu(
         DropdownMenuItem(
             text = { Text(text = stringResource(R.string.edit_list)) },
             onClick = {
-                onUpdate(EditList(identifier = meta.identifier, cachedTitle = meta.title))
+                onUpdate(EditList(identifier = identifier))
                 onCloseDrawer()
                 onDismiss()
             }
@@ -205,7 +205,7 @@ private fun ItemSetOptionsMenu(
         DropdownMenuItem(
             text = { Text(text = stringResource(R.string.delete_list)) },
             onClick = {
-                onUpdate(DeleteList(identifier = meta.identifier, onCloseDrawer = onCloseDrawer))
+                onUpdate(DeleteList(identifier = identifier, onCloseDrawer = onCloseDrawer))
                 onDismiss()
             }
         )
