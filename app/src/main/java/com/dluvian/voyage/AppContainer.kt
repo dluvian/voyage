@@ -315,7 +315,13 @@ class AppContainer(context: Context) {
         snackbar = snackbar,
     )
 
-    val itemSetProvider = ItemSetProvider(itemSetDao = roomDb.itemSetDao())
+    val itemSetProvider = ItemSetProvider(
+        itemSetDao = roomDb.itemSetDao(),
+        profileDao = roomDb.profileDao(),
+        topicDao = roomDb.topicDao(),
+        pubkeyProvider = accountManager,
+        friendProvider = friendProvider
+    )
     val itemSetEditor = ItemSetEditor(
         nostrService = nostrService,
         relayProvider = relayProvider,

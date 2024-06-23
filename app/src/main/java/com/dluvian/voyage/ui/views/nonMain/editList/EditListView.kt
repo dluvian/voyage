@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -154,7 +155,8 @@ private fun ScreenContent(
     SimpleTabPager(
         headers = headers,
         index = vm.tabIndex,
-        pagerState = vm.pagerState,
+        pagerState = rememberPagerState { 2 },
+        isLoading = vm.isLoading.value,
         onScrollUp = {
             when (it) {
                 0 -> scope.launch { profileState.animateScrollToItem(0) }

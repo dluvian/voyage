@@ -27,6 +27,21 @@ interface ProfileDao {
     @Query("SELECT * FROM AdvancedProfileView WHERE pubkey IN (SELECT friendPubkey FROM friend)")
     suspend fun getAdvancedProfilesOfFriends(): List<AdvancedProfileView>
 
+    @Query(
+        "SELECT * " +
+                "FROM AdvancedProfileView " +
+                "WHERE pubkey IN (SELECT pubkey FROM profileSetItem WHERE identifier = :identifier)"
+    )
+    suspend fun getAdvancedProfilesOfList(identifier: String): List<AdvancedProfileView>
+
+    @Query(
+        "SELECT pubkey " +
+                "FROM profileSetItem " +
+                "WHERE identifier = :identifier " +
+                "AND pubkey NOT IN (SELECT pubkey FROM profile)"
+    )
+    suspend fun getUnknownPubkeysFromList(identifier: String): List<PubkeyHex>
+
     @Query("SELECT name FROM profile WHERE pubkey = :pubkey")
     suspend fun getName(pubkey: PubkeyHex): String?
 

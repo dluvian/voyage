@@ -1,7 +1,5 @@
 package com.dluvian.voyage.core.viewModel
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -19,21 +17,22 @@ import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.normalizeTopic
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.interactor.ItemSetEditor
+import com.dluvian.voyage.data.provider.ItemSetProvider
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import kotlinx.coroutines.delay
 import java.util.UUID
 
-class EditListViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
-    val pagerState: PagerState,
+class EditListViewModel(
     private val itemSetEditor: ItemSetEditor,
     private val snackbar: SnackbarHostState,
+    private val itemSetProvider: ItemSetProvider,
 ) : ViewModel() {
     private val _identifier = mutableStateOf("")
 
+    val isLoading = mutableStateOf(false)
     val isSaving = mutableStateOf(false)
     val title = mutableStateOf("")
     val profiles = mutableStateOf(emptyList<AdvancedProfileView>())
-
     val topics = mutableStateOf(emptyList<Topic>())
     val tabIndex = mutableIntStateOf(0)
 
@@ -46,8 +45,21 @@ class EditListViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
     }
 
     fun editExisting(identifier: String) {
-        title.value = identifier
+        isLoading.value = true
         _identifier.value = identifier
+
+        title.value = identifier
+        profiles.value = emptyList()
+        topics.value = emptyList()
+        tabIndex.intValue = 0
+
+        viewModelScope.launchIO {
+            title.value = itemSetProvider.getTitle(identifier = identifier)
+            profiles.value = itemSetProvider.getProfilesFromList(identifier = identifier)
+            topics.value = itemSetProvider.getTopicsFromList(identifier = identifier)
+        }.invokeOnCompletion {
+            isLoading.value = false
+        }
     }
 
     fun handle(action: EditListViewAction) {

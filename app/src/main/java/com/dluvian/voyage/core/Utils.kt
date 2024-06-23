@@ -25,6 +25,8 @@ import com.dluvian.nostr_kt.getSubject
 import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.data.model.RelevantMetadata
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
+import com.dluvian.voyage.data.provider.FriendProvider
+import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.data.room.view.ReplyView
 import com.dluvian.voyage.data.room.view.RootPostView
 import kotlinx.coroutines.CoroutineScope
@@ -347,4 +349,23 @@ fun mergeToParentUIList(
         result.add(mapped)
     }
     return result.sortedByDescending { it.createdAt }.take(size)
+}
+
+fun createAdvancedProfile(
+    pubkey: PubkeyHex,
+    dbProfile: AdvancedProfileView?,
+    forcedFollowState: Boolean?,
+    metadata: RelevantMetadata?,
+    myPubkey: PubkeyHex,
+    friendProvider: FriendProvider,
+): AdvancedProfileView {
+    val name = normalizeName(metadata?.name.orEmpty().ifEmpty { dbProfile?.name.orEmpty() })
+        .ifEmpty { pubkey.toShortenedBech32() }
+    return AdvancedProfileView(
+        pubkey = pubkey,
+        name = name,
+        isMe = dbProfile?.isMe ?: (myPubkey == pubkey),
+        isFriend = forcedFollowState ?: dbProfile?.isFriend ?: friendProvider.isFriend(pubkey),
+        isWebOfTrust = dbProfile?.isWebOfTrust ?: false
+    )
 }

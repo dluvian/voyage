@@ -16,6 +16,7 @@ import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.zIndex
+import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -25,6 +26,7 @@ fun SimpleTabPager(
     headers: List<String>,
     index: MutableIntState,
     pagerState: PagerState,
+    isLoading: Boolean = false,
     scope: CoroutineScope = rememberCoroutineScope(),
     onScrollUp: (Int) -> Unit,
     pageContent: @Composable PagerScope.(page: Int) -> Unit
@@ -42,6 +44,7 @@ fun SimpleTabPager(
                 scope.launch { pagerState.animateScrollToPage(i) }
                 if (pagerState.currentPage == i) onScrollUp(i)
             })
+        if (isLoading) FullLinearProgressIndicator()
         HorizontalPager(
             modifier = Modifier
                 .fillMaxWidth()

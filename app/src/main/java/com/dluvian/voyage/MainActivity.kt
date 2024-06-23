@@ -93,7 +93,6 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
 
     val profilePagerState = rememberPagerState { 4 }
     val followListsPagerState = rememberPagerState { 2 }
-    val ediListPagerState = rememberPagerState { 2 }
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
 
@@ -242,9 +241,9 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         },
         editListVM = viewModel {
             EditListViewModel(
-                pagerState = ediListPagerState,
                 itemSetEditor = appContainer.itemSetEditor,
-                snackbar = appContainer.snackbar
+                snackbar = appContainer.snackbar,
+                itemSetProvider = appContainer.itemSetProvider
             )
         },
         listVM = viewModel {

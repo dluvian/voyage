@@ -1,8 +1,8 @@
 package com.dluvian.voyage.data.provider
 
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.core.createAdvancedProfile
 import com.dluvian.voyage.core.launchIO
-import com.dluvian.voyage.core.normalizeName
 import com.dluvian.voyage.core.toBech32
 import com.dluvian.voyage.core.toShortenedBech32
 import com.dluvian.voyage.data.account.IPubkeyProvider
@@ -117,7 +117,9 @@ class ProfileProvider(
                     pubkey = pubkey,
                     dbProfile = null,
                     forcedFollowState = forcedFollows[pubkey],
-                    metadata = null
+                    metadata = null,
+                    myPubkey = pubkeyProvider.getPubkeyHex(),
+                    friendProvider = friendProvider,
                 )
             }
         }
@@ -141,23 +143,6 @@ class ProfileProvider(
         }
     }
 
-    private fun createAdvancedProfile(
-        pubkey: PubkeyHex,
-        dbProfile: AdvancedProfileView?,
-        forcedFollowState: Boolean?,
-        metadata: RelevantMetadata?
-    ): AdvancedProfileView {
-        val name = normalizeName(metadata?.name.orEmpty().ifEmpty { dbProfile?.name.orEmpty() })
-            .ifEmpty { pubkey.toShortenedBech32() }
-        return AdvancedProfileView(
-            pubkey = pubkey,
-            name = name,
-            isMe = dbProfile?.isMe ?: (pubkeyProvider.getPubkeyHex() == pubkey),
-            isFriend = forcedFollowState ?: dbProfile?.isFriend ?: friendProvider.isFriend(pubkey),
-            isWebOfTrust = dbProfile?.isWebOfTrust ?: false
-        )
-    }
-
     private fun createFullProfile(
         pubkey: PubkeyHex,
         dbProfile: AdvancedProfileView?,
@@ -168,7 +153,9 @@ class ProfileProvider(
             pubkey = pubkey,
             dbProfile = dbProfile,
             forcedFollowState = forcedFollowState,
-            metadata = metadata
+            metadata = metadata,
+            myPubkey = pubkeyProvider.getPubkeyHex(),
+            friendProvider = friendProvider,
         )
         return FullProfileUI(
             inner = inner,

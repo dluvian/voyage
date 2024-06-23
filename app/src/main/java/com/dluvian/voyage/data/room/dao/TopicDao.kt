@@ -16,6 +16,9 @@ interface TopicDao {
     @Query("SELECT DISTINCT topic FROM topic UNION SELECT DISTINCT hashtag from hashtag")
     suspend fun getAllTopics(): List<Topic>
 
+    @Query("SELECT DISTINCT topic FROM topicSetItem WHERE identifier = :identifier")
+    suspend fun getTopicsFromList(identifier: String): List<Topic>
+
     @Query(
         "SELECT DISTINCT hashtag " +
                 "FROM hashtag " +
