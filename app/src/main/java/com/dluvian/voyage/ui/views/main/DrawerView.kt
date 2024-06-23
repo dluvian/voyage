@@ -114,7 +114,7 @@ fun MainDrawer(
                     )
                 }
                 items(itemSets) {
-                    DrawerListItem(itemSetMeta = it, scope = scope, onUpdate = onUpdate)
+                    DrawerListItem(meta = it, scope = scope, onUpdate = onUpdate)
                 }
                 item {
                     DrawerItem(label = stringResource(id = R.string.create_a_list),
@@ -154,24 +154,24 @@ private fun DrawerItem(
 }
 
 @Composable
-private fun DrawerListItem(itemSetMeta: ItemSetMeta, scope: CoroutineScope, onUpdate: OnUpdate) {
+private fun DrawerListItem(meta: ItemSetMeta, scope: CoroutineScope, onUpdate: OnUpdate) {
     val showMenu = remember { mutableStateOf(false) }
     Box {
         ItemSetOptionsMenu(
             isExpanded = showMenu.value,
-            identifier = itemSetMeta.identifier,
+            meta = meta,
             scope = scope,
             onDismiss = { showMenu.value = false },
             onUpdate = onUpdate
         )
         ClickableRow(
             modifier = Modifier.fillMaxWidth(),
-            header = itemSetMeta.title,
+            header = meta.title,
             leadingContent = {
                 Icon(imageVector = ViewListIcon, contentDescription = null)
             },
             onClick = {
-                onUpdate(OpenList(identifier = itemSetMeta.identifier))
+                onUpdate(OpenList(identifier = meta.identifier, cachedTitle = meta.title))
                 onUpdate(CloseDrawer(scope = scope))
             },
             onLongClick = { showMenu.value = true }
@@ -182,7 +182,7 @@ private fun DrawerListItem(itemSetMeta: ItemSetMeta, scope: CoroutineScope, onUp
 @Composable
 private fun ItemSetOptionsMenu(
     isExpanded: Boolean,
-    identifier: String,
+    meta: ItemSetMeta,
     scope: CoroutineScope,
     modifier: Modifier = Modifier,
     onDismiss: Fn,
@@ -197,7 +197,7 @@ private fun ItemSetOptionsMenu(
         DropdownMenuItem(
             text = { Text(text = stringResource(R.string.edit_list)) },
             onClick = {
-                onUpdate(EditList(identifier = identifier))
+                onUpdate(EditList(identifier = meta.identifier, cachedTitle = meta.title))
                 onCloseDrawer()
                 onDismiss()
             }
@@ -205,7 +205,7 @@ private fun ItemSetOptionsMenu(
         DropdownMenuItem(
             text = { Text(text = stringResource(R.string.delete_list)) },
             onClick = {
-                onUpdate(DeleteList(identifier = identifier, onCloseDrawer = onCloseDrawer))
+                onUpdate(DeleteList(identifier = meta.identifier, onCloseDrawer = onCloseDrawer))
                 onDismiss()
             }
         )

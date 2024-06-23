@@ -9,6 +9,7 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.core.model.RootPostUI
+import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import rust.nostr.protocol.Nip19Event
 import rust.nostr.protocol.Nip19Profile
 
@@ -26,6 +27,7 @@ sealed class MainNavView : NavView() {
         }
     }
 }
+
 data object HomeNavView : MainNavView()
 data object DiscoverNavView : MainNavView()
 data object InboxNavView : MainNavView()
@@ -46,11 +48,21 @@ sealed class AdvancedNonMainNavView : NonMainNavView()
 data class ThreadNavView(val rootPost: RootPostUI) : AdvancedNonMainNavView()
 data class ThreadRawNavView(val nevent: Nip19Event, val parent: ParentUI?) :
     AdvancedNonMainNavView()
+
 data class ProfileNavView(val nprofile: Nip19Profile) : AdvancedNonMainNavView()
 data class TopicNavView(val topic: Topic) : AdvancedNonMainNavView()
 data class ReplyCreationNavView(val parent: ParentUI) : AdvancedNonMainNavView()
 data class CrossPostCreationNavView(val id: EventIdHex) : AdvancedNonMainNavView()
 data class RelayProfileNavView(val relayUrl: RelayUrl) : AdvancedNonMainNavView()
-data class OpenListNavView(val identifier: String) : AdvancedNonMainNavView()
+data class OpenListNavView(
+    val identifier: String,
+    val cachedTitle: String
+) : AdvancedNonMainNavView()
+
 data object EditNewListNavView : AdvancedNonMainNavView()
-data class EditExistingListNavView(val identifier: String) : AdvancedNonMainNavView()
+data class EditExistingListNavView(
+    val identifier: String,
+    val cachedTitle: String,
+    val cachedProfiles: List<AdvancedProfileView>,
+    val cachedTopics: List<Topic>,
+) : AdvancedNonMainNavView()

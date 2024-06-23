@@ -65,8 +65,17 @@ sealed class PushNavEvent : NavEvent() {
             is OpenThreadRaw -> ThreadRawNavView(nevent = this.nevent, parent = this.parent)
             is OpenCrossPostCreation -> CrossPostCreationNavView(id = this.id)
             is OpenRelayProfile -> RelayProfileNavView(relayUrl = this.relayUrl)
-            is OpenList -> OpenListNavView(identifier = this.identifier)
-            is EditList -> EditExistingListNavView(identifier = this.identifier)
+            is OpenList -> OpenListNavView(
+                identifier = this.identifier,
+                cachedTitle = this.cachedTitle
+            )
+
+            is EditList -> EditExistingListNavView(
+                identifier = this.identifier,
+                cachedTitle = this.cachedTitle,
+                cachedProfiles = this.cachedProfiles,
+                cachedTopics = this.cachedTopics
+            )
         }
     }
 }
@@ -94,8 +103,17 @@ data class OpenTopic(val topic: Topic) : AdvancedPushNavEvent()
 data class OpenReplyCreation(val parent: ParentUI) : AdvancedPushNavEvent()
 data class OpenCrossPostCreation(val id: EventIdHex) : AdvancedPushNavEvent()
 data class OpenRelayProfile(val relayUrl: RelayUrl) : AdvancedPushNavEvent()
-data class OpenList(val identifier: String) : AdvancedPushNavEvent()
-data class EditList(val identifier: String) : AdvancedPushNavEvent()
+data class OpenList(
+    val identifier: String,
+    val cachedTitle: String
+) : AdvancedPushNavEvent()
+
+data class EditList(
+    val identifier: String,
+    val cachedTitle: String,
+    val cachedProfiles: List<AdvancedProfileView> = emptyList(),
+    val cachedTopics: List<Topic> = emptyList()
+) : AdvancedPushNavEvent()
 
 
 sealed class VoteEvent(open val postId: EventIdHex, open val mention: PubkeyHex) : UIEvent()

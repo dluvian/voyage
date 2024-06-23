@@ -7,8 +7,8 @@ class ListViewModel : ViewModel() {
     val title = mutableStateOf("")
     val identifier = mutableStateOf("")
 
-    fun openList(identifier: String) {
-        title.value = identifier
+    fun openList(identifier: String, cachedTitle: String) {
+        title.value = cachedTitle
         this.identifier.value = identifier
     }
 }

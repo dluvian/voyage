@@ -44,19 +44,30 @@ class EditListViewModel(
         topics.value = emptyList()
     }
 
-    fun editExisting(identifier: String) {
+    fun editExisting(
+        identifier: String,
+        cachedTitle: String,
+        cachedProfiles: List<AdvancedProfileView>,
+        cachedTopics: List<Topic>,
+    ) {
         isLoading.value = true
         _identifier.value = identifier
 
-        title.value = identifier
-        profiles.value = emptyList()
-        topics.value = emptyList()
+        title.value = cachedTitle
+        profiles.value = cachedProfiles
+        topics.value = cachedTopics
         tabIndex.intValue = 0
 
         viewModelScope.launchIO {
-            title.value = itemSetProvider.getTitle(identifier = identifier)
-            profiles.value = itemSetProvider.getProfilesFromList(identifier = identifier)
-            topics.value = itemSetProvider.getTopicsFromList(identifier = identifier)
+            if (cachedTitle == identifier || cachedTitle.isEmpty()) {
+                title.value = itemSetProvider.getTitle(identifier = identifier)
+            }
+            if (cachedProfiles.isEmpty()) {
+                profiles.value = itemSetProvider.getProfilesFromList(identifier = identifier)
+            }
+            if (cachedTopics.isEmpty()) {
+                topics.value = itemSetProvider.getTopicsFromList(identifier = identifier)
+            }
         }.invokeOnCompletion {
             isLoading.value = false
         }

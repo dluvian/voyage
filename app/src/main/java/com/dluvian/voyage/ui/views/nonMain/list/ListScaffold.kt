@@ -24,7 +24,7 @@ fun ListScaffold(
                 title = title,
                 actions = {
                     EditIconButton(onEdit = {
-                        onUpdate(EditList(identifier = identifier))
+                        onUpdate(EditList(identifier = identifier, cachedTitle = title))
                     })
                 },
                 onUpdate = onUpdate,
