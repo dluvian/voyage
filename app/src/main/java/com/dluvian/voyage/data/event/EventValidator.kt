@@ -212,7 +212,7 @@ class EventValidator(
             return ValidatedProfileSet(
                 identifier = identifier,
                 myPubkey = event.author().toHex(),
-                title = event.getNormalizedTitle(default = identifier),
+                title = event.getNormalizedTitle(),
                 pubkeys = event.publicKeys()
                     .distinct()
                     .takeRandom(MAX_KEYS_SQL)
@@ -228,16 +228,15 @@ class EventValidator(
             return ValidatedTopicSet(
                 identifier = identifier,
                 myPubkey = event.author().toHex(),
-                title = event.getNormalizedTitle(default = identifier),
+                title = event.getNormalizedTitle(),
                 topics = event.getHashtags().takeRandom(MAX_KEYS_SQL).toSet(),
                 createdAt = event.createdAt().secs()
             )
         }
 
-        private fun Event.getNormalizedTitle(default: String): String {
+        private fun Event.getNormalizedTitle(): String {
             return this.getTitle()
                 .orEmpty()
-                .ifEmpty { default }
                 .trim()
                 .take(MAX_SUBJECT_LEN)
         }

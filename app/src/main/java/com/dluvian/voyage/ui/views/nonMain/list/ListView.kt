@@ -13,8 +13,8 @@ fun ListView(
     snackbar: SnackbarHostState,
     onUpdate: OnUpdate
 ) {
-    val title by vm.title
-    val identifier by vm.identifier
+    val title by vm.itemSetProvider.title
+    val identifier by vm.itemSetProvider.identifier
 
     ListScaffold(title = title, identifier = identifier, snackbar = snackbar, onUpdate = onUpdate) {
         ComingSoon()

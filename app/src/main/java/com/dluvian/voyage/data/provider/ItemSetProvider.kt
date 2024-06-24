@@ -1,5 +1,7 @@
 package com.dluvian.voyage.data.provider
 
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.createAdvancedProfile
@@ -20,23 +22,43 @@ class ItemSetProvider(
     private val pubkeyProvider: IPubkeyProvider,
     private val friendProvider: FriendProvider,
 ) {
+    val identifier = mutableStateOf("")
+    val title = mutableStateOf("")
+    val profiles = mutableStateOf(emptyList<AdvancedProfileView>())
+    val topics = mutableStateOf(emptyList<Topic>())
+    val tabIndex = mutableIntStateOf(0)
+
+    suspend fun loadList(identifier: String) {
+        this.identifier.value = identifier
+
+        if (identifier != this.identifier.value) {
+            title.value = ""
+            profiles.value = emptyList()
+            topics.value = emptyList()
+            tabIndex.intValue = 0
+        }
+
+        title.value = getTitle(identifier = identifier)
+        profiles.value = getProfilesFromList(identifier = identifier)
+        topics.value = getTopicsFromList(identifier = identifier)
+    }
+
     fun getMySetsFlow(): Flow<List<ItemSetMeta>> {
         return combine(
             itemSetDao.getMyProfileSetMetasFlow().firstThenDistinctDebounce(SHORT_DEBOUNCE),
             itemSetDao.getMyTopicSetMetasFlow().firstThenDistinctDebounce(SHORT_DEBOUNCE)
         ) { profileSets, topicSets ->
-            profileSets.plus(topicSets).distinctBy { it.identifier }
+            profileSets.plus(topicSets).distinctBy { it.identifier }.sortedBy { it.title }
         }
     }
 
-    suspend fun getTitle(identifier: String): String {
+    private suspend fun getTitle(identifier: String): String {
         return itemSetDao.getProfileSetTitle(identifier = identifier)
             .orEmpty()
             .ifEmpty { itemSetDao.getTopicSetTitle(identifier = identifier).orEmpty() }
-            .ifEmpty { identifier }
     }
 
-    suspend fun getProfilesFromList(identifier: String): List<AdvancedProfileView> {
+    private suspend fun getProfilesFromList(identifier: String): List<AdvancedProfileView> {
         val known = profileDao.getAdvancedProfilesOfList(identifier = identifier)
         val unknown = profileDao.getUnknownPubkeysFromList(identifier = identifier)
         val friendPubkeys = friendProvider.getFriendPubkeys().toSet()
@@ -53,7 +75,7 @@ class ItemSetProvider(
         }
     }
 
-    suspend fun getTopicsFromList(identifier: String): List<Topic> {
+    private suspend fun getTopicsFromList(identifier: String): List<Topic> {
         return topicDao.getTopicsFromList(identifier = identifier)
     }
 }

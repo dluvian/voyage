@@ -38,7 +38,6 @@ class EditListViewModel(
 
     fun createNew() {
         _identifier.value = UUID.randomUUID().toString()
-
         title.value = ""
         profiles.value = emptyList()
         topics.value = emptyList()
@@ -48,16 +47,24 @@ class EditListViewModel(
         isLoading.value = true
         _identifier.value = identifier
 
-        title.value = identifier
-        profiles.value = emptyList()
-        topics.value = emptyList()
-        tabIndex.intValue = 0
+        if (identifier == itemSetProvider.identifier.value) {
+            title.value = itemSetProvider.title.value
+            profiles.value = itemSetProvider.profiles.value
+            topics.value = itemSetProvider.topics.value
+            tabIndex.intValue = itemSetProvider.tabIndex.intValue
+        } else {
+            title.value = ""
+            profiles.value = emptyList()
+            topics.value = emptyList()
+            tabIndex.intValue = 0
+        }
 
         viewModelScope.launchIO {
-            title.value = itemSetProvider.getTitle(identifier = identifier)
-            profiles.value = itemSetProvider.getProfilesFromList(identifier = identifier)
-            topics.value = itemSetProvider.getTopicsFromList(identifier = identifier)
+            itemSetProvider.loadList(identifier = identifier)
         }.invokeOnCompletion {
+            title.value = itemSetProvider.title.value
+            profiles.value = itemSetProvider.profiles.value
+            topics.value = itemSetProvider.topics.value
             isLoading.value = false
         }
     }
