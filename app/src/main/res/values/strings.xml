@@ -193,4 +193,6 @@
     <string name="failed_to_sign_profile_list">Failed to sign profile list</string>
     <string name="delete_list">Delete list</string>
     <string name="edit_list">Edit list</string>
+    <string name="feed">Feed</string>
+    <string name="no_items_found">No items found</string>
 </resources>

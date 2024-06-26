@@ -72,14 +72,16 @@ fun MainDrawer(
             LazyColumn {
                 item { Spacer(modifier = Modifier.height(spacing.screenEdge)) }
                 item {
-                    DrawerItem(label = personalProfile.name, icon = AccountIcon, style = TextStyle(
-                        fontSize = 25.sp, fontWeight = FontWeight.SemiBold
-                    ), onClick = {
-                        onUpdate(
-                            OpenProfile(nprofile = createNprofile(hex = personalProfile.pubkey))
-                        )
-                        onUpdate(CloseDrawer(scope = scope))
-                    })
+                    DrawerItem(
+                        label = personalProfile.name,
+                        icon = AccountIcon,
+                        style = TextStyle(fontSize = 25.sp, fontWeight = FontWeight.SemiBold),
+                        onClick = {
+                            onUpdate(
+                                OpenProfile(nprofile = createNprofile(hex = personalProfile.pubkey))
+                            )
+                            onUpdate(CloseDrawer(scope = scope))
+                        })
                 }
                 item {
                     DrawerItem(label = stringResource(id = R.string.follow_lists),

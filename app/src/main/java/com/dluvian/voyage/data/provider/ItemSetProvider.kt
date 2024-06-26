@@ -1,6 +1,5 @@
 package com.dluvian.voyage.data.provider
 
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.Topic
@@ -26,7 +25,6 @@ class ItemSetProvider(
     val title = mutableStateOf("")
     val profiles = mutableStateOf(emptyList<AdvancedProfileView>())
     val topics = mutableStateOf(emptyList<Topic>())
-    val tabIndex = mutableIntStateOf(0)
 
     suspend fun loadList(identifier: String) {
         this.identifier.value = identifier
@@ -35,7 +33,6 @@ class ItemSetProvider(
             title.value = ""
             profiles.value = emptyList()
             topics.value = emptyList()
-            tabIndex.intValue = 0
         }
 
         title.value = getTitle(identifier = identifier)

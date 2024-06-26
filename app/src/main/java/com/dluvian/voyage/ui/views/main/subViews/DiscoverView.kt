@@ -31,7 +31,6 @@ import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenTopic
 import com.dluvian.voyage.core.UnfollowProfile
 import com.dluvian.voyage.core.UnfollowTopic
-import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.core.viewModel.DiscoverViewModel
 import com.dluvian.voyage.ui.components.PullRefreshBox
 import com.dluvian.voyage.ui.components.chip.FollowChip
@@ -92,13 +91,7 @@ fun DiscoverView(vm: DiscoverViewModel, onUpdate: OnUpdate) {
                             .fillMaxHeight(0.7f),
                         contentAlignment = Alignment.Center
                     ) {
-                        TrustIcon(
-                            trustType = TrustType.from(
-                                isOneself = it.inner.isMe,
-                                isFriend = it.inner.isFriend,
-                                isWebOfTrust = it.inner.isWebOfTrust
-                            )
-                        )
+                        TrustIcon(profile = it.inner)
                     }
                 },
                 onFollow = { onUpdate(FollowProfile(pubkey = it.inner.pubkey)) },

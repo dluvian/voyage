@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -18,10 +19,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.getHashtags
 import com.dluvian.nostr_kt.getSubject
+import com.dluvian.voyage.R
 import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.data.model.RelevantMetadata
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
@@ -368,4 +371,17 @@ fun createAdvancedProfile(
         isFriend = forcedFollowState ?: dbProfile?.isFriend ?: friendProvider.isFriend(pubkey),
         isWebOfTrust = dbProfile?.isWebOfTrust ?: false
     )
+}
+
+@Composable
+@Stable
+fun getListTabHeaders(numOfProfiles: Int, numOfTopics: Int): List<String> {
+    val profileHeader = stringResource(id = R.string.profiles)
+    val topicHeader = stringResource(id = R.string.topics)
+    return remember(numOfProfiles, numOfTopics) {
+        listOf(
+            profileHeader + if (numOfProfiles > 0) " ($numOfProfiles)" else "",
+            topicHeader + if (numOfTopics > 0) " ($numOfTopics)" else "",
+        )
+    }
 }

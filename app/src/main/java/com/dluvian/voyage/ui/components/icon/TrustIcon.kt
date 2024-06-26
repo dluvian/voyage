@@ -11,6 +11,7 @@ import com.dluvian.voyage.core.model.NoTrust
 import com.dluvian.voyage.core.model.Oneself
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.core.model.WebTrust
+import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.ui.theme.getTrustColor
 import com.dluvian.voyage.ui.theme.getTrustIcon
 import com.dluvian.voyage.ui.theme.sizing
@@ -48,5 +49,17 @@ fun TrustIcon(modifier: Modifier = Modifier, trustType: TrustType) {
         imageVector = icon,
         contentDescription = description,
         tint = color
+    )
+}
+
+@Composable
+fun TrustIcon(modifier: Modifier = Modifier, profile: AdvancedProfileView) {
+    TrustIcon(
+        modifier = modifier,
+        trustType = TrustType.from(
+            isOneself = profile.isMe,
+            isFriend = profile.isFriend,
+            isWebOfTrust = profile.isWebOfTrust
+        )
     )
 }

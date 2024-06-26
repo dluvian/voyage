@@ -51,7 +51,6 @@ class EditListViewModel(
             title.value = itemSetProvider.title.value
             profiles.value = itemSetProvider.profiles.value
             topics.value = itemSetProvider.topics.value
-            tabIndex.intValue = itemSetProvider.tabIndex.intValue
         } else {
             title.value = ""
             profiles.value = emptyList()

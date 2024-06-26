@@ -1,5 +1,6 @@
 package com.dluvian.voyage.core.viewModel
 
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,9 +8,10 @@ import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.data.provider.ItemSetProvider
 
 class ListViewModel(
-    val itemSetProvider: ItemSetProvider
+    val itemSetProvider: ItemSetProvider,
 ) : ViewModel() {
     val isLoading = mutableStateOf(false)
+    val tabIndex = mutableIntStateOf(0)
 
     fun openList(identifier: String) {
         isLoading.value = true

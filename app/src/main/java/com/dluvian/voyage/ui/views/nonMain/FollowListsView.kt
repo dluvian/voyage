@@ -25,7 +25,6 @@ import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenTopic
 import com.dluvian.voyage.core.UnfollowProfile
 import com.dluvian.voyage.core.UnfollowTopic
-import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.core.viewModel.FollowListsViewModel
 import com.dluvian.voyage.ui.components.PullRefreshBox
 import com.dluvian.voyage.ui.components.SimpleTabPager
@@ -49,15 +48,7 @@ fun FollowListsView(vm: FollowListsViewModel, snackbar: SnackbarHostState, onUpd
             Followable(
                 label = it.name,
                 isFollowed = it.isFriend,
-                icon = {
-                    TrustIcon(
-                        trustType = TrustType.from(
-                            isOneself = it.isMe,
-                            isFriend = it.isFriend,
-                            isWebOfTrust = it.isWebOfTrust
-                        )
-                    )
-                },
+                icon = { TrustIcon(profile = it) },
                 onFollow = { onUpdate(FollowProfile(pubkey = it.pubkey)) },
                 onUnfollow = { onUpdate(UnfollowProfile(pubkey = it.pubkey)) },
                 onOpen = { onUpdate(OpenProfile(nprofile = it.toNip19())) }
