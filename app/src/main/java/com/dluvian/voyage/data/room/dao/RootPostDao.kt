@@ -50,11 +50,27 @@ private const val PROFILE_FEED_EXISTS_QUERY = "SELECT EXISTS(SELECT * " +
         "FROM RootPostView " +
         "WHERE pubkey = :pubkey)"
 
+
+private const val LIST_CONDITION =
+    "pubkey IN (SELECT pubkey FROM profileSetItem WHERE identifier = :identifier) " +
+            "OR id IN (SELECT postId FROM hashtag WHERE hashtag IN (SELECT topic FROM topicSetItem WHERE identifier = :identifier)) "
+private const val LIST_FEED_BASE_QUERY = "FROM RootPostView " +
+        "WHERE createdAt <= :until " +
+        "AND $LIST_CONDITION " +
+        "ORDER BY createdAt DESC " +
+        "LIMIT :size"
+private const val LIST_FEED_QUERY = "SELECT * $LIST_FEED_BASE_QUERY"
+private const val LIST_FEED_CREATED_AT_QUERY = "SELECT createdAt $LIST_FEED_BASE_QUERY"
+private const val LIST_FEED_EXISTS_QUERY = "SELECT EXISTS(SELECT * " +
+        "FROM RootPostView " +
+        "WHERE $LIST_CONDITION)"
+
 @Dao
 interface RootPostDao {
 
     @Query("SELECT * FROM RootPostView WHERE id = :id")
     fun getRootPostFlow(id: EventIdHex): Flow<RootPostView?>
+
 
     @Query(HOME_FEED_QUERY)
     fun getHomeRootPostFlow(until: Long, size: Int): Flow<List<RootPostView>>
@@ -64,6 +80,7 @@ interface RootPostDao {
 
     @Query(HOME_FEED_EXISTS_QUERY)
     fun hasHomeRootPostsFlow(): Flow<Boolean>
+
 
     @Query(HOME_FEED_CREATED_AT_QUERY)
     suspend fun getHomeRootPostsCreatedAt(until: Long, size: Int): List<Long>
@@ -80,6 +97,7 @@ interface RootPostDao {
     @Query(TOPIC_FEED_CREATED_AT_QUERY)
     suspend fun getTopicRootPostsCreatedAt(topic: Topic, until: Long, size: Int): List<Long>
 
+
     @Query(PROFILE_FEED_QUERY)
     fun getProfileRootPostFlow(pubkey: PubkeyHex, until: Long, size: Int): Flow<List<RootPostView>>
 
@@ -91,4 +109,17 @@ interface RootPostDao {
 
     @Query(PROFILE_FEED_CREATED_AT_QUERY)
     suspend fun getProfileRootPostsCreatedAt(pubkey: PubkeyHex, until: Long, size: Int): List<Long>
+
+
+    @Query(LIST_FEED_QUERY)
+    fun getListRootPostFlow(identifier: String, until: Long, size: Int): Flow<List<RootPostView>>
+
+    @Query(LIST_FEED_EXISTS_QUERY)
+    fun hasListRootPostsFlow(identifier: String): Flow<Boolean>
+
+    @Query(LIST_FEED_QUERY)
+    suspend fun getListRootPosts(identifier: String, until: Long, size: Int): List<RootPostView>
+
+    @Query(LIST_FEED_CREATED_AT_QUERY)
+    suspend fun getListRootPostsCreatedAt(identifier: String, until: Long, size: Int): List<Long>
 }

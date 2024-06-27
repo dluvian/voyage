@@ -9,9 +9,12 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
+import com.dluvian.voyage.core.ListViewFeedAppend
+import com.dluvian.voyage.core.ListViewRefresh
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.getListTabHeaders
 import com.dluvian.voyage.core.viewModel.ListViewModel
+import com.dluvian.voyage.ui.components.Feed
 import com.dluvian.voyage.ui.components.SimpleTabPager
 import com.dluvian.voyage.ui.components.indicator.ComingSoon
 import com.dluvian.voyage.ui.components.list.ProfileList
@@ -30,13 +33,13 @@ fun ListView(
         snackbar = snackbar,
         onUpdate = onUpdate
     ) {
-        ScreenContent(vm = vm)
+        ScreenContent(vm = vm, onUpdate = onUpdate)
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun ScreenContent(vm: ListViewModel) {
+private fun ScreenContent(vm: ListViewModel, onUpdate: OnUpdate) {
     val scope = rememberCoroutineScope()
     val feedState = rememberLazyListState()
     val profileState = rememberLazyListState()
@@ -59,7 +62,13 @@ private fun ScreenContent(vm: ListViewModel) {
         },
     ) {
         when (it) {
-            0 -> ComingSoon()
+            0 -> Feed(
+                paginator = vm.paginator,
+                state = feedState,
+                onRefresh = { onUpdate(ListViewRefresh) },
+                onAppend = { onUpdate(ListViewFeedAppend) },
+                onUpdate = onUpdate,
+            )
 
             1 -> ProfileList(
                 profiles = vm.itemSetProvider.profiles.value,

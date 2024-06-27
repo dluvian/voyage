@@ -248,6 +248,8 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         },
         listVM = viewModel {
             ListViewModel(
+                feedProvider = appContainer.feedProvider,
+                subCreator = appContainer.nostrSubscriber.subCreator,
                 itemSetProvider = appContainer.itemSetProvider,
             )
         }

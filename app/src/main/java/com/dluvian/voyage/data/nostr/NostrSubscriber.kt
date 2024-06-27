@@ -10,6 +10,7 @@ import com.dluvian.voyage.data.model.BookmarksFeedSetting
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.InboxFeedSetting
+import com.dluvian.voyage.data.model.ListFeedSetting
 import com.dluvian.voyage.data.model.ProfileRootFeedSetting
 import com.dluvian.voyage.data.model.ReplyFeedSetting
 import com.dluvian.voyage.data.model.TopicFeedSetting
@@ -62,6 +63,13 @@ class NostrSubscriber(
 
         val subscriptions = when (setting) {
             is HomeFeedSetting -> feedSubscriber.getHomeFeedSubscriptions(
+                until = until.toULong(),
+                since = since,
+                limit = (4 * limit).toULong() // We don't know if we receive enough root posts
+            )
+
+            is ListFeedSetting -> feedSubscriber.getListFeedSubscriptions(
+                identifier = setting.identifier,
                 until = until.toULong(),
                 since = since,
                 limit = (4 * limit).toULong() // We don't know if we receive enough root posts
@@ -184,6 +192,12 @@ class NostrSubscriber(
 
             is TopicFeedSetting -> room.rootPostDao().getTopicRootPostsCreatedAt(
                 topic = setting.topic,
+                until = until,
+                size = pageSizeAndHalfOfNext
+            )
+
+            is ListFeedSetting -> room.rootPostDao().getListRootPostsCreatedAt(
+                identifier = setting.identifier,
                 until = until,
                 size = pageSizeAndHalfOfNext
             )

@@ -13,6 +13,7 @@ import com.dluvian.voyage.data.model.BookmarksFeedSetting
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.InboxFeedSetting
+import com.dluvian.voyage.data.model.ListFeedSetting
 import com.dluvian.voyage.data.model.ProfileRootFeedSetting
 import com.dluvian.voyage.data.model.ReplyFeedSetting
 import com.dluvian.voyage.data.model.RootFeedSetting
@@ -101,6 +102,12 @@ class FeedProvider(
 
             is ProfileRootFeedSetting -> room.rootPostDao().getProfileRootPostFlow(
                 pubkey = setting.nprofile.publicKey().toHex(),
+                until = until,
+                size = size
+            )
+
+            is ListFeedSetting -> room.rootPostDao().getListRootPostFlow(
+                identifier = setting.identifier,
                 until = until,
                 size = size
             )
@@ -209,9 +216,13 @@ class FeedProvider(
             is ReplyFeedSetting -> room.replyDao()
                 .hasProfileRepliesFlow(pubkey = setting.nprofile.publicKey().toHex())
 
+            is ListFeedSetting -> room.rootPostDao()
+                .hasListRootPostsFlow(identifier = setting.identifier)
+
             InboxFeedSetting -> room.inboxDao().hasInboxFlow()
 
             BookmarksFeedSetting -> room.bookmarkDao().hasBookmarkedPostsFlow()
+
         }
     }
 }

@@ -11,6 +11,11 @@ import com.dluvian.voyage.core.takeRandom
 import com.dluvian.voyage.core.textNoteAndRepostKinds
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.model.FriendPubkeys
+import com.dluvian.voyage.data.model.ListPubkeys
+import com.dluvian.voyage.data.model.ListTopics
+import com.dluvian.voyage.data.model.MyTopics
+import com.dluvian.voyage.data.model.PubkeySelection
+import com.dluvian.voyage.data.model.TopicSelection
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.room.dao.BookmarkDao
@@ -25,6 +30,7 @@ import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Timestamp
 
 private const val TAG = "NostrFeedSubscriber"
+
 class NostrFeedSubscriber(
     private val scope: CoroutineScope,
     private val relayProvider: RelayProvider,
@@ -37,6 +43,37 @@ class NostrFeedSubscriber(
         since: ULong,
         limit: ULong
     ): Map<RelayUrl, List<Filter>> {
+        return getPeopleAndTopicFeed(
+            pubkeySelection = FriendPubkeys,
+            topicSelection = MyTopics,
+            until = until,
+            since = since,
+            limit = limit
+        )
+    }
+
+    suspend fun getListFeedSubscriptions(
+        identifier: String,
+        until: ULong,
+        since: ULong,
+        limit: ULong
+    ): Map<RelayUrl, List<Filter>> {
+        return getPeopleAndTopicFeed(
+            pubkeySelection = ListPubkeys(identifier = identifier),
+            topicSelection = ListTopics(identifier = identifier),
+            until = until,
+            since = since,
+            limit = limit
+        )
+    }
+
+    private suspend fun getPeopleAndTopicFeed(
+        pubkeySelection: PubkeySelection,
+        topicSelection: TopicSelection,
+        until: ULong,
+        since: ULong,
+        limit: ULong
+    ): Map<RelayUrl, List<Filter>> {
         if (limit <= 0u || since >= until) return emptyMap()
 
         val result = mutableMapOf<RelayUrl, MutableList<Filter>>()
@@ -44,9 +81,9 @@ class NostrFeedSubscriber(
         val sinceTimestamp = Timestamp.fromSecs(since)
         val untilTimestamp = Timestamp.fromSecs(until)
 
-        val friendJob = scope.launch {
+        val peopleJob = scope.launch {
             relayProvider
-                .getObserveRelays(selection = FriendPubkeys)
+                .getObserveRelays(selection = pubkeySelection)
                 .forEach { (relayUrl, pubkeys) ->
                     val publicKeys = pubkeys.takeRandom(MAX_KEYS).map { PublicKey.fromHex(it) }
                     val friendsNoteFilter = Filter()
@@ -60,7 +97,10 @@ class NostrFeedSubscriber(
                 }
         }
 
-        val topics = topicProvider.getMyTopics(limit = MAX_KEYS)
+        val topics = topicProvider.getTopicSelection(
+            topicSelection = topicSelection,
+            limit = MAX_KEYS
+        )
         if (topics.isNotEmpty()) {
             val topicedNoteFilter = Filter()
                 .kinds(kinds = textNoteAndRepostKinds)
@@ -75,7 +115,7 @@ class NostrFeedSubscriber(
             }
         }
 
-        friendJob.join()
+        peopleJob.join()
 
         return result
     }

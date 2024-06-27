@@ -8,6 +8,7 @@ import com.dluvian.voyage.data.model.BookmarksFeedSetting
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.InboxFeedSetting
+import com.dluvian.voyage.data.model.ListFeedSetting
 import com.dluvian.voyage.data.model.ProfileRootFeedSetting
 import com.dluvian.voyage.data.model.ReplyFeedSetting
 import com.dluvian.voyage.data.model.RootFeedSetting
@@ -46,6 +47,12 @@ class StaticFeedProvider(
 
             is ProfileRootFeedSetting -> room.rootPostDao().getProfileRootPosts(
                 pubkey = setting.nprofile.publicKey().toHex(),
+                until = until,
+                size = size
+            )
+
+            is ListFeedSetting -> room.rootPostDao().getListRootPosts(
+                identifier = setting.identifier,
                 until = until,
                 size = size
             )

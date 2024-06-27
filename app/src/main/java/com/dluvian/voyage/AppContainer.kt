@@ -85,11 +85,6 @@ class AppContainer(context: Context) {
 
     private val forcedFollowTopicStates = MutableStateFlow(emptyMap<Topic, Boolean>())
 
-    val topicProvider = TopicProvider(
-        topicDao = roomDb.topicDao(),
-        forcedFollowStates = forcedFollowTopicStates
-    )
-
     private val accountManager = AccountManager(
         mnemonicSigner = mnemonicSigner,
         externalSigner = externalSigner,
@@ -99,6 +94,20 @@ class AppContainer(context: Context) {
     private val friendProvider = FriendProvider(
         friendDao = roomDb.friendDao(),
         pubkeyProvider = accountManager,
+    )
+
+    val itemSetProvider = ItemSetProvider(
+        itemSetDao = roomDb.itemSetDao(),
+        profileDao = roomDb.profileDao(),
+        topicDao = roomDb.topicDao(),
+        pubkeyProvider = accountManager,
+        friendProvider = friendProvider
+    )
+
+    val topicProvider = TopicProvider(
+        forcedFollowStates = forcedFollowTopicStates,
+        topicDao = roomDb.topicDao(),
+        itemSetProvider = itemSetProvider,
     )
 
     val relayProvider = RelayProvider(
@@ -315,13 +324,6 @@ class AppContainer(context: Context) {
         snackbar = snackbar,
     )
 
-    val itemSetProvider = ItemSetProvider(
-        itemSetDao = roomDb.itemSetDao(),
-        profileDao = roomDb.profileDao(),
-        topicDao = roomDb.topicDao(),
-        pubkeyProvider = accountManager,
-        friendProvider = friendProvider
-    )
     val itemSetEditor = ItemSetEditor(
         nostrService = nostrService,
         relayProvider = relayProvider,

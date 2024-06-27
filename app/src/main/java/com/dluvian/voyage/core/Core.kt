@@ -77,6 +77,7 @@ class Core(
             is FollowListsViewAction -> vmContainer.followListsVM.handle(action = uiEvent)
             is BookmarksViewAction -> vmContainer.bookmarksVM.handle(action = uiEvent)
             is EditListViewAction -> vmContainer.editListVM.handle(action = uiEvent)
+            is ListViewAction -> vmContainer.listVM.handle(action = uiEvent)
 
             is ProcessExternalSignature -> viewModelScope.launch {
                 appContainer.externalSignerHandler.processExternalSignature(

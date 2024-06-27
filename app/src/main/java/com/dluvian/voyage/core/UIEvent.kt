@@ -168,6 +168,11 @@ data class EditListViewAddProfile(val profile: AdvancedProfileView) : EditListVi
 data class EditListViewAddTopic(val topic: Topic) : EditListViewAction()
 
 
+sealed class ListViewAction : UIEvent()
+data object ListViewRefresh : ListViewAction()
+data object ListViewFeedAppend : ListViewAction()
+
+
 sealed class DrawerViewAction : UIEvent()
 data object DrawerViewSubscribeSets : DrawerViewAction()
 data class OpenDrawer(val scope: CoroutineScope) : DrawerViewAction()

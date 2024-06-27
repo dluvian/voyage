@@ -3,17 +3,39 @@ package com.dluvian.voyage.data.provider
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.TopicFollowState
 import com.dluvian.voyage.core.takeRandom
+import com.dluvian.voyage.data.model.ListTopics
+import com.dluvian.voyage.data.model.MyTopics
+import com.dluvian.voyage.data.model.TopicSelection
 import com.dluvian.voyage.data.room.dao.TopicDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 
 class TopicProvider(
-    private val topicDao: TopicDao,
     val forcedFollowStates: Flow<Map<Topic, Boolean>>,
+    private val topicDao: TopicDao,
+    private val itemSetProvider: ItemSetProvider,
 ) {
-    suspend fun getMyTopics(limit: Int = Int.MAX_VALUE) = topicDao.getMyTopics().takeRandom(limit)
-    suspend fun getAllTopics() = topicDao.getAllTopics()
+    suspend fun getMyTopics(limit: Int = Int.MAX_VALUE): List<Topic> {
+        return topicDao.getMyTopics().takeRandom(limit)
+    }
+
+    suspend fun getTopicSelection(
+        topicSelection: TopicSelection,
+        limit: Int = Int.MAX_VALUE
+    ): List<Topic> {
+        return when (topicSelection) {
+            MyTopics -> getMyTopics(limit = limit)
+            is ListTopics -> itemSetProvider.getTopicsFromList(
+                identifier = topicSelection.identifier,
+                limit = limit
+            )
+        }
+    }
+
+    suspend fun getAllTopics(): List<Topic> {
+        return topicDao.getAllTopics()
+    }
 
     suspend fun getPopularUnfollowedTopics(limit: Int): List<Topic> {
         return topicDao.getUnfollowedTopics(limit = limit)

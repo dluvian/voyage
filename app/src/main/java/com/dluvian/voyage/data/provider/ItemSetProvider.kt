@@ -72,7 +72,7 @@ class ItemSetProvider(
         }
     }
 
-    private suspend fun getTopicsFromList(identifier: String): List<Topic> {
-        return topicDao.getTopicsFromList(identifier = identifier)
+    suspend fun getTopicsFromList(identifier: String, limit: Int = Int.MAX_VALUE): List<Topic> {
+        return topicDao.getTopicsFromList(identifier = identifier, limit = limit)
     }
 }

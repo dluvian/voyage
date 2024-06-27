@@ -13,6 +13,7 @@ import com.dluvian.voyage.data.model.BookmarksFeedSetting
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.InboxFeedSetting
+import com.dluvian.voyage.data.model.ListFeedSetting
 import com.dluvian.voyage.data.model.ProfileRootFeedSetting
 import com.dluvian.voyage.data.model.ReplyFeedSetting
 import com.dluvian.voyage.data.model.TopicFeedSetting
@@ -56,7 +57,8 @@ class Paginator(
             HomeFeedSetting, InboxFeedSetting, BookmarksFeedSetting -> page.value.value.isNotEmpty()
             is TopicFeedSetting,
             is ProfileRootFeedSetting,
-            is ReplyFeedSetting -> page.value.value.isNotEmpty() && feedSetting == setting
+            is ReplyFeedSetting,
+            is ListFeedSetting -> page.value.value.isNotEmpty() && feedSetting == setting
         }
         if (isSame) {
             Log.i(TAG, "Skip init. Settings are the same")

@@ -20,6 +20,7 @@ import com.dluvian.voyage.core.putOrAdd
 import com.dluvian.voyage.core.takeRandom
 import com.dluvian.voyage.data.model.CustomPubkeys
 import com.dluvian.voyage.data.model.FriendPubkeys
+import com.dluvian.voyage.data.model.ListPubkeys
 import com.dluvian.voyage.data.model.PubkeySelection
 import com.dluvian.voyage.data.room.dao.EventRelayDao
 import com.dluvian.voyage.data.room.dao.Nip65Dao
@@ -143,6 +144,7 @@ class RelayProvider(
                     return getObserveRelays(pubkey = pubkey).associateWith { setOf(pubkey) }
                 }
             }
+            is ListPubkeys -> TODO()
         }
 
         val result = mutableMapOf<RelayUrl, MutableSet<PubkeyHex>>()
@@ -153,6 +155,8 @@ class RelayProvider(
             is CustomPubkeys -> eventRelayDao.getEventRelayAuthorView(
                 authors = selection.pubkeys.takeRandom(MAX_KEYS_SQL)
             )
+
+            is ListPubkeys -> TODO()
         }
         val eventRelays = eventRelaysView.map { it.relayUrl }.toSet()
 
@@ -161,6 +165,8 @@ class RelayProvider(
             is CustomPubkeys -> nip65Dao.getWriteRelays(
                 pubkeys = selection.pubkeys.takeRandom(MAX_KEYS_SQL)
             )
+
+            is ListPubkeys -> TODO()
         }
 
         // Cover pubkey-write-relay pairing
@@ -205,6 +211,7 @@ class RelayProvider(
         val restPubkeys = when (selection) {
             is FriendPubkeys -> friendProvider.getFriendPubkeys()
             is CustomPubkeys -> selection.pubkeys
+            is ListPubkeys -> TODO()
         } - pubkeyCache
         if (restPubkeys.isNotEmpty()) {
             Log.w(TAG, "Default to read relays for ${restPubkeys.size} pubkeys")
