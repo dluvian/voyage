@@ -1,5 +1,7 @@
 package com.dluvian.voyage.core.viewModel
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -14,10 +16,11 @@ import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.ItemSetProvider
 
-class ListViewModel(
+class ListViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
     feedProvider: FeedProvider,
     subCreator: SubscriptionCreator,
     val itemSetProvider: ItemSetProvider,
+    val pagerState: PagerState
 
 ) : ViewModel() {
     val isLoading = mutableStateOf(false)

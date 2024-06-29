@@ -14,6 +14,7 @@ fun ProfileList(
     isRemovable: Boolean = false,
     firstRow: ComposableContent = {},
     onRemove: (Int) -> Unit = {},
+    onClick: (Int) -> Unit = {},
 ) {
     val mappedProfiles = remember(profiles) {
         profiles.map { profile ->
@@ -28,6 +29,7 @@ fun ProfileList(
         state = state,
         isRemovable = isRemovable,
         firstRow = firstRow,
-        onRemove = onRemove
+        onRemove = onRemove,
+        onClick = onClick
     )
 }

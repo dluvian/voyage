@@ -15,6 +15,7 @@ fun TopicList(
     isRemovable: Boolean = false,
     firstRow: ComposableContent = {},
     onRemove: (Int) -> Unit = {},
+    onClick: (Int) -> Unit = {},
 ) {
     val mappedTopics = remember(topics) {
         topics.map { topic ->
@@ -29,6 +30,7 @@ fun TopicList(
         state = state,
         isRemovable = isRemovable,
         firstRow = firstRow,
-        onRemove = onRemove
+        onRemove = onRemove,
+        onClick = onClick,
     )
 }

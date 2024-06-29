@@ -2,16 +2,18 @@ package com.dluvian.voyage.ui.views.nonMain.list
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ListViewFeedAppend
 import com.dluvian.voyage.core.ListViewRefresh
 import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.core.OpenProfile
+import com.dluvian.voyage.core.OpenTopic
 import com.dluvian.voyage.core.getListTabHeaders
 import com.dluvian.voyage.core.viewModel.ListViewModel
 import com.dluvian.voyage.ui.components.Feed
@@ -44,13 +46,14 @@ private fun ScreenContent(vm: ListViewModel, onUpdate: OnUpdate) {
     val feedState = rememberLazyListState()
     val profileState = rememberLazyListState()
     val topicState = rememberLazyListState()
+
+    val profiles by vm.itemSetProvider.profiles
+    val topics by vm.itemSetProvider.topics
+
     SimpleTabPager(
-        headers = getHeaders(
-            numOfProfiles = vm.itemSetProvider.profiles.value.size,
-            numOfTopics = vm.itemSetProvider.topics.value.size
-        ),
+        headers = getHeaders(numOfProfiles = profiles.size, numOfTopics = topics.size),
         index = vm.tabIndex,
-        pagerState = rememberPagerState { 3 },
+        pagerState = vm.pagerState,
         isLoading = vm.isLoading.value,
         onScrollUp = {
             when (it) {
@@ -71,13 +74,15 @@ private fun ScreenContent(vm: ListViewModel, onUpdate: OnUpdate) {
             )
 
             1 -> ProfileList(
-                profiles = vm.itemSetProvider.profiles.value,
+                profiles = profiles,
                 state = profileState,
+                onClick = { i -> onUpdate(OpenProfile(nprofile = profiles[i].toNip19())) },
             )
 
             2 -> TopicList(
-                topics = vm.itemSetProvider.topics.value,
+                topics = topics,
                 state = topicState,
+                onClick = { i -> onUpdate(OpenTopic(topic = topics[i])) },
             )
 
             else -> ComingSoon()

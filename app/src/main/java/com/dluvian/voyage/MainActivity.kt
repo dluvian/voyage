@@ -93,6 +93,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
 
     val profilePagerState = rememberPagerState { 4 }
     val followListsPagerState = rememberPagerState { 2 }
+    val listViewPagerState = rememberPagerState { 3 }
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
 
@@ -251,6 +252,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 feedProvider = appContainer.feedProvider,
                 subCreator = appContainer.nostrSubscriber.subCreator,
                 itemSetProvider = appContainer.itemSetProvider,
+                pagerState = listViewPagerState
             )
         }
     )

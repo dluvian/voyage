@@ -23,6 +23,7 @@ fun ItemList(
     isRemovable: Boolean,
     firstRow: ComposableContent = {},
     onRemove: (Int) -> Unit = {},
+    onClick: (Int) -> Unit = {},
 ) {
     if (!isRemovable && items.isEmpty()) {
         BaseHint(text = stringResource(id = R.string.no_items_found))
@@ -40,7 +41,7 @@ fun ItemList(
                         RemoveIconButton(onRemove = { onRemove(i) })
                     }
                 },
-                onClick = { }
+                onClick = { onClick(i) }
             )
         }
     }
