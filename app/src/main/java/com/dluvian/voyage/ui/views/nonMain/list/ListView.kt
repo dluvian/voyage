@@ -54,7 +54,7 @@ private fun ScreenContent(vm: ListViewModel, onUpdate: OnUpdate) {
         headers = getHeaders(numOfProfiles = profiles.size, numOfTopics = topics.size),
         index = vm.tabIndex,
         pagerState = vm.pagerState,
-        isLoading = vm.isLoading.value,
+        isLoading = vm.isLoading.value && !vm.paginator.isRefreshing.value,
         onScrollUp = {
             when (it) {
                 0 -> scope.launch { feedState.animateScrollToItem(0) }
