@@ -78,7 +78,7 @@ class Paginator(
         }
     }
 
-    fun refresh(onSub: Fn = {}) {
+    fun refresh(onSub: Fn? = null) {
         if (isRefreshing.value) return
 
         isRefreshing.value = true
@@ -88,8 +88,10 @@ class Paginator(
         val now = getCurrentSecs()
 
         scope.launchIO {
-            onSub()
-            delay(DELAY_1SEC)
+            if (onSub != null) {
+                onSub()
+                delay(DELAY_1SEC)
+            }
             page.value =
                 getFlow(
                     until = now,

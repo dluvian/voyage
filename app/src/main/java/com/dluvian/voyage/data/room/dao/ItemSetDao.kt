@@ -2,6 +2,7 @@ package com.dluvian.voyage.data.room.dao
 
 import androidx.room.Dao
 import androidx.room.Query
+import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.model.ItemSetMeta
 import kotlinx.coroutines.flow.Flow
 
@@ -27,4 +28,7 @@ interface ItemSetDao {
 
     @Query("SELECT title FROM topicSet WHERE identifier = :identifier")
     suspend fun getTopicSetTitle(identifier: String): String?
+
+    @Query("SELECT DISTINCT pubkey FROM profileSetItem WHERE identifier = :identifier LIMIT :limit")
+    suspend fun getPubkeys(identifier: String, limit: Int): List<PubkeyHex>
 }

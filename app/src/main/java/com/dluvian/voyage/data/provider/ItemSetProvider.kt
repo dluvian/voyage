@@ -1,6 +1,7 @@
 package com.dluvian.voyage.data.provider
 
 import androidx.compose.runtime.mutableStateOf
+import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.createAdvancedProfile
@@ -74,5 +75,12 @@ class ItemSetProvider(
 
     suspend fun getTopicsFromList(identifier: String, limit: Int = Int.MAX_VALUE): List<Topic> {
         return topicDao.getTopicsFromList(identifier = identifier, limit = limit)
+    }
+
+    suspend fun getPubkeysFromList(
+        identifier: String,
+        limit: Int = Int.MAX_VALUE
+    ): List<PubkeyHex> {
+        return itemSetDao.getPubkeys(identifier = identifier, limit = limit)
     }
 }

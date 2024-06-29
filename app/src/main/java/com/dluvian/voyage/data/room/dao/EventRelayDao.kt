@@ -16,6 +16,14 @@ interface EventRelayDao {
     @Query("SELECT * FROM EventRelayAuthorView WHERE pubkey IN (SELECT friendPubkey FROM friend)")
     suspend fun getFriendsEventRelayAuthorView(): List<EventRelayAuthorView>
 
+    @Query(
+        "SELECT * " +
+                "FROM EventRelayAuthorView " +
+                "WHERE pubkey " +
+                "IN (SELECT pubkey FROM profileSetItem WHERE identifier = :identifier)"
+    )
+    suspend fun getEventRelayAuthorViewFromList(identifier: String): List<EventRelayAuthorView>
+
     @Query("SELECT relayUrl FROM post WHERE id = :eventId")
     suspend fun getEventRelay(eventId: EventIdHex): RelayUrl?
 

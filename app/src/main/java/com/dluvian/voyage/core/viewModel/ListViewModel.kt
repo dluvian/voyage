@@ -31,7 +31,7 @@ class ListViewModel(
 
     fun handle(action: ListViewAction) {
         when (action) {
-            ListViewRefresh -> TODO()
+            ListViewRefresh -> paginator.refresh()
             ListViewFeedAppend -> paginator.append()
         }
     }

@@ -116,6 +116,7 @@ class AppContainer(context: Context) {
         nostrClient = nostrClient,
         connectionStatuses = connectionStatuses,
         friendProvider = friendProvider,
+        itemSetProvider = itemSetProvider
     )
 
     private val eventCounter = EventCounter()

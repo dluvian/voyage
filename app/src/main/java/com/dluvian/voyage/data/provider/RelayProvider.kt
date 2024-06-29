@@ -40,6 +40,7 @@ class RelayProvider(
     private val nostrClient: NostrClient,
     private val connectionStatuses: State<Map<RelayUrl, ConnectionStatus>>,
     private val friendProvider: FriendProvider,
+    private val itemSetProvider: ItemSetProvider,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val myNip65 =
@@ -134,7 +135,7 @@ class RelayProvider(
 
     suspend fun getObserveRelays(selection: PubkeySelection): Map<RelayUrl, Set<PubkeyHex>> {
         when (selection) {
-            is FriendPubkeys -> {}
+            is FriendPubkeys, is ListPubkeys -> {}
             is CustomPubkeys -> {
                 val pubkeys = selection.pubkeys
                 if (pubkeys.isEmpty()) {
@@ -144,7 +145,6 @@ class RelayProvider(
                     return getObserveRelays(pubkey = pubkey).associateWith { setOf(pubkey) }
                 }
             }
-            is ListPubkeys -> TODO()
         }
 
         val result = mutableMapOf<RelayUrl, MutableSet<PubkeyHex>>()
@@ -156,8 +156,11 @@ class RelayProvider(
                 authors = selection.pubkeys.takeRandom(MAX_KEYS_SQL)
             )
 
-            is ListPubkeys -> TODO()
+            is ListPubkeys -> eventRelayDao.getEventRelayAuthorViewFromList(
+                identifier = selection.identifier
+            )
         }
+
         val eventRelays = eventRelaysView.map { it.relayUrl }.toSet()
 
         val writeRelays = when (selection) {
@@ -166,7 +169,7 @@ class RelayProvider(
                 pubkeys = selection.pubkeys.takeRandom(MAX_KEYS_SQL)
             )
 
-            is ListPubkeys -> TODO()
+            is ListPubkeys -> nip65Dao.getWriteRelaysFromList(identifier = selection.identifier)
         }
 
         // Cover pubkey-write-relay pairing
@@ -211,7 +214,7 @@ class RelayProvider(
         val restPubkeys = when (selection) {
             is FriendPubkeys -> friendProvider.getFriendPubkeys()
             is CustomPubkeys -> selection.pubkeys
-            is ListPubkeys -> TODO()
+            is ListPubkeys -> itemSetProvider.getPubkeysFromList(identifier = selection.identifier)
         } - pubkeyCache
         if (restPubkeys.isNotEmpty()) {
             Log.w(TAG, "Default to read relays for ${restPubkeys.size} pubkeys")
