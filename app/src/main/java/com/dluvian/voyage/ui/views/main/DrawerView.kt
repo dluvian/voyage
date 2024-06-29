@@ -119,7 +119,9 @@ fun MainDrawer(
                     DrawerListItem(meta = it, scope = scope, onUpdate = onUpdate)
                 }
                 item {
-                    DrawerItem(label = stringResource(id = R.string.create_a_list),
+                    DrawerItem(
+                        modifier = Modifier.padding(bottom = spacing.bottomPadding),
+                        label = stringResource(id = R.string.create_a_list),
                         icon = AddIcon,
                         onClick = {
                             onUpdate(ClickCreateList)
@@ -138,12 +140,13 @@ fun MainDrawer(
 private fun DrawerItem(
     label: String,
     icon: ImageVector,
+    modifier: Modifier = Modifier,
     style: TextStyle = LocalTextStyle.current,
     onClick: Fn,
     onLongClick: Fn = {},
 ) {
     NavigationDrawerItem(
-        modifier = Modifier.combinedClickable(onLongClick = onLongClick, onClick = onClick),
+        modifier = modifier.combinedClickable(onLongClick = onLongClick, onClick = onClick),
         icon = {
             Icon(imageVector = icon, contentDescription = null)
         },
