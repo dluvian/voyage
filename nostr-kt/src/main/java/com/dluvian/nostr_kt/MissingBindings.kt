@@ -213,6 +213,14 @@ fun createNevent(
     )
 }
 
+fun createNeventUri(
+    hex: String,
+    author: String? = null,
+    relays: List<String> = emptyList()
+): String {
+    return "nostr:${createNeventStr(hex = hex, author = author, relays = relays)}"
+}
+
 fun createNeventStr(
     hex: String,
     author: String? = null,

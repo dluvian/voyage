@@ -9,7 +9,7 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.dluvian.nostr_kt.createNevent
-import com.dluvian.nostr_kt.createNeventStr
+import com.dluvian.nostr_kt.createNeventUri
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.BookmarkPost
 import com.dluvian.voyage.core.DeletePost
@@ -69,7 +69,7 @@ fun ParentRowDropdown(
             text = stringResource(id = R.string.copy_id),
             onClick = {
                 copyAndToast(
-                    text = createNeventStr(
+                    text = createNeventUri(
                         hex = parent.id,
                         author = parent.pubkey,
                         relays = listOf(parent.relayUrl).filter { it.isNotEmpty() }),
