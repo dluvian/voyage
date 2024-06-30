@@ -330,5 +330,6 @@ class AppContainer(context: Context) {
         relayProvider = relayProvider,
         profileSetUpsertDao = roomDb.profileSetUpsertDao(),
         topicSetUpsertDao = roomDb.topicSetUpsertDao(),
+        itemSetProvider = itemSetProvider,
     )
 }

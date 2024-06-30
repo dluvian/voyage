@@ -50,7 +50,15 @@ class ItemSetProvider(
         }
     }
 
-    private suspend fun getTitle(identifier: String): String {
+    suspend fun getAddableSets(pubkey: PubkeyHex): List<ItemSetMeta> {
+        return itemSetDao.getAddableSets(pubkey = pubkey).sortedBy { it.title }
+    }
+
+    suspend fun getNonAddableSets(pubkey: PubkeyHex): List<ItemSetMeta> {
+        return itemSetDao.getNonAddableSets(pubkey = pubkey).sortedBy { it.title }
+    }
+
+    suspend fun getTitle(identifier: String): String {
         return itemSetDao.getProfileSetTitle(identifier = identifier)
             .orEmpty()
             .ifEmpty { itemSetDao.getTopicSetTitle(identifier = identifier).orEmpty() }

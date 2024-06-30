@@ -168,6 +168,14 @@ data class EditListViewAddProfile(val profile: AdvancedProfileView) : EditListVi
 data class EditListViewAddTopic(val topic: Topic) : EditListViewAction()
 
 
+data class AddProfileToList(
+    val pubkey: PubkeyHex,
+    val identifier: String,
+    val scope: CoroutineScope,
+    val context: Context
+) : UIEvent()
+
+
 sealed class ListViewAction : UIEvent()
 data object ListViewRefresh : ListViewAction()
 data object ListViewFeedAppend : ListViewAction()
@@ -202,6 +210,7 @@ sealed class ProfileViewAction : UIEvent()
 data object ProfileViewRefresh : ProfileViewAction()
 data object ProfileViewRootAppend : ProfileViewAction()
 data object ProfileViewReplyAppend : ProfileViewAction()
+data object ProfileViewLoadLists : ProfileViewAction()
 
 
 sealed class CreatePostViewAction : UIEvent()

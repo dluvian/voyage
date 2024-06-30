@@ -87,7 +87,13 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
     )
     val scope = rememberCoroutineScope()
 
-    ProfileScaffold(profile = profile, snackbar = snackbar, onUpdate = onUpdate) {
+    ProfileScaffold(
+        profile = profile,
+        addableLists = vm.addableLists.value,
+        nonAddableLists = vm.nonAddableLists.value,
+        snackbar = snackbar,
+        onUpdate = onUpdate
+    ) {
         SimpleTabPager(
             headers = headers,
             index = index,

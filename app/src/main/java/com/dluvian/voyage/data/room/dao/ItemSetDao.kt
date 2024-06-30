@@ -23,6 +23,22 @@ interface ItemSetDao {
     )
     fun getMyTopicSetMetasFlow(): Flow<List<ItemSetMeta>>
 
+    @Query(
+        "SELECT identifier, title " +
+                "FROM profileSet " +
+                "WHERE deleted = 0 " +
+                "AND identifier NOT IN (SELECT identifier FROM profileSetItem WHERE pubkey = :pubkey)"
+    )
+    suspend fun getAddableSets(pubkey: PubkeyHex): List<ItemSetMeta>
+
+    @Query(
+        "SELECT identifier, title " +
+                "FROM profileSet " +
+                "WHERE deleted = 0 " +
+                "AND identifier IN (SELECT identifier FROM profileSetItem WHERE pubkey = :pubkey)"
+    )
+    suspend fun getNonAddableSets(pubkey: PubkeyHex): List<ItemSetMeta>
+
     @Query("SELECT title FROM profileSet WHERE identifier = :identifier")
     suspend fun getProfileSetTitle(identifier: String): String?
 

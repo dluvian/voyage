@@ -195,4 +195,7 @@
     <string name="edit_list">Edit list</string>
     <string name="feed">Feed</string>
     <string name="no_items_found">No items found</string>
+    <string name="add_to_list">Add to list</string>
+    <string name="choose_list">Choose list</string>
+    <string name="added_to_list">Added to list</string>
 </resources>

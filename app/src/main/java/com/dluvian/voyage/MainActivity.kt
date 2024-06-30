@@ -132,16 +132,17 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         },
         profileVM = viewModel {
             ProfileViewModel(
-                feedProvider = appContainer.feedProvider,
-                subCreator = appContainer.nostrSubscriber.subCreator,
-                profileProvider = appContainer.profileProvider,
-                nip65Dao = appContainer.roomDb.nip65Dao(),
-                eventRelayDao = appContainer.roomDb.eventRelayDao(),
                 rootFeedState = profileRootFeedState,
                 replyFeedState = profileReplyFeedState,
                 profileAboutState = profileAboutState,
                 profileRelayState = profileRelayState,
                 pagerState = profilePagerState,
+                feedProvider = appContainer.feedProvider,
+                subCreator = appContainer.nostrSubscriber.subCreator,
+                profileProvider = appContainer.profileProvider,
+                nip65Dao = appContainer.roomDb.nip65Dao(),
+                eventRelayDao = appContainer.roomDb.eventRelayDao(),
+                itemSetProvider = appContainer.itemSetProvider,
             )
         },
         threadVM = viewModel {

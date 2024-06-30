@@ -5,6 +5,7 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.event.EventValidator
 import com.dluvian.voyage.data.nostr.NostrService
+import com.dluvian.voyage.data.provider.ItemSetProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.tx.ProfileSetUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.TopicSetUpsertDao
@@ -18,6 +19,7 @@ class ItemSetEditor(
     private val relayProvider: RelayProvider,
     private val profileSetUpsertDao: ProfileSetUpsertDao,
     private val topicSetUpsertDao: TopicSetUpsertDao,
+    private val itemSetProvider: ItemSetProvider,
 ) {
     suspend fun editProfileSet(
         identifier: String,
@@ -63,5 +65,18 @@ class ItemSetEditor(
             }
             topicSetUpsertDao.upsertSet(set = validated)
         }
+    }
+
+    suspend fun addProfileToSet(pubkey: PubkeyHex, identifier: String): Result<Event> {
+        val currentList = itemSetProvider.getPubkeysFromList(identifier = identifier)
+        if (currentList.contains(pubkey)) {
+            return Result.failure(IllegalStateException("Pubkey is already in list"))
+        }
+
+        return editProfileSet(
+            identifier = identifier,
+            title = itemSetProvider.getTitle(identifier = identifier),
+            pubkeys = currentList + pubkey,
+        )
     }
 }

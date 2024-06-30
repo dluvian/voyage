@@ -12,17 +12,22 @@ import com.dluvian.nostr_kt.Nip65Relay
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.voyage.core.ProfileViewAction
+import com.dluvian.voyage.core.ProfileViewLoadLists
 import com.dluvian.voyage.core.ProfileViewRefresh
 import com.dluvian.voyage.core.ProfileViewReplyAppend
 import com.dluvian.voyage.core.ProfileViewRootAppend
+import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.core.navigator.ProfileNavView
 import com.dluvian.voyage.core.toBech32
 import com.dluvian.voyage.data.model.FullProfileUI
+import com.dluvian.voyage.data.model.ItemSetMeta
 import com.dluvian.voyage.data.model.ProfileRootFeedSetting
 import com.dluvian.voyage.data.model.ReplyFeedSetting
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.provider.FeedProvider
+import com.dluvian.voyage.data.provider.ItemSetProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.room.dao.EventRelayDao
 import com.dluvian.voyage.data.room.dao.Nip65Dao
@@ -35,18 +40,21 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class ProfileViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
-    feedProvider: FeedProvider,
-    private val subCreator: SubscriptionCreator,
-    private val profileProvider: ProfileProvider,
-    private val nip65Dao: Nip65Dao,
-    private val eventRelayDao: EventRelayDao,
     val rootFeedState: LazyListState,
     val replyFeedState: LazyListState,
     val profileAboutState: LazyListState,
     val profileRelayState: LazyListState,
     val pagerState: PagerState,
+    feedProvider: FeedProvider,
+    private val subCreator: SubscriptionCreator,
+    private val profileProvider: ProfileProvider,
+    private val nip65Dao: Nip65Dao,
+    private val eventRelayDao: EventRelayDao,
+    private val itemSetProvider: ItemSetProvider,
 ) : ViewModel() {
     val tabIndex = mutableIntStateOf(0)
+    val addableLists = mutableStateOf(emptyList<ItemSetMeta>())
+    val nonAddableLists = mutableStateOf(emptyList<ItemSetMeta>())
     val profile: MutableState<StateFlow<FullProfileUI>> =
         mutableStateOf(MutableStateFlow(FullProfileUI()))
     val nip65Relays: MutableState<StateFlow<List<Nip65Relay>>> =
@@ -96,6 +104,7 @@ class ProfileViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
             ProfileViewRefresh -> refresh()
             ProfileViewRootAppend -> rootPaginator.append()
             ProfileViewReplyAppend -> replyPaginator.append()
+            ProfileViewLoadLists -> updateLists(pubkey = profile.value.value.inner.pubkey)
         }
     }
 
@@ -110,5 +119,12 @@ class ProfileViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
             )
         rootPaginator.refresh()
         replyPaginator.refresh()
+    }
+
+    private fun updateLists(pubkey: PubkeyHex) {
+        viewModelScope.launchIO {
+            addableLists.value = itemSetProvider.getAddableSets(pubkey = pubkey)
+            nonAddableLists.value = itemSetProvider.getNonAddableSets(pubkey = pubkey)
+        }
     }
 }

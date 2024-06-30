@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.dluvian.nostr_kt.createNevent
 import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.voyage.AppContainer
+import com.dluvian.voyage.R
 import com.dluvian.voyage.VMContainer
 import com.dluvian.voyage.core.model.CoordinateMention
 import com.dluvian.voyage.core.model.NeventMention
@@ -52,11 +53,29 @@ class Core(
             is DeletePost -> viewModelScope.launchIO {
                 appContainer.eventDeletor.deletePost(postId = uiEvent.id)
             }
+
             is DeleteList -> viewModelScope.launchIO {
                 appContainer.eventDeletor.deleteList(
                     identifier = uiEvent.identifier,
                     onCloseDrawer = uiEvent.onCloseDrawer
                 )
+            }
+
+            is AddProfileToList -> viewModelScope.launchIO {
+                appContainer.itemSetEditor.addProfileToSet(
+                    pubkey = uiEvent.pubkey,
+                    identifier = uiEvent.identifier
+                ).onFailure {
+                    appContainer.snackbar.showToast(
+                        scope = uiEvent.scope,
+                        msg = uiEvent.context.getString(R.string.failed_to_sign_profile_list)
+                    )
+                }.onSuccess {
+                    appContainer.snackbar.showToast(
+                        scope = uiEvent.scope,
+                        msg = uiEvent.context.getString(R.string.added_to_list)
+                    )
+                }
             }
 
             is BookmarkEvent -> appContainer.bookmarker.handle(action = uiEvent)
