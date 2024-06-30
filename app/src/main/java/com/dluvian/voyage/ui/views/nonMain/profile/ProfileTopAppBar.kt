@@ -45,7 +45,7 @@ fun ProfileTopAppBar(
 ) {
     val scope = rememberCoroutineScope()
     SimpleGoBackTopAppBar(
-        title = profile.inner.name + "asdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdf",
+        title = profile.inner.name,
         actions = {
             if (!profile.inner.isMe) {
                 ActionButton(
@@ -91,7 +91,6 @@ private fun ActionButton(
             pubkey = pubkey,
             addableLists = addableLists,
             nonAddableLists = nonAddableLists,
-            snackbar = snackbar,
             scope = scope,
             onUpdate = onUpdate,
             onDismiss = { showMenu.value = false })
@@ -115,7 +114,6 @@ private fun ActionMenu(
     pubkey: PubkeyHex,
     addableLists: List<ItemSetMeta>,
     nonAddableLists: List<ItemSetMeta>,
-    snackbar: SnackbarHostState,
     scope: CoroutineScope,
     onUpdate: OnUpdate,
     onDismiss: Fn
@@ -126,7 +124,6 @@ private fun ActionMenu(
         pubkey = pubkey,
         addableLists = addableLists,
         nonAddableLists = nonAddableLists,
-        snackbar = snackbar,
         scope = scope,
         onUpdate = onUpdate,
         onDismiss = { showAddToList.value = false }
@@ -147,7 +144,6 @@ private fun AddToListDialog(
     pubkey: PubkeyHex,
     addableLists: List<ItemSetMeta>,
     nonAddableLists: List<ItemSetMeta>,
-    snackbar: SnackbarHostState,
     scope: CoroutineScope,
     onUpdate: OnUpdate,
     onDismiss: Fn
