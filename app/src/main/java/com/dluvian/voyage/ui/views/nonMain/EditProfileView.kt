@@ -149,10 +149,10 @@ private fun EditProfileViewContent(
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         item { Name(username = name) }
         item { About(about = about) }
+        item { Lud16(lud16 = lud16) }
         item { ShowAdvancedButton(showAdvanced = showAdvanced) }
         item { DisplayName(showAdvanced.value, displayName = displayName) }
         item { Picture(isVisible = showAdvanced.value, picture = picture) }
-        item { Lud16(isVisible = showAdvanced.value, lud16 = lud16) }
         item { Lud06(isVisible = showAdvanced.value, lud06 = lud06) }
         item { Nip05(isVisible = showAdvanced.value, nip05 = nip05) }
         item { Website(isVisible = showAdvanced.value, website = website) }
@@ -225,9 +225,9 @@ private fun Lud06(isVisible: Boolean, lud06: MutableState<TextFieldValue>) {
 }
 
 @Composable
-private fun Lud16(isVisible: Boolean, lud16: MutableState<TextFieldValue>) {
+private fun Lud16(lud16: MutableState<TextFieldValue>) {
     EditableField(
-        isVisible = isVisible,
+        isVisible = true,
         header = stringResource(id = R.string.lightning_address_lud16),
         input = lud16,
         placeholder = stringResource(id = R.string.enter_your_lightning_address),

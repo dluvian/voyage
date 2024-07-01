@@ -8,7 +8,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -40,7 +39,6 @@ fun ProfileTopAppBar(
     profile: FullProfileUI,
     addableLists: List<ItemSetMeta>,
     nonAddableLists: List<ItemSetMeta>,
-    snackbar: SnackbarHostState,
     onUpdate: OnUpdate
 ) {
     val scope = rememberCoroutineScope()
@@ -52,7 +50,6 @@ fun ProfileTopAppBar(
                     pubkey = profile.inner.pubkey,
                     addableLists = addableLists,
                     nonAddableLists = nonAddableLists,
-                    snackbar = snackbar,
                     scope = scope,
                     onUpdate = onUpdate
                 )
@@ -79,7 +76,6 @@ private fun ActionButton(
     pubkey: PubkeyHex,
     addableLists: List<ItemSetMeta>,
     nonAddableLists: List<ItemSetMeta>,
-    snackbar: SnackbarHostState,
     scope: CoroutineScope,
     onUpdate: OnUpdate
 ) {

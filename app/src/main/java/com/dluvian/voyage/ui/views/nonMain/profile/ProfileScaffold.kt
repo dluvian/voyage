@@ -24,7 +24,6 @@ fun ProfileScaffold(
                 profile = profile,
                 addableLists = addableLists,
                 nonAddableLists = nonAddableLists,
-                snackbar = snackbar,
                 onUpdate = onUpdate
             )
         }
