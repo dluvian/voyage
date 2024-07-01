@@ -180,7 +180,7 @@ class NostrFeedSubscriber(
         Log.d(TAG, "getInboxFeedSubscription")
 
         val mentionFilter = Filter()
-            .kinds(kinds = textNoteAndRepostKinds)
+            .kind(kind = Kind.fromEnum(KindEnum.TextNote))
             .pubkey(pubkey = pubkeyProvider.getPublicKey())
             .since(timestamp = Timestamp.fromSecs(since))
             .until(timestamp = Timestamp.fromSecs(until))

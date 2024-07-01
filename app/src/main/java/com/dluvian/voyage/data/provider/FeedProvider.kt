@@ -163,16 +163,13 @@ class FeedProvider(
             room.inboxDao()
                 .getDirectReplyFlow(until = until, size = size)
                 .firstThenDistinctDebounce(SHORT_DEBOUNCE),
-            room.inboxDao()
-                .getDirectCrossPostFlow(until = until, size = size)
-                .firstThenDistinctDebounce(SHORT_DEBOUNCE),
             forcedVotes,
             forcedFollows,
             forcedBookmarks,
-        ) { replies, crossPosts, votes, follows, bookmarks ->
+        ) { replies, votes, follows, bookmarks ->
             mergeToParentUIList(
                 replies = replies,
-                roots = crossPosts,
+                roots = emptyList(),
                 votes = votes,
                 follows = follows,
                 bookmarks = bookmarks,
