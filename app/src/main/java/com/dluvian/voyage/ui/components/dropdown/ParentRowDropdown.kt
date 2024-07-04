@@ -120,20 +120,22 @@ fun ParentRowDropdown(
             )
         }
 
-        val launcher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.StartActivityForResult()
-        ) { _ -> }
-        val packageManager = LocalContext.current.packageManager
-        for (translator in getTranslators(packageManager = packageManager)) {
-            SimpleDropdownItem(
-                text = translator.loadLabel(packageManager).toString(),
-                onClick = {
-                    launcher.launch(
-                        createProcessTextIntent(text = parent.content.text, info = translator)
-                    )
-                    onDismiss()
-                }
-            )
+        if (parent.trustType !is Oneself) {
+            val launcher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.StartActivityForResult()
+            ) { _ -> }
+            val packageManager = LocalContext.current.packageManager
+            for (translator in getTranslators(packageManager = packageManager)) {
+                SimpleDropdownItem(
+                    text = translator.loadLabel(packageManager).toString(),
+                    onClick = {
+                        launcher.launch(
+                            createProcessTextIntent(text = parent.content.text, info = translator)
+                        )
+                        onDismiss()
+                    }
+                )
+            }
         }
     }
 }
