@@ -3,7 +3,6 @@ package com.dluvian.voyage.data.event
 import android.util.Log
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
-import com.dluvian.nostr_kt.getHashtags
 import com.dluvian.nostr_kt.getMetadata
 import com.dluvian.nostr_kt.getNip65s
 import com.dluvian.nostr_kt.getReplyToId
@@ -13,6 +12,7 @@ import com.dluvian.nostr_kt.secs
 import com.dluvian.voyage.core.MAX_CONTENT_LEN
 import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.MAX_SUBJECT_LEN
+import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.getNormalizedTopics
 import com.dluvian.voyage.core.getTrimmedSubject
 import com.dluvian.voyage.core.takeRandom
@@ -124,7 +124,7 @@ class EventValidator(
                 if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) return null
                 ValidatedTopicList(
                     myPubkey = event.author().toHex(),
-                    topics = event.getNormalizedTopics(limited = false)
+                    topics = event.getNormalizedTopics()
                         .distinct()
                         .takeRandom(MAX_KEYS_SQL)
                         .toSet(),
@@ -167,7 +167,7 @@ class EventValidator(
         return ValidatedCrossPost(
             id = event.id().toHex(),
             pubkey = event.author().toHex(),
-            topics = event.getNormalizedTopics(limited = true),
+            topics = event.getNormalizedTopics(limit = MAX_TOPICS),
             createdAt = event.createdAt().secs(),
             relayUrl = relayUrl,
             crossPosted = validated
@@ -185,7 +185,7 @@ class EventValidator(
                 ValidatedRootPost(
                     id = event.id().toHex(),
                     pubkey = event.author().toHex(),
-                    topics = event.getNormalizedTopics(limited = true),
+                    topics = event.getNormalizedTopics(limit = MAX_TOPICS),
                     subject = subject,
                     content = content,
                     createdAt = event.createdAt().secs(),
@@ -229,7 +229,7 @@ class EventValidator(
                 identifier = identifier,
                 myPubkey = event.author().toHex(),
                 title = event.getNormalizedTitle(),
-                topics = event.getHashtags().takeRandom(MAX_KEYS_SQL).toSet(),
+                topics = event.getNormalizedTopics().takeRandom(MAX_KEYS_SQL).toSet(),
                 createdAt = event.createdAt().secs()
             )
         }

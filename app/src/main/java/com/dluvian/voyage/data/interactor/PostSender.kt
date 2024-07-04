@@ -54,7 +54,7 @@ class PostSender(
             val validatedPost = ValidatedRootPost(
                 id = event.id().toHex(),
                 pubkey = event.author().toHex(),
-                topics = event.getNormalizedTopics(limited = false),
+                topics = event.getNormalizedTopics(),
                 subject = event.getSubject(),
                 content = event.content(),
                 createdAt = event.createdAt().secs(),
@@ -128,7 +128,7 @@ class PostSender(
             val validatedCrossPost = ValidatedCrossPost(
                 id = event.id().toHex(),
                 pubkey = event.author().toHex(),
-                topics = event.getNormalizedTopics(limited = false),
+                topics = event.getNormalizedTopics(),
                 createdAt = event.createdAt().secs(),
                 relayUrl = "", // We don't know which relay accepted this note
                 crossPosted = validatedMainPost,

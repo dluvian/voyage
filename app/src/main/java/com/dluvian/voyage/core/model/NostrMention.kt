@@ -1,7 +1,9 @@
 package com.dluvian.voyage.core.model
 
+import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.removeMentionChar
 import com.dluvian.nostr_kt.removeNostrUri
+import com.dluvian.nostr_kt.removeTrailingSlashes
 import com.dluvian.voyage.core.Bech32
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
@@ -9,6 +11,7 @@ import rust.nostr.protocol.Coordinate
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Nip19Event
 import rust.nostr.protocol.Nip19Profile
+import rust.nostr.protocol.Nip19Relay
 import rust.nostr.protocol.PublicKey
 
 sealed class NostrMention(open val bech32: Bech32, open val hex: String) {
@@ -48,6 +51,11 @@ sealed class NostrMention(open val bech32: Bech32, open val hex: String) {
                     hex = result.publicKey().toHex(),
                     identifier = result.identifier().trim()
                 )
+            } else if (trimmed.startsWith("nrelay")) {
+                val result = kotlin.runCatching {
+                    Nip19Relay.fromBech32(bech32 = trimmed)
+                }.getOrNull() ?: return null
+                RelayMention(bech32 = trimmed, relay = result.url().removeTrailingSlashes())
             } else null
         }
     }
@@ -74,3 +82,6 @@ data class CoordinateMention(
     override val hex: EventIdHex,
     val identifier: String
 ) : NostrMention(bech32 = bech32, hex = hex)
+
+data class RelayMention(override val bech32: Bech32, val relay: RelayUrl) :
+    NostrMention(bech32 = bech32, hex = "")

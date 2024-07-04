@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
+import com.dluvian.nostr_kt.NOSTR_URI
 import com.dluvian.voyage.core.ClickProfileSuggestion
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.OnUpdate
@@ -90,7 +91,7 @@ private fun TextFieldValue.replaceWithSuggestion(pubkey: String): TextFieldValue
     var newCursorPos: Int
     val text = buildString {
         append(stringUntilCursor.removeSuffix(mentionedName).removeSuffix("@"))
-        append("nostr:")
+        append(NOSTR_URI)
         append(PublicKey.fromHex(pubkey).toBech32())
         append(" ")
         newCursorPos = this.length

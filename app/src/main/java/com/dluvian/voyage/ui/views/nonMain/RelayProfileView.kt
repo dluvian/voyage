@@ -36,6 +36,7 @@ fun RelayProfileView(vm: RelayProfileViewModel, snackbar: SnackbarHostState, onU
     val header by vm.header
     val profile by vm.profile
     val isLoading by vm.isLoading
+    val nrelay by vm.nrelayUri
     val postsInDb by vm.postsInDb.value.collectAsState()
 
     SimpleGoBackScaffold(
@@ -45,6 +46,7 @@ fun RelayProfileView(vm: RelayProfileViewModel, snackbar: SnackbarHostState, onU
     ) {
         RelayProfileViewContent(
             url = "${WEBSOCKET_PREFIX}$header",
+            nrelay = nrelay,
             profile = profile,
             postsInDb = postsInDb,
             isLoading = isLoading
@@ -55,6 +57,7 @@ fun RelayProfileView(vm: RelayProfileViewModel, snackbar: SnackbarHostState, onU
 @Composable
 private fun RelayProfileViewContent(
     url: String,
+    nrelay: String,
     profile: RelayInformationDocument?,
     postsInDb: Int,
     isLoading: Boolean
@@ -72,6 +75,9 @@ private fun RelayProfileViewContent(
     ) {
         item {
             InfoRow(infoType = stringResource(id = R.string.url), value = url)
+        }
+        item {
+            InfoRow(infoType = stringResource(id = R.string.nostr_uri), value = nrelay)
         }
         item {
             InfoRow(

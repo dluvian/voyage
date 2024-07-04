@@ -4,6 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dluvian.nostr_kt.NOSTR_URI
 import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.WEBSOCKET_PREFIX
 import com.dluvian.voyage.core.DELAY_1SEC
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import rust.nostr.protocol.Nip19Relay
 import rust.nostr.protocol.RelayInformationDocument
 
 class RelayProfileViewModel(
@@ -25,6 +27,7 @@ class RelayProfileViewModel(
     val header = mutableStateOf("")
     val profile = mutableStateOf<RelayInformationDocument?>(null)
     val isLoading = mutableStateOf(false)
+    val nrelayUri = mutableStateOf("")
     val postsInDb: MutableState<StateFlow<Int>> = mutableStateOf(MutableStateFlow(0))
 
     private var job: Job? = null
@@ -37,6 +40,7 @@ class RelayProfileViewModel(
         profile.value = null
 
         isLoading.value = true
+        nrelayUri.value = "$NOSTR_URI:${Nip19Relay(url = relayUrl).toBech32()}"
         postsInDb.value = countDao.countEventRelays(relayUrl = relayUrl)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
         job?.cancel()

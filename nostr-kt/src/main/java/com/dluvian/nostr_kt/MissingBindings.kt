@@ -74,7 +74,7 @@ fun createUnsignedTopicSet(
 
 private val nostrMentionPattern = Regex("(nostr:|@)(npub1|nprofile1)[a-zA-Z0-9]+")
 fun extractMentions(content: String) = nostrMentionPattern.findAll(content)
-    .map { it.value.removePrefix("@").removePrefix("nostr:") }
+    .map { it.value.removePrefix("@").removePrefix(NOSTR_URI) }
     .distinct()
     .filter {
         runCatching { PublicKey.fromBech32(it) }.isSuccess ||
@@ -131,14 +131,6 @@ fun Event.getReplyToId(): String? {
     return nip10Tags.find { it.getOrNull(3) == "reply" }?.get(1)
         ?: nip10Tags.find { it.getOrNull(3) == "root" }?.get(1)
         ?: nip10Tags.last()[1] // Deprecated but still used by Damus. First is root, not reply
-}
-
-fun Event.getHashtags(): List<String> {
-    return this.tags()
-        .map { it.asVec() }
-        .filter { it.firstOrNull() == "t" }
-        .mapNotNull { it.getOrNull(1) }
-        .distinct()
 }
 
 fun String.removeTrailingSlashes(): String {
@@ -218,7 +210,7 @@ fun createNeventUri(
     author: String? = null,
     relays: List<String> = emptyList()
 ): String {
-    return "nostr:${createNeventStr(hex = hex, author = author, relays = relays)}"
+    return "$NOSTR_URI:${createNeventStr(hex = hex, author = author, relays = relays)}"
 }
 
 fun createNeventStr(

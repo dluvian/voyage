@@ -198,4 +198,5 @@
     <string name="add_to_list">Add to list</string>
     <string name="choose_list">Choose list</string>
     <string name="added_to_list">Added to list</string>
+    <string name="nostr_uri">Nostr URI</string>
 </resources>

@@ -2,7 +2,6 @@ package com.dluvian.voyage.data.provider
 
 import android.util.Log
 import com.dluvian.nostr_kt.RelayUrl
-import kotlinx.coroutines.delay
 import rust.nostr.protocol.RelayInformationDocument
 import rust.nostr.protocol.nip11GetInformationDocument
 import java.util.Collections

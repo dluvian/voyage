@@ -18,6 +18,7 @@ import com.dluvian.voyage.core.model.NostrMention
 import com.dluvian.voyage.core.model.NoteMention
 import com.dluvian.voyage.core.model.NprofileMention
 import com.dluvian.voyage.core.model.NpubMention
+import com.dluvian.voyage.core.model.RelayMention
 import com.dluvian.voyage.core.navigator.Navigator
 import kotlinx.coroutines.launch
 import rust.nostr.protocol.Nip19Event
@@ -182,6 +183,11 @@ class Core(
 
             is CoordinateMention -> {
                 uriHandler?.openUri("https://njump.me/${nostrMention.bech32}")
+            }
+
+            is RelayMention -> {
+                val relayUrl = nostrMention.relay
+                onUpdate(OpenRelayProfile(relayUrl = relayUrl))
             }
 
             null -> Log.w(TAG, "Unknown clickable string $str")

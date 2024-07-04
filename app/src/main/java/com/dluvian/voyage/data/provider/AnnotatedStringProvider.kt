@@ -16,6 +16,7 @@ import com.dluvian.voyage.core.model.NostrMention
 import com.dluvian.voyage.core.model.NoteMention
 import com.dluvian.voyage.core.model.NprofileMention
 import com.dluvian.voyage.core.model.NpubMention
+import com.dluvian.voyage.core.model.RelayMention
 import com.dluvian.voyage.core.shortenBech32
 import com.dluvian.voyage.core.shortenUrl
 import com.dluvian.voyage.ui.theme.HyperlinkStyle
@@ -34,6 +35,7 @@ class AnnotatedStringProvider(
         const val NPUB_TAG = "NPUB"
         const val HASHTAG = "HASHTAG"
         const val COORDINATE = "COORDINATE"
+        const val RELAY = "RELAY"
     }
 
     private val cache: MutableMap<String, AnnotatedString> =
@@ -116,10 +118,20 @@ class AnnotatedStringProvider(
                             )
                         }
 
+                        is RelayMention -> {
+                            pushAnnotatedString(
+                                tag = RELAY,
+                                annotation = nostrMention.bech32,
+                                style = MentionAndHashtagStyle,
+                                text = nostrMention.bech32.shortenBech32()
+                            )
+                        }
+
                         null -> {
                             Log.w(TAG, "Failed to identify ${token.value}")
                             append(token.value)
                         }
+
                     }
                 }
                 editedContent.delete(0, token.value.length)

@@ -22,7 +22,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import com.dluvian.nostr_kt.RelayUrl
-import com.dluvian.nostr_kt.getHashtags
 import com.dluvian.nostr_kt.getSubject
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.model.ParentUI
@@ -155,7 +154,7 @@ fun extractUrls(extractFrom: String) = urlRegex.findAll(extractFrom).toList()
 
 
 private val nostrMentionRegex =
-    Regex("(nostr:|@)(npub1|note1|nevent1|nprofile1|naddr1)[a-zA-Z0-9]+")
+    Regex("(nostr:|@)(npub1|note1|nevent1|nprofile1|naddr1|nrelay)[a-zA-Z0-9]+")
 
 fun extractNostrMentions(extractFrom: String) = nostrMentionRegex.findAll(extractFrom).toList()
 
@@ -207,8 +206,8 @@ private fun List<Topic>.normalizeTopics(): List<Topic> {
         .distinct()
 }
 
-fun Event.getNormalizedTopics(limited: Boolean): List<Topic> {
-    return this.getHashtags().normalizeTopics().take(if (limited) MAX_TOPICS else Int.MAX_VALUE)
+fun Event.getNormalizedTopics(limit: Int = Int.MAX_VALUE): List<Topic> {
+    return this.hashtags().normalizeTopics().take(limit)
 }
 
 @Composable

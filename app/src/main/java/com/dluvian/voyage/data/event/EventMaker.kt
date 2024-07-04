@@ -94,7 +94,7 @@ class EventMaker(
     }
 
     suspend fun buildDelete(eventId: EventId): Result<Event> {
-        val unsignedEvent = EventBuilder.delete(ids = listOf(eventId), reason = null)
+        val unsignedEvent = EventBuilder.delete(ids = listOf(eventId))
             .toUnsignedEvent(accountManager.getPublicKey())
 
         return accountManager.sign(unsignedEvent = unsignedEvent)
