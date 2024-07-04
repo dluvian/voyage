@@ -114,7 +114,7 @@ class EventMaker(
     }
 
     suspend fun buildTopicList(topics: List<Topic>): Result<Event> {
-        val interests = Interests(hashtags = topics, coordinate = emptyList())
+        val interests = Interests(hashtags = topics)
         val unsignedEvent = EventBuilder.interests(list = interests)
             .toUnsignedEvent(accountManager.getPublicKey())
 
@@ -122,12 +122,7 @@ class EventMaker(
     }
 
     suspend fun buildBookmarkList(postIds: List<EventIdHex>): Result<Event> {
-        val bookmarks = Bookmarks(
-            eventIds = postIds.map { EventId.fromHex(it) },
-            coordinate = emptyList(),
-            hashtags = emptyList(),
-            urls = emptyList()
-        )
+        val bookmarks = Bookmarks(eventIds = postIds.map { EventId.fromHex(it) })
         val unsignedEvent = EventBuilder.bookmarks(list = bookmarks)
             .toUnsignedEvent(accountManager.getPublicKey())
 
@@ -135,8 +130,7 @@ class EventMaker(
     }
 
     suspend fun buildContactList(pubkeys: List<PubkeyHex>): Result<Event> {
-        val contacts = pubkeys
-            .map { Contact(pk = PublicKey.fromHex(it), relayUrl = null, alias = null) }
+        val contacts = pubkeys.map { Contact(pk = PublicKey.fromHex(it)) }
         val unsignedEvent = EventBuilder.contactList(list = contacts)
             .toUnsignedEvent(accountManager.getPublicKey())
 
