@@ -208,27 +208,31 @@ fun createNevent(
 fun createNeventUri(
     hex: String,
     author: String? = null,
-    relays: List<String> = emptyList()
+    relays: List<String> = emptyList(),
+    kind: Kind? = null
 ): String {
-    return "$NOSTR_URI:${createNeventStr(hex = hex, author = author, relays = relays)}"
+    return "$NOSTR_URI:${createNeventStr(hex = hex, author = author, relays = relays, kind = kind)}"
 }
 
 fun createNeventStr(
     hex: String,
     author: String? = null,
-    relays: List<String> = emptyList()
+    relays: List<String> = emptyList(),
+    kind: Kind? = null
 ): String {
     return createNevent(
         eventId = EventId.fromHex(hex),
         author = author?.let { PublicKey.fromHex(it) },
-        relays = relays
+        relays = relays,
+        kind = kind
     ).toBech32()
 }
 
 fun createNevent(
     eventId: EventId,
     author: PublicKey? = null,
-    relays: List<String> = emptyList()
+    relays: List<String> = emptyList(),
+    kind: Kind? = null
 ): Nip19Event {
-    return Nip19Event(eventId = eventId, author = author, relays = relays)
+    return Nip19Event(eventId = eventId, author = author, relays = relays, kind = kind)
 }

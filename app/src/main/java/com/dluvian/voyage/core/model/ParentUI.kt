@@ -8,6 +8,8 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 import com.dluvian.voyage.data.room.view.ReplyView
 import com.dluvian.voyage.data.room.view.RootPostView
+import rust.nostr.protocol.Kind
+import rust.nostr.protocol.KindEnum
 
 sealed class ParentUI(
     open val id: EventIdHex,
@@ -28,6 +30,17 @@ sealed class ParentUI(
     fun getRelevantPubkey() = when (this) {
         is RootPostUI -> this.crossPostedPubkey ?: this.pubkey
         is ReplyUI -> this.pubkey
+    }
+
+    fun getKind(): Kind {
+        return when (this) {
+            is RootPostUI -> {
+                if (this.crossPostedId != null) Kind.fromEnum(KindEnum.Repost)
+                else Kind.fromEnum(KindEnum.TextNote)
+            }
+
+            is ReplyUI -> Kind.fromEnum(KindEnum.TextNote)
+        }
     }
 }
 

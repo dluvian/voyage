@@ -72,7 +72,9 @@ fun ParentRowDropdown(
                     text = createNeventUri(
                         hex = parent.id,
                         author = parent.pubkey,
-                        relays = listOf(parent.relayUrl).filter { it.isNotEmpty() }),
+                        relays = listOf(parent.relayUrl).filter { it.isNotEmpty() },
+                        kind = parent.getKind()
+                    ),
                     toast = idCopiedToast,
                     context = context,
                     clip = clip
