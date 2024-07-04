@@ -86,7 +86,6 @@ class EventMaker(
         val unsignedEvent = EventBuilder.reactionExtended(
             eventId = eventId,
             publicKey = mention,
-            kind = Kind(1u),
             reaction = "+",
         ).toUnsignedEvent(publicKey = accountManager.getPublicKey())
 
