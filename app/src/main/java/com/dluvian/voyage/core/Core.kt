@@ -161,6 +161,10 @@ class Core(
     }
 
     private fun openNostrString(str: String, uriHandler: UriHandler? = null) {
+        val onHandleUri = { nostrStr: String ->
+            uriHandler?.openUri("https://njump.me/$nostrStr")
+        }
+
         when (val nostrMention = NostrMention.from(str)) {
             is NprofileMention -> {
                 val nip19 = Nip19Profile.fromBech32(nostrMention.bech32)
@@ -173,7 +177,13 @@ class Core(
             }
 
             is NeventMention -> {
-                onUpdate(OpenThreadRaw(nevent = Nip19Event.fromBech32(nostrMention.bech32)))
+                val nevent = Nip19Event.fromBech32(nostrMention.bech32)
+                val kind = nevent.kind()
+                if (kind == null || textNoteAndRepostKinds.contains(kind)) {
+                    onUpdate(OpenThreadRaw(nevent = nevent))
+                } else {
+                    onHandleUri(nostrMention.bech32)
+                }
             }
 
             is NoteMention -> {
@@ -182,7 +192,7 @@ class Core(
             }
 
             is CoordinateMention -> {
-                uriHandler?.openUri("https://njump.me/${nostrMention.bech32}")
+                onHandleUri(nostrMention.bech32)
             }
 
             is RelayMention -> {
