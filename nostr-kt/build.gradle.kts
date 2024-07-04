@@ -34,6 +34,6 @@ android {
 
 dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("io.github.rust-nostr:nostr:0.12.1")
+    implementation("org.rust-nostr:nostr:0.32.1")
     implementation("cash.z.ecc.android:kotlin-bip39:1.0.7")
 }
