@@ -62,7 +62,7 @@ private fun RowWithDivider(level: Int, content: ComposableContent) {
             VerticalDivider(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .padding(start = spacing.xl, end = spacing.medium)
+                    .padding(start = spacing.large, end = spacing.medium)
             )
         }
         content()
