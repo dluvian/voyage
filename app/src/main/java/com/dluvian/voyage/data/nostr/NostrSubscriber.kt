@@ -1,6 +1,7 @@
 package com.dluvian.voyage.data.nostr
 
 import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.core.FEED_OFFSET
 import com.dluvian.voyage.core.FEED_RESUB_SPAN_THRESHOLD_SECS
 import com.dluvian.voyage.core.MAX_KEYS
 import com.dluvian.voyage.core.RESUB_TIMEOUT
@@ -182,50 +183,50 @@ class NostrSubscriber(
         pageSize: Int,
         forceSubscription: Boolean,
     ): ULong {
-        val pageSizeAndHalfOfNext = pageSize.times(1.5).toInt()
+        val pageSizePlusOffset = pageSize + FEED_OFFSET
 
         val timestamps = when (setting) {
             HomeFeedSetting -> room.rootPostDao().getHomeRootPostsCreatedAt(
                 until = until,
-                size = pageSizeAndHalfOfNext
+                size = pageSizePlusOffset
             )
 
             is TopicFeedSetting -> room.rootPostDao().getTopicRootPostsCreatedAt(
                 topic = setting.topic,
                 until = until,
-                size = pageSizeAndHalfOfNext
+                size = pageSizePlusOffset
             )
 
             is ListFeedSetting -> room.rootPostDao().getListRootPostsCreatedAt(
                 identifier = setting.identifier,
                 until = until,
-                size = pageSizeAndHalfOfNext
+                size = pageSizePlusOffset
             )
 
             is ProfileRootFeedSetting -> room.rootPostDao().getProfileRootPostsCreatedAt(
                 pubkey = setting.nprofile.publicKey().toHex(),
                 until = until,
-                size = pageSizeAndHalfOfNext,
+                size = pageSizePlusOffset,
             )
 
             is ReplyFeedSetting -> room.replyDao().getProfileRepliesCreatedAt(
                 pubkey = setting.nprofile.publicKey().toHex(),
                 until = until,
-                size = pageSizeAndHalfOfNext,
+                size = pageSizePlusOffset,
             )
 
             InboxFeedSetting -> room.postDao().getInboxPostsCreatedAt(
                 until = until,
-                size = pageSizeAndHalfOfNext
+                size = pageSizePlusOffset
             )
 
             BookmarksFeedSetting -> room.bookmarkDao().getBookmarkedPostsCreatedAt(
                 until = until,
-                size = pageSizeAndHalfOfNext
+                size = pageSizePlusOffset
             )
         }
 
-        if (timestamps.size < pageSizeAndHalfOfNext) return 1uL
+        if (timestamps.size < pageSizePlusOffset) return 1uL
 
         val min = timestamps.min()
         val max = timestamps.max()
