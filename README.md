@@ -1,7 +1,6 @@
 # voyage
 
-Voyage is a lightweight nostr client for Android with a Reddit-like UI. It is a fork and successor
-of [Nozzle](https://github.com/dluvian/Nozzle).
+Voyage is a lightweight nostr client for Android with a Reddit-like UI.
 
 [App icon source](https://www.flaticon.com/free-icons/greek)
 
