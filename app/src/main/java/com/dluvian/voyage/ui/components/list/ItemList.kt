@@ -29,9 +29,7 @@ fun ItemList(
         BaseHint(text = stringResource(id = R.string.no_items_found))
     }
     LazyColumn(modifier = Modifier.fillMaxSize(), state = state) {
-        item {
-            firstRow()
-        }
+        item { firstRow() }
         itemsIndexed(items) { i, (icon, label) ->
             ClickableRow(
                 header = label,

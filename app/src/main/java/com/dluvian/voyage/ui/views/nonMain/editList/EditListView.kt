@@ -17,6 +17,7 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.core.EditListViewAddProfile
 import com.dluvian.voyage.core.EditListViewAddTopic
 import com.dluvian.voyage.core.Fn
+import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.getListTabHeaders
@@ -114,7 +115,7 @@ private fun ScreenContent(
                 state = profileState,
                 isRemovable = true,
                 firstRow = {
-                    AddRow(
+                    if (vm.profiles.value.size < MAX_KEYS_SQL) AddRow(
                         header = stringResource(id = R.string.add_profile),
                         onClick = { showProfileDialog.value = true })
                 },
@@ -130,7 +131,7 @@ private fun ScreenContent(
                 state = topicState,
                 isRemovable = true,
                 firstRow = {
-                    AddRow(
+                    if (vm.topics.value.size < MAX_KEYS_SQL) AddRow(
                         header = stringResource(id = R.string.add_topic),
                         onClick = { showTopicDialog.value = true })
                 },

@@ -11,6 +11,7 @@ import com.dluvian.voyage.core.EditListViewAction
 import com.dluvian.voyage.core.EditListViewAddProfile
 import com.dluvian.voyage.core.EditListViewAddTopic
 import com.dluvian.voyage.core.EditListViewSave
+import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.isBareTopicStr
 import com.dluvian.voyage.core.launchIO
@@ -74,6 +75,7 @@ class EditListViewModel(
 
             is EditListViewAddProfile -> {
                 if (profiles.value.any { it.pubkey == action.profile.pubkey }) return
+                if (profiles.value.size >= MAX_KEYS_SQL) return
                 profiles.value += action.profile
             }
 
@@ -81,6 +83,7 @@ class EditListViewModel(
                 val normalized = action.topic.normalizeTopic()
                 if (!normalized.isBareTopicStr()) return
                 if (topics.value.any { it == normalized }) return
+                if (topics.value.size >= MAX_KEYS_SQL) return
                 topics.value += normalized
             }
         }

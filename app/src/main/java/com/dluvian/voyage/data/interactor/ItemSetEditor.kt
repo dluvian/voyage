@@ -1,6 +1,7 @@
 package com.dluvian.voyage.data.interactor
 
 import android.util.Log
+import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.event.EventValidator
@@ -71,6 +72,9 @@ class ItemSetEditor(
         val currentList = itemSetProvider.getPubkeysFromList(identifier = identifier)
         if (currentList.contains(pubkey)) {
             return Result.failure(IllegalStateException("Pubkey is already in list"))
+        }
+        if (currentList.size >= MAX_KEYS_SQL) {
+            return Result.failure(IllegalArgumentException("List is already full"))
         }
 
         return editProfileSet(

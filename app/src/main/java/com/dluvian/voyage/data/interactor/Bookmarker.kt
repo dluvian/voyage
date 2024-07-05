@@ -118,7 +118,7 @@ class Bookmarker(
                     Log.w(TAG, "Failed to publish bookmarks: ${it.message}", it)
                     snackbar.showToast(
                         scope = scope,
-                        msg = context.getString(R.string.failed_to_sign_topic_list)
+                        msg = context.getString(R.string.failed_to_sign_bookmarks)
                     )
                 }
         }

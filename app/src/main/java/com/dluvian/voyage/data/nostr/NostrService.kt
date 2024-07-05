@@ -9,6 +9,7 @@ import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.nostr_kt.SubId
 import com.dluvian.voyage.core.AUTH_TIMEOUT
 import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.launchIO
@@ -205,6 +206,10 @@ class NostrService(
         topics: List<Topic>,
         relayUrls: Collection<RelayUrl>,
     ): Result<Event> {
+        if (topics.size > MAX_KEYS_SQL) {
+            return Result.failure(IllegalArgumentException("Too many topics"))
+        }
+
         return eventMaker.buildTopicList(topics = topics)
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
@@ -213,6 +218,10 @@ class NostrService(
         postIds: List<EventIdHex>,
         relayUrls: Collection<RelayUrl>,
     ): Result<Event> {
+        if (postIds.size > MAX_KEYS_SQL) {
+            return Result.failure(IllegalArgumentException("Too many bookmarks"))
+        }
+
         return eventMaker.buildBookmarkList(postIds = postIds)
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
@@ -221,6 +230,10 @@ class NostrService(
         pubkeys: List<PubkeyHex>,
         relayUrls: Collection<RelayUrl>,
     ): Result<Event> {
+        if (pubkeys.size > MAX_KEYS_SQL) {
+            return Result.failure(IllegalArgumentException("Too many contacts"))
+        }
+
         return eventMaker.buildContactList(pubkeys = pubkeys)
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
@@ -239,6 +252,10 @@ class NostrService(
         pubkeys: List<PublicKey>,
         relayUrls: Collection<RelayUrl>,
     ): Result<Event> {
+        if (pubkeys.size > MAX_KEYS_SQL) {
+            return Result.failure(IllegalArgumentException("Too many profiles"))
+        }
+
         return eventMaker.buildProfileSet(identifier = identifier, title = title, pubkeys = pubkeys)
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
@@ -249,6 +266,10 @@ class NostrService(
         topics: List<Topic>,
         relayUrls: Collection<RelayUrl>,
     ): Result<Event> {
+        if (topics.size > MAX_KEYS_SQL) {
+            return Result.failure(IllegalArgumentException("Too many topics"))
+        }
+
         return eventMaker.buildTopicSet(identifier = identifier, title = title, topics = topics)
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
