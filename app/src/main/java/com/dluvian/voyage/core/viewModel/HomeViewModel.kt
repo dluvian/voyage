@@ -44,6 +44,7 @@ class HomeViewModel(
     private fun subMyAccountAndTrustData() {
         if (job?.isActive == true) return
         job = viewModelScope.launchIO {
+            lazyNostrSubscriber.lazySubMyBookmarks()
             lazyNostrSubscriber.lazySubMyAccountAndTrustData()
             delay(DELAY_10SEC)
         }
