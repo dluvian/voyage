@@ -83,7 +83,9 @@ class FeedProvider(
             .firstThenDistinctDebounce(SHORT_DEBOUNCE)
             .onEach { posts ->
                 oldestUsedEvent.updateOldestCreatedAt(posts.minOfOrNull { it.createdAt })
-                nostrSubscriber.subVotesAndReplies(parentIds = posts.map { it.getRelevantId() })
+                nostrSubscriber.subVotesAndReplies(
+                    parentIds = posts.filter { it.replyCount == 0 }.map { it.getRelevantId() }
+                )
             }
     }
 
