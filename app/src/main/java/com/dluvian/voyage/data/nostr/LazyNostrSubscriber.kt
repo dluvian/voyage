@@ -174,7 +174,7 @@ class LazyNostrSubscriber(
             myProfileFilter,
         )
 
-        relayProvider.getReadRelays().forEach { relay ->
+        relayProvider.getWriteRelays().forEach { relay ->
             subCreator.subscribe(relayUrl = relay, filters = filters)
         }
     }
@@ -192,7 +192,7 @@ class LazyNostrSubscriber(
             .limit(1u)
         val filters = listOf(myBookmarksFilter)
 
-        relayProvider.getReadRelays().forEach { relay ->
+        relayProvider.getWriteRelays().forEach { relay ->
             subCreator.subscribe(relayUrl = relay, filters = filters)
         }
     }
@@ -217,7 +217,7 @@ class LazyNostrSubscriber(
             .limitRestricted(limit = MAX_EVENTS_TO_SUB)
         val filters = listOf(myProfileSetsFilter, myTopicSetsFilter)
 
-        relayProvider.getReadRelays().forEach { relay ->
+        relayProvider.getWriteRelays().forEach { relay ->
             subCreator.subscribe(relayUrl = relay, filters = filters)
         }
     }
