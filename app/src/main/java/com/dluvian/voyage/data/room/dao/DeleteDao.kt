@@ -22,13 +22,10 @@ interface DeleteDao {
         internalSoftDeleteTopicList(identifier = identifier)
     }
 
-    @Transaction
     suspend fun sweepPosts(threshold: Int, oldestCreatedAtInUse: Long) {
         val createdAtWithOffset = internalOldestCreatedAt(threshold = threshold) ?: return
         val oldestCreatedAt = minOf(createdAtWithOffset, oldestCreatedAtInUse)
-
         internalDeleteOldestPosts(oldestCreatedAt = oldestCreatedAt)
-        internalDeleteOldVotes(oldestCreatedAt = oldestCreatedAt)
     }
 
     @Query(
@@ -46,18 +43,12 @@ interface DeleteDao {
         "DELETE FROM post " +
                 "WHERE createdAt < :oldestCreatedAt " +
                 "AND pubkey NOT IN (SELECT pubkey FROM account) " +
+                "AND parentId NOT IN (SELECT id FROM account) " +
                 "AND id NOT IN (SELECT postId FROM bookmark) " +
-                "AND id NOT IN (SELECT crossPostedId FROM post WHERE createdAt >= :oldestCreatedAt AND crossPostedId IS NOT NULL) " +
-                "AND id NOT IN (SELECT crossPostedId FROM post WHERE pubkey IN (SELECT pubkey FROM account) AND crossPostedId IS NOT NULL) "
+                "AND parentId NOT IN (SELECT postId FROM bookmark) " +
+                "AND id NOT IN (SELECT crossPostedId FROM post WHERE crossPostedId IS NOT NULL AND (createdAt >= :oldestCreatedAt OR pubkey IN (SELECT pubkey FROM account) OR id IN (SELECT postId FROM bookmark)))"
     )
     suspend fun internalDeleteOldestPosts(oldestCreatedAt: Long)
-
-    @Query(
-        "DELETE FROM vote " +
-                "WHERE pubkey NOT IN (SELECT pubkey FROM account) " +
-                "AND postId IN (SELECT id FROM post WHERE createdAt < :oldestCreatedAt)"
-    )
-    suspend fun internalDeleteOldVotes(oldestCreatedAt: Long)
 
     @Query("DELETE FROM profileSetItem WHERE identifier = :identifier")
     suspend fun internalEmptyProfileList(identifier: String)
