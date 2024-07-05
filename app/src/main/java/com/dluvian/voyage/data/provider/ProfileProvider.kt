@@ -3,7 +3,6 @@ package com.dluvian.voyage.data.provider
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.createAdvancedProfile
 import com.dluvian.voyage.core.launchIO
-import com.dluvian.voyage.core.toBech32
 import com.dluvian.voyage.core.toShortenedBech32
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
@@ -159,7 +158,6 @@ class ProfileProvider(
         )
         return FullProfileUI(
             inner = inner,
-            npub = pubkey.toBech32(),
             about = metadata?.about?.let { annotatedStringProvider.annotate(it) },
             lightning = metadata?.lightning,
         )

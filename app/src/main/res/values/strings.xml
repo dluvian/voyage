@@ -162,7 +162,8 @@
     <string name="connected_relays">Connected relays</string>
     <string name="posts">Posts</string>
     <string name="open_parent">Open parent</string>
-    <string name="profile_identifier">Profile identifier</string>
+    <string name="npub">npub</string>
+    <string name="nprofile">nprofile</string>
     <string name="lightning_address">Lightning address</string>
     <string name="no_relays_found">No relays found</string>
     <string name="url">URL</string>

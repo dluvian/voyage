@@ -34,10 +34,12 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.dluvian.nostr_kt.RelayUrl
+import com.dluvian.nostr_kt.createNprofile
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Bech32
 import com.dluvian.voyage.core.ClickText
 import com.dluvian.voyage.core.ComposableContent
+import com.dluvian.voyage.core.MAX_RELAYS
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenLightningWallet
 import com.dluvian.voyage.core.OpenRelayProfile
@@ -47,6 +49,8 @@ import com.dluvian.voyage.core.ProfileViewRootAppend
 import com.dluvian.voyage.core.copyAndToast
 import com.dluvian.voyage.core.getSimpleLauncher
 import com.dluvian.voyage.core.shortenBech32
+import com.dluvian.voyage.core.takeRandom
+import com.dluvian.voyage.core.toBech32
 import com.dluvian.voyage.core.viewModel.ProfileViewModel
 import com.dluvian.voyage.ui.components.Feed
 import com.dluvian.voyage.ui.components.PullRefreshBox
@@ -75,6 +79,17 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
     }
     val writeOnlyRelays = remember(nip65Relays) {
         nip65Relays.filter { it.isWrite && !it.isRead }.map { it.url }
+    }
+    val npub = remember(profile.inner.pubkey) {
+        profile.inner.pubkey.toBech32()
+    }
+    val nprofile = remember(profile.inner.pubkey, nip65Relays) {
+        createNprofile(
+            hex = profile.inner.pubkey,
+            relays = nip65Relays.filter { it.isWrite }
+                .takeRandom(MAX_RELAYS)
+                .map { it.url }
+        ).toBech32()
     }
     val seenInRelays by vm.seenInRelays.value.collectAsState()
     val index = vm.tabIndex
@@ -129,7 +144,8 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(horizontal = spacing.bigScreenEdge),
-                    npub = profile.npub,
+                    npub = npub,
+                    nprofile = nprofile,
                     lightning = profile.lightning,
                     about = profile.about,
                     isRefreshing = isRefreshing,
@@ -160,6 +176,7 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
 @Composable
 private fun AboutPage(
     npub: Bech32,
+    nprofile: Bech32,
     lightning: String?,
     about: AnnotatedString?,
     isRefreshing: Boolean,
@@ -177,7 +194,18 @@ private fun AboutPage(
                     icon = KeyIcon,
                     text = npub,
                     shortenedText = npub.shortenBech32(),
-                    description = stringResource(id = R.string.profile_identifier)
+                    description = stringResource(id = R.string.npub)
+                )
+            }
+            item {
+                AboutPageTextRow(
+                    modifier = Modifier
+                        .padding(vertical = spacing.medium)
+                        .padding(top = spacing.screenEdge),
+                    icon = KeyIcon,
+                    text = nprofile,
+                    shortenedText = nprofile.shortenBech32(),
+                    description = stringResource(id = R.string.nprofile)
                 )
             }
             if (!lightning.isNullOrEmpty()) item {

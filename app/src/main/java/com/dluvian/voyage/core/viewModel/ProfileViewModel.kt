@@ -20,7 +20,6 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.core.navigator.ProfileNavView
-import com.dluvian.voyage.core.toBech32
 import com.dluvian.voyage.data.model.FullProfileUI
 import com.dluvian.voyage.data.model.ItemSetMeta
 import com.dluvian.voyage.data.model.ProfileRootFeedSetting
@@ -83,10 +82,7 @@ class ProfileViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
             .stateIn(
                 viewModelScope,
                 SharingStarted.Eagerly,
-                FullProfileUI(
-                    inner = AdvancedProfileView(pubkey = pubkeyHex),
-                    npub = pubkeyHex.toBech32()
-                )
+                FullProfileUI(inner = AdvancedProfileView(pubkey = pubkeyHex))
             )
         tabIndex.intValue = 0
         viewModelScope.launch { pagerState.scrollToPage(0) }
@@ -115,7 +111,7 @@ class ProfileViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
             .stateIn(
                 viewModelScope,
                 SharingStarted.Eagerly,
-                FullProfileUI(inner = profile.value.value.inner, npub = profile.value.value.npub)
+                FullProfileUI(inner = profile.value.value.inner)
             )
         rootPaginator.refresh()
         replyPaginator.refresh()
