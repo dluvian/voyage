@@ -81,6 +81,8 @@ class Paginator(
     fun refresh(onSub: Fn? = null) {
         if (isRefreshing.value) return
 
+        val isFirstPage = !hasMoreRecentPosts.value
+
         isRefreshing.value = true
         hasMoreRecentPosts.value = false
         hasPosts.value = getHasPosts(setting = feedSetting)
@@ -97,7 +99,7 @@ class Paginator(
                     until = now,
                     subUntil = now,
                     subscribe = feedSetting !is ReplyFeedSetting,
-                    forceSubscription = true
+                    forceSubscription = isFirstPage
                 )
                     .stateIn(scope, SharingStarted.WhileSubscribed(), getStaticFeed(until = now))
             delay(DELAY_1SEC)
