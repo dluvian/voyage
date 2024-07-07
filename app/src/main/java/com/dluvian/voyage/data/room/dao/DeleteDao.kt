@@ -40,13 +40,28 @@ interface DeleteDao {
 
     // I don't know why but it will not work without "crossPostedId IS NOT NULL"
     @Query(
-        "DELETE FROM post " +
-                "WHERE createdAt < :oldestCreatedAt " +
-                "AND pubkey NOT IN (SELECT pubkey FROM account) " +
-                "AND parentId NOT IN (SELECT id FROM account) " +
-                "AND id NOT IN (SELECT postId FROM bookmark) " +
-                "AND parentId NOT IN (SELECT postId FROM bookmark) " +
-                "AND id NOT IN (SELECT crossPostedId FROM post WHERE crossPostedId IS NOT NULL AND (createdAt >= :oldestCreatedAt OR pubkey IN (SELECT pubkey FROM account) OR id IN (SELECT postId FROM bookmark)))"
+        """
+            DELETE FROM post 
+            WHERE createdAt < :oldestCreatedAt 
+            AND pubkey NOT IN (SELECT pubkey FROM account) 
+            AND id NOT IN (SELECT postId FROM bookmark) 
+            AND (
+                parentId IS NULL 
+                OR (
+                    parentId NOT IN (SELECT id FROM post WHERE pubkey IN (SELECT pubkey FROM account)) 
+                    AND parentId NOT IN (SELECT postId FROM bookmark)
+                )
+            ) 
+            AND id NOT IN (
+                SELECT crossPostedId 
+                FROM post 
+                WHERE crossPostedId IS NOT NULL 
+                AND (
+                    createdAt >= :oldestCreatedAt 
+                    OR pubkey IN (SELECT pubkey FROM account) 
+                    OR id IN (SELECT postId FROM bookmark))
+            )
+        """
     )
     suspend fun internalDeleteOldestPosts(oldestCreatedAt: Long)
 
