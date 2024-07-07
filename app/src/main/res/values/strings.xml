@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="app_name" translatable="false">Voyage</string>
     <string name="version">Version</string>
     <string name="version_nr" translatable="false">v0.7.0</string>
@@ -162,8 +162,8 @@
     <string name="connected_relays">Connected relays</string>
     <string name="posts">Posts</string>
     <string name="open_parent">Open parent</string>
-    <string name="npub">npub</string>
-    <string name="nprofile">nprofile</string>
+    <string name="npub" translatable="false">npub</string>
+    <string name="nprofile" translatable="false">nprofile</string>
     <string name="lightning_address">Lightning address</string>
     <string name="no_relays_found">No relays found</string>
     <string name="url">URL</string>

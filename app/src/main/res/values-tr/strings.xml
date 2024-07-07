@@ -1,7 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">Voyage</string>
     <string name="version">Versiyon</string>
-    <string name="version_nr" translatable="false">v0.6.0</string>
     <string name="home">Ana Sayfa</string>
     <string name="inbox">Gelen Kutusu</string>
     <string name="settings">Ayarlar</string>
@@ -69,7 +67,6 @@
     <string name="click_to_load_most_recent_posts">En son gönderileri yüklemek için tıklayın</string>
     <string name="oneself">Kendisi</string>
     <string name="no_posts_found">Gönderi bulunamadı</string>
-    <string name="op" translatable="false">OP</string>
     <string name="no_topics_selected">Konu seçilmedi</string>
     <string name="my_topics">Konularım</string>
     <string name="you_dont_follow_any_topics_yet">Henüz herhangi bir konuyu takip etmiyorsunuz</string>
@@ -100,8 +97,8 @@
     <string name="recovery_phrase">Kurtarma ifadesi</string>
     <string name="click_to_show_recovery_phrase">Kurtarma ifadesini göstermek için tıklayın</string>
     <string name="unfollow">Takipten Çık</string>
-    <string name="copy_id">Kimliği kopyala</string>
-    <string name="note_id_copied">Not kimliği kopyalandı</string>
+    <string name="copy_uri">Kimliği kopyala</string>
+    <string name="note_uri_copied">Not kimliği kopyalandı</string>
     <string name="content_copied">İçerik kopyalandı</string>
     <string name="copy_content">İçeriği kopyala</string>
     <string name="attempt_deletion">Silme girişimi</string>
@@ -162,7 +159,6 @@
     <string name="connected_relays">Bağlı röleler</string>
     <string name="posts">Gönderiler</string>
     <string name="open_parent">Ana gönderiyi aç</string>
-    <string name="profile_identifier">Profil tanımlayıcı</string>
     <string name="lightning_address">Lightning adresi</string>
     <string name="no_relays_found">Röle bulunamadı</string>
     <string name="url">URL</string>
