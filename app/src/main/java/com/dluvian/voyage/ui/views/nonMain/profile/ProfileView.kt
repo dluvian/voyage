@@ -199,9 +199,7 @@ private fun AboutPage(
             }
             item {
                 AboutPageTextRow(
-                    modifier = Modifier
-                        .padding(vertical = spacing.medium)
-                        .padding(top = spacing.screenEdge),
+                    modifier = Modifier.padding(vertical = spacing.medium),
                     icon = KeyIcon,
                     text = nprofile,
                     shortenedText = nprofile.shortenBech32(),

@@ -211,7 +211,7 @@ fun createNeventUri(
     relays: List<String> = emptyList(),
     kind: Kind? = null
 ): String {
-    return "$NOSTR_URI:${createNeventStr(hex = hex, author = author, relays = relays, kind = kind)}"
+    return "$NOSTR_URI${createNeventStr(hex = hex, author = author, relays = relays, kind = kind)}"
 }
 
 fun createNeventStr(

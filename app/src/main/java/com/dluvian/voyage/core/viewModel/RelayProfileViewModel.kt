@@ -40,7 +40,7 @@ class RelayProfileViewModel(
         profile.value = null
 
         isLoading.value = true
-        nrelayUri.value = "$NOSTR_URI:${Nip19Relay(url = relayUrl).toBech32()}"
+        nrelayUri.value = "$NOSTR_URI${Nip19Relay(url = relayUrl).toBech32()}"
         postsInDb.value = countDao.countEventRelays(relayUrl = relayUrl)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
         job?.cancel()

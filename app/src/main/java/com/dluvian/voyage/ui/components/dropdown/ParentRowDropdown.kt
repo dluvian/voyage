@@ -64,9 +64,9 @@ fun ParentRowDropdown(
 
         val clip = LocalClipboardManager.current
         val context = LocalContext.current
-        val idCopiedToast = stringResource(id = R.string.note_id_copied)
+        val idCopiedToast = stringResource(id = R.string.note_uri_copied)
         SimpleDropdownItem(
-            text = stringResource(id = R.string.copy_id),
+            text = stringResource(id = R.string.copy_uri),
             onClick = {
                 copyAndToast(
                     text = createNeventUri(
