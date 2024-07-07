@@ -24,7 +24,9 @@ private const val PERMISSIONS = """
         {"type":"sign_event","kind":10004},
         {"type":"sign_event","kind":10006},
         {"type":"sign_event","kind":10015},
-        {"type":"sign_event","kind":22242}
+        {"type":"sign_event","kind":22242},
+        {"type":"sign_event","kind":30000},
+        {"type":"sign_event","kind":30015}
     ]
 """
 
