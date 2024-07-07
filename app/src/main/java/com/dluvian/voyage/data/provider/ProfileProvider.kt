@@ -111,7 +111,9 @@ class ProfileProvider(
         val friendsWithoutProfile = profileDao.getUnknownFriends()
 
         return forcedFollowFlow.map { forcedFollows ->
-            friends + friendsWithoutProfile.map { pubkey ->
+            friends.map {
+                it.copy(isFriend = forcedFollows[it.pubkey] ?: true)
+            } + friendsWithoutProfile.map { pubkey ->
                 createAdvancedProfile(
                     pubkey = pubkey,
                     dbProfile = null,
