@@ -1,7 +1,7 @@
 package com.dluvian.voyage.data.room.view
 
 import androidx.room.DatabaseView
-import com.dluvian.nostr_kt.RelayUrl
+import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.core.PubkeyHex
 
 

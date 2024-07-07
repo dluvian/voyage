@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.activity.result.ActivityResult
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.text.AnnotatedString
-import com.dluvian.nostr_kt.RelayUrl
+import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.navigator.BookmarksNavView

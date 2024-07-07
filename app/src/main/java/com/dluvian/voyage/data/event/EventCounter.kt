@@ -1,7 +1,7 @@
 package com.dluvian.voyage.data.event
 
 import android.util.Log
-import com.dluvian.nostr_kt.SubId
+import com.dluvian.voyage.data.nostr.SubId
 import rust.nostr.protocol.Filter
 
 private const val TAG = "EventCounter"

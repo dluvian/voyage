@@ -5,7 +5,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.nostr_kt.createNprofile
+import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.CreateReplyViewAction
 import com.dluvian.voyage.core.DELAY_1SEC

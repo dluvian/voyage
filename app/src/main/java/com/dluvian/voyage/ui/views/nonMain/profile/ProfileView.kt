@@ -33,8 +33,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import com.dluvian.nostr_kt.RelayUrl
-import com.dluvian.nostr_kt.createNprofile
+import com.dluvian.voyage.data.nostr.RelayUrl
+import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Bech32
 import com.dluvian.voyage.core.ClickText

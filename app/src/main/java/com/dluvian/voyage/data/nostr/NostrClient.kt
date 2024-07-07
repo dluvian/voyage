@@ -1,4 +1,4 @@
-package com.dluvian.nostr_kt
+package com.dluvian.voyage.data.nostr
 
 import android.util.Log
 import okhttp3.OkHttpClient

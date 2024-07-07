@@ -8,8 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import com.dluvian.nostr_kt.createNevent
-import com.dluvian.nostr_kt.createNeventUri
+import com.dluvian.voyage.data.nostr.createNevent
+import com.dluvian.voyage.data.nostr.createNeventUri
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.BookmarkPost
 import com.dluvian.voyage.core.DeletePost

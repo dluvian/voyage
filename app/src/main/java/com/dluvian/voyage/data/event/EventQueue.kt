@@ -1,8 +1,8 @@
 package com.dluvian.voyage.data.event
 
 import android.util.Log
-import com.dluvian.nostr_kt.RelayUrl
-import com.dluvian.nostr_kt.SubId
+import com.dluvian.voyage.data.nostr.RelayUrl
+import com.dluvian.voyage.data.nostr.SubId
 import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.launchIO
 import kotlinx.coroutines.CoroutineScope

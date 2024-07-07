@@ -21,8 +21,8 @@ import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
-import com.dluvian.nostr_kt.RelayUrl
-import com.dluvian.nostr_kt.getSubject
+import com.dluvian.voyage.data.nostr.RelayUrl
+import com.dluvian.voyage.data.nostr.getSubject
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.data.model.RelevantMetadata

@@ -1,9 +1,9 @@
 package com.dluvian.voyage.core.model
 
-import com.dluvian.nostr_kt.RelayUrl
-import com.dluvian.nostr_kt.removeMentionChar
-import com.dluvian.nostr_kt.removeNostrUri
-import com.dluvian.nostr_kt.removeTrailingSlashes
+import com.dluvian.voyage.data.nostr.RelayUrl
+import com.dluvian.voyage.data.nostr.removeMentionChar
+import com.dluvian.voyage.data.nostr.removeNostrUri
+import com.dluvian.voyage.data.nostr.removeTrailingSlashes
 import com.dluvian.voyage.core.Bech32
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex

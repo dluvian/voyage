@@ -59,7 +59,8 @@ interface DeleteDao {
                 AND (
                     createdAt >= :oldestCreatedAt 
                     OR pubkey IN (SELECT pubkey FROM account) 
-                    OR id IN (SELECT postId FROM bookmark))
+                    OR id IN (SELECT postId FROM bookmark)
+                )
             )
         """
     )

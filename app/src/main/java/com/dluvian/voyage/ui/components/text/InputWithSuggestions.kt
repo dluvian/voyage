@@ -14,7 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
-import com.dluvian.nostr_kt.NOSTR_URI
+import com.dluvian.voyage.data.nostr.NOSTR_URI
 import com.dluvian.voyage.core.ClickProfileSuggestion
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.OnUpdate

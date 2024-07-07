@@ -2,11 +2,6 @@ package com.dluvian.voyage.data.nostr
 
 import android.util.Log
 import androidx.compose.runtime.MutableState
-import com.dluvian.nostr_kt.INostrListener
-import com.dluvian.nostr_kt.Nip65Relay
-import com.dluvian.nostr_kt.NostrClient
-import com.dluvian.nostr_kt.RelayUrl
-import com.dluvian.nostr_kt.SubId
 import com.dluvian.voyage.core.AUTH_TIMEOUT
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_KEYS_SQL

@@ -1,10 +1,10 @@
 package com.dluvian.voyage.data.interactor
 
 import android.util.Log
-import com.dluvian.nostr_kt.RelayUrl
-import com.dluvian.nostr_kt.extractMentions
-import com.dluvian.nostr_kt.getSubject
-import com.dluvian.nostr_kt.secs
+import com.dluvian.voyage.data.nostr.RelayUrl
+import com.dluvian.voyage.data.nostr.extractMentions
+import com.dluvian.voyage.data.nostr.getSubject
+import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.PubkeyHex

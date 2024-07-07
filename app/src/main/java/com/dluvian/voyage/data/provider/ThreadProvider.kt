@@ -1,7 +1,7 @@
 package com.dluvian.voyage.data.provider
 
 import android.util.Log
-import com.dluvian.nostr_kt.createNevent
+import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.EventIdHex

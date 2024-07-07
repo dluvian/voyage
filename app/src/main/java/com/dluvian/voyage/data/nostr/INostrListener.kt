@@ -1,4 +1,4 @@
-package com.dluvian.nostr_kt
+package com.dluvian.voyage.data.nostr
 
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId

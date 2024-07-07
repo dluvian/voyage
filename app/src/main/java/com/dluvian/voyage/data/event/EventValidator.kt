@@ -1,14 +1,14 @@
 package com.dluvian.voyage.data.event
 
 import android.util.Log
-import com.dluvian.nostr_kt.RelayUrl
-import com.dluvian.nostr_kt.SubId
-import com.dluvian.nostr_kt.getMetadata
-import com.dluvian.nostr_kt.getNip65s
-import com.dluvian.nostr_kt.getReplyToId
-import com.dluvian.nostr_kt.getTitle
-import com.dluvian.nostr_kt.isPostOrReply
-import com.dluvian.nostr_kt.secs
+import com.dluvian.voyage.data.nostr.RelayUrl
+import com.dluvian.voyage.data.nostr.SubId
+import com.dluvian.voyage.data.nostr.getMetadata
+import com.dluvian.voyage.data.nostr.getNip65s
+import com.dluvian.voyage.data.nostr.getReplyToId
+import com.dluvian.voyage.data.nostr.getTitle
+import com.dluvian.voyage.data.nostr.isPostOrReply
+import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.core.MAX_CONTENT_LEN
 import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.MAX_SUBJECT_LEN

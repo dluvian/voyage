@@ -6,7 +6,7 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.UrlAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
-import com.dluvian.nostr_kt.createNprofile
+import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.core.extractHashtags
 import com.dluvian.voyage.core.extractNostrMentions
 import com.dluvian.voyage.core.extractUrls

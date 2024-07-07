@@ -3,7 +3,7 @@ package com.dluvian.voyage.data.account
 import android.content.Context
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import com.dluvian.nostr_kt.generateMnemonic
+import com.dluvian.voyage.data.nostr.generateMnemonic
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.Keys
 import rust.nostr.protocol.PublicKey

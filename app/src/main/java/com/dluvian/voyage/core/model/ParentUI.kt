@@ -2,7 +2,7 @@ package com.dluvian.voyage.core.model
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.text.AnnotatedString
-import com.dluvian.nostr_kt.RelayUrl
+import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider

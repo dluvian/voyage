@@ -5,7 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.State
-import com.dluvian.nostr_kt.getCurrentSecs
+import com.dluvian.voyage.data.nostr.getCurrentSecs
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.FEED_PAGE_SIZE
 import com.dluvian.voyage.core.model.AccountType

@@ -19,7 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import com.dluvian.nostr_kt.createNprofile
+import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate

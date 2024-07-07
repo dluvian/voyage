@@ -2,7 +2,7 @@ package com.dluvian.voyage.data.room.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.dluvian.nostr_kt.RelayUrl
+import com.dluvian.voyage.data.nostr.RelayUrl
 import kotlinx.coroutines.flow.Flow
 
 @Dao

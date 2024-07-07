@@ -2,8 +2,8 @@ package com.dluvian.voyage.data.room.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import com.dluvian.nostr_kt.getMetadata
-import com.dluvian.nostr_kt.secs
+import com.dluvian.voyage.data.nostr.getMetadata
+import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.getNormalizedName
 import com.dluvian.voyage.data.event.ValidatedProfile

@@ -1,7 +1,7 @@
 package com.dluvian.voyage.core.navigator
 
 import androidx.compose.runtime.mutableStateOf
-import com.dluvian.nostr_kt.createNevent
+import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.VMContainer
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.NavEvent

@@ -4,9 +4,9 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.nostr_kt.NOSTR_URI
-import com.dluvian.nostr_kt.RelayUrl
-import com.dluvian.nostr_kt.WEBSOCKET_PREFIX
+import com.dluvian.voyage.data.nostr.NOSTR_URI
+import com.dluvian.voyage.data.nostr.RelayUrl
+import com.dluvian.voyage.data.nostr.WEBSOCKET_PREFIX
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.data.provider.RelayProfileProvider

@@ -2,10 +2,10 @@ package com.dluvian.voyage.data.provider
 
 import android.util.Log
 import androidx.compose.runtime.State
-import com.dluvian.nostr_kt.Nip65Relay
-import com.dluvian.nostr_kt.NostrClient
-import com.dluvian.nostr_kt.RelayUrl
-import com.dluvian.nostr_kt.removeTrailingSlashes
+import com.dluvian.voyage.data.nostr.Nip65Relay
+import com.dluvian.voyage.data.nostr.NostrClient
+import com.dluvian.voyage.data.nostr.RelayUrl
+import com.dluvian.voyage.data.nostr.removeTrailingSlashes
 import com.dluvian.voyage.core.MAX_KEYS
 import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.MAX_POPULAR_RELAYS

@@ -36,8 +36,8 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import com.dluvian.nostr_kt.Nip65Relay
-import com.dluvian.nostr_kt.RelayUrl
+import com.dluvian.voyage.data.nostr.Nip65Relay
+import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.AddRelay
 import com.dluvian.voyage.core.GoBack

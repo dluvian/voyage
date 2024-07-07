@@ -1,7 +1,6 @@
 package com.dluvian.voyage.data.nostr
 
 import android.util.Log
-import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
 import com.dluvian.voyage.core.MAX_KEYS
 import com.dluvian.voyage.core.Topic

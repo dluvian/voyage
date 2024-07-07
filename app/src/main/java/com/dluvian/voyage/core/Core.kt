@@ -7,8 +7,8 @@ import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.nostr_kt.createNevent
-import com.dluvian.nostr_kt.createNprofile
+import com.dluvian.voyage.data.nostr.createNevent
+import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.AppContainer
 import com.dluvian.voyage.R
 import com.dluvian.voyage.VMContainer

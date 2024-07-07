@@ -4,10 +4,10 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.nostr_kt.createNevent
-import com.dluvian.nostr_kt.createNprofile
-import com.dluvian.nostr_kt.removeMentionChar
-import com.dluvian.nostr_kt.removeNostrUri
+import com.dluvian.voyage.data.nostr.createNevent
+import com.dluvian.voyage.data.nostr.createNprofile
+import com.dluvian.voyage.data.nostr.removeMentionChar
+import com.dluvian.voyage.data.nostr.removeNostrUri
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.DELAY_10SEC
 import com.dluvian.voyage.core.MAX_TOPIC_LEN

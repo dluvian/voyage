@@ -68,8 +68,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":nostr-kt"))
-
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.3")
     implementation("androidx.activity:activity-compose:1.9.0")
@@ -91,7 +89,9 @@ dependencies {
     ksp("androidx.room:room-compiler:$roomVersion")
 
     implementation("org.rust-nostr:nostr:0.32.1")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("cash.z.ecc.android:kotlin-bip39:1.0.7")
 
     // R8 error: Missing class com.google.errorprone.annotations...
-    implementation("com.google.errorprone:error_prone_annotations:2.23.0")
+    implementation("com.google.errorprone:error_prone_annotations:2.28.0")
 }

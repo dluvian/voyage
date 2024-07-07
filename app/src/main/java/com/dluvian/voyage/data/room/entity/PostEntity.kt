@@ -2,7 +2,7 @@ package com.dluvian.voyage.data.room.entity
 
 import androidx.room.Entity
 import androidx.room.Index
-import com.dluvian.nostr_kt.RelayUrl
+import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.event.ValidatedCrossPost

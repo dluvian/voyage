@@ -2,7 +2,7 @@ package com.dluvian.voyage.data.room.entity
 
 import androidx.room.Embedded
 import androidx.room.Entity
-import com.dluvian.nostr_kt.Nip65Relay
+import com.dluvian.voyage.data.nostr.Nip65Relay
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.event.ValidatedNip65
 

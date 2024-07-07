@@ -10,8 +10,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.dluvian.nostr_kt.createNevent
-import com.dluvian.nostr_kt.createNprofile
+import com.dluvian.voyage.data.nostr.createNevent
+import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile

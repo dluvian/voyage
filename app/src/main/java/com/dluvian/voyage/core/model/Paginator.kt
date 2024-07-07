@@ -3,7 +3,7 @@ package com.dluvian.voyage.core.model
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import com.dluvian.nostr_kt.getCurrentSecs
+import com.dluvian.voyage.data.nostr.getCurrentSecs
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.FEED_OFFSET
 import com.dluvian.voyage.core.FEED_PAGE_SIZE

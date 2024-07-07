@@ -23,7 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.dluvian.nostr_kt.createNevent
+import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.Fn

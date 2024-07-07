@@ -1,14 +1,14 @@
 package com.dluvian.voyage.data.event
 
 import android.util.Log
-import com.dluvian.nostr_kt.Nip65Relay
-import com.dluvian.nostr_kt.RelayUrl
-import com.dluvian.nostr_kt.createHashtagTag
-import com.dluvian.nostr_kt.createMentionTag
-import com.dluvian.nostr_kt.createReplyTag
-import com.dluvian.nostr_kt.createSubjectTag
-import com.dluvian.nostr_kt.createUnsignedProfileSet
-import com.dluvian.nostr_kt.createUnsignedTopicSet
+import com.dluvian.voyage.data.nostr.Nip65Relay
+import com.dluvian.voyage.data.nostr.RelayUrl
+import com.dluvian.voyage.data.nostr.createHashtagTag
+import com.dluvian.voyage.data.nostr.createMentionTag
+import com.dluvian.voyage.data.nostr.createReplyTag
+import com.dluvian.voyage.data.nostr.createSubjectTag
+import com.dluvian.voyage.data.nostr.createUnsignedProfileSet
+import com.dluvian.voyage.data.nostr.createUnsignedTopicSet
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic

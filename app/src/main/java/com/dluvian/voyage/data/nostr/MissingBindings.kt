@@ -1,4 +1,4 @@
-package com.dluvian.nostr_kt
+package com.dluvian.voyage.data.nostr
 
 import cash.z.ecc.android.bip39.Mnemonics
 import rust.nostr.protocol.Event

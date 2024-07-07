@@ -1,7 +1,6 @@
 package com.dluvian.voyage.data.nostr
 
 import android.util.Log
-import com.dluvian.nostr_kt.RelayUrl
 import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex

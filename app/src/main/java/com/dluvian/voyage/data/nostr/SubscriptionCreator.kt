@@ -1,9 +1,6 @@
 package com.dluvian.voyage.data.nostr
 
 import android.util.Log
-import com.dluvian.nostr_kt.NostrClient
-import com.dluvian.nostr_kt.RelayUrl
-import com.dluvian.nostr_kt.SubId
 import com.dluvian.voyage.data.event.EventCounter
 import rust.nostr.protocol.Filter
 

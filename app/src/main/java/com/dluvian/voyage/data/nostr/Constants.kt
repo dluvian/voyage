@@ -1,4 +1,4 @@
-package com.dluvian.nostr_kt
+package com.dluvian.voyage.data.nostr
 
 const val WEBSOCKET_SHORT = "wss"
 const val WEBSOCKET_PREFIX = "$WEBSOCKET_SHORT://"

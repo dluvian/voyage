@@ -3,7 +3,7 @@ package com.dluvian.voyage.core.navigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.res.stringResource
-import com.dluvian.nostr_kt.RelayUrl
+import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.Topic

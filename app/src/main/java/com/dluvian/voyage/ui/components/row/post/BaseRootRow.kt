@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import com.dluvian.nostr_kt.createNevent
+import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.core.ClickText
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenReplyCreation

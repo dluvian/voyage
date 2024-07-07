@@ -4,9 +4,9 @@ import android.content.Context
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.mutableStateOf
 import androidx.room.Room
-import com.dluvian.nostr_kt.NostrClient
-import com.dluvian.nostr_kt.RelayUrl
-import com.dluvian.nostr_kt.SubId
+import com.dluvian.voyage.data.nostr.NostrClient
+import com.dluvian.voyage.data.nostr.RelayUrl
+import com.dluvian.voyage.data.nostr.SubId
 import com.dluvian.voyage.core.ExternalSignerHandler
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.ConnectionStatus

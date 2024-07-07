@@ -8,9 +8,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.nostr_kt.Nip65Relay
-import com.dluvian.nostr_kt.RelayUrl
-import com.dluvian.nostr_kt.createNprofile
+import com.dluvian.voyage.data.nostr.Nip65Relay
+import com.dluvian.voyage.data.nostr.RelayUrl
+import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.core.ProfileViewAction
 import com.dluvian.voyage.core.ProfileViewLoadLists
 import com.dluvian.voyage.core.ProfileViewRefresh

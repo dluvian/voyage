@@ -3,7 +3,7 @@ package com.dluvian.voyage.data.interactor
 import android.content.Context
 import android.util.Log
 import androidx.compose.material3.SnackbarHostState
-import com.dluvian.nostr_kt.secs
+import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ClickNeutralizeVote
 import com.dluvian.voyage.core.ClickUpvote

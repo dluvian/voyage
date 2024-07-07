@@ -1,7 +1,7 @@
 package com.dluvian.voyage.data.event
 
-import com.dluvian.nostr_kt.Nip65Relay
-import com.dluvian.nostr_kt.RelayUrl
+import com.dluvian.voyage.data.nostr.Nip65Relay
+import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic

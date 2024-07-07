@@ -24,7 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import com.dluvian.nostr_kt.createNprofile
+import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.LoadSeed
