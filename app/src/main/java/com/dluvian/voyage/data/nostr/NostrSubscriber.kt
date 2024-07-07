@@ -116,11 +116,17 @@ class NostrSubscriber(
         }
     }
 
-    // No lazySubProfile bc we always don't save fields in db
     suspend fun subProfile(nprofile: Nip19Profile) {
+        val profileSince = room.profileDao()
+            .getMaxCreatedAt(pubkey = nprofile.publicKey().toHex())
+            ?.toULong()
+            ?: 1uL
+
         val profileFilter = Filter()
             .kind(kind = Kind.fromEnum(KindEnum.Metadata))
             .author(author = nprofile.publicKey())
+            // No +1 because we don't cache all fields
+            .since(timestamp = Timestamp.fromSecs(profileSince))
             .until(timestamp = Timestamp.now())
             .limit(1u)
         val filters = listOf(profileFilter)
