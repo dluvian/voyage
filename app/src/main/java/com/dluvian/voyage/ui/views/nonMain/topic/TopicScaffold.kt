@@ -18,10 +18,18 @@ fun TopicScaffold(
 ) {
     val topic by vm.currentTopic
     val isFollowed by vm.isFollowed.collectAsState()
+    val isMuted by vm.isMuted.collectAsState()
 
     VoyageScaffold(
         snackbar = snackbar,
-        topBar = { TopicTopAppBar(topic = topic, isFollowed = isFollowed, onUpdate = onUpdate) }
+        topBar = {
+            TopicTopAppBar(
+                topic = topic,
+                isFollowed = isFollowed,
+                isMuted = isMuted,
+                onUpdate = onUpdate
+            )
+        }
     ) {
         content()
     }

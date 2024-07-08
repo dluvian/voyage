@@ -7,8 +7,6 @@ import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.voyage.data.nostr.createNevent
-import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.AppContainer
 import com.dluvian.voyage.R
 import com.dluvian.voyage.VMContainer
@@ -20,6 +18,8 @@ import com.dluvian.voyage.core.model.NprofileMention
 import com.dluvian.voyage.core.model.NpubMention
 import com.dluvian.voyage.core.model.RelayMention
 import com.dluvian.voyage.core.navigator.Navigator
+import com.dluvian.voyage.data.nostr.createNevent
+import com.dluvian.voyage.data.nostr.createNprofile
 import kotlinx.coroutines.launch
 import rust.nostr.protocol.Nip19Event
 import rust.nostr.protocol.Nip19Profile
@@ -80,6 +80,7 @@ class Core(
             }
 
             is BookmarkEvent -> appContainer.bookmarker.handle(action = uiEvent)
+            is MuteEvent -> appContainer.muter.handle(action = uiEvent)
 
             is HomeViewAction -> vmContainer.homeVM.handle(action = uiEvent)
             is DiscoverViewAction -> vmContainer.discoverVM.handle(action = uiEvent)

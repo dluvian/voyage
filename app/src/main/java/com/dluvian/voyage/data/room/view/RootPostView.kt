@@ -1,12 +1,12 @@
 package com.dluvian.voyage.data.room.view
 
 import androidx.room.DatabaseView
-import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.model.TrustType
+import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 
 @DatabaseView(
@@ -25,6 +25,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             CASE WHEN account.pubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsOneself,
             CASE WHEN friend.friendPubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsFriend,
             CASE WHEN weboftrust.webOfTrustPubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsTrusted,
+            CASE WHEN mute.mutedItem IS NOT NULL THEN 1 ELSE 0 END AS authorIsMuted,
             CASE WHEN vote.postId IS NOT NULL THEN 1 ELSE 0 END isUpvoted,
             upvotes.upvoteCount,
             replies.replyCount,
@@ -43,6 +44,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
         LEFT JOIN account ON account.pubkey = post.pubkey
         LEFT JOIN friend ON friend.friendPubkey = post.pubkey
         LEFT JOIN weboftrust ON weboftrust.webOfTrustPubkey = post.pubkey
+        LEFT JOIN mute ON mute.mutedItem = post.pubkey AND mute.tag IS 'p'
         LEFT JOIN vote ON vote.postId = IFNULL(post.crossPostedId, post.id) AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)
         LEFT JOIN (
             SELECT vote.postId, COUNT(*) AS upvoteCount 
@@ -68,6 +70,7 @@ data class RootPostView(
     val authorIsOneself: Boolean,
     val authorIsFriend: Boolean,
     val authorIsTrusted: Boolean,
+    val authorIsMuted: Boolean,
     val myTopic: Topic?,
     val subject: String?,
     val content: String,
@@ -101,7 +104,8 @@ data class RootPostView(
             trustType = TrustType.from(
                 isOneself = this.authorIsOneself,
                 isFriend = follow ?: this.authorIsFriend,
-                isWebOfTrust = this.authorIsTrusted
+                isWebOfTrust = this.authorIsTrusted,
+                isMuted = this.authorIsMuted
             ),
             isBookmarked = bookmark ?: rootPostUI.isBookmarked
         )

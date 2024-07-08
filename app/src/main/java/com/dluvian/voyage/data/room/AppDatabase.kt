@@ -16,6 +16,7 @@ import com.dluvian.voyage.data.room.dao.FriendDao
 import com.dluvian.voyage.data.room.dao.FullProfileDao
 import com.dluvian.voyage.data.room.dao.InboxDao
 import com.dluvian.voyage.data.room.dao.ItemSetDao
+import com.dluvian.voyage.data.room.dao.MuteDao
 import com.dluvian.voyage.data.room.dao.Nip65Dao
 import com.dluvian.voyage.data.room.dao.PostDao
 import com.dluvian.voyage.data.room.dao.ProfileDao
@@ -61,7 +62,7 @@ import com.dluvian.voyage.data.room.view.SimplePostView
 class V10DeleteVoteIsPositiveColumn : AutoMigrationSpec
 
 @Database(
-    version = 13,
+    version = 14,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -76,6 +77,7 @@ class V10DeleteVoteIsPositiveColumn : AutoMigrationSpec
         AutoMigration(from = 10, to = 11),
         AutoMigration(from = 11, to = 12),
         AutoMigration(from = 12, to = 13),
+        AutoMigration(from = 13, to = 14),
     ],
     entities = [
         PostEntity::class,
@@ -120,6 +122,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun bookmarkDao(): BookmarkDao
     abstract fun contentSetDao(): ContentSetDao
     abstract fun itemSetDao(): ItemSetDao
+    abstract fun muteDao(): MuteDao
 
     // Util
     abstract fun deleteDao(): DeleteDao

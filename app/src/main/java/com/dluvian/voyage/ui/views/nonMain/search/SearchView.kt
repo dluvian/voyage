@@ -10,8 +10,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.dluvian.voyage.data.nostr.createNevent
-import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
@@ -21,6 +19,8 @@ import com.dluvian.voyage.core.SubUnknownProfiles
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.core.viewModel.SearchViewModel
+import com.dluvian.voyage.data.nostr.createNevent
+import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.data.room.view.SimplePostView
 import com.dluvian.voyage.ui.components.row.ClickableProfileRow
@@ -95,6 +95,7 @@ private fun SearchViewContent(
                         isOneself = post.authorIsOneself,
                         isFriend = post.authorIsFriend,
                         isWebOfTrust = post.authorIsTrusted,
+                        isMuted = post.authorIsMuted
                     ),
                     header = post.subject,
                     content = post.content,

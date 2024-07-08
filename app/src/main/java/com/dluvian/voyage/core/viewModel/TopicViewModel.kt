@@ -28,6 +28,7 @@ class TopicViewModel(
 
     val currentTopic = mutableStateOf("")
     var isFollowed: StateFlow<Boolean> = MutableStateFlow(false)
+    var isMuted: StateFlow<Boolean> = MutableStateFlow(false)
     val paginator = Paginator(
         feedProvider = feedProvider,
         scope = viewModelScope,
@@ -38,10 +39,15 @@ class TopicViewModel(
         val stripped = topicNavView.topic.normalizeTopic()
         subCreator.unsubAll()
         paginator.reinit(setting = TopicFeedSetting(topic = stripped))
-        val initVal = if (currentTopic.value == stripped) isFollowed.value else false
+
+        val initFollowVal = if (currentTopic.value == stripped) isFollowed.value else false
+        val initMuteVal = if (currentTopic.value == stripped) isMuted.value else false
         currentTopic.value = stripped
-        isFollowed = topicProvider.getIsFollowedFlow(topic = topicNavView.topic)
-            .stateIn(viewModelScope, SharingStarted.Eagerly, initVal)
+
+        isFollowed = topicProvider.getIsFollowedFlow(topic = stripped)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, initFollowVal)
+        isMuted = topicProvider.getIsMutedFlow(topic = stripped)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, initMuteVal)
     }
 
     fun handle(action: TopicViewAction) {

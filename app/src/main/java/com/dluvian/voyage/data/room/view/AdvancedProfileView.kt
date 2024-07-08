@@ -1,9 +1,9 @@
 package com.dluvian.voyage.data.room.view
 
 import androidx.room.DatabaseView
-import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.toShortenedBech32
+import com.dluvian.voyage.data.nostr.createNprofile
 import rust.nostr.protocol.Nip19Profile
 
 
@@ -11,7 +11,8 @@ import rust.nostr.protocol.Nip19Profile
     "SELECT profile.pubkey, profile.name,  " +
             "(SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = profile.pubkey)) AS isFriend, " +
             "(SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = profile.pubkey)) AS isWebOfTrust, " +
-            "(SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = profile.pubkey)) AS isMe " +
+            "(SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = profile.pubkey)) AS isMe, " +
+            "(SELECT EXISTS(SELECT * FROM mute WHERE mute.mutedItem = profile.pubkey AND mute.tag IS 'p')) AS isMuted " +
             "FROM profile "
 )
 data class AdvancedProfileView(
@@ -20,6 +21,7 @@ data class AdvancedProfileView(
     val isMe: Boolean = false,
     val isFriend: Boolean = false,
     val isWebOfTrust: Boolean = false,
+    val isMuted: Boolean = false,
 ) {
     fun toNip19(): Nip19Profile {
         return createNprofile(hex = pubkey)

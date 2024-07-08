@@ -6,6 +6,7 @@ import com.dluvian.voyage.core.takeRandom
 import com.dluvian.voyage.data.model.ListTopics
 import com.dluvian.voyage.data.model.MyTopics
 import com.dluvian.voyage.data.model.TopicSelection
+import com.dluvian.voyage.data.room.dao.MuteDao
 import com.dluvian.voyage.data.room.dao.TopicDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -13,7 +14,9 @@ import kotlinx.coroutines.flow.map
 
 class TopicProvider(
     val forcedFollowStates: Flow<Map<Topic, Boolean>>,
+    val forcedMuteStates: Flow<Map<Topic, Boolean>>,
     private val topicDao: TopicDao,
+    private val muteDao: MuteDao,
     private val itemSetProvider: ItemSetProvider,
 ) {
     suspend fun getMyTopics(limit: Int = Int.MAX_VALUE): List<Topic> {
@@ -60,6 +63,15 @@ class TopicProvider(
         return combine(
             topicDao.getIsFollowedFlow(topic = topic),
             forcedFollowStates
+        ) { db, forced ->
+            forced[topic] ?: db
+        }
+    }
+
+    fun getIsMutedFlow(topic: Topic): Flow<Boolean> {
+        return combine(
+            muteDao.getTopicIsMutedFlow(topic = topic),
+            forcedMuteStates
         ) { db, forced ->
             forced[topic] ?: db
         }

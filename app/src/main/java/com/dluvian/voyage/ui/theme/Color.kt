@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
 import com.dluvian.voyage.core.model.FriendTrust
+import com.dluvian.voyage.core.model.Muted
 import com.dluvian.voyage.core.model.NoTrust
 import com.dluvian.voyage.core.model.Oneself
 import com.dluvian.voyage.core.model.TrustType
@@ -17,7 +18,6 @@ val DenimBlue = Color(0xFF1565c0)
 val Orange = Color(0xFFff7b00)
 
 val UpvoteColor = Orange
-val DownvoteColor = DenimBlue
 
 val HyperlinkBlue = Color(0xFF007AFF)
 
@@ -94,6 +94,7 @@ fun getTrustColor(trustType: TrustType): Color {
         Oneself -> Color.Green
         FriendTrust -> Color.Green
         WebTrust -> Orange
+        Muted -> Color.Red
         NoTrust -> MaterialTheme.colorScheme.onBackground.light()
     }
 }

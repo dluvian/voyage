@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.model.FriendTrust
+import com.dluvian.voyage.core.model.Muted
 import com.dluvian.voyage.core.model.NoTrust
 import com.dluvian.voyage.core.model.Oneself
 import com.dluvian.voyage.core.model.TrustType
@@ -38,6 +39,12 @@ fun TrustIcon(modifier: Modifier = Modifier, trustType: TrustType) {
             stringResource(id = R.string.trusted)
         )
 
+        Muted -> Triple(
+            getTrustIcon(trustType = trustType),
+            getTrustColor(trustType = trustType),
+            stringResource(id = R.string.muted)
+        )
+
         NoTrust -> Triple(
             getTrustIcon(trustType = trustType),
             getTrustColor(trustType = trustType),
@@ -59,7 +66,8 @@ fun TrustIcon(modifier: Modifier = Modifier, profile: AdvancedProfileView) {
         trustType = TrustType.from(
             isOneself = profile.isMe,
             isFriend = profile.isFriend,
-            isWebOfTrust = profile.isWebOfTrust
+            isWebOfTrust = profile.isWebOfTrust,
+            isMuted = profile.isMuted
         )
     )
 }

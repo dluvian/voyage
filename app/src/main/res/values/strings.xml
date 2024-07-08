@@ -38,6 +38,7 @@
     <string name="follow">Follow</string>
     <string name="failed_to_sign_topic_list">Failed to sign topic list</string>
     <string name="failed_to_sign_bookmarks">Failed to sign bookmarks</string>
+    <string name="failed_to_sign_mute_list">Failed to sign mute list</string>
     <string name="failed_to_sign_contact_list">Failed to sign contact list</string>
     <string name="about">About</string>
     <string name="popular_topics">Popular topics</string>
@@ -171,6 +172,7 @@
     <string name="following_more_than_n_profiles_is_not_allowed">Following more than %d profiles is not allowed</string>
     <string name="following_more_than_n_topics_is_not_allowed">Following more than %d topics is not allowed</string>
     <string name="bookmarking_more_than_n_is_not_allowed">Bookmarking more than %d posts is not allowed</string>
+    <string name="muting_more_than_n_is_not_allowed">Muting more than %d items is not allowed</string>
     <string name="rebroadcast">Rebroadcast</string>
     <string name="event_json_is_not_available">Event json is not available</string>
     <string name="rebroadcasted_to_n_relays">Rebroadcasted to %d relays</string>
@@ -200,4 +202,7 @@
     <string name="choose_list">Choose list</string>
     <string name="added_to_list">Added to list</string>
     <string name="nostr_uri">Nostr URI</string>
+    <string name="muted">Muted</string>
+    <string name="unmute">Unmute</string>
+    <string name="mute">Mute</string>
 </resources>

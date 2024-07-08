@@ -1,12 +1,12 @@
 package com.dluvian.voyage.data.room.view
 
 import androidx.room.DatabaseView
-import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.model.LeveledReplyUI
 import com.dluvian.voyage.core.model.ReplyUI
 import com.dluvian.voyage.core.model.TrustType
+import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 
 
@@ -21,6 +21,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             "(SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.pubkey)) AS authorIsOneself, " +
             "(SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.pubkey)) AS authorIsFriend, " +
             "(SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = post.pubkey)) AS authorIsTrusted, " +
+            "(SELECT EXISTS(SELECT * FROM mute WHERE mute.mutedItem = post.pubkey AND mute.tag IS 'p')) AS authorIsMuted, " +
             "(SELECT EXISTS(SELECT* FROM vote WHERE vote.postId = post.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1))) AS isUpvoted, " +
             "(SELECT COUNT(*) FROM vote WHERE vote.postId = post.id) AS upvoteCount, " +
             "(SELECT COUNT(*) FROM post AS post2 WHERE post2.parentId = post.id) AS replyCount, " +
@@ -38,6 +39,7 @@ data class ReplyView(
     val authorIsOneself: Boolean,
     val authorIsFriend: Boolean,
     val authorIsTrusted: Boolean,
+    val authorIsMuted: Boolean,
     val isUpvoted: Boolean,
     val upvoteCount: Int,
     val replyCount: Int,
@@ -84,7 +86,8 @@ data class ReplyView(
             trustType = TrustType.from(
                 isOneself = this.authorIsOneself,
                 isFriend = follow ?: this.authorIsFriend,
-                isWebOfTrust = this.authorIsTrusted
+                isWebOfTrust = this.authorIsTrusted,
+                isMuted = this.authorIsMuted
             ),
             isBookmarked = bookmark ?: reply.isBookmarked
         ) else reply

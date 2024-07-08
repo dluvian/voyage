@@ -3,25 +3,23 @@ package com.dluvian.voyage.data.interactor
 import android.content.Context
 import android.util.Log
 import androidx.compose.material3.SnackbarHostState
-import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.BookmarkEvent
 import com.dluvian.voyage.core.BookmarkPost
 import com.dluvian.voyage.core.EventIdHex
-import com.dluvian.voyage.core.LIST_CHANGE_DEBOUNCE
 import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.UnbookmarkPost
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.event.ValidatedBookmarkList
 import com.dluvian.voyage.data.nostr.NostrService
+import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.BookmarkDao
 import com.dluvian.voyage.data.room.dao.tx.BookmarkUpsertDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -61,14 +59,14 @@ class Bookmarker(
     }
 
     private fun handleAction(postId: EventIdHex, isBookmarked: Boolean) {
-        updateForcedStates(postId = postId, isFollowed = isBookmarked)
+        updateForcedStates(postId = postId, isBookmarked = isBookmarked)
         handleBookmark()
     }
 
-    private fun updateForcedStates(postId: EventIdHex, isFollowed: Boolean) {
+    private fun updateForcedStates(postId: EventIdHex, isBookmarked: Boolean) {
         _forcedBookmarks.update {
             val mutable = it.toMutableMap()
-            mutable[postId] = isFollowed
+            mutable[postId] = isBookmarked
             mutable
         }
     }
@@ -78,8 +76,6 @@ class Bookmarker(
         if (job?.isActive == true) return
 
         job = scope.launchIO {
-            delay(LIST_CHANGE_DEBOUNCE)
-
             val toHandle = _forcedBookmarks.value.toMap()
             val before = bookmarkDao.getMyBookmarks().toSet()
             val adjusted = before.toMutableSet()
@@ -94,7 +90,7 @@ class Bookmarker(
                 Log.w(TAG, "New bookmark list is too large (${adjusted.size})")
                 adjusted
                     .minus(before)
-                    .forEach { updateForcedStates(postId = it, isFollowed = false) }
+                    .forEach { updateForcedStates(postId = it, isBookmarked = false) }
                 val msg = context.getString(
                     R.string.bookmarking_more_than_n_is_not_allowed,
                     MAX_KEYS_SQL

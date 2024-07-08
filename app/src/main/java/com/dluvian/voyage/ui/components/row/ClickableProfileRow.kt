@@ -17,7 +17,8 @@ fun ClickableProfileRow(
         trustType = TrustType.from(
             isOneself = profile.isMe,
             isFriend = profile.isFriend,
-            isWebOfTrust = profile.isWebOfTrust
+            isWebOfTrust = profile.isWebOfTrust,
+            isMuted = profile.isMuted
         ),
         header = profile.name,
         trailingContent = trailingContent,

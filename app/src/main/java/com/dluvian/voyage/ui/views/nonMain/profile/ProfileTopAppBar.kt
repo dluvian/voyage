@@ -20,10 +20,12 @@ import com.dluvian.voyage.core.AddProfileToList
 import com.dluvian.voyage.core.ClickEditProfile
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.FollowProfile
+import com.dluvian.voyage.core.MuteProfile
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.ProfileViewLoadLists
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.UnfollowProfile
+import com.dluvian.voyage.core.UnmuteProfile
 import com.dluvian.voyage.data.model.FullProfileUI
 import com.dluvian.voyage.data.model.ItemSetMeta
 import com.dluvian.voyage.ui.components.NamedCheckbox
@@ -48,12 +50,13 @@ fun ProfileTopAppBar(
             if (!profile.inner.isMe) {
                 ActionButton(
                     pubkey = profile.inner.pubkey,
+                    isMuted = profile.inner.isMuted,
                     addableLists = addableLists,
                     nonAddableLists = nonAddableLists,
                     scope = scope,
                     onUpdate = onUpdate
                 )
-                FollowButton(
+                if (!profile.inner.isMuted) FollowButton(
                     isFollowed = profile.inner.isFriend,
                     onFollow = {
                         onUpdate(FollowProfile(pubkey = profile.inner.pubkey))
@@ -74,6 +77,7 @@ fun ProfileTopAppBar(
 @Composable
 private fun ActionButton(
     pubkey: PubkeyHex,
+    isMuted: Boolean,
     addableLists: List<ItemSetMeta>,
     nonAddableLists: List<ItemSetMeta>,
     scope: CoroutineScope,
@@ -85,6 +89,7 @@ private fun ActionButton(
         ActionMenu(
             isExpanded = showMenu.value,
             pubkey = pubkey,
+            isMuted = isMuted,
             addableLists = addableLists,
             nonAddableLists = nonAddableLists,
             scope = scope,
@@ -108,6 +113,7 @@ private fun ActionButton(
 private fun ActionMenu(
     isExpanded: Boolean,
     pubkey: PubkeyHex,
+    isMuted: Boolean,
     addableLists: List<ItemSetMeta>,
     nonAddableLists: List<ItemSetMeta>,
     scope: CoroutineScope,
@@ -115,6 +121,7 @@ private fun ActionMenu(
     onDismiss: Fn
 ) {
     val showAddToList = remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     if (showAddToList.value) AddToListDialog(
         pubkey = pubkey,
@@ -132,6 +139,21 @@ private fun ActionMenu(
                 showAddToList.value = true
                 onDismiss()
             })
+        if (isMuted) {
+            SimpleDropdownItem(
+                text = stringResource(id = R.string.unmute),
+                onClick = {
+                    onUpdate(UnmuteProfile(pubkey = pubkey, scope = scope, context = context))
+                    onDismiss()
+                })
+        } else {
+            SimpleDropdownItem(
+                text = stringResource(id = R.string.mute),
+                onClick = {
+                    onUpdate(MuteProfile(pubkey = pubkey, scope = scope, context = context))
+                    onDismiss()
+                })
+        }
     }
 }
 

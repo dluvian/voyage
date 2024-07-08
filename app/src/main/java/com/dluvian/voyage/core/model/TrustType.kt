@@ -7,8 +7,14 @@ import androidx.compose.runtime.Stable
 sealed class TrustType {
     companion object {
         @Stable
-        fun from(isOneself: Boolean, isFriend: Boolean, isWebOfTrust: Boolean): TrustType {
+        fun from(
+            isOneself: Boolean,
+            isFriend: Boolean,
+            isWebOfTrust: Boolean,
+            isMuted: Boolean
+        ): TrustType {
             return if (isOneself) Oneself
+            else if (isMuted) Muted
             else if (isFriend) FriendTrust
             else if (isWebOfTrust) WebTrust
             else NoTrust
@@ -19,4 +25,5 @@ sealed class TrustType {
 data object Oneself : TrustType()
 data object FriendTrust : TrustType()
 data object WebTrust : TrustType()
+data object Muted : TrustType()
 data object NoTrust : TrustType()

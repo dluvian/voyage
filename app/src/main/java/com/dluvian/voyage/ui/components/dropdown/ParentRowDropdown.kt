@@ -8,8 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import com.dluvian.voyage.data.nostr.createNevent
-import com.dluvian.voyage.data.nostr.createNeventUri
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.BookmarkPost
 import com.dluvian.voyage.core.DeletePost
@@ -23,12 +21,15 @@ import com.dluvian.voyage.core.copyAndToast
 import com.dluvian.voyage.core.createProcessTextIntent
 import com.dluvian.voyage.core.getTranslators
 import com.dluvian.voyage.core.model.FriendTrust
+import com.dluvian.voyage.core.model.Muted
 import com.dluvian.voyage.core.model.NoTrust
 import com.dluvian.voyage.core.model.Oneself
 import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.core.model.ReplyUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.model.WebTrust
+import com.dluvian.voyage.data.nostr.createNevent
+import com.dluvian.voyage.data.nostr.createNeventUri
 
 @Composable
 fun ParentRowDropdown(
@@ -149,7 +150,7 @@ private fun FollowItem(
     onUpdate: OnUpdate
 ) {
     when (parent.trustType) {
-        Oneself -> {}
+        Oneself, Muted -> {}
         FriendTrust -> {
             SimpleDropdownItem(
                 text = stringResource(id = R.string.unfollow),
@@ -180,7 +181,7 @@ private fun FollowCrossPostedItem(
 ) {
     if (parent is RootPostUI && parent.crossPostedTrustType != null && parent.crossPostedPubkey != null) {
         when (parent.crossPostedTrustType) {
-            Oneself -> {}
+            Oneself, Muted -> {}
             FriendTrust -> {
                 SimpleDropdownItem(
                     text = stringResource(id = R.string.unfollow_cross_posted_author),

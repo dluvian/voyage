@@ -2,9 +2,9 @@ package com.dluvian.voyage.core.model
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.text.AnnotatedString
-import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 import com.dluvian.voyage.data.room.view.ReplyView
 import com.dluvian.voyage.data.room.view.RootPostView
@@ -86,6 +86,7 @@ data class RootPostUI(
                     isOneself = rootPostView.authorIsOneself,
                     isFriend = rootPostView.authorIsFriend,
                     isWebOfTrust = rootPostView.authorIsTrusted,
+                    isMuted = rootPostView.authorIsMuted
                 ),
                 myTopic = rootPostView.myTopic,
                 createdAt = rootPostView.createdAt,
@@ -101,6 +102,7 @@ data class RootPostUI(
                     isOneself = rootPostView.crossPostedAuthorIsOneself,
                     isFriend = rootPostView.crossPostedAuthorIsFriend,
                     isWebOfTrust = rootPostView.crossPostedAuthorIsTrusted,
+                    isMuted = false // False bc this will never be in UI
                 ),
                 isBookmarked = rootPostView.isBookmarked,
             )
@@ -143,7 +145,8 @@ data class ReplyUI(
                 trustType = TrustType.from(
                     isOneself = replyView.authorIsOneself,
                     isFriend = replyView.authorIsFriend,
-                    isWebOfTrust = replyView.authorIsTrusted
+                    isWebOfTrust = replyView.authorIsTrusted,
+                    isMuted = replyView.authorIsMuted,
                 ),
                 createdAt = replyView.createdAt,
                 content = annotatedStringProvider.annotate(replyView.content),

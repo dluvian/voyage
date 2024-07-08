@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.activity.result.ActivityResult
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.text.AnnotatedString
-import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.navigator.BookmarksNavView
@@ -28,6 +27,7 @@ import com.dluvian.voyage.core.navigator.SettingsNavView
 import com.dluvian.voyage.core.navigator.ThreadNavView
 import com.dluvian.voyage.core.navigator.ThreadRawNavView
 import com.dluvian.voyage.core.navigator.TopicNavView
+import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import kotlinx.coroutines.CoroutineScope
 import rust.nostr.protocol.Metadata
@@ -109,6 +109,32 @@ data class ClickNeutralizeVote(
     override val postId: EventIdHex,
     override val mention: PubkeyHex,
 ) : VoteEvent(postId = postId, mention = mention)
+
+
+sealed class MuteEvent : UIEvent()
+data class MuteProfile(
+    val pubkey: PubkeyHex,
+    val scope: CoroutineScope,
+    val context: Context
+) : MuteEvent()
+
+data class UnmuteProfile(
+    val pubkey: PubkeyHex,
+    val scope: CoroutineScope,
+    val context: Context
+) : MuteEvent()
+
+data class MuteTopic(
+    val topic: Topic,
+    val scope: CoroutineScope,
+    val context: Context
+) : MuteEvent()
+
+data class UnmuteTopic(
+    val topic: Topic,
+    val scope: CoroutineScope,
+    val context: Context
+) : MuteEvent()
 
 
 sealed class TopicEvent(open val topic: Topic) : UIEvent()

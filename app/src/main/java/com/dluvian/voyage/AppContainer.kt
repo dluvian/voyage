@@ -4,9 +4,6 @@ import android.content.Context
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.mutableStateOf
 import androidx.room.Room
-import com.dluvian.voyage.data.nostr.NostrClient
-import com.dluvian.voyage.data.nostr.RelayUrl
-import com.dluvian.voyage.data.nostr.SubId
 import com.dluvian.voyage.core.ExternalSignerHandler
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.ConnectionStatus
@@ -27,15 +24,19 @@ import com.dluvian.voyage.data.event.OldestUsedEvent
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
 import com.dluvian.voyage.data.interactor.Bookmarker
 import com.dluvian.voyage.data.interactor.ItemSetEditor
+import com.dluvian.voyage.data.interactor.Muter
 import com.dluvian.voyage.data.interactor.PostSender
 import com.dluvian.voyage.data.interactor.PostVoter
 import com.dluvian.voyage.data.interactor.ProfileFollower
 import com.dluvian.voyage.data.interactor.ThreadCollapser
 import com.dluvian.voyage.data.interactor.TopicFollower
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
+import com.dluvian.voyage.data.nostr.NostrClient
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.NostrSubscriber
+import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.SubBatcher
+import com.dluvian.voyage.data.nostr.SubId
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.preferences.DatabasePreferences
 import com.dluvian.voyage.data.preferences.RelayPreferences
@@ -84,6 +85,7 @@ class AppContainer(context: Context) {
     val connectionStatuses = mutableStateOf(mapOf<RelayUrl, ConnectionStatus>())
 
     private val forcedFollowTopicStates = MutableStateFlow(emptyMap<Topic, Boolean>())
+    private val forcedMuteTopicStates = MutableStateFlow(emptyMap<Topic, Boolean>())
 
     private val accountManager = AccountManager(
         mnemonicSigner = mnemonicSigner,
@@ -106,7 +108,9 @@ class AppContainer(context: Context) {
 
     val topicProvider = TopicProvider(
         forcedFollowStates = forcedFollowTopicStates,
+        forcedMuteStates = forcedMuteTopicStates,
         topicDao = roomDb.topicDao(),
+        muteDao = roomDb.muteDao(),
         itemSetProvider = itemSetProvider,
     )
 
@@ -232,6 +236,16 @@ class AppContainer(context: Context) {
         relayProvider = relayProvider,
         bookmarkUpsertDao = roomDb.bookmarkUpsertDao(),
         bookmarkDao = roomDb.bookmarkDao(),
+        snackbar = snackbar,
+        context = context,
+    )
+
+    val muter = Muter(
+        forcedTopicMutes = forcedMuteTopicStates,
+        nostrService = nostrService,
+        relayProvider = relayProvider,
+        muteUpsertDao = roomDb.muteUpsertDao(),
+        muteDao = roomDb.muteDao(),
         snackbar = snackbar,
         context = context,
     )

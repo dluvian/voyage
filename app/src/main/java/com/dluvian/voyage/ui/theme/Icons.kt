@@ -8,6 +8,7 @@ import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.automirrored.filled.Reply
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.automirrored.filled.ViewList
+import androidx.compose.material.icons.automirrored.filled.VolumeOff
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Bookmark
@@ -41,6 +42,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.dluvian.voyage.core.model.FriendTrust
+import com.dluvian.voyage.core.model.Muted
 import com.dluvian.voyage.core.model.NoTrust
 import com.dluvian.voyage.core.model.Oneself
 import com.dluvian.voyage.core.model.TrustType
@@ -79,6 +81,7 @@ val BookmarkIcon = Icons.Filled.Bookmark
 val RelayIcon = Icons.Default.CellTower
 val OpenIcon = Icons.AutoMirrored.Filled.OpenInNew
 val EditIcon = Icons.Default.Edit
+val MuteIcon = Icons.AutoMirrored.Filled.VolumeOff
 
 @Stable
 @Composable
@@ -87,5 +90,6 @@ fun getTrustIcon(trustType: TrustType): ImageVector {
         Oneself -> Icons.Default.Star
         FriendTrust, WebTrust -> Icons.Filled.VerifiedUser
         NoTrust -> Icons.Default.QuestionMark
+        Muted -> MuteIcon
     }
 }

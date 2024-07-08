@@ -1,6 +1,10 @@
 package com.dluvian.voyage.data.event
 
 import android.util.Log
+import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.data.account.AccountManager
 import com.dluvian.voyage.data.nostr.Nip65Relay
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.createHashtagTag
@@ -9,10 +13,6 @@ import com.dluvian.voyage.data.nostr.createReplyTag
 import com.dluvian.voyage.data.nostr.createSubjectTag
 import com.dluvian.voyage.data.nostr.createUnsignedProfileSet
 import com.dluvian.voyage.data.nostr.createUnsignedTopicSet
-import com.dluvian.voyage.core.EventIdHex
-import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.data.account.AccountManager
 import rust.nostr.protocol.Bookmarks
 import rust.nostr.protocol.Contact
 import rust.nostr.protocol.Event
@@ -22,6 +22,7 @@ import rust.nostr.protocol.Interests
 import rust.nostr.protocol.Kind
 import rust.nostr.protocol.KindEnum
 import rust.nostr.protocol.Metadata
+import rust.nostr.protocol.MuteList
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.RelayMetadata
 import rust.nostr.protocol.Tag
@@ -124,6 +125,17 @@ class EventMaker(
     suspend fun buildBookmarkList(postIds: List<EventIdHex>): Result<Event> {
         val bookmarks = Bookmarks(eventIds = postIds.map { EventId.fromHex(it) })
         val unsignedEvent = EventBuilder.bookmarks(list = bookmarks)
+            .toUnsignedEvent(accountManager.getPublicKey())
+
+        return accountManager.sign(unsignedEvent = unsignedEvent)
+    }
+
+    suspend fun buildMuteList(pubkeys: List<PubkeyHex>, topics: List<Topic>): Result<Event> {
+        val mutes = MuteList(
+            publicKeys = pubkeys.map { PublicKey.fromHex(it) },
+            hashtags = topics
+        )
+        val unsignedEvent = EventBuilder.muteList(list = mutes)
             .toUnsignedEvent(accountManager.getPublicKey())
 
         return accountManager.sign(unsignedEvent = unsignedEvent)
