@@ -23,6 +23,11 @@ class EventProcessor(
     private val pubkeyProvider: IPubkeyProvider,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
+    private val listEventProcessor = ListEventProcessor(
+        scope = scope,
+        pubkeyProvider = pubkeyProvider,
+        room = room
+    )
 
     fun processEvents(events: Collection<ValidatedEvent>) {
         if (events.isEmpty()) return
@@ -36,13 +41,10 @@ class EventProcessor(
         val replies = mutableListOf<ValidatedReply>()
         val crossPosts = mutableListOf<ValidatedCrossPost>()
         val votes = mutableListOf<ValidatedVote>()
-        val contactLists = mutableListOf<ValidatedContactList>()
-        val nip65s = mutableListOf<ValidatedNip65>()
         val profiles = mutableListOf<ValidatedProfile>()
-        val topicLists = mutableListOf<ValidatedTopicList>()
-        val bookmarkLists = mutableListOf<ValidatedBookmarkList>()
         val profileSets = mutableListOf<ValidatedProfileSet>()
         val topicSets = mutableListOf<ValidatedTopicSet>()
+        val lists = mutableListOf<ValidatedList>()
 
         allEvents.forEach { event ->
             when (event) {
@@ -50,26 +52,20 @@ class EventProcessor(
                 is ValidatedReply -> replies.add(event)
                 is ValidatedCrossPost -> crossPosts.add(event)
                 is ValidatedVote -> votes.add(event)
-                is ValidatedContactList -> contactLists.add(event)
-                is ValidatedNip65 -> nip65s.add(event)
                 is ValidatedProfile -> profiles.add(event)
-                is ValidatedTopicList -> topicLists.add(event)
-                is ValidatedBookmarkList -> bookmarkLists.add(event)
                 is ValidatedProfileSet -> profileSets.add(event)
                 is ValidatedTopicSet -> topicSets.add(event)
+                is ValidatedList -> lists.add(event)
             }
         }
         processRootPosts(rootPosts = rootPosts)
         processReplies(replies = replies)
         processCrossPosts(crossPosts = crossPosts)
         processVotes(votes = votes)
-        processContactLists(contactLists = contactLists)
-        processNip65s(nip65s = nip65s)
         processProfiles(profiles = profiles)
-        processTopicLists(topicLists = topicLists)
-        processBookmarkLists(bookmarkLists = bookmarkLists)
         processProfileSets(sets = profileSets)
         processTopicSets(sets = topicSets)
+        listEventProcessor.processLists(lists = lists)
     }
 
     private fun processRootPosts(rootPosts: Collection<ValidatedRootPost>) {
@@ -118,65 +114,6 @@ class EventProcessor(
         }
     }
 
-    private fun processContactLists(contactLists: Collection<ValidatedContactList>) {
-        if (contactLists.isEmpty()) return
-
-        val newestLists = filterNewestLists(lists = contactLists)
-
-        val myPubkey = pubkeyProvider.getPubkeyHex()
-        val myList = newestLists.find { it.pubkey == myPubkey }
-        val otherLists = newestLists.let { if (myList != null) it - myList else it }
-
-        processFriendList(myFriendList = myList)
-        processWebOfTrustList(validatedWoTs = otherLists)
-    }
-
-    private fun processFriendList(myFriendList: ValidatedContactList?) {
-        if (myFriendList == null) return
-
-        scope.launch {
-            Log.d(TAG, "Upsert my friend list of ${myFriendList.friendPubkeys.size} friends")
-            room.friendUpsertDao().upsertFriends(validatedContactList = myFriendList)
-        }.invokeOnCompletion { exception ->
-            if (exception != null) Log.w(TAG, "Failed to process friend list", exception)
-        }
-    }
-
-    private fun processWebOfTrustList(validatedWoTs: Collection<ValidatedContactList>) {
-        if (validatedWoTs.isEmpty()) return
-
-        scope.launch {
-            Log.d(TAG, "Upsert ${validatedWoTs.size} wot contact lists")
-            room.webOfTrustUpsertDao().upsertWebOfTrust(validatedWoTs = validatedWoTs)
-        }.invokeOnCompletion { ex ->
-            if (ex != null) Log.w(TAG, "Failed to process web of trust list", ex)
-        }
-    }
-
-    private fun processTopicLists(topicLists: Collection<ValidatedTopicList>) {
-        if (topicLists.isEmpty()) return
-
-        val myNewestList = filterNewestLists(lists = topicLists)
-            .firstOrNull { it.myPubkey == pubkeyProvider.getPubkeyHex() } ?: return
-
-        scope.launch {
-            Log.d(TAG, "Upsert topic list of ${myNewestList.topics.size} topics")
-            room.topicUpsertDao().upsertTopics(validatedTopicList = myNewestList)
-        }
-    }
-
-    private fun processBookmarkLists(bookmarkLists: Collection<ValidatedBookmarkList>) {
-        if (bookmarkLists.isEmpty()) return
-
-        val myNewestList = filterNewestLists(lists = bookmarkLists)
-            .firstOrNull { it.myPubkey == pubkeyProvider.getPubkeyHex() } ?: return
-
-        scope.launch {
-            Log.d(TAG, "Upsert bookmark list of ${myNewestList.postIds.size} postIds")
-            room.bookmarkUpsertDao().upsertBookmarks(validatedBookmarkList = myNewestList)
-        }
-    }
-
     private fun processProfileSets(sets: Collection<ValidatedProfileSet>) {
         if (sets.isEmpty()) return
 
@@ -204,20 +141,6 @@ class EventProcessor(
                 Log.d(TAG, "Upsert set with ${it.topics.size} topics")
                 room.topicSetUpsertDao().upsertSet(set = it)
             }
-        }
-    }
-
-    private fun processNip65s(nip65s: Collection<ValidatedNip65>) {
-        if (nip65s.isEmpty()) return
-
-        val newestNip65s = filterNewestLists(lists = nip65s).filter { it.relays.isNotEmpty() }
-        if (newestNip65s.isEmpty()) return
-
-        scope.launch {
-            Log.d(TAG, "Upsert ${nip65s.size} nip65s")
-            room.nip65UpsertDao().upsertNip65s(validatedNip65s = newestNip65s)
-        }.invokeOnCompletion { ex ->
-            if (ex != null) Log.w(TAG, "Failed to process nip65", ex)
         }
     }
 
@@ -268,10 +191,6 @@ class EventProcessor(
         }
 
         return newest
-    }
-
-    private fun <T : ValidatedList> filterNewestLists(lists: Collection<T>): List<T> {
-        return lists.sortedByDescending { it.createdAt }.distinctBy { it.owner }
     }
 
     private fun <T : ValidatedSet> filterNewestSets(sets: Collection<T>): List<T> {

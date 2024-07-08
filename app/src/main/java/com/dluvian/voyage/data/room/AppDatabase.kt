@@ -27,6 +27,7 @@ import com.dluvian.voyage.data.room.dao.WebOfTrustDao
 import com.dluvian.voyage.data.room.dao.tx.BookmarkUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.FriendUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.FullProfileUpsertDao
+import com.dluvian.voyage.data.room.dao.tx.MuteUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.Nip65UpsertDao
 import com.dluvian.voyage.data.room.dao.tx.PostInsertDao
 import com.dluvian.voyage.data.room.dao.tx.ProfileSetUpsertDao
@@ -39,6 +40,7 @@ import com.dluvian.voyage.data.room.entity.BookmarkEntity
 import com.dluvian.voyage.data.room.entity.FriendEntity
 import com.dluvian.voyage.data.room.entity.FullProfileEntity
 import com.dluvian.voyage.data.room.entity.HashtagEntity
+import com.dluvian.voyage.data.room.entity.MuteEntity
 import com.dluvian.voyage.data.room.entity.Nip65Entity
 import com.dluvian.voyage.data.room.entity.PostEntity
 import com.dluvian.voyage.data.room.entity.ProfileEntity
@@ -59,7 +61,7 @@ import com.dluvian.voyage.data.room.view.SimplePostView
 class V10DeleteVoteIsPositiveColumn : AutoMigrationSpec
 
 @Database(
-    version = 12,
+    version = 13,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -73,6 +75,7 @@ class V10DeleteVoteIsPositiveColumn : AutoMigrationSpec
         AutoMigration(from = 9, to = 10, spec = V10DeleteVoteIsPositiveColumn::class),
         AutoMigration(from = 10, to = 11),
         AutoMigration(from = 11, to = 12),
+        AutoMigration(from = 12, to = 13),
     ],
     entities = [
         PostEntity::class,
@@ -90,6 +93,7 @@ class V10DeleteVoteIsPositiveColumn : AutoMigrationSpec
         ProfileSetItemEntity::class,
         TopicSetEntity::class,
         TopicSetItemEntity::class,
+        MuteEntity::class,
     ],
     views = [
         RootPostView::class,
@@ -133,4 +137,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun fullProfileUpsertDao(): FullProfileUpsertDao
     abstract fun profileSetUpsertDao(): ProfileSetUpsertDao
     abstract fun topicSetUpsertDao(): TopicSetUpsertDao
+    abstract fun muteUpsertDao(): MuteUpsertDao
 }

@@ -1,14 +1,6 @@
 package com.dluvian.voyage.data.event
 
 import android.util.Log
-import com.dluvian.voyage.data.nostr.RelayUrl
-import com.dluvian.voyage.data.nostr.SubId
-import com.dluvian.voyage.data.nostr.getMetadata
-import com.dluvian.voyage.data.nostr.getNip65s
-import com.dluvian.voyage.data.nostr.getReplyToId
-import com.dluvian.voyage.data.nostr.getTitle
-import com.dluvian.voyage.data.nostr.isPostOrReply
-import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.core.MAX_CONTENT_LEN
 import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.MAX_SUBJECT_LEN
@@ -17,6 +9,14 @@ import com.dluvian.voyage.core.getNormalizedTopics
 import com.dluvian.voyage.core.getTrimmedSubject
 import com.dluvian.voyage.core.takeRandom
 import com.dluvian.voyage.data.account.IPubkeyProvider
+import com.dluvian.voyage.data.nostr.RelayUrl
+import com.dluvian.voyage.data.nostr.SubId
+import com.dluvian.voyage.data.nostr.getMetadata
+import com.dluvian.voyage.data.nostr.getNip65s
+import com.dluvian.voyage.data.nostr.getReplyToId
+import com.dluvian.voyage.data.nostr.getTitle
+import com.dluvian.voyage.data.nostr.isPostOrReply
+import com.dluvian.voyage.data.nostr.secs
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
@@ -141,6 +141,19 @@ class EventValidator(
                         .distinct()
                         .takeRandom(MAX_KEYS_SQL)
                         .toSet(),
+                    createdAt = event.createdAt().secs()
+                )
+            }
+
+            is KindEnum.MuteList -> {
+                if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) return null
+                ValidatedMuteList(
+                    myPubkey = event.author().toHex(),
+                    pubkeys = event.publicKeys().map { it.toHex() }
+                        .distinct()
+                        .takeRandom(MAX_KEYS_SQL)
+                        .toSet(),
+                    topics = event.getNormalizedTopics(limit = MAX_KEYS_SQL).toSet(),
                     createdAt = event.createdAt().secs()
                 )
             }

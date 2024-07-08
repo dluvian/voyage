@@ -1,10 +1,10 @@
 package com.dluvian.voyage.data.event
 
-import com.dluvian.voyage.data.nostr.Nip65Relay
-import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.data.nostr.Nip65Relay
+import com.dluvian.voyage.data.nostr.RelayUrl
 import rust.nostr.protocol.Metadata
 
 sealed class ValidatedEvent
@@ -79,9 +79,22 @@ data class ValidatedTopicList(
     override val createdAt: Long
 ) : ValidatedList(owner = myPubkey, createdAt = createdAt)
 
+data class ValidatedNip65(
+    val pubkey: PubkeyHex,
+    val relays: List<Nip65Relay>,
+    override val createdAt: Long
+) : ValidatedList(owner = pubkey, createdAt = createdAt)
+
 data class ValidatedBookmarkList(
     val myPubkey: PubkeyHex,
     val postIds: Set<EventIdHex>,
+    override val createdAt: Long
+) : ValidatedList(owner = myPubkey, createdAt = createdAt)
+
+data class ValidatedMuteList(
+    val myPubkey: PubkeyHex,
+    val pubkeys: Set<PubkeyHex>,
+    val topics: Set<Topic>,
     override val createdAt: Long
 ) : ValidatedList(owner = myPubkey, createdAt = createdAt)
 
@@ -112,10 +125,3 @@ data class ValidatedTopicSet(
     identifier = identifier,
     createdAt = createdAt
 )
-
-
-data class ValidatedNip65(
-    val pubkey: PubkeyHex,
-    val relays: List<Nip65Relay>,
-    override val createdAt: Long
-) : ValidatedList(owner = pubkey, createdAt = createdAt)
