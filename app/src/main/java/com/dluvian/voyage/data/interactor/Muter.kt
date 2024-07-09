@@ -31,7 +31,7 @@ import kotlinx.coroutines.flow.update
 private const val TAG = "Muter"
 
 class Muter(
-    private val forcedTopicMutes: MutableStateFlow<Map<Topic, Boolean>>,
+    private val forcedTopicMuteFlow: MutableStateFlow<Map<Topic, Boolean>>,
     private val nostrService: NostrService,
     private val relayProvider: RelayProvider,
     private val muteUpsertDao: MuteUpsertDao,
@@ -46,13 +46,6 @@ class Muter(
         scope,
         SharingStarted.Eagerly,
         _forcedProfileMutes.value
-    )
-
-    // TODO: Keep or ??
-    val forcedTopicMuteFlow = forcedTopicMutes.stateIn(
-        scope,
-        SharingStarted.Eagerly,
-        forcedTopicMutes.value
     )
 
     fun handle(action: MuteEvent) {
@@ -83,7 +76,7 @@ class Muter(
     }
 
     private fun updateForcedTopicStates(topic: Topic, isMuted: Boolean) {
-        forcedTopicMutes.update {
+        forcedTopicMuteFlow.update {
             val mutable = it.toMutableMap()
             mutable[topic] = isMuted
             mutable
@@ -96,10 +89,10 @@ class Muter(
 
         job = scope.launchIO {
             val toHandleProfiles = _forcedProfileMutes.value.toMap()
-            val toHandleTopics = forcedTopicMutes.value.toMap()
+            val toHandleTopics = forcedTopicMuteFlow.value.toMap()
 
             val beforeProfiles = muteDao.getMyProfileMutes().toSet()
-            val beforeTopics = muteDao.getMyTopicMutes()
+            val beforeTopics = muteDao.getMyTopicMutes().toSet()
 
             val adjustedProfiles = beforeProfiles.toMutableSet().apply {
                 addAll(

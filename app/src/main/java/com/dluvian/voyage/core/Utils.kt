@@ -21,11 +21,11 @@ import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
-import com.dluvian.voyage.data.nostr.RelayUrl
-import com.dluvian.voyage.data.nostr.getSubject
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.data.model.RelevantMetadata
+import com.dluvian.voyage.data.nostr.RelayUrl
+import com.dluvian.voyage.data.nostr.getSubject
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
@@ -357,6 +357,7 @@ fun createAdvancedProfile(
     pubkey: PubkeyHex,
     dbProfile: AdvancedProfileView?,
     forcedFollowState: Boolean?,
+    forcedMuteState: Boolean?,
     metadata: RelevantMetadata?,
     myPubkey: PubkeyHex,
     friendProvider: FriendProvider,
@@ -368,7 +369,8 @@ fun createAdvancedProfile(
         name = name,
         isMe = dbProfile?.isMe ?: (myPubkey == pubkey),
         isFriend = forcedFollowState ?: dbProfile?.isFriend ?: friendProvider.isFriend(pubkey),
-        isWebOfTrust = dbProfile?.isWebOfTrust ?: false
+        isWebOfTrust = dbProfile?.isWebOfTrust ?: false,
+        isMuted = forcedMuteState ?: dbProfile?.isMuted ?: false
     )
 }
 

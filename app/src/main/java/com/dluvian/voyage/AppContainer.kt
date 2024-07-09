@@ -99,9 +99,7 @@ class AppContainer(context: Context) {
     )
 
     val itemSetProvider = ItemSetProvider(
-        itemSetDao = roomDb.itemSetDao(),
-        profileDao = roomDb.profileDao(),
-        topicDao = roomDb.topicDao(),
+        room = roomDb,
         pubkeyProvider = accountManager,
         friendProvider = friendProvider
     )
@@ -241,7 +239,7 @@ class AppContainer(context: Context) {
     )
 
     val muter = Muter(
-        forcedTopicMutes = forcedMuteTopicStates,
+        forcedTopicMuteFlow = forcedMuteTopicStates,
         nostrService = nostrService,
         relayProvider = relayProvider,
         muteUpsertDao = roomDb.muteUpsertDao(),
@@ -251,7 +249,6 @@ class AppContainer(context: Context) {
     )
 
     private val oldestUsedEvent = OldestUsedEvent()
-
 
     private val nameProvider = NameProvider(
         profileDao = roomDb.profileDao(),
@@ -296,6 +293,7 @@ class AppContainer(context: Context) {
 
     val profileProvider = ProfileProvider(
         forcedFollowFlow = profileFollower.forcedFollowsFlow,
+        forcedMuteFlow = muter.forcedProfileMuteFlow,
         pubkeyProvider = accountManager,
         metadataInMemory = metadataInMemory,
         profileDao = roomDb.profileDao(),

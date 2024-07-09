@@ -19,11 +19,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import rust.nostr.protocol.Nip19Profile
 
 class ProfileProvider(
     private val forcedFollowFlow: Flow<Map<PubkeyHex, Boolean>>,
+    private val forcedMuteFlow: Flow<Map<PubkeyHex, Boolean>>,
     private val pubkeyProvider: IPubkeyProvider,
     private val metadataInMemory: MetadataInMemory,
     private val profileDao: ProfileDao,
@@ -53,12 +53,14 @@ class ProfileProvider(
         return combine(
             profileDao.getAdvancedProfileFlow(pubkey = hex),
             forcedFollowFlow,
+            forcedMuteFlow,
             metadataInMemory.getMetadataFlow(pubkey = hex)
-        ) { dbProfile, forcedFollows, metadata ->
+        ) { dbProfile, forcedFollows, forcedMute, metadata ->
             createFullProfile(
                 pubkey = hex,
                 dbProfile = dbProfile,
                 forcedFollowState = forcedFollows[hex],
+                forcedMuteState = forcedMute[hex],
                 metadata = metadata
             )
         }
@@ -110,7 +112,7 @@ class ProfileProvider(
         val friends = profileDao.getAdvancedProfilesOfFriends()
         val friendsWithoutProfile = profileDao.getUnknownFriends()
 
-        return forcedFollowFlow.map { forcedFollows ->
+        return combine(forcedFollowFlow, forcedMuteFlow) { forcedFollows, forcedMutes ->
             friends.map {
                 it.copy(isFriend = forcedFollows[it.pubkey] ?: true)
             } + friendsWithoutProfile.map { pubkey ->
@@ -118,6 +120,7 @@ class ProfileProvider(
                     pubkey = pubkey,
                     dbProfile = null,
                     forcedFollowState = forcedFollows[pubkey],
+                    forcedMuteState = forcedMutes[pubkey],
                     metadata = null,
                     myPubkey = pubkeyProvider.getPubkeyHex(),
                     friendProvider = friendProvider,
@@ -132,12 +135,14 @@ class ProfileProvider(
         return combine(
             profileDao.getAdvancedProfilesFlow(pubkeys = pubkeys),
             forcedFollowFlow,
-        ) { dbProfiles, forcedFollows ->
+            forcedMuteFlow,
+        ) { dbProfiles, forcedFollows, forcedMutes ->
             dbProfiles.map { dbProfile ->
                 createFullProfile(
                     pubkey = dbProfile.pubkey,
                     dbProfile = dbProfile,
                     forcedFollowState = forcedFollows[dbProfile.pubkey],
+                    forcedMuteState = forcedMutes[dbProfile.pubkey],
                     metadata = null
                 )
             }
@@ -148,12 +153,14 @@ class ProfileProvider(
         pubkey: PubkeyHex,
         dbProfile: AdvancedProfileView?,
         forcedFollowState: Boolean?,
+        forcedMuteState: Boolean?,
         metadata: RelevantMetadata?
     ): FullProfileUI {
         val inner = createAdvancedProfile(
             pubkey = pubkey,
             dbProfile = dbProfile,
             forcedFollowState = forcedFollowState,
+            forcedMuteState = forcedMuteState,
             metadata = metadata,
             myPubkey = pubkeyProvider.getPubkeyHex(),
             friendProvider = friendProvider,
