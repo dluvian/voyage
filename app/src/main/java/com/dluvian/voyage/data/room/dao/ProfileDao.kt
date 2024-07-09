@@ -60,6 +60,7 @@ interface ProfileDao {
                 "WHERE pk NOT IN (SELECT friendPubkey FROM friend) " +
                 "AND pk NOT IN (SELECT pubkey FROM account) " +
                 "AND pk IN (SELECT webOfTrustPubkey FROM weboftrust) " +
+                "AND pk NOT IN (SELECT mutedItem FROM mute WHERE tag = 'p') " +
                 "GROUP BY pk " +
                 "ORDER BY COUNT(pk) DESC " +
                 "LIMIT :limit"

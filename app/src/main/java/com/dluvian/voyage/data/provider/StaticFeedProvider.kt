@@ -87,12 +87,9 @@ class StaticFeedProvider(
     }
 
     private suspend fun getStaticInboxFeed(until: Long, size: Int): List<ParentUI> {
-        val replies = room.inboxDao().getDirectReplies(until = until, size = size)
-        val crossPosts = room.inboxDao().getDirectCrossPosts(until = until, size = size)
-
         return mergeToParentUIList(
-            replies = replies,
-            roots = crossPosts,
+            replies = room.inboxDao().getDirectReplies(until = until, size = size),
+            roots = emptyList(),
             votes = emptyMap(),
             follows = emptyMap(),
             bookmarks = emptyMap(),
@@ -102,12 +99,9 @@ class StaticFeedProvider(
     }
 
     private suspend fun getStaticBooksmarksFeed(until: Long, size: Int): List<ParentUI> {
-        val roots = room.bookmarkDao().getRootPosts(until = until, size = size)
-        val replies = room.bookmarkDao().getReplies(until = until, size = size)
-
         return mergeToParentUIList(
-            replies = replies,
-            roots = roots,
+            replies = room.bookmarkDao().getReplies(until = until, size = size),
+            roots = room.bookmarkDao().getRootPosts(until = until, size = size),
             votes = emptyMap(),
             follows = emptyMap(),
             bookmarks = emptyMap(),

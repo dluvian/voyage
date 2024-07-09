@@ -85,14 +85,14 @@ class NostrFeedSubscriber(
                 .getObserveRelays(selection = pubkeySelection)
                 .forEach { (relayUrl, pubkeys) ->
                     val publicKeys = pubkeys.takeRandom(MAX_KEYS).map { PublicKey.fromHex(it) }
-                    val friendsNoteFilter = Filter()
+                    val pubkeysNoteFilter = Filter()
                         .kinds(kinds = textNoteAndRepostKinds)
                         .authors(authors = publicKeys)
                         .since(timestamp = sinceTimestamp)
                         .until(timestamp = untilTimestamp)
                         .limitRestricted(limit = limit)
-                    val friendsNoteFilters = mutableListOf(friendsNoteFilter)
-                    result.syncedPutOrAdd(relayUrl, friendsNoteFilters)
+                    val pubkeysNoteFilters = mutableListOf(pubkeysNoteFilter)
+                    result.syncedPutOrAdd(relayUrl, pubkeysNoteFilters)
                 }
         }
 

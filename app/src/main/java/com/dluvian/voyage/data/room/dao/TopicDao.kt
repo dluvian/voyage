@@ -23,6 +23,7 @@ interface TopicDao {
         "SELECT DISTINCT hashtag " +
                 "FROM hashtag " +
                 "WHERE hashtag NOT IN (SELECT topic FROM topic) " +
+                "AND hashtag NOT IN (SELECT mutedItem FROM mute WHERE tag = 't') " +
                 "GROUP BY hashtag " +
                 "ORDER BY COUNT(hashtag) DESC " +
                 "LIMIT :limit"
