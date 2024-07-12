@@ -174,8 +174,6 @@
     <string name="rebroadcasted_to_n_relays">已转播到%d个中继</string>
     <string name="failed_to_rebroadcast">转播失败</string>
     <string name="follow_lists">关注列表</string>
-    <string name="your_contact_list_is_empty">您的联系人列表为空</string>
-    <string name="your_topic_list_is_empty">您的话题列表为空</string>
     <string name="open_menu">打开菜单</string>
     <string name="bookmarks">书签</string>
     <string name="remove_bookmark">移除书签</string>
@@ -201,5 +199,5 @@
     <string name="muted">已静音</string>
     <string name="unmute">取消静音</string>
     <string name="mute">静音</string>
-    <string name="mute_lists">静音列表</string>
+    <string name="mute_list">静音列表</string>
 </resources>

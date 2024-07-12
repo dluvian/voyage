@@ -178,8 +178,6 @@
     <string name="rebroadcasted_to_n_relays">Rebroadcasted to %d relays</string>
     <string name="failed_to_rebroadcast">Failed to rebroadcast</string>
     <string name="follow_lists">Follow Lists</string>
-    <string name="your_contact_list_is_empty">Your contact list is empty</string>
-    <string name="your_topic_list_is_empty">Your topic list is empty</string>
     <string name="open_menu">Open menu</string>
     <string name="bookmarks">Bookmarks</string>
     <string name="remove_bookmark">Remove bookmark</string>
@@ -205,5 +203,6 @@
     <string name="muted">Muted</string>
     <string name="unmute">Unmute</string>
     <string name="mute">Mute</string>
-    <string name="mute_lists">Mute lists</string>
+    <string name="mute_list">Mute list</string>
+    <string name="list_is_empty">List is empty</string>
 </resources>

@@ -27,6 +27,7 @@ import com.dluvian.voyage.core.viewModel.FollowListsViewModel
 import com.dluvian.voyage.core.viewModel.HomeViewModel
 import com.dluvian.voyage.core.viewModel.InboxViewModel
 import com.dluvian.voyage.core.viewModel.ListViewModel
+import com.dluvian.voyage.core.viewModel.MuteListViewModel
 import com.dluvian.voyage.core.viewModel.ProfileViewModel
 import com.dluvian.voyage.core.viewModel.RelayEditorViewModel
 import com.dluvian.voyage.core.viewModel.RelayProfileViewModel
@@ -88,11 +89,14 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
     val inboxFeedState = rememberLazyListState()
     val contactListState = rememberLazyListState()
     val topicListState = rememberLazyListState()
+    val mutedProfileListState = rememberLazyListState()
+    val mutedTopicListState = rememberLazyListState()
     val bookmarksFeedState = rememberLazyListState()
     val relayEditorState = rememberLazyListState()
 
     val profilePagerState = rememberPagerState { 4 }
     val followListsPagerState = rememberPagerState { 2 }
+    val muteListPagerState = rememberPagerState { 2 }
     val listViewPagerState = rememberPagerState { 3 }
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -255,6 +259,13 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 itemSetProvider = appContainer.itemSetProvider,
                 pagerState = listViewPagerState
             )
-        }
+        },
+        muteListVM = viewModel {
+            MuteListViewModel(
+                mutedProfileState = mutedProfileListState,
+                mutedTopicState = mutedTopicListState,
+                pagerState = muteListPagerState,
+            )
+        },
     )
 }

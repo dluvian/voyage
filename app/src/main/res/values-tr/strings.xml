@@ -171,8 +171,6 @@
     <string name="rebroadcasted_to_n_relays">%d röleye yeniden yayınlandı</string>
     <string name="failed_to_rebroadcast">Yeniden yayınlama başarısız oldu</string>
     <string name="follow_lists">Takip Listeleri</string>
-    <string name="your_contact_list_is_empty">İletişim listeniz boş</string>
-    <string name="your_topic_list_is_empty">Konu listeniz boş</string>
     <string name="open_menu">Menüyü aç</string>
     <string name="bookmarks">Yer İmleri</string>
     <string name="remove_bookmark">Yer imini kaldır</string>

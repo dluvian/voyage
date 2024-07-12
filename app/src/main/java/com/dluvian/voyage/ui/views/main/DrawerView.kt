@@ -35,7 +35,7 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ClickBookmarks
 import com.dluvian.voyage.core.ClickCreateList
 import com.dluvian.voyage.core.ClickFollowLists
-import com.dluvian.voyage.core.ClickMuteLists
+import com.dluvian.voyage.core.ClickMuteList
 import com.dluvian.voyage.core.ClickRelayEditor
 import com.dluvian.voyage.core.CloseDrawer
 import com.dluvian.voyage.core.ComposableContent
@@ -112,10 +112,10 @@ fun MainDrawer(
                 }
                 item {
                     DrawerItem(
-                        label = stringResource(id = R.string.mute_lists),
+                        label = stringResource(id = R.string.mute_list),
                         icon = MuteIcon,
                         onClick = {
-                            onUpdate(ClickMuteLists)
+                            onUpdate(ClickMuteList)
                             onUpdate(CloseDrawer(scope = scope))
                         })
                 }

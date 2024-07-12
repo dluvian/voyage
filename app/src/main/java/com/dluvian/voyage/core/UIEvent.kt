@@ -16,7 +16,7 @@ import com.dluvian.voyage.core.navigator.EditProfileNavView
 import com.dluvian.voyage.core.navigator.FollowListsNavView
 import com.dluvian.voyage.core.navigator.HomeNavView
 import com.dluvian.voyage.core.navigator.InboxNavView
-import com.dluvian.voyage.core.navigator.MuteListsNavView
+import com.dluvian.voyage.core.navigator.MuteListNavView
 import com.dluvian.voyage.core.navigator.NavView
 import com.dluvian.voyage.core.navigator.OpenListNavView
 import com.dluvian.voyage.core.navigator.ProfileNavView
@@ -58,7 +58,7 @@ sealed class PushNavEvent : NavEvent() {
             ClickRelayEditor -> RelayEditorNavView
             ClickFollowLists -> FollowListsNavView
             ClickBookmarks -> BookmarksNavView
-            ClickMuteLists -> MuteListsNavView
+            ClickMuteList -> MuteListNavView
             ClickCreateList -> EditNewListNavView
             is OpenThread -> ThreadNavView(rootPost = this.rootPost)
             is OpenProfile -> ProfileNavView(nprofile = this.nprofile)
@@ -83,7 +83,7 @@ data object ClickEditProfile : PushNavEvent()
 data object ClickRelayEditor : PushNavEvent()
 data object ClickFollowLists : PushNavEvent()
 data object ClickBookmarks : PushNavEvent()
-data object ClickMuteLists : PushNavEvent()
+data object ClickMuteList : PushNavEvent()
 data object ClickCreateList : PushNavEvent()
 
 
@@ -115,29 +115,10 @@ data class ClickNeutralizeVote(
 
 
 sealed class MuteEvent : UIEvent()
-data class MuteProfile(
-    val pubkey: PubkeyHex,
-    val scope: CoroutineScope,
-    val context: Context
-) : MuteEvent()
-
-data class UnmuteProfile(
-    val pubkey: PubkeyHex,
-    val scope: CoroutineScope,
-    val context: Context
-) : MuteEvent()
-
-data class MuteTopic(
-    val topic: Topic,
-    val scope: CoroutineScope,
-    val context: Context
-) : MuteEvent()
-
-data class UnmuteTopic(
-    val topic: Topic,
-    val scope: CoroutineScope,
-    val context: Context
-) : MuteEvent()
+data class MuteProfile(val pubkey: PubkeyHex) : MuteEvent()
+data class UnmuteProfile(val pubkey: PubkeyHex) : MuteEvent()
+data class MuteTopic(val topic: Topic) : MuteEvent()
+data class UnmuteTopic(val topic: Topic) : MuteEvent()
 
 
 sealed class TopicEvent(open val topic: Topic) : UIEvent()
@@ -183,6 +164,11 @@ data object DiscoverViewRefresh : DiscoverViewAction()
 sealed class FollowListsViewAction : UIEvent()
 data object FollowListsViewInit : FollowListsViewAction()
 data object FollowListsViewRefresh : FollowListsViewAction()
+
+
+sealed class MuteListViewAction : UIEvent()
+data object MuteListViewInit : MuteListViewAction()
+data object MuteListViewRefresh : MuteListViewAction()
 
 
 sealed class BookmarksViewAction : UIEvent()

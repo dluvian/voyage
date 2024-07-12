@@ -83,6 +83,7 @@ val OpenIcon = Icons.AutoMirrored.Filled.OpenInNew
 val EditIcon = Icons.Default.Edit
 val MuteIcon = Icons.AutoMirrored.Filled.VolumeOff
 
+
 @Stable
 @Composable
 fun getTrustIcon(trustType: TrustType): ImageVector {
