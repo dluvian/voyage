@@ -3,12 +3,12 @@ package com.dluvian.voyage.core.navigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.res.stringResource
-import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.core.model.RootPostUI
+import com.dluvian.voyage.data.nostr.RelayUrl
 import rust.nostr.protocol.Nip19Event
 import rust.nostr.protocol.Nip19Profile
 
@@ -41,6 +41,7 @@ data object EditProfileNavView : SimpleNonMainNavView()
 data object RelayEditorNavView : SimpleNonMainNavView()
 data object FollowListsNavView : SimpleNonMainNavView()
 data object BookmarksNavView : SimpleNonMainNavView()
+data object MuteListsNavView : SimpleNonMainNavView()
 
 
 sealed class AdvancedNonMainNavView : NonMainNavView()

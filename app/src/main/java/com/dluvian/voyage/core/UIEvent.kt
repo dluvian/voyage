@@ -16,6 +16,7 @@ import com.dluvian.voyage.core.navigator.EditProfileNavView
 import com.dluvian.voyage.core.navigator.FollowListsNavView
 import com.dluvian.voyage.core.navigator.HomeNavView
 import com.dluvian.voyage.core.navigator.InboxNavView
+import com.dluvian.voyage.core.navigator.MuteListsNavView
 import com.dluvian.voyage.core.navigator.NavView
 import com.dluvian.voyage.core.navigator.OpenListNavView
 import com.dluvian.voyage.core.navigator.ProfileNavView
@@ -57,6 +58,7 @@ sealed class PushNavEvent : NavEvent() {
             ClickRelayEditor -> RelayEditorNavView
             ClickFollowLists -> FollowListsNavView
             ClickBookmarks -> BookmarksNavView
+            ClickMuteLists -> MuteListsNavView
             ClickCreateList -> EditNewListNavView
             is OpenThread -> ThreadNavView(rootPost = this.rootPost)
             is OpenProfile -> ProfileNavView(nprofile = this.nprofile)
@@ -81,6 +83,7 @@ data object ClickEditProfile : PushNavEvent()
 data object ClickRelayEditor : PushNavEvent()
 data object ClickFollowLists : PushNavEvent()
 data object ClickBookmarks : PushNavEvent()
+data object ClickMuteLists : PushNavEvent()
 data object ClickCreateList : PushNavEvent()
 
 

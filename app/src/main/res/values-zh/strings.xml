@@ -201,4 +201,5 @@
     <string name="muted">已静音</string>
     <string name="unmute">取消静音</string>
     <string name="mute">静音</string>
+    <string name="mute_lists">静音列表</string>
 </resources>

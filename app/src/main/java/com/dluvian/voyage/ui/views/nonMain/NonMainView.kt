@@ -9,6 +9,7 @@ import com.dluvian.voyage.core.navigator.EditExistingListNavView
 import com.dluvian.voyage.core.navigator.EditNewListNavView
 import com.dluvian.voyage.core.navigator.EditProfileNavView
 import com.dluvian.voyage.core.navigator.FollowListsNavView
+import com.dluvian.voyage.core.navigator.MuteListsNavView
 import com.dluvian.voyage.core.navigator.NonMainNavView
 import com.dluvian.voyage.core.navigator.OpenListNavView
 import com.dluvian.voyage.core.navigator.ProfileNavView
@@ -20,6 +21,7 @@ import com.dluvian.voyage.core.navigator.SettingsNavView
 import com.dluvian.voyage.core.navigator.ThreadNavView
 import com.dluvian.voyage.core.navigator.ThreadRawNavView
 import com.dluvian.voyage.core.navigator.TopicNavView
+import com.dluvian.voyage.ui.components.indicator.ComingSoon
 import com.dluvian.voyage.ui.views.nonMain.editList.EditListView
 import com.dluvian.voyage.ui.views.nonMain.list.ListView
 import com.dluvian.voyage.ui.views.nonMain.profile.ProfileView
@@ -125,5 +127,7 @@ fun NonMainView(
             snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate
         )
+
+        MuteListsNavView -> ComingSoon()
     }
 }

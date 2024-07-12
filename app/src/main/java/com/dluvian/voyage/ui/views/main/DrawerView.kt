@@ -31,11 +31,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
-import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ClickBookmarks
 import com.dluvian.voyage.core.ClickCreateList
 import com.dluvian.voyage.core.ClickFollowLists
+import com.dluvian.voyage.core.ClickMuteLists
 import com.dluvian.voyage.core.ClickRelayEditor
 import com.dluvian.voyage.core.CloseDrawer
 import com.dluvian.voyage.core.ComposableContent
@@ -48,11 +48,13 @@ import com.dluvian.voyage.core.OpenList
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.viewModel.DrawerViewModel
 import com.dluvian.voyage.data.model.ItemSetMeta
+import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.ui.components.row.ClickableRow
 import com.dluvian.voyage.ui.theme.AccountIcon
 import com.dluvian.voyage.ui.theme.AddIcon
 import com.dluvian.voyage.ui.theme.BookmarksIcon
 import com.dluvian.voyage.ui.theme.ListIcon
+import com.dluvian.voyage.ui.theme.MuteIcon
 import com.dluvian.voyage.ui.theme.RelayIcon
 import com.dluvian.voyage.ui.theme.ViewListIcon
 import com.dluvian.voyage.ui.theme.spacing
@@ -105,6 +107,15 @@ fun MainDrawer(
                         icon = RelayIcon,
                         onClick = {
                             onUpdate(ClickRelayEditor)
+                            onUpdate(CloseDrawer(scope = scope))
+                        })
+                }
+                item {
+                    DrawerItem(
+                        label = stringResource(id = R.string.mute_lists),
+                        icon = MuteIcon,
+                        onClick = {
+                            onUpdate(ClickMuteLists)
                             onUpdate(CloseDrawer(scope = scope))
                         })
                 }
