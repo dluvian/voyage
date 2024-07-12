@@ -32,6 +32,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             CASE WHEN cross_posted_account.pubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsOneself,
             CASE WHEN cross_posted_friend.friendPubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsFriend,
             CASE WHEN cross_posted_wot.webOfTrustPubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsTrusted,
+            CASE WHEN cross_posted_mute.mutedItem IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsMuted,
             (SELECT EXISTS(SELECT * FROM bookmark WHERE bookmark.postId = IFNULL(post.crossPostedId, post.id))) AS isBookmarked 
         FROM post
         LEFT JOIN profile ON profile.pubkey = post.pubkey
@@ -60,6 +61,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
         LEFT JOIN account AS cross_posted_account ON cross_posted_account.pubkey = post.crossPostedPubkey
         LEFT JOIN friend AS cross_posted_friend ON cross_posted_friend.friendPubkey = post.crossPostedPubkey
         LEFT JOIN weboftrust AS cross_posted_wot ON cross_posted_wot.webOfTrustPubkey = post.crossPostedPubkey
+        LEFT JOIN mute AS cross_posted_mute ON cross_posted_mute.mutedItem = post.crossPostedPubkey AND cross_posted_mute.tag IS 'p'
         WHERE post.parentId IS NULL
 """
 )
@@ -84,6 +86,7 @@ data class RootPostView(
     val crossPostedAuthorIsOneself: Boolean,
     val crossPostedAuthorIsFriend: Boolean,
     val crossPostedAuthorIsTrusted: Boolean,
+    val crossPostedAuthorIsMuted: Boolean,
     val isBookmarked: Boolean,
 ) {
     fun mapToRootPostUI(

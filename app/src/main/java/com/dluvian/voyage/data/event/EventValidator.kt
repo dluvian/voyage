@@ -121,9 +121,10 @@ class EventValidator(
             }
 
             is KindEnum.Interests -> {
-                if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) return null
+                val authorHex = event.author().toHex()
+                if (authorHex != pubkeyProvider.getPubkeyHex()) return null
                 ValidatedTopicList(
-                    myPubkey = event.author().toHex(),
+                    myPubkey = authorHex,
                     topics = event.getNormalizedTopics()
                         .distinct()
                         .takeRandom(MAX_KEYS_SQL)
@@ -133,9 +134,10 @@ class EventValidator(
             }
 
             is KindEnum.Bookmarks -> {
-                if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) return null
+                val authorHex = event.author().toHex()
+                if (authorHex != pubkeyProvider.getPubkeyHex()) return null
                 ValidatedBookmarkList(
-                    myPubkey = event.author().toHex(),
+                    myPubkey = authorHex,
                     postIds = event.eventIds()
                         .map { it.toHex() }
                         .distinct()
@@ -146,9 +148,10 @@ class EventValidator(
             }
 
             is KindEnum.MuteList -> {
-                if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) return null
+                val authorHex = event.author().toHex()
+                if (authorHex != pubkeyProvider.getPubkeyHex()) return null
                 ValidatedMuteList(
-                    myPubkey = event.author().toHex(),
+                    myPubkey = authorHex,
                     pubkeys = event.publicKeys().map { it.toHex() }
                         .distinct()
                         .takeRandom(MAX_KEYS_SQL)

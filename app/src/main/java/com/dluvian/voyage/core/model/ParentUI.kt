@@ -102,7 +102,7 @@ data class RootPostUI(
                     isOneself = rootPostView.crossPostedAuthorIsOneself,
                     isFriend = rootPostView.crossPostedAuthorIsFriend,
                     isWebOfTrust = rootPostView.crossPostedAuthorIsTrusted,
-                    isMuted = false // False bc this will never be in UI
+                    isMuted = rootPostView.crossPostedAuthorIsMuted
                 ),
                 isBookmarked = rootPostView.isBookmarked,
             )

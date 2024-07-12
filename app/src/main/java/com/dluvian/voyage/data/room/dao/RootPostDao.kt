@@ -13,6 +13,7 @@ private const val HOME_FEED_BASE_QUERY = "FROM RootPostView " +
         "AND (authorIsFriend OR myTopic IS NOT NULL) " +
         "AND authorIsOneself = 0 " +
         "AND authorIsMuted = 0 " +
+        "AND crossPostedAuthorIsMuted = 0 " +
         "AND NOT EXISTS (SELECT * FROM hashtag WHERE postId = id AND hashtag IN (SELECT mutedItem FROM mute WHERE tag IS 't')) " +
         "ORDER BY createdAt DESC " +
         "LIMIT :size"
@@ -24,6 +25,7 @@ private const val HOME_FEED_EXISTS_QUERY = "SELECT EXISTS($HOME_FEED_QUERY)"
 private const val TOPIC_FEED_BASE_QUERY = "FROM RootPostView " +
         "WHERE createdAt <= :until " +
         "AND authorIsMuted = 0 " +
+        "AND crossPostedAuthorIsMuted = 0 " +
         "AND id IN (SELECT postId FROM hashtag WHERE hashtag = :topic) " +
         "AND NOT EXISTS (SELECT * FROM hashtag WHERE postId = id AND hashtag IN (SELECT mutedItem FROM mute WHERE tag IS 't' AND mutedItem IS NOT :topic)) " +
         "ORDER BY createdAt DESC " +
@@ -52,7 +54,8 @@ private const val LIST_FEED_BASE_QUERY = """
         pubkey IN (SELECT pubkey FROM profileSetItem WHERE identifier = :identifier)
         OR id IN (SELECT postId FROM hashtag WHERE hashtag IN (SELECT topic FROM topicSetItem WHERE identifier = :identifier))
     )
-    AND pubkey NOT IN (SELECT mutedItem FROM mute WHERE tag = 'p')
+    AND authorIsMuted = 0 
+    AND crossPostedAuthorIsMuted = 0 
     AND NOT EXISTS (SELECT * FROM hashtag WHERE postId = id AND hashtag IN (SELECT mutedItem FROM mute WHERE tag IS 't'))
     ORDER BY createdAt DESC
     LIMIT :size
