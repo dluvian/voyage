@@ -121,7 +121,6 @@ private fun ActionMenu(
     onDismiss: Fn
 ) {
     val showAddToList = remember { mutableStateOf(false) }
-    val context = LocalContext.current
 
     if (showAddToList.value) AddToListDialog(
         pubkey = pubkey,
@@ -143,14 +142,14 @@ private fun ActionMenu(
             SimpleDropdownItem(
                 text = stringResource(id = R.string.unmute),
                 onClick = {
-                    onUpdate(UnmuteProfile(pubkey = pubkey, scope = scope, context = context))
+                    onUpdate(UnmuteProfile(pubkey = pubkey))
                     onDismiss()
                 })
         } else {
             SimpleDropdownItem(
                 text = stringResource(id = R.string.mute),
                 onClick = {
-                    onUpdate(MuteProfile(pubkey = pubkey, scope = scope, context = context))
+                    onUpdate(MuteProfile(pubkey = pubkey))
                     onDismiss()
                 })
         }

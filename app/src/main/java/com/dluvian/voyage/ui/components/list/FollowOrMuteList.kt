@@ -12,12 +12,12 @@ import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.ui.components.PullRefreshBox
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.row.ClickableRow
-import com.dluvian.voyage.ui.model.FollowableOrMutableRow
+import com.dluvian.voyage.ui.model.FollowableOrMutableItem
 
 
 @Composable
 fun FollowOrMuteList(
-    rows: List<FollowableOrMutableRow>,
+    rows: List<FollowableOrMutableItem>,
     isRefreshing: Boolean,
     state: LazyListState,
     onRefresh: Fn,

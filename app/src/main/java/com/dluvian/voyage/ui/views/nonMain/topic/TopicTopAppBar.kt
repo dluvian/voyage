@@ -7,8 +7,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Fn
@@ -22,19 +20,15 @@ import com.dluvian.voyage.ui.components.bar.SimpleGoBackTopAppBar
 import com.dluvian.voyage.ui.components.button.FollowButton
 import com.dluvian.voyage.ui.components.dropdown.SimpleDropdownItem
 import com.dluvian.voyage.ui.theme.HorizMoreIcon
-import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun TopicTopAppBar(topic: Topic, isFollowed: Boolean, isMuted: Boolean, onUpdate: OnUpdate) {
-    val scope = rememberCoroutineScope()
-
     SimpleGoBackTopAppBar(
         title = "#$topic",
         actions = {
             ActionButton(
                 topic = topic,
                 isMuted = isMuted,
-                scope = scope,
                 onUpdate = onUpdate
             )
             if (!isMuted) FollowButton(
@@ -50,7 +44,6 @@ fun TopicTopAppBar(topic: Topic, isFollowed: Boolean, isMuted: Boolean, onUpdate
 private fun ActionButton(
     topic: Topic,
     isMuted: Boolean,
-    scope: CoroutineScope,
     onUpdate: OnUpdate
 ) {
     val showMenu = remember { mutableStateOf(false) }
@@ -60,7 +53,6 @@ private fun ActionButton(
             isExpanded = showMenu.value,
             topic = topic,
             isMuted = isMuted,
-            scope = scope,
             onUpdate = onUpdate,
             onDismiss = { showMenu.value = false })
         IconButton(onClick = { showMenu.value = true }) {
@@ -77,25 +69,22 @@ private fun ActionMenu(
     isExpanded: Boolean,
     topic: Topic,
     isMuted: Boolean,
-    scope: CoroutineScope,
     onUpdate: OnUpdate,
     onDismiss: Fn
 ) {
-    val context = LocalContext.current
-
     DropdownMenu(expanded = isExpanded, onDismissRequest = onDismiss) {
         if (isMuted) {
             SimpleDropdownItem(
                 text = stringResource(id = R.string.unmute),
                 onClick = {
-                    onUpdate(UnmuteTopic(topic = topic, scope = scope, context = context))
+                    onUpdate(UnmuteTopic(topic = topic))
                     onDismiss()
                 })
         } else {
             SimpleDropdownItem(
                 text = stringResource(id = R.string.mute),
                 onClick = {
-                    onUpdate(MuteTopic(topic = topic, scope = scope, context = context))
+                    onUpdate(MuteTopic(topic = topic))
                     onDismiss()
                 })
         }

@@ -128,7 +128,7 @@ fun NonMainView(
         )
 
         MuteListNavView -> MuteListView(
-            vm = core.vmContainer.muteListView,
+            vm = core.vmContainer.muteListVM,
             snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate
         )

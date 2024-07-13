@@ -19,17 +19,29 @@ import com.dluvian.voyage.ui.components.button.FollowButton
 import com.dluvian.voyage.ui.components.icon.TrustIcon
 import com.dluvian.voyage.ui.theme.HashtagIcon
 
-sealed class FollowableOrMutableRow(
+sealed class FollowableOrMutableItem(
     open val label: String,
     open val icon: ComposableContent,
     open val button: ComposableContent,
     open val onOpen: Fn,
 )
 
+sealed class FollowableItem(
+    override val label: String,
+    override val icon: ComposableContent,
+    override val button: ComposableContent,
+    override val onOpen: Fn,
+) : FollowableOrMutableItem(
+    label = label,
+    icon = icon,
+    button = button,
+    onOpen = onOpen
+)
+
 data class FollowableProfileItem(
     val profile: AdvancedProfileView,
     val onUpdate: OnUpdate,
-) : FollowableOrMutableRow(
+) : FollowableItem(
     label = profile.name,
     icon = { TrustIcon(profile = profile) },
     button = {
@@ -46,7 +58,7 @@ data class FollowableTopicItem(
     val topic: Topic,
     val isFollowed: Boolean,
     val onUpdate: OnUpdate,
-) : FollowableOrMutableRow(
+) : FollowableItem(
     label = topic,
     icon = { Icon(imageVector = HashtagIcon, contentDescription = null) },
     button = {
@@ -62,7 +74,7 @@ data class FollowableTopicItem(
 data class MutableProfileItem(
     val profile: AdvancedProfileView,
     val onUpdate: OnUpdate,
-) : FollowableOrMutableRow(
+) : FollowableOrMutableItem(
     label = profile.name,
     icon = { TrustIcon(profile = profile) },
     button = {
@@ -79,7 +91,7 @@ data class MutableTopicItem(
     val topic: Topic,
     val isMuted: Boolean,
     val onUpdate: OnUpdate,
-) : FollowableOrMutableRow(
+) : FollowableOrMutableItem(
     label = topic,
     icon = { Icon(imageVector = HashtagIcon, contentDescription = null) },
     button = {

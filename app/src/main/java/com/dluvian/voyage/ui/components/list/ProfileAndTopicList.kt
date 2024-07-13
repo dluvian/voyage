@@ -9,7 +9,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.ui.components.SimpleTabPager
 import com.dluvian.voyage.ui.components.indicator.ComingSoon
-import com.dluvian.voyage.ui.model.FollowableOrMutableRow
+import com.dluvian.voyage.ui.model.FollowableOrMutableItem
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -17,8 +17,8 @@ import kotlinx.coroutines.launch
 fun ProfileAndTopicList(
     isRefreshing: Boolean,
     headers: List<String>,
-    profiles: List<FollowableOrMutableRow>,
-    topics: List<FollowableOrMutableRow>,
+    profiles: List<FollowableOrMutableItem>,
+    topics: List<FollowableOrMutableItem>,
     profileState: LazyListState,
     topicState: LazyListState,
     tabIndex: MutableIntState,
