@@ -45,6 +45,7 @@ import com.dluvian.voyage.data.provider.DatabaseStatProvider
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.ItemSetProvider
+import com.dluvian.voyage.data.provider.MuteProvider
 import com.dluvian.voyage.data.provider.NameProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.provider.RelayProfileProvider
@@ -98,10 +99,13 @@ class AppContainer(context: Context) {
         pubkeyProvider = accountManager,
     )
 
+    private val muteProvider = MuteProvider(muteDao = roomDb.muteDao())
+
     val itemSetProvider = ItemSetProvider(
         room = roomDb,
         pubkeyProvider = accountManager,
-        friendProvider = friendProvider
+        friendProvider = friendProvider,
+        muteProvider = muteProvider,
     )
 
     val topicProvider = TopicProvider(
@@ -296,9 +300,9 @@ class AppContainer(context: Context) {
         forcedMuteFlow = muter.forcedProfileMuteFlow,
         pubkeyProvider = accountManager,
         metadataInMemory = metadataInMemory,
-        profileDao = roomDb.profileDao(),
-        fullProfileDao = roomDb.fullProfileDao(),
+        room = roomDb,
         friendProvider = friendProvider,
+        muteProvider = muteProvider,
         lazyNostrSubscriber = lazyNostrSubscriber,
         nostrSubscriber = nostrSubscriber,
         annotatedStringProvider = annotatedStringProvider,

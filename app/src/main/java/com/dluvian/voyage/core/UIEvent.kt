@@ -167,7 +167,7 @@ data object FollowListsViewRefresh : FollowListsViewAction()
 
 
 sealed class MuteListViewAction : UIEvent()
-data object MuteListViewInit : MuteListViewAction()
+data object MuteListViewOpen : MuteListViewAction()
 data object MuteListViewRefresh : MuteListViewAction()
 
 

@@ -10,8 +10,7 @@ import com.dluvian.voyage.data.model.FullProfileUI
 import com.dluvian.voyage.data.model.RelevantMetadata
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.nostr.NostrSubscriber
-import com.dluvian.voyage.data.room.dao.FullProfileDao
-import com.dluvian.voyage.data.room.dao.ProfileDao
+import com.dluvian.voyage.data.room.AppDatabase
 import com.dluvian.voyage.data.room.entity.ProfileEntity
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import kotlinx.coroutines.CoroutineScope
@@ -26,21 +25,22 @@ class ProfileProvider(
     private val forcedMuteFlow: Flow<Map<PubkeyHex, Boolean>>,
     private val pubkeyProvider: IPubkeyProvider,
     private val metadataInMemory: MetadataInMemory,
-    private val profileDao: ProfileDao,
-    private val fullProfileDao: FullProfileDao,
+    private val room: AppDatabase,
     private val friendProvider: FriendProvider,
+    private val muteProvider: MuteProvider,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val nostrSubscriber: NostrSubscriber,
     private val annotatedStringProvider: AnnotatedStringProvider,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
+
     fun getProfileFlow(nprofile: Nip19Profile, isInit: Boolean): Flow<FullProfileUI> {
         val hex = nprofile.publicKey().toHex()
         scope.launchIO {
             lazyNostrSubscriber.lazySubNip65(nprofile = nprofile)
             var isNotInMemory = metadataInMemory.getMetadata(pubkey = hex) == null
             if (isNotInMemory && hex == pubkeyProvider.getPubkeyHex()) {
-                val dbMeta = fullProfileDao.getFullProfile()?.toRelevantMetadata()
+                val dbMeta = room.fullProfileDao().getFullProfile()?.toRelevantMetadata()
                 if (dbMeta != null) {
                     metadataInMemory.submit(pubkey = hex, metadata = dbMeta)
                     isNotInMemory = false
@@ -51,7 +51,7 @@ class ProfileProvider(
             }
         }
         return combine(
-            profileDao.getAdvancedProfileFlow(pubkey = hex),
+            room.profileDao().getAdvancedProfileFlow(pubkey = hex),
             forcedFollowFlow,
             forcedMuteFlow,
             metadataInMemory.getMetadataFlow(pubkey = hex)
@@ -68,7 +68,7 @@ class ProfileProvider(
 
     fun getPersonalProfileFlow(): Flow<ProfileEntity> {
         return combine(
-            profileDao.getPersonalProfileFlow(),
+            room.profileDao().getPersonalProfileFlow(),
             metadataInMemory.getMetadataFlow()
         ) { profile, meta ->
             val nonNull = profile ?: getDefaultProfile()
@@ -89,13 +89,13 @@ class ProfileProvider(
     }
 
     suspend fun getProfileByName(name: String, limit: Int): List<AdvancedProfileView> {
-        return profileDao.getProfilesByName(name = name, limit = 2 * limit)
+        return room.profileDao().getProfilesByName(name = name, limit = 2 * limit)
             .sortedByDescending { it.isFriend }
             .take(limit)
     }
 
-    suspend fun getPopularUnfollowedProfiles(limit: Int): Flow<List<FullProfileUI>> {
-        val unfollowedPubkeys = profileDao.getPopularUnfollowedPubkeys(limit = limit)
+    suspend fun getPopularUnfollowedProfiles(limit: Int): Flow<List<AdvancedProfileView>> {
+        val unfollowedPubkeys = room.profileDao().getPopularUnfollowedPubkeys(limit = limit)
             .ifEmpty {
                 val default = defaultPubkeys.toMutableSet()
                 default.removeAll(friendProvider.getFriendPubkeys().toSet())
@@ -104,13 +104,13 @@ class ProfileProvider(
             }
         lazyNostrSubscriber.lazySubUnknownProfiles(pubkeys = unfollowedPubkeys)
 
-        return getProfilesFlow(pubkeys = unfollowedPubkeys)
+        return getKnownProfilesFlow(pubkeys = unfollowedPubkeys)
     }
 
     suspend fun getMyFriendsFlow(): Flow<List<AdvancedProfileView>> {
         // We want to be able to unfollow on the same list
-        val friends = profileDao.getAdvancedProfilesOfFriends()
-        val friendsWithoutProfile = profileDao.getUnknownFriends()
+        val friends = room.profileDao().getAdvancedProfilesOfFriends()
+        val friendsWithoutProfile = room.profileDao().getUnknownFriends()
 
         return combine(forcedFollowFlow, forcedMuteFlow) { forcedFollows, forcedMutes ->
             friends.map {
@@ -124,26 +124,53 @@ class ProfileProvider(
                     metadata = null,
                     myPubkey = pubkeyProvider.getPubkeyHex(),
                     friendProvider = friendProvider,
+                    muteProvider = muteProvider
                 )
             }
         }
     }
 
-    private fun getProfilesFlow(pubkeys: Collection<PubkeyHex>): Flow<List<FullProfileUI>> {
+    suspend fun getMutedProfiles(): Flow<List<AdvancedProfileView>> {
+        // We want to be able to unmute on the same list
+        val mutedProfiles = room.profileDao().getAdvancedProfilesOfMutes()
+        val mutesWithoutProfile = room.profileDao().getUnknownMutes()
+
+        return combine(forcedFollowFlow, forcedMuteFlow) { forcedFollows, forcedMutes ->
+            mutedProfiles.map {
+                it.copy(isMuted = forcedMutes[it.pubkey] ?: true)
+            } + mutesWithoutProfile.map { pubkey ->
+                createAdvancedProfile(
+                    pubkey = pubkey,
+                    dbProfile = null,
+                    forcedFollowState = forcedFollows[pubkey],
+                    forcedMuteState = forcedMutes[pubkey],
+                    metadata = null,
+                    myPubkey = pubkeyProvider.getPubkeyHex(),
+                    friendProvider = friendProvider,
+                    muteProvider = muteProvider
+                )
+            }
+        }
+    }
+
+    private fun getKnownProfilesFlow(pubkeys: Collection<PubkeyHex>): Flow<List<AdvancedProfileView>> {
         if (pubkeys.isEmpty()) return flowOf(emptyList())
 
         return combine(
-            profileDao.getAdvancedProfilesFlow(pubkeys = pubkeys),
+            room.profileDao().getAdvancedProfilesFlow(pubkeys = pubkeys),
             forcedFollowFlow,
             forcedMuteFlow,
         ) { dbProfiles, forcedFollows, forcedMutes ->
             dbProfiles.map { dbProfile ->
-                createFullProfile(
+                createAdvancedProfile(
                     pubkey = dbProfile.pubkey,
                     dbProfile = dbProfile,
                     forcedFollowState = forcedFollows[dbProfile.pubkey],
                     forcedMuteState = forcedMutes[dbProfile.pubkey],
-                    metadata = null
+                    metadata = null,
+                    myPubkey = pubkeyProvider.getPubkeyHex(),
+                    friendProvider = friendProvider,
+                    muteProvider = muteProvider
                 )
             }
         }
@@ -164,6 +191,7 @@ class ProfileProvider(
             metadata = metadata,
             myPubkey = pubkeyProvider.getPubkeyHex(),
             friendProvider = friendProvider,
+            muteProvider = muteProvider
         )
         return FullProfileUI(
             inner = inner,

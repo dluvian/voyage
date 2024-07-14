@@ -9,10 +9,10 @@ import com.dluvian.voyage.core.DiscoverViewInit
 import com.dluvian.voyage.core.DiscoverViewRefresh
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.TopicFollowState
-import com.dluvian.voyage.data.model.FullProfileUI
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.provider.TopicProvider
+import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -31,7 +31,7 @@ class DiscoverViewModel(
     val isRefreshing = mutableStateOf(false)
     val popularTopics: MutableState<StateFlow<List<TopicFollowState>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
-    val popularProfiles: MutableState<StateFlow<List<FullProfileUI>>> =
+    val popularProfiles: MutableState<StateFlow<List<AdvancedProfileView>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
 
     fun handle(action: DiscoverViewAction) {
@@ -78,7 +78,7 @@ class DiscoverViewModel(
             )
     }
 
-    private suspend fun getProfileFlow(): StateFlow<List<FullProfileUI>> {
+    private suspend fun getProfileFlow(): StateFlow<List<AdvancedProfileView>> {
         return profileProvider.getPopularUnfollowedProfiles(limit = maxCount)
             .stateIn(
                 viewModelScope,

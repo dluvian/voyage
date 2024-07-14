@@ -265,6 +265,9 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 mutedProfileState = mutedProfileListState,
                 mutedTopicState = mutedTopicListState,
                 pagerState = muteListPagerState,
+                lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
+                profileProvider = appContainer.profileProvider,
+                topicProvider = appContainer.topicProvider
             )
         },
     )

@@ -17,6 +17,7 @@ class ItemSetProvider(
     private val room: AppDatabase,
     private val pubkeyProvider: IPubkeyProvider,
     private val friendProvider: FriendProvider,
+    private val muteProvider: MuteProvider,
 ) {
     val identifier = mutableStateOf("")
     val title = mutableStateOf("")
@@ -75,6 +76,7 @@ class ItemSetProvider(
                 metadata = null,
                 myPubkey = pubkeyProvider.getPubkeyHex(),
                 friendProvider = friendProvider,
+                muteProvider = muteProvider
             )
         }
     }

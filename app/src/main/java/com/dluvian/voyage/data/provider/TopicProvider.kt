@@ -2,6 +2,7 @@ package com.dluvian.voyage.data.provider
 
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.TopicFollowState
+import com.dluvian.voyage.core.model.TopicMuteState
 import com.dluvian.voyage.core.takeRandom
 import com.dluvian.voyage.data.model.ListTopics
 import com.dluvian.voyage.data.model.MyTopics
@@ -54,6 +55,20 @@ class TopicProvider(
                 TopicFollowState(
                     topic = topic,
                     isFollowed = forcedFollows[topic] ?: true
+                )
+            }
+        }
+    }
+
+    suspend fun getMutedTopicsFlow(): Flow<List<TopicMuteState>> {
+        // We want to be able to unmute on the same list
+        val mutedTopics = muteDao.getMyTopicMutes()
+
+        return forcedMuteStates.map { forcedMutes ->
+            mutedTopics.map { topic ->
+                TopicMuteState(
+                    topic = topic,
+                    isMuted = forcedMutes[topic] ?: true
                 )
             }
         }

@@ -27,6 +27,9 @@ interface ProfileDao {
     @Query("SELECT * FROM AdvancedProfileView WHERE pubkey IN (SELECT friendPubkey FROM friend)")
     suspend fun getAdvancedProfilesOfFriends(): List<AdvancedProfileView>
 
+    @Query("SELECT * FROM AdvancedProfileView WHERE pubkey IN (SELECT mutedItem FROM mute WHERE tag = 'p')")
+    suspend fun getAdvancedProfilesOfMutes(): List<AdvancedProfileView>
+
     @Query(
         "SELECT * " +
                 "FROM AdvancedProfileView " +
@@ -80,6 +83,14 @@ interface ProfileDao {
                 "WHERE friendPubkey NOT IN (SELECT pubkey FROM profile)"
     )
     suspend fun getUnknownFriends(): List<PubkeyHex>
+
+    @Query(
+        "SELECT mutedItem " +
+                "FROM mute " +
+                "WHERE mutedItem NOT IN (SELECT pubkey FROM profile) " +
+                "AND tag = 'p'"
+    )
+    suspend fun getUnknownMutes(): List<PubkeyHex>
 
     @Query(
         "SELECT * " +

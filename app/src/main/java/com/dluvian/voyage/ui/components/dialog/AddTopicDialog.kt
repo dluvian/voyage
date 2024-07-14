@@ -95,7 +95,8 @@ private fun TopicSuggestions(
 ) {
     LazyColumn(modifier = modifier) {
         items(suggestions) { topic ->
-            ClickableRow(header = topic,
+            ClickableRow(
+                header = topic,
                 leadingIcon = HashtagIcon,
                 onClick = { onClickSuggestion(topic) })
         }

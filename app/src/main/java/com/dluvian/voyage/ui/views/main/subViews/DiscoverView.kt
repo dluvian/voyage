@@ -55,7 +55,7 @@ fun DiscoverView(vm: DiscoverViewModel, onUpdate: OnUpdate) {
         }
     }
     val followableProfiles = remember(profiles) {
-        profiles.map { FollowableProfileItem(profile = it.inner, onUpdate = onUpdate) }
+        profiles.map { FollowableProfileItem(profile = it, onUpdate = onUpdate) }
     }
 
     PullRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(DiscoverViewRefresh) }) {

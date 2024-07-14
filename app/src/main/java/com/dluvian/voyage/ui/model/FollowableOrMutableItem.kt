@@ -1,6 +1,7 @@
 package com.dluvian.voyage.ui.model
 
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.FollowProfile
@@ -14,10 +15,14 @@ import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.UnfollowProfile
 import com.dluvian.voyage.core.UnfollowTopic
 import com.dluvian.voyage.core.UnmuteProfile
+import com.dluvian.voyage.core.UnmuteTopic
+import com.dluvian.voyage.core.model.Muted
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.ui.components.button.FollowButton
+import com.dluvian.voyage.ui.components.button.MuteButton
 import com.dluvian.voyage.ui.components.icon.TrustIcon
 import com.dluvian.voyage.ui.theme.HashtagIcon
+import com.dluvian.voyage.ui.theme.getTrustColor
 
 sealed class FollowableOrMutableItem(
     open val label: String,
@@ -78,10 +83,10 @@ data class MutableProfileItem(
     label = profile.name,
     icon = { TrustIcon(profile = profile) },
     button = {
-        FollowButton(
-            isFollowed = profile.isMuted,
-            onFollow = { onUpdate(MuteProfile(pubkey = profile.pubkey)) },
-            onUnfollow = { onUpdate(UnmuteProfile(pubkey = profile.pubkey)) },
+        MuteButton(
+            isMuted = profile.isMuted,
+            onMute = { onUpdate(MuteProfile(pubkey = profile.pubkey)) },
+            onUnmute = { onUpdate(UnmuteProfile(pubkey = profile.pubkey)) },
         )
     },
     onOpen = { onUpdate(OpenProfile(nprofile = profile.toNip19())) }
@@ -93,12 +98,18 @@ data class MutableTopicItem(
     val onUpdate: OnUpdate,
 ) : FollowableOrMutableItem(
     label = topic,
-    icon = { Icon(imageVector = HashtagIcon, contentDescription = null) },
+    icon = {
+        Icon(
+            imageVector = HashtagIcon,
+            contentDescription = null,
+            tint = if (isMuted) getTrustColor(trustType = Muted) else LocalContentColor.current
+        )
+    },
     button = {
-        FollowButton(
-            isFollowed = isMuted,
-            onFollow = { onUpdate(MuteTopic(topic = topic)) },
-            onUnfollow = { onUpdate(UnfollowTopic(topic = topic)) },
+        MuteButton(
+            isMuted = isMuted,
+            onMute = { onUpdate(MuteTopic(topic = topic)) },
+            onUnmute = { onUpdate(UnmuteTopic(topic = topic)) },
         )
     },
     onOpen = { onUpdate(OpenTopic(topic = topic)) }

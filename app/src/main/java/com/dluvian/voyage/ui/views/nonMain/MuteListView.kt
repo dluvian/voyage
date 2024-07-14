@@ -9,7 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.MuteListViewInit
+import com.dluvian.voyage.core.MuteListViewOpen
 import com.dluvian.voyage.core.MuteListViewRefresh
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.viewModel.MuteListViewModel
@@ -31,7 +31,7 @@ fun MuteListView(vm: MuteListViewModel, snackbar: SnackbarHostState, onUpdate: O
     }
     val mutedTopics = remember(mutedTopicsRaw) {
         mutedTopicsRaw.map {
-            MutableTopicItem(topic = it.topic, isMuted = it.isFollowed, onUpdate = onUpdate)
+            MutableTopicItem(topic = it.topic, isMuted = it.isMuted, onUpdate = onUpdate)
         }
     }
     val headers = listOf(
@@ -40,7 +40,7 @@ fun MuteListView(vm: MuteListViewModel, snackbar: SnackbarHostState, onUpdate: O
     )
 
     LaunchedEffect(key1 = Unit) {
-        onUpdate(MuteListViewInit)
+        onUpdate(MuteListViewOpen)
     }
 
     SimpleGoBackScaffold(

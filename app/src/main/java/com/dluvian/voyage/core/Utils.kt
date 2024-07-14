@@ -28,6 +28,7 @@ import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.getSubject
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 import com.dluvian.voyage.data.provider.FriendProvider
+import com.dluvian.voyage.data.provider.MuteProvider
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.data.room.view.ReplyView
 import com.dluvian.voyage.data.room.view.RootPostView
@@ -361,6 +362,7 @@ fun createAdvancedProfile(
     metadata: RelevantMetadata?,
     myPubkey: PubkeyHex,
     friendProvider: FriendProvider,
+    muteProvider: MuteProvider,
 ): AdvancedProfileView {
     val name = normalizeName(metadata?.name.orEmpty().ifEmpty { dbProfile?.name.orEmpty() })
         .ifEmpty { pubkey.toShortenedBech32() }
@@ -368,9 +370,10 @@ fun createAdvancedProfile(
         pubkey = pubkey,
         name = name,
         isMe = dbProfile?.isMe ?: (myPubkey == pubkey),
-        isFriend = forcedFollowState ?: dbProfile?.isFriend ?: friendProvider.isFriend(pubkey),
+        isFriend = forcedFollowState ?: dbProfile?.isFriend
+        ?: friendProvider.isFriend(pubkey = pubkey),
         isWebOfTrust = dbProfile?.isWebOfTrust ?: false,
-        isMuted = forcedMuteState ?: dbProfile?.isMuted ?: false
+        isMuted = forcedMuteState ?: dbProfile?.isMuted ?: muteProvider.isMuted(pubkey = pubkey)
     )
 }
 

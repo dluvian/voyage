@@ -133,63 +133,70 @@ class LazyNostrSubscriber(
     }
 
     suspend fun lazySubMyAccount() {
-        val timestamp = Timestamp.now()
-        val pubkey = pubkeyProvider.getPublicKey()
-        val hex = pubkey.toHex()
+        Log.d(TAG, "lazySubMyAccount")
+
+        val hex = pubkeyProvider.getPubkeyHex()
 
         val contactSince = friendProvider.getCreatedAt()?.toULong() ?: 1uL
-        val myContactFilter = Filter()
-            .kind(kind = Kind.fromEnum(KindEnum.ContactList))
-            .author(author = pubkey)
-            .until(timestamp = timestamp)
-            .since(timestamp = Timestamp.fromSecs(secs = contactSince + 1u))
-            .limit(1u)
-
         val topicSince = topicProvider.getCreatedAt()?.toULong() ?: 1uL
-        val myTopicsFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Interests))
-            .author(author = pubkey)
-            .until(timestamp = timestamp)
-            .since(timestamp = Timestamp.fromSecs(secs = topicSince + 1u))
-            .limit(1u)
-
         val nip65Since = relayProvider.getCreatedAt(pubkey = hex)?.toULong() ?: 1uL
-        val myNip65Filter = Filter().kind(kind = Kind.fromEnum(KindEnum.RelayList))
-            .author(author = pubkey)
-            .until(timestamp = timestamp)
-            .since(timestamp = Timestamp.fromSecs(secs = nip65Since + 1u))
-            .limit(1u)
-
         val profileSince = room.profileDao().getMaxCreatedAt(pubkey = hex)?.toULong() ?: 1uL
-        val myProfileFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Metadata))
-            .author(author = pubkey)
-            .until(timestamp = timestamp)
-            .since(timestamp = Timestamp.fromSecs(secs = profileSince + 1u))
-            .limit(1u)
 
-        val filters = listOf(
-            myContactFilter,
-            myTopicsFilter,
-            myNip65Filter,
-            myProfileFilter,
+        lazySubMyKind(
+            kindAndSince = listOf(
+                Pair(Kind.fromEnum(KindEnum.ContactList), contactSince + 1uL),
+                Pair(Kind.fromEnum(KindEnum.Interests), topicSince + 1uL),
+                Pair(Kind.fromEnum(KindEnum.RelayList), nip65Since + 1uL),
+                Pair(Kind.fromEnum(KindEnum.Metadata), profileSince + 1uL),
+            )
         )
+    }
 
-        relayProvider.getWriteRelays().forEach { relay ->
-            subCreator.subscribe(relayUrl = relay, filters = filters)
-        }
+    suspend fun lazySubMyMainView() {
+        Log.d(TAG, "lazySubMyMainView")
+        val bookmarksSince = room.bookmarkDao().getMaxCreatedAt()?.toULong() ?: 1uL
+        val muteSince = room.muteDao().getMaxCreatedAt()?.toULong() ?: 1uL
+        lazySubMyKind(
+            kindAndSince = listOf(
+                Pair(Kind.fromEnum(KindEnum.Bookmarks), bookmarksSince + 1uL),
+                Pair(Kind.fromEnum(KindEnum.MuteList), muteSince + 1uL)
+            )
+        )
     }
 
     suspend fun lazySubMyBookmarks() {
         Log.d(TAG, "lazySubMyBookmarks")
-        val timestamp = Timestamp.now()
+        val bookmarksSince = room.bookmarkDao().getMaxCreatedAt()?.toULong() ?: 1uL
+        lazySubMyKind(
+            kindAndSince = listOf(
+                Pair(Kind.fromEnum(KindEnum.Bookmarks), bookmarksSince + 1uL)
+            )
+        )
+    }
+
+    suspend fun lazySubMyMutes() {
+        Log.d(TAG, "lazySubMyMutes")
+        val muteSince = room.muteDao().getMaxCreatedAt()?.toULong() ?: 1uL
+        lazySubMyKind(
+            kindAndSince = listOf(
+                Pair(Kind.fromEnum(KindEnum.MuteList), muteSince + 1uL)
+            )
+        )
+    }
+
+    private fun lazySubMyKind(kindAndSince: Collection<Pair<Kind, ULong>>) {
+        if (kindAndSince.isEmpty()) return
+
+        val now = Timestamp.now()
         val pubkey = pubkeyProvider.getPublicKey()
 
-        val bookmarksSince = room.bookmarkDao().getMaxCreatedAt()?.toULong() ?: 1uL
-        val myBookmarksFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.Bookmarks))
-            .author(author = pubkey)
-            .until(timestamp = timestamp)
-            .since(timestamp = Timestamp.fromSecs(secs = bookmarksSince + 1u))
-            .limit(1u)
-        val filters = listOf(myBookmarksFilter)
+        val filters = kindAndSince.map { (kind, since) ->
+            Filter().kind(kind = kind)
+                .author(author = pubkey)
+                .until(timestamp = now)
+                .since(timestamp = Timestamp.fromSecs(secs = since))
+                .limit(1u)
+        }
 
         relayProvider.getWriteRelays().forEach { relay ->
             subCreator.subscribe(relayUrl = relay, filters = filters)
