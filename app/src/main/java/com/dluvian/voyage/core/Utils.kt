@@ -198,7 +198,10 @@ fun extractHashtags(extractFrom: String) = hashtagRegex.findAll(extractFrom).toL
 fun String.isBareTopicStr(): Boolean = bareTopicRegex.matches(this)
 
 fun Topic.normalizeTopic(): Topic {
-    return this.trim().removePrefix("#").trim().take(MAX_TOPIC_LEN).lowercase()
+    return this.trim()
+        .dropWhile { it == '#' || it.isWhitespace() }
+        .take(MAX_TOPIC_LEN)
+        .lowercase()
 }
 
 private fun List<Topic>.normalizeTopics(): List<Topic> {

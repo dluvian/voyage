@@ -1,22 +1,18 @@
 package com.dluvian.voyage.ui.views.nonMain.editList
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.EditListViewAddProfile
 import com.dluvian.voyage.core.EditListViewAddTopic
-import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.Topic
@@ -29,9 +25,7 @@ import com.dluvian.voyage.ui.components.dialog.AddTopicDialog
 import com.dluvian.voyage.ui.components.indicator.ComingSoon
 import com.dluvian.voyage.ui.components.list.ProfileList
 import com.dluvian.voyage.ui.components.list.TopicList
-import com.dluvian.voyage.ui.components.row.ClickableRow
-import com.dluvian.voyage.ui.theme.AddIcon
-import com.dluvian.voyage.ui.theme.spacing
+import com.dluvian.voyage.ui.components.row.AddRow
 import kotlinx.coroutines.launch
 
 
@@ -145,19 +139,4 @@ private fun ScreenContent(
             else -> ComingSoon()
         }
     }
-}
-
-@Composable
-private fun AddRow(header: String, onClick: Fn) {
-    ClickableRow(
-        header = header,
-        leadingContent = {
-            Icon(
-                modifier = Modifier.padding(vertical = spacing.large),
-                imageVector = AddIcon,
-                contentDescription = null
-            )
-        },
-        onClick = onClick
-    )
 }

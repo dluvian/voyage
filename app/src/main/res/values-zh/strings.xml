@@ -72,7 +72,6 @@
     <string name="no_topics_selected">未选择话题</string>
     <string name="my_topics">我的话题</string>
     <string name="you_dont_follow_any_topics_yet">您尚未关注任何话题</string>
-    <string name="selected_n_of_m">已选择（%d/%d）</string>
     <string name="save">保存</string>
     <string name="describe_yourself">描述自己</string>
     <string name="name">姓名</string>

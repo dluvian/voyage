@@ -256,8 +256,6 @@ data class SendCrossPost(
     val onGoBack: Fn
 ) : CreateCrossPostViewAction()
 
-data object UpdateCrossPostTopics : CreateCrossPostViewAction()
-
 
 sealed class SuggestionAction : UIEvent()
 data class SearchProfileSuggestion(val name: String) : SuggestionAction()

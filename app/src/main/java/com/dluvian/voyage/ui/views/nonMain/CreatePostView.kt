@@ -38,13 +38,13 @@ import com.dluvian.voyage.ui.theme.spacing
 fun CreatePostView(
     vm: CreatePostViewModel,
     searchSuggestions: State<List<AdvancedProfileView>>,
+    topicSuggestions: State<List<Topic>>,
     snackbar: SnackbarHostState,
     onUpdate: OnUpdate
 ) {
     val header = remember { mutableStateOf(TextFieldValue()) }
     val body = remember { mutableStateOf(TextFieldValue()) }
     val topics = remember { mutableStateOf(emptyList<Topic>()) }
-    val myTopics by vm.myTopics
     val isSendingPost by vm.isSendingPost
     val suggestions by searchSuggestions
     val context = LocalContext.current
@@ -75,8 +75,8 @@ fun CreatePostView(
         CreatePostContent(
             header = header,
             body = body,
-            topics = topics,
-            myTopics = myTopics,
+            topicSuggestions = topicSuggestions.value,
+            selectedTopics = topics,
             searchSuggestions = suggestions,
             focusRequester = focusRequester,
             onUpdate = onUpdate
@@ -88,14 +88,18 @@ fun CreatePostView(
 private fun CreatePostContent(
     header: MutableState<TextFieldValue>,
     body: MutableState<TextFieldValue>,
-    topics: MutableState<List<Topic>>,
-    myTopics: List<Topic>,
+    topicSuggestions: List<Topic>,
+    selectedTopics: MutableState<List<Topic>>,
     searchSuggestions: List<AdvancedProfileView>,
     focusRequester: FocusRequester,
     onUpdate: OnUpdate,
 ) {
     InputWithSuggestions(body = body, searchSuggestions = searchSuggestions, onUpdate = onUpdate) {
-        TopicSelectionRow(topics = topics, myTopics = myTopics)
+        TopicSelectionRow(
+            topicSuggestions = topicSuggestions,
+            selectedTopics = selectedTopics,
+            onUpdate = onUpdate
+        )
         Spacer(modifier = Modifier.height(spacing.medium))
         TextInput(
             modifier = Modifier.focusRequester(focusRequester),

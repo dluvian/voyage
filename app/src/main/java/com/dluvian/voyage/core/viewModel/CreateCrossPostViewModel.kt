@@ -11,23 +11,18 @@ import com.dluvian.voyage.core.CreateCrossPostViewAction
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.SendCrossPost
-import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.UpdateCrossPostTopics
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.interactor.PostSender
-import com.dluvian.voyage.data.provider.TopicProvider
 import kotlinx.coroutines.delay
 
 private const val TAG = "CreateCrossPostViewModel"
 
 class CreateCrossPostViewModel(
-    private val topicProvider: TopicProvider,
     private val postSender: PostSender,
     private val snackbar: SnackbarHostState,
 ) : ViewModel() {
     val isSending = mutableStateOf(false)
-    val myTopics = mutableStateOf(emptyList<Topic>())
     private val id: MutableState<EventIdHex?> = mutableStateOf(null)
 
     fun prepareCrossPost(id: EventIdHex) {
@@ -37,7 +32,6 @@ class CreateCrossPostViewModel(
     fun handle(action: CreateCrossPostViewAction) {
         when (action) {
             is SendCrossPost -> sendCrossPost(action = action)
-            is UpdateCrossPostTopics -> updateTopics()
         }
     }
 
@@ -65,11 +59,5 @@ class CreateCrossPostViewModel(
                 )
             }
         }.invokeOnCompletion { isSending.value = false }
-    }
-
-    private fun updateTopics() {
-        viewModelScope.launchIO {
-            myTopics.value = topicProvider.getMyTopics()
-        }
     }
 }

@@ -70,7 +70,6 @@
     <string name="no_topics_selected">Konu seçilmedi</string>
     <string name="my_topics">Konularım</string>
     <string name="you_dont_follow_any_topics_yet">Henüz herhangi bir konuyu takip etmiyorsunuz</string>
-    <string name="selected_n_of_m">Seçilen (%d / %d)</string>
     <string name="save">Kaydet</string>
     <string name="describe_yourself">Kendinizi tanımlayın</string>
     <string name="name">Ad</string>

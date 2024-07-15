@@ -74,7 +74,6 @@
     <string name="no_topics_selected">No topics selected</string>
     <string name="my_topics">My topics</string>
     <string name="you_dont_follow_any_topics_yet">You don\'t follow any topics yet</string>
-    <string name="selected_n_of_m">Selected (%d of %d)</string>
     <string name="save">Save</string>
     <string name="describe_yourself">Describe yourself</string>
     <string name="name">Name</string>

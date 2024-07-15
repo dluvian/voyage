@@ -37,6 +37,7 @@ fun NonMainView(
             vm = core.vmContainer.createPostVM,
             snackbar = core.appContainer.snackbar,
             searchSuggestions = core.appContainer.suggestionProvider.profileSuggestions,
+            topicSuggestions = core.appContainer.suggestionProvider.topicSuggestions,
             onUpdate = core.onUpdate
         )
 
@@ -91,6 +92,7 @@ fun NonMainView(
 
         is CrossPostCreationNavView -> CreateCrossPostView(
             vm = core.vmContainer.createCrossPostVM,
+            topicSuggestions = core.appContainer.suggestionProvider.topicSuggestions,
             snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate
         )

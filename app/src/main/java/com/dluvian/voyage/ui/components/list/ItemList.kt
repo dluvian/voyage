@@ -21,14 +21,16 @@ fun ItemList(
     items: List<ItemProps>,
     state: LazyListState,
     isRemovable: Boolean,
+    modifier: Modifier = Modifier,
     firstRow: ComposableContent = {},
+    lastRow: ComposableContent = {},
     onRemove: (Int) -> Unit = {},
     onClick: (Int) -> Unit = {},
 ) {
     if (!isRemovable && items.isEmpty()) {
         BaseHint(text = stringResource(id = R.string.no_items_found))
     }
-    LazyColumn(modifier = Modifier.fillMaxSize(), state = state) {
+    LazyColumn(modifier = modifier.fillMaxSize(), state = state) {
         item { firstRow() }
         itemsIndexed(items) { i, (icon, label) ->
             ClickableRow(
@@ -42,5 +44,6 @@ fun ItemList(
                 onClick = { onClick(i) }
             )
         }
+        item { lastRow() }
     }
 }

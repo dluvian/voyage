@@ -12,7 +12,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -27,9 +26,9 @@ import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.SendCrossPost
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.UpdateCrossPostTopics
 import com.dluvian.voyage.core.viewModel.CreateCrossPostViewModel
-import com.dluvian.voyage.ui.components.TopicSelectionChips
+import com.dluvian.voyage.ui.components.TopicSelectionColumn
+import com.dluvian.voyage.ui.components.dialog.AddTopicDialog
 import com.dluvian.voyage.ui.components.scaffold.ContentCreationScaffold
 import com.dluvian.voyage.ui.theme.CrossPostIcon
 import com.dluvian.voyage.ui.theme.sizing
@@ -38,11 +37,11 @@ import com.dluvian.voyage.ui.theme.spacing
 @Composable
 fun CreateCrossPostView(
     vm: CreateCrossPostViewModel,
+    topicSuggestions: State<List<Topic>>,
     snackbar: SnackbarHostState,
     onUpdate: OnUpdate
 ) {
     val isSending by vm.isSending
-    val myTopics by vm.myTopics
     val selectedTopics = remember { mutableStateOf(emptyList<Topic>()) }
 
     ContentCreationScaffold(
@@ -57,7 +56,7 @@ fun CreateCrossPostView(
         onUpdate = onUpdate,
     ) {
         CreateCrossPostViewContent(
-            myTopics = myTopics,
+            topicSuggestions = topicSuggestions.value,
             selectedTopics = selectedTopics,
             onUpdate = onUpdate
         )
@@ -66,24 +65,32 @@ fun CreateCrossPostView(
 
 @Composable
 private fun CreateCrossPostViewContent(
-    myTopics: List<Topic>,
+    topicSuggestions: List<Topic>,
     selectedTopics: MutableState<List<Topic>>,
     onUpdate: OnUpdate,
 ) {
-    LaunchedEffect(key1 = Unit) {
-        onUpdate(UpdateCrossPostTopics)
-    }
+    val showTopicSelection = remember { mutableStateOf(false) }
+    if (showTopicSelection.value) AddTopicDialog(
+        topicSuggestions = topicSuggestions,
+        onAdd = { topic ->
+            selectedTopics.value += topic
+            showTopicSelection.value = false
+        },
+        onDismiss = { showTopicSelection.value = false },
+        onUpdate = onUpdate
+    )
 
-    Column(modifier = Modifier.padding(horizontal = spacing.screenEdge)) {
-        TopicSelectionChips(
+    Column {
+        TopicSelectionColumn(
             modifier = Modifier.weight(1f, fill = false),
-            myTopics = myTopics,
-            selectedTopics = selectedTopics
+            topicSuggestions = topicSuggestions,
+            selectedTopics = selectedTopics,
+            onUpdate = onUpdate
         )
         CrossPostButton(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = spacing.xxl),
+                .padding(vertical = spacing.xxl),
             selectedTopics = selectedTopics,
             onUpdate = onUpdate
         )

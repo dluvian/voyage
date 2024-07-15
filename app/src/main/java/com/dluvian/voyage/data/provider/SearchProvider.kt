@@ -39,6 +39,6 @@ class SearchProvider(
     fun getStrippedSearchText(text: String) = text.stripSearchText()
 
     private fun String.stripSearchText(): String {
-        return this.trim().dropWhile { it == '#' || it == ' ' }.trim().lowercase()
+        return this.trim().dropWhile { it == '#' || it.isWhitespace() }.trim().lowercase()
     }
 }
