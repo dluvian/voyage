@@ -18,7 +18,8 @@ fun ClickableProfileRow(
             isOneself = profile.isMe,
             isFriend = profile.isFriend,
             isWebOfTrust = profile.isWebOfTrust,
-            isMuted = profile.isMuted
+            isMuted = profile.isMuted,
+            isInList = profile.isInList
         ),
         header = profile.name,
         trailingContent = trailingContent,

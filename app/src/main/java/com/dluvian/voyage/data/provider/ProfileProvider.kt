@@ -28,6 +28,7 @@ class ProfileProvider(
     private val room: AppDatabase,
     private val friendProvider: FriendProvider,
     private val muteProvider: MuteProvider,
+    private val itemSetProvider: ItemSetProvider,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val nostrSubscriber: NostrSubscriber,
     private val annotatedStringProvider: AnnotatedStringProvider,
@@ -124,7 +125,8 @@ class ProfileProvider(
                     metadata = null,
                     myPubkey = pubkeyProvider.getPubkeyHex(),
                     friendProvider = friendProvider,
-                    muteProvider = muteProvider
+                    muteProvider = muteProvider,
+                    itemSetProvider = itemSetProvider
                 )
             }
         }
@@ -147,7 +149,8 @@ class ProfileProvider(
                     metadata = null,
                     myPubkey = pubkeyProvider.getPubkeyHex(),
                     friendProvider = friendProvider,
-                    muteProvider = muteProvider
+                    muteProvider = muteProvider,
+                    itemSetProvider = itemSetProvider
                 )
             }
         }
@@ -170,7 +173,8 @@ class ProfileProvider(
                     metadata = null,
                     myPubkey = pubkeyProvider.getPubkeyHex(),
                     friendProvider = friendProvider,
-                    muteProvider = muteProvider
+                    muteProvider = muteProvider,
+                    itemSetProvider = itemSetProvider
                 )
             }
         }
@@ -191,7 +195,8 @@ class ProfileProvider(
             metadata = metadata,
             myPubkey = pubkeyProvider.getPubkeyHex(),
             friendProvider = friendProvider,
-            muteProvider = muteProvider
+            muteProvider = muteProvider,
+            itemSetProvider = itemSetProvider
         )
         return FullProfileUI(
             inner = inner,

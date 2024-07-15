@@ -303,6 +303,7 @@ class AppContainer(context: Context) {
         room = roomDb,
         friendProvider = friendProvider,
         muteProvider = muteProvider,
+        itemSetProvider = itemSetProvider,
         lazyNostrSubscriber = lazyNostrSubscriber,
         nostrSubscriber = nostrSubscriber,
         annotatedStringProvider = annotatedStringProvider,

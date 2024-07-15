@@ -95,7 +95,8 @@ private fun SearchViewContent(
                         isOneself = post.authorIsOneself,
                         isFriend = post.authorIsFriend,
                         isWebOfTrust = post.authorIsTrusted,
-                        isMuted = post.authorIsMuted
+                        isMuted = post.authorIsMuted,
+                        isInList = post.authorIsInList
                     ),
                     header = post.subject,
                     content = post.content,

@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
 import com.dluvian.voyage.core.model.FriendTrust
+import com.dluvian.voyage.core.model.IsInListTrust
 import com.dluvian.voyage.core.model.Muted
 import com.dluvian.voyage.core.model.NoTrust
 import com.dluvian.voyage.core.model.Oneself
@@ -92,7 +93,7 @@ val OPBlue: Color
 fun getTrustColor(trustType: TrustType): Color {
     return when (trustType) {
         Oneself -> Color.Green
-        FriendTrust -> Color.Green
+        FriendTrust, IsInListTrust -> Color.Green
         WebTrust -> Orange
         Muted -> Color.Red
         NoTrust -> MaterialTheme.colorScheme.onBackground.light()

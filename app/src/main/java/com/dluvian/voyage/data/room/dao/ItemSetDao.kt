@@ -47,4 +47,7 @@ interface ItemSetDao {
 
     @Query("SELECT DISTINCT pubkey FROM profileSetItem WHERE identifier = :identifier LIMIT :limit")
     suspend fun getPubkeys(identifier: String, limit: Int): List<PubkeyHex>
+
+    @Query("SELECT DISTINCT pubkey FROM profileSetItem")
+    fun getAllPubkeysFlow(): Flow<List<PubkeyHex>>
 }

@@ -10,8 +10,12 @@ import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.model.ItemSetMeta
 import com.dluvian.voyage.data.room.AppDatabase
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 
 class ItemSetProvider(
     private val room: AppDatabase,
@@ -19,6 +23,10 @@ class ItemSetProvider(
     private val friendProvider: FriendProvider,
     private val muteProvider: MuteProvider,
 ) {
+    private val scope = CoroutineScope(Dispatchers.IO)
+    private val allPubkeys = room.itemSetDao().getAllPubkeysFlow()
+        .stateIn(scope, SharingStarted.WhileSubscribed(), emptyList())
+
     val identifier = mutableStateOf("")
     val title = mutableStateOf("")
     val profiles = mutableStateOf(emptyList<AdvancedProfileView>())
@@ -76,7 +84,8 @@ class ItemSetProvider(
                 metadata = null,
                 myPubkey = pubkeyProvider.getPubkeyHex(),
                 friendProvider = friendProvider,
-                muteProvider = muteProvider
+                muteProvider = muteProvider,
+                itemSetProvider = this
             )
         }
     }
@@ -90,5 +99,9 @@ class ItemSetProvider(
         limit: Int = Int.MAX_VALUE
     ): List<PubkeyHex> {
         return room.itemSetDao().getPubkeys(identifier = identifier, limit = limit)
+    }
+
+    fun isInAnySet(pubkey: PubkeyHex): Boolean {
+        return allPubkeys.value.contains(pubkey)
     }
 }

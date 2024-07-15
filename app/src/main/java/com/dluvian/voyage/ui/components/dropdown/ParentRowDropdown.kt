@@ -21,6 +21,7 @@ import com.dluvian.voyage.core.copyAndToast
 import com.dluvian.voyage.core.createProcessTextIntent
 import com.dluvian.voyage.core.getTranslators
 import com.dluvian.voyage.core.model.FriendTrust
+import com.dluvian.voyage.core.model.IsInListTrust
 import com.dluvian.voyage.core.model.Muted
 import com.dluvian.voyage.core.model.NoTrust
 import com.dluvian.voyage.core.model.Oneself
@@ -161,7 +162,7 @@ private fun FollowItem(
             )
         }
 
-        NoTrust, WebTrust -> {
+        NoTrust, WebTrust, IsInListTrust -> {
             SimpleDropdownItem(
                 text = stringResource(id = R.string.follow),
                 onClick = {
@@ -192,7 +193,7 @@ private fun FollowCrossPostedItem(
                 )
             }
 
-            NoTrust, WebTrust -> {
+            NoTrust, WebTrust, IsInListTrust -> {
                 SimpleDropdownItem(
                     text = stringResource(id = R.string.follow_cross_posted_author),
                     onClick = {

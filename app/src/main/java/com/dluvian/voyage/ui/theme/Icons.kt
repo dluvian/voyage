@@ -42,6 +42,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.dluvian.voyage.core.model.FriendTrust
+import com.dluvian.voyage.core.model.IsInListTrust
 import com.dluvian.voyage.core.model.Muted
 import com.dluvian.voyage.core.model.NoTrust
 import com.dluvian.voyage.core.model.Oneself
@@ -90,6 +91,7 @@ fun getTrustIcon(trustType: TrustType): ImageVector {
     return when (trustType) {
         Oneself -> Icons.Default.Star
         FriendTrust, WebTrust -> Icons.Filled.VerifiedUser
+        IsInListTrust -> ListIcon
         NoTrust -> Icons.Default.QuestionMark
         Muted -> MuteIcon
     }

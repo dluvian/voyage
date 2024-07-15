@@ -86,7 +86,8 @@ data class RootPostUI(
                     isOneself = rootPostView.authorIsOneself,
                     isFriend = rootPostView.authorIsFriend,
                     isWebOfTrust = rootPostView.authorIsTrusted,
-                    isMuted = rootPostView.authorIsMuted
+                    isMuted = rootPostView.authorIsMuted,
+                    isInList = rootPostView.authorIsInList,
                 ),
                 myTopic = rootPostView.myTopic,
                 createdAt = rootPostView.createdAt,
@@ -102,7 +103,8 @@ data class RootPostUI(
                     isOneself = rootPostView.crossPostedAuthorIsOneself,
                     isFriend = rootPostView.crossPostedAuthorIsFriend,
                     isWebOfTrust = rootPostView.crossPostedAuthorIsTrusted,
-                    isMuted = rootPostView.crossPostedAuthorIsMuted
+                    isMuted = rootPostView.crossPostedAuthorIsMuted,
+                    isInList = rootPostView.crossPostedAuthorIsInList,
                 ),
                 isBookmarked = rootPostView.isBookmarked,
             )
@@ -147,6 +149,7 @@ data class ReplyUI(
                     isFriend = replyView.authorIsFriend,
                     isWebOfTrust = replyView.authorIsTrusted,
                     isMuted = replyView.authorIsMuted,
+                    isInList = replyView.authorIsInList
                 ),
                 createdAt = replyView.createdAt,
                 content = annotatedStringProvider.annotate(replyView.content),

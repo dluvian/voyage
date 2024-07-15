@@ -22,6 +22,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             "(SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.pubkey)) AS authorIsFriend, " +
             "(SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = post.pubkey)) AS authorIsTrusted, " +
             "(SELECT EXISTS(SELECT * FROM mute WHERE mute.mutedItem = post.pubkey AND mute.tag IS 'p')) AS authorIsMuted, " +
+            "(SELECT EXISTS(SELECT * FROM profileSetItem WHERE profileSetItem.pubkey = post.pubkey)) AS authorIsInList, " +
             "(SELECT EXISTS(SELECT* FROM vote WHERE vote.postId = post.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1))) AS isUpvoted, " +
             "(SELECT COUNT(*) FROM vote WHERE vote.postId = post.id) AS upvoteCount, " +
             "(SELECT COUNT(*) FROM post AS post2 WHERE post2.parentId = post.id) AS replyCount, " +
@@ -40,6 +41,7 @@ data class ReplyView(
     val authorIsFriend: Boolean,
     val authorIsTrusted: Boolean,
     val authorIsMuted: Boolean,
+    val authorIsInList: Boolean,
     val isUpvoted: Boolean,
     val upvoteCount: Int,
     val replyCount: Int,
@@ -87,7 +89,8 @@ data class ReplyView(
                 isOneself = this.authorIsOneself,
                 isFriend = follow ?: this.authorIsFriend,
                 isWebOfTrust = this.authorIsTrusted,
-                isMuted = this.authorIsMuted
+                isMuted = this.authorIsMuted,
+                isInList = this.authorIsInList
             ),
             isBookmarked = bookmark ?: reply.isBookmarked
         ) else reply
