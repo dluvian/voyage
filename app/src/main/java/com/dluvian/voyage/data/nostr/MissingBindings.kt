@@ -196,12 +196,14 @@ fun createNprofile(pubkey: PublicKey, relays: List<String> = emptyList()): Nip19
 fun createNevent(
     hex: String,
     author: String? = null,
-    relays: List<String> = emptyList()
+    relays: List<String> = emptyList(),
+    kind: Kind? = null
 ): Nip19Event {
     return createNevent(
         eventId = EventId.fromHex(hex),
         author = author?.let { PublicKey.fromHex(it) },
-        relays = relays
+        relays = relays,
+        kind = kind
     )
 }
 

@@ -202,7 +202,6 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         },
         createCrossPostVM = viewModel {
             CreateCrossPostViewModel(
-                topicProvider = appContainer.topicProvider,
                 postSender = appContainer.postSender,
                 snackbar = appContainer.snackbar
             )
