@@ -3,6 +3,7 @@ package com.dluvian.voyage.data.room.dao
 import androidx.room.Dao
 import androidx.room.Query
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.model.ItemSetMeta
 import kotlinx.coroutines.flow.Flow
 
@@ -29,7 +30,7 @@ interface ItemSetDao {
                 "WHERE deleted = 0 " +
                 "AND identifier NOT IN (SELECT identifier FROM profileSetItem WHERE pubkey = :pubkey)"
     )
-    suspend fun getAddableSets(pubkey: PubkeyHex): List<ItemSetMeta>
+    suspend fun getAddableProfileSets(pubkey: PubkeyHex): List<ItemSetMeta>
 
     @Query(
         "SELECT identifier, title " +
@@ -37,7 +38,23 @@ interface ItemSetDao {
                 "WHERE deleted = 0 " +
                 "AND identifier IN (SELECT identifier FROM profileSetItem WHERE pubkey = :pubkey)"
     )
-    suspend fun getNonAddableSets(pubkey: PubkeyHex): List<ItemSetMeta>
+    suspend fun getNonAddableProfileSets(pubkey: PubkeyHex): List<ItemSetMeta>
+
+    @Query(
+        "SELECT identifier, title " +
+                "FROM topicSet " +
+                "WHERE deleted = 0 " +
+                "AND identifier NOT IN (SELECT identifier FROM topicSetItem WHERE topic = :topic)"
+    )
+    suspend fun getAddableTopicSets(topic: Topic): List<ItemSetMeta>
+
+    @Query(
+        "SELECT identifier, title " +
+                "FROM topicSet " +
+                "WHERE deleted = 0 " +
+                "AND identifier IN (SELECT identifier FROM topicSetItem WHERE topic = :topic)"
+    )
+    suspend fun getNonAddableTopicSets(topic: Topic): List<ItemSetMeta>
 
     @Query("SELECT title FROM profileSet WHERE identifier = :identifier")
     suspend fun getProfileSetTitle(identifier: String): String?

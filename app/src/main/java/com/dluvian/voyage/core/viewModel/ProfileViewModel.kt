@@ -8,9 +8,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.voyage.data.nostr.Nip65Relay
-import com.dluvian.voyage.data.nostr.RelayUrl
-import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.core.ProfileViewAction
 import com.dluvian.voyage.core.ProfileViewLoadLists
 import com.dluvian.voyage.core.ProfileViewRefresh
@@ -18,13 +15,17 @@ import com.dluvian.voyage.core.ProfileViewReplyAppend
 import com.dluvian.voyage.core.ProfileViewRootAppend
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.launchIO
+import com.dluvian.voyage.core.model.ItemSetProfile
 import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.core.navigator.ProfileNavView
 import com.dluvian.voyage.data.model.FullProfileUI
 import com.dluvian.voyage.data.model.ItemSetMeta
 import com.dluvian.voyage.data.model.ProfileRootFeedSetting
 import com.dluvian.voyage.data.model.ReplyFeedSetting
+import com.dluvian.voyage.data.nostr.Nip65Relay
+import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
+import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.ItemSetProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
@@ -119,8 +120,10 @@ class ProfileViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
 
     private fun updateLists(pubkey: PubkeyHex) {
         viewModelScope.launchIO {
-            addableLists.value = itemSetProvider.getAddableSets(pubkey = pubkey)
-            nonAddableLists.value = itemSetProvider.getNonAddableSets(pubkey = pubkey)
+            addableLists.value = itemSetProvider
+                .getAddableSets(item = ItemSetProfile(pubkey = pubkey))
+            nonAddableLists.value = itemSetProvider
+                .getNonAddableSets(item = ItemSetProfile(pubkey = pubkey))
         }
     }
 }

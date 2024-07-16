@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.activity.result.ActivityResult
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.text.AnnotatedString
+import com.dluvian.voyage.core.model.ItemSetItem
 import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.navigator.BookmarksNavView
@@ -183,8 +184,8 @@ data class EditListViewAddProfile(val profile: AdvancedProfileView) : EditListVi
 data class EditListViewAddTopic(val topic: Topic) : EditListViewAction()
 
 
-data class AddProfileToList(
-    val pubkey: PubkeyHex,
+data class AddItemToList(
+    val item: ItemSetItem,
     val identifier: String,
     val scope: CoroutineScope,
     val context: Context
@@ -205,6 +206,7 @@ data class CloseDrawer(val scope: CoroutineScope) : DrawerViewAction()
 sealed class TopicViewAction : UIEvent()
 data object TopicViewRefresh : TopicViewAction()
 data object TopicViewAppend : TopicViewAction()
+data object TopicViewLoadLists : TopicViewAction()
 
 
 sealed class RelayEditorViewAction : UIEvent()

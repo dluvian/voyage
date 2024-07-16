@@ -11,6 +11,8 @@ import com.dluvian.voyage.AppContainer
 import com.dluvian.voyage.R
 import com.dluvian.voyage.VMContainer
 import com.dluvian.voyage.core.model.CoordinateMention
+import com.dluvian.voyage.core.model.ItemSetProfile
+import com.dluvian.voyage.core.model.ItemSetTopic
 import com.dluvian.voyage.core.model.NeventMention
 import com.dluvian.voyage.core.model.NostrMention
 import com.dluvian.voyage.core.model.NoteMention
@@ -62,14 +64,18 @@ class Core(
                 )
             }
 
-            is AddProfileToList -> viewModelScope.launchIO {
-                appContainer.itemSetEditor.addProfileToSet(
-                    pubkey = uiEvent.pubkey,
+            is AddItemToList -> viewModelScope.launchIO {
+                appContainer.itemSetEditor.addItemToSet(
+                    item = uiEvent.item,
                     identifier = uiEvent.identifier
                 ).onFailure {
+                    val errId = when (uiEvent.item) {
+                        is ItemSetProfile -> R.string.failed_to_sign_profile_list
+                        is ItemSetTopic -> R.string.failed_to_sign_topic_list
+                    }
                     appContainer.snackbar.showToast(
                         scope = uiEvent.scope,
-                        msg = uiEvent.context.getString(R.string.failed_to_sign_profile_list)
+                        msg = uiEvent.context.getString(errId)
                     )
                 }.onSuccess {
                     appContainer.snackbar.showToast(

@@ -3,7 +3,6 @@ package com.dluvian.voyage.ui.views.nonMain.topic
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.viewModel.TopicViewModel
@@ -16,17 +15,15 @@ fun TopicScaffold(
     onUpdate: OnUpdate,
     content: ComposableContent
 ) {
-    val topic by vm.currentTopic
-    val isFollowed by vm.isFollowed.collectAsState()
-    val isMuted by vm.isMuted.collectAsState()
-
     VoyageScaffold(
         snackbar = snackbar,
         topBar = {
             TopicTopAppBar(
-                topic = topic,
-                isFollowed = isFollowed,
-                isMuted = isMuted,
+                topic = vm.currentTopic.value,
+                isFollowed = vm.isFollowed.collectAsState().value,
+                isMuted = vm.isMuted.collectAsState().value,
+                addableLists = vm.addableLists.value,
+                nonAddableLists = vm.nonAddableLists.value,
                 onUpdate = onUpdate
             )
         }

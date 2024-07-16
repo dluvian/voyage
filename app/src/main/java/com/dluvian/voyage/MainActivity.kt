@@ -158,10 +158,11 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         },
         topicVM = viewModel {
             TopicViewModel(
-                subCreator = appContainer.subCreator,
                 feedProvider = appContainer.feedProvider,
-                topicProvider = appContainer.topicProvider,
                 feedState = topicFeedState,
+                subCreator = appContainer.subCreator,
+                topicProvider = appContainer.topicProvider,
+                itemSetProvider = appContainer.itemSetProvider,
             )
         },
         createPostVM = viewModel {

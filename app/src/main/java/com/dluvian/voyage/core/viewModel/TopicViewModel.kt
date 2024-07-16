@@ -4,15 +4,21 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.TopicViewAction
 import com.dluvian.voyage.core.TopicViewAppend
+import com.dluvian.voyage.core.TopicViewLoadLists
 import com.dluvian.voyage.core.TopicViewRefresh
+import com.dluvian.voyage.core.launchIO
+import com.dluvian.voyage.core.model.ItemSetTopic
 import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.core.navigator.TopicNavView
 import com.dluvian.voyage.core.normalizeTopic
+import com.dluvian.voyage.data.model.ItemSetMeta
 import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.provider.FeedProvider
+import com.dluvian.voyage.data.provider.ItemSetProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,11 +27,13 @@ import kotlinx.coroutines.flow.stateIn
 
 class TopicViewModel(
     feedProvider: FeedProvider,
+    val feedState: LazyListState,
     private val subCreator: SubscriptionCreator,
     private val topicProvider: TopicProvider,
-    val feedState: LazyListState,
+    private val itemSetProvider: ItemSetProvider,
 ) : ViewModel() {
-
+    val addableLists = mutableStateOf(emptyList<ItemSetMeta>())
+    val nonAddableLists = mutableStateOf(emptyList<ItemSetMeta>())
     val currentTopic = mutableStateOf("")
     var isFollowed: StateFlow<Boolean> = MutableStateFlow(false)
     var isMuted: StateFlow<Boolean> = MutableStateFlow(false)
@@ -52,11 +60,22 @@ class TopicViewModel(
 
     fun handle(action: TopicViewAction) {
         when (action) {
-            is TopicViewRefresh -> {
+            TopicViewRefresh -> {
                 subCreator.unsubAll()
                 paginator.refresh()
             }
-            is TopicViewAppend -> paginator.append()
+
+            TopicViewAppend -> paginator.append()
+            TopicViewLoadLists -> updateLists(topic = currentTopic.value)
+        }
+    }
+
+    private fun updateLists(topic: Topic) {
+        viewModelScope.launchIO {
+            addableLists.value = itemSetProvider
+                .getAddableSets(item = ItemSetTopic(topic = topic))
+            nonAddableLists.value = itemSetProvider
+                .getNonAddableSets(item = ItemSetTopic(topic = topic))
         }
     }
 }

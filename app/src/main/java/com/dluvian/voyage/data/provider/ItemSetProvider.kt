@@ -6,6 +6,9 @@ import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.createAdvancedProfile
 import com.dluvian.voyage.core.firstThenDistinctDebounce
+import com.dluvian.voyage.core.model.ItemSetItem
+import com.dluvian.voyage.core.model.ItemSetProfile
+import com.dluvian.voyage.core.model.ItemSetTopic
 import com.dluvian.voyage.data.account.IPubkeyProvider
 import com.dluvian.voyage.data.model.ItemSetMeta
 import com.dluvian.voyage.data.room.AppDatabase
@@ -55,12 +58,18 @@ class ItemSetProvider(
         }
     }
 
-    suspend fun getAddableSets(pubkey: PubkeyHex): List<ItemSetMeta> {
-        return room.itemSetDao().getAddableSets(pubkey = pubkey).sortedBy { it.title }
+    suspend fun getAddableSets(item: ItemSetItem): List<ItemSetMeta> {
+        return when (item) {
+            is ItemSetProfile -> room.itemSetDao().getAddableProfileSets(pubkey = item.pubkey)
+            is ItemSetTopic -> room.itemSetDao().getAddableTopicSets(topic = item.topic)
+        }.sortedBy { it.title }
     }
 
-    suspend fun getNonAddableSets(pubkey: PubkeyHex): List<ItemSetMeta> {
-        return room.itemSetDao().getNonAddableSets(pubkey = pubkey).sortedBy { it.title }
+    suspend fun getNonAddableSets(item: ItemSetItem): List<ItemSetMeta> {
+        return when (item) {
+            is ItemSetProfile -> room.itemSetDao().getNonAddableProfileSets(pubkey = item.pubkey)
+            is ItemSetTopic -> room.itemSetDao().getNonAddableTopicSets(topic = item.topic)
+        }.sortedBy { it.title }
     }
 
     suspend fun getTitle(identifier: String): String {

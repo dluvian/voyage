@@ -4,6 +4,9 @@ import android.util.Log
 import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.core.model.ItemSetItem
+import com.dluvian.voyage.core.model.ItemSetProfile
+import com.dluvian.voyage.core.model.ItemSetTopic
 import com.dluvian.voyage.data.event.EventValidator
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.provider.ItemSetProvider
@@ -68,19 +71,37 @@ class ItemSetEditor(
         }
     }
 
-    suspend fun addProfileToSet(pubkey: PubkeyHex, identifier: String): Result<Event> {
-        val currentList = itemSetProvider.getPubkeysFromList(identifier = identifier)
-        if (currentList.contains(pubkey)) {
-            return Result.failure(IllegalStateException("Pubkey is already in list"))
+    suspend fun addItemToSet(item: ItemSetItem, identifier: String): Result<Event> {
+        val currentList = when (item) {
+            is ItemSetProfile -> itemSetProvider.getPubkeysFromList(identifier = identifier)
+            is ItemSetTopic -> itemSetProvider.getTopicsFromList(identifier = identifier)
+        }
+
+        if (currentList.contains(item.value)) {
+            return Result.failure(IllegalStateException("Item is already in list"))
         }
         if (currentList.size >= MAX_KEYS_SQL) {
             return Result.failure(IllegalArgumentException("List is already full"))
         }
 
-        return editProfileSet(
-            identifier = identifier,
-            title = itemSetProvider.getTitle(identifier = identifier),
-            pubkeys = currentList + pubkey,
-        )
+        val title = itemSetProvider.getTitle(identifier = identifier)
+
+        return when (item) {
+            is ItemSetProfile -> {
+                editProfileSet(
+                    identifier = identifier,
+                    title = title,
+                    pubkeys = currentList + item.pubkey,
+                )
+            }
+
+            is ItemSetTopic -> {
+                editTopicSet(
+                    identifier = identifier,
+                    title = title,
+                    topics = currentList + item.topic,
+                )
+            }
+        }
     }
 }
