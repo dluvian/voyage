@@ -209,14 +209,14 @@ class LazyNostrSubscriber(
         val pubkey = pubkeyProvider.getPublicKey()
 
         val profileSetsSince = room.contentSetDao().getProfileSetMaxCreatedAt()?.toULong() ?: 1uL
-        val myProfileSetsFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.FollowSets))
+        val myProfileSetsFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.FollowSet))
             .author(author = pubkey)
             .until(timestamp = timestamp)
             .since(timestamp = Timestamp.fromSecs(secs = profileSetsSince + 1u))
             .limitRestricted(limit = MAX_EVENTS_TO_SUB)
 
         val topicSetsSince = room.contentSetDao().getTopicSetMaxCreatedAt()?.toULong() ?: 1uL
-        val myTopicSetsFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.InterestSets))
+        val myTopicSetsFilter = Filter().kind(kind = Kind.fromEnum(KindEnum.InterestSet))
             .author(author = pubkey)
             .until(timestamp = timestamp)
             .since(timestamp = Timestamp.fromSecs(secs = topicSetsSince + 1u))

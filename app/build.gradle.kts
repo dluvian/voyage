@@ -88,7 +88,7 @@ dependencies {
     implementation("androidx.room:room-ktx:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
 
-    implementation("org.rust-nostr:nostr:0.32.1")
+    implementation("org.rust-nostr:nostr:0.33.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("cash.z.ecc.android:kotlin-bip39:1.0.7")
 

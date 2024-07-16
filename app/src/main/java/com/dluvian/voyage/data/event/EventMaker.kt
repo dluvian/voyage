@@ -11,10 +11,10 @@ import com.dluvian.voyage.data.nostr.createHashtagTag
 import com.dluvian.voyage.data.nostr.createMentionTag
 import com.dluvian.voyage.data.nostr.createReplyTag
 import com.dluvian.voyage.data.nostr.createSubjectTag
-import com.dluvian.voyage.data.nostr.createUnsignedProfileSet
-import com.dluvian.voyage.data.nostr.createUnsignedTopicSet
+import com.dluvian.voyage.data.nostr.createTitleTag
 import rust.nostr.protocol.Bookmarks
 import rust.nostr.protocol.Contact
+import rust.nostr.protocol.Coordinate
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventBuilder
 import rust.nostr.protocol.EventId
@@ -102,14 +102,11 @@ class EventMaker(
 
     suspend fun buildListDelete(identifier: String): Result<Event> {
         val pubkey = accountManager.getPublicKey()
-        val tags = listOf(Kind.fromEnum(KindEnum.FollowSets), Kind.fromEnum(KindEnum.InterestSets))
-            .map { kind -> "${kind.asU64()}:${pubkey.toHex()}:$identifier" }
-            .map { coordinate -> Tag.parse(listOf("a", coordinate)) }
-        val unsignedEvent = EventBuilder(
-            kind = Kind.fromEnum(KindEnum.EventDeletion),
-            content = "",
-            tags = tags
-        ).toUnsignedEvent(pubkey)
+        val coordinates = listOf(
+            Coordinate(Kind.fromEnum(KindEnum.FollowSet), pubkey, identifier),
+            Coordinate(Kind.fromEnum(KindEnum.InterestSet), pubkey, identifier)
+        )
+        val unsignedEvent = EventBuilder.delete(coordinates = coordinates).toUnsignedEvent(pubkey)
 
         return accountManager.sign(unsignedEvent = unsignedEvent)
     }
@@ -169,12 +166,10 @@ class EventMaker(
         title: String,
         pubkeys: List<PublicKey>
     ): Result<Event> {
-        val unsignedEvent = createUnsignedProfileSet(
-            identifier = identifier,
-            title = title,
-            pubkeys = pubkeys,
-            author = accountManager.getPublicKey()
-        )
+        val additionalTags = listOf(createTitleTag(title = title))
+        val unsignedEvent = EventBuilder.followSet(identifier = identifier, publicKeys = pubkeys)
+            .addTags(tags = additionalTags)
+            .toUnsignedEvent(publicKey = accountManager.getPublicKey())
 
         return accountManager.sign(unsignedEvent = unsignedEvent)
     }
@@ -184,12 +179,9 @@ class EventMaker(
         title: String,
         topics: List<Topic>
     ): Result<Event> {
-        val unsignedEvent = createUnsignedTopicSet(
-            identifier = identifier,
-            title = title,
-            topics = topics,
-            author = accountManager.getPublicKey()
-        )
+        val unsignedEvent = EventBuilder.interestSet(identifier = identifier, hashtags = topics)
+            .addTags(tags = listOf(createTitleTag(title = title)))
+            .toUnsignedEvent(publicKey = accountManager.getPublicKey())
 
         return accountManager.sign(unsignedEvent = unsignedEvent)
     }

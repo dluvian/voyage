@@ -110,12 +110,12 @@ class EventValidator(
                 )
             }
 
-            is KindEnum.FollowSets -> {
+            is KindEnum.FollowSet -> {
                 if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) return null
                 createValidatedProfileSet(event = event)
             }
 
-            is KindEnum.InterestSets -> {
+            is KindEnum.InterestSet -> {
                 if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) return null
                 createValidatedTopicSet(event = event)
             }
