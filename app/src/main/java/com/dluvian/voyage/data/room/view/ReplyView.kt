@@ -25,7 +25,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             "(SELECT EXISTS(SELECT * FROM profileSetItem WHERE profileSetItem.pubkey = post.pubkey)) AS authorIsInList, " +
             "(SELECT EXISTS(SELECT* FROM vote WHERE vote.postId = post.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1))) AS isUpvoted, " +
             "(SELECT COUNT(*) FROM vote WHERE vote.postId = post.id) AS upvoteCount, " +
-            "(SELECT COUNT(*) FROM post AS post2 WHERE post2.parentId = post.id) AS replyCount, " +
+            "(SELECT COUNT(*) FROM post AS post2 WHERE post2.parentId = post.id AND post2.pubkey NOT IN (SELECT mutedItem FROM mute WHERE tag IS 'p')) AS replyCount, " +
             "(SELECT EXISTS(SELECT * FROM bookmark WHERE bookmark.postId = IFNULL(post.crossPostedId, post.id))) AS isBookmarked " +
             "FROM post " +
             "WHERE post.parentId IS NOT NULL"

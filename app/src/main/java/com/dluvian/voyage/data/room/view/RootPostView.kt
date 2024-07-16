@@ -59,6 +59,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             SELECT post2.parentId, COUNT(*) AS replyCount 
             FROM post AS post2 
             WHERE post2.parentId IS NOT NULL 
+            AND post2.pubkey NOT IN (SELECT mutedItem FROM mute WHERE tag IS 'p')
             GROUP BY post2.parentId
         ) AS replies ON replies.parentId = IFNULL(post.crossPostedId, post.id)
         LEFT JOIN account AS cross_posted_account ON cross_posted_account.pubkey = post.crossPostedPubkey

@@ -70,7 +70,6 @@ interface RootPostDao {
     @Query("SELECT * FROM RootPostView WHERE id = :id")
     fun getRootPostFlow(id: EventIdHex): Flow<RootPostView?>
 
-
     @Query(HOME_FEED_QUERY)
     fun getHomeRootPostFlow(until: Long, size: Int): Flow<List<RootPostView>>
 

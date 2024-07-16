@@ -27,7 +27,15 @@ interface ReplyDao {
     @Query("SELECT MAX(createdAt) FROM post WHERE parentId = :parentId")
     suspend fun getNewestReplyCreatedAt(parentId: EventIdHex): Long?
 
-    @Query("SELECT * FROM ReplyView WHERE parentId IN (:parentIds) ORDER BY createdAt ASC")
+    @Query(
+        """
+        SELECT * 
+        FROM ReplyView 
+        WHERE parentId IN (:parentIds) 
+        AND authorIsMuted = 0
+        ORDER BY createdAt ASC
+    """
+    )
     fun getRepliesFlow(parentIds: Collection<EventIdHex>): Flow<List<ReplyView>>
 
     @Query("SELECT * FROM ReplyView WHERE id = :id")
