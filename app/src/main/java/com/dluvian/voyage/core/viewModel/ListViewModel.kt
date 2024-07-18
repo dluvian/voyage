@@ -1,6 +1,7 @@
 package com.dluvian.voyage.core.viewModel
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -19,6 +20,9 @@ import com.dluvian.voyage.data.provider.ItemSetProvider
 class ListViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
     feedProvider: FeedProvider,
     subCreator: SubscriptionCreator,
+    val feedState: LazyListState,
+    val profileState: LazyListState,
+    val topicState: LazyListState,
     val itemSetProvider: ItemSetProvider,
     val pagerState: PagerState
 

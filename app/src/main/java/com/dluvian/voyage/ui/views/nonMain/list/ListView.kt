@@ -1,7 +1,6 @@
 package com.dluvian.voyage.ui.views.nonMain.list
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -43,9 +42,6 @@ fun ListView(
 @Composable
 private fun ScreenContent(vm: ListViewModel, onUpdate: OnUpdate) {
     val scope = rememberCoroutineScope()
-    val feedState = rememberLazyListState()
-    val profileState = rememberLazyListState()
-    val topicState = rememberLazyListState()
 
     val profiles by vm.itemSetProvider.profiles
     val topics by vm.itemSetProvider.topics
@@ -57,9 +53,9 @@ private fun ScreenContent(vm: ListViewModel, onUpdate: OnUpdate) {
         isLoading = vm.isLoading.value && !vm.paginator.isRefreshing.value,
         onScrollUp = {
             when (it) {
-                0 -> scope.launch { feedState.animateScrollToItem(0) }
-                1 -> scope.launch { profileState.animateScrollToItem(0) }
-                2 -> scope.launch { topicState.animateScrollToItem(0) }
+                0 -> scope.launch { vm.feedState.animateScrollToItem(0) }
+                1 -> scope.launch { vm.profileState.animateScrollToItem(0) }
+                2 -> scope.launch { vm.topicState.animateScrollToItem(0) }
                 else -> {}
             }
         },
@@ -67,7 +63,7 @@ private fun ScreenContent(vm: ListViewModel, onUpdate: OnUpdate) {
         when (it) {
             0 -> Feed(
                 paginator = vm.paginator,
-                state = feedState,
+                state = vm.feedState,
                 onRefresh = { onUpdate(ListViewRefresh) },
                 onAppend = { onUpdate(ListViewFeedAppend) },
                 onUpdate = onUpdate,
@@ -75,13 +71,13 @@ private fun ScreenContent(vm: ListViewModel, onUpdate: OnUpdate) {
 
             1 -> ProfileList(
                 profiles = profiles,
-                state = profileState,
+                state = vm.profileState,
                 onClick = { i -> onUpdate(OpenProfile(nprofile = profiles[i].toNip19())) },
             )
 
             2 -> TopicList(
                 topics = topics,
-                state = topicState,
+                state = vm.topicState,
                 onClick = { i -> onUpdate(OpenTopic(topic = topics[i])) },
             )
 
