@@ -13,10 +13,8 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,10 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.sp
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ClickBookmarks
 import com.dluvian.voyage.core.ClickCreateList
@@ -77,7 +71,6 @@ fun MainDrawer(
                     DrawerItem(
                         label = personalProfile.name,
                         icon = AccountIcon,
-                        style = TextStyle(fontSize = 25.sp, fontWeight = FontWeight.SemiBold),
                         onClick = {
                             onUpdate(
                                 OpenProfile(nprofile = createNprofile(hex = personalProfile.pubkey))
@@ -152,20 +145,19 @@ private fun DrawerItem(
     label: String,
     icon: ImageVector,
     modifier: Modifier = Modifier,
-    style: TextStyle = LocalTextStyle.current,
     onClick: Fn,
     onLongClick: Fn = {},
 ) {
-    NavigationDrawerItem(
-        modifier = modifier.combinedClickable(onLongClick = onLongClick, onClick = onClick),
-        icon = {
+    ClickableRow(
+        modifier = modifier
+            .fillMaxWidth()
+            .combinedClickable(onLongClick = onLongClick, onClick = onClick),
+        header = label,
+        leadingContent = {
             Icon(imageVector = icon, contentDescription = null)
         },
-        label = {
-            Text(text = label, style = style, maxLines = 1, overflow = TextOverflow.Ellipsis)
-        },
-        selected = false,
-        onClick = onClick
+        onClick = onClick,
+        onLongClick = onLongClick
     )
 }
 
@@ -181,8 +173,8 @@ private fun DrawerListItem(meta: ItemSetMeta, scope: CoroutineScope, onUpdate: O
             onUpdate = onUpdate
         )
         ClickableRow(
-            modifier = Modifier.fillMaxWidth(),
             header = meta.title,
+            modifier = Modifier.fillMaxWidth(),
             leadingContent = {
                 Icon(imageVector = ViewListIcon, contentDescription = null)
             },

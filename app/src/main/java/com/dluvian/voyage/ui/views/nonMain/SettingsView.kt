@@ -24,7 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.LoadSeed
@@ -41,6 +40,7 @@ import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
 import com.dluvian.voyage.core.toShortenedNpub
 import com.dluvian.voyage.core.viewModel.SettingsViewModel
+import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.ui.components.bottomSheet.SeedBottomSheet
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import com.dluvian.voyage.ui.components.row.ClickableRow
@@ -133,13 +133,13 @@ private fun RelaySection(sendAuth: Boolean, onUpdate: OnUpdate) {
         ClickableRow(
             header = stringResource(id = R.string.authenticate_via_auth),
             text = stringResource(id = R.string.enable_to_authenticate_yourself_to_relays),
-            onClick = { onUpdate(SendAuth(sendAuth = !sendAuth)) },
             trailingContent = {
                 Checkbox(
                     checked = sendAuth,
                     onCheckedChange = { onUpdate(SendAuth(sendAuth = it)) },
                 )
-            }
+            },
+            onClick = { onUpdate(SendAuth(sendAuth = !sendAuth)) }
         )
     }
 }
@@ -183,7 +183,7 @@ private fun AppSection() {
     SettingsSection(header = stringResource(id = R.string.app)) {
         ClickableRow(
             header = stringResource(id = R.string.version),
-            text = stringResource(id = R.string.version_nr)
+            text = stringResource(id = R.string.version_nr),
         )
     }
 }
