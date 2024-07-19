@@ -18,6 +18,7 @@ import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.normalizeTopic
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.interactor.ItemSetEditor
+import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.ItemSetProvider
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import kotlinx.coroutines.delay
@@ -27,6 +28,7 @@ class EditListViewModel(
     private val itemSetEditor: ItemSetEditor,
     private val snackbar: SnackbarHostState,
     private val itemSetProvider: ItemSetProvider,
+    private val lazyNostrSubscriber: LazyNostrSubscriber,
 ) : ViewModel() {
     private val _identifier = mutableStateOf("")
 
@@ -61,6 +63,9 @@ class EditListViewModel(
 
         viewModelScope.launchIO {
             itemSetProvider.loadList(identifier = identifier)
+            lazyNostrSubscriber.lazySubUnknownProfiles(
+                pubkeys = itemSetProvider.profiles.value.map { it.pubkey }
+            )
         }.invokeOnCompletion {
             title.value = itemSetProvider.title.value
             profiles.value = itemSetProvider.profiles.value

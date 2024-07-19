@@ -13,19 +13,18 @@ import com.dluvian.voyage.core.ListViewRefresh
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.data.model.ListFeedSetting
-import com.dluvian.voyage.data.nostr.SubscriptionCreator
+import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.ItemSetProvider
 
 class ListViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
     feedProvider: FeedProvider,
-    subCreator: SubscriptionCreator,
     val feedState: LazyListState,
     val profileState: LazyListState,
     val topicState: LazyListState,
     val itemSetProvider: ItemSetProvider,
-    val pagerState: PagerState
-
+    val pagerState: PagerState,
+    private val lazyNostrSubscriber: LazyNostrSubscriber
 ) : ViewModel() {
     val isLoading = mutableStateOf(false)
     val tabIndex = mutableIntStateOf(0)
@@ -33,7 +32,7 @@ class ListViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
     val paginator = Paginator(
         feedProvider = feedProvider,
         scope = viewModelScope,
-        subCreator = subCreator
+        subCreator = lazyNostrSubscriber.subCreator
     )
 
     fun handle(action: ListViewAction) {
@@ -48,6 +47,9 @@ class ListViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
         paginator.reinit(setting = ListFeedSetting(identifier = identifier))
         viewModelScope.launchIO {
             itemSetProvider.loadList(identifier = identifier)
+            lazyNostrSubscriber.lazySubUnknownProfiles(
+                pubkeys = itemSetProvider.profiles.value.map { it.pubkey }
+            )
         }.invokeOnCompletion {
             isLoading.value = false
         }

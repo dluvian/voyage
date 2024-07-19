@@ -114,6 +114,7 @@ class ProfileProvider(
         // We want to be able to unfollow on the same list
         val friends = room.profileDao().getAdvancedProfilesOfFriends()
         val friendsWithoutProfile = room.profileDao().getUnknownFriends()
+        lazyNostrSubscriber.lazySubUnknownProfiles(pubkeys = friendsWithoutProfile)
 
         return combine(forcedFollowFlow, forcedMuteFlow) { forcedFollows, forcedMutes ->
             friends.map {

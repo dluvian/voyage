@@ -252,18 +252,19 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             EditListViewModel(
                 itemSetEditor = appContainer.itemSetEditor,
                 snackbar = appContainer.snackbar,
-                itemSetProvider = appContainer.itemSetProvider
+                itemSetProvider = appContainer.itemSetProvider,
+                lazyNostrSubscriber = appContainer.lazyNostrSubscriber
             )
         },
         listVM = viewModel {
             ListViewModel(
                 feedProvider = appContainer.feedProvider,
-                subCreator = appContainer.nostrSubscriber.subCreator,
                 feedState = listFeedState,
                 profileState = listProfileState,
                 topicState = listTopicState,
                 itemSetProvider = appContainer.itemSetProvider,
-                pagerState = listViewPagerState
+                pagerState = listViewPagerState,
+                lazyNostrSubscriber = appContainer.lazyNostrSubscriber
             )
         },
         muteListVM = viewModel {
