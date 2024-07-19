@@ -199,4 +199,6 @@
     <string name="unmute">取消静音</string>
     <string name="mute">静音</string>
     <string name="mute_list">静音列表</string>
+    <string name="list_is_empty">列表为空</string>
+    <string name="in_list">在列表中</string>
 </resources>
