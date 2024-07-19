@@ -32,7 +32,7 @@ fun TopicTopAppBar(
                 scope = rememberCoroutineScope(),
                 onUpdate = onUpdate
             )
-            if (!isMuted) FollowButton(
+            if (!isMuted || isFollowed) FollowButton(
                 isFollowed = isFollowed,
                 onFollow = { onUpdate(FollowTopic(topic = topic)) },
                 onUnfollow = { onUpdate(UnfollowTopic(topic = topic)) })

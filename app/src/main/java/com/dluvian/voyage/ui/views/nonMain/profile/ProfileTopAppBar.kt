@@ -37,7 +37,7 @@ fun ProfileTopAppBar(
                     scope = rememberCoroutineScope(),
                     onUpdate = onUpdate
                 )
-                if (!profile.inner.isMuted) FollowButton(
+                if (!profile.inner.isMuted || profile.inner.isFriend) FollowButton(
                     isFollowed = profile.inner.isFriend,
                     onFollow = {
                         onUpdate(FollowProfile(pubkey = profile.inner.pubkey))
