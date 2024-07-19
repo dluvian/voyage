@@ -91,6 +91,8 @@ class ProfileProvider(
 
     suspend fun getProfileByName(name: String, limit: Int): List<AdvancedProfileView> {
         return room.profileDao().getProfilesByName(name = name, limit = 2 * limit)
+            .sortedByDescending { it.isWebOfTrust }
+            .sortedByDescending { it.isInList }
             .sortedByDescending { it.isFriend }
             .take(limit)
     }

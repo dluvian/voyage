@@ -98,6 +98,7 @@ interface ProfileDao {
                 "FROM AdvancedProfileView " +
                 "WHERE (name = :name OR name LIKE :somewhere) " +
                 "AND name != '' " +
+                "AND pubkey NOT IN (SELECT mutedItem FROM mute WHERE tag = 'p') " +
                 "ORDER BY length(name) ASC " +
                 "LIMIT :limit"
     )
