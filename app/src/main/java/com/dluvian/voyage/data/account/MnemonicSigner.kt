@@ -16,7 +16,7 @@ private const val MNEMONIC = "mnemonic"
 private const val FILENAME = "voyage_encrypted_mnemonic"
 private const val MAIN_ACCOUNT_INDEX = 0u
 
-class MnemonicSigner(context: Context) : IPubkeyProvider {
+class MnemonicSigner(context: Context) : IMyPubkeyProvider {
     private val masterKey = MasterKey.Builder(context)
         .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
         .build()

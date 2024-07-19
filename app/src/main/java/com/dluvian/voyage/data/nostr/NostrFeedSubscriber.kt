@@ -8,7 +8,7 @@ import com.dluvian.voyage.core.limitRestricted
 import com.dluvian.voyage.core.syncedPutOrAdd
 import com.dluvian.voyage.core.takeRandom
 import com.dluvian.voyage.core.textNoteAndRepostKinds
-import com.dluvian.voyage.data.account.IPubkeyProvider
+import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.model.FriendPubkeys
 import com.dluvian.voyage.data.model.ListPubkeys
 import com.dluvian.voyage.data.model.ListTopics
@@ -34,7 +34,7 @@ class NostrFeedSubscriber(
     private val scope: CoroutineScope,
     private val relayProvider: RelayProvider,
     private val topicProvider: TopicProvider,
-    private val pubkeyProvider: IPubkeyProvider,
+    private val myPubkeyProvider: IMyPubkeyProvider,
     private val bookmarkDao: BookmarkDao,
 ) {
     suspend fun getHomeFeedSubscriptions(
@@ -180,7 +180,7 @@ class NostrFeedSubscriber(
 
         val mentionFilter = Filter()
             .kind(kind = Kind.fromEnum(KindEnum.TextNote))
-            .pubkey(pubkey = pubkeyProvider.getPublicKey())
+            .pubkey(pubkey = myPubkeyProvider.getPublicKey())
             .since(timestamp = Timestamp.fromSecs(since))
             .until(timestamp = Timestamp.fromSecs(until))
             .limitRestricted(limit = MAX_EVENTS_TO_SUB)

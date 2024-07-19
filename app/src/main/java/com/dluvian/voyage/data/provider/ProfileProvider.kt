@@ -4,8 +4,9 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.createAdvancedProfile
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.toShortenedBech32
-import com.dluvian.voyage.data.account.IPubkeyProvider
+import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
+import com.dluvian.voyage.data.model.CustomPubkeys
 import com.dluvian.voyage.data.model.FullProfileUI
 import com.dluvian.voyage.data.model.RelevantMetadata
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
@@ -23,7 +24,7 @@ import rust.nostr.protocol.Nip19Profile
 class ProfileProvider(
     private val forcedFollowFlow: Flow<Map<PubkeyHex, Boolean>>,
     private val forcedMuteFlow: Flow<Map<PubkeyHex, Boolean>>,
-    private val pubkeyProvider: IPubkeyProvider,
+    private val myPubkeyProvider: IMyPubkeyProvider,
     private val metadataInMemory: MetadataInMemory,
     private val room: AppDatabase,
     private val friendProvider: FriendProvider,
@@ -40,7 +41,7 @@ class ProfileProvider(
         scope.launchIO {
             lazyNostrSubscriber.lazySubNip65(nprofile = nprofile)
             var isNotInMemory = metadataInMemory.getMetadata(pubkey = hex) == null
-            if (isNotInMemory && hex == pubkeyProvider.getPubkeyHex()) {
+            if (isNotInMemory && hex == myPubkeyProvider.getPubkeyHex()) {
                 val dbMeta = room.fullProfileDao().getFullProfile()?.toRelevantMetadata()
                 if (dbMeta != null) {
                     metadataInMemory.submit(pubkey = hex, metadata = dbMeta)
@@ -81,7 +82,7 @@ class ProfileProvider(
     }
 
     fun getDefaultProfile(): ProfileEntity {
-        val hex = pubkeyProvider.getPubkeyHex()
+        val hex = myPubkeyProvider.getPubkeyHex()
         return ProfileEntity(
             pubkey = hex,
             name = hex.toShortenedBech32(),
@@ -102,10 +103,11 @@ class ProfileProvider(
             .ifEmpty {
                 val default = defaultPubkeys.toMutableSet()
                 default.removeAll(friendProvider.getFriendPubkeys().toSet())
-                default.remove(pubkeyProvider.getPubkeyHex())
+                default.remove(myPubkeyProvider.getPubkeyHex())
                 default
             }
-        lazyNostrSubscriber.lazySubUnknownProfiles(pubkeys = unfollowedPubkeys)
+        lazyNostrSubscriber
+            .lazySubUnknownProfiles(selection = CustomPubkeys(pubkeys = unfollowedPubkeys))
 
         return getKnownProfilesFlow(pubkeys = unfollowedPubkeys)
     }
@@ -114,7 +116,8 @@ class ProfileProvider(
         // We want to be able to unfollow on the same list
         val friends = room.profileDao().getAdvancedProfilesOfFriends()
         val friendsWithoutProfile = room.profileDao().getUnknownFriends()
-        lazyNostrSubscriber.lazySubUnknownProfiles(pubkeys = friendsWithoutProfile)
+        lazyNostrSubscriber
+            .lazySubUnknownProfiles(selection = CustomPubkeys(pubkeys = friendsWithoutProfile))
 
         return combine(forcedFollowFlow, forcedMuteFlow) { forcedFollows, forcedMutes ->
             friends.map {
@@ -126,7 +129,7 @@ class ProfileProvider(
                     forcedFollowState = forcedFollows[pubkey],
                     forcedMuteState = forcedMutes[pubkey],
                     metadata = null,
-                    myPubkey = pubkeyProvider.getPubkeyHex(),
+                    myPubkey = myPubkeyProvider.getPubkeyHex(),
                     friendProvider = friendProvider,
                     muteProvider = muteProvider,
                     itemSetProvider = itemSetProvider
@@ -150,7 +153,7 @@ class ProfileProvider(
                     forcedFollowState = forcedFollows[pubkey],
                     forcedMuteState = forcedMutes[pubkey],
                     metadata = null,
-                    myPubkey = pubkeyProvider.getPubkeyHex(),
+                    myPubkey = myPubkeyProvider.getPubkeyHex(),
                     friendProvider = friendProvider,
                     muteProvider = muteProvider,
                     itemSetProvider = itemSetProvider
@@ -174,7 +177,7 @@ class ProfileProvider(
                     forcedFollowState = forcedFollows[dbProfile.pubkey],
                     forcedMuteState = forcedMutes[dbProfile.pubkey],
                     metadata = null,
-                    myPubkey = pubkeyProvider.getPubkeyHex(),
+                    myPubkey = myPubkeyProvider.getPubkeyHex(),
                     friendProvider = friendProvider,
                     muteProvider = muteProvider,
                     itemSetProvider = itemSetProvider
@@ -196,7 +199,7 @@ class ProfileProvider(
             forcedFollowState = forcedFollowState,
             forcedMuteState = forcedMuteState,
             metadata = metadata,
-            myPubkey = pubkeyProvider.getPubkeyHex(),
+            myPubkey = myPubkeyProvider.getPubkeyHex(),
             friendProvider = friendProvider,
             muteProvider = muteProvider,
             itemSetProvider = itemSetProvider

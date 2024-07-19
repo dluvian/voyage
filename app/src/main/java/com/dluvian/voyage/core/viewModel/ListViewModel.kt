@@ -12,7 +12,9 @@ import com.dluvian.voyage.core.ListViewFeedAppend
 import com.dluvian.voyage.core.ListViewRefresh
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.Paginator
+import com.dluvian.voyage.data.model.CustomPubkeys
 import com.dluvian.voyage.data.model.ListFeedSetting
+import com.dluvian.voyage.data.model.ListPubkeys
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.ItemSetProvider
@@ -46,9 +48,10 @@ class ListViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
         isLoading.value = true
         paginator.reinit(setting = ListFeedSetting(identifier = identifier))
         viewModelScope.launchIO {
+            lazyNostrSubscriber.lazySubNip65s(selection = ListPubkeys(identifier = identifier))
             itemSetProvider.loadList(identifier = identifier)
             lazyNostrSubscriber.lazySubUnknownProfiles(
-                pubkeys = itemSetProvider.profiles.value.map { it.pubkey }
+                selection = CustomPubkeys(itemSetProvider.profiles.value.map { it.pubkey })
             )
         }.invokeOnCompletion {
             isLoading.value = false

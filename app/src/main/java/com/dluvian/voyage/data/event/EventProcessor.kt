@@ -4,7 +4,7 @@ import android.util.Log
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.toRelevantMetadata
-import com.dluvian.voyage.data.account.IPubkeyProvider
+import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
 import com.dluvian.voyage.data.room.AppDatabase
 import com.dluvian.voyage.data.room.entity.FullProfileEntity
@@ -20,12 +20,12 @@ private const val TAG = "EventProcessor"
 class EventProcessor(
     private val room: AppDatabase,
     private val metadataInMemory: MetadataInMemory,
-    private val pubkeyProvider: IPubkeyProvider,
+    private val myPubkeyProvider: IMyPubkeyProvider,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val listEventProcessor = ListEventProcessor(
         scope = scope,
-        pubkeyProvider = pubkeyProvider,
+        myPubkeyProvider = myPubkeyProvider,
         room = room
     )
 
@@ -118,7 +118,7 @@ class EventProcessor(
         if (sets.isEmpty()) return
 
         val myNewestSets = filterNewestSets(sets = sets)
-            .filter { it.myPubkey == pubkeyProvider.getPubkeyHex() }
+            .filter { it.myPubkey == myPubkeyProvider.getPubkeyHex() }
         if (myNewestSets.isEmpty()) return
 
         scope.launch {
@@ -133,7 +133,7 @@ class EventProcessor(
         if (sets.isEmpty()) return
 
         val myNewestSets = filterNewestSets(sets = sets)
-            .filter { it.myPubkey == pubkeyProvider.getPubkeyHex() }
+            .filter { it.myPubkey == myPubkeyProvider.getPubkeyHex() }
         if (myNewestSets.isEmpty()) return
 
         scope.launch {
@@ -171,7 +171,7 @@ class EventProcessor(
             if (ex != null) Log.w(TAG, "Failed to process profile ${entities.size}", ex)
         }
 
-        val myPubkey = pubkeyProvider.getPubkeyHex()
+        val myPubkey = myPubkeyProvider.getPubkeyHex()
         val myProfile = uniqueProfiles.find { it.pubkey == myPubkey } ?: return
         val myProfileEntity = FullProfileEntity.from(profile = myProfile)
 

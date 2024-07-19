@@ -2,9 +2,9 @@ package com.dluvian.voyage.data.room.dao
 
 import androidx.room.Dao
 import androidx.room.Query
+import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.nostr.Nip65Relay
 import com.dluvian.voyage.data.nostr.RelayUrl
-import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.room.entity.Nip65Entity
 import kotlinx.coroutines.flow.Flow
 
@@ -53,4 +53,11 @@ interface Nip65Dao {
                 "LIMIT :limit"
     )
     suspend fun getPopularRelays(limit: Int): List<RelayUrl>
+
+    @Query(
+        "SELECT DISTINCT pubkey " +
+                "FROM nip65 " +
+                "WHERE pubkey IN (:pubkeys) "
+    )
+    suspend fun filterKnownPubkeys(pubkeys: List<PubkeyHex>): List<PubkeyHex>
 }

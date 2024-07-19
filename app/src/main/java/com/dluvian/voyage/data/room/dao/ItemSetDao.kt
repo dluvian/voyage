@@ -67,4 +67,12 @@ interface ItemSetDao {
 
     @Query("SELECT DISTINCT pubkey FROM profileSetItem")
     fun getAllPubkeysFlow(): Flow<List<PubkeyHex>>
+
+    @Query(
+        "SELECT pubkey " +
+                "FROM profileSetItem " +
+                "WHERE identifier = :identifier " +
+                "AND pubkey NOT IN (SELECT pubkey FROM nip65)"
+    )
+    suspend fun getPubkeysWithMissingNip65(identifier: String): List<PubkeyHex>
 }

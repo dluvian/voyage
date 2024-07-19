@@ -6,7 +6,7 @@ import com.dluvian.voyage.core.FEED_RESUB_SPAN_THRESHOLD_SECS
 import com.dluvian.voyage.core.MAX_KEYS
 import com.dluvian.voyage.core.RESUB_TIMEOUT
 import com.dluvian.voyage.core.textNoteAndRepostKinds
-import com.dluvian.voyage.data.account.IPubkeyProvider
+import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.model.BookmarksFeedSetting
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class NostrSubscriber(
     topicProvider: TopicProvider,
-    pubkeyProvider: IPubkeyProvider,
+    myPubkeyProvider: IMyPubkeyProvider,
     val subCreator: SubscriptionCreator,
     private val relayProvider: RelayProvider,
     private val webOfTrustProvider: WebOfTrustProvider,
@@ -45,7 +45,7 @@ class NostrSubscriber(
         scope = scope,
         relayProvider = relayProvider,
         topicProvider = topicProvider,
-        pubkeyProvider = pubkeyProvider,
+        myPubkeyProvider = myPubkeyProvider,
         bookmarkDao = room.bookmarkDao(),
     )
 

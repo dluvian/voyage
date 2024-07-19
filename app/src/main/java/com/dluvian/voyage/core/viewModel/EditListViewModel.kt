@@ -18,6 +18,7 @@ import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.normalizeTopic
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.interactor.ItemSetEditor
+import com.dluvian.voyage.data.model.CustomPubkeys
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.ItemSetProvider
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
@@ -63,9 +64,9 @@ class EditListViewModel(
 
         viewModelScope.launchIO {
             itemSetProvider.loadList(identifier = identifier)
-            lazyNostrSubscriber.lazySubUnknownProfiles(
-                pubkeys = itemSetProvider.profiles.value.map { it.pubkey }
-            )
+
+            val pubkeys = itemSetProvider.profiles.value.map { it.pubkey }
+            lazyNostrSubscriber.lazySubUnknownProfiles(selection = CustomPubkeys(pubkeys = pubkeys))
         }.invokeOnCompletion {
             title.value = itemSetProvider.title.value
             profiles.value = itemSetProvider.profiles.value

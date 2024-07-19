@@ -2,10 +2,6 @@ package com.dluvian.voyage.data.provider
 
 import android.util.Log
 import androidx.compose.runtime.State
-import com.dluvian.voyage.data.nostr.Nip65Relay
-import com.dluvian.voyage.data.nostr.NostrClient
-import com.dluvian.voyage.data.nostr.RelayUrl
-import com.dluvian.voyage.data.nostr.removeTrailingSlashes
 import com.dluvian.voyage.core.MAX_KEYS
 import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.MAX_POPULAR_RELAYS
@@ -22,6 +18,11 @@ import com.dluvian.voyage.data.model.CustomPubkeys
 import com.dluvian.voyage.data.model.FriendPubkeys
 import com.dluvian.voyage.data.model.ListPubkeys
 import com.dluvian.voyage.data.model.PubkeySelection
+import com.dluvian.voyage.data.model.SingularPubkey
+import com.dluvian.voyage.data.nostr.Nip65Relay
+import com.dluvian.voyage.data.nostr.NostrClient
+import com.dluvian.voyage.data.nostr.RelayUrl
+import com.dluvian.voyage.data.nostr.removeTrailingSlashes
 import com.dluvian.voyage.data.room.dao.EventRelayDao
 import com.dluvian.voyage.data.room.dao.Nip65Dao
 import kotlinx.coroutines.CoroutineScope
@@ -39,8 +40,7 @@ class RelayProvider(
     private val eventRelayDao: EventRelayDao,
     private val nostrClient: NostrClient,
     private val connectionStatuses: State<Map<RelayUrl, ConnectionStatus>>,
-    private val friendProvider: FriendProvider,
-    private val itemSetProvider: ItemSetProvider,
+    private val pubkeyProvider: PubkeyProvider,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val myNip65 =
@@ -87,7 +87,7 @@ class RelayProvider(
         return relays.toList()
     }
 
-    suspend fun getObserveRelays(
+    private suspend fun getObserveRelays(
         pubkey: PubkeyHex,
         limit: Int = MAX_RELAYS,
         includeConnected: Boolean = false
@@ -135,7 +135,12 @@ class RelayProvider(
 
     suspend fun getObserveRelays(selection: PubkeySelection): Map<RelayUrl, Set<PubkeyHex>> {
         when (selection) {
-            is FriendPubkeys, is ListPubkeys -> {}
+            FriendPubkeys, is ListPubkeys -> {}
+            is SingularPubkey -> {
+                return getObserveRelays(pubkey = selection.pubkey)
+                    .associateWith { setOf(selection.pubkey) }
+            }
+
             is CustomPubkeys -> {
                 val pubkeys = selection.pubkeys
                 if (pubkeys.isEmpty()) {
@@ -156,6 +161,8 @@ class RelayProvider(
                 authors = selection.pubkeys.takeRandom(MAX_KEYS_SQL)
             )
 
+            is SingularPubkey -> eventRelayDao.getEventRelayAuthorView(authors = selection.asList())
+
             is ListPubkeys -> eventRelayDao.getEventRelayAuthorViewFromList(
                 identifier = selection.identifier
             )
@@ -168,7 +175,7 @@ class RelayProvider(
             is CustomPubkeys -> nip65Dao.getWriteRelays(
                 pubkeys = selection.pubkeys.takeRandom(MAX_KEYS_SQL)
             )
-
+            is SingularPubkey -> nip65Dao.getWriteRelays(pubkeys = selection.asList())
             is ListPubkeys -> nip65Dao.getWriteRelaysFromList(identifier = selection.identifier)
         }
 
@@ -211,11 +218,7 @@ class RelayProvider(
             }
 
         // Cover rest with already selected relays and read relays for initial start up
-        val restPubkeys = when (selection) {
-            is FriendPubkeys -> friendProvider.getFriendPubkeys()
-            is CustomPubkeys -> selection.pubkeys
-            is ListPubkeys -> itemSetProvider.getPubkeysFromList(identifier = selection.identifier)
-        } - pubkeyCache
+        val restPubkeys = pubkeyProvider.getPubkeys(selection = selection) - pubkeyCache
         if (restPubkeys.isNotEmpty()) {
             Log.w(TAG, "Default to read relays for ${restPubkeys.size} pubkeys")
             getReadRelays()
@@ -238,6 +241,12 @@ class RelayProvider(
     suspend fun getNewestCreatedAt() = nip65Dao.getNewestCreatedAt()
 
     suspend fun getCreatedAt(pubkey: PubkeyHex) = nip65Dao.getNewestCreatedAt(pubkey = pubkey)
+
+    suspend fun filterMissingPubkeys(pubkeys: List<PubkeyHex>): List<PubkeyHex> {
+        if (pubkeys.isEmpty()) return emptyList()
+
+        return pubkeys - nip65Dao.filterKnownPubkeys(pubkeys = pubkeys).toSet()
+    }
 
     fun getMyNip65(): List<Nip65Relay> {
         return myNip65.value.map { it.nip65Relay }

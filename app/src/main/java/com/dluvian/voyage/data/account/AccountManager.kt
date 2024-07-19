@@ -23,7 +23,7 @@ class AccountManager(
     val mnemonicSigner: MnemonicSigner,
     private val externalSigner: ExternalSigner,
     private val accountDao: AccountDao,
-) : IPubkeyProvider {
+) : IMyPubkeyProvider {
     private val scope = CoroutineScope(Dispatchers.Main)
 
     val accountType: MutableState<AccountType>

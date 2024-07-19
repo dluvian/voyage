@@ -1,7 +1,6 @@
 package com.dluvian.voyage.data.provider
 
 import android.util.Log
-import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.EventIdHex
@@ -12,8 +11,10 @@ import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.LeveledReplyUI
 import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.data.event.OldestUsedEvent
+import com.dluvian.voyage.data.model.SingularPubkey
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.nostr.NostrSubscriber
+import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.data.room.AppDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -46,7 +47,9 @@ class ThreadProvider(
             }
             val author = nevent.author()?.toHex() ?: room.postDao().getAuthor(id = id)
             if (author != null) {
-                lazyNostrSubscriber.lazySubUnknownProfiles(pubkeys = listOf(author))
+                lazyNostrSubscriber.lazySubUnknownProfiles(
+                    selection = SingularPubkey(pubkey = author)
+                )
             }
 
             if (isInit) lazyNostrSubscriber.lazySubRepliesAndVotes(parentId = id)

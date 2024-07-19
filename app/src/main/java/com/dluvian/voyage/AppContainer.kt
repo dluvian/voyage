@@ -48,6 +48,7 @@ import com.dluvian.voyage.data.provider.ItemSetProvider
 import com.dluvian.voyage.data.provider.MuteProvider
 import com.dluvian.voyage.data.provider.NameProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
+import com.dluvian.voyage.data.provider.PubkeyProvider
 import com.dluvian.voyage.data.provider.RelayProfileProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.SearchProvider
@@ -96,14 +97,14 @@ class AppContainer(context: Context) {
 
     private val friendProvider = FriendProvider(
         friendDao = roomDb.friendDao(),
-        pubkeyProvider = accountManager,
+        myPubkeyProvider = accountManager,
     )
 
     private val muteProvider = MuteProvider(muteDao = roomDb.muteDao())
 
     val itemSetProvider = ItemSetProvider(
         room = roomDb,
-        pubkeyProvider = accountManager,
+        myPubkeyProvider = accountManager,
         friendProvider = friendProvider,
         muteProvider = muteProvider,
     )
@@ -116,13 +117,17 @@ class AppContainer(context: Context) {
         itemSetProvider = itemSetProvider,
     )
 
+    private val pubkeyProvider = PubkeyProvider(
+        friendProvider = friendProvider,
+        itemSetProvider = itemSetProvider
+    )
+
     val relayProvider = RelayProvider(
         nip65Dao = roomDb.nip65Dao(),
         eventRelayDao = roomDb.eventRelayDao(),
         nostrClient = nostrClient,
         connectionStatuses = connectionStatuses,
-        friendProvider = friendProvider,
-        itemSetProvider = itemSetProvider
+        pubkeyProvider = pubkeyProvider
     )
 
     private val eventCounter = EventCounter()
@@ -134,7 +139,7 @@ class AppContainer(context: Context) {
     )
 
     private val webOfTrustProvider = WebOfTrustProvider(
-        pubkeyProvider = accountManager,
+        myPubkeyProvider = accountManager,
         friendProvider = friendProvider,
         webOfTrustDao = roomDb.webOfTrustDao()
     )
@@ -146,14 +151,16 @@ class AppContainer(context: Context) {
         webOfTrustProvider = webOfTrustProvider,
         friendProvider = friendProvider,
         topicProvider = topicProvider,
-        pubkeyProvider = accountManager,
+        myPubkeyProvider = accountManager,
+        itemSetProvider = itemSetProvider,
+        pubkeyProvider = pubkeyProvider
     )
 
     private val subBatcher = SubBatcher(subCreator = subCreator)
 
     val nostrSubscriber = NostrSubscriber(
         topicProvider = topicProvider,
-        pubkeyProvider = accountManager,
+        myPubkeyProvider = accountManager,
         subCreator = subCreator,
         relayProvider = relayProvider,
         webOfTrustProvider = webOfTrustProvider,
@@ -173,12 +180,12 @@ class AppContainer(context: Context) {
     private val eventValidator = EventValidator(
         syncedFilterCache = syncedFilterCache,
         syncedIdCache = syncedIdCache,
-        pubkeyProvider = accountManager
+        myPubkeyProvider = accountManager
     )
     private val eventProcessor = EventProcessor(
         room = roomDb,
         metadataInMemory = metadataInMemory,
-        pubkeyProvider = accountManager
+        myPubkeyProvider = accountManager
     )
     private val eventQueue = EventQueue(
         eventValidator = eventValidator,
@@ -298,7 +305,7 @@ class AppContainer(context: Context) {
     val profileProvider = ProfileProvider(
         forcedFollowFlow = profileFollower.forcedFollowsFlow,
         forcedMuteFlow = muter.forcedProfileMuteFlow,
-        pubkeyProvider = accountManager,
+        myPubkeyProvider = accountManager,
         metadataInMemory = metadataInMemory,
         room = roomDb,
         friendProvider = friendProvider,

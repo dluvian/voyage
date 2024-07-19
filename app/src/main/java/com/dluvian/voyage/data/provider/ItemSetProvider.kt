@@ -9,7 +9,7 @@ import com.dluvian.voyage.core.firstThenDistinctDebounce
 import com.dluvian.voyage.core.model.ItemSetItem
 import com.dluvian.voyage.core.model.ItemSetProfile
 import com.dluvian.voyage.core.model.ItemSetTopic
-import com.dluvian.voyage.data.account.IPubkeyProvider
+import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.model.ItemSetMeta
 import com.dluvian.voyage.data.room.AppDatabase
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.stateIn
 
 class ItemSetProvider(
     private val room: AppDatabase,
-    private val pubkeyProvider: IPubkeyProvider,
+    private val myPubkeyProvider: IMyPubkeyProvider,
     private val friendProvider: FriendProvider,
     private val muteProvider: MuteProvider,
 ) {
@@ -91,7 +91,7 @@ class ItemSetProvider(
                 forcedFollowState = friendPubkeys.contains(unknownPubkey),
                 forcedMuteState = mutedPubkeys.contains(unknownPubkey),
                 metadata = null,
-                myPubkey = pubkeyProvider.getPubkeyHex(),
+                myPubkey = myPubkeyProvider.getPubkeyHex(),
                 friendProvider = friendProvider,
                 muteProvider = muteProvider,
                 itemSetProvider = this
@@ -112,5 +112,9 @@ class ItemSetProvider(
 
     fun isInAnySet(pubkey: PubkeyHex): Boolean {
         return allPubkeys.value.contains(pubkey)
+    }
+
+    suspend fun getPubkeysWithMissingNip65(identifier: String): List<PubkeyHex> {
+        return room.itemSetDao().getPubkeysWithMissingNip65(identifier = identifier)
     }
 }

@@ -8,7 +8,7 @@ import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.getNormalizedTopics
 import com.dluvian.voyage.core.getTrimmedSubject
 import com.dluvian.voyage.core.takeRandom
-import com.dluvian.voyage.data.account.IPubkeyProvider
+import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.SubId
 import com.dluvian.voyage.data.nostr.getMetadata
@@ -28,7 +28,7 @@ private const val TAG = "EventValidator"
 class EventValidator(
     private val syncedFilterCache: Map<SubId, List<Filter>>,
     private val syncedIdCache: MutableSet<EventId>,
-    private val pubkeyProvider: IPubkeyProvider,
+    private val myPubkeyProvider: IMyPubkeyProvider,
 ) {
 
     fun getValidatedEvent(
@@ -111,18 +111,18 @@ class EventValidator(
             }
 
             is KindEnum.FollowSet -> {
-                if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) return null
+                if (event.author().toHex() != myPubkeyProvider.getPubkeyHex()) return null
                 createValidatedProfileSet(event = event)
             }
 
             is KindEnum.InterestSet -> {
-                if (event.author().toHex() != pubkeyProvider.getPubkeyHex()) return null
+                if (event.author().toHex() != myPubkeyProvider.getPubkeyHex()) return null
                 createValidatedTopicSet(event = event)
             }
 
             is KindEnum.Interests -> {
                 val authorHex = event.author().toHex()
-                if (authorHex != pubkeyProvider.getPubkeyHex()) return null
+                if (authorHex != myPubkeyProvider.getPubkeyHex()) return null
                 ValidatedTopicList(
                     myPubkey = authorHex,
                     topics = event.getNormalizedTopics()
@@ -135,7 +135,7 @@ class EventValidator(
 
             is KindEnum.Bookmarks -> {
                 val authorHex = event.author().toHex()
-                if (authorHex != pubkeyProvider.getPubkeyHex()) return null
+                if (authorHex != myPubkeyProvider.getPubkeyHex()) return null
                 ValidatedBookmarkList(
                     myPubkey = authorHex,
                     postIds = event.eventIds()
@@ -149,7 +149,7 @@ class EventValidator(
 
             is KindEnum.MuteList -> {
                 val authorHex = event.author().toHex()
-                if (authorHex != pubkeyProvider.getPubkeyHex()) return null
+                if (authorHex != myPubkeyProvider.getPubkeyHex()) return null
                 ValidatedMuteList(
                     myPubkey = authorHex,
                     pubkeys = event.publicKeys().map { it.toHex() }

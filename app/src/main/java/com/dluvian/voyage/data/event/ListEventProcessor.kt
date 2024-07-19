@@ -1,7 +1,7 @@
 package com.dluvian.voyage.data.event
 
 import android.util.Log
-import com.dluvian.voyage.data.account.IPubkeyProvider
+import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.room.AppDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -10,7 +10,7 @@ private const val TAG = "ListEventProcessor"
 
 class ListEventProcessor(
     private val scope: CoroutineScope,
-    private val pubkeyProvider: IPubkeyProvider,
+    private val myPubkeyProvider: IMyPubkeyProvider,
     private val room: AppDatabase,
 ) {
     fun processLists(lists: Collection<ValidatedList>) {
@@ -44,7 +44,7 @@ class ListEventProcessor(
 
         val newestLists = filterNewestLists(lists = contactLists)
 
-        val myPubkey = pubkeyProvider.getPubkeyHex()
+        val myPubkey = myPubkeyProvider.getPubkeyHex()
         val myList = newestLists.find { it.pubkey == myPubkey }
         val otherLists = newestLists.let { if (myList != null) it - myList else it }
 
@@ -92,7 +92,7 @@ class ListEventProcessor(
         if (topicLists.isEmpty()) return
 
         val myNewestList = filterNewestLists(lists = topicLists)
-            .firstOrNull { it.myPubkey == pubkeyProvider.getPubkeyHex() } ?: return
+            .firstOrNull { it.myPubkey == myPubkeyProvider.getPubkeyHex() } ?: return
 
         scope.launch {
             Log.d(TAG, "Upsert topic list of ${myNewestList.topics.size} topics")
@@ -104,7 +104,7 @@ class ListEventProcessor(
         if (bookmarkLists.isEmpty()) return
 
         val myNewestList = filterNewestLists(lists = bookmarkLists)
-            .firstOrNull { it.myPubkey == pubkeyProvider.getPubkeyHex() } ?: return
+            .firstOrNull { it.myPubkey == myPubkeyProvider.getPubkeyHex() } ?: return
 
         scope.launch {
             Log.d(TAG, "Upsert bookmark list of ${myNewestList.postIds.size} postIds")
@@ -116,7 +116,7 @@ class ListEventProcessor(
         if (muteLists.isEmpty()) return
 
         val myNewestList = filterNewestLists(lists = muteLists)
-            .firstOrNull { it.myPubkey == pubkeyProvider.getPubkeyHex() } ?: return
+            .firstOrNull { it.myPubkey == myPubkeyProvider.getPubkeyHex() } ?: return
 
         scope.launch {
             Log.d(TAG, "Upsert mute list")
