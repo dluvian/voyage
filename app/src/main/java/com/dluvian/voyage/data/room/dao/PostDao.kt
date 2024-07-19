@@ -35,9 +35,14 @@ interface PostDao {
     }
 
     @Query(
-        "SELECT * FROM SimplePostView WHERE subject IS NOT NULL AND subject LIKE :somewhere " +
+        "SELECT * FROM SimplePostView " +
+                "WHERE subject IS NOT NULL " +
+                "AND subject LIKE :somewhere " +
+                "AND pubkey NOT IN (SELECT mutedItem FROM mute WHERE mutedItem = pubkey AND tag = 'p')" +
                 "UNION " +
-                "SELECT * FROM SimplePostView WHERE content LIKE :somewhere " +
+                "SELECT * FROM SimplePostView " +
+                "WHERE content LIKE :somewhere " +
+                "AND pubkey NOT IN (SELECT mutedItem FROM mute WHERE mutedItem = pubkey AND tag = 'p')" +
                 "LIMIT :limit"
     )
     suspend fun internalGetPostsWithContentLike(
