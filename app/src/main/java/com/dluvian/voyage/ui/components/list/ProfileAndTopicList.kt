@@ -49,7 +49,7 @@ fun ProfileAndTopicList(
             1 -> FollowOrMuteList(
                 rows = topics,
                 isRefreshing = isRefreshing,
-                state = profileState,
+                state = topicState,
                 onRefresh = onRefresh
             )
 
