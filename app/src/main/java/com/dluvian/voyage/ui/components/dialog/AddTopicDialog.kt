@@ -30,6 +30,7 @@ import com.dluvian.voyage.ui.theme.sizing
 @Composable
 fun AddTopicDialog(
     topicSuggestions: List<Topic>,
+    showNext: Boolean,
     onAdd: (Topic) -> Unit,
     onDismiss: Fn,
     onUpdate: OnUpdate
@@ -51,15 +52,37 @@ fun AddTopicDialog(
                 input = input,
                 topicSuggestions = topicSuggestions,
                 focusRequester = focusRequester,
-                onAdd = onAdd,
+                onAdd = { topic ->
+                    onAdd(topic)
+                    onDismiss()
+                },
                 onUpdate = onUpdate
             )
         },
-        onDismiss = onDismiss,
+        onDismiss = {
+            onDismiss()
+            input.value = TextFieldValue("")
+        },
         confirmButton = {
             if (showConfirmationButton) {
-                TextButton(onClick = { onAdd(cleanInput) }) {
+                TextButton(
+                    onClick = {
+                        onAdd(cleanInput)
+                        onDismiss()
+                    }
+                ) {
                     Text(text = stringResource(id = R.string.add))
+                }
+            }
+        },
+        nextButton = {
+            if (showNext && showConfirmationButton) {
+                TextButton(
+                    onClick = {
+                        onAdd(cleanInput)
+                        input.value = TextFieldValue("")
+                    }) {
+                    Text(text = stringResource(id = R.string.next))
                 }
             }
         }

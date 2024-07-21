@@ -79,10 +79,8 @@ private fun ScreenContent(
     if (showTopicDialog.value) {
         AddTopicDialog(
             topicSuggestions = topicSuggestions,
-            onAdd = {
-                onUpdate(EditListViewAddTopic(topic = it))
-                showTopicDialog.value = false
-            },
+            showNext = true,
+            onAdd = { onUpdate(EditListViewAddTopic(topic = it)) },
             onDismiss = { showTopicDialog.value = false },
             onUpdate = onUpdate
         )

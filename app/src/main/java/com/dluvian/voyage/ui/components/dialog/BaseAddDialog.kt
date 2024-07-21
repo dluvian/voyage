@@ -1,5 +1,6 @@
 package com.dluvian.voyage.ui.components.dialog
 
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -18,6 +19,7 @@ fun BaseAddDialog(
     main: ComposableContent,
     onDismiss: Fn,
     confirmButton: ComposableContent = {},
+    nextButton: ComposableContent = {}
 ) {
     LaunchedEffect(key1 = Unit) { focusRequester.requestFocus() }
 
@@ -25,7 +27,12 @@ fun BaseAddDialog(
         onDismissRequest = onDismiss,
         title = { Text(text = header) },
         text = main,
-        confirmButton = confirmButton,
+        confirmButton = {
+            Row {
+                nextButton()
+                confirmButton()
+            }
+        },
         dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text(text = stringResource(id = R.string.cancel))

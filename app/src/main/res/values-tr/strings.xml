@@ -199,4 +199,5 @@
     <string name="mute_list">Listeyi sessize al</string>
     <string name="list_is_empty">Liste boş</string>
     <string name="in_list">"Listede "</string>
+    <string name="next">Sonraki</string>
 </resources>

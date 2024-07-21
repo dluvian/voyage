@@ -26,6 +26,7 @@ import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.SendCrossPost
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.core.canAddAnotherTopic
 import com.dluvian.voyage.core.viewModel.CreateCrossPostViewModel
 import com.dluvian.voyage.ui.components.TopicSelectionColumn
 import com.dluvian.voyage.ui.components.dialog.AddTopicDialog
@@ -72,10 +73,8 @@ private fun CreateCrossPostViewContent(
     val showTopicSelection = remember { mutableStateOf(false) }
     if (showTopicSelection.value) AddTopicDialog(
         topicSuggestions = topicSuggestions,
-        onAdd = { topic ->
-            selectedTopics.value += topic
-            showTopicSelection.value = false
-        },
+        showNext = canAddAnotherTopic(selectedItemLength = selectedTopics.value.size),
+        onAdd = { topic -> selectedTopics.value += topic },
         onDismiss = { showTopicSelection.value = false },
         onUpdate = onUpdate
     )
