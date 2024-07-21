@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.material3.SnackbarHostState
 import com.dluvian.voyage.R
+import com.dluvian.voyage.core.LIST_CHANGE_DEBOUNCE
 import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.MuteEvent
 import com.dluvian.voyage.core.MuteProfile
@@ -23,6 +24,7 @@ import com.dluvian.voyage.data.room.dao.tx.MuteUpsertDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -88,6 +90,8 @@ class Muter(
         if (job?.isActive == true) return
 
         job = scope.launchIO {
+            delay(LIST_CHANGE_DEBOUNCE)
+
             val toHandleProfiles = _forcedProfileMutes.value.toMap()
             val toHandleTopics = forcedTopicMuteFlow.value.toMap()
 
