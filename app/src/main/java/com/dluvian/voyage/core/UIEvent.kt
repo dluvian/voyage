@@ -116,10 +116,10 @@ data class ClickNeutralizeVote(
 
 
 sealed class MuteEvent : UIEvent()
-data class MuteProfile(val pubkey: PubkeyHex) : MuteEvent()
-data class UnmuteProfile(val pubkey: PubkeyHex) : MuteEvent()
-data class MuteTopic(val topic: Topic) : MuteEvent()
-data class UnmuteTopic(val topic: Topic) : MuteEvent()
+data class MuteProfile(val pubkey: PubkeyHex, val debounce: Boolean = true) : MuteEvent()
+data class UnmuteProfile(val pubkey: PubkeyHex, val debounce: Boolean = true) : MuteEvent()
+data class MuteTopic(val topic: Topic, val debounce: Boolean = true) : MuteEvent()
+data class UnmuteTopic(val topic: Topic, val debounce: Boolean = true) : MuteEvent()
 
 
 sealed class TopicEvent(open val topic: Topic) : UIEvent()

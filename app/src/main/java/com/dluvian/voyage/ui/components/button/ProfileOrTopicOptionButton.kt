@@ -97,8 +97,19 @@ private fun ActionMenu(
                 text = stringResource(id = R.string.unmute),
                 onClick = {
                     when (item) {
-                        is ItemSetProfile -> onUpdate(UnmuteProfile(pubkey = item.pubkey))
-                        is ItemSetTopic -> onUpdate(UnmuteTopic(topic = item.topic))
+                        is ItemSetProfile -> onUpdate(
+                            UnmuteProfile(
+                                pubkey = item.pubkey,
+                                debounce = false
+                            )
+                        )
+
+                        is ItemSetTopic -> onUpdate(
+                            UnmuteTopic(
+                                topic = item.topic,
+                                debounce = false
+                            )
+                        )
                     }
                     onDismiss()
                 })
@@ -107,8 +118,14 @@ private fun ActionMenu(
                 text = stringResource(id = R.string.mute),
                 onClick = {
                     when (item) {
-                        is ItemSetProfile -> onUpdate(MuteProfile(pubkey = item.pubkey))
-                        is ItemSetTopic -> onUpdate(MuteTopic(topic = item.topic))
+                        is ItemSetProfile -> onUpdate(
+                            MuteProfile(
+                                pubkey = item.pubkey,
+                                debounce = false
+                            )
+                        )
+
+                        is ItemSetTopic -> onUpdate(MuteTopic(topic = item.topic, debounce = false))
                     }
                     onDismiss()
                 })

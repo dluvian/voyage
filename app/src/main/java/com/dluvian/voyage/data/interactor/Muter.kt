@@ -52,21 +52,40 @@ class Muter(
 
     fun handle(action: MuteEvent) {
         when (action) {
-            is MuteProfile -> handleProfileAction(pubkey = action.pubkey, isMuted = true)
-            is UnmuteProfile -> handleProfileAction(pubkey = action.pubkey, isMuted = false)
-            is MuteTopic -> handleTopicAction(topic = action.topic, isMuted = true)
-            is UnmuteTopic -> handleTopicAction(topic = action.topic, isMuted = false)
+            is MuteProfile -> handleProfileAction(
+                pubkey = action.pubkey,
+                isMuted = true,
+                debounce = action.debounce
+            )
+
+            is UnmuteProfile -> handleProfileAction(
+                pubkey = action.pubkey,
+                isMuted = false,
+                debounce = action.debounce
+            )
+
+            is MuteTopic -> handleTopicAction(
+                topic = action.topic,
+                isMuted = true,
+                debounce = action.debounce
+            )
+
+            is UnmuteTopic -> handleTopicAction(
+                topic = action.topic,
+                isMuted = false,
+                debounce = action.debounce
+            )
         }
     }
 
-    private fun handleProfileAction(pubkey: PubkeyHex, isMuted: Boolean) {
+    private fun handleProfileAction(pubkey: PubkeyHex, isMuted: Boolean, debounce: Boolean) {
         updateForcedProfileStates(pubkey = pubkey, isMuted = isMuted)
-        handleMutes()
+        handleMutes(debounce = debounce)
     }
 
-    private fun handleTopicAction(topic: Topic, isMuted: Boolean) {
+    private fun handleTopicAction(topic: Topic, isMuted: Boolean, debounce: Boolean) {
         updateForcedTopicStates(topic = topic, isMuted = isMuted)
-        handleMutes()
+        handleMutes(debounce = debounce)
     }
 
     private fun updateForcedProfileStates(pubkey: PubkeyHex, isMuted: Boolean) {
@@ -86,11 +105,11 @@ class Muter(
     }
 
     private var job: Job? = null
-    private fun handleMutes() {
+    private fun handleMutes(debounce: Boolean) {
         if (job?.isActive == true) return
 
         job = scope.launchIO {
-            delay(LIST_CHANGE_DEBOUNCE)
+            if (debounce) delay(LIST_CHANGE_DEBOUNCE)
 
             val toHandleProfiles = _forcedProfileMutes.value.toMap()
             val toHandleTopics = forcedTopicMuteFlow.value.toMap()
@@ -135,7 +154,7 @@ class Muter(
                     .minus(beforeTopics)
                     .forEach { updateForcedTopicStates(topic = it, isMuted = false) }
                 val msg = context.getString(
-                    R.string.bookmarking_more_than_n_is_not_allowed,
+                    R.string.muting_more_than_n_is_not_allowed,
                     MAX_KEYS_SQL
                 )
                 snackbar.showToast(scope = scope, msg = msg)
