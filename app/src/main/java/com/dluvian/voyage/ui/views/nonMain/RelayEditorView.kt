@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,7 +26,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -36,8 +36,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import com.dluvian.voyage.data.nostr.Nip65Relay
-import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.AddRelay
 import com.dluvian.voyage.core.GoBack
@@ -52,6 +50,9 @@ import com.dluvian.voyage.core.model.Connected
 import com.dluvian.voyage.core.model.ConnectionStatus
 import com.dluvian.voyage.core.model.Waiting
 import com.dluvian.voyage.core.viewModel.RelayEditorViewModel
+import com.dluvian.voyage.data.model.LocalRelaySetting
+import com.dluvian.voyage.data.nostr.Nip65Relay
+import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.ui.components.ConnectionDot
 import com.dluvian.voyage.ui.components.NamedCheckbox
 import com.dluvian.voyage.ui.components.scaffold.SaveableScaffold
@@ -64,12 +65,6 @@ import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun RelayEditorView(vm: RelayEditorViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
-    val myRelays by vm.myRelays
-    val popularRelays by vm.popularRelays
-    val addIsEnabled by vm.addIsEnabled
-    val isSaving by vm.isSaving
-    val connectionStatuses by vm.connectionStatuses
-    val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
     LaunchedEffect(key1 = Unit) {
@@ -78,7 +73,7 @@ fun RelayEditorView(vm: RelayEditorViewModel, snackbar: SnackbarHostState, onUpd
 
     SaveableScaffold(
         showSaveButton = true,
-        isSaving = isSaving,
+        isSaving = vm.isSaving.value,
         snackbar = snackbar,
         title = stringResource(id = R.string.relays),
         onSave = {
@@ -92,16 +87,18 @@ fun RelayEditorView(vm: RelayEditorViewModel, snackbar: SnackbarHostState, onUpd
         onUpdate = onUpdate
     ) {
         RelayEditorViewContent(
-            myRelays = myRelays,
-            popularRelays = popularRelays,
-            connectionStatuses = connectionStatuses,
-            addIsEnabled = addIsEnabled,
+            myRelays = vm.myRelays.value,
+            popularRelays = vm.popularRelays.value,
+            connectionStatuses = vm.connectionStatuses.value,
+            addIsEnabled = vm.addIsEnabled.value,
+            localRelaySetting = vm.localRelaySetting.value,
             state = vm.lazyListState,
-            scope = scope,
+            scope = rememberCoroutineScope(),
             onUpdate = onUpdate
         )
     }
 }
+
 
 @Composable
 private fun RelayEditorViewContent(
@@ -109,6 +106,7 @@ private fun RelayEditorViewContent(
     popularRelays: List<RelayUrl>,
     connectionStatuses: Map<RelayUrl, ConnectionStatus>,
     addIsEnabled: Boolean,
+    localRelaySetting: LocalRelaySetting,
     state: LazyListState,
     scope: CoroutineScope,
     onUpdate: OnUpdate,
@@ -135,6 +133,24 @@ private fun RelayEditorViewContent(
         if (addIsEnabled) item {
             AddRelayRow(scope = scope, onUpdate = onUpdate)
             Spacer(modifier = Modifier.height(spacing.xxl))
+        }
+
+        item {
+            SectionHeader(header = stringResource(id = R.string.local_relay))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(
+                    checked = localRelaySetting.isEnabled(),
+                    onCheckedChange = { TODO() },
+                )
+                TextField(
+                    value = "",
+                    onValueChange = {},
+                    enabled = localRelaySetting.isEnabled(),
+                    prefix = { Text("ws://localhost:") })
+            }
         }
 
         addSection(

@@ -206,4 +206,5 @@
     <string name="list_is_empty">List is empty</string>
     <string name="in_list">In list</string>
     <string name="next">Next</string>
+    <string name="local_relay">Local relay</string>
 </resources>
