@@ -5,9 +5,9 @@ import androidx.room.Query
 
 @Dao
 interface ContentSetDao {
-    @Query("SELECT MAX(createdAt) FROM topicSet")
+    @Query("SELECT MAX(createdAt) FROM profileSet")
     suspend fun getProfileSetMaxCreatedAt(): Long?
 
-    @Query("SELECT MAX(createdAt) FROM profileSet")
+    @Query("SELECT MAX(createdAt) FROM topicSet")
     suspend fun getTopicSetMaxCreatedAt(): Long?
 }
