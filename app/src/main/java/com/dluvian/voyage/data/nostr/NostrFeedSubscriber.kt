@@ -83,6 +83,7 @@ class NostrFeedSubscriber(
         val peopleJob = scope.launch {
             relayProvider
                 .getObserveRelays(selection = pubkeySelection)
+                .filter { (_, pubkeys) -> pubkeys.isNotEmpty() }
                 .forEach { (relayUrl, pubkeys) ->
                     val publicKeys = pubkeys.takeRandom(MAX_KEYS).map { PublicKey.fromHex(it) }
                     val pubkeysNoteFilter = Filter()
