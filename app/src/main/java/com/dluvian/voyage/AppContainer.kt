@@ -122,12 +122,15 @@ class AppContainer(context: Context) {
         itemSetProvider = itemSetProvider
     )
 
+    val relayPreferences = RelayPreferences(context = context)
+
     val relayProvider = RelayProvider(
         nip65Dao = roomDb.nip65Dao(),
         eventRelayDao = roomDb.eventRelayDao(),
         nostrClient = nostrClient,
         connectionStatuses = connectionStatuses,
-        pubkeyProvider = pubkeyProvider
+        pubkeyProvider = pubkeyProvider,
+        relayPreferences = relayPreferences,
     )
 
     private val eventCounter = EventCounter()
@@ -193,7 +196,6 @@ class AppContainer(context: Context) {
     )
     private val eventMaker = EventMaker(accountManager = accountManager)
 
-    val relayPreferences = RelayPreferences(context = context)
     val databasePreferences = DatabasePreferences(context = context)
     val databaseStatProvider = DatabaseStatProvider(countDao = roomDb.countDao())
 

@@ -5,7 +5,8 @@ import android.content.Context
 private const val SEND_AUTH = "send_auth"
 private const val LOCAL_RELAY_PORT = "local_relay_port"
 
-private const val DEFAULT_LOCAL_RELAY_PORT = 8888
+// https://github.com/greenart7c3/Citrine/blob/main/app/src/main/java/com/greenart7c3/citrine/server/Settings.kt#L11
+private const val DEFAULT_LOCAL_RELAY_PORT = 4869
 
 class RelayPreferences(context: Context) {
     private val preferences = context.getSharedPreferences(DATABASE_FILE, Context.MODE_PRIVATE)

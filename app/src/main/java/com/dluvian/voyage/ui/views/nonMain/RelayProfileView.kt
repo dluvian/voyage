@@ -20,7 +20,6 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import com.dluvian.voyage.data.nostr.WEBSOCKET_PREFIX
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.copyAndToast
@@ -45,7 +44,7 @@ fun RelayProfileView(vm: RelayProfileViewModel, snackbar: SnackbarHostState, onU
         onUpdate = onUpdate
     ) {
         RelayProfileViewContent(
-            url = "$WEBSOCKET_PREFIX$header",
+            url = header,
             nrelay = nrelay,
             profile = profile,
             postsInDb = postsInDb,

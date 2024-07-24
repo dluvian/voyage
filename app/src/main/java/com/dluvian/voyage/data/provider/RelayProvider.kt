@@ -9,6 +9,8 @@ import com.dluvian.voyage.core.MAX_RELAYS
 import com.dluvian.voyage.core.MAX_RELAYS_PER_PUBKEY
 import com.dluvian.voyage.core.MAX_RELAY_CONNECTIONS
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.core.addLocalRelay
+import com.dluvian.voyage.core.createLocalRelayUrl
 import com.dluvian.voyage.core.model.ConnectionStatus
 import com.dluvian.voyage.core.model.Disconnected
 import com.dluvian.voyage.core.model.Spam
@@ -23,6 +25,7 @@ import com.dluvian.voyage.data.nostr.Nip65Relay
 import com.dluvian.voyage.data.nostr.NostrClient
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.removeTrailingSlashes
+import com.dluvian.voyage.data.preferences.RelayPreferences
 import com.dluvian.voyage.data.room.dao.EventRelayDao
 import com.dluvian.voyage.data.room.dao.Nip65Dao
 import kotlinx.coroutines.CoroutineScope
@@ -41,6 +44,7 @@ class RelayProvider(
     private val nostrClient: NostrClient,
     private val connectionStatuses: State<Map<RelayUrl, ConnectionStatus>>,
     private val pubkeyProvider: PubkeyProvider,
+    private val relayPreferences: RelayPreferences,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val myNip65 =
@@ -55,6 +59,8 @@ class RelayProvider(
             .let {
                 if (includeConnected) (it + nostrClient.getAllConnectedUrls()).distinct() else it
             }
+            .addLocalRelay(relayPreferences.getLocalRelayPort())
+            .distinct()
     }
 
     fun getWriteRelays(limit: Int = MAX_RELAYS): List<RelayUrl> {
@@ -63,6 +69,8 @@ class RelayProvider(
             .map { it.nip65Relay.url }
             .ifEmpty { defaultRelays }
             .preferConnected(limit)
+            .addLocalRelay(relayPreferences.getLocalRelayPort())
+            .distinct()
     }
 
     fun getPublishRelays(addConnected: Boolean = true): List<RelayUrl> {
@@ -229,6 +237,11 @@ class RelayProvider(
                     val maxKeys = MAX_KEYS - present.size
                     result.putOrAdd(relay, restPubkeys.takeRandom(maxKeys))
                 }
+        }
+
+        val localRelay = createLocalRelayUrl(port = relayPreferences.getLocalRelayPort())
+        if (localRelay != null) {
+            result.putOrAdd(localRelay, result.values.flatten().toSet())
         }
 
         Log.i(TAG, "Selected ${result.size} autopilot relays ${result.keys}")

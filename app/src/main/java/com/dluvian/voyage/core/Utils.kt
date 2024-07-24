@@ -24,6 +24,7 @@ import androidx.compose.ui.text.AnnotatedString
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.data.model.RelevantMetadata
+import com.dluvian.voyage.data.nostr.LOCAL_WEBSOCKET
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.getSubject
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
@@ -399,4 +400,13 @@ fun getListTabHeaders(numOfProfiles: Int, numOfTopics: Int): List<String> {
 @Composable
 fun canAddAnotherTopic(selectedItemLength: Int, maxItems: Int = MAX_TOPICS): Boolean {
     return remember(selectedItemLength) { maxItems - selectedItemLength > 1 }
+}
+
+fun createLocalRelayUrl(port: Int?): String? {
+    return if (port != null) "$LOCAL_WEBSOCKET$port" else null
+}
+
+fun Collection<RelayUrl>.addLocalRelay(port: Int?): List<RelayUrl> {
+    val local = createLocalRelayUrl(port = port)
+    return if (local != null) this + local else this.toList()
 }

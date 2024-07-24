@@ -7,6 +7,7 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.core.addLocalRelay
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.BadConnection
 import com.dluvian.voyage.core.model.Connected
@@ -34,7 +35,7 @@ class NostrService(
     private val filterCache: MutableMap<SubId, List<Filter>>,
     private val relayPreferences: RelayPreferences,
     private val connectionStatuses: MutableState<Map<RelayUrl, ConnectionStatus>>,
-    private val eventCounter: EventCounter
+    private val eventCounter: EventCounter,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -105,7 +106,8 @@ class NostrService(
     fun initialize(initRelayUrls: Collection<RelayUrl>) {
         nostrClient.setListener(listener)
         Log.i(TAG, "Add ${initRelayUrls.size} relays: $initRelayUrls")
-        nostrClient.addRelays(initRelayUrls)
+        nostrClient.addRelays(initRelayUrls.addLocalRelay(relayPreferences.getLocalRelayPort()))
+
         initRelayUrls.forEach {
             addConnectionStatus(relayUrl = it, status = Waiting)
         }

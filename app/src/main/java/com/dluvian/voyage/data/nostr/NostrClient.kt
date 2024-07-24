@@ -184,7 +184,6 @@ class NostrClient {
 
     fun addRelay(relayUrl: RelayUrl) {
         if (sockets.containsKey(relayUrl)) return
-        if (!relayUrl.startsWith(WEBSOCKET_PREFIX)) return
 
         Log.i(TAG, "Add relay $relayUrl")
         runCatching {
