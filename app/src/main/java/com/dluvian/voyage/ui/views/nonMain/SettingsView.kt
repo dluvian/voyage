@@ -9,21 +9,25 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.LoadSeed
@@ -33,6 +37,7 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.RequestExternalAccount
 import com.dluvian.voyage.core.SendAuth
+import com.dluvian.voyage.core.UpdateLocalRelayPort
 import com.dluvian.voyage.core.UpdateRootPostThreshold
 import com.dluvian.voyage.core.UseDefaultAccount
 import com.dluvian.voyage.core.model.AccountType
@@ -40,6 +45,7 @@ import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
 import com.dluvian.voyage.core.toShortenedNpub
 import com.dluvian.voyage.core.viewModel.SettingsViewModel
+import com.dluvian.voyage.data.nostr.LOCAL_WEBSOCKET
 import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.ui.components.bottomSheet.SeedBottomSheet
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
@@ -47,6 +53,7 @@ import com.dluvian.voyage.ui.components.row.ClickableRow
 import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.ui.theme.AccountIcon
 import com.dluvian.voyage.ui.theme.spacing
+import kotlin.math.abs
 
 @Composable
 fun SettingsView(vm: SettingsViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
@@ -61,27 +68,26 @@ fun SettingsView(vm: SettingsViewModel, snackbar: SnackbarHostState, onUpdate: O
 
 @Composable
 private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: OnUpdate) {
-    val accountType by vm.accountType
-    val seed by vm.seed
-    val isLoadingAccount by vm.isLoadingAccount
-    val rootPostThreshold by vm.rootPostThreshold
-    val sendAuth by vm.sendAuth
-    val currentRootPostCount by vm.currentRootPostCount.collectAsState()
-
     LazyColumn {
-        if (isLoadingAccount) item { FullLinearProgressIndicator() }
+        if (vm.isLoadingAccount.value) item { FullLinearProgressIndicator() }
         item {
             AccountSection(
-                accountType = accountType,
-                seed = seed,
+                accountType = vm.accountType.value,
+                seed = vm.seed.value,
                 onUpdate = onUpdate
             )
         }
-        item { RelaySection(sendAuth = sendAuth, onUpdate = onUpdate) }
+        item {
+            RelaySection(
+                localRelayPort = vm.localRelayPort.value,
+                sendAuth = vm.sendAuth.value,
+                onUpdate = onUpdate
+            )
+        }
         item {
             DatabaseSection(
-                rootPostThreshold = rootPostThreshold,
-                currentRootPostCount = currentRootPostCount,
+                rootPostThreshold = vm.rootPostThreshold.intValue,
+                currentRootPostCount = vm.currentRootPostCount.collectAsState().value,
                 onUpdate = onUpdate
             )
         }
@@ -128,8 +134,44 @@ private fun AccountSection(
 }
 
 @Composable
-private fun RelaySection(sendAuth: Boolean, onUpdate: OnUpdate) {
+private fun RelaySection(localRelayPort: Int?, sendAuth: Boolean, onUpdate: OnUpdate) {
+    val newPort = remember(localRelayPort) { mutableStateOf(localRelayPort?.toString().orEmpty()) }
+    LaunchedEffect(key1 = newPort.value) {
+        val parsed = runCatching { newPort.value.toInt() }.getOrNull()
+        if (parsed != localRelayPort) onUpdate(UpdateLocalRelayPort(port = parsed))
+    }
+    val showTextField = remember { mutableStateOf(false) }
+
     SettingsSection(header = stringResource(id = R.string.relays)) {
+        val headerSuffix = if (newPort.value.isNotEmpty()) ": ${newPort.value}" else ""
+        ClickableRow(
+            header = stringResource(id = R.string.local_relay_port) + headerSuffix,
+            text = stringResource(id = R.string.port_number_of_your_local_relay),
+            onClick = { showTextField.value = !showTextField.value }
+        ) {
+            AnimatedVisibility(visible = showTextField.value) {
+                TextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = spacing.bigScreenEdge)
+                        .padding(bottom = spacing.bigScreenEdge),
+                    value = newPort.value,
+                    prefix = { Text(text = LOCAL_WEBSOCKET) },
+                    onValueChange = { newStr ->
+                        val trimmed = newStr.trim()
+                        runCatching { Integer.valueOf(trimmed) }
+                            .onSuccess { parsed -> newPort.value = abs(parsed).toString() }
+                            .onFailure { if (trimmed.isEmpty()) newPort.value = trimmed }
+                    },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done
+                    ),
+                )
+            }
+        }
+
         ClickableRow(
             header = stringResource(id = R.string.authenticate_via_auth),
             text = stringResource(id = R.string.enable_to_authenticate_yourself_to_relays),

@@ -277,15 +277,14 @@ data class SaveProfile(
 sealed class SettingsViewAction : UIEvent()
 data object UseDefaultAccount : SettingsViewAction()
 data class RequestExternalAccount(val context: Context) : SettingsViewAction()
-
 data class ProcessExternalAccount(
     val activityResult: ActivityResult,
     val context: Context
 ) : SettingsViewAction()
-
 data class UpdateRootPostThreshold(val threshold: Float) : SettingsViewAction()
 data object LoadSeed : SettingsViewAction()
 data class SendAuth(val sendAuth: Boolean) : SettingsViewAction()
+data class UpdateLocalRelayPort(val port: Int?) : SettingsViewAction()
 
 
 sealed class SearchViewAction : UIEvent()

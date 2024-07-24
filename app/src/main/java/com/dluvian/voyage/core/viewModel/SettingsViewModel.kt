@@ -16,6 +16,7 @@ import com.dluvian.voyage.core.ProcessExternalAccount
 import com.dluvian.voyage.core.RequestExternalAccount
 import com.dluvian.voyage.core.SendAuth
 import com.dluvian.voyage.core.SettingsViewAction
+import com.dluvian.voyage.core.UpdateLocalRelayPort
 import com.dluvian.voyage.core.UpdateRootPostThreshold
 import com.dluvian.voyage.core.UseDefaultAccount
 import com.dluvian.voyage.core.launchIO
@@ -49,6 +50,7 @@ class SettingsViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
     val seed = mutableStateOf(emptyList<String>())
     val sendAuth = mutableStateOf(relayPreferences.getSendAuth())
+    val localRelayPort = mutableStateOf(relayPreferences.getLocalRelayPort())
 
     val isLoadingAccount = mutableStateOf(false)
 
@@ -70,13 +72,17 @@ class SettingsViewModel(
             }
 
             is LoadSeed -> seed.value = mnemonicSigner.getSeed()
-            is SendAuth -> setSendAuth(sendAuth = action.sendAuth)
-        }
-    }
 
-    private fun setSendAuth(sendAuth: Boolean) {
-        relayPreferences.setSendAuth(sendAuth = sendAuth)
-        this.sendAuth.value = sendAuth
+            is SendAuth -> {
+                relayPreferences.setSendAuth(sendAuth = action.sendAuth)
+                this.sendAuth.value = action.sendAuth
+            }
+
+            is UpdateLocalRelayPort -> {
+                relayPreferences.setLocalRelayPort(port = action.port)
+                this.localRelayPort.value = action.port
+            }
+        }
     }
 
     private fun useDefaultAccount() {

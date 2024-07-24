@@ -206,4 +206,6 @@
     <string name="list_is_empty">List is empty</string>
     <string name="in_list">In list</string>
     <string name="next">Next</string>
+    <string name="local_relay_port">Local relay port</string>
+    <string name="port_number_of_your_local_relay">Port number of your local relay</string>
 </resources>

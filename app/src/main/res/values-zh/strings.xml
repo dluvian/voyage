@@ -202,4 +202,6 @@
     <string name="list_is_empty">列表为空</string>
     <string name="in_list">在列表中</string>
     <string name="next">下一个</string>
+    <string name="local_relay_port">本地中继端口</string>
+    <string name="port_number_of_your_local_relay">"本地中继的端口号 "</string>
 </resources>
