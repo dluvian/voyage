@@ -53,8 +53,9 @@ interface PostDao {
     @Query(
         "SELECT id " +
                 "FROM post " +
-                "WHERE pubkey IN (SELECT pubkey FROM account) " +
-                "OR id IN (SELECT postId FROM bookmark) " +
+                "WHERE (pubkey IN (SELECT pubkey FROM account) " +
+                "OR id IN (SELECT postId FROM bookmark)) " +
+                "AND json IS NOT NULL " +
                 "ORDER BY createdAt ASC"
     )
     suspend fun getBookmarkedAndMyPostIds(): List<EventIdHex>
