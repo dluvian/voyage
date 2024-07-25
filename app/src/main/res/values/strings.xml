@@ -208,4 +208,9 @@
     <string name="next">Next</string>
     <string name="local_relay_port">Local relay port</string>
     <string name="port_number_of_your_local_relay">Port number of your local relay</string>
+    <string name="export_database">Export database</string>
+    <string name="export_your_posts_and_bookmarks">Export your posts and bookmarks</string>
+    <string name="exported_n_posts">Exported %d posts</string>
+    <string name="something_went_wrong">Something went wrong :(</string>
+    <string name="exporting_n_posts">Exporting %d posts…</string>
 </resources>

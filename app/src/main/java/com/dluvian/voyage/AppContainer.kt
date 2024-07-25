@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.mutableStateOf
 import androidx.room.Room
+import com.anggrayudi.storage.SimpleStorageHelper
 import com.dluvian.voyage.core.ExternalSignerHandler
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.ConnectionStatus
@@ -41,7 +42,7 @@ import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.preferences.DatabasePreferences
 import com.dluvian.voyage.data.preferences.RelayPreferences
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
-import com.dluvian.voyage.data.provider.DatabaseStatProvider
+import com.dluvian.voyage.data.provider.DatabaseInteractor
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.ItemSetProvider
@@ -62,7 +63,7 @@ import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
 import java.util.Collections
 
-class AppContainer(context: Context) {
+class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
     val roomDb: AppDatabase = Room.databaseBuilder(
         context = context,
         klass = AppDatabase::class.java,
@@ -197,7 +198,12 @@ class AppContainer(context: Context) {
     private val eventMaker = EventMaker(accountManager = accountManager)
 
     val databasePreferences = DatabasePreferences(context = context)
-    val databaseStatProvider = DatabaseStatProvider(countDao = roomDb.countDao())
+    val databaseInteractor = DatabaseInteractor(
+        room = roomDb,
+        context = context,
+        storageHelper = storageHelper,
+        snackbar = snackbar
+    )
 
     val nostrService = NostrService(
         nostrClient = nostrClient,

@@ -204,4 +204,9 @@
     <string name="next">下一个</string>
     <string name="local_relay_port">本地中继端口</string>
     <string name="port_number_of_your_local_relay">"本地中继的端口号 "</string>
+    <string name="export_database">导出数据库</string>
+    <string name="export_your_posts_and_bookmarks">导出您的帖子和书签</string>
+    <string name="exported_n_posts">已导出 %d 个帖子</string>
+    <string name="something_went_wrong">出了些问题 :(</string>
+    <string name="exporting_n_posts">正在导出 %d 个帖子…</string>
 </resources>

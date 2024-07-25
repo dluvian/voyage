@@ -9,7 +9,7 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.ui.components.button.GoBackIconButton
 import com.dluvian.voyage.ui.components.button.MenuIconButton
 import com.dluvian.voyage.ui.components.button.SearchIconButton
-import com.dluvian.voyage.ui.components.indicator.TopBarCircleProgressIndicator
+import com.dluvian.voyage.ui.components.indicator.SmallCircleProgressIndicator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,7 +37,7 @@ fun VoyageTopAppBar(
         },
         actions = {
             if (hasSearch) SearchIconButton(onUpdate = onUpdate)
-            if (isLoading) TopBarCircleProgressIndicator()
+            if (isLoading) SmallCircleProgressIndicator()
         }
     )
 }

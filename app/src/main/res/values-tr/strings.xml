@@ -202,4 +202,9 @@
     <string name="next">Sonraki</string>
     <string name="local_relay_port">Yerel röle bağlantı noktası</string>
     <string name="port_number_of_your_local_relay">Yerel aktarıcınızın bağlantı noktası numarası</string>
+    <string name="export_database">Veritabanını dışa aktar</string>
+    <string name="export_your_posts_and_bookmarks">Gönderilerinizi ve yer işaretlerinizi dışa aktarın</string>
+    <string name="exported_n_posts">%d gönderi dışa aktarıldı</string>
+    <string name="something_went_wrong">Bir şeyler yanlış gitti :(</string>
+    <string name="exporting_n_posts">%d gönderi dışa aktarılıyor…</string>
 </resources>

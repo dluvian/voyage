@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.ui.components.button.SendIconButton
-import com.dluvian.voyage.ui.components.indicator.TopBarCircleProgressIndicator
+import com.dluvian.voyage.ui.components.indicator.SmallCircleProgressIndicator
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -31,7 +31,7 @@ fun ContentCreationTopAppBar(
             if (showSendButton && !isSendingContent) {
                 SendIconButton(onSend = onSend)
             }
-            if (isSendingContent) TopBarCircleProgressIndicator()
+            if (isSendingContent) SmallCircleProgressIndicator()
         },
         onUpdate = onUpdate
     )

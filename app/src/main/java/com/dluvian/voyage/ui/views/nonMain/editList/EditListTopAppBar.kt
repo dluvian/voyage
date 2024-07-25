@@ -23,7 +23,7 @@ import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.ui.components.button.GoBackIconButton
 import com.dluvian.voyage.ui.components.button.SaveIconButton
-import com.dluvian.voyage.ui.components.indicator.TopBarCircleProgressIndicator
+import com.dluvian.voyage.ui.components.indicator.SmallCircleProgressIndicator
 import com.dluvian.voyage.ui.theme.RoundedChip
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,7 +56,7 @@ fun EditListTopAppBar(
         },
         actions = {
             if (isSaving) {
-                TopBarCircleProgressIndicator()
+                SmallCircleProgressIndicator()
             } else {
                 val context = LocalContext.current
                 SaveIconButton(onSave = {

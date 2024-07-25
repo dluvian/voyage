@@ -49,4 +49,13 @@ interface PostDao {
         somewhere: String,
         limit: Int
     ): List<SimplePostView>
+
+    @Query(
+        "SELECT id " +
+                "FROM post " +
+                "WHERE pubkey IN (SELECT pubkey FROM account) " +
+                "OR id IN (SELECT postId FROM bookmark) " +
+                "ORDER BY createdAt ASC"
+    )
+    suspend fun getBookmarkedAndMyPostIds(): List<EventIdHex>
 }

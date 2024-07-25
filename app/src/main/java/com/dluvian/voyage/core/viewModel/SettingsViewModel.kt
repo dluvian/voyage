@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.R
+import com.dluvian.voyage.core.ExportDatabase
 import com.dluvian.voyage.core.ExternalSignerHandler
 import com.dluvian.voyage.core.LoadSeed
 import com.dluvian.voyage.core.ProcessExternalAccount
@@ -28,7 +29,8 @@ import com.dluvian.voyage.data.account.AccountSwitcher
 import com.dluvian.voyage.data.account.MnemonicSigner
 import com.dluvian.voyage.data.preferences.DatabasePreferences
 import com.dluvian.voyage.data.preferences.RelayPreferences
-import com.dluvian.voyage.data.provider.DatabaseStatProvider
+import com.dluvian.voyage.data.provider.DatabaseInteractor
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import rust.nostr.protocol.PublicKey
@@ -40,17 +42,19 @@ class SettingsViewModel(
     private val snackbar: SnackbarHostState,
     private val databasePreferences: DatabasePreferences,
     private val relayPreferences: RelayPreferences,
-    databaseStatProvider: DatabaseStatProvider,
+    private val databaseInteractor: DatabaseInteractor,
     private val externalSignerHandler: ExternalSignerHandler,
     private val mnemonicSigner: MnemonicSigner,
 ) : ViewModel() {
     val accountType: State<AccountType> = accountSwitcher.accountType
     val rootPostThreshold = mutableIntStateOf(databasePreferences.getSweepThreshold())
-    val currentRootPostCount = databaseStatProvider.getRootPostCountFlow()
+    val currentRootPostCount = databaseInteractor.getRootPostCountFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
     val seed = mutableStateOf(emptyList<String>())
     val sendAuth = mutableStateOf(relayPreferences.getSendAuth())
     val localRelayPort = mutableStateOf(relayPreferences.getLocalRelayPort())
+    val isExporting = mutableStateOf(false)
+    val exportCount = mutableIntStateOf(0)
 
     val isLoadingAccount = mutableStateOf(false)
 
@@ -82,6 +86,8 @@ class SettingsViewModel(
                 relayPreferences.setLocalRelayPort(port = action.port)
                 this.localRelayPort.value = action.port
             }
+
+            is ExportDatabase -> exportDatabase(uiScope = action.uiScope)
         }
     }
 
@@ -139,6 +145,22 @@ class SettingsViewModel(
             accountSwitcher.useExternalAccount(publicKey = publicKey, packageName = packageName)
         }.invokeOnCompletion {
             isLoadingAccount.value = false
+        }
+    }
+
+    private fun exportDatabase(uiScope: CoroutineScope) {
+        if (isExporting.value) return
+        isExporting.value = true
+
+        viewModelScope.launchIO {
+            databaseInteractor.exportMyPostsAndBookmarks(
+                uiScope = uiScope,
+                onSetExportCount = { count -> exportCount.intValue = count },
+                onFinishExport = {
+                    exportCount.intValue = 0
+                    isExporting.value = false
+                }
+            )
         }
     }
 }

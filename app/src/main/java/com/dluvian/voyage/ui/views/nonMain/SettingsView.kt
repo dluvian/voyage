@@ -23,6 +23,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -30,6 +31,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ComposableContent
+import com.dluvian.voyage.core.ExportDatabase
 import com.dluvian.voyage.core.LoadSeed
 import com.dluvian.voyage.core.MAX_RETAIN_ROOT
 import com.dluvian.voyage.core.MIN_RETAIN_ROOT
@@ -49,6 +51,7 @@ import com.dluvian.voyage.data.nostr.LOCAL_WEBSOCKET
 import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.ui.components.bottomSheet.SeedBottomSheet
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
+import com.dluvian.voyage.ui.components.indicator.SmallCircleProgressIndicator
 import com.dluvian.voyage.ui.components.row.ClickableRow
 import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.ui.theme.AccountIcon
@@ -85,11 +88,7 @@ private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: OnUpdate) {
             )
         }
         item {
-            DatabaseSection(
-                rootPostThreshold = vm.rootPostThreshold.intValue,
-                currentRootPostCount = vm.currentRootPostCount.collectAsState().value,
-                onUpdate = onUpdate
-            )
+            DatabaseSection(vm = vm, onUpdate = onUpdate)
         }
         item {
             AppSection()
@@ -188,21 +187,25 @@ private fun RelaySection(localRelayPort: Int?, sendAuth: Boolean, onUpdate: OnUp
 
 @Composable
 private fun DatabaseSection(
-    rootPostThreshold: Int,
-    currentRootPostCount: Int,
+    vm: SettingsViewModel,
     onUpdate: OnUpdate
 ) {
-    val localRootPostThreshold = remember(rootPostThreshold) {
-        mutableFloatStateOf(rootPostThreshold.toFloat())
+    val localRootPostThreshold = remember(vm.rootPostThreshold.intValue) {
+        mutableFloatStateOf(vm.rootPostThreshold.intValue.toFloat())
     }
     val showSlider = remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
     SettingsSection(header = stringResource(id = R.string.database)) {
         ClickableRow(
             header = stringResource(
                 id = R.string.keep_at_least_n_root_posts,
                 localRootPostThreshold.floatValue.toInt()
             ),
-            text = stringResource(id = R.string.currently_n_root_posts_in_db, currentRootPostCount),
+            text = stringResource(
+                id = R.string.currently_n_root_posts_in_db,
+                vm.currentRootPostCount.collectAsState().value
+            ),
             onClick = { showSlider.value = !showSlider.value }
         ) {
             AnimatedVisibility(visible = showSlider.value) {
@@ -217,6 +220,21 @@ private fun DatabaseSection(
                 )
             }
         }
+
+        val isExporting = vm.isExporting.value
+        val exportCount = vm.exportCount.intValue
+        ClickableRow(
+            header = stringResource(id = R.string.export_database),
+            text = if (isExporting && exportCount > 0) {
+                stringResource(id = R.string.exporting_n_posts, exportCount)
+            } else {
+                stringResource(id = R.string.export_your_posts_and_bookmarks)
+            },
+            onClick = { onUpdate(ExportDatabase(uiScope = scope)) },
+            trailingContent = {
+                if (isExporting) SmallCircleProgressIndicator()
+            }
+        )
     }
 }
 

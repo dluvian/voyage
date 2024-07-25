@@ -8,7 +8,7 @@ import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.ui.components.bar.GoBackTopAppBar
 import com.dluvian.voyage.ui.components.button.SaveIconButton
-import com.dluvian.voyage.ui.components.indicator.TopBarCircleProgressIndicator
+import com.dluvian.voyage.ui.components.indicator.SmallCircleProgressIndicator
 
 @Composable
 fun SaveableScaffold(
@@ -29,7 +29,7 @@ fun SaveableScaffold(
                     if (showSaveButton && !isSaving) {
                         SaveIconButton(onSave = onSave)
                     }
-                    if (isSaving) TopBarCircleProgressIndicator()
+                    if (isSaving) SmallCircleProgressIndicator()
                 },
                 onUpdate = onUpdate
             )

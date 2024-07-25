@@ -13,6 +13,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.anggrayudi.storage.SimpleStorageHelper
 import com.dluvian.voyage.core.Core
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.viewModel.BookmarksViewModel
@@ -44,7 +45,13 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appContainer = AppContainer(context = this.applicationContext)
+        val storageHelper = SimpleStorageHelper(this@MainActivity)
+
+        appContainer = AppContainer(
+            context = this.applicationContext,
+            storageHelper = storageHelper
+        )
+
         setContent {
             val activity = (LocalContext.current as? Activity)
             val closeApp: Fn = { activity?.finish() }
@@ -125,7 +132,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 snackbar = appContainer.snackbar,
                 databasePreferences = appContainer.databasePreferences,
                 relayPreferences = appContainer.relayPreferences,
-                databaseStatProvider = appContainer.databaseStatProvider,
+                databaseInteractor = appContainer.databaseInteractor,
                 externalSignerHandler = appContainer.externalSignerHandler,
                 mnemonicSigner = appContainer.mnemonicSigner,
             )

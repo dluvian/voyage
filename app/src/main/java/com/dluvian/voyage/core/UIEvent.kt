@@ -285,6 +285,7 @@ data class UpdateRootPostThreshold(val threshold: Float) : SettingsViewAction()
 data object LoadSeed : SettingsViewAction()
 data class SendAuth(val sendAuth: Boolean) : SettingsViewAction()
 data class UpdateLocalRelayPort(val port: Int?) : SettingsViewAction()
+data class ExportDatabase(val uiScope: CoroutineScope) : SettingsViewAction()
 
 
 sealed class SearchViewAction : UIEvent()
