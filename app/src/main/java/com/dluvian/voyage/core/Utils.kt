@@ -408,5 +408,9 @@ fun createLocalRelayUrl(port: Int?): String? {
 
 fun Collection<RelayUrl>.addLocalRelay(port: Int?): List<RelayUrl> {
     val local = createLocalRelayUrl(port = port)
-    return if (local != null) this + local else this.toList()
+    return if (local != null) {
+        mutableListOf(local).apply { addAll(this@addLocalRelay) }
+    } else {
+        this.toList()
+    }
 }
