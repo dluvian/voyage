@@ -209,4 +209,9 @@
     <string name="exported_n_posts">已导出 %d 个帖子</string>
     <string name="something_went_wrong">出了些问题 :(</string>
     <string name="exporting_n_posts">正在导出 %d 个帖子…</string>
+    <string name="delete_posts">删除帖子</string>
+    <string name="remove_all_posts_from_database">从数据库中删除所有帖子</string>
+    <string name="deleted_n_posts">已删除 %d 条帖子</string>
+    <string name="delete">删除</string>
+    <string name="are_you_sure_you_want_to_delete_all_posts_from_the_database">您确实要从数据库中删除所有帖子吗？</string>
 </resources>

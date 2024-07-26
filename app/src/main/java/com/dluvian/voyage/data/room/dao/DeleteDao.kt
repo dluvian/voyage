@@ -14,6 +14,9 @@ interface DeleteDao {
     @Query("DELETE FROM post WHERE id = :postId")
     suspend fun deletePost(postId: EventIdHex)
 
+    @Query("DELETE FROM post")
+    suspend fun deleteAllPost()
+
     @Transaction
     suspend fun deleteList(identifier: String) {
         internalEmptyProfileList(identifier = identifier)

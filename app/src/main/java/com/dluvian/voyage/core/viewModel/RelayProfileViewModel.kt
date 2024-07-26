@@ -4,11 +4,11 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dluvian.voyage.core.DELAY_1SEC
+import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.data.nostr.NOSTR_URI
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.WEBSOCKET_PREFIX
-import com.dluvian.voyage.core.DELAY_1SEC
-import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.data.provider.RelayProfileProvider
 import com.dluvian.voyage.data.room.dao.CountDao
 import kotlinx.coroutines.Job
@@ -41,7 +41,7 @@ class RelayProfileViewModel(
 
         isLoading.value = true
         nrelayUri.value = "$NOSTR_URI${Nip19Relay(url = relayUrl).toBech32()}"
-        postsInDb.value = countDao.countEventRelays(relayUrl = relayUrl)
+        postsInDb.value = countDao.countEventRelaysFlow(relayUrl = relayUrl)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
         job?.cancel()
         job = viewModelScope.launchIO {

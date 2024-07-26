@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
@@ -31,7 +32,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ComposableContent
+import com.dluvian.voyage.core.DeleteAllPosts
 import com.dluvian.voyage.core.ExportDatabase
+import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.LoadSeed
 import com.dluvian.voyage.core.MAX_RETAIN_ROOT
 import com.dluvian.voyage.core.MIN_RETAIN_ROOT
@@ -56,6 +59,7 @@ import com.dluvian.voyage.ui.components.row.ClickableRow
 import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.ui.theme.AccountIcon
 import com.dluvian.voyage.ui.theme.spacing
+import kotlinx.coroutines.CoroutineScope
 import kotlin.math.abs
 
 @Composable
@@ -235,6 +239,22 @@ private fun DatabaseSection(
                 if (isExporting) SmallCircleProgressIndicator()
             }
         )
+
+        val isDeleting = vm.isDeleting.value
+        val showDeleteDialog = remember { mutableStateOf(false) }
+        if (showDeleteDialog.value) DeleteAllPostsDialog(
+            scope = scope,
+            onDismiss = { showDeleteDialog.value = false },
+            onUpdate = onUpdate
+        )
+        ClickableRow(
+            header = stringResource(id = R.string.delete_posts),
+            text = stringResource(id = R.string.remove_all_posts_from_database),
+            onClick = { showDeleteDialog.value = true },
+            trailingContent = {
+                if (isDeleting) SmallCircleProgressIndicator()
+            }
+        )
     }
 }
 
@@ -283,4 +303,26 @@ private fun SettingsSection(header: String, content: ComposableContent) {
         content()
         Spacer(modifier = Modifier.height(spacing.screenEdge))
     }
+}
+
+@Composable
+private fun DeleteAllPostsDialog(scope: CoroutineScope, onDismiss: Fn, onUpdate: OnUpdate) {
+    AlertDialog(
+        title = { Text(text = stringResource(id = R.string.delete_posts)) },
+        text = { Text(text = stringResource(id = R.string.are_you_sure_you_want_to_delete_all_posts_from_the_database)) },
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = {
+                onUpdate(DeleteAllPosts(uiScope = scope))
+                onDismiss()
+            }) {
+                Text(text = stringResource(id = R.string.delete))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = stringResource(id = R.string.cancel))
+            }
+        },
+    )
 }

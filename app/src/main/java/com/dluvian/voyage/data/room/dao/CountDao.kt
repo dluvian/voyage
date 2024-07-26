@@ -11,5 +11,8 @@ interface CountDao {
     fun countRootPostsFlow(): Flow<Int>
 
     @Query("SELECT COUNT(*) FROM post WHERE relayUrl = :relayUrl")
-    fun countEventRelays(relayUrl: RelayUrl): Flow<Int>
+    fun countEventRelaysFlow(relayUrl: RelayUrl): Flow<Int>
+
+    @Query("SELECT COUNT(*) FROM post")
+    suspend fun countAllPosts(): Int
 }

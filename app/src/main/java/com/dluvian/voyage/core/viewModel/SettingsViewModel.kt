@@ -10,6 +10,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.R
+import com.dluvian.voyage.core.DEBOUNCE
+import com.dluvian.voyage.core.DeleteAllPosts
 import com.dluvian.voyage.core.ExportDatabase
 import com.dluvian.voyage.core.ExternalSignerHandler
 import com.dluvian.voyage.core.LoadSeed
@@ -31,9 +33,11 @@ import com.dluvian.voyage.data.preferences.DatabasePreferences
 import com.dluvian.voyage.data.preferences.RelayPreferences
 import com.dluvian.voyage.data.provider.DatabaseInteractor
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import rust.nostr.protocol.PublicKey
+import java.util.concurrent.atomic.AtomicBoolean
 
 private const val TAG = "SettingsViewModel"
 
@@ -53,6 +57,7 @@ class SettingsViewModel(
     val seed = mutableStateOf(emptyList<String>())
     val sendAuth = mutableStateOf(relayPreferences.getSendAuth())
     val localRelayPort = mutableStateOf(relayPreferences.getLocalRelayPort())
+    val isDeleting = mutableStateOf(false)
     val isExporting = mutableStateOf(false)
     val exportCount = mutableIntStateOf(0)
 
@@ -88,6 +93,8 @@ class SettingsViewModel(
             }
 
             is ExportDatabase -> exportDatabase(uiScope = action.uiScope)
+
+            is DeleteAllPosts -> deleteAllPosts(uiScope = action.uiScope)
         }
     }
 
@@ -148,19 +155,32 @@ class SettingsViewModel(
         }
     }
 
+    private val isExportable = AtomicBoolean(true)
     private fun exportDatabase(uiScope: CoroutineScope) {
-        if (isExporting.value) return
-        isExporting.value = true
+        if (!isExportable.compareAndSet(true, false)) return
 
         viewModelScope.launchIO {
             databaseInteractor.exportMyPostsAndBookmarks(
                 uiScope = uiScope,
                 onSetExportCount = { count -> exportCount.intValue = count },
+                onStartExport = { isExporting.value = true },
                 onFinishExport = {
                     exportCount.intValue = 0
                     isExporting.value = false
                 }
             )
+        }.invokeOnCompletion { isExportable.set(true) }
+    }
+
+    private fun deleteAllPosts(uiScope: CoroutineScope) {
+        if (isDeleting.value) return
+        isDeleting.value = true
+
+        viewModelScope.launchIO {
+            delay(DEBOUNCE)
+            databaseInteractor.deleteAllPosts(uiScope = uiScope)
+        }.invokeOnCompletion {
+            isDeleting.value = false
         }
     }
 }

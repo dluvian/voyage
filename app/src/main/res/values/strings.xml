@@ -213,4 +213,9 @@
     <string name="exported_n_posts">Exported %d posts</string>
     <string name="something_went_wrong">Something went wrong :(</string>
     <string name="exporting_n_posts">Exporting %d posts…</string>
+    <string name="delete_posts">Delete posts</string>
+    <string name="remove_all_posts_from_database">Remove all posts from database</string>
+    <string name="deleted_n_posts">Deleted %d posts</string>
+    <string name="delete">Delete</string>
+    <string name="are_you_sure_you_want_to_delete_all_posts_from_the_database">Are you sure you want to delete all posts from the database?</string>
 </resources>

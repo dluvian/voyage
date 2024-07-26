@@ -207,4 +207,9 @@
     <string name="exported_n_posts">%d gönderi dışa aktarıldı</string>
     <string name="something_went_wrong">Bir şeyler yanlış gitti :(</string>
     <string name="exporting_n_posts">%d gönderi dışa aktarılıyor…</string>
+    <string name="delete_posts">Gönderileri sil</string>
+    <string name="remove_all_posts_from_database">Veritabanından tüm gönderileri kaldır</string>
+    <string name="deleted_n_posts">%d gönderi silindi</string>
+    <string name="delete">Silmek</string>
+    <string name="are_you_sure_you_want_to_delete_all_posts_from_the_database">Veritabanındaki tüm gönderileri silmek istediğinizden emin misiniz?</string>
 </resources>

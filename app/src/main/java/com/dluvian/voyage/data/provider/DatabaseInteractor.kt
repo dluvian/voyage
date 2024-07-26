@@ -31,6 +31,7 @@ class DatabaseInteractor(
 
     suspend fun exportMyPostsAndBookmarks(
         uiScope: CoroutineScope,
+        onStartExport: Fn,
         onSetExportCount: (Int) -> Unit,
         onFinishExport: Fn,
     ) {
@@ -40,6 +41,7 @@ class DatabaseInteractor(
         var somethingWentWrong = false
 
         storageHelper.onFolderSelected = { _, folder ->
+            onStartExport()
             scope.launchIO {
                 folder.makeFile(context = context, name = name)
                     ?.openOutputStream(context = context, append = false)
@@ -68,5 +70,23 @@ class DatabaseInteractor(
                 onFinishExport()
             }
         }
+    }
+
+    suspend fun deleteAllPosts(uiScope: CoroutineScope) {
+        val count = room.countDao().countAllPosts()
+        if (count <= 0) {
+            snackbar.showToast(
+                scope = uiScope,
+                msg = context.getString(R.string.deleted_n_posts, 0)
+            )
+            return
+        }
+
+        room.deleteDao().deleteAllPost()
+
+        snackbar.showToast(
+            scope = uiScope,
+            msg = context.getString(R.string.deleted_n_posts, count)
+        )
     }
 }
