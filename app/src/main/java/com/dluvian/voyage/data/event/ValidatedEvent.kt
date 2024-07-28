@@ -12,7 +12,7 @@ sealed class ValidatedEvent
 sealed class ValidatedPost(
     open val id: EventIdHex,
     open val pubkey: PubkeyHex,
-    open val topics: List<Topic>
+    open val topics: List<Topic>,
 ) : ValidatedEvent()
 
 sealed class ValidatedMainPost(
@@ -31,6 +31,7 @@ data class ValidatedRootPost(
     val createdAt: Long,
     val relayUrl: RelayUrl,
     val json: String,
+    val isMentioningMe: Boolean,
 ) : ValidatedMainPost(id = id, pubkey = pubkey, subject = subject, topics = topics)
 
 data class ValidatedReply(
@@ -41,6 +42,7 @@ data class ValidatedReply(
     val createdAt: Long,
     val relayUrl: RelayUrl,
     val json: String,
+    val isMentioningMe: Boolean,
 ) : ValidatedMainPost(id = id, pubkey = pubkey, subject = null, topics = emptyList())
 
 data class ValidatedCrossPost(

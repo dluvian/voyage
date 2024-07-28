@@ -163,15 +163,18 @@ class FeedProvider(
     private fun getInboxFeedFlow(until: Long, size: Int): Flow<List<ParentUI>> {
         return combine(
             room.inboxDao()
-                .getDirectReplyFlow(until = until, size = size)
+                .getMentionReplyFlow(until = until, size = size)
+                .firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            room.inboxDao()
+                .getMentionRootFlow(until = until, size = size)
                 .firstThenDistinctDebounce(SHORT_DEBOUNCE),
             forcedVotes,
             forcedFollows,
             forcedBookmarks,
-        ) { replies, votes, follows, bookmarks ->
+        ) { replies, roots, votes, follows, bookmarks ->
             mergeToParentUIList(
                 replies = replies,
-                roots = emptyList(),
+                roots = roots,
                 votes = votes,
                 follows = follows,
                 bookmarks = bookmarks,

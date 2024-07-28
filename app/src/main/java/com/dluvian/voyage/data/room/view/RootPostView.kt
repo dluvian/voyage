@@ -20,6 +20,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             post.relayUrl, 
             post.crossPostedId, 
             post.crossPostedPubkey, 
+            post.isMentioningMe, 
             profile.name AS authorName,
             ht.hashtag AS myTopic,
             CASE WHEN account.pubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsOneself,
@@ -95,6 +96,7 @@ data class RootPostView(
     val crossPostedAuthorIsMuted: Boolean,
     val crossPostedAuthorIsInList: Boolean,
     val isBookmarked: Boolean,
+    val isMentioningMe: Boolean,
 ) {
     fun mapToRootPostUI(
         forcedVotes: Map<EventIdHex, Boolean>,

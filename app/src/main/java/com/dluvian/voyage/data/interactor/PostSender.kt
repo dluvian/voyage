@@ -1,21 +1,22 @@
 package com.dluvian.voyage.data.interactor
 
 import android.util.Log
-import com.dluvian.voyage.data.nostr.RelayUrl
-import com.dluvian.voyage.data.nostr.extractMentions
-import com.dluvian.voyage.data.nostr.getSubject
-import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.extractCleanHashtags
 import com.dluvian.voyage.core.getNormalizedTopics
+import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.event.EventValidator
 import com.dluvian.voyage.data.event.ValidatedCrossPost
 import com.dluvian.voyage.data.event.ValidatedReply
 import com.dluvian.voyage.data.event.ValidatedRootPost
 import com.dluvian.voyage.data.nostr.NostrService
+import com.dluvian.voyage.data.nostr.RelayUrl
+import com.dluvian.voyage.data.nostr.extractMentions
+import com.dluvian.voyage.data.nostr.getSubject
+import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.PostDao
 import com.dluvian.voyage.data.room.dao.tx.PostInsertDao
@@ -30,6 +31,7 @@ class PostSender(
     private val relayProvider: RelayProvider,
     private val postInsertDao: PostInsertDao,
     private val postDao: PostDao,
+    private val myPubkeyProvider: IMyPubkeyProvider,
 ) {
     suspend fun sendPost(
         header: String,
@@ -60,6 +62,7 @@ class PostSender(
                 createdAt = event.createdAt().secs(),
                 relayUrl = "", // We don't know which relay accepted this note
                 json = event.asJson(),
+                isMentioningMe = mentions.contains(myPubkeyProvider.getPubkeyHex())
             )
             postInsertDao.insertRootPosts(posts = listOf(validatedPost))
         }.onFailure {
@@ -92,6 +95,7 @@ class PostSender(
                 createdAt = event.createdAt().secs(),
                 relayUrl = "", // We don't know which relay accepted this note
                 json = event.asJson(),
+                isMentioningMe = mentions.contains(myPubkeyProvider.getPubkeyHex())
             )
             postInsertDao.insertReplies(replies = listOf(validatedReply))
         }.onFailure {
@@ -115,7 +119,8 @@ class PostSender(
         }
         val validatedMainPost = EventValidator.createValidatedMainPost(
             event = crossPostedEvent,
-            relayUrl = post.relayUrl
+            relayUrl = post.relayUrl,
+            myPubkey = myPubkeyProvider.getPublicKey()
         )
             ?: return Result.failure(IllegalStateException("Cross-posted event is invalid"))
 

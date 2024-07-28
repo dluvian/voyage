@@ -17,6 +17,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             "post.content, " +
             "post.createdAt, " +
             "post.relayUrl, " +
+            "post.isMentioningMe, " +
             "(SELECT name FROM profile WHERE profile.pubkey = post.pubkey) AS authorName, " +
             "(SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.pubkey)) AS authorIsOneself, " +
             "(SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.pubkey)) AS authorIsFriend, " +
@@ -47,6 +48,7 @@ data class ReplyView(
     val replyCount: Int,
     val relayUrl: RelayUrl,
     val isBookmarked: Boolean,
+    val isMentioningMe: Boolean,
 ) {
     fun mapToLeveledReplyUI(
         level: Int,

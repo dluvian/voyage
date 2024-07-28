@@ -88,8 +88,8 @@ class StaticFeedProvider(
 
     private suspend fun getStaticInboxFeed(until: Long, size: Int): List<ParentUI> {
         return mergeToParentUIList(
-            replies = room.inboxDao().getDirectReplies(until = until, size = size),
-            roots = emptyList(),
+            replies = room.inboxDao().getMentionReplies(until = until, size = size),
+            roots = room.inboxDao().getMentionRoots(until = until, size = size),
             votes = emptyMap(),
             follows = emptyMap(),
             bookmarks = emptyMap(),

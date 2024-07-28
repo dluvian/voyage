@@ -21,6 +21,7 @@ import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
 import rust.nostr.protocol.KindEnum
+import rust.nostr.protocol.PublicKey
 
 
 private const val TAG = "EventValidator"
@@ -67,7 +68,12 @@ class EventValidator(
 
     private fun validate(event: Event, relayUrl: RelayUrl): ValidatedEvent? {
         val validatedEvent = when (event.kind().asEnum()) {
-            is KindEnum.TextNote -> createValidatedMainPost(event = event, relayUrl = relayUrl)
+            is KindEnum.TextNote -> createValidatedMainPost(
+                event = event,
+                relayUrl = relayUrl,
+                myPubkey = myPubkeyProvider.getPublicKey()
+            )
+
             is KindEnum.Repost -> createValidatedRepost(event = event, relayUrl = relayUrl)
             is KindEnum.Reaction -> {
                 if (event.content() == "-") return null
@@ -177,7 +183,11 @@ class EventValidator(
         val parsedEvent = runCatching { Event.fromJson(event.content()) }.getOrNull()
             ?: return null
         if (!parsedEvent.isPostOrReply()) return null
-        val validated = createValidatedMainPost(event = parsedEvent, relayUrl = relayUrl)
+        val validated = createValidatedMainPost(
+            event = parsedEvent,
+            relayUrl = relayUrl,
+            myPubkey = myPubkeyProvider.getPublicKey()
+        )
             ?: return null
         if (!parsedEvent.verify()) return null
         return ValidatedCrossPost(
@@ -191,7 +201,11 @@ class EventValidator(
     }
 
     companion object {
-        fun createValidatedMainPost(event: Event, relayUrl: RelayUrl): ValidatedMainPost? {
+        fun createValidatedMainPost(
+            event: Event,
+            relayUrl: RelayUrl,
+            myPubkey: PublicKey,
+        ): ValidatedMainPost? {
             if (!event.isPostOrReply()) return null
             val replyToId = event.getReplyToId()
             val content = event.content().trim().take(MAX_CONTENT_LEN)
@@ -206,7 +220,8 @@ class EventValidator(
                     content = content,
                     createdAt = event.createdAt().secs(),
                     relayUrl = relayUrl,
-                    json = event.asJson()
+                    json = event.asJson(),
+                    isMentioningMe = event.publicKeys().contains(myPubkey)
                 )
             } else {
                 if (content.isEmpty() || replyToId == event.id().toHex()) return null
@@ -217,7 +232,8 @@ class EventValidator(
                     content = content,
                     createdAt = event.createdAt().secs(),
                     relayUrl = relayUrl,
-                    event.asJson()
+                    json = event.asJson(),
+                    isMentioningMe = event.publicKeys().contains(myPubkey)
                 )
             }
         }

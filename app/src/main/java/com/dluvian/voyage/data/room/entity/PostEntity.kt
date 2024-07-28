@@ -1,14 +1,15 @@
 package com.dluvian.voyage.data.room.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
-import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.event.ValidatedCrossPost
 import com.dluvian.voyage.data.event.ValidatedPost
 import com.dluvian.voyage.data.event.ValidatedReply
 import com.dluvian.voyage.data.event.ValidatedRootPost
+import com.dluvian.voyage.data.nostr.RelayUrl
 
 @Entity(
     tableName = "post",
@@ -31,7 +32,8 @@ data class PostEntity(
     val relayUrl: RelayUrl,
     val crossPostedId: EventIdHex?,
     val crossPostedPubkey: PubkeyHex?,
-    val json: String?
+    val json: String?,
+    @ColumnInfo(defaultValue = "false") val isMentioningMe: Boolean,
 ) {
     companion object {
 
@@ -47,7 +49,8 @@ data class PostEntity(
                     relayUrl = post.relayUrl,
                     crossPostedId = null,
                     crossPostedPubkey = null,
-                    json = post.json
+                    json = post.json,
+                    isMentioningMe = post.isMentioningMe
                 )
 
                 is ValidatedReply -> PostEntity(
@@ -60,7 +63,8 @@ data class PostEntity(
                     relayUrl = post.relayUrl,
                     crossPostedId = null,
                     crossPostedPubkey = null,
-                    json = post.json
+                    json = post.json,
+                    isMentioningMe = post.isMentioningMe
                 )
 
                 is ValidatedCrossPost -> PostEntity(
@@ -76,7 +80,8 @@ data class PostEntity(
                     relayUrl = post.relayUrl,
                     crossPostedId = post.crossPosted.id,
                     crossPostedPubkey = post.crossPosted.pubkey,
-                    json = null
+                    json = null,
+                    isMentioningMe = false
                 )
             }
         }

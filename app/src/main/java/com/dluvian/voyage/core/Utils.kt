@@ -91,9 +91,7 @@ fun Metadata.getNormalizedName(): String {
 }
 
 fun normalizeName(str: String): String {
-    return str.filter { it != ' ' }
-        .trim()
-        .take(MAX_NAME_LEN)
+    return str.filterNot { it.isWhitespace() }.take(MAX_NAME_LEN)
 }
 
 fun SnackbarHostState.showToast(scope: CoroutineScope, msg: String) {
@@ -329,7 +327,8 @@ fun mergeToParentUIList(
     size: Int,
     annotatedStringProvider: AnnotatedStringProvider,
 ): List<ParentUI> {
-    val applicableTimestamps = replies.map { it.createdAt }
+    val applicableTimestamps = replies.asSequence()
+        .map { it.createdAt }
         .plus(roots.map { it.createdAt })
         .sortedDescending()
         .take(size)

@@ -175,6 +175,7 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
     val accountSwitcher = AccountSwitcher(
         accountManager = accountManager,
         accountDao = roomDb.accountDao(),
+        deleteDao = roomDb.deleteDao(),
         idCacheClearer = idCacheClearer,
         lazyNostrSubscriber = lazyNostrSubscriber,
         nostrSubscriber = nostrSubscriber
@@ -338,7 +339,8 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
         nostrService = nostrService,
         relayProvider = relayProvider,
         postInsertDao = roomDb.postInsertDao(),
-        postDao = roomDb.postDao()
+        postDao = roomDb.postDao(),
+        myPubkeyProvider = accountManager
     )
 
     val eventSweeper = EventSweeper(

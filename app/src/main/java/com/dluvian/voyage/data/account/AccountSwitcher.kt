@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.State
-import com.dluvian.voyage.data.nostr.getCurrentSecs
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.FEED_PAGE_SIZE
 import com.dluvian.voyage.core.model.AccountType
@@ -15,7 +14,9 @@ import com.dluvian.voyage.data.event.IdCacheClearer
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.nostr.NostrSubscriber
+import com.dluvian.voyage.data.nostr.getCurrentSecs
 import com.dluvian.voyage.data.room.dao.AccountDao
+import com.dluvian.voyage.data.room.dao.DeleteDao
 import com.dluvian.voyage.data.room.entity.AccountEntity
 import kotlinx.coroutines.delay
 import rust.nostr.protocol.PublicKey
@@ -25,6 +26,7 @@ private const val TAG = "AccountSwitcher"
 class AccountSwitcher(
     private val accountManager: AccountManager,
     private val accountDao: AccountDao,
+    private val deleteDao: DeleteDao,
     private val idCacheClearer: IdCacheClearer,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val nostrSubscriber: NostrSubscriber,
@@ -65,6 +67,7 @@ class AccountSwitcher(
         Log.i(TAG, "Update account and reset caches")
         lazyNostrSubscriber.subCreator.unsubAll()
         idCacheClearer.clear()
+        deleteDao.deleteAllPost()
         accountDao.updateAccount(account = account)
         lazyNostrSubscriber.lazySubMyAccount()
         delay(DELAY_1SEC)
