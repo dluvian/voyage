@@ -6,9 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.launchIO
+import com.dluvian.voyage.data.nostr.LOCALHOST
 import com.dluvian.voyage.data.nostr.NOSTR_URI
 import com.dluvian.voyage.data.nostr.RelayUrl
-import com.dluvian.voyage.data.nostr.SIMPLE_WEBSOCKET_PREFIX
+import com.dluvian.voyage.data.nostr.SIMPLE_WEBSOCKET_URI
 import com.dluvian.voyage.data.nostr.WEBSOCKET_URI
 import com.dluvian.voyage.data.provider.RelayProfileProvider
 import com.dluvian.voyage.data.room.dao.CountDao
@@ -34,7 +35,7 @@ class RelayProfileViewModel(
     private var job: Job? = null
 
     fun openProfile(relayUrl: RelayUrl) {
-        val noPrefix = relayUrl.removePrefix(WEBSOCKET_URI).removePrefix(SIMPLE_WEBSOCKET_PREFIX)
+        val noPrefix = relayUrl.removePrefix(WEBSOCKET_URI).removePrefix(SIMPLE_WEBSOCKET_URI)
         if (header.value == noPrefix) return
 
         header.value = noPrefix
@@ -46,8 +47,8 @@ class RelayProfileViewModel(
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
         job?.cancel()
         job = viewModelScope.launchIO {
-            val httpsUrl = "https://$noPrefix"
-            val fromNetwork = relayProfileProvider.getRelayProfile(httpsUrl = httpsUrl)
+            val prefix = if (noPrefix.startsWith("$LOCALHOST:")) "http://" else "https://"
+            val fromNetwork = relayProfileProvider.getRelayProfile(url = prefix + noPrefix)
             profile.value = fromNetwork
             delay(DELAY_1SEC)
         }

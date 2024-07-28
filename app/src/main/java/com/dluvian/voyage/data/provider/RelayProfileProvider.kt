@@ -12,17 +12,17 @@ class RelayProfileProvider {
     private val cache =
         Collections.synchronizedMap(mutableMapOf<RelayUrl, RelayInformationDocument>())
 
-    suspend fun getRelayProfile(httpsUrl: String): RelayInformationDocument? {
-        val cached = cache[httpsUrl]
+    suspend fun getRelayProfile(url: String): RelayInformationDocument? {
+        val cached = cache[url]
         if (cached != null) return cached
 
         val fromNetwork = kotlin.runCatching {
-            nip11GetInformationDocument(url = httpsUrl)
+            nip11GetInformationDocument(url = url)
         }.onFailure {
-            Log.w(TAG, "Failed to fetch RelayProfile of $httpsUrl", it)
+            Log.w(TAG, "Failed to fetch RelayProfile of $url", it)
         }.getOrNull()
 
-        if (fromNetwork != null) cache[httpsUrl] = fromNetwork
+        if (fromNetwork != null) cache[url] = fromNetwork
 
         return fromNetwork
     }
