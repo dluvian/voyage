@@ -20,7 +20,7 @@ const val LAZY_RND_RESUB_LIMIT = 10uL
 
 const val AUTH_TIMEOUT = DELAY_10SEC
 
-const val MAX_RELAY_CONNECTIONS = 12
+const val MAX_RELAY_CONNECTIONS = 15
 const val MAX_RELAYS = 5
 const val MAX_RELAYS_PER_PUBKEY = 2
 const val MAX_POPULAR_RELAYS = 50
