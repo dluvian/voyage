@@ -8,7 +8,8 @@ import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.data.nostr.NOSTR_URI
 import com.dluvian.voyage.data.nostr.RelayUrl
-import com.dluvian.voyage.data.nostr.WEBSOCKET_PREFIX
+import com.dluvian.voyage.data.nostr.SIMPLE_WEBSOCKET_PREFIX
+import com.dluvian.voyage.data.nostr.WEBSOCKET_URI
 import com.dluvian.voyage.data.provider.RelayProfileProvider
 import com.dluvian.voyage.data.room.dao.CountDao
 import kotlinx.coroutines.Job
@@ -33,7 +34,7 @@ class RelayProfileViewModel(
     private var job: Job? = null
 
     fun openProfile(relayUrl: RelayUrl) {
-        val noPrefix = relayUrl.removePrefix(WEBSOCKET_PREFIX)
+        val noPrefix = relayUrl.removePrefix(WEBSOCKET_URI).removePrefix(SIMPLE_WEBSOCKET_PREFIX)
         if (header.value == noPrefix) return
 
         header.value = noPrefix

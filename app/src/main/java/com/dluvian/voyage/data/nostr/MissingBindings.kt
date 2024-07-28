@@ -109,7 +109,7 @@ fun Event.getNip65s(): List<Nip65Relay> {
     return this.tags().asSequence()
         .map { it.asVec() }
         .filter { it.firstOrNull() == "r" && it.size >= 2 }
-        .filter { it[1].startsWith(WEBSOCKET_PREFIX) && it[1].trim().length >= 10 }
+        .filter { it[1].startsWith(WEBSOCKET_URI) && it[1].trim().length >= 10 }
         .map {
             val restriction = it.getOrNull(2)
             Nip65Relay(

@@ -7,12 +7,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.voyage.data.nostr.Nip65Relay
-import com.dluvian.voyage.data.nostr.RelayUrl
-import com.dluvian.voyage.data.nostr.WEBSOCKET_PREFIX
-import com.dluvian.voyage.data.nostr.getNip65s
-import com.dluvian.voyage.data.nostr.removeTrailingSlashes
-import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.AddRelay
 import com.dluvian.voyage.core.DELAY_1SEC
@@ -27,7 +21,13 @@ import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.ConnectionStatus
 import com.dluvian.voyage.core.showToast
 import com.dluvian.voyage.data.event.ValidatedNip65
+import com.dluvian.voyage.data.nostr.Nip65Relay
 import com.dluvian.voyage.data.nostr.NostrService
+import com.dluvian.voyage.data.nostr.RelayUrl
+import com.dluvian.voyage.data.nostr.WEBSOCKET_URI
+import com.dluvian.voyage.data.nostr.getNip65s
+import com.dluvian.voyage.data.nostr.removeTrailingSlashes
+import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.tx.Nip65UpsertDao
 import kotlinx.coroutines.delay
@@ -131,7 +131,7 @@ class RelayEditorViewModel(
 
     private fun addRelay(action: AddRelay) {
         val relay = action.relayUrl.trim().removeTrailingSlashes()
-        val checked = if (relay.startsWith(WEBSOCKET_PREFIX)) relay else WEBSOCKET_PREFIX + relay
+        val checked = if (relay.startsWith(WEBSOCKET_URI)) relay else WEBSOCKET_URI + relay
 
         if (myRelays.value.any { it.url == checked }) {
             val err = action.context.getString(R.string.relay_is_already_in_your_list, checked)
