@@ -47,20 +47,26 @@ class AccountSwitcher(
         if (accountManager.accountType.value is DefaultAccount) return
         Log.i(TAG, "Use default account")
 
-        val defaultPubkey = accountManager.mnemonicSigner.getPubkeyHex()
-        updateAndReset(account = AccountEntity(pubkey = defaultPubkey))
-        accountManager.accountType.value = DefaultAccount(
-            publicKey = PublicKey.fromHex(hex = defaultPubkey)
-        )
+        // Set accountType first, bc it's needed for subbing events
+        val defaultPubkey = accountManager.mnemonicSigner.getPublicKey()
+        accountManager.accountType.value = DefaultAccount(publicKey = defaultPubkey)
+
+        updateAndReset(account = AccountEntity(pubkey = defaultPubkey.toHex()))
     }
 
     suspend fun useExternalAccount(publicKey: PublicKey, packageName: String) {
         if (accountManager.accountType.value is ExternalAccount) return
         Log.i(TAG, "Use external account")
 
-        val externalPubkey = publicKey.toHex()
-        updateAndReset(account = AccountEntity(pubkey = externalPubkey, packageName = packageName))
+        // Set accountType first, bc it's needed for subbing events
         accountManager.accountType.value = ExternalAccount(publicKey = publicKey)
+
+        updateAndReset(
+            account = AccountEntity(
+                pubkey = publicKey.toHex(),
+                packageName = packageName
+            )
+        )
     }
 
     private suspend fun updateAndReset(account: AccountEntity) {
