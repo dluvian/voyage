@@ -212,4 +212,6 @@
     <string name="deleted_n_posts">%d gönderi silindi</string>
     <string name="delete">Silmek</string>
     <string name="are_you_sure_you_want_to_delete_all_posts_from_the_database">Veritabanındaki tüm gönderileri silmek istediğinizden emin misiniz?</string>
+    <string name="profile_list_identifier">Profil listesi tanımlayıcısı</string>
+    <string name="topic_list_identifier">Konu listesi tanımlayıcısı</string>
 </resources>

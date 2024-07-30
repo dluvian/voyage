@@ -214,4 +214,6 @@
     <string name="deleted_n_posts">已删除 %d 条帖子</string>
     <string name="delete">删除</string>
     <string name="are_you_sure_you_want_to_delete_all_posts_from_the_database">您确实要从数据库中删除所有帖子吗？</string>
+    <string name="profile_list_identifier">概要信息列表标识符</string>
+    <string name="topic_list_identifier">主题列表标识符</string>
 </resources>
