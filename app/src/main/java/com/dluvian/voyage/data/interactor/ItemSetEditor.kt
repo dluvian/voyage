@@ -36,7 +36,7 @@ class ItemSetEditor(
             title = title,
             description = description,
             pubkeys = pubkeys.map { PublicKey.fromHex(it) },
-            relayUrls = relayProvider.getPublishRelays(addConnected = false) // TODO: write relays only
+            relayUrls = relayProvider.getWriteRelays()
         ).onFailure {
             Log.w(TAG, "Failed to sign profile set", it)
         }.onSuccess {
@@ -61,7 +61,7 @@ class ItemSetEditor(
             title = title,
             description = description,
             topics = topics,
-            relayUrls = relayProvider.getPublishRelays(addConnected = false) // TODO: write relays only
+            relayUrls = relayProvider.getWriteRelays()
         ).onFailure {
             Log.w(TAG, "Failed to sign topic set", it)
         }.onSuccess {
