@@ -103,25 +103,18 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
 
     private val muteProvider = MuteProvider(muteDao = roomDb.muteDao())
 
-    val itemSetProvider = ItemSetProvider(
-        room = roomDb,
-        myPubkeyProvider = accountManager,
-        friendProvider = friendProvider,
-        muteProvider = muteProvider,
+    val metadataInMemory = MetadataInMemory()
+
+    private val nameProvider = NameProvider(
+        profileDao = roomDb.profileDao(),
+        metadataInMemory = metadataInMemory,
     )
 
-    val topicProvider = TopicProvider(
-        forcedFollowStates = forcedFollowTopicStates,
-        forcedMuteStates = forcedMuteTopicStates,
-        topicDao = roomDb.topicDao(),
-        muteDao = roomDb.muteDao(),
-        itemSetProvider = itemSetProvider,
+    private val annotatedStringProvider = AnnotatedStringProvider(
+        nameProvider = nameProvider
     )
 
-    private val pubkeyProvider = PubkeyProvider(
-        friendProvider = friendProvider,
-        itemSetProvider = itemSetProvider
-    )
+    private val pubkeyProvider = PubkeyProvider(friendProvider = friendProvider)
 
     val relayPreferences = RelayPreferences(context = context)
 
@@ -133,6 +126,24 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
         pubkeyProvider = pubkeyProvider,
         relayPreferences = relayPreferences,
     )
+
+    val itemSetProvider = ItemSetProvider(
+        room = roomDb,
+        myPubkeyProvider = accountManager,
+        friendProvider = friendProvider,
+        muteProvider = muteProvider,
+        annotatedStringProvider = annotatedStringProvider,
+        relayProvider = relayProvider
+    )
+
+    val topicProvider = TopicProvider(
+        forcedFollowStates = forcedFollowTopicStates,
+        forcedMuteStates = forcedMuteTopicStates,
+        topicDao = roomDb.topicDao(),
+        muteDao = roomDb.muteDao(),
+        itemSetProvider = itemSetProvider,
+    )
+
 
     private val eventCounter = EventCounter()
 
@@ -181,7 +192,6 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
         nostrSubscriber = nostrSubscriber
     )
 
-    val metadataInMemory = MetadataInMemory()
     private val eventValidator = EventValidator(
         syncedFilterCache = syncedFilterCache,
         syncedIdCache = syncedIdCache,
@@ -217,6 +227,8 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
     )
 
     init {
+        nameProvider.nostrSubscriber = nostrSubscriber
+        pubkeyProvider.itemSetProvider = itemSetProvider
         nostrService.initialize(initRelayUrls = relayProvider.getReadRelays())
     }
 
@@ -269,16 +281,6 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
     )
 
     private val oldestUsedEvent = OldestUsedEvent()
-
-    private val nameProvider = NameProvider(
-        profileDao = roomDb.profileDao(),
-        nostrSubscriber = nostrSubscriber,
-        metadataInMemory = metadataInMemory,
-    )
-
-    private val annotatedStringProvider = AnnotatedStringProvider(
-        nameProvider = nameProvider
-    )
 
     val profileFollower = ProfileFollower(
         nostrService = nostrService,

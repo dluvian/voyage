@@ -1,12 +1,21 @@
 package com.dluvian.voyage.ui.views.nonMain.list
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ListViewFeedAppend
 import com.dluvian.voyage.core.ListViewRefresh
@@ -14,12 +23,17 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenTopic
 import com.dluvian.voyage.core.getListTabHeaders
+import com.dluvian.voyage.core.shortenBech32
 import com.dluvian.voyage.core.viewModel.ListViewModel
+import com.dluvian.voyage.data.nostr.NOSTR_URI
 import com.dluvian.voyage.ui.components.Feed
 import com.dluvian.voyage.ui.components.SimpleTabPager
-import com.dluvian.voyage.ui.components.indicator.ComingSoon
 import com.dluvian.voyage.ui.components.list.ProfileList
 import com.dluvian.voyage.ui.components.list.TopicList
+import com.dluvian.voyage.ui.components.text.AnnotatedTextWithHeader
+import com.dluvian.voyage.ui.components.text.CopyableText
+import com.dluvian.voyage.ui.components.text.SmallHeader
+import com.dluvian.voyage.ui.theme.spacing
 import kotlinx.coroutines.launch
 
 @Composable
@@ -56,6 +70,7 @@ private fun ScreenContent(vm: ListViewModel, onUpdate: OnUpdate) {
                 0 -> scope.launch { vm.feedState.animateScrollToItem(0) }
                 1 -> scope.launch { vm.profileState.animateScrollToItem(0) }
                 2 -> scope.launch { vm.topicState.animateScrollToItem(0) }
+                3 -> scope.launch { /*TODO*/ }
                 else -> {}
             }
         },
@@ -81,7 +96,12 @@ private fun ScreenContent(vm: ListViewModel, onUpdate: OnUpdate) {
                 onClick = { i -> onUpdate(OpenTopic(topic = topics[i])) },
             )
 
-            else -> ComingSoon()
+            else -> AboutSection(
+                profileListNaddr = vm.itemSetProvider.profileListNaddr.value,
+                topicListNaddr = vm.itemSetProvider.topicListNaddr.value,
+                description = vm.itemSetProvider.description.value,
+                onUpdate = onUpdate
+            )
         }
     }
 }
@@ -92,5 +112,51 @@ private fun getHeaders(numOfProfiles: Int, numOfTopics: Int): List<String> {
     return listOf(stringResource(id = R.string.feed)) + getListTabHeaders(
         numOfProfiles = numOfProfiles,
         numOfTopics = numOfTopics
-    )
+    ) + stringResource(id = R.string.about)
+}
+
+@Composable
+private fun AboutSection(
+    profileListNaddr: String,
+    topicListNaddr: String,
+    description: AnnotatedString,
+    onUpdate: OnUpdate
+) {
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        item {
+            Spacer(modifier = Modifier.height(spacing.medium))
+            UriRow(
+                header = stringResource(id = R.string.profile_list_identifier),
+                naddr = profileListNaddr
+            )
+        }
+        item {
+            UriRow(
+                header = stringResource(id = R.string.topic_list_identifier),
+                naddr = topicListNaddr
+            )
+        }
+        if (description.isNotEmpty()) item {
+            AnnotatedTextWithHeader(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = spacing.medium),
+                header = stringResource(id = R.string.about),
+                text = description,
+                onUpdate = onUpdate
+            )
+        }
+    }
+}
+
+@Composable
+private fun UriRow(header: String, naddr: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = spacing.bigScreenEdge, vertical = spacing.medium)
+    ) {
+        SmallHeader(header = header)
+        CopyableText(text = naddr.shortenBech32(), NOSTR_URI + naddr)
+    }
 }

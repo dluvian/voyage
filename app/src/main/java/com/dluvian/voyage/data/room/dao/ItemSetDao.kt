@@ -5,6 +5,7 @@ import androidx.room.Query
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.model.ItemSetMeta
+import com.dluvian.voyage.data.room.entity.helper.TitleAndDescription
 import kotlinx.coroutines.flow.Flow
 
 
@@ -56,11 +57,11 @@ interface ItemSetDao {
     )
     suspend fun getNonAddableTopicSets(topic: Topic): List<ItemSetMeta>
 
-    @Query("SELECT title FROM profileSet WHERE identifier = :identifier")
-    suspend fun getProfileSetTitle(identifier: String): String?
+    @Query("SELECT title, description FROM profileSet WHERE identifier = :identifier")
+    suspend fun getProfileSetTitleAndDescription(identifier: String): TitleAndDescription?
 
-    @Query("SELECT title FROM topicSet WHERE identifier = :identifier")
-    suspend fun getTopicSetTitle(identifier: String): String?
+    @Query("SELECT title, description FROM topicSet WHERE identifier = :identifier")
+    suspend fun getTopicSetTitleAndDescription(identifier: String): TitleAndDescription?
 
     @Query("SELECT DISTINCT pubkey FROM profileSetItem WHERE identifier = :identifier LIMIT :limit")
     suspend fun getPubkeys(identifier: String, limit: Int): List<PubkeyHex>

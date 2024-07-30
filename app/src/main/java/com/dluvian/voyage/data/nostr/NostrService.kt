@@ -259,6 +259,7 @@ class NostrService(
     suspend fun publishProfileSet(
         identifier: String,
         title: String,
+        description: String,
         pubkeys: List<PublicKey>,
         relayUrls: Collection<RelayUrl>,
     ): Result<Event> {
@@ -266,13 +267,19 @@ class NostrService(
             return Result.failure(IllegalArgumentException("Too many profiles"))
         }
 
-        return eventMaker.buildProfileSet(identifier = identifier, title = title, pubkeys = pubkeys)
+        return eventMaker.buildProfileSet(
+            identifier = identifier,
+            title = title,
+            description = description,
+            pubkeys = pubkeys
+        )
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
     suspend fun publishTopicSet(
         identifier: String,
         title: String,
+        description: String,
         topics: List<Topic>,
         relayUrls: Collection<RelayUrl>,
     ): Result<Event> {
@@ -280,7 +287,12 @@ class NostrService(
             return Result.failure(IllegalArgumentException("Too many topics"))
         }
 
-        return eventMaker.buildTopicSet(identifier = identifier, title = title, topics = topics)
+        return eventMaker.buildTopicSet(
+            identifier = identifier,
+            title = title,
+            description = description,
+            topics = topics
+        )
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 

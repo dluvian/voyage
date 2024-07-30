@@ -218,4 +218,6 @@
     <string name="deleted_n_posts">Deleted %d posts</string>
     <string name="delete">Delete</string>
     <string name="are_you_sure_you_want_to_delete_all_posts_from_the_database">Are you sure you want to delete all posts from the database?</string>
+    <string name="profile_list_identifier">Profile list identifier</string>
+    <string name="topic_list_identifier">Topic list identifier</string>
 </resources>

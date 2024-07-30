@@ -36,6 +36,7 @@ class EditListViewModel(
     val isLoading = mutableStateOf(false)
     val isSaving = mutableStateOf(false)
     val title = mutableStateOf("")
+    val description = mutableStateOf("")
     val profiles = mutableStateOf(emptyList<AdvancedProfileView>())
     val topics = mutableStateOf(emptyList<Topic>())
     val tabIndex = mutableIntStateOf(0)
@@ -43,6 +44,7 @@ class EditListViewModel(
     fun createNew() {
         _identifier.value = UUID.randomUUID().toString()
         title.value = ""
+        description.value = ""
         profiles.value = emptyList()
         topics.value = emptyList()
     }
@@ -53,10 +55,12 @@ class EditListViewModel(
 
         if (identifier == itemSetProvider.identifier.value) {
             title.value = itemSetProvider.title.value
+            description.value = itemSetProvider.description.value.text
             profiles.value = itemSetProvider.profiles.value
             topics.value = itemSetProvider.topics.value
         } else {
             title.value = ""
+            description.value = ""
             profiles.value = emptyList()
             topics.value = emptyList()
             tabIndex.intValue = 0
@@ -69,6 +73,7 @@ class EditListViewModel(
             lazyNostrSubscriber.lazySubUnknownProfiles(selection = CustomPubkeys(pubkeys = pubkeys))
         }.invokeOnCompletion {
             title.value = itemSetProvider.title.value
+            description.value = itemSetProvider.description.value.text
             profiles.value = itemSetProvider.profiles.value
             topics.value = itemSetProvider.topics.value
             isLoading.value = false
@@ -103,10 +108,12 @@ class EditListViewModel(
             val profileSet = itemSetEditor.editProfileSet(
                 identifier = _identifier.value,
                 title = title.value,
+                description = description.value,
                 pubkeys = profiles.value.map { it.pubkey })
             val topicSet = itemSetEditor.editTopicSet(
                 identifier = _identifier.value,
                 title = title.value,
+                description = description.value,
                 topics = topics.value
             )
 

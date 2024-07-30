@@ -7,6 +7,7 @@ import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.account.AccountManager
 import com.dluvian.voyage.data.nostr.Nip65Relay
 import com.dluvian.voyage.data.nostr.RelayUrl
+import com.dluvian.voyage.data.nostr.createDescriptionTag
 import com.dluvian.voyage.data.nostr.createHashtagTag
 import com.dluvian.voyage.data.nostr.createMentionTag
 import com.dluvian.voyage.data.nostr.createReplyTag
@@ -161,31 +162,6 @@ class EventMaker(
         return accountManager.sign(unsignedEvent = unsignedEvent)
     }
 
-    suspend fun buildProfileSet(
-        identifier: String,
-        title: String,
-        pubkeys: List<PublicKey>
-    ): Result<Event> {
-        val additionalTags = listOf(createTitleTag(title = title))
-        val unsignedEvent = EventBuilder.followSet(identifier = identifier, publicKeys = pubkeys)
-            .addTags(tags = additionalTags)
-            .toUnsignedEvent(publicKey = accountManager.getPublicKey())
-
-        return accountManager.sign(unsignedEvent = unsignedEvent)
-    }
-
-    suspend fun buildTopicSet(
-        identifier: String,
-        title: String,
-        topics: List<Topic>
-    ): Result<Event> {
-        val unsignedEvent = EventBuilder.interestSet(identifier = identifier, hashtags = topics)
-            .addTags(tags = listOf(createTitleTag(title = title)))
-            .toUnsignedEvent(publicKey = accountManager.getPublicKey())
-
-        return accountManager.sign(unsignedEvent = unsignedEvent)
-    }
-
     suspend fun buildProfile(metadata: Metadata): Result<Event> {
         val unsignedEvent = EventBuilder.metadata(metadata)
             .toUnsignedEvent(publicKey = accountManager.getPublicKey())
@@ -208,5 +184,47 @@ class EventMaker(
                 unsignedEvent.exceptionOrNull() ?: IllegalStateException("EventBuilder.auth failed")
             )
         }
+    }
+
+    suspend fun buildProfileSet(
+        identifier: String,
+        title: String,
+        description: String,
+        pubkeys: List<PublicKey>
+    ): Result<Event> {
+        return buildSet(
+            title = title,
+            description = description,
+            eventBuilder = EventBuilder.followSet(identifier = identifier, publicKeys = pubkeys)
+        )
+    }
+
+    suspend fun buildTopicSet(
+        identifier: String,
+        title: String,
+        description: String,
+        topics: List<Topic>
+    ): Result<Event> {
+        return buildSet(
+            title = title,
+            description = description,
+            eventBuilder = EventBuilder.interestSet(identifier = identifier, hashtags = topics)
+        )
+    }
+
+    private suspend fun buildSet(
+        title: String,
+        description: String,
+        eventBuilder: EventBuilder
+    ): Result<Event> {
+        val additionalTags = listOf(
+            createTitleTag(title = title),
+            createDescriptionTag(description = description)
+        )
+        val unsignedEvent = eventBuilder
+            .addTags(tags = additionalTags)
+            .toUnsignedEvent(publicKey = accountManager.getPublicKey())
+
+        return accountManager.sign(unsignedEvent = unsignedEvent)
     }
 }

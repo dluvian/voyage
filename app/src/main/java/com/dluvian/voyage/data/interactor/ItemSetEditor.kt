@@ -28,13 +28,15 @@ class ItemSetEditor(
     suspend fun editProfileSet(
         identifier: String,
         title: String,
+        description: String,
         pubkeys: List<PubkeyHex>
     ): Result<Event> {
         return nostrService.publishProfileSet(
             identifier = identifier,
             title = title,
+            description = description,
             pubkeys = pubkeys.map { PublicKey.fromHex(it) },
-            relayUrls = relayProvider.getPublishRelays(addConnected = false)
+            relayUrls = relayProvider.getPublishRelays(addConnected = false) // TODO: write relays only
         ).onFailure {
             Log.w(TAG, "Failed to sign profile set", it)
         }.onSuccess {
@@ -51,13 +53,15 @@ class ItemSetEditor(
     suspend fun editTopicSet(
         identifier: String,
         title: String,
+        description: String,
         topics: List<Topic>
     ): Result<Event> {
         return nostrService.publishTopicSet(
             identifier = identifier,
             title = title,
+            description = description,
             topics = topics,
-            relayUrls = relayProvider.getPublishRelays(addConnected = false)
+            relayUrls = relayProvider.getPublishRelays(addConnected = false) // TODO: write relays only
         ).onFailure {
             Log.w(TAG, "Failed to sign topic set", it)
         }.onSuccess {
@@ -84,13 +88,14 @@ class ItemSetEditor(
             return Result.failure(IllegalArgumentException("List is already full"))
         }
 
-        val title = itemSetProvider.getTitle(identifier = identifier)
+        val titleAndDescription = itemSetProvider.getTitleAndDescription(identifier = identifier)
 
         return when (item) {
             is ItemSetProfile -> {
                 editProfileSet(
                     identifier = identifier,
-                    title = title,
+                    title = titleAndDescription.title,
+                    description = titleAndDescription.description,
                     pubkeys = currentList + item.pubkey,
                 )
             }
@@ -98,7 +103,8 @@ class ItemSetEditor(
             is ItemSetTopic -> {
                 editTopicSet(
                     identifier = identifier,
-                    title = title,
+                    title = titleAndDescription.title,
+                    description = titleAndDescription.description,
                     topics = currentList + item.topic,
                 )
             }

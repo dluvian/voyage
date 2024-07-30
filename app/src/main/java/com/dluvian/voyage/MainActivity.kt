@@ -107,7 +107,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
     val profilePagerState = rememberPagerState { 4 }
     val followListsPagerState = rememberPagerState { 2 }
     val muteListPagerState = rememberPagerState { 2 }
-    val listViewPagerState = rememberPagerState { 3 }
+    val listViewPagerState = rememberPagerState { 4 }
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
 

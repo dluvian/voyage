@@ -2,6 +2,7 @@ package com.dluvian.voyage.data.event
 
 import android.util.Log
 import com.dluvian.voyage.core.MAX_CONTENT_LEN
+import com.dluvian.voyage.core.MAX_DESCRIPTION_LEN
 import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.MAX_SUBJECT_LEN
 import com.dluvian.voyage.core.MAX_TOPICS
@@ -11,6 +12,7 @@ import com.dluvian.voyage.core.takeRandom
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.SubId
+import com.dluvian.voyage.data.nostr.getDescription
 import com.dluvian.voyage.data.nostr.getMetadata
 import com.dluvian.voyage.data.nostr.getNip65s
 import com.dluvian.voyage.data.nostr.getReplyToId
@@ -245,6 +247,7 @@ class EventValidator(
                 identifier = identifier,
                 myPubkey = event.author().toHex(),
                 title = event.getNormalizedTitle(),
+                description = event.getNormalizedDescription(),
                 pubkeys = event.publicKeys()
                     .distinct()
                     .takeRandom(MAX_KEYS_SQL)
@@ -261,6 +264,7 @@ class EventValidator(
                 identifier = identifier,
                 myPubkey = event.author().toHex(),
                 title = event.getNormalizedTitle(),
+                description = event.getNormalizedDescription(),
                 topics = event.getNormalizedTopics().takeRandom(MAX_KEYS_SQL).toSet(),
                 createdAt = event.createdAt().secs()
             )
@@ -271,6 +275,13 @@ class EventValidator(
                 .orEmpty()
                 .trim()
                 .take(MAX_SUBJECT_LEN)
+        }
+
+        private fun Event.getNormalizedDescription(): String {
+            return this.getDescription()
+                .orEmpty()
+                .trim()
+                .take(MAX_DESCRIPTION_LEN)
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.dluvian.voyage.data.provider
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.text.AnnotatedString
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.Topic
@@ -12,6 +13,7 @@ import com.dluvian.voyage.core.model.ItemSetTopic
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.model.ItemSetMeta
 import com.dluvian.voyage.data.room.AppDatabase
+import com.dluvian.voyage.data.room.entity.helper.TitleAndDescription
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,12 +21,17 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import rust.nostr.protocol.Coordinate
+import rust.nostr.protocol.Kind
+import rust.nostr.protocol.KindEnum
 
 class ItemSetProvider(
     private val room: AppDatabase,
     private val myPubkeyProvider: IMyPubkeyProvider,
     private val friendProvider: FriendProvider,
     private val muteProvider: MuteProvider,
+    private val annotatedStringProvider: AnnotatedStringProvider,
+    private val relayProvider: RelayProvider,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val allPubkeys = room.itemSetDao().getAllPubkeysFlow()
@@ -32,19 +39,28 @@ class ItemSetProvider(
 
     val identifier = mutableStateOf("")
     val title = mutableStateOf("")
+    val description = mutableStateOf(AnnotatedString(""))
+    val profileListNaddr = mutableStateOf("")
+    val topicListNaddr = mutableStateOf("")
+
     val profiles = mutableStateOf(emptyList<AdvancedProfileView>())
     val topics = mutableStateOf(emptyList<Topic>())
 
     suspend fun loadList(identifier: String) {
         this.identifier.value = identifier
+        profileListNaddr.value = getNaddr(kind = KindEnum.FollowSet, identifier = identifier)
+        topicListNaddr.value = getNaddr(kind = KindEnum.InterestSet, identifier = identifier)
 
         if (identifier != this.identifier.value) {
             title.value = ""
+            description.value = AnnotatedString("")
             profiles.value = emptyList()
             topics.value = emptyList()
         }
 
-        title.value = getTitle(identifier = identifier)
+        val titleAndDescription = getTitleAndDescription(identifier = identifier)
+        title.value = titleAndDescription.title
+        description.value = annotatedStringProvider.annotate(titleAndDescription.description)
         profiles.value = getProfilesFromList(identifier = identifier)
         topics.value = getTopicsFromList(identifier = identifier)
     }
@@ -72,10 +88,22 @@ class ItemSetProvider(
         }.sortedBy { it.title }
     }
 
-    suspend fun getTitle(identifier: String): String {
-        return room.itemSetDao().getProfileSetTitle(identifier = identifier)
-            .orEmpty()
-            .ifEmpty { room.itemSetDao().getTopicSetTitle(identifier = identifier).orEmpty() }
+    suspend fun getTitleAndDescription(identifier: String): TitleAndDescription {
+        val profile = room.itemSetDao().getProfileSetTitleAndDescription(identifier = identifier)
+
+        return if (profile == null || profile.title.isEmpty()) {
+            room.itemSetDao().getProfileSetTitleAndDescription(identifier = identifier)
+                ?: TitleAndDescription()
+        } else profile
+    }
+
+    private fun getNaddr(kind: KindEnum, identifier: String): String {
+        return Coordinate(
+            kind = Kind.fromEnum(kind),
+            identifier = identifier,
+            publicKey = myPubkeyProvider.getPublicKey(),
+            relays = relayProvider.getWriteRelays()
+        ).toBech32()
     }
 
     private suspend fun getProfilesFromList(identifier: String): List<AdvancedProfileView> {

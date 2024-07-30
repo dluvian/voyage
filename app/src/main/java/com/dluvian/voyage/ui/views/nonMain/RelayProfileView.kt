@@ -1,6 +1,5 @@
 package com.dluvian.voyage.ui.views.nonMain
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -16,17 +15,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.copyAndToast
 import com.dluvian.voyage.core.viewModel.RelayProfileViewModel
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
+import com.dluvian.voyage.ui.components.text.CopyableText
 import com.dluvian.voyage.ui.theme.spacing
 import rust.nostr.protocol.RelayInformationDocument
 
@@ -209,9 +206,6 @@ private fun RelayProfileViewContent(
 
 @Composable
 private fun InfoRow(infoType: String, value: String) {
-    val context = LocalContext.current
-    val clip = LocalClipboardManager.current
-    val toast = stringResource(id = R.string.value_copied)
     Row(
         modifier = Modifier.padding(vertical = spacing.large),
         verticalAlignment = Alignment.CenterVertically
@@ -221,12 +215,7 @@ private fun InfoRow(infoType: String, value: String) {
         }
         Spacer(modifier = Modifier.width(spacing.medium))
         Column(modifier = Modifier.weight(weight = 0.7f, fill = true)) {
-            Text(
-                modifier = Modifier.clickable {
-                    copyAndToast(text = value, toast = toast, context = context, clip = clip)
-                },
-                text = value
-            )
+            CopyableText(text = value)
         }
     }
 }

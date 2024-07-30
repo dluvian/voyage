@@ -2,7 +2,6 @@ package com.dluvian.voyage.ui.views.nonMain.profile
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,16 +26,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import com.dluvian.voyage.data.nostr.RelayUrl
-import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Bech32
-import com.dluvian.voyage.core.ClickText
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.MAX_RELAYS
 import com.dluvian.voyage.core.OnUpdate
@@ -52,12 +46,14 @@ import com.dluvian.voyage.core.shortenBech32
 import com.dluvian.voyage.core.takeRandom
 import com.dluvian.voyage.core.toBech32
 import com.dluvian.voyage.core.viewModel.ProfileViewModel
+import com.dluvian.voyage.data.nostr.RelayUrl
+import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.ui.components.Feed
 import com.dluvian.voyage.ui.components.PullRefreshBox
 import com.dluvian.voyage.ui.components.SimpleTabPager
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.ComingSoon
-import com.dluvian.voyage.ui.components.text.AnnotatedText
+import com.dluvian.voyage.ui.components.text.AnnotatedTextWithHeader
 import com.dluvian.voyage.ui.components.text.IndexedText
 import com.dluvian.voyage.ui.theme.KeyIcon
 import com.dluvian.voyage.ui.theme.LightningIcon
@@ -238,11 +234,12 @@ private fun AboutPage(
                 )
             }
             if (!about.isNullOrEmpty()) item {
-                AboutSection(
+                AnnotatedTextWithHeader(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = spacing.medium),
-                    about = about,
+                    header = stringResource(id = R.string.about),
+                    text = about,
                     onUpdate = onUpdate
                 )
             }
@@ -282,27 +279,6 @@ private fun AboutPageTextRow(
             overflow = TextOverflow.Ellipsis
         )
         trailingIcon()
-    }
-}
-
-@Composable
-private fun AboutSection(
-    modifier: Modifier = Modifier,
-    about: AnnotatedString,
-    onUpdate: OnUpdate
-) {
-    val uriHandler = LocalUriHandler.current
-    Column(modifier = modifier) {
-        Text(
-            text = stringResource(id = R.string.about),
-            style = MaterialTheme.typography.titleMedium
-        )
-        AnnotatedText(
-            text = about,
-            onClick = { offset ->
-                onUpdate(ClickText(text = about, offset = offset, uriHandler = uriHandler))
-            }
-        )
     }
 }
 

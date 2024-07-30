@@ -110,6 +110,7 @@ data class ValidatedProfileSet(
     override val identifier: String,
     val myPubkey: PubkeyHex,
     val title: String,
+    val description: String,
     val pubkeys: Set<PubkeyHex>,
     override val createdAt: Long
 ) : ValidatedSet(
@@ -121,6 +122,7 @@ data class ValidatedTopicSet(
     override val identifier: String,
     val myPubkey: PubkeyHex,
     val title: String,
+    val description: String,
     val topics: Set<Topic>,
     override val createdAt: Long
 ) : ValidatedSet(

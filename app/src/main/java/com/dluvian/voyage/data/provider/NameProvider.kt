@@ -17,13 +17,14 @@ private const val TAG = "NameProvider"
 
 class NameProvider(
     private val profileDao: ProfileDao,
-    private val nostrSubscriber: NostrSubscriber,
     private val metadataInMemory: MetadataInMemory,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val nameCache = Collections.synchronizedMap(mutableMapOf<PublicKey, String?>())
     private val subCache = Collections.synchronizedSet(mutableSetOf<PubkeyHex>())
     private val jobs = Collections.synchronizedMap(mutableMapOf<PublicKey, Job>())
+    lateinit var nostrSubscriber: NostrSubscriber
+
 
     fun getName(nprofile: Nip19Profile): String? {
         val name = nameCache[nprofile.publicKey()]

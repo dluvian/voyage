@@ -28,6 +28,10 @@ fun createTitleTag(title: String): Tag {
     return Tag.fromStandardized(TagStandard.Title(title = title))
 }
 
+fun createDescriptionTag(description: String): Tag {
+    return Tag.fromStandardized(TagStandard.Description(desc = description))
+}
+
 fun createMentionTag(pubkeys: Collection<String>): List<Tag> {
     return pubkeys.map { Tag.parse(listOf("p", it)) }
 }
@@ -121,16 +125,13 @@ fun Event.getNip65s(): List<Nip65Relay> {
         .distinctBy { it.url }.toList()
 }
 
-fun Event.getSubject(): String? {
-    return this.tags()
-        .firstOrNull { it.kind() == TagKind.Subject }
-        ?.asVec()
-        ?.getOrNull(1)
-}
+fun Event.getSubject() = this.getValue(kind = TagKind.Subject)
+fun Event.getTitle() = this.getValue(kind = TagKind.Title)
+fun Event.getDescription() = this.getValue(kind = TagKind.Description)
 
-fun Event.getTitle(): String? {
+private fun Event.getValue(kind: TagKind): String? {
     return this.tags()
-        .firstOrNull { it.kind() == TagKind.Title }
+        .firstOrNull { it.kind() == kind }
         ?.asVec()
         ?.getOrNull(1)
 }

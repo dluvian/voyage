@@ -9,8 +9,9 @@ import com.dluvian.voyage.data.model.SingularPubkey
 
 class PubkeyProvider(
     private val friendProvider: FriendProvider,
-    private val itemSetProvider: ItemSetProvider
 ) {
+    lateinit var itemSetProvider: ItemSetProvider
+
     suspend fun getPubkeys(selection: PubkeySelection): List<PubkeyHex> {
         return when (selection) {
             is CustomPubkeys -> selection.pubkeys.toList()

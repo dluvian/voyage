@@ -24,6 +24,7 @@ data class TopicSetEntity(
     val identifier: String,
     val myPubkey: PubkeyHex,
     val title: String,
+    @ColumnInfo(defaultValue = "") val description: String,
     val createdAt: Long,
     @ColumnInfo(defaultValue = "0") val deleted: Boolean,
 ) {
@@ -33,6 +34,7 @@ data class TopicSetEntity(
                 identifier = set.identifier,
                 myPubkey = set.myPubkey,
                 title = set.title,
+                description = set.description,
                 createdAt = set.createdAt,
                 deleted = false
             )
