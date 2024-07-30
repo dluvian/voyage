@@ -67,6 +67,7 @@ I don't plan to publish this app in the Google Play Store.
 - The project uses [rust-nostr](https://github.com/rust-nostr/nostr), a cross platform Nostr library
   written in Rust
 - Release notes are generated with [git-cliff](https://github.com/orhun/git-cliff)
+- Recommended local relay is [Citrine](https://github.com/greenart7c3/Citrine)
 - [App icon source](https://www.flaticon.com/free-icons/greek)
 
 ## Nostr
