@@ -15,6 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.zIndex
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import kotlinx.coroutines.CoroutineScope
@@ -72,7 +73,7 @@ private fun PagerTabRow(
                     index.intValue = i
                     onClickTab(i)
                 },
-                text = { Text(header) }
+                text = { Text(text = header, maxLines = 1, overflow = TextOverflow.Ellipsis) }
             )
         }
     }
