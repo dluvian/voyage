@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -24,7 +23,6 @@ import com.dluvian.voyage.core.ListViewRefresh
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenTopic
-import com.dluvian.voyage.core.utils.getListTabHeaders
 import com.dluvian.voyage.core.utils.shortenBech32
 import com.dluvian.voyage.core.viewModel.ListViewModel
 import com.dluvian.voyage.data.nostr.NOSTR_URI
@@ -65,7 +63,12 @@ private fun ScreenContent(vm: ListViewModel, onUpdate: OnUpdate) {
     val aboutState = rememberLazyListState()
 
     SimpleTabPager(
-        headers = getHeaders(numOfProfiles = profiles.size, numOfTopics = topics.size),
+        headers = listOf(
+            stringResource(id = R.string.feed),
+            stringResource(id = R.string.profiles),
+            stringResource(id = R.string.topics),
+            stringResource(id = R.string.about)
+        ),
         index = vm.tabIndex,
         pagerState = vm.pagerState,
         isLoading = vm.isLoading.value && !vm.paginator.isRefreshing.value,
@@ -109,15 +112,6 @@ private fun ScreenContent(vm: ListViewModel, onUpdate: OnUpdate) {
             )
         }
     }
-}
-
-@Composable
-@Stable
-private fun getHeaders(numOfProfiles: Int, numOfTopics: Int): List<String> {
-    return listOf(stringResource(id = R.string.feed)) + getListTabHeaders(
-        numOfProfiles = numOfProfiles,
-        numOfTopics = numOfTopics
-    ) + stringResource(id = R.string.about)
 }
 
 @Composable
