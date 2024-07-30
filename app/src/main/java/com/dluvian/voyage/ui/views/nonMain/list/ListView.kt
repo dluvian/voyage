@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -60,6 +62,8 @@ private fun ScreenContent(vm: ListViewModel, onUpdate: OnUpdate) {
     val profiles by vm.itemSetProvider.profiles
     val topics by vm.itemSetProvider.topics
 
+    val aboutState = rememberLazyListState()
+
     SimpleTabPager(
         headers = getHeaders(numOfProfiles = profiles.size, numOfTopics = topics.size),
         index = vm.tabIndex,
@@ -70,7 +74,7 @@ private fun ScreenContent(vm: ListViewModel, onUpdate: OnUpdate) {
                 0 -> scope.launch { vm.feedState.animateScrollToItem(0) }
                 1 -> scope.launch { vm.profileState.animateScrollToItem(0) }
                 2 -> scope.launch { vm.topicState.animateScrollToItem(0) }
-                3 -> scope.launch { /*TODO*/ }
+                3 -> scope.launch { aboutState.animateScrollToItem(0) }
                 else -> {}
             }
         },
@@ -100,6 +104,7 @@ private fun ScreenContent(vm: ListViewModel, onUpdate: OnUpdate) {
                 profileListNaddr = vm.itemSetProvider.profileListNaddr.value,
                 topicListNaddr = vm.itemSetProvider.topicListNaddr.value,
                 description = vm.itemSetProvider.description.value,
+                state = aboutState,
                 onUpdate = onUpdate
             )
         }
@@ -120,9 +125,10 @@ private fun AboutSection(
     profileListNaddr: String,
     topicListNaddr: String,
     description: AnnotatedString,
+    state: LazyListState,
     onUpdate: OnUpdate
 ) {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
+    LazyColumn(modifier = Modifier.fillMaxSize(), state = state) {
         item {
             Spacer(modifier = Modifier.height(spacing.medium))
             UriRow(
