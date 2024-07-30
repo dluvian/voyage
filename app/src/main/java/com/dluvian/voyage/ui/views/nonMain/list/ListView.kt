@@ -147,7 +147,7 @@ private fun AboutSection(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = spacing.medium),
-                header = stringResource(id = R.string.about),
+                header = stringResource(id = R.string.description),
                 text = description,
                 onUpdate = onUpdate
             )
