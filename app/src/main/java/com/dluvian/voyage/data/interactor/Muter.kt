@@ -13,8 +13,8 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.UnmuteProfile
 import com.dluvian.voyage.core.UnmuteTopic
-import com.dluvian.voyage.core.launchIO
-import com.dluvian.voyage.core.showToast
+import com.dluvian.voyage.core.utils.launchIO
+import com.dluvian.voyage.core.utils.showToast
 import com.dluvian.voyage.data.event.ValidatedMuteList
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.secs

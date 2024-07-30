@@ -1,4 +1,4 @@
-package com.dluvian.voyage.core
+package com.dluvian.voyage.core.utils
 
 import android.content.Context
 import android.content.Intent
@@ -9,6 +9,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -17,11 +19,23 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import com.dluvian.voyage.R
+import com.dluvian.voyage.core.Bech32
+import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
+import com.dluvian.voyage.core.MAX_SUBJECT_LEN
+import com.dluvian.voyage.core.MAX_TOPICS
+import com.dluvian.voyage.core.ManagedLauncher
+import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.core.ProcessExternalAccount
+import com.dluvian.voyage.core.ProcessExternalSignature
+import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.data.model.RelevantMetadata
 import com.dluvian.voyage.data.nostr.LOCAL_WEBSOCKET
@@ -80,18 +94,6 @@ fun Metadata.toRelevantMetadata(pubkey: PubkeyHex, createdAt: Long): RelevantMet
         lightning = this.getLud16().orEmpty().ifEmpty { this.getLud06() },
         createdAt = createdAt
     )
-}
-
-fun Metadata.getNormalizedName(): String {
-    val name = this.getName()
-        .orEmpty()
-        .ifBlank { this.getDisplayName() }
-        .orEmpty()
-    return normalizeName(str = name)
-}
-
-fun normalizeName(str: String): String {
-    return str.filterNot { it.isWhitespace() }.take(MAX_NAME_LEN)
 }
 
 fun SnackbarHostState.showToast(scope: CoroutineScope, msg: String) {
@@ -196,24 +198,6 @@ fun extractHashtags(extractFrom: String) = hashtagRegex.findAll(extractFrom).toL
 
 fun String.isBareTopicStr(): Boolean = bareTopicRegex.matches(this)
 
-fun Topic.normalizeTopic(): Topic {
-    return this.trim()
-        .dropWhile { it == '#' || it.isWhitespace() }
-        .take(MAX_TOPIC_LEN)
-        .lowercase()
-}
-
-private fun List<Topic>.normalizeTopics(): List<Topic> {
-    return this
-        .map { it.normalizeTopic() }
-        .filter { it.isBareTopicStr() }
-        .distinct()
-}
-
-fun Event.getNormalizedTopics(limit: Int = Int.MAX_VALUE): List<Topic> {
-    return this.hashtags().normalizeTopics().take(limit)
-}
-
 @Composable
 fun LazyListState.showScrollButton(): Boolean {
     val hasOffset by remember { derivedStateOf { this.firstVisibleItemIndex > 2 } }
@@ -317,7 +301,6 @@ fun createProcessTextIntent(text: String, info: ResolveInfo): Intent {
         )
 }
 
-
 fun mergeToParentUIList(
     replies: Collection<ReplyView>,
     roots: Collection<RootPostView>,
@@ -412,4 +395,14 @@ fun Collection<RelayUrl>.addLocalRelay(port: Int?): List<RelayUrl> {
     } else {
         this.toList()
     }
+}
+
+@Composable
+fun getTransparentTextFieldColors(): TextFieldColors {
+    return TextFieldDefaults.colors(
+        focusedIndicatorColor = Color.Transparent,
+        unfocusedIndicatorColor = Color.Transparent,
+        focusedContainerColor = Color.Transparent,
+        unfocusedContainerColor = Color.Transparent
+    )
 }

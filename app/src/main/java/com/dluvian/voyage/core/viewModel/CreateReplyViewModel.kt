@@ -5,16 +5,16 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.CreateReplyViewAction
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.SendReply
-import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.ParentUI
-import com.dluvian.voyage.core.showToast
+import com.dluvian.voyage.core.utils.launchIO
+import com.dluvian.voyage.core.utils.showToast
 import com.dluvian.voyage.data.interactor.PostSender
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
+import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.data.room.dao.EventRelayDao
 import kotlinx.coroutines.delay
 

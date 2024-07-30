@@ -2,7 +2,7 @@ package com.dluvian.voyage.data.provider
 
 import android.util.Log
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.launchIO
+import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.room.dao.ProfileDao

@@ -3,6 +3,7 @@ package com.dluvian.voyage.core.viewModel
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.R
@@ -13,10 +14,10 @@ import com.dluvian.voyage.core.EditListViewAddTopic
 import com.dluvian.voyage.core.EditListViewSave
 import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.isBareTopicStr
-import com.dluvian.voyage.core.launchIO
-import com.dluvian.voyage.core.normalizeTopic
-import com.dluvian.voyage.core.showToast
+import com.dluvian.voyage.core.utils.isBareTopicStr
+import com.dluvian.voyage.core.utils.launchIO
+import com.dluvian.voyage.core.utils.normalizeTopic
+import com.dluvian.voyage.core.utils.showToast
 import com.dluvian.voyage.data.interactor.ItemSetEditor
 import com.dluvian.voyage.data.model.CustomPubkeys
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
@@ -36,7 +37,7 @@ class EditListViewModel(
     val isLoading = mutableStateOf(false)
     val isSaving = mutableStateOf(false)
     val title = mutableStateOf("")
-    val description = mutableStateOf("")
+    val description = mutableStateOf(TextFieldValue())
     val profiles = mutableStateOf(emptyList<AdvancedProfileView>())
     val topics = mutableStateOf(emptyList<Topic>())
     val tabIndex = mutableIntStateOf(0)
@@ -44,7 +45,7 @@ class EditListViewModel(
     fun createNew() {
         _identifier.value = UUID.randomUUID().toString()
         title.value = ""
-        description.value = ""
+        description.value = TextFieldValue()
         profiles.value = emptyList()
         topics.value = emptyList()
     }
@@ -55,12 +56,12 @@ class EditListViewModel(
 
         if (identifier == itemSetProvider.identifier.value) {
             title.value = itemSetProvider.title.value
-            description.value = itemSetProvider.description.value.text
+            description.value = TextFieldValue(itemSetProvider.description.value.text)
             profiles.value = itemSetProvider.profiles.value
             topics.value = itemSetProvider.topics.value
         } else {
             title.value = ""
-            description.value = ""
+            description.value = TextFieldValue()
             profiles.value = emptyList()
             topics.value = emptyList()
             tabIndex.intValue = 0
@@ -73,7 +74,7 @@ class EditListViewModel(
             lazyNostrSubscriber.lazySubUnknownProfiles(selection = CustomPubkeys(pubkeys = pubkeys))
         }.invokeOnCompletion {
             title.value = itemSetProvider.title.value
-            description.value = itemSetProvider.description.value.text
+            description.value = TextFieldValue(itemSetProvider.description.value.text)
             profiles.value = itemSetProvider.profiles.value
             topics.value = itemSetProvider.topics.value
             isLoading.value = false
@@ -108,12 +109,12 @@ class EditListViewModel(
             val profileSet = itemSetEditor.editProfileSet(
                 identifier = _identifier.value,
                 title = title.value,
-                description = description.value,
+                description = description.value.text,
                 pubkeys = profiles.value.map { it.pubkey })
             val topicSet = itemSetEditor.editTopicSet(
                 identifier = _identifier.value,
                 title = title.value,
-                description = description.value,
+                description = description.value.text,
                 topics = topics.value
             )
 

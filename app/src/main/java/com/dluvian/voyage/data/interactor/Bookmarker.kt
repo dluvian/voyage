@@ -9,8 +9,8 @@ import com.dluvian.voyage.core.BookmarkPost
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.UnbookmarkPost
-import com.dluvian.voyage.core.launchIO
-import com.dluvian.voyage.core.showToast
+import com.dluvian.voyage.core.utils.launchIO
+import com.dluvian.voyage.core.utils.showToast
 import com.dluvian.voyage.data.event.ValidatedBookmarkList
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.secs

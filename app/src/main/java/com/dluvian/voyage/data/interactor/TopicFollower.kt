@@ -3,7 +3,6 @@ package com.dluvian.voyage.data.interactor
 import android.content.Context
 import android.util.Log
 import androidx.compose.material3.SnackbarHostState
-import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.FollowTopic
 import com.dluvian.voyage.core.LIST_CHANGE_DEBOUNCE
@@ -11,11 +10,12 @@ import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.TopicEvent
 import com.dluvian.voyage.core.UnfollowTopic
-import com.dluvian.voyage.core.getNormalizedTopics
-import com.dluvian.voyage.core.launchIO
-import com.dluvian.voyage.core.showToast
+import com.dluvian.voyage.core.utils.getNormalizedTopics
+import com.dluvian.voyage.core.utils.launchIO
+import com.dluvian.voyage.core.utils.showToast
 import com.dluvian.voyage.data.event.ValidatedTopicList
 import com.dluvian.voyage.data.nostr.NostrService
+import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.TopicDao
 import com.dluvian.voyage.data.room.dao.tx.TopicUpsertDao

@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.getNormalizedName
+import com.dluvian.voyage.core.utils.getNormalizedName
 import com.dluvian.voyage.data.event.ValidatedProfile
 
 @Entity(

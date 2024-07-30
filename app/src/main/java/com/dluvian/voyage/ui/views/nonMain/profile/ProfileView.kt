@@ -40,11 +40,11 @@ import com.dluvian.voyage.core.OpenRelayProfile
 import com.dluvian.voyage.core.ProfileViewRefresh
 import com.dluvian.voyage.core.ProfileViewReplyAppend
 import com.dluvian.voyage.core.ProfileViewRootAppend
-import com.dluvian.voyage.core.copyAndToast
-import com.dluvian.voyage.core.getSimpleLauncher
-import com.dluvian.voyage.core.shortenBech32
-import com.dluvian.voyage.core.takeRandom
-import com.dluvian.voyage.core.toBech32
+import com.dluvian.voyage.core.utils.copyAndToast
+import com.dluvian.voyage.core.utils.getSimpleLauncher
+import com.dluvian.voyage.core.utils.shortenBech32
+import com.dluvian.voyage.core.utils.takeRandom
+import com.dluvian.voyage.core.utils.toBech32
 import com.dluvian.voyage.core.viewModel.ProfileViewModel
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.createNprofile

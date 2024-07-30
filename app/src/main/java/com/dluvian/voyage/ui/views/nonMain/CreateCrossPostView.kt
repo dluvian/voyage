@@ -26,7 +26,7 @@ import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.SendCrossPost
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.canAddAnotherTopic
+import com.dluvian.voyage.core.utils.canAddAnotherTopic
 import com.dluvian.voyage.core.viewModel.CreateCrossPostViewModel
 import com.dluvian.voyage.ui.components.TopicSelectionColumn
 import com.dluvian.voyage.ui.components.dialog.AddTopicDialog

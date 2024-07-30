@@ -3,7 +3,6 @@ package com.dluvian.voyage.data.interactor
 import android.content.Context
 import android.util.Log
 import androidx.compose.material3.SnackbarHostState
-import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ClickNeutralizeVote
 import com.dluvian.voyage.core.ClickUpvote
@@ -11,9 +10,10 @@ import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.VoteEvent
-import com.dluvian.voyage.core.showToast
+import com.dluvian.voyage.core.utils.showToast
 import com.dluvian.voyage.data.event.EventDeletor
 import com.dluvian.voyage.data.nostr.NostrService
+import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.VoteDao
 import com.dluvian.voyage.data.room.entity.VoteEntity

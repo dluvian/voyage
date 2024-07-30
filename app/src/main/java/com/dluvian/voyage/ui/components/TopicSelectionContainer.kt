@@ -5,7 +5,7 @@ import androidx.compose.runtime.MutableState
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.canAddAnotherTopic
+import com.dluvian.voyage.core.utils.canAddAnotherTopic
 import com.dluvian.voyage.ui.components.dialog.AddTopicDialog
 
 @Composable

@@ -9,11 +9,11 @@ import com.dluvian.voyage.core.TopicViewAction
 import com.dluvian.voyage.core.TopicViewAppend
 import com.dluvian.voyage.core.TopicViewLoadLists
 import com.dluvian.voyage.core.TopicViewRefresh
-import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.ItemSetTopic
 import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.core.navigator.TopicNavView
-import com.dluvian.voyage.core.normalizeTopic
+import com.dluvian.voyage.core.utils.launchIO
+import com.dluvian.voyage.core.utils.normalizeTopic
 import com.dluvian.voyage.data.model.ItemSetMeta
 import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.nostr.SubscriptionCreator

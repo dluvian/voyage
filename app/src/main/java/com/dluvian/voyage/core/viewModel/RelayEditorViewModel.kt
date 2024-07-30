@@ -17,9 +17,9 @@ import com.dluvian.voyage.core.RemoveRelay
 import com.dluvian.voyage.core.SaveRelays
 import com.dluvian.voyage.core.ToggleReadRelay
 import com.dluvian.voyage.core.ToggleWriteRelay
-import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.ConnectionStatus
-import com.dluvian.voyage.core.showToast
+import com.dluvian.voyage.core.utils.launchIO
+import com.dluvian.voyage.core.utils.showToast
 import com.dluvian.voyage.data.event.ValidatedNip65
 import com.dluvian.voyage.data.nostr.Nip65Relay
 import com.dluvian.voyage.data.nostr.NostrService

@@ -1,9 +1,9 @@
 package com.dluvian.voyage.data.provider
 
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.createAdvancedProfile
-import com.dluvian.voyage.core.launchIO
-import com.dluvian.voyage.core.toShortenedBech32
+import com.dluvian.voyage.core.utils.createAdvancedProfile
+import com.dluvian.voyage.core.utils.launchIO
+import com.dluvian.voyage.core.utils.toShortenedBech32
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
 import com.dluvian.voyage.data.model.CustomPubkeys

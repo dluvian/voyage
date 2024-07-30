@@ -4,10 +4,10 @@ import android.util.Log
 import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
 import com.dluvian.voyage.core.MAX_KEYS
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.limitRestricted
-import com.dluvian.voyage.core.syncedPutOrAdd
-import com.dluvian.voyage.core.takeRandom
-import com.dluvian.voyage.core.textNoteAndRepostKinds
+import com.dluvian.voyage.core.utils.limitRestricted
+import com.dluvian.voyage.core.utils.syncedPutOrAdd
+import com.dluvian.voyage.core.utils.takeRandom
+import com.dluvian.voyage.core.utils.textNoteAndRepostKinds
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.model.FriendPubkeys
 import com.dluvian.voyage.data.model.ListPubkeys

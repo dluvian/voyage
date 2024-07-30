@@ -6,10 +6,6 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.UrlAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
-import com.dluvian.voyage.data.nostr.createNprofile
-import com.dluvian.voyage.core.extractHashtags
-import com.dluvian.voyage.core.extractNostrMentions
-import com.dluvian.voyage.core.extractUrls
 import com.dluvian.voyage.core.model.CoordinateMention
 import com.dluvian.voyage.core.model.NeventMention
 import com.dluvian.voyage.core.model.NostrMention
@@ -17,8 +13,12 @@ import com.dluvian.voyage.core.model.NoteMention
 import com.dluvian.voyage.core.model.NprofileMention
 import com.dluvian.voyage.core.model.NpubMention
 import com.dluvian.voyage.core.model.RelayMention
-import com.dluvian.voyage.core.shortenBech32
-import com.dluvian.voyage.core.shortenUrl
+import com.dluvian.voyage.core.utils.extractHashtags
+import com.dluvian.voyage.core.utils.extractNostrMentions
+import com.dluvian.voyage.core.utils.extractUrls
+import com.dluvian.voyage.core.utils.shortenBech32
+import com.dluvian.voyage.core.utils.shortenUrl
+import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.ui.theme.HyperlinkStyle
 import com.dluvian.voyage.ui.theme.MentionAndHashtagStyle
 import java.util.Collections

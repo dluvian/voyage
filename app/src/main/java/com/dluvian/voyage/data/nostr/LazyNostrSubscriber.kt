@@ -8,9 +8,9 @@ import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
 import com.dluvian.voyage.core.MAX_KEYS
 import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.limitRestricted
-import com.dluvian.voyage.core.mergeRelayFilters
-import com.dluvian.voyage.core.takeRandom
+import com.dluvian.voyage.core.utils.limitRestricted
+import com.dluvian.voyage.core.utils.mergeRelayFilters
+import com.dluvian.voyage.core.utils.takeRandom
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.model.CustomPubkeys
 import com.dluvian.voyage.data.model.FriendPubkeys

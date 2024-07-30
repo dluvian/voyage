@@ -7,8 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.core.DiscoverViewAction
 import com.dluvian.voyage.core.DiscoverViewInit
 import com.dluvian.voyage.core.DiscoverViewRefresh
-import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.TopicFollowState
+import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.provider.TopicProvider

@@ -48,7 +48,7 @@ import com.dluvian.voyage.core.UseDefaultAccount
 import com.dluvian.voyage.core.model.AccountType
 import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
-import com.dluvian.voyage.core.toShortenedNpub
+import com.dluvian.voyage.core.utils.toShortenedNpub
 import com.dluvian.voyage.core.viewModel.SettingsViewModel
 import com.dluvian.voyage.data.nostr.LOCAL_WEBSOCKET
 import com.dluvian.voyage.data.nostr.createNprofile

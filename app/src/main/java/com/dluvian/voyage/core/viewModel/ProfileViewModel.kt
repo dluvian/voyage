@@ -14,10 +14,10 @@ import com.dluvian.voyage.core.ProfileViewRefresh
 import com.dluvian.voyage.core.ProfileViewReplyAppend
 import com.dluvian.voyage.core.ProfileViewRootAppend
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.ItemSetProfile
 import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.core.navigator.ProfileNavView
+import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.model.FullProfileUI
 import com.dluvian.voyage.data.model.ItemSetMeta
 import com.dluvian.voyage.data.model.ProfileRootFeedSetting

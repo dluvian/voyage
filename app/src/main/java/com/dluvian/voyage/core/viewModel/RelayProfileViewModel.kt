@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.core.DELAY_1SEC
-import com.dluvian.voyage.core.launchIO
+import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.nostr.LOCALHOST
 import com.dluvian.voyage.data.nostr.NOSTR_URI
 import com.dluvian.voyage.data.nostr.RelayUrl

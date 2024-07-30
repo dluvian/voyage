@@ -1,14 +1,18 @@
 package com.dluvian.voyage.ui.views.nonMain.editList
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.EditListViewAddProfile
@@ -16,7 +20,8 @@ import com.dluvian.voyage.core.EditListViewAddTopic
 import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.getListTabHeaders
+import com.dluvian.voyage.core.utils.getListTabHeaders
+import com.dluvian.voyage.core.utils.getTransparentTextFieldColors
 import com.dluvian.voyage.core.viewModel.EditListViewModel
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.ui.components.SimpleTabPager
@@ -89,9 +94,9 @@ private fun ScreenContent(
         headers = getListTabHeaders(
             numOfProfiles = vm.profiles.value.size,
             numOfTopics = vm.topics.value.size
-        ),
+        ) + stringResource(id = R.string.about),
         index = vm.tabIndex,
-        pagerState = rememberPagerState { 2 },
+        pagerState = rememberPagerState { 3 },
         isLoading = vm.isLoading.value,
         onScrollUp = {
             when (it) {
@@ -133,6 +138,14 @@ private fun ScreenContent(
                         .apply { removeAt(i) }
                 }
             )
+
+            2 -> TextField(
+                modifier = Modifier.fillMaxSize(),
+                value = vm.description.value,
+                onValueChange = { newVal -> vm.description.value = newVal },
+                colors = getTransparentTextFieldColors(),
+                label = { Text(text = stringResource(R.string.description)) },
+                placeholder = { Text(text = stringResource(id = R.string.describe_this_list)) })
 
             else -> ComingSoon()
         }

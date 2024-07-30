@@ -3,7 +3,7 @@ package com.dluvian.voyage.data.provider
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.TopicFollowState
 import com.dluvian.voyage.core.model.TopicMuteState
-import com.dluvian.voyage.core.takeRandom
+import com.dluvian.voyage.core.utils.takeRandom
 import com.dluvian.voyage.data.model.ListTopics
 import com.dluvian.voyage.data.model.MyTopics
 import com.dluvian.voyage.data.model.TopicSelection

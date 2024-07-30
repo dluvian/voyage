@@ -1,7 +1,7 @@
 package com.dluvian.voyage.data.provider
 
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.takeRandom
+import com.dluvian.voyage.core.utils.takeRandom
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.room.dao.WebOfTrustDao
 import kotlinx.coroutines.CoroutineScope

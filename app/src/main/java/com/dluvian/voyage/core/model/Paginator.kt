@@ -3,12 +3,11 @@ package com.dluvian.voyage.core.model
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import com.dluvian.voyage.data.nostr.getCurrentSecs
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.FEED_OFFSET
 import com.dluvian.voyage.core.FEED_PAGE_SIZE
 import com.dluvian.voyage.core.Fn
-import com.dluvian.voyage.core.launchIO
+import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.model.BookmarksFeedSetting
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
@@ -18,6 +17,7 @@ import com.dluvian.voyage.data.model.ProfileRootFeedSetting
 import com.dluvian.voyage.data.model.ReplyFeedSetting
 import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
+import com.dluvian.voyage.data.nostr.getCurrentSecs
 import com.dluvian.voyage.data.provider.FeedProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay

@@ -10,8 +10,8 @@ import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.core.ListViewAction
 import com.dluvian.voyage.core.ListViewFeedAppend
 import com.dluvian.voyage.core.ListViewRefresh
-import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.Paginator
+import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.model.CustomPubkeys
 import com.dluvian.voyage.data.model.ListFeedSetting
 import com.dluvian.voyage.data.model.ListPubkeys

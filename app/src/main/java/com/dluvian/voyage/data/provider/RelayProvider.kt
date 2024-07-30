@@ -9,13 +9,13 @@ import com.dluvian.voyage.core.MAX_RELAYS
 import com.dluvian.voyage.core.MAX_RELAYS_PER_PUBKEY
 import com.dluvian.voyage.core.MAX_RELAY_CONNECTIONS
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.addLocalRelay
-import com.dluvian.voyage.core.createLocalRelayUrl
 import com.dluvian.voyage.core.model.ConnectionStatus
 import com.dluvian.voyage.core.model.Disconnected
 import com.dluvian.voyage.core.model.Spam
-import com.dluvian.voyage.core.putOrAdd
-import com.dluvian.voyage.core.takeRandom
+import com.dluvian.voyage.core.utils.addLocalRelay
+import com.dluvian.voyage.core.utils.createLocalRelayUrl
+import com.dluvian.voyage.core.utils.putOrAdd
+import com.dluvian.voyage.core.utils.takeRandom
 import com.dluvian.voyage.data.model.CustomPubkeys
 import com.dluvian.voyage.data.model.FriendPubkeys
 import com.dluvian.voyage.data.model.ListPubkeys

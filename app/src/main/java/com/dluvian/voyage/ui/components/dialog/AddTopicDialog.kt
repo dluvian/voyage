@@ -21,8 +21,8 @@ import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.SearchTopicSuggestion
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.isBareTopicStr
-import com.dluvian.voyage.core.normalizeTopic
+import com.dluvian.voyage.core.utils.isBareTopicStr
+import com.dluvian.voyage.core.utils.normalizeTopic
 import com.dluvian.voyage.ui.components.row.ClickableRow
 import com.dluvian.voyage.ui.theme.HashtagIcon
 import com.dluvian.voyage.ui.theme.sizing

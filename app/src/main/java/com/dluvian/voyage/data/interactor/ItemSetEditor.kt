@@ -7,6 +7,8 @@ import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.ItemSetItem
 import com.dluvian.voyage.core.model.ItemSetProfile
 import com.dluvian.voyage.core.model.ItemSetTopic
+import com.dluvian.voyage.core.utils.normalizeDescription
+import com.dluvian.voyage.core.utils.normalizeTitle
 import com.dluvian.voyage.data.event.EventValidator
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.provider.ItemSetProvider
@@ -33,8 +35,8 @@ class ItemSetEditor(
     ): Result<Event> {
         return nostrService.publishProfileSet(
             identifier = identifier,
-            title = title,
-            description = description,
+            title = title.normalizeTitle(),
+            description = description.normalizeDescription(),
             pubkeys = pubkeys.map { PublicKey.fromHex(it) },
             relayUrls = relayProvider.getWriteRelays()
         ).onFailure {
@@ -58,8 +60,8 @@ class ItemSetEditor(
     ): Result<Event> {
         return nostrService.publishTopicSet(
             identifier = identifier,
-            title = title,
-            description = description,
+            title = title.normalizeTitle(),
+            description = description.normalizeDescription(),
             topics = topics,
             relayUrls = relayProvider.getWriteRelays()
         ).onFailure {

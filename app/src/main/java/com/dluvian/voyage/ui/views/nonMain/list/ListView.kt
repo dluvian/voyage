@@ -24,8 +24,8 @@ import com.dluvian.voyage.core.ListViewRefresh
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenTopic
-import com.dluvian.voyage.core.getListTabHeaders
-import com.dluvian.voyage.core.shortenBech32
+import com.dluvian.voyage.core.utils.getListTabHeaders
+import com.dluvian.voyage.core.utils.shortenBech32
 import com.dluvian.voyage.core.viewModel.ListViewModel
 import com.dluvian.voyage.data.nostr.NOSTR_URI
 import com.dluvian.voyage.ui.components.Feed
@@ -128,7 +128,13 @@ private fun AboutSection(
     state: LazyListState,
     onUpdate: OnUpdate
 ) {
-    LazyColumn(modifier = Modifier.fillMaxSize(), state = state) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = spacing.bigScreenEdge)
+            .padding(bottom = spacing.bigScreenEdge),
+        state = state
+    ) {
         item {
             Spacer(modifier = Modifier.height(spacing.medium))
             UriRow(
@@ -160,9 +166,9 @@ private fun UriRow(header: String, naddr: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = spacing.bigScreenEdge, vertical = spacing.medium)
+            .padding(vertical = spacing.medium)
     ) {
         SmallHeader(header = header)
-        CopyableText(text = naddr.shortenBech32(), NOSTR_URI + naddr)
+        CopyableText(text = naddr.shortenBech32(), toCopy = NOSTR_URI + naddr)
     }
 }

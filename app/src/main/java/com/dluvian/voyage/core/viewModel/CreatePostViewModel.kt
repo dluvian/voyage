@@ -10,8 +10,8 @@ import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.SendPost
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.UpdatePostTopics
-import com.dluvian.voyage.core.launchIO
-import com.dluvian.voyage.core.showToast
+import com.dluvian.voyage.core.utils.launchIO
+import com.dluvian.voyage.core.utils.showToast
 import com.dluvian.voyage.data.interactor.PostSender
 import com.dluvian.voyage.data.provider.TopicProvider
 import kotlinx.coroutines.delay

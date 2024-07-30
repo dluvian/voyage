@@ -8,7 +8,7 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.copyAndToast
+import com.dluvian.voyage.core.utils.copyAndToast
 
 @Composable
 fun CopyableText(
@@ -20,7 +20,7 @@ fun CopyableText(
     val clip = LocalClipboardManager.current
     Text(
         modifier = Modifier.clickable {
-            copyAndToast(text = text, toast = toast, context = context, clip = clip)
+            copyAndToast(text = toCopy, toast = toast, context = context, clip = clip)
         },
         text = text
     )

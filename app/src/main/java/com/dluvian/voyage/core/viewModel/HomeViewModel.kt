@@ -8,8 +8,8 @@ import com.dluvian.voyage.core.HomeViewAction
 import com.dluvian.voyage.core.HomeViewAppend
 import com.dluvian.voyage.core.HomeViewRefresh
 import com.dluvian.voyage.core.HomeViewSubAccountAndTrustData
-import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.Paginator
+import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.FeedProvider

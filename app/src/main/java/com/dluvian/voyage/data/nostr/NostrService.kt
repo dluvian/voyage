@@ -7,13 +7,13 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.addLocalRelay
-import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.BadConnection
 import com.dluvian.voyage.core.model.Connected
 import com.dluvian.voyage.core.model.ConnectionStatus
 import com.dluvian.voyage.core.model.Spam
 import com.dluvian.voyage.core.model.Waiting
+import com.dluvian.voyage.core.utils.addLocalRelay
+import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.event.EventCounter
 import com.dluvian.voyage.data.event.EventMaker
 import com.dluvian.voyage.data.event.EventQueue

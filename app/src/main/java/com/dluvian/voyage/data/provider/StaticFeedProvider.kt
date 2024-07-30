@@ -1,9 +1,9 @@
 package com.dluvian.voyage.data.provider
 
-import com.dluvian.voyage.core.mergeToParentUIList
 import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.core.model.ReplyUI
 import com.dluvian.voyage.core.model.RootPostUI
+import com.dluvian.voyage.core.utils.mergeToParentUIList
 import com.dluvian.voyage.data.model.BookmarksFeedSetting
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting

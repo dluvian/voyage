@@ -5,10 +5,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import com.dluvian.voyage.core.Core
 import com.dluvian.voyage.core.RegisterAccountLauncher
 import com.dluvian.voyage.core.RegisterSignerLauncher
-import com.dluvian.voyage.core.getAccountLauncher
-import com.dluvian.voyage.core.getSignerLauncher
 import com.dluvian.voyage.core.navigator.MainNavView
 import com.dluvian.voyage.core.navigator.NonMainNavView
+import com.dluvian.voyage.core.utils.getAccountLauncher
+import com.dluvian.voyage.core.utils.getSignerLauncher
 import com.dluvian.voyage.ui.views.main.MainView
 import com.dluvian.voyage.ui.views.nonMain.NonMainView
 

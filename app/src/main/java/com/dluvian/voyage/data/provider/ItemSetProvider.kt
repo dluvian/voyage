@@ -5,11 +5,11 @@ import androidx.compose.ui.text.AnnotatedString
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.createAdvancedProfile
-import com.dluvian.voyage.core.firstThenDistinctDebounce
 import com.dluvian.voyage.core.model.ItemSetItem
 import com.dluvian.voyage.core.model.ItemSetProfile
 import com.dluvian.voyage.core.model.ItemSetTopic
+import com.dluvian.voyage.core.utils.createAdvancedProfile
+import com.dluvian.voyage.core.utils.firstThenDistinctDebounce
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.model.ItemSetMeta
 import com.dluvian.voyage.data.room.AppDatabase
@@ -102,7 +102,7 @@ class ItemSetProvider(
             kind = Kind.fromEnum(kind),
             identifier = identifier,
             publicKey = myPubkeyProvider.getPublicKey(),
-            relays = relayProvider.getWriteRelays()
+            relays = relayProvider.getWriteRelays(limit = 2)
         ).toBech32()
     }
 

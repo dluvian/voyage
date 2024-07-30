@@ -6,7 +6,7 @@ import androidx.compose.material3.SnackbarHostState
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.Fn
-import com.dluvian.voyage.core.showToast
+import com.dluvian.voyage.core.utils.showToast
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.DeleteDao

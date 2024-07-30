@@ -11,10 +11,10 @@ import com.dluvian.voyage.core.ThreadViewAction
 import com.dluvian.voyage.core.ThreadViewRefresh
 import com.dluvian.voyage.core.ThreadViewShowReplies
 import com.dluvian.voyage.core.ThreadViewToggleCollapse
-import com.dluvian.voyage.core.launchIO
 import com.dluvian.voyage.core.model.LeveledReplyUI
 import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.core.model.RootPostUI
+import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.interactor.ThreadCollapser
 import com.dluvian.voyage.data.provider.ThreadProvider
 import kotlinx.coroutines.delay

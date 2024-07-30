@@ -3,7 +3,7 @@ package com.dluvian.voyage.data.event
 import android.util.Log
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.toRelevantMetadata
+import com.dluvian.voyage.core.utils.toRelevantMetadata
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
 import com.dluvian.voyage.data.room.AppDatabase

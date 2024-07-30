@@ -5,8 +5,8 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.extractCleanHashtags
-import com.dluvian.voyage.core.getNormalizedTopics
+import com.dluvian.voyage.core.utils.extractCleanHashtags
+import com.dluvian.voyage.core.utils.getNormalizedTopics
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.event.EventValidator
 import com.dluvian.voyage.data.event.ValidatedCrossPost

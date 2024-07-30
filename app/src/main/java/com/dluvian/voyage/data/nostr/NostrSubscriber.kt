@@ -5,7 +5,7 @@ import com.dluvian.voyage.core.FEED_OFFSET
 import com.dluvian.voyage.core.FEED_RESUB_SPAN_THRESHOLD_SECS
 import com.dluvian.voyage.core.MAX_KEYS
 import com.dluvian.voyage.core.RESUB_TIMEOUT
-import com.dluvian.voyage.core.textNoteAndRepostKinds
+import com.dluvian.voyage.core.utils.textNoteAndRepostKinds
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.model.BookmarksFeedSetting
 import com.dluvian.voyage.data.model.FeedSetting

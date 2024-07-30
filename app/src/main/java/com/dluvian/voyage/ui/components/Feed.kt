@@ -35,7 +35,7 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.model.IPaginator
 import com.dluvian.voyage.core.model.ReplyUI
 import com.dluvian.voyage.core.model.RootPostUI
-import com.dluvian.voyage.core.showScrollButton
+import com.dluvian.voyage.core.utils.showScrollButton
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import com.dluvian.voyage.ui.components.row.post.FeedReplyRow

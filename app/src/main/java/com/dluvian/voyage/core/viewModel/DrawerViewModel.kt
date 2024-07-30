@@ -8,7 +8,7 @@ import com.dluvian.voyage.core.DELAY_10SEC
 import com.dluvian.voyage.core.DrawerViewAction
 import com.dluvian.voyage.core.DrawerViewSubscribeSets
 import com.dluvian.voyage.core.OpenDrawer
-import com.dluvian.voyage.core.launchIO
+import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.ItemSetProvider
 import com.dluvian.voyage.data.provider.ProfileProvider

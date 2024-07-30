@@ -17,9 +17,6 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenThreadRaw
 import com.dluvian.voyage.core.RebroadcastPost
 import com.dluvian.voyage.core.UnfollowProfile
-import com.dluvian.voyage.core.copyAndToast
-import com.dluvian.voyage.core.createProcessTextIntent
-import com.dluvian.voyage.core.getTranslators
 import com.dluvian.voyage.core.model.FriendTrust
 import com.dluvian.voyage.core.model.IsInListTrust
 import com.dluvian.voyage.core.model.Muted
@@ -29,6 +26,9 @@ import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.core.model.ReplyUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.model.WebTrust
+import com.dluvian.voyage.core.utils.copyAndToast
+import com.dluvian.voyage.core.utils.createProcessTextIntent
+import com.dluvian.voyage.core.utils.getTranslators
 import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.data.nostr.createNeventUri
 

@@ -25,7 +25,7 @@ import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.LoadFullProfile
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.SaveProfile
-import com.dluvian.voyage.core.normalizeName
+import com.dluvian.voyage.core.utils.normalizeName
 import com.dluvian.voyage.core.viewModel.EditProfileViewModel
 import com.dluvian.voyage.ui.components.button.ExpandToggleTextButton
 import com.dluvian.voyage.ui.components.scaffold.SaveableScaffold

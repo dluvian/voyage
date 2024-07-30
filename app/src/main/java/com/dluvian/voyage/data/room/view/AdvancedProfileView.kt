@@ -2,7 +2,7 @@ package com.dluvian.voyage.data.room.view
 
 import androidx.room.DatabaseView
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.toShortenedBech32
+import com.dluvian.voyage.core.utils.toShortenedBech32
 import com.dluvian.voyage.data.nostr.createNprofile
 import rust.nostr.protocol.Nip19Profile
 

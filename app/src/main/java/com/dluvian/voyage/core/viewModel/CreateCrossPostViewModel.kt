@@ -11,8 +11,8 @@ import com.dluvian.voyage.core.CreateCrossPostViewAction
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.SendCrossPost
-import com.dluvian.voyage.core.launchIO
-import com.dluvian.voyage.core.showToast
+import com.dluvian.voyage.core.utils.launchIO
+import com.dluvian.voyage.core.utils.showToast
 import com.dluvian.voyage.data.interactor.PostSender
 import kotlinx.coroutines.delay
 

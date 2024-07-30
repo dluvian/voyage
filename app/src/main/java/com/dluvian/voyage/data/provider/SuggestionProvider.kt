@@ -7,9 +7,9 @@ import com.dluvian.voyage.core.SearchProfileSuggestion
 import com.dluvian.voyage.core.SearchTopicSuggestion
 import com.dluvian.voyage.core.SuggestionAction
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.isBareTopicStr
-import com.dluvian.voyage.core.launchIO
-import com.dluvian.voyage.core.normalizeTopic
+import com.dluvian.voyage.core.utils.isBareTopicStr
+import com.dluvian.voyage.core.utils.launchIO
+import com.dluvian.voyage.core.utils.normalizeTopic
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

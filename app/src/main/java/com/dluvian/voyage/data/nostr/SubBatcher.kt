@@ -4,9 +4,9 @@ import android.util.Log
 import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.createReplyAndVoteFilters
-import com.dluvian.voyage.core.launchIO
-import com.dluvian.voyage.core.syncedPutOrAdd
+import com.dluvian.voyage.core.utils.createReplyAndVoteFilters
+import com.dluvian.voyage.core.utils.launchIO
+import com.dluvian.voyage.core.utils.syncedPutOrAdd
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
