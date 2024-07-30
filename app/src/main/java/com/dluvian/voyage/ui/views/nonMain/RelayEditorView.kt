@@ -36,8 +36,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import com.dluvian.voyage.data.nostr.Nip65Relay
-import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.AddRelay
 import com.dluvian.voyage.core.GoBack
@@ -52,6 +50,9 @@ import com.dluvian.voyage.core.model.Connected
 import com.dluvian.voyage.core.model.ConnectionStatus
 import com.dluvian.voyage.core.model.Waiting
 import com.dluvian.voyage.core.viewModel.RelayEditorViewModel
+import com.dluvian.voyage.data.nostr.LOCAL_WEBSOCKET
+import com.dluvian.voyage.data.nostr.Nip65Relay
+import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.ui.components.ConnectionDot
 import com.dluvian.voyage.ui.components.NamedCheckbox
 import com.dluvian.voyage.ui.components.scaffold.SaveableScaffold
@@ -181,7 +182,9 @@ private fun LazyListScope.addSection(
         itemsIndexed(items = relays) { index, relayUrl ->
             NormalRelayRow(
                 relayUrl = relayUrl,
-                isAddable = addIsEnabled && myRelays.none { it.url == relayUrl },
+                isAddable = addIsEnabled &&
+                        myRelays.none { it.url == relayUrl } &&
+                        !relayUrl.startsWith(LOCAL_WEBSOCKET),
                 connectionStatus = connectionStatuses[relayUrl],
                 scope = scope,
                 onUpdate = onUpdate,
