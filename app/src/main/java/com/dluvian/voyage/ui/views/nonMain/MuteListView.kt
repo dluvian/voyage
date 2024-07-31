@@ -17,7 +17,6 @@ import com.dluvian.voyage.ui.components.list.ProfileAndTopicList
 import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.ui.model.MutableProfileItem
 import com.dluvian.voyage.ui.model.MutableTopicItem
-import com.dluvian.voyage.ui.model.MutableWordItem
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -25,7 +24,6 @@ fun MuteListView(vm: MuteListViewModel, snackbar: SnackbarHostState, onUpdate: O
     val isRefreshing by vm.isRefreshing
     val mutedProfilesRaw by vm.mutedProfiles.value.collectAsState()
     val mutedTopicsRaw by vm.mutedTopics.value.collectAsState()
-    val mutedWordsRaw by vm.mutedWords.value.collectAsState()
     val mutedProfiles = remember(mutedProfilesRaw) {
         mutedProfilesRaw.map {
             MutableProfileItem(profile = it, onUpdate = onUpdate)
@@ -36,15 +34,10 @@ fun MuteListView(vm: MuteListViewModel, snackbar: SnackbarHostState, onUpdate: O
             MutableTopicItem(topic = it.topic, isMuted = it.isMuted, onUpdate = onUpdate)
         }
     }
-    val mutedWords = remember(mutedWordsRaw) {
-        mutedWordsRaw.map {
-            MutableWordItem(word = it.word, isMuted = it.isMuted, onUpdate = onUpdate)
-        }
-    }
     val headers = listOf(
         stringResource(id = R.string.profiles) + " (${mutedProfilesRaw.size})",
         stringResource(id = R.string.topics) + " (${mutedTopicsRaw.size})",
-        stringResource(id = R.string.words) + " (${mutedWordsRaw.size})"
+        stringResource(id = R.string.words) + " (${vm.mutedWords.value.size})"
     )
 
     LaunchedEffect(key1 = Unit) {
@@ -61,13 +54,14 @@ fun MuteListView(vm: MuteListViewModel, snackbar: SnackbarHostState, onUpdate: O
             headers = headers,
             profiles = mutedProfiles,
             topics = mutedTopics,
-            words = mutedWords,
+            words = vm.mutedWords,
             profileState = vm.mutedProfileState,
             topicState = vm.mutedTopicState,
             wordState = vm.mutedWordState,
             tabIndex = vm.tabIndex,
             pagerState = vm.pagerState,
-            onRefresh = { onUpdate(MuteListViewRefresh) }
+            onRefresh = { onUpdate(MuteListViewRefresh) },
+            onUpdate = onUpdate,
         )
     }
 }

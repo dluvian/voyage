@@ -1,6 +1,7 @@
 package com.dluvian.voyage.core.utils
 
 import com.dluvian.voyage.core.MAX_DESCRIPTION_LEN
+import com.dluvian.voyage.core.MAX_MUTE_WORD_LEN
 import com.dluvian.voyage.core.MAX_NAME_LEN
 import com.dluvian.voyage.core.MAX_SUBJECT_LEN
 import com.dluvian.voyage.core.MAX_TOPIC_LEN
@@ -45,6 +46,8 @@ fun Metadata.getNormalizedName(): String {
     return normalizeName(str = name)
 }
 
+fun String.normalizeMuteWord() = this.lowercase().take(MAX_MUTE_WORD_LEN)
+
 fun Event.getNormalizedMuteWords(limit: Int = Int.MAX_VALUE): List<Topic> {
-    return this.getMuteWords().map { it.lowercase() }.distinct().take(limit)
+    return this.getMuteWords().map { it.normalizeMuteWord() }.distinct().take(limit)
 }

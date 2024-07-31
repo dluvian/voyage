@@ -13,9 +13,9 @@ import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.MuteListViewAction
 import com.dluvian.voyage.core.MuteListViewOpen
 import com.dluvian.voyage.core.MuteListViewRefresh
-import com.dluvian.voyage.core.model.MuteWordState
 import com.dluvian.voyage.core.model.TopicMuteState
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
+import com.dluvian.voyage.data.provider.MuteProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
@@ -34,6 +34,7 @@ class MuteListViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
     private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val profileProvider: ProfileProvider,
     private val topicProvider: TopicProvider,
+    private val muteProvider: MuteProvider,
 ) : ViewModel() {
     val tabIndex = mutableIntStateOf(0)
     val isRefreshing = mutableStateOf(false)
@@ -42,8 +43,7 @@ class MuteListViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
         mutableStateOf(MutableStateFlow(emptyList()))
     val mutedTopics: MutableState<StateFlow<List<TopicMuteState>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
-    val mutedWords: MutableState<StateFlow<List<MuteWordState>>> =
-        mutableStateOf(MutableStateFlow(emptyList()))
+    val mutedWords: MutableState<List<String>> = mutableStateOf(emptyList())
 
     fun handle(action: MuteListViewAction) {
         when (action) {
@@ -70,6 +70,7 @@ class MuteListViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
                 )
             mutedTopics.value = topicProvider.getMutedTopicsFlow()
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), mutedTopics.value.value)
+            mutedWords.value = muteProvider.getMutedWords()
             delay(DEBOUNCE)
         }.invokeOnCompletion {
             isRefreshing.value = false

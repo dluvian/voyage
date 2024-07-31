@@ -18,6 +18,9 @@ interface MuteDao {
     @Query("SELECT mutedItem FROM mute WHERE tag IS 't'")
     suspend fun getMyTopicMutes(): List<Topic>
 
+    @Query("SELECT mutedItem FROM mute WHERE tag IS 'word'")
+    suspend fun getMyWordMutes(): List<String>
+
     @Query("SELECT mutedItem FROM mute WHERE tag IS 'p'")
     fun getMyProfileMutesFlow(): Flow<List<PubkeyHex>>
 

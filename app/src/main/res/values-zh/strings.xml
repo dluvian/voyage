@@ -218,4 +218,5 @@
     <string name="topic_list_identifier">主题列表标识符</string>
     <string name="describe_this_list">描述此列表</string>
     <string name="words">字</string>
+    <string name="add_word">添加单词</string>
 </resources>

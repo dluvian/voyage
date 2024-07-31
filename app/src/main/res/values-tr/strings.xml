@@ -216,4 +216,6 @@
     <string name="topic_list_identifier">Konu listesi tanımlayıcısı</string>
     <string name="describe_this_list">Bu listeyi açıklayın</string>
     <string name="words">Kelimeler</string>
+    <string name="failed_to_sign_mute_list">Sessiz listeyi imzalama başarısız oldu</string>
+    <string name="add_word">Kelime ekle</string>
 </resources>

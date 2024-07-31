@@ -57,7 +57,8 @@ fun FollowListsView(vm: FollowListsViewModel, snackbar: SnackbarHostState, onUpd
             topicState = vm.topicListState,
             tabIndex = vm.tabIndex,
             pagerState = vm.pagerState,
-            onRefresh = { onUpdate(FollowListsViewRefresh) }
+            onRefresh = { onUpdate(FollowListsViewRefresh) },
+            onUpdate = onUpdate,
         )
     }
 }

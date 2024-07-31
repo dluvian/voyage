@@ -8,7 +8,6 @@ import com.dluvian.voyage.core.FollowProfile
 import com.dluvian.voyage.core.FollowTopic
 import com.dluvian.voyage.core.MuteProfile
 import com.dluvian.voyage.core.MuteTopic
-import com.dluvian.voyage.core.MuteWord
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenTopic
@@ -17,14 +16,12 @@ import com.dluvian.voyage.core.UnfollowProfile
 import com.dluvian.voyage.core.UnfollowTopic
 import com.dluvian.voyage.core.UnmuteProfile
 import com.dluvian.voyage.core.UnmuteTopic
-import com.dluvian.voyage.core.UnmuteWord
 import com.dluvian.voyage.core.model.Muted
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.ui.components.button.FollowButton
 import com.dluvian.voyage.ui.components.button.MuteButton
 import com.dluvian.voyage.ui.components.icon.TrustIcon
 import com.dluvian.voyage.ui.theme.HashtagIcon
-import com.dluvian.voyage.ui.theme.WordIcon
 import com.dluvian.voyage.ui.theme.getTrustColor
 
 sealed class FollowableOrMutableItem(
@@ -116,27 +113,4 @@ data class MutableTopicItem(
         )
     },
     onOpen = { onUpdate(OpenTopic(topic = topic)) }
-)
-
-data class MutableWordItem(
-    val word: String,
-    val isMuted: Boolean,
-    val onUpdate: OnUpdate,
-) : FollowableOrMutableItem(
-    label = word,
-    icon = {
-        Icon(
-            imageVector = WordIcon,
-            contentDescription = null,
-            tint = if (isMuted) getTrustColor(trustType = Muted) else LocalContentColor.current
-        )
-    },
-    button = {
-        MuteButton(
-            isMuted = isMuted,
-            onMute = { onUpdate(MuteWord(word = word)) },
-            onUnmute = { onUpdate(UnmuteWord(word = word)) },
-        )
-    },
-    onOpen = { /* Can't open a mute word */ }
 )

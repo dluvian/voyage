@@ -222,4 +222,5 @@
     <string name="topic_list_identifier">Topic List Identifier</string>
     <string name="describe_this_list">Describe this list</string>
     <string name="words">Words</string>
+    <string name="add_word">Add word</string>
 </resources>

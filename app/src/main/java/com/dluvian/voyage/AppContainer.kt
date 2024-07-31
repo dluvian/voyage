@@ -101,7 +101,7 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
         myPubkeyProvider = accountManager,
     )
 
-    private val muteProvider = MuteProvider(muteDao = roomDb.muteDao())
+    val muteProvider = MuteProvider(muteDao = roomDb.muteDao())
 
     val metadataInMemory = MetadataInMemory()
 
