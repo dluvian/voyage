@@ -6,6 +6,7 @@ import com.dluvian.voyage.core.MAX_SUBJECT_LEN
 import com.dluvian.voyage.core.MAX_TOPIC_LEN
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.nostr.getDescription
+import com.dluvian.voyage.data.nostr.getMuteWords
 import com.dluvian.voyage.data.nostr.getTitle
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.Metadata
@@ -42,4 +43,8 @@ fun normalizeName(str: String) = str.filterNot { it.isWhitespace() }.take(MAX_NA
 fun Metadata.getNormalizedName(): String {
     val name = this.getName().orEmpty().ifBlank { this.getDisplayName() }.orEmpty()
     return normalizeName(str = name)
+}
+
+fun Event.getNormalizedMuteWords(limit: Int = Int.MAX_VALUE): List<Topic> {
+    return this.getMuteWords().map { it.lowercase() }.distinct().take(limit)
 }

@@ -4,10 +4,14 @@ import androidx.room.Dao
 import androidx.room.Query
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.data.room.entity.helper.MutePair
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MuteDao {
+    @Query("SELECT tag, mutedItem FROM mute")
+    suspend fun getMyMutes(): List<MutePair>
+
     @Query("SELECT mutedItem FROM mute WHERE tag IS 'p'")
     suspend fun getMyProfileMutes(): List<PubkeyHex>
 

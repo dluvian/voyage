@@ -40,6 +40,13 @@ data class MuteEntity(
                     tag = "t",
                     createdAt = muteList.createdAt
                 )
+            } + muteList.words.map { word ->
+                MuteEntity(
+                    myPubkey = muteList.myPubkey,
+                    mutedItem = word,
+                    tag = "word",
+                    createdAt = muteList.createdAt
+                )
             }
         }
     }

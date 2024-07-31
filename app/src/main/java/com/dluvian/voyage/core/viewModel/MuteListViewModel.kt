@@ -13,6 +13,7 @@ import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.MuteListViewAction
 import com.dluvian.voyage.core.MuteListViewOpen
 import com.dluvian.voyage.core.MuteListViewRefresh
+import com.dluvian.voyage.core.model.MuteWordState
 import com.dluvian.voyage.core.model.TopicMuteState
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.ProfileProvider
@@ -28,6 +29,7 @@ import kotlinx.coroutines.launch
 class MuteListViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
     val mutedProfileState: LazyListState,
     val mutedTopicState: LazyListState,
+    val mutedWordState: LazyListState,
     val pagerState: PagerState,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val profileProvider: ProfileProvider,
@@ -39,6 +41,8 @@ class MuteListViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
     val mutedProfiles: MutableState<StateFlow<List<AdvancedProfileView>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
     val mutedTopics: MutableState<StateFlow<List<TopicMuteState>>> =
+        mutableStateOf(MutableStateFlow(emptyList()))
+    val mutedWords: MutableState<StateFlow<List<MuteWordState>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
 
     fun handle(action: MuteListViewAction) {

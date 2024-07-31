@@ -98,6 +98,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
     val topicListState = rememberLazyListState()
     val mutedProfileListState = rememberLazyListState()
     val mutedTopicListState = rememberLazyListState()
+    val mutedWordListState = rememberLazyListState()
     val bookmarksFeedState = rememberLazyListState()
     val relayEditorState = rememberLazyListState()
     val listFeedState = rememberLazyListState()
@@ -106,7 +107,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
 
     val profilePagerState = rememberPagerState { 4 }
     val followListsPagerState = rememberPagerState { 2 }
-    val muteListPagerState = rememberPagerState { 2 }
+    val muteListPagerState = rememberPagerState { 3 }
     val listViewPagerState = rememberPagerState { 4 }
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -278,6 +279,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             MuteListViewModel(
                 mutedProfileState = mutedProfileListState,
                 mutedTopicState = mutedTopicListState,
+                mutedWordState = mutedWordListState,
                 pagerState = muteListPagerState,
                 lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
                 profileProvider = appContainer.profileProvider,

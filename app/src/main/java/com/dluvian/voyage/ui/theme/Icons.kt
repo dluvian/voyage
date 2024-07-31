@@ -9,6 +9,7 @@ import androidx.compose.material.icons.automirrored.filled.Reply
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.automirrored.filled.ViewList
 import androidx.compose.material.icons.automirrored.filled.VolumeOff
+import androidx.compose.material.icons.filled.Abc
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Bookmark
@@ -83,6 +84,7 @@ val RelayIcon = Icons.Default.CellTower
 val OpenIcon = Icons.AutoMirrored.Filled.OpenInNew
 val EditIcon = Icons.Default.Edit
 val MuteIcon = Icons.AutoMirrored.Filled.VolumeOff
+val WordIcon = Icons.Default.Abc
 
 
 @Stable

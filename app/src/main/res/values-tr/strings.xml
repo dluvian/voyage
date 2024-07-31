@@ -215,4 +215,5 @@
     <string name="profile_list_identifier">Profil listesi tanımlayıcısı</string>
     <string name="topic_list_identifier">Konu listesi tanımlayıcısı</string>
     <string name="describe_this_list">Bu listeyi açıklayın</string>
+    <string name="words">Kelimeler</string>
 </resources>

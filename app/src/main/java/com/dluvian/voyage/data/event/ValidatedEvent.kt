@@ -97,6 +97,7 @@ data class ValidatedMuteList(
     val myPubkey: PubkeyHex,
     val pubkeys: Set<PubkeyHex>,
     val topics: Set<Topic>,
+    val words: Set<String>,
     override val createdAt: Long
 ) : ValidatedList(owner = myPubkey, createdAt = createdAt)
 

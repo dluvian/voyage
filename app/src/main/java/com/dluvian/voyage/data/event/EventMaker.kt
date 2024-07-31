@@ -128,10 +128,15 @@ class EventMaker(
         return accountManager.sign(unsignedEvent = unsignedEvent)
     }
 
-    suspend fun buildMuteList(pubkeys: List<PubkeyHex>, topics: List<Topic>): Result<Event> {
+    suspend fun buildMuteList(
+        pubkeys: List<PubkeyHex>,
+        topics: List<Topic>,
+        words: List<String>
+    ): Result<Event> {
         val mutes = MuteList(
             publicKeys = pubkeys.map { PublicKey.fromHex(it) },
-            hashtags = topics
+            hashtags = topics,
+            words = words,
         )
         val unsignedEvent = EventBuilder.muteList(list = mutes)
             .toUnsignedEvent(accountManager.getPublicKey())

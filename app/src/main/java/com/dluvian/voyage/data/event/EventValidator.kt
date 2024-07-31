@@ -5,6 +5,7 @@ import com.dluvian.voyage.core.MAX_CONTENT_LEN
 import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.utils.getNormalizedDescription
+import com.dluvian.voyage.core.utils.getNormalizedMuteWords
 import com.dluvian.voyage.core.utils.getNormalizedTitle
 import com.dluvian.voyage.core.utils.getNormalizedTopics
 import com.dluvian.voyage.core.utils.getTrimmedSubject
@@ -163,6 +164,7 @@ class EventValidator(
                         .takeRandom(MAX_KEYS_SQL)
                         .toSet(),
                     topics = event.getNormalizedTopics(limit = MAX_KEYS_SQL).toSet(),
+                    words = event.getNormalizedMuteWords(limit = MAX_KEYS_SQL).toSet(),
                     createdAt = event.createdAt().secs()
                 )
             }

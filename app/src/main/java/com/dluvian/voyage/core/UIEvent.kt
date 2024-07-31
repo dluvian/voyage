@@ -120,6 +120,8 @@ data class MuteProfile(val pubkey: PubkeyHex, val debounce: Boolean = true) : Mu
 data class UnmuteProfile(val pubkey: PubkeyHex, val debounce: Boolean = true) : MuteEvent()
 data class MuteTopic(val topic: Topic, val debounce: Boolean = true) : MuteEvent()
 data class UnmuteTopic(val topic: Topic, val debounce: Boolean = true) : MuteEvent()
+data class MuteWord(val word: String, val debounce: Boolean = true) : MuteEvent()
+data class UnmuteWord(val word: String, val debounce: Boolean = true) : MuteEvent()
 
 
 sealed class TopicEvent(open val topic: Topic) : UIEvent()

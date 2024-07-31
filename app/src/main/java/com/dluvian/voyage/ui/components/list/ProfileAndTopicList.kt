@@ -23,6 +23,8 @@ fun ProfileAndTopicList(
     topicState: LazyListState,
     tabIndex: MutableIntState,
     pagerState: PagerState,
+    words: List<FollowableOrMutableItem>? = null,
+    wordState: LazyListState? = null,
     onRefresh: Fn,
 ) {
     val scope = rememberCoroutineScope()
@@ -34,6 +36,10 @@ fun ProfileAndTopicList(
             when (it) {
                 0 -> scope.launch { profileState.animateScrollToItem(0) }
                 1 -> scope.launch { topicState.animateScrollToItem(0) }
+                2 -> if (words != null && wordState != null) {
+                    scope.launch { wordState.animateScrollToItem(0) }
+                }
+
                 else -> {}
             }
         },
@@ -52,6 +58,15 @@ fun ProfileAndTopicList(
                 state = topicState,
                 onRefresh = onRefresh
             )
+
+            2 -> if (words != null && wordState != null) {
+                FollowOrMuteList(
+                    rows = words,
+                    isRefreshing = isRefreshing,
+                    state = wordState,
+                    onRefresh = onRefresh
+                )
+            } else ComingSoon()
 
             else -> ComingSoon()
         }

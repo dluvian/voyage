@@ -76,6 +76,12 @@ fun isValidEventId(hex: String): Boolean {
     return hex.length == 64 && hex.all { it.isDigit() || it in ('a'..'f') || it in ('A'..'F') }
 }
 
+fun Event.getMuteWords(): List<String> {
+    return this.tags()
+        .filter { it.kind() == TagKind.Word }
+        .mapNotNull { it.asVec().getOrNull(1) }
+}
+
 fun Event.getReplyToId(): String? {
     if (!this.isPostOrReply()) return null
 
