@@ -11,14 +11,17 @@ import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.data.model.InboxFeedSetting
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.provider.FeedProvider
+import com.dluvian.voyage.data.provider.MuteProvider
 
 class InboxViewModel(
     feedProvider: FeedProvider,
+    muteProvider: MuteProvider,
     subCreator: SubscriptionCreator,
     val feedState: LazyListState,
 ) : ViewModel() {
     val paginator = Paginator(
         feedProvider = feedProvider,
+        muteProvider = muteProvider,
         scope = viewModelScope,
         subCreator = subCreator
     )

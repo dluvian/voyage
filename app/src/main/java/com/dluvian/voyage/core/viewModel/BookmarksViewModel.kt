@@ -12,16 +12,19 @@ import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.model.BookmarksFeedSetting
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.FeedProvider
+import com.dluvian.voyage.data.provider.MuteProvider
 
 class BookmarksViewModel(
     feedProvider: FeedProvider,
+    muteProvider: MuteProvider,
     val feedState: LazyListState,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
 ) : ViewModel() {
     val paginator = Paginator(
         feedProvider = feedProvider,
+        muteProvider = muteProvider,
+        subCreator = lazyNostrSubscriber.subCreator,
         scope = viewModelScope,
-        subCreator = lazyNostrSubscriber.subCreator
     )
 
     fun handle(action: BookmarksViewAction) {

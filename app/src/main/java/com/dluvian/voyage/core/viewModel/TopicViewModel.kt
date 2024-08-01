@@ -19,6 +19,7 @@ import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.ItemSetProvider
+import com.dluvian.voyage.data.provider.MuteProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -27,6 +28,7 @@ import kotlinx.coroutines.flow.stateIn
 
 class TopicViewModel(
     feedProvider: FeedProvider,
+    muteProvider: MuteProvider,
     val feedState: LazyListState,
     private val subCreator: SubscriptionCreator,
     private val topicProvider: TopicProvider,
@@ -39,6 +41,7 @@ class TopicViewModel(
     var isMuted: StateFlow<Boolean> = MutableStateFlow(false)
     val paginator = Paginator(
         feedProvider = feedProvider,
+        muteProvider = muteProvider,
         scope = viewModelScope,
         subCreator = subCreator
     )

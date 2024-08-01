@@ -58,9 +58,7 @@ fun Feed(
     val hasMoreRecentPosts by paginator.hasMoreRecentPosts
     val hasPosts by paginator.hasPosts.value.collectAsState()
     val posts by paginator.page.value.collectAsState()
-    val uniquePosts = remember(posts) {
-        posts.distinctBy { it.getRelevantId() }
-    }
+    val filteredPosts by paginator.filteredPage.value.collectAsState()
     val scope = rememberCoroutineScope()
     val showProgressIndicator by remember {
         derivedStateOf { isAppending || (hasPosts && posts.isEmpty()) }
@@ -74,7 +72,7 @@ fun Feed(
             if (hasMoreRecentPosts) item { MostRecentPostsTextButton(onClick = onRefresh) }
 
             items(
-                items = uniquePosts,
+                items = filteredPosts,
                 key = { item -> item.id }) { post ->
                 when (post) {
                     is RootPostUI -> FeedRootRow(post = post, onUpdate = onUpdate)

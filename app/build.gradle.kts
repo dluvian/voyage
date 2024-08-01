@@ -17,6 +17,7 @@ android {
         versionName = "v0.9.0"
 
         // Change versionCode, versionName and strings.xml when releasing new
+        // Reproducible build hints: https://gitlab.com/IzzyOnDroid/repo/-/wikis/Reproducible-Builds
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

@@ -116,6 +116,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         homeVM = viewModel {
             HomeViewModel(
                 feedProvider = appContainer.feedProvider,
+                muteProvider = appContainer.muteProvider,
                 lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
                 feedState = homeFeedState,
             )
@@ -147,12 +148,13 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         },
         profileVM = viewModel {
             ProfileViewModel(
+                feedProvider = appContainer.feedProvider,
+                muteProvider = appContainer.muteProvider,
                 rootFeedState = profileRootFeedState,
                 replyFeedState = profileReplyFeedState,
                 profileAboutState = profileAboutState,
                 profileRelayState = profileRelayState,
                 pagerState = profilePagerState,
-                feedProvider = appContainer.feedProvider,
                 subCreator = appContainer.nostrSubscriber.subCreator,
                 profileProvider = appContainer.profileProvider,
                 nip65Dao = appContainer.roomDb.nip65Dao(),
@@ -170,6 +172,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         topicVM = viewModel {
             TopicViewModel(
                 feedProvider = appContainer.feedProvider,
+                muteProvider = appContainer.muteProvider,
                 feedState = topicFeedState,
                 subCreator = appContainer.subCreator,
                 topicProvider = appContainer.topicProvider,
@@ -227,6 +230,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         inboxVM = viewModel {
             InboxViewModel(
                 feedProvider = appContainer.feedProvider,
+                muteProvider = appContainer.muteProvider,
                 subCreator = appContainer.lazyNostrSubscriber.subCreator,
                 feedState = inboxFeedState,
             )
@@ -252,6 +256,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         bookmarksVM = viewModel {
             BookmarksViewModel(
                 feedProvider = appContainer.feedProvider,
+                muteProvider = appContainer.muteProvider,
                 feedState = bookmarksFeedState,
                 lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
             )
@@ -267,6 +272,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         listVM = viewModel {
             ListViewModel(
                 feedProvider = appContainer.feedProvider,
+                muteProvider = appContainer.muteProvider,
                 feedState = listFeedState,
                 profileState = listProfileState,
                 topicState = listTopicState,

@@ -28,6 +28,7 @@ import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.ItemSetProvider
+import com.dluvian.voyage.data.provider.MuteProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.room.dao.EventRelayDao
 import com.dluvian.voyage.data.room.dao.Nip65Dao
@@ -40,12 +41,13 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class ProfileViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
+    feedProvider: FeedProvider,
+    muteProvider: MuteProvider,
     val rootFeedState: LazyListState,
     val replyFeedState: LazyListState,
     val profileAboutState: LazyListState,
     val profileRelayState: LazyListState,
     val pagerState: PagerState,
-    feedProvider: FeedProvider,
     private val subCreator: SubscriptionCreator,
     private val profileProvider: ProfileProvider,
     private val nip65Dao: Nip65Dao,
@@ -63,11 +65,13 @@ class ProfileViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
         mutableStateOf(MutableStateFlow(emptyList()))
     val rootPaginator = Paginator(
         feedProvider = feedProvider,
+        muteProvider = muteProvider,
         scope = viewModelScope,
         subCreator = subCreator
     )
     val replyPaginator = Paginator(
         feedProvider = feedProvider,
+        muteProvider = muteProvider,
         scope = viewModelScope,
         subCreator = subCreator
     )
