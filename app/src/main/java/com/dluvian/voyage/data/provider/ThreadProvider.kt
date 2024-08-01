@@ -36,6 +36,7 @@ class ThreadProvider(
     private val forcedVotes: Flow<Map<EventIdHex, Boolean>>,
     private val forcedFollows: Flow<Map<PubkeyHex, Boolean>>,
     private val forcedBookmarks: Flow<Map<EventIdHex, Boolean>>,
+    private val muteProvider: MuteProvider,
 ) {
 
     fun getLocalRoot(scope: CoroutineScope, nevent: Nip19Event, isInit: Boolean): Flow<ParentUI?> {
@@ -94,6 +95,12 @@ class ThreadProvider(
         return room.existsDao().parentExistsFlow(replyId = replyId)
     }
 
+    // Unfiltered count for ProgressBar purpose
+    fun getTotalReplyCount(rootId: EventIdHex): Flow<Int> {
+        return room.replyDao().getReplyCountFlow(parentId = rootId)
+            .firstThenDistinctDebounce(SHORT_DEBOUNCE)
+    }
+
     // Don't update oldestCreatedAt in replies. They are always younger than root
     fun getLeveledReplies(
         rootId: EventIdHex,
@@ -101,6 +108,7 @@ class ThreadProvider(
     ): Flow<List<LeveledReplyUI>> {
         val replyFlow = room.replyDao().getRepliesFlow(parentIds = parentIds + rootId)
             .firstThenDistinctDebounce(DEBOUNCE)
+        val mutedWords = muteProvider.getMutedWords()
 
         return combine(
             replyFlow,
@@ -109,9 +117,15 @@ class ThreadProvider(
             forcedBookmarks,
             collapsedIds,
         ) { replies, votes, follows, bookmarks, collapsed ->
+            val filteredReplies = replies.filter { reply ->
+                mutedWords.none { word ->
+                    reply.content.contains(other = word, ignoreCase = true)
+                }
+            }
+
             val result = LinkedList<LeveledReplyUI>()
 
-            for (reply in replies) {
+            for (reply in filteredReplies) {
                 val parent = result.find { it.reply.id == reply.parentId }
 
                 if (parent?.isCollapsed == true) continue

@@ -23,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.Fn
@@ -35,6 +34,7 @@ import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.core.model.ReplyUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.viewModel.ThreadViewModel
+import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.ui.components.FullHorizontalDivider
 import com.dluvian.voyage.ui.components.PullRefreshBox
 import com.dluvian.voyage.ui.components.indicator.BaseHint
@@ -47,10 +47,7 @@ import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
 fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
-    val isRefreshing by vm.isRefreshing
     val localRoot by vm.localRoot.collectAsState()
-    val leveledReplies by vm.leveledReplies.value.collectAsState()
-    val parentIsAvailable by vm.parentIsAvailable.collectAsState()
 
     SimpleGoBackScaffold(
         header = stringResource(id = R.string.thread),
@@ -61,9 +58,10 @@ fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpd
         localRoot?.let {
             ThreadViewContent(
                 localRoot = it,
-                leveledReplies = leveledReplies,
-                parentIsAvailable = parentIsAvailable,
-                isRefreshing = isRefreshing,
+                leveledReplies = vm.leveledReplies.value.collectAsState().value,
+                totalReplyCount = vm.totalReplyCount.value.collectAsState().value,
+                parentIsAvailable = vm.parentIsAvailable.collectAsState().value,
+                isRefreshing = vm.isRefreshing.value,
                 state = vm.threadState,
                 onUpdate = onUpdate
             )
@@ -75,6 +73,7 @@ fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpd
 private fun ThreadViewContent(
     localRoot: ParentUI,
     leveledReplies: List<LeveledReplyUI>,
+    totalReplyCount: Int,
     parentIsAvailable: Boolean,
     isRefreshing: Boolean,
     state: LazyListState,
@@ -122,7 +121,7 @@ private fun ThreadViewContent(
                     }
                 }
             }
-            if (localRoot.replyCount > replies.size) item {
+            if (localRoot.replyCount > totalReplyCount) item {
                 FullLinearProgressIndicator()
             }
             itemsIndexed(replies) { i, reply ->

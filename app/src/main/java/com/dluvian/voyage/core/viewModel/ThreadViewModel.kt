@@ -34,6 +34,7 @@ class ThreadViewModel(
     var localRoot: StateFlow<ParentUI?> = MutableStateFlow(null)
     val leveledReplies: MutableState<StateFlow<List<LeveledReplyUI>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
+    val totalReplyCount: MutableState<StateFlow<Int>> = mutableStateOf(MutableStateFlow(0))
     private val parentIds = mutableStateOf(emptySet<EventIdHex>())
     private var nevent: Nip19Event? = null
 
@@ -108,6 +109,8 @@ class ThreadViewModel(
         val init = if (isInit) emptyList() else leveledReplies.value.value
         parentIds.value += rootId
         parentIds.value += parentId
+        totalReplyCount.value = threadProvider.getTotalReplyCount(rootId = rootId)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
         leveledReplies.value = threadProvider
             .getLeveledReplies(rootId = rootId, parentIds = parentIds.value)
             .stateIn(viewModelScope, SharingStarted.Eagerly, init)

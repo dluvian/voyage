@@ -28,6 +28,7 @@ interface ReplyDao {
     suspend fun getNewestReplyCreatedAt(parentId: EventIdHex): Long?
 
     @Query(
+        // getReplyCountFlow depends on this
         """
         SELECT * 
         FROM ReplyView 
@@ -37,6 +38,17 @@ interface ReplyDao {
     """
     )
     fun getRepliesFlow(parentIds: Collection<EventIdHex>): Flow<List<ReplyView>>
+
+    @Query(
+        // Should be like getRepliesFlow
+        """
+        SELECT COUNT(*) 
+        FROM ReplyView 
+        WHERE parentId = :parentId
+        AND authorIsMuted = 0
+    """
+    )
+    fun getReplyCountFlow(parentId: EventIdHex): Flow<Int>
 
     @Query("SELECT * FROM ReplyView WHERE id = :id")
     fun getReplyFlow(id: EventIdHex): Flow<ReplyView?>
