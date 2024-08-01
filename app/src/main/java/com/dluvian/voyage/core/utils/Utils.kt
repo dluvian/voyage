@@ -308,3 +308,5 @@ fun Collection<RelayUrl>.addLocalRelay(port: Int?): List<RelayUrl> {
         this.toList()
     }
 }
+
+fun String.containsNoneIgnoreCase(strs: Collection<String>) = strs.none { it == this }

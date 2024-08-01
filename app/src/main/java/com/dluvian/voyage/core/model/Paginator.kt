@@ -7,6 +7,7 @@ import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.FEED_OFFSET
 import com.dluvian.voyage.core.FEED_PAGE_SIZE
 import com.dluvian.voyage.core.Fn
+import com.dluvian.voyage.core.utils.containsNoneIgnoreCase
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.model.BookmarksFeedSetting
 import com.dluvian.voyage.data.model.FeedSetting
@@ -158,9 +159,7 @@ class Paginator(
                     // No muted words
                     HomeFeedSetting, is TopicFeedSetting, InboxFeedSetting, is ListFeedSetting -> {
                         posts.filter { post ->
-                            mutedWords.none { word ->
-                                post.content.text.contains(other = word, ignoreCase = true)
-                            }
+                            post.content.text.containsNoneIgnoreCase(strs = mutedWords)
                         }
                     }
                     // Muted words allowed

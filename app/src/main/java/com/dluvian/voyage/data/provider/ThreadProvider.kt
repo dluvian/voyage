@@ -8,6 +8,7 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.model.LeveledReplyUI
 import com.dluvian.voyage.core.model.ParentUI
+import com.dluvian.voyage.core.utils.containsNoneIgnoreCase
 import com.dluvian.voyage.core.utils.firstThenDistinctDebounce
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.event.OldestUsedEvent
@@ -118,9 +119,7 @@ class ThreadProvider(
             collapsedIds,
         ) { replies, votes, follows, bookmarks, collapsed ->
             val filteredReplies = replies.filter { reply ->
-                mutedWords.none { word ->
-                    reply.content.contains(other = word, ignoreCase = true)
-                }
+                reply.content.containsNoneIgnoreCase(strs = mutedWords)
             }
 
             val result = LinkedList<LeveledReplyUI>()

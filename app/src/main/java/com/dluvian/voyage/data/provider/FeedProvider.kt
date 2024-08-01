@@ -6,6 +6,7 @@ import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.core.model.ReplyUI
 import com.dluvian.voyage.core.model.RootPostUI
+import com.dluvian.voyage.core.utils.containsNoneIgnoreCase
 import com.dluvian.voyage.core.utils.firstThenDistinctDebounce
 import com.dluvian.voyage.core.utils.mergeToParentUIList
 import com.dluvian.voyage.data.event.OldestUsedEvent
@@ -31,7 +32,8 @@ class FeedProvider(
     private val annotatedStringProvider: AnnotatedStringProvider,
     private val forcedVotes: Flow<Map<EventIdHex, Boolean>>,
     private val forcedFollows: Flow<Map<PubkeyHex, Boolean>>,
-    private val forcedBookmarks: Flow<Map<EventIdHex, Boolean>>
+    private val forcedBookmarks: Flow<Map<EventIdHex, Boolean>>,
+    private val muteProvider: MuteProvider,
 ) {
     private val staticFeedProvider = StaticFeedProvider(
         room = room,
@@ -66,6 +68,7 @@ class FeedProvider(
                 forceSubscription = forceSubscription
             )
         }
+        val mutedWords = muteProvider.getMutedWords()
 
         return when (setting) {
             is RootFeedSetting -> getRootFeedFlow(
@@ -84,7 +87,9 @@ class FeedProvider(
             .onEach { posts ->
                 oldestUsedEvent.updateOldestCreatedAt(posts.minOfOrNull { it.createdAt })
                 nostrSubscriber.subVotesAndReplies(
-                    parentIds = posts.filter { it.replyCount == 0 }.map { it.getRelevantId() }
+                    parentIds = posts.filter { it.replyCount == 0 }
+                        .filter { it.content.text.containsNoneIgnoreCase(strs = mutedWords) }
+                        .map { it.getRelevantId() }
                 )
             }
     }
