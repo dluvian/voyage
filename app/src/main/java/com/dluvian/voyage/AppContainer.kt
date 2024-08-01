@@ -298,7 +298,8 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
         annotatedStringProvider = annotatedStringProvider,
         forcedVotes = postVoter.forcedVotes,
         forcedFollows = profileFollower.forcedFollowsFlow,
-        forcedBookmarks = bookmarker.forcedBookmarksFlow
+        forcedBookmarks = bookmarker.forcedBookmarksFlow,
+        muteProvider = muteProvider,
     )
 
     val threadProvider = ThreadProvider(
