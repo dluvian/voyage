@@ -131,7 +131,7 @@ class Core(
 
             is RebroadcastPost -> viewModelScope.launchIO {
                 appContainer.eventRebroadcaster.rebroadcast(
-                    noteId = uiEvent.postId,
+                    postId = uiEvent.postId,
                     context = uiEvent.context,
                     scope = viewModelScope
                 )

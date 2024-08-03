@@ -261,6 +261,13 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
         forcedFollowStates = forcedFollowTopicStates
     )
 
+    val eventRebroadcaster = EventRebroadcaster(
+        nostrService = nostrService,
+        postDao = roomDb.postDao(),
+        relayProvider = relayProvider,
+        snackbar = snackbar,
+    )
+
     val bookmarker = Bookmarker(
         nostrService = nostrService,
         relayProvider = relayProvider,
@@ -268,6 +275,7 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
         bookmarkDao = roomDb.bookmarkDao(),
         snackbar = snackbar,
         context = context,
+        rebroadcaster = eventRebroadcaster
     )
 
     val muter = Muter(
@@ -355,13 +363,6 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
     )
 
     val relayProfileProvider = RelayProfileProvider()
-
-    val eventRebroadcaster = EventRebroadcaster(
-        nostrService = nostrService,
-        postDao = roomDb.postDao(),
-        relayProvider = relayProvider,
-        snackbar = snackbar,
-    )
 
     val itemSetEditor = ItemSetEditor(
         nostrService = nostrService,

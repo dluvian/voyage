@@ -11,6 +11,7 @@ import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.UnbookmarkPost
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.core.utils.showToast
+import com.dluvian.voyage.data.event.EventRebroadcaster
 import com.dluvian.voyage.data.event.ValidatedBookmarkList
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.secs
@@ -34,6 +35,7 @@ class Bookmarker(
     private val bookmarkDao: BookmarkDao,
     private val snackbar: SnackbarHostState,
     private val context: Context,
+    private val rebroadcaster: EventRebroadcaster,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -60,6 +62,7 @@ class Bookmarker(
 
     private fun handleAction(postId: EventIdHex, isBookmarked: Boolean) {
         updateForcedStates(postId = postId, isBookmarked = isBookmarked)
+        scope.launchIO { rebroadcaster.rebroadcastLocally(postId = postId) }
         handleBookmark()
     }
 

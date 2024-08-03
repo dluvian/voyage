@@ -21,6 +21,7 @@ import com.dluvian.voyage.data.model.FriendPubkeys
 import com.dluvian.voyage.data.model.ListPubkeys
 import com.dluvian.voyage.data.model.PubkeySelection
 import com.dluvian.voyage.data.model.SingularPubkey
+import com.dluvian.voyage.data.nostr.LOCAL_WEBSOCKET
 import com.dluvian.voyage.data.nostr.Nip65Relay
 import com.dluvian.voyage.data.nostr.NostrClient
 import com.dluvian.voyage.data.nostr.RelayUrl
@@ -183,6 +184,7 @@ class RelayProvider(
             is CustomPubkeys -> nip65Dao.getWriteRelays(
                 pubkeys = selection.pubkeys.takeRandom(MAX_KEYS_SQL)
             )
+
             is SingularPubkey -> nip65Dao.getWriteRelays(pubkeys = selection.asList())
             is ListPubkeys -> nip65Dao.getWriteRelaysFromList(identifier = selection.identifier)
         }
@@ -267,6 +269,11 @@ class RelayProvider(
     }
 
     suspend fun getPopularRelays() = nip65Dao.getPopularRelays(limit = MAX_POPULAR_RELAYS)
+
+    fun getConnectedLocalRelay(): RelayUrl? {
+        return nostrClient.getAllConnectedUrls()
+            .find { it.startsWith(LOCAL_WEBSOCKET) }
+    }
 
     private fun List<RelayUrl>.preferConnected(limit: Int): List<RelayUrl> {
         if (this.size <= limit) return this

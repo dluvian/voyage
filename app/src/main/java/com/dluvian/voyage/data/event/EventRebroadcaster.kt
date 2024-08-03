@@ -21,10 +21,10 @@ class EventRebroadcaster(
     private val relayProvider: RelayProvider,
     private val snackbar: SnackbarHostState,
 ) {
-    suspend fun rebroadcast(noteId: EventIdHex, context: Context, scope: CoroutineScope) {
-        val json = postDao.getJson(id = noteId)
+    suspend fun rebroadcast(postId: EventIdHex, context: Context, scope: CoroutineScope) {
+        val json = postDao.getJson(id = postId)
         if (json.isNullOrEmpty()) {
-            Log.w(TAG, "Note $noteId has no json in database")
+            Log.w(TAG, "Post $postId has no json in database")
             snackbar.showToast(
                 scope = scope,
                 msg = context.getString(R.string.event_json_is_not_available)
@@ -46,5 +46,18 @@ class EventRebroadcaster(
                     msg = context.getString(R.string.failed_to_rebroadcast)
                 )
             }
+    }
+
+    suspend fun rebroadcastLocally(postId: EventIdHex) {
+        val localRelay = relayProvider.getConnectedLocalRelay()
+        if (localRelay.isNullOrEmpty()) {
+            Log.i(TAG, "No open local relay connection to rebroadcast bookmarked post")
+            return
+        }
+
+        val json = postDao.getJson(id = postId)
+        if (json.isNullOrEmpty()) return
+
+        nostrService.publishJson(eventJson = json, relayUrls = listOf(localRelay))
     }
 }
