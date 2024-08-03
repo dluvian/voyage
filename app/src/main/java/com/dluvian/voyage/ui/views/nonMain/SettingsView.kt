@@ -43,6 +43,7 @@ import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.RequestExternalAccount
 import com.dluvian.voyage.core.SendAuth
 import com.dluvian.voyage.core.SendBookmarkedToLocalRelay
+import com.dluvian.voyage.core.SendUpvotedToLocalRelay
 import com.dluvian.voyage.core.UpdateLocalRelayPort
 import com.dluvian.voyage.core.UpdateRootPostThreshold
 import com.dluvian.voyage.core.UseDefaultAccount
@@ -211,6 +212,22 @@ private fun RelaySection(
                 onUpdate(
                     SendBookmarkedToLocalRelay(sendToLocalRelay = !sendBookmarkedToLocalRelay)
                 )
+            }
+        )
+
+        ClickableRow(
+            header = stringResource(id = R.string.send_upvoted_post_to_local_relay),
+            text = stringResource(id = R.string.send_post_to_local_relay_after_upvoting_it),
+            trailingContent = {
+                Checkbox(
+                    checked = sendUpvotedToLocalRelay,
+                    onCheckedChange = {
+                        onUpdate(SendUpvotedToLocalRelay(sendToLocalRelay = it))
+                    },
+                )
+            },
+            onClick = {
+                onUpdate(SendUpvotedToLocalRelay(sendToLocalRelay = !sendUpvotedToLocalRelay))
             }
         )
     }
