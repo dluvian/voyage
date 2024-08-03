@@ -275,7 +275,8 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
         bookmarkDao = roomDb.bookmarkDao(),
         snackbar = snackbar,
         context = context,
-        rebroadcaster = eventRebroadcaster
+        rebroadcaster = eventRebroadcaster,
+        relayPreferences = relayPreferences,
     )
 
     val muter = Muter(

@@ -15,6 +15,7 @@ import com.dluvian.voyage.data.event.EventRebroadcaster
 import com.dluvian.voyage.data.event.ValidatedBookmarkList
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.secs
+import com.dluvian.voyage.data.preferences.RelayPreferences
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.BookmarkDao
 import com.dluvian.voyage.data.room.dao.tx.BookmarkUpsertDao
@@ -36,6 +37,7 @@ class Bookmarker(
     private val snackbar: SnackbarHostState,
     private val context: Context,
     private val rebroadcaster: EventRebroadcaster,
+    private val relayPreferences: RelayPreferences,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -62,7 +64,9 @@ class Bookmarker(
 
     private fun handleAction(postId: EventIdHex, isBookmarked: Boolean) {
         updateForcedStates(postId = postId, isBookmarked = isBookmarked)
-        scope.launchIO { rebroadcaster.rebroadcastLocally(postId = postId) }
+        if (relayPreferences.getSendBookmarkedToLocalRelay()) {
+            scope.launchIO { rebroadcaster.rebroadcastLocally(postId = postId) }
+        }
         handleBookmark()
     }
 
