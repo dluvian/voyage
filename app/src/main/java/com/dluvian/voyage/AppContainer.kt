@@ -240,6 +240,13 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
         deleteDao = roomDb.deleteDao()
     )
 
+    val eventRebroadcaster = EventRebroadcaster(
+        nostrService = nostrService,
+        postDao = roomDb.postDao(),
+        relayProvider = relayProvider,
+        snackbar = snackbar,
+    )
+
     val postVoter = PostVoter(
         nostrService = nostrService,
         relayProvider = relayProvider,
@@ -247,6 +254,8 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
         context = context,
         voteDao = roomDb.voteDao(),
         eventDeletor = eventDeletor,
+        rebroadcaster = eventRebroadcaster,
+        relayPreferences = relayPreferences
     )
 
     val threadCollapser = ThreadCollapser()
@@ -259,13 +268,6 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
         snackbar = snackbar,
         context = context,
         forcedFollowStates = forcedFollowTopicStates
-    )
-
-    val eventRebroadcaster = EventRebroadcaster(
-        nostrService = nostrService,
-        postDao = roomDb.postDao(),
-        relayProvider = relayProvider,
-        snackbar = snackbar,
     )
 
     val bookmarker = Bookmarker(

@@ -102,7 +102,7 @@ private fun ClickableBaseRow(
                 Text(
                     text = header,
                     style = MaterialTheme.typography.titleMedium,
-                    maxLines = 1,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
                 if (text != null) {
@@ -110,7 +110,7 @@ private fun ClickableBaseRow(
                     Text(
                         text = text,
                         style = MaterialTheme.typography.bodyMedium,
-                        maxLines = 2,
+                        maxLines = 3,
                         overflow = TextOverflow.Ellipsis
                     )
                 }

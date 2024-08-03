@@ -10,10 +10,13 @@ import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.VoteEvent
+import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.core.utils.showToast
 import com.dluvian.voyage.data.event.EventDeletor
+import com.dluvian.voyage.data.event.EventRebroadcaster
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.secs
+import com.dluvian.voyage.data.preferences.RelayPreferences
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.VoteDao
 import com.dluvian.voyage.data.room.entity.VoteEntity
@@ -39,6 +42,8 @@ class PostVoter(
     private val context: Context,
     private val voteDao: VoteDao,
     private val eventDeletor: EventDeletor,
+    private val rebroadcaster: EventRebroadcaster,
+    private val relayPreferences: RelayPreferences,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val _forcedVotes = MutableStateFlow(mapOf<EventIdHex, Boolean>())
@@ -52,6 +57,9 @@ class PostVoter(
             is ClickNeutralizeVote -> false
         }
         updateForcedVote(action.postId, newVote)
+        if (relayPreferences.getSendUpvotedToLocalRelay()) {
+            scope.launchIO { rebroadcaster.rebroadcastLocally(postId = action.postId) }
+        }
         vote(
             postId = action.postId,
             mention = action.mention,
@@ -84,8 +92,8 @@ class PostVoter(
                     mention = mention,
                 )
             } else {
-                    if (currentVote == null) return@launch
-                    eventDeletor.deleteVote(voteId = currentVote.id)
+                if (currentVote == null) return@launch
+                eventDeletor.deleteVote(voteId = currentVote.id)
             }
         }
         jobs[postId]?.invokeOnCompletion { ex ->
