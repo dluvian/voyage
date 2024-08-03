@@ -286,6 +286,8 @@ data class ProcessExternalAccount(
 data class UpdateRootPostThreshold(val threshold: Float) : SettingsViewAction()
 data object LoadSeed : SettingsViewAction()
 data class SendAuth(val sendAuth: Boolean) : SettingsViewAction()
+data class SendUpvotedToLocalRelay(val sendToLocalRelay: Boolean) : SettingsViewAction()
+data class SendBookmarkedToLocalRelay(val sendToLocalRelay: Boolean) : SettingsViewAction()
 data class UpdateLocalRelayPort(val port: Int?) : SettingsViewAction()
 data class ExportDatabase(val uiScope: CoroutineScope) : SettingsViewAction()
 data class DeleteAllPosts(val uiScope: CoroutineScope) : SettingsViewAction()

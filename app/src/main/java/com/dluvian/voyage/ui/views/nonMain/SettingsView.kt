@@ -42,6 +42,7 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.RequestExternalAccount
 import com.dluvian.voyage.core.SendAuth
+import com.dluvian.voyage.core.SendBookmarkedToLocalRelay
 import com.dluvian.voyage.core.UpdateLocalRelayPort
 import com.dluvian.voyage.core.UpdateRootPostThreshold
 import com.dluvian.voyage.core.UseDefaultAccount
@@ -88,6 +89,8 @@ private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: OnUpdate) {
             RelaySection(
                 localRelayPort = vm.localRelayPort.value,
                 sendAuth = vm.sendAuth.value,
+                sendBookmarkedToLocalRelay = vm.sendBookmarkedToLocalRelay.value,
+                sendUpvotedToLocalRelay = vm.sendUpvotedToLocalRelay.value,
                 onUpdate = onUpdate
             )
         }
@@ -137,7 +140,13 @@ private fun AccountSection(
 }
 
 @Composable
-private fun RelaySection(localRelayPort: Int?, sendAuth: Boolean, onUpdate: OnUpdate) {
+private fun RelaySection(
+    localRelayPort: Int?,
+    sendAuth: Boolean,
+    sendBookmarkedToLocalRelay: Boolean,
+    sendUpvotedToLocalRelay: Boolean,
+    onUpdate: OnUpdate
+) {
     val newPort = remember(localRelayPort) { mutableStateOf(localRelayPort?.toString().orEmpty()) }
     LaunchedEffect(key1 = newPort.value) {
         val parsed = runCatching { newPort.value.toInt() }.getOrNull()
@@ -185,6 +194,24 @@ private fun RelaySection(localRelayPort: Int?, sendAuth: Boolean, onUpdate: OnUp
                 )
             },
             onClick = { onUpdate(SendAuth(sendAuth = !sendAuth)) }
+        )
+
+        ClickableRow(
+            header = stringResource(id = R.string.send_bookmarked_post_to_local_relay),
+            text = stringResource(id = R.string.send_post_to_local_relay_after_bookmarking_it),
+            trailingContent = {
+                Checkbox(
+                    checked = sendBookmarkedToLocalRelay,
+                    onCheckedChange = {
+                        onUpdate(SendBookmarkedToLocalRelay(sendToLocalRelay = it))
+                    },
+                )
+            },
+            onClick = {
+                onUpdate(
+                    SendBookmarkedToLocalRelay(sendToLocalRelay = !sendBookmarkedToLocalRelay)
+                )
+            }
         )
     }
 }

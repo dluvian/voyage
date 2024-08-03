@@ -223,4 +223,8 @@
     <string name="describe_this_list">Describe this list</string>
     <string name="words">Words</string>
     <string name="add_word">Add word</string>
+    <string name="send_bookmarked_post_to_local_relay">Send bookmarked post to local relay</string>
+    <string name="send_post_to_local_relay_after_bookmarking_it">Send post to local relay after bookmarking it</string>
+    <string name="send_upvoted_post_to_local_relay">Send upvoted post to local relay</string>
+    <string name="send_post_to_local_relay_after_upvoting_it">Send post to local relay after upvoting it</string>
 </resources>
