@@ -10,10 +10,11 @@ import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.Fn
 
 @Composable
-fun BaseChangeDialog(
+fun BaseActionDialog(
     title: String,
     main: ComposableContent,
-    confirmText: String = stringResource(id = R.string.change),
+    confirmIsEnabled: Boolean = true,
+    confirmText: String = stringResource(id = R.string.confirm),
     cancelText: String = stringResource(id = R.string.cancel),
     onConfirm: Fn,
     onDismiss: Fn,
@@ -23,10 +24,12 @@ fun BaseChangeDialog(
         text = { main() },
         onDismissRequest = onDismiss,
         confirmButton = {
-            TextButton(onClick = {
-                onConfirm()
-                onDismiss()
-            }) {
+            TextButton(
+                enabled = confirmIsEnabled,
+                onClick = {
+                    onConfirm()
+                    onDismiss()
+                }) {
                 Text(text = confirmText)
             }
         },
@@ -37,17 +40,19 @@ fun BaseChangeDialog(
 }
 
 @Composable
-fun BaseChangeDialog(
+fun BaseActionDialog(
     title: String,
     text: String,
-    confirmText: String = stringResource(id = R.string.change),
+    confirmIsEnabled: Boolean = true,
+    confirmText: String = stringResource(id = R.string.confirm),
     cancelText: String = stringResource(id = R.string.cancel),
     onConfirm: Fn,
     onDismiss: Fn,
 ) {
-    BaseChangeDialog(
+    BaseActionDialog(
         title = title,
         main = { Text(text = text) },
+        confirmIsEnabled = confirmIsEnabled,
         confirmText = confirmText,
         cancelText = cancelText,
         onConfirm = onConfirm,

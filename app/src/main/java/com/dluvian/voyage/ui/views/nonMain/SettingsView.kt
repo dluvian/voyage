@@ -54,7 +54,7 @@ import com.dluvian.voyage.core.viewModel.SettingsViewModel
 import com.dluvian.voyage.data.nostr.LOCAL_WEBSOCKET
 import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.ui.components.bottomSheet.SeedBottomSheet
-import com.dluvian.voyage.ui.components.dialog.BaseChangeDialog
+import com.dluvian.voyage.ui.components.dialog.BaseActionDialog
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import com.dluvian.voyage.ui.components.indicator.SmallCircleProgressIndicator
 import com.dluvian.voyage.ui.components.row.ClickableRow
@@ -287,7 +287,7 @@ private fun DatabaseSection(
 
         val isDeleting = vm.isDeleting.value
         val showDeleteDialog = remember { mutableStateOf(false) }
-        if (showDeleteDialog.value) BaseChangeDialog(
+        if (showDeleteDialog.value) BaseActionDialog(
             title = stringResource(id = R.string.delete_posts),
             text = stringResource(id = R.string.are_you_sure_you_want_to_delete_all_posts_from_the_database),
             confirmText = stringResource(id = R.string.delete),
@@ -310,9 +310,10 @@ private fun AppSection(currentUpvote: String, onUpdate: OnUpdate) {
     SettingsSection(header = stringResource(id = R.string.app)) {
         val newUpvote = remember { mutableStateOf(currentUpvote) }
         val showUpvoteDialog = remember { mutableStateOf(false) }
-        if (showUpvoteDialog.value) BaseChangeDialog(
+        if (showUpvoteDialog.value) BaseActionDialog(
             title = stringResource(id = R.string.change_upvote_content),
             main = { TextField(value = newUpvote.value, onValueChange = { newUpvote.value = it }) },
+            confirmIsEnabled = newUpvote.value.trim() != "-",
             onConfirm = { onUpdate(ChangeUpvoteContent(newContent = newUpvote.value)) },
             onDismiss = { showUpvoteDialog.value = false }
         )
