@@ -36,7 +36,7 @@ class ProfileProvider(
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    fun getProfileFlow(nprofile: Nip19Profile, isInit: Boolean): Flow<FullProfileUI> {
+    fun getProfileFlow(nprofile: Nip19Profile, subProfile: Boolean): Flow<FullProfileUI> {
         val hex = nprofile.publicKey().toHex()
         scope.launchIO {
             lazyNostrSubscriber.lazySubNip65(nprofile = nprofile)
@@ -48,7 +48,7 @@ class ProfileProvider(
                     isNotInMemory = false
                 }
             }
-            if (!isInit || isNotInMemory) {
+            if (!subProfile || isNotInMemory) {
                 nostrSubscriber.subProfile(nprofile = nprofile)
             }
         }
@@ -65,6 +65,27 @@ class ProfileProvider(
                 forcedMuteState = forcedMute[hex],
                 metadata = metadata
             )
+        }
+    }
+
+    fun getTrustedByFlow(pubkey: PubkeyHex): Flow<AdvancedProfileView?> {
+        return combine(
+            room.profileDao().getAdvancedProfileTrustedByFlow(pubkey = pubkey),
+            forcedMuteFlow,
+        ) { dbProfile, forcedMute ->
+            dbProfile?.let { trustedProfile ->
+                createAdvancedProfile(
+                    pubkey = trustedProfile.pubkey,
+                    dbProfile = trustedProfile,
+                    forcedFollowState = true, // Return null if not followed
+                    forcedMuteState = forcedMute[trustedProfile.pubkey],
+                    metadata = metadataInMemory.getMetadata(pubkey = trustedProfile.pubkey),
+                    myPubkey = myPubkeyProvider.getPubkeyHex(),
+                    friendProvider = friendProvider,
+                    muteProvider = muteProvider,
+                    itemSetProvider = itemSetProvider
+                )
+            }
         }
     }
 

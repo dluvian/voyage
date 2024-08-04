@@ -231,4 +231,5 @@
     <string name="this_affects_how_other_clients_render_your_upvotes">This affects how other clients render your upvotes</string>
     <string name="confirm">Confirm</string>
     <string name="threshold">Threshold</string>
+    <string name="semi_trusted_bc_you_follow">Semi-trusted because you follow</string>
 </resources>

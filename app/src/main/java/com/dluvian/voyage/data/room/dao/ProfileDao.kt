@@ -12,6 +12,13 @@ interface ProfileDao {
     @Query("SELECT * FROM AdvancedProfileView WHERE pubkey = :pubkey")
     fun getAdvancedProfileFlow(pubkey: PubkeyHex): Flow<AdvancedProfileView?>
 
+    @Query(
+        "SELECT * " +
+                "FROM AdvancedProfileView " +
+                "WHERE pubkey = (SELECT friendPubkey FROM weboftrust WHERE webOfTrustPubkey = :pubkey)"
+    )
+    fun getAdvancedProfileTrustedByFlow(pubkey: PubkeyHex): Flow<AdvancedProfileView?>
+
     // From account table in case we switch the account during a session
     @Query(
         "SELECT account.pubkey, IFNULL(profile.name, '') name, IFNULL(profile.createdAt, 0) createdAt " +

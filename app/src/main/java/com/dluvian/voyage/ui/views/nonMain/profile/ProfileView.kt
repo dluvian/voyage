@@ -2,6 +2,7 @@ package com.dluvian.voyage.ui.views.nonMain.profile
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -36,25 +37,31 @@ import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.MAX_RELAYS
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenLightningWallet
+import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenRelayProfile
 import com.dluvian.voyage.core.ProfileViewRefresh
 import com.dluvian.voyage.core.ProfileViewReplyAppend
 import com.dluvian.voyage.core.ProfileViewRootAppend
+import com.dluvian.voyage.core.model.FriendTrust
 import com.dluvian.voyage.core.utils.copyAndToast
 import com.dluvian.voyage.core.utils.getSimpleLauncher
 import com.dluvian.voyage.core.utils.shortenBech32
 import com.dluvian.voyage.core.utils.takeRandom
 import com.dluvian.voyage.core.utils.toBech32
 import com.dluvian.voyage.core.viewModel.ProfileViewModel
+import com.dluvian.voyage.data.nostr.Nip65Relay
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.createNprofile
+import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.ui.components.Feed
 import com.dluvian.voyage.ui.components.PullRefreshBox
 import com.dluvian.voyage.ui.components.SimpleTabPager
+import com.dluvian.voyage.ui.components.icon.ClickableTrustIcon
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.ComingSoon
 import com.dluvian.voyage.ui.components.text.AnnotatedTextWithHeader
 import com.dluvian.voyage.ui.components.text.IndexedText
+import com.dluvian.voyage.ui.components.text.SmallHeader
 import com.dluvian.voyage.ui.theme.KeyIcon
 import com.dluvian.voyage.ui.theme.LightningIcon
 import com.dluvian.voyage.ui.theme.OpenIcon
@@ -67,29 +74,6 @@ import kotlinx.coroutines.launch
 fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
     val profile by vm.profile.value.collectAsState()
     val nip65Relays by vm.nip65Relays.value.collectAsState()
-    val nip65RelayUrls = remember(nip65Relays) {
-        nip65Relays.filter { it.isRead && it.isWrite }.map { it.url }
-    }
-    val readOnlyRelays = remember(nip65Relays) {
-        nip65Relays.filter { it.isRead && !it.isWrite }.map { it.url }
-    }
-    val writeOnlyRelays = remember(nip65Relays) {
-        nip65Relays.filter { it.isWrite && !it.isRead }.map { it.url }
-    }
-    val npub = remember(profile.inner.pubkey) {
-        profile.inner.pubkey.toBech32()
-    }
-    val nprofile = remember(profile.inner.pubkey, nip65Relays) {
-        createNprofile(
-            hex = profile.inner.pubkey,
-            relays = nip65Relays.filter { it.isWrite }
-                .takeRandom(MAX_RELAYS)
-                .map { it.url }
-        ).toBech32()
-    }
-    val seenInRelays by vm.seenInRelays.value.collectAsState()
-    val index = vm.tabIndex
-    val isRefreshing by vm.rootPaginator.isRefreshing
     val headers = listOf(
         stringResource(id = R.string.posts),
         stringResource(id = R.string.replies),
@@ -107,7 +91,7 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
     ) {
         SimpleTabPager(
             headers = headers,
-            index = index,
+            index = vm.tabIndex,
             pagerState = vm.pagerState,
             onScrollUp = {
                 when (it) {
@@ -140,11 +124,23 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(horizontal = spacing.bigScreenEdge),
-                    npub = npub,
-                    nprofile = nprofile,
+                    npub = remember(profile.inner.pubkey) { profile.inner.pubkey.toBech32() },
+                    nprofile = remember(profile.inner.pubkey, nip65Relays) {
+                        createNprofile(
+                            hex = profile.inner.pubkey,
+                            relays = nip65Relays.filter { relay -> relay.isWrite }
+                                .takeRandom(MAX_RELAYS)
+                                .map(Nip65Relay::url)
+                        ).toBech32()
+                    },
                     lightning = profile.lightning,
+                    trustedBy = if (profile.inner.isWebOfTrust) {
+                        vm.trustedBy.value.collectAsState().value
+                    } else {
+                        null
+                    },
                     about = profile.about,
-                    isRefreshing = isRefreshing,
+                    isRefreshing = vm.rootPaginator.isRefreshing.value,
                     state = vm.profileAboutState,
                     onUpdate = onUpdate
                 )
@@ -153,11 +149,20 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(horizontal = spacing.bigScreenEdge),
-                    nip65Relays = nip65RelayUrls,
-                    readOnlyRelays = readOnlyRelays,
-                    writeOnlyRelays = writeOnlyRelays,
-                    seenInRelays = seenInRelays,
-                    isRefreshing = isRefreshing,
+                    nip65Relays = remember(nip65Relays) {
+                        nip65Relays.filter { relay -> relay.isRead && relay.isWrite }
+                            .map(Nip65Relay::url)
+                    },
+                    readOnlyRelays = remember(nip65Relays) {
+                        nip65Relays.filter { relay -> relay.isRead && !relay.isWrite }
+                            .map(Nip65Relay::url)
+                    },
+                    writeOnlyRelays = remember(nip65Relays) {
+                        nip65Relays.filter { relay -> relay.isWrite && !relay.isRead }
+                            .map(Nip65Relay::url)
+                    },
+                    seenInRelays = vm.seenInRelays.value.collectAsState().value,
+                    isRefreshing = vm.rootPaginator.isRefreshing.value,
                     state = vm.profileRelayState,
                     onUpdate = onUpdate
                 )
@@ -174,6 +179,7 @@ private fun AboutPage(
     npub: Bech32,
     nprofile: Bech32,
     lightning: String?,
+    trustedBy: AdvancedProfileView?,
     about: AnnotatedString?,
     isRefreshing: Boolean,
     state: LazyListState,
@@ -232,6 +238,18 @@ private fun AboutPage(
                         )
                     }
                 )
+            }
+            if (trustedBy != null && trustedBy.isFriend) item {
+                Column(modifier = Modifier.padding(vertical = spacing.small)) {
+                    SmallHeader(header = stringResource(id = R.string.semi_trusted_bc_you_follow))
+                    ClickableTrustIcon(
+                        trustType = FriendTrust,
+                        authorName = trustedBy.name,
+                        onClick = {
+                            onUpdate(OpenProfile(nprofile = createNprofile(hex = trustedBy.pubkey)))
+                        }
+                    )
+                }
             }
             if (!about.isNullOrEmpty()) item {
                 AnnotatedTextWithHeader(

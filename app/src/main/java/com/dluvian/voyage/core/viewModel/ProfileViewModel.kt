@@ -63,6 +63,8 @@ class ProfileViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
         mutableStateOf(MutableStateFlow(emptyList()))
     val seenInRelays: MutableState<StateFlow<List<RelayUrl>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
+    val trustedBy: MutableState<StateFlow<AdvancedProfileView?>> =
+        mutableStateOf(MutableStateFlow(null))
     val rootPaginator = Paginator(
         feedProvider = feedProvider,
         muteProvider = muteProvider,
@@ -81,18 +83,24 @@ class ProfileViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
         val pubkeyHex = profileNavView.nprofile.publicKey().toHex()
         if (profile.value.value.inner.pubkey == pubkeyHex) return
 
+        // TODO: Sub contactlist if friend and force refreshing
+
         subCreator.unsubAll()
         profile.value = profileProvider
-            .getProfileFlow(nprofile = profileNavView.nprofile, isInit = true)
+            .getProfileFlow(nprofile = profileNavView.nprofile, subProfile = true)
             .stateIn(
                 viewModelScope,
                 SharingStarted.Eagerly,
                 FullProfileUI(inner = AdvancedProfileView(pubkey = pubkeyHex))
             )
         tabIndex.intValue = 0
-        viewModelScope.launch { pagerState.scrollToPage(0) }
+        viewModelScope.launch {
+            pagerState.scrollToPage(0)
+        }
         rootPaginator.reinit(setting = ProfileRootFeedSetting(nprofile = profileNavView.nprofile))
         replyPaginator.reinit(setting = ReplyFeedSetting(nprofile = profileNavView.nprofile))
+        trustedBy.value = profileProvider.getTrustedByFlow(pubkey = pubkeyHex)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
         nip65Relays.value = nip65Dao.getNip65Flow(pubkey = pubkeyHex)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
         seenInRelays.value = eventRelayDao.getEventRelays(pubkey = pubkeyHex)
@@ -112,7 +120,7 @@ class ProfileViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
     private fun refresh() {
         subCreator.unsubAll()
         val nprofile = createNprofile(hex = profile.value.value.inner.pubkey)
-        profile.value = profileProvider.getProfileFlow(nprofile = nprofile, isInit = false)
+        profile.value = profileProvider.getProfileFlow(nprofile = nprofile, subProfile = false)
             .stateIn(
                 viewModelScope,
                 SharingStarted.Eagerly,
