@@ -227,7 +227,7 @@
     <string name="send_post_to_local_relay_after_bookmarking_it">Send post to local relay after bookmarking it</string>
     <string name="send_upvoted_post_to_local_relay">Send upvoted post to local relay</string>
     <string name="send_post_to_local_relay_after_upvoting_it">Send post to local relay after upvoting it</string>
-    <string name="upvote_event_content">Upvote event content</string>
+    <string name="upvote_event_content">Upvote-Event content</string>
     <string name="this_affects_how_other_clients_render_your_upvotes">This affects how other clients render your upvotes</string>
     <string name="confirm">Confirm</string>
     <string name="threshold">Threshold</string>

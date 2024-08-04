@@ -219,4 +219,13 @@
     <string name="describe_this_list">描述此列表</string>
     <string name="words">字</string>
     <string name="add_word">添加单词</string>
+    <string name="send_bookmarked_post_to_local_relay">将书签帖子发送至本地中继</string>
+    <string name="send_post_to_local_relay_after_bookmarking_it">将帖子添加书签后发送至本地中继</string>
+    <string name="send_upvoted_post_to_local_relay">将点赞帖子发送至本地中继</string>
+    <string name="send_post_to_local_relay_after_upvoting_it">点赞后将帖子发送至本地中继</string>
+    <string name="upvote_event_content">点赞-活动内容</string>
+    <string name="this_affects_how_other_clients_render_your_upvotes">这会影响其他客户端如何投票</string>
+    <string name="confirm">确认</string>
+    <string name="threshold">临界点</string>
+    <string name="semi_trusted_bc_you_follow">由于您关注，因此处于半信任状态</string>
 </resources>
