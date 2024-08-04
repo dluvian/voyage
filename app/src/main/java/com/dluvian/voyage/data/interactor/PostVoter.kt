@@ -16,6 +16,7 @@ import com.dluvian.voyage.data.event.EventDeletor
 import com.dluvian.voyage.data.event.EventRebroadcaster
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.secs
+import com.dluvian.voyage.data.preferences.EventPreferences
 import com.dluvian.voyage.data.preferences.RelayPreferences
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.VoteDao
@@ -44,6 +45,7 @@ class PostVoter(
     private val eventDeletor: EventDeletor,
     private val rebroadcaster: EventRebroadcaster,
     private val relayPreferences: RelayPreferences,
+    private val eventPreferences: EventPreferences,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val _forcedVotes = MutableStateFlow(mapOf<EventIdHex, Boolean>())
@@ -110,8 +112,9 @@ class PostVoter(
         if (currentVote != null) {
             eventDeletor.deleteVote(voteId = currentVote.id)
         }
-        nostrService.publishUpvote(
+        nostrService.publishVote(
             eventId = EventId.fromHex(postId),
+            content = eventPreferences.getUpvoteContent(),
             mention = PublicKey.fromHex(mention),
             relayUrls = relayProvider.getPublishRelays(
                 publishTo = listOf(mention),

@@ -291,6 +291,7 @@ data class SendBookmarkedToLocalRelay(val sendToLocalRelay: Boolean) : SettingsV
 data class UpdateLocalRelayPort(val port: Int?) : SettingsViewAction()
 data class ExportDatabase(val uiScope: CoroutineScope) : SettingsViewAction()
 data class DeleteAllPosts(val uiScope: CoroutineScope) : SettingsViewAction()
+data class ChangeUpvoteContent(val newContent: String) : SettingsViewAction()
 
 
 sealed class SearchViewAction : UIEvent()

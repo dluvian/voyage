@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.R
+import com.dluvian.voyage.core.ChangeUpvoteContent
 import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.DeleteAllPosts
 import com.dluvian.voyage.core.ExportDatabase
@@ -32,6 +33,7 @@ import com.dluvian.voyage.core.utils.showToast
 import com.dluvian.voyage.data.account.AccountSwitcher
 import com.dluvian.voyage.data.account.MnemonicSigner
 import com.dluvian.voyage.data.preferences.DatabasePreferences
+import com.dluvian.voyage.data.preferences.EventPreferences
 import com.dluvian.voyage.data.preferences.RelayPreferences
 import com.dluvian.voyage.data.provider.DatabaseInteractor
 import kotlinx.coroutines.CoroutineScope
@@ -48,6 +50,7 @@ class SettingsViewModel(
     private val snackbar: SnackbarHostState,
     private val databasePreferences: DatabasePreferences,
     private val relayPreferences: RelayPreferences,
+    private val eventPreferences: EventPreferences,
     private val databaseInteractor: DatabaseInteractor,
     private val externalSignerHandler: ExternalSignerHandler,
     private val mnemonicSigner: MnemonicSigner,
@@ -65,6 +68,7 @@ class SettingsViewModel(
     val isDeleting = mutableStateOf(false)
     val isExporting = mutableStateOf(false)
     val exportCount = mutableIntStateOf(0)
+    val currentUpvote = mutableStateOf(eventPreferences.getUpvoteContent())
 
     val isLoadingAccount = mutableStateOf(false)
 
@@ -90,6 +94,11 @@ class SettingsViewModel(
             is SendAuth -> {
                 relayPreferences.setSendAuth(sendAuth = action.sendAuth)
                 this.sendAuth.value = action.sendAuth
+            }
+
+            is ChangeUpvoteContent -> {
+                eventPreferences.setUpvoteContent(newUpvote = action.newContent)
+                this.currentUpvote.value = action.newContent
             }
 
             is SendBookmarkedToLocalRelay -> {

@@ -134,6 +134,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 snackbar = appContainer.snackbar,
                 databasePreferences = appContainer.databasePreferences,
                 relayPreferences = appContainer.relayPreferences,
+                eventPreferences = appContainer.eventPreferences,
                 databaseInteractor = appContainer.databaseInteractor,
                 externalSignerHandler = appContainer.externalSignerHandler,
                 mnemonicSigner = appContainer.mnemonicSigner,

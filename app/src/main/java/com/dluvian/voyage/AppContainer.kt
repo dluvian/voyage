@@ -40,6 +40,7 @@ import com.dluvian.voyage.data.nostr.SubBatcher
 import com.dluvian.voyage.data.nostr.SubId
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.preferences.DatabasePreferences
+import com.dluvian.voyage.data.preferences.EventPreferences
 import com.dluvian.voyage.data.preferences.RelayPreferences
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 import com.dluvian.voyage.data.provider.DatabaseInteractor
@@ -110,13 +111,11 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
         metadataInMemory = metadataInMemory,
     )
 
-    private val annotatedStringProvider = AnnotatedStringProvider(
-        nameProvider = nameProvider
-    )
-
+    private val annotatedStringProvider = AnnotatedStringProvider(nameProvider = nameProvider)
     private val pubkeyProvider = PubkeyProvider(friendProvider = friendProvider)
 
     val relayPreferences = RelayPreferences(context = context)
+    val eventPreferences = EventPreferences(context = context)
 
     val relayProvider = RelayProvider(
         nip65Dao = roomDb.nip65Dao(),
@@ -255,7 +254,8 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
         voteDao = roomDb.voteDao(),
         eventDeletor = eventDeletor,
         rebroadcaster = eventRebroadcaster,
-        relayPreferences = relayPreferences
+        relayPreferences = relayPreferences,
+        eventPreferences = eventPreferences,
     )
 
     val threadCollapser = ThreadCollapser()

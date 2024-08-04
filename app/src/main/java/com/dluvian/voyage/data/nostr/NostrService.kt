@@ -171,13 +171,15 @@ class NostrService(
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
-    suspend fun publishUpvote(
+    suspend fun publishVote(
         eventId: EventId,
+        content: String,
         mention: PublicKey,
         relayUrls: Collection<RelayUrl>,
     ): Result<Event> {
         return eventMaker.buildVote(
             eventId = eventId,
+            content = content,
             mention = mention,
         )
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }

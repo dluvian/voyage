@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
@@ -31,10 +30,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.dluvian.voyage.R
+import com.dluvian.voyage.core.ChangeUpvoteContent
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.DeleteAllPosts
 import com.dluvian.voyage.core.ExportDatabase
-import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.LoadSeed
 import com.dluvian.voyage.core.MAX_RETAIN_ROOT
 import com.dluvian.voyage.core.MIN_RETAIN_ROOT
@@ -55,6 +54,7 @@ import com.dluvian.voyage.core.viewModel.SettingsViewModel
 import com.dluvian.voyage.data.nostr.LOCAL_WEBSOCKET
 import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.ui.components.bottomSheet.SeedBottomSheet
+import com.dluvian.voyage.ui.components.dialog.BaseChangeDialog
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import com.dluvian.voyage.ui.components.indicator.SmallCircleProgressIndicator
 import com.dluvian.voyage.ui.components.row.ClickableRow
@@ -77,6 +77,7 @@ fun SettingsView(vm: SettingsViewModel, snackbar: SnackbarHostState, onUpdate: O
 
 @Composable
 private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: OnUpdate) {
+    val scope = rememberCoroutineScope()
     LazyColumn {
         if (vm.isLoadingAccount.value) item { FullLinearProgressIndicator() }
         item {
@@ -96,10 +97,10 @@ private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: OnUpdate) {
             )
         }
         item {
-            DatabaseSection(vm = vm, onUpdate = onUpdate)
+            DatabaseSection(vm = vm, scope = scope, onUpdate = onUpdate)
         }
         item {
-            AppSection()
+            AppSection(currentUpvote = vm.currentUpvote.value, onUpdate = onUpdate)
         }
     }
 }
@@ -236,13 +237,13 @@ private fun RelaySection(
 @Composable
 private fun DatabaseSection(
     vm: SettingsViewModel,
+    scope: CoroutineScope,
     onUpdate: OnUpdate
 ) {
     val localRootPostThreshold = remember(vm.rootPostThreshold.intValue) {
         mutableFloatStateOf(vm.rootPostThreshold.intValue.toFloat())
     }
     val showSlider = remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
 
     SettingsSection(header = stringResource(id = R.string.database)) {
         ClickableRow(
@@ -286,10 +287,12 @@ private fun DatabaseSection(
 
         val isDeleting = vm.isDeleting.value
         val showDeleteDialog = remember { mutableStateOf(false) }
-        if (showDeleteDialog.value) DeleteAllPostsDialog(
-            scope = scope,
-            onDismiss = { showDeleteDialog.value = false },
-            onUpdate = onUpdate
+        if (showDeleteDialog.value) BaseChangeDialog(
+            title = stringResource(id = R.string.delete_posts),
+            text = stringResource(id = R.string.are_you_sure_you_want_to_delete_all_posts_from_the_database),
+            confirmText = stringResource(id = R.string.delete),
+            onConfirm = { onUpdate(DeleteAllPosts(uiScope = scope)) },
+            onDismiss = { showDeleteDialog.value = false }
         )
         ClickableRow(
             header = stringResource(id = R.string.delete_posts),
@@ -303,8 +306,22 @@ private fun DatabaseSection(
 }
 
 @Composable
-private fun AppSection() {
+private fun AppSection(currentUpvote: String, onUpdate: OnUpdate) {
     SettingsSection(header = stringResource(id = R.string.app)) {
+        val newUpvote = remember { mutableStateOf(currentUpvote) }
+        val showUpvoteDialog = remember { mutableStateOf(false) }
+        if (showUpvoteDialog.value) BaseChangeDialog(
+            title = stringResource(id = R.string.change_upvote_content),
+            main = { TextField(value = newUpvote.value, onValueChange = { newUpvote.value = it }) },
+            onConfirm = { onUpdate(ChangeUpvoteContent(newContent = newUpvote.value)) },
+            onDismiss = { showUpvoteDialog.value = false }
+        )
+        ClickableRow(
+            header = stringResource(id = R.string.upvote_event_content) + ": $currentUpvote",
+            text = stringResource(id = R.string.this_affects_how_other_clients_render_your_upvotes),
+            onClick = { showUpvoteDialog.value = true }
+        )
+
         ClickableRow(
             header = stringResource(id = R.string.version),
             text = stringResource(id = R.string.version_nr),
@@ -347,26 +364,4 @@ private fun SettingsSection(header: String, content: ComposableContent) {
         content()
         Spacer(modifier = Modifier.height(spacing.screenEdge))
     }
-}
-
-@Composable
-private fun DeleteAllPostsDialog(scope: CoroutineScope, onDismiss: Fn, onUpdate: OnUpdate) {
-    AlertDialog(
-        title = { Text(text = stringResource(id = R.string.delete_posts)) },
-        text = { Text(text = stringResource(id = R.string.are_you_sure_you_want_to_delete_all_posts_from_the_database)) },
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            TextButton(onClick = {
-                onUpdate(DeleteAllPosts(uiScope = scope))
-                onDismiss()
-            }) {
-                Text(text = stringResource(id = R.string.delete))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(text = stringResource(id = R.string.cancel))
-            }
-        },
-    )
 }
