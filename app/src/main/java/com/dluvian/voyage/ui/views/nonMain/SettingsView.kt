@@ -1,6 +1,5 @@
 package com.dluvian.voyage.ui.views.nonMain
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -251,35 +250,37 @@ private fun DatabaseSection(
     scope: CoroutineScope,
     onUpdate: OnUpdate
 ) {
-    val localRootPostThreshold = remember(vm.rootPostThreshold.intValue) {
-        mutableFloatStateOf(vm.rootPostThreshold.intValue.toFloat())
-    }
-    val showSlider = remember { mutableStateOf(false) }
-
     SettingsSection(header = stringResource(id = R.string.database)) {
+        val newNum = remember(vm.rootPostThreshold.intValue) {
+            mutableFloatStateOf(vm.rootPostThreshold.intValue.toFloat())
+        }
+        val showThresholdDialog = remember { mutableStateOf(false) }
+        if (showThresholdDialog.value) BaseActionDialog(
+            title = stringResource(id = R.string.threshold) + ": ${newNum.floatValue.toInt()}",
+            main = {
+                Slider(
+                    modifier = Modifier.padding(horizontal = spacing.bigScreenEdge),
+                    value = newNum.floatValue,
+                    onValueChange = { newNum.floatValue = it },
+                    valueRange = MIN_RETAIN_ROOT..MAX_RETAIN_ROOT
+                )
+            },
+            onConfirm = {
+                onUpdate(UpdateRootPostThreshold(threshold = newNum.floatValue))
+            },
+            onDismiss = { showThresholdDialog.value = false }
+        )
         ClickableRow(
             header = stringResource(
                 id = R.string.keep_at_least_n_root_posts,
-                localRootPostThreshold.floatValue.toInt()
+                vm.rootPostThreshold.intValue
             ),
             text = stringResource(
                 id = R.string.currently_n_root_posts_in_db,
                 vm.currentRootPostCount.collectAsState().value
             ),
-            onClick = { showSlider.value = !showSlider.value }
-        ) {
-            AnimatedVisibility(visible = showSlider.value) {
-                Slider(
-                    modifier = Modifier.padding(horizontal = spacing.bigScreenEdge),
-                    value = localRootPostThreshold.floatValue,
-                    onValueChange = { localRootPostThreshold.floatValue = it },
-                    onValueChangeFinished = {
-                        onUpdate(UpdateRootPostThreshold(threshold = localRootPostThreshold.floatValue))
-                    },
-                    valueRange = MIN_RETAIN_ROOT..MAX_RETAIN_ROOT
-                )
-            }
-        }
+            onClick = { showThresholdDialog.value = true }
+        )
 
         val isExporting = vm.isExporting.value
         val exportCount = vm.exportCount.intValue
@@ -324,7 +325,7 @@ private fun AppSection(currentUpvote: String, onUpdate: OnUpdate) {
         val newUpvote = remember { mutableStateOf(currentUpvote.toTextFieldValue()) }
         val showUpvoteDialog = remember { mutableStateOf(false) }
         if (showUpvoteDialog.value) BaseActionDialog(
-            title = stringResource(id = R.string.change_upvote_content),
+            title = stringResource(id = R.string.upvote_event_content),
             main = {
                 LaunchedEffect(key1 = Unit) { focusRequester.requestFocus() }
                 TextField(
