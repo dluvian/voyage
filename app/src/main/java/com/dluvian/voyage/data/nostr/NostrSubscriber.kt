@@ -149,6 +149,18 @@ class NostrSubscriber(
         }
     }
 
+    suspend fun subContactList(nprofile: Nip19Profile) {
+        val contactFilter = Filter()
+            .kind(kind = Kind.fromEnum(KindEnum.ContactList))
+            .author(author = nprofile.publicKey())
+            .until(timestamp = Timestamp.now())
+            .limit(limit = 1u)
+        val filters = listOf(contactFilter)
+
+        relayProvider.getObserveRelays(nprofile = nprofile, includeConnected = false)
+            .forEach { relay -> subCreator.subscribe(relayUrl = relay, filters = filters) }
+    }
+
     private val votesAndRepliesCache = mutableSetOf<EventIdHex>()
     private var lastUpdate = System.currentTimeMillis()
     private val isSubbingVotesAndReplies = AtomicBoolean(false)

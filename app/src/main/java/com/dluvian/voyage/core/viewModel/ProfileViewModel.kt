@@ -23,8 +23,8 @@ import com.dluvian.voyage.data.model.ItemSetMeta
 import com.dluvian.voyage.data.model.ProfileRootFeedSetting
 import com.dluvian.voyage.data.model.ReplyFeedSetting
 import com.dluvian.voyage.data.nostr.Nip65Relay
+import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.nostr.RelayUrl
-import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.ItemSetProvider
@@ -48,7 +48,7 @@ class ProfileViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
     val profileAboutState: LazyListState,
     val profileRelayState: LazyListState,
     val pagerState: PagerState,
-    private val subCreator: SubscriptionCreator,
+    private val nostrSubscriber: NostrSubscriber,
     private val profileProvider: ProfileProvider,
     private val nip65Dao: Nip65Dao,
     private val eventRelayDao: EventRelayDao,
@@ -69,13 +69,13 @@ class ProfileViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
         feedProvider = feedProvider,
         muteProvider = muteProvider,
         scope = viewModelScope,
-        subCreator = subCreator
+        subCreator = nostrSubscriber.subCreator
     )
     val replyPaginator = Paginator(
         feedProvider = feedProvider,
         muteProvider = muteProvider,
         scope = viewModelScope,
-        subCreator = subCreator
+        subCreator = nostrSubscriber.subCreator
     )
 
     @OptIn(ExperimentalFoundationApi::class)
@@ -83,9 +83,7 @@ class ProfileViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
         val pubkeyHex = profileNavView.nprofile.publicKey().toHex()
         if (profile.value.value.inner.pubkey == pubkeyHex) return
 
-        // TODO: Sub contactlist if friend and force refreshing
-
-        subCreator.unsubAll()
+        nostrSubscriber.subCreator.unsubAll()
         profile.value = profileProvider
             .getProfileFlow(nprofile = profileNavView.nprofile, subProfile = true)
             .stateIn(
@@ -118,7 +116,7 @@ class ProfileViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
     }
 
     private fun refresh() {
-        subCreator.unsubAll()
+        nostrSubscriber.subCreator.unsubAll()
         val nprofile = createNprofile(hex = profile.value.value.inner.pubkey)
         profile.value = profileProvider.getProfileFlow(nprofile = nprofile, subProfile = false)
             .stateIn(
@@ -126,6 +124,14 @@ class ProfileViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
                 SharingStarted.Eagerly,
                 FullProfileUI(inner = profile.value.value.inner)
             )
+
+        // Sub contacts to update trustedBy of a trusted profile
+        if (profile.value.value.inner.isFriend) {
+            viewModelScope.launchIO {
+                nostrSubscriber.subContactList(nprofile = nprofile)
+            }
+        }
+
         rootPaginator.refresh()
         replyPaginator.refresh()
     }

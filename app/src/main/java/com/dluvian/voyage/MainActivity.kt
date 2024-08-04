@@ -156,7 +156,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 profileAboutState = profileAboutState,
                 profileRelayState = profileRelayState,
                 pagerState = profilePagerState,
-                subCreator = appContainer.nostrSubscriber.subCreator,
+                nostrSubscriber = appContainer.nostrSubscriber,
                 profileProvider = appContainer.profileProvider,
                 nip65Dao = appContainer.roomDb.nip65Dao(),
                 eventRelayDao = appContainer.roomDb.eventRelayDao(),
