@@ -112,8 +112,8 @@ class SettingsViewModel(
             }
 
             is UpdateLocalRelayPort -> {
-                relayPreferences.setLocalRelayPort(port = action.port)
-                this.localRelayPort.value = action.port
+                relayPreferences.setLocalRelayPort(port = action.port?.toInt())
+                this.localRelayPort.value = action.port?.toInt()
             }
 
             is ExportDatabase -> exportDatabase(uiScope = action.uiScope)

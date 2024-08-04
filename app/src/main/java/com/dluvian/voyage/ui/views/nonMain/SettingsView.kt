@@ -25,6 +25,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -50,6 +52,7 @@ import com.dluvian.voyage.core.model.AccountType
 import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
 import com.dluvian.voyage.core.utils.toShortenedNpub
+import com.dluvian.voyage.core.utils.toTextFieldValue
 import com.dluvian.voyage.core.viewModel.SettingsViewModel
 import com.dluvian.voyage.data.nostr.LOCAL_WEBSOCKET
 import com.dluvian.voyage.data.nostr.createNprofile
@@ -62,7 +65,6 @@ import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.ui.theme.AccountIcon
 import com.dluvian.voyage.ui.theme.spacing
 import kotlinx.coroutines.CoroutineScope
-import kotlin.math.abs
 
 @Composable
 fun SettingsView(vm: SettingsViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
@@ -149,33 +151,33 @@ private fun RelaySection(
     sendUpvotedToLocalRelay: Boolean,
     onUpdate: OnUpdate
 ) {
-    val newPort = remember(localRelayPort) { mutableStateOf(localRelayPort?.toString().orEmpty()) }
-    LaunchedEffect(key1 = newPort.value) {
-        val parsed = runCatching { newPort.value.toInt() }.getOrNull()
-        if (parsed != localRelayPort) onUpdate(UpdateLocalRelayPort(port = parsed))
+    val newPort = remember(localRelayPort) {
+        mutableStateOf(localRelayPort?.toString().orEmpty().toTextFieldValue())
     }
-    val showTextField = remember { mutableStateOf(false) }
+    val parsedNewPort = remember(newPort.value) {
+        runCatching { newPort.value.text.toUShort() }.getOrNull()
+    }
+    val focusRequester = remember { FocusRequester() }
 
     SettingsSection(header = stringResource(id = R.string.relays)) {
-        val headerSuffix = if (newPort.value.isNotEmpty()) ": ${newPort.value}" else ""
-        ClickableRow(
-            header = stringResource(id = R.string.local_relay_port) + headerSuffix,
-            text = stringResource(id = R.string.port_number_of_your_local_relay),
-            onClick = { showTextField.value = !showTextField.value }
-        ) {
-            AnimatedVisibility(visible = showTextField.value) {
+        val showPortDialog = remember { mutableStateOf(false) }
+        if (showPortDialog.value) BaseActionDialog(
+            title = stringResource(id = R.string.local_relay_port),
+            main = {
+                LaunchedEffect(key1 = Unit) { focusRequester.requestFocus() }
                 TextField(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = spacing.bigScreenEdge)
-                        .padding(bottom = spacing.bigScreenEdge),
+                        .focusRequester(focusRequester = focusRequester),
                     value = newPort.value,
                     prefix = { Text(text = LOCAL_WEBSOCKET) },
                     onValueChange = { newStr ->
-                        val trimmed = newStr.trim()
-                        runCatching { Integer.valueOf(trimmed) }
-                            .onSuccess { parsed -> newPort.value = abs(parsed).toString() }
-                            .onFailure { if (trimmed.isEmpty()) newPort.value = trimmed }
+                        if (newStr.text.length <= 5 &&
+                            newStr.text.all { it.isDigit() } &&
+                            !newStr.text.startsWith("0")
+                        ) {
+                            newPort.value = newStr
+                        }
                     },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
@@ -183,8 +185,17 @@ private fun RelaySection(
                         imeAction = ImeAction.Done
                     ),
                 )
-            }
-        }
+            },
+            confirmIsEnabled = newPort.value.text.isEmpty() || parsedNewPort != null,
+            onConfirm = { onUpdate(UpdateLocalRelayPort(port = parsedNewPort)) },
+            onDismiss = { showPortDialog.value = false }
+        )
+        val headerSuffix = if (newPort.value.text.isNotEmpty()) ": ${newPort.value.text}" else ""
+        ClickableRow(
+            header = stringResource(id = R.string.local_relay_port) + headerSuffix,
+            text = stringResource(id = R.string.port_number_of_your_local_relay),
+            onClick = { showPortDialog.value = !showPortDialog.value }
+        )
 
         ClickableRow(
             header = stringResource(id = R.string.authenticate_via_auth),
@@ -307,14 +318,26 @@ private fun DatabaseSection(
 
 @Composable
 private fun AppSection(currentUpvote: String, onUpdate: OnUpdate) {
+    val focusRequester = remember { FocusRequester() }
+
     SettingsSection(header = stringResource(id = R.string.app)) {
-        val newUpvote = remember { mutableStateOf(currentUpvote) }
+        val newUpvote = remember { mutableStateOf(currentUpvote.toTextFieldValue()) }
         val showUpvoteDialog = remember { mutableStateOf(false) }
         if (showUpvoteDialog.value) BaseActionDialog(
             title = stringResource(id = R.string.change_upvote_content),
-            main = { TextField(value = newUpvote.value, onValueChange = { newUpvote.value = it }) },
-            confirmIsEnabled = newUpvote.value.trim() != "-",
-            onConfirm = { onUpdate(ChangeUpvoteContent(newContent = newUpvote.value)) },
+            main = {
+                LaunchedEffect(key1 = Unit) { focusRequester.requestFocus() }
+                TextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester = focusRequester),
+                    value = newUpvote.value,
+                    onValueChange = { newUpvote.value = it },
+                    singleLine = true
+                )
+            },
+            confirmIsEnabled = newUpvote.value.text.trim() != "-",
+            onConfirm = { onUpdate(ChangeUpvoteContent(newContent = newUpvote.value.text)) },
             onDismiss = { showUpvoteDialog.value = false }
         )
         ClickableRow(

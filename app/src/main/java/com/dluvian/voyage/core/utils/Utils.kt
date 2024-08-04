@@ -8,6 +8,8 @@ import android.widget.Toast
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import com.dluvian.voyage.core.Bech32
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
@@ -310,3 +312,4 @@ fun Collection<RelayUrl>.addLocalRelay(port: Int?): List<RelayUrl> {
 }
 
 fun String.containsNoneIgnoreCase(strs: Collection<String>) = strs.none { it == this }
+fun String.toTextFieldValue() = TextFieldValue(text = this, selection = TextRange(this.length))
