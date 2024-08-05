@@ -87,15 +87,19 @@ class EventValidator(
                 )
             }
 
-            is KindEnum.ContactList -> ValidatedContactList(
-                pubkey = event.author().toHex(),
-                friendPubkeys = event.publicKeys()
-                    .map { it.toHex() }
-                    .distinct()
-                    .takeRandom(MAX_KEYS_SQL)
-                    .toSet(),
-                createdAt = event.createdAt().secs()
-            )
+            is KindEnum.ContactList -> {
+                val author = event.author()
+                ValidatedContactList(
+                    pubkey = author.toHex(),
+                    friendPubkeys = event.publicKeys()
+                        .filter { it != author }
+                        .map { it.toHex() }
+                        .distinct()
+                        .takeRandom(MAX_KEYS_SQL)
+                        .toSet(),
+                    createdAt = event.createdAt().secs()
+                )
+            }
 
             is KindEnum.RelayList -> {
                 val relays = event.getNip65s()
