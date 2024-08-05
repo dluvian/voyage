@@ -165,7 +165,6 @@ class Paginator(
                     // Muted words allowed
                     BookmarksFeedSetting, is ReplyFeedSetting, is ProfileRootFeedSetting -> posts
                 }
-
             }
             .stateIn(scope, SharingStarted.WhileSubscribed(), staticFeed)
     }

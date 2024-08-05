@@ -44,6 +44,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             FROM hashtag 
             JOIN topic ON hashtag.hashtag = topic.topic
             WHERE topic.myPubkey = (SELECT pubkey FROM account LIMIT 1)
+            LIMIT 1
         ) AS ht ON ht.postId = post.id
         LEFT JOIN account ON account.pubkey = post.pubkey
         LEFT JOIN friend ON friend.friendPubkey = post.pubkey
