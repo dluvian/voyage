@@ -43,6 +43,7 @@ class PostSender(
         val concat = "$trimmedHeader $trimmedBody"
 
         val mentions = extractMentionPubkeys(content = concat)
+            .filter { it != myPubkeyProvider.getPubkeyHex() }
         val allTopics = topics.toMutableList()
         allTopics.addAll(extractCleanHashtags(content = concat))
 
@@ -83,6 +84,7 @@ class PostSender(
                 add(grandparentAuthor)
             }
             distinct()
+            removeIf { it == myPubkeyProvider.getPubkeyHex() }
         }
 
         return nostrService.publishReply(
