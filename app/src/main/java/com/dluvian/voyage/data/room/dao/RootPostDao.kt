@@ -38,7 +38,6 @@ private const val TOPIC_FEED_EXISTS_QUERY = "SELECT EXISTS($TOPIC_FEED_QUERY)"
 private const val PROFILE_FEED_BASE_QUERY = "FROM RootPostView " +
         "WHERE createdAt <= :until " +
         "AND pubkey = :pubkey " +
-        "AND NOT EXISTS (SELECT * FROM hashtag WHERE postId = id AND hashtag IN (SELECT mutedItem FROM mute WHERE tag IS 't')) " +
         "ORDER BY createdAt DESC " +
         "LIMIT :size"
 
