@@ -311,5 +311,8 @@ fun Collection<RelayUrl>.addLocalRelay(port: Int?): List<RelayUrl> {
     }
 }
 
-fun String.containsNoneIgnoreCase(strs: Collection<String>) = strs.none { it == this }
+fun String.containsNoneIgnoreCase(strs: Collection<String>): Boolean {
+    return strs.none { this.contains(other = it, ignoreCase = true) }
+}
+
 fun String.toTextFieldValue() = TextFieldValue(text = this, selection = TextRange(this.length))
