@@ -15,6 +15,9 @@ interface PostDao {
     @Query("SELECT pubkey FROM post WHERE id = :id")
     suspend fun getAuthor(id: EventIdHex): PubkeyHex?
 
+    @Query("SELECT pubkey FROM post WHERE id = (SELECT parentId FROM post WHERE id = :id)")
+    suspend fun getParentAuthor(id: EventIdHex): PubkeyHex?
+
     @Query("SELECT json FROM post WHERE id = :id")
     suspend fun getJson(id: EventIdHex): String?
 

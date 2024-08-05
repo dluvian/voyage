@@ -77,7 +77,13 @@ class PostSender(
         relayHint: RelayUrl,
     ): Result<Event> {
         val trimmedBody = body.trim()
-        val mentions = (extractMentionPubkeys(content = trimmedBody) + recipient).distinct()
+        val mentions = mutableListOf(recipient).apply {
+            addAll(extractMentionPubkeys(content = trimmedBody))
+            postDao.getParentAuthor(id = parentId)?.let { grandparentAuthor ->
+                add(grandparentAuthor)
+            }
+            distinct()
+        }
 
         return nostrService.publishReply(
             content = trimmedBody,
