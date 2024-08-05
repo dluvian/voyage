@@ -32,7 +32,7 @@ fun TopicSelectionColumn(
             modifier = modifier,
             topics = selectedTopics.value,
             isRemovable = true,
-            firstRow = {
+            lastRow = {
                 if (selectedTopics.value.size < MAX_TOPICS) AddRow(
                     header = stringResource(id = R.string.add_topic),
                     onClick = { showDialog.value = true })
