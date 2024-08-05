@@ -136,6 +136,10 @@ class ProfileProvider(
     suspend fun getMyFriendsFlow(): Flow<List<AdvancedProfileView>> {
         // We want to be able to unfollow on the same list
         val friends = room.profileDao().getAdvancedProfilesOfFriends()
+            .map { friend ->
+                if (friend.name.isEmpty()) friend.copy(name = friend.pubkey.toShortenedBech32())
+                else friend
+            }
         val friendsWithoutProfile = room.profileDao().getUnknownFriends()
         lazyNostrSubscriber
             .lazySubUnknownProfiles(selection = CustomPubkeys(pubkeys = friendsWithoutProfile))
