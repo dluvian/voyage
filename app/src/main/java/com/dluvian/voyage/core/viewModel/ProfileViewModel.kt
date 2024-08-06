@@ -94,11 +94,11 @@ class ProfileViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
         tabIndex.intValue = 0
         viewModelScope.launch {
             pagerState.scrollToPage(0)
+            trustedBy.value = profileProvider.getTrustedByFlow(pubkey = pubkeyHex)
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
         }
         rootPaginator.reinit(setting = ProfileRootFeedSetting(nprofile = profileNavView.nprofile))
         replyPaginator.reinit(setting = ReplyFeedSetting(nprofile = profileNavView.nprofile))
-        trustedBy.value = profileProvider.getTrustedByFlow(pubkey = pubkeyHex)
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
         nip65Relays.value = nip65Dao.getNip65Flow(pubkey = pubkeyHex)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
         seenInRelays.value = eventRelayDao.getEventRelays(pubkey = pubkeyHex)

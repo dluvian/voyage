@@ -68,24 +68,26 @@ class ProfileProvider(
         }
     }
 
-    fun getTrustedByFlow(pubkey: PubkeyHex): Flow<AdvancedProfileView?> {
+    suspend fun getTrustedByFlow(pubkey: PubkeyHex): Flow<AdvancedProfileView?> {
+        val trustedBy = room.webOfTrustDao().getTrustedByPubkey(pubkey = pubkey)
+            ?: return flowOf(null)
+
         return combine(
             room.profileDao().getAdvancedProfileTrustedByFlow(pubkey = pubkey),
             forcedMuteFlow,
         ) { dbProfile, forcedMute ->
-            dbProfile?.let { trustedProfile ->
-                createAdvancedProfile(
-                    pubkey = trustedProfile.pubkey,
-                    dbProfile = trustedProfile,
-                    forcedFollowState = true, // Return null if not followed
-                    forcedMuteState = forcedMute[trustedProfile.pubkey],
-                    metadata = metadataInMemory.getMetadata(pubkey = trustedProfile.pubkey),
-                    myPubkey = myPubkeyProvider.getPubkeyHex(),
-                    friendProvider = friendProvider,
-                    muteProvider = muteProvider,
-                    itemSetProvider = itemSetProvider
-                )
-            }
+            createAdvancedProfile(
+                pubkey = dbProfile?.pubkey ?: trustedBy,
+                dbProfile = dbProfile,
+                forcedFollowState = true, // Return null if not followed
+                forcedMuteState = forcedMute[dbProfile?.pubkey],
+                metadata = metadataInMemory.getMetadata(pubkey = dbProfile?.pubkey ?: trustedBy),
+                myPubkey = myPubkeyProvider.getPubkeyHex(),
+                friendProvider = friendProvider,
+                muteProvider = muteProvider,
+                itemSetProvider = itemSetProvider
+            )
+
         }
     }
 
