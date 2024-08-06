@@ -4,10 +4,10 @@ Voyage is a lightweight nostr client for Android with a Reddit-like UI.
 
 ## Installation
 
-Install it
-via [zap.store](https://zap.store/download), [Obtainium](https://github.com/ImranR98/Obtainium) or
-go to
-the [release page](https://github.com/dluvian/voyage/releases) and download the latest apk file.
+Install it via [zap.store](https://zap.store/download),
+[Obtainium](https://github.com/ImranR98/Obtainium),
+[IzzyOnDroid](https://apt.izzysoft.de/fdroid/index/apk/com.dluvian.voyage) or go to the
+[release page](https://github.com/dluvian/voyage/releases) and download the latest apk file.
 
 I don't plan to publish this app in the Google Play Store.
 
