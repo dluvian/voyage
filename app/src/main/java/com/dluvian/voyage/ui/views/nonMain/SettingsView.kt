@@ -36,7 +36,9 @@ import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.DeleteAllPosts
 import com.dluvian.voyage.core.ExportDatabase
 import com.dluvian.voyage.core.LoadSeed
+import com.dluvian.voyage.core.MAX_AUTOPILOT_RELAYS
 import com.dluvian.voyage.core.MAX_RETAIN_ROOT
+import com.dluvian.voyage.core.MIN_AUTOPILOT_RELAYS
 import com.dluvian.voyage.core.MIN_RETAIN_ROOT
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
@@ -44,6 +46,7 @@ import com.dluvian.voyage.core.RequestExternalAccount
 import com.dluvian.voyage.core.SendAuth
 import com.dluvian.voyage.core.SendBookmarkedToLocalRelay
 import com.dluvian.voyage.core.SendUpvotedToLocalRelay
+import com.dluvian.voyage.core.UpdateAutopilotRelays
 import com.dluvian.voyage.core.UpdateLocalRelayPort
 import com.dluvian.voyage.core.UpdateRootPostThreshold
 import com.dluvian.voyage.core.UseDefaultAccount
@@ -89,13 +92,7 @@ private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: OnUpdate) {
             )
         }
         item {
-            RelaySection(
-                localRelayPort = vm.localRelayPort.value,
-                sendAuth = vm.sendAuth.value,
-                sendBookmarkedToLocalRelay = vm.sendBookmarkedToLocalRelay.value,
-                sendUpvotedToLocalRelay = vm.sendUpvotedToLocalRelay.value,
-                onUpdate = onUpdate
-            )
+            RelaySection(vm = vm, onUpdate = onUpdate)
         }
         item {
             DatabaseSection(vm = vm, scope = scope, onUpdate = onUpdate)
@@ -143,15 +140,12 @@ private fun AccountSection(
 }
 
 @Composable
-private fun RelaySection(
-    localRelayPort: Int?,
-    sendAuth: Boolean,
-    sendBookmarkedToLocalRelay: Boolean,
-    sendUpvotedToLocalRelay: Boolean,
-    onUpdate: OnUpdate
-) {
-    val newPort = remember(localRelayPort) {
-        mutableStateOf(localRelayPort?.toString().orEmpty().toTextFieldValue())
+private fun RelaySection(vm: SettingsViewModel, onUpdate: OnUpdate) {
+    val newAutoRelays = remember(vm.autopilotRelays.intValue) {
+        mutableFloatStateOf(vm.autopilotRelays.intValue.toFloat())
+    }
+    val newPort = remember(vm.localRelayPort.value) {
+        mutableStateOf(vm.localRelayPort.value?.toString().orEmpty().toTextFieldValue())
     }
     val parsedNewPort = remember(newPort.value) {
         runCatching { newPort.value.text.toUShort() }.getOrNull()
@@ -159,6 +153,28 @@ private fun RelaySection(
     val focusRequester = remember { FocusRequester() }
 
     SettingsSection(header = stringResource(id = R.string.relays)) {
+        val showAutopilotDialog = remember { mutableStateOf(false) }
+        if (showAutopilotDialog.value) BaseActionDialog(
+            title = stringResource(id = R.string.max_relays) + ": ${newAutoRelays.floatValue.toInt()}",
+            main = {
+                Slider(
+                    modifier = Modifier.padding(horizontal = spacing.bigScreenEdge),
+                    value = newAutoRelays.floatValue,
+                    onValueChange = { newAutoRelays.floatValue = it },
+                    valueRange = MIN_AUTOPILOT_RELAYS.toFloat()..MAX_AUTOPILOT_RELAYS.toFloat()
+                )
+            },
+            onConfirm = {
+                onUpdate(UpdateAutopilotRelays(numberOfRelays = newAutoRelays.floatValue.toInt()))
+            },
+            onDismiss = { showAutopilotDialog.value = false })
+        val autoHeader =
+            remember(vm.autopilotRelays.intValue) { ": ${vm.autopilotRelays.intValue}" }
+        ClickableRow(
+            header = stringResource(id = R.string.max_autopilot_relays) + autoHeader,
+            text = stringResource(id = R.string.max_num_of_relays_autopilot_is_allowed_to_select),
+            onClick = { showAutopilotDialog.value = true }
+        )
         val showPortDialog = remember { mutableStateOf(false) }
         if (showPortDialog.value) BaseActionDialog(
             title = stringResource(id = R.string.local_relay_port),
@@ -193,7 +209,7 @@ private fun RelaySection(
         ClickableRow(
             header = stringResource(id = R.string.local_relay_port) + headerSuffix,
             text = stringResource(id = R.string.port_number_of_your_local_relay),
-            onClick = { showPortDialog.value = !showPortDialog.value }
+            onClick = { showPortDialog.value = true }
         )
 
         ClickableRow(
@@ -201,11 +217,11 @@ private fun RelaySection(
             text = stringResource(id = R.string.enable_to_authenticate_yourself_to_relays),
             trailingContent = {
                 Checkbox(
-                    checked = sendAuth,
+                    checked = vm.sendAuth.value,
                     onCheckedChange = { onUpdate(SendAuth(sendAuth = it)) },
                 )
             },
-            onClick = { onUpdate(SendAuth(sendAuth = !sendAuth)) }
+            onClick = { onUpdate(SendAuth(sendAuth = !vm.sendAuth.value)) }
         )
 
         ClickableRow(
@@ -213,16 +229,14 @@ private fun RelaySection(
             text = stringResource(id = R.string.send_post_to_local_relay_after_bookmarking_it),
             trailingContent = {
                 Checkbox(
-                    checked = sendBookmarkedToLocalRelay,
+                    checked = vm.sendBookmarkedToLocalRelay.value,
                     onCheckedChange = {
                         onUpdate(SendBookmarkedToLocalRelay(sendToLocalRelay = it))
                     },
                 )
             },
             onClick = {
-                onUpdate(
-                    SendBookmarkedToLocalRelay(sendToLocalRelay = !sendBookmarkedToLocalRelay)
-                )
+                onUpdate(SendBookmarkedToLocalRelay(!vm.sendBookmarkedToLocalRelay.value))
             }
         )
 
@@ -231,14 +245,14 @@ private fun RelaySection(
             text = stringResource(id = R.string.send_post_to_local_relay_after_upvoting_it),
             trailingContent = {
                 Checkbox(
-                    checked = sendUpvotedToLocalRelay,
+                    checked = vm.sendUpvotedToLocalRelay.value,
                     onCheckedChange = {
                         onUpdate(SendUpvotedToLocalRelay(sendToLocalRelay = it))
                     },
                 )
             },
             onClick = {
-                onUpdate(SendUpvotedToLocalRelay(sendToLocalRelay = !sendUpvotedToLocalRelay))
+                onUpdate(SendUpvotedToLocalRelay(!vm.sendUpvotedToLocalRelay.value))
             }
         )
     }

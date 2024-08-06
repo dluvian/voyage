@@ -227,4 +227,7 @@
     <string name="confirm">Onaylamak</string>
     <string name="threshold">Eşik</string>
     <string name="semi_trusted_bc_you_follow">Yarı güvenilir çünkü takip ediyorsunuz</string>
+    <string name="max_autopilot_relays">Maksimum otopilot röleleri</string>
+    <string name="max_num_of_relays_autopilot_is_allowed_to_select">Otopilotun seçmesine izin verilen maksimum röle sayısı</string>
+    <string name="max_relays">Maksimum röleler</string>
 </resources>
