@@ -69,117 +69,122 @@ private fun RelayProfileViewContent(
             bottom = spacing.bigScreenEdge
         )
     ) {
-        item {
-            InfoRow(infoType = stringResource(id = R.string.url), value = url)
-        }
-        item {
-            InfoRow(infoType = stringResource(id = R.string.nostr_uri), value = nrelay)
-        }
+        item { InfoRow(infoType = stringResource(id = R.string.url), value = url) }
+        item { InfoRow(infoType = stringResource(id = R.string.nostr_uri), value = nrelay) }
         item {
             InfoRow(
                 infoType = stringResource(id = R.string.posts_in_db),
                 value = postsInDb.toString()
             )
         }
-        profile?.name()?.let {
-            item {
-                InfoRow(infoType = stringResource(id = R.string.name), value = it)
+        item { InfoRow(infoType = stringResource(id = R.string.name), value = profile?.name()) }
+        item {
+            InfoRow(
+                infoType = stringResource(id = R.string.description),
+                value = profile?.description()
+            )
+        }
+        item { InfoRow(infoType = stringResource(id = R.string.pubkey), value = profile?.pubkey()) }
+        item {
+            InfoRow(
+                infoType = stringResource(id = R.string.contact),
+                value = profile?.contact()
+            )
+        }
+        profile?.supportedNips()?.let {
+            if (it.isNotEmpty()) item {
+                InfoRow(infoType = stringResource(id = R.string.nips), value = it.toString())
             }
         }
-        profile?.description()?.let {
-            item {
-                InfoRow(infoType = stringResource(id = R.string.description), value = it)
-            }
+        item {
+            InfoRow(
+                infoType = stringResource(id = R.string.software),
+                value = profile?.software()
+            )
         }
-        profile?.pubkey()?.let {
-            item {
-                InfoRow(infoType = stringResource(id = R.string.pubkey), value = it)
-            }
+        item {
+            InfoRow(
+                infoType = stringResource(id = R.string.version),
+                value = profile?.version()
+            )
         }
-        profile?.contact()?.let {
-            item {
-                InfoRow(infoType = stringResource(id = R.string.contact), value = it)
-            }
+        item {
+            InfoRow(
+                infoType = stringResource(id = R.string.max_message_length),
+                value = profile?.limitation()?.maxMessageLength?.toString()
+            )
         }
-        profile?.supportedNips()?.toString()?.let {
-            item {
-                InfoRow(infoType = stringResource(id = R.string.nips), value = it)
-            }
+        item {
+            InfoRow(
+                infoType = stringResource(id = R.string.max_subscriptions),
+                value = profile?.limitation()?.maxSubscriptions?.toString()
+            )
         }
-        profile?.software()?.let {
-            item {
-                InfoRow(infoType = stringResource(id = R.string.software), value = it)
-            }
+        item {
+            InfoRow(
+                infoType = stringResource(id = R.string.max_filters),
+                value = profile?.limitation()?.maxFilters?.toString()
+            )
         }
-        profile?.version()?.let {
-            item {
-                InfoRow(infoType = stringResource(id = R.string.version), value = it)
-            }
+        item {
+            InfoRow(
+                infoType = stringResource(id = R.string.max_limit),
+                value = profile?.limitation()?.maxLimit?.toString()
+            )
         }
-        profile?.limitation()?.maxMessageLength?.toString()?.let {
-            item {
-                InfoRow(infoType = stringResource(id = R.string.max_message_length), value = it)
-            }
+        item {
+            InfoRow(
+                infoType = stringResource(id = R.string.max_sub_id_length),
+                value = profile?.limitation()?.maxSubidLength?.toString()
+            )
         }
-        profile?.limitation()?.maxSubscriptions?.toString()?.let {
-            item {
-                InfoRow(infoType = stringResource(id = R.string.max_subscriptions), value = it)
-            }
+        item {
+            InfoRow(
+                infoType = stringResource(id = R.string.max_tags),
+                value = profile?.limitation()?.maxEventTags?.toString()
+            )
         }
-        profile?.limitation()?.maxFilters?.toString()?.let {
-            item {
-                InfoRow(infoType = stringResource(id = R.string.max_filters), value = it)
-            }
+        item {
+            InfoRow(
+                infoType = stringResource(id = R.string.max_content_length),
+                value = profile?.limitation()?.maxContentLength?.toString()
+            )
         }
-        profile?.limitation()?.maxLimit?.toString()?.let {
-            item {
-                InfoRow(infoType = stringResource(id = R.string.max_limit), value = it)
-            }
+        item {
+            InfoRow(
+                infoType = stringResource(id = R.string.min_difficulty),
+                value = profile?.limitation()?.minPowDifficulty?.toString()
+            )
         }
-        profile?.limitation()?.maxSubidLength?.toString()?.let {
-            item {
-                InfoRow(infoType = stringResource(id = R.string.max_sub_id_length), value = it)
-            }
+        item {
+            InfoRow(
+                infoType = stringResource(id = R.string.auth_required),
+                value = profile?.limitation()?.authRequired?.toString()
+            )
         }
-        profile?.limitation()?.maxEventTags?.toString()?.let {
-            item {
-                InfoRow(infoType = stringResource(id = R.string.max_tags), value = it)
-            }
+        item {
+            InfoRow(
+                infoType = stringResource(id = R.string.payment_required),
+                value = profile?.limitation()?.paymentRequired?.toString()
+            )
         }
-        profile?.limitation()?.maxContentLength?.toString()?.let {
-            item {
-                InfoRow(infoType = stringResource(id = R.string.max_content_length), value = it)
-            }
+        item {
+            InfoRow(
+                infoType = stringResource(id = R.string.paymentUrl),
+                value = profile?.paymentsUrl()
+            )
         }
-        profile?.limitation()?.minPowDifficulty?.toString()?.let {
-            item {
-                InfoRow(infoType = stringResource(id = R.string.min_difficulty), value = it)
-            }
+        item {
+            InfoRow(
+                infoType = stringResource(id = R.string.min_timestamp),
+                value = profile?.limitation()?.createdAtLowerLimit?.toHumanDatetime()
+            )
         }
-        profile?.limitation()?.authRequired?.toString()?.let {
-            item {
-                InfoRow(infoType = stringResource(id = R.string.auth_required), value = it)
-            }
-        }
-        profile?.limitation()?.paymentRequired?.toString()?.let {
-            item {
-                InfoRow(infoType = stringResource(id = R.string.payment_required), value = it)
-            }
-        }
-        profile?.paymentsUrl()?.let {
-            item {
-                InfoRow(infoType = stringResource(id = R.string.paymentUrl), value = it)
-            }
-        }
-        profile?.limitation()?.createdAtLowerLimit?.toHumanDatetime()?.let {
-            item {
-                InfoRow(infoType = stringResource(id = R.string.min_timestamp), value = it)
-            }
-        }
-        profile?.limitation()?.createdAtUpperLimit?.toHumanDatetime()?.let {
-            item {
-                InfoRow(infoType = stringResource(id = R.string.max_timestamp), value = it)
-            }
+        item {
+            InfoRow(
+                infoType = stringResource(id = R.string.max_timestamp),
+                value = profile?.limitation()?.createdAtUpperLimit?.toHumanDatetime()
+            )
         }
         profile?.relayCountries()?.let {
             if (it.isNotEmpty()) item {
@@ -191,31 +196,30 @@ private fun RelayProfileViewContent(
                 InfoRow(infoType = stringResource(id = R.string.languages), value = it.toString())
             }
         }
-        profile?.postingPolicy()?.let {
-            item {
-                InfoRow(infoType = stringResource(id = R.string.policy), value = it)
-            }
+        item {
+            InfoRow(
+                infoType = stringResource(id = R.string.policy),
+                value = profile?.postingPolicy()
+            )
         }
-        profile?.icon()?.let {
-            item {
-                InfoRow(infoType = stringResource(id = R.string.icon), value = it)
-            }
-        }
+        item { InfoRow(infoType = stringResource(id = R.string.icon), value = profile?.icon()) }
     }
 }
 
 @Composable
-private fun InfoRow(infoType: String, value: String) {
-    Row(
-        modifier = Modifier.padding(vertical = spacing.large),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(modifier = Modifier.weight(weight = 0.3f, fill = true)) {
-            Text(text = infoType, fontWeight = FontWeight.Bold)
-        }
-        Spacer(modifier = Modifier.width(spacing.medium))
-        Column(modifier = Modifier.weight(weight = 0.7f, fill = true)) {
-            CopyableText(text = value)
+private fun InfoRow(infoType: String, value: String?) {
+    if (!value.isNullOrBlank()) {
+        Row(
+            modifier = Modifier.padding(vertical = spacing.large),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(weight = 0.3f, fill = true)) {
+                Text(text = infoType, fontWeight = FontWeight.Bold)
+            }
+            Spacer(modifier = Modifier.width(spacing.medium))
+            Column(modifier = Modifier.weight(weight = 0.7f, fill = true)) {
+                CopyableText(text = value)
+            }
         }
     }
 }
