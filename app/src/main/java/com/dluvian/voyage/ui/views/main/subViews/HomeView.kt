@@ -1,5 +1,6 @@
 package com.dluvian.voyage.ui.views.main.subViews
 
+import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.dluvian.voyage.core.HomeViewAppend
@@ -22,4 +23,8 @@ fun HomeView(vm: HomeViewModel, onUpdate: OnUpdate) {
         onAppend = { onUpdate(HomeViewAppend) },
         onUpdate = onUpdate
     )
+
+    if (vm.showFilterMenu.value) {
+        AlertDialog(onDismissRequest = { /*TODO*/ }, confirmButton = { /*TODO*/ })
+    }
 }

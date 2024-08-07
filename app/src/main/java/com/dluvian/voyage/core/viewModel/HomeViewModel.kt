@@ -1,11 +1,14 @@
 package com.dluvian.voyage.core.viewModel
 
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.core.DELAY_10SEC
 import com.dluvian.voyage.core.HomeViewAction
 import com.dluvian.voyage.core.HomeViewAppend
+import com.dluvian.voyage.core.HomeViewOpenFilter
 import com.dluvian.voyage.core.HomeViewRefresh
 import com.dluvian.voyage.core.HomeViewSubAccountAndTrustData
 import com.dluvian.voyage.core.model.Paginator
@@ -24,6 +27,7 @@ class HomeViewModel(
     private val lazyNostrSubscriber: LazyNostrSubscriber,
     val feedState: LazyListState,
 ) : ViewModel() {
+    val showFilterMenu: MutableState<Boolean> = mutableStateOf(false)
     val paginator = Paginator(
         feedProvider = feedProvider,
         muteProvider = muteProvider,
@@ -40,6 +44,7 @@ class HomeViewModel(
             is HomeViewRefresh -> refresh()
             is HomeViewAppend -> paginator.append()
             is HomeViewSubAccountAndTrustData -> subMyAccountAndTrustData()
+            HomeViewOpenFilter -> showFilterMenu.value = true
         }
     }
 

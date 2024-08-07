@@ -231,4 +231,5 @@
     <string name="max_autopilot_relays">最大自动驾驶仪继电器</string>
     <string name="max_num_of_relays_autopilot_is_allowed_to_select">自动驾驶仪允许选择的最大继电器数量</string>
     <string name="max_relays">最大继电器数量</string>
+    <string name="filter">筛选</string>
 </resources>

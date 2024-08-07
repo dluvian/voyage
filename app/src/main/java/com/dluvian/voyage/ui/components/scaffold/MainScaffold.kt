@@ -7,7 +7,7 @@ import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.navigator.MainNavView
 import com.dluvian.voyage.ui.components.bar.MainBottomBar
-import com.dluvian.voyage.ui.components.bar.VoyageTopAppBar
+import com.dluvian.voyage.ui.components.bar.MainTopAppBar
 
 @Composable
 fun MainScaffold(
@@ -21,12 +21,7 @@ fun MainScaffold(
     VoyageScaffold(
         snackbar = snackbar,
         topBar = {
-            VoyageTopAppBar(
-                title = currentView.getTitle(),
-                showMenu = true,
-                hasSearch = true,
-                onUpdate = onUpdate
-            )
+            MainTopAppBar(currentView = currentView, onUpdate = onUpdate)
         },
         bottomBar = {
             MainBottomBar(

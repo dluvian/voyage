@@ -235,4 +235,5 @@
     <string name="max_autopilot_relays">Maximum autopilot relays</string>
     <string name="max_num_of_relays_autopilot_is_allowed_to_select">The maximum number of relays the autopilot is allowed to select</string>
     <string name="max_relays">Maximum relays</string>
+    <string name="filter">Filter</string>
 </resources>

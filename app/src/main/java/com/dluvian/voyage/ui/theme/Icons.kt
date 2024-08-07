@@ -38,6 +38,7 @@ import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material.icons.filled.ThumbUpAlt
 import androidx.compose.material.icons.filled.ThumbUpOffAlt
 import androidx.compose.material.icons.filled.TravelExplore
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -85,6 +86,7 @@ val OpenIcon = Icons.AutoMirrored.Filled.OpenInNew
 val EditIcon = Icons.Default.Edit
 val MuteIcon = Icons.AutoMirrored.Filled.VolumeOff
 val WordIcon = Icons.Default.Abc
+val FilterIcon = Icons.Default.Tune
 
 
 @Stable

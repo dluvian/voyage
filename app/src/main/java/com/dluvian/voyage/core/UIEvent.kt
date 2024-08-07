@@ -145,6 +145,7 @@ sealed class HomeViewAction : UIEvent()
 data object HomeViewRefresh : HomeViewAction()
 data object HomeViewAppend : HomeViewAction()
 data object HomeViewSubAccountAndTrustData : HomeViewAction()
+data object HomeViewOpenFilter : HomeViewAction()
 
 
 sealed class ThreadViewAction : UIEvent()
