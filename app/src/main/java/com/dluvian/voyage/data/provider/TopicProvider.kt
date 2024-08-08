@@ -6,6 +6,7 @@ import com.dluvian.voyage.core.model.TopicMuteState
 import com.dluvian.voyage.core.utils.takeRandom
 import com.dluvian.voyage.data.model.ListTopics
 import com.dluvian.voyage.data.model.MyTopics
+import com.dluvian.voyage.data.model.NoTopics
 import com.dluvian.voyage.data.model.TopicSelection
 import com.dluvian.voyage.data.room.dao.MuteDao
 import com.dluvian.voyage.data.room.dao.TopicDao
@@ -29,6 +30,7 @@ class TopicProvider(
         limit: Int = Int.MAX_VALUE
     ): List<Topic> {
         return when (topicSelection) {
+            NoTopics -> emptyList()
             MyTopics -> getMyTopics(limit = limit)
             is ListTopics -> itemSetProvider.getTopicsFromList(
                 identifier = topicSelection.identifier,

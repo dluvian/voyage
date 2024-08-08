@@ -119,6 +119,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 muteProvider = appContainer.muteProvider,
                 lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
                 feedState = homeFeedState,
+                feedPreferences = appContainer.feedPreferences
             )
         },
         discoverVM = viewModel {

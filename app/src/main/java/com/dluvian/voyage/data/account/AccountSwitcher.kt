@@ -11,10 +11,10 @@ import com.dluvian.voyage.core.model.AccountType
 import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
 import com.dluvian.voyage.data.event.IdCacheClearer
-import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.nostr.getCurrentSecs
+import com.dluvian.voyage.data.preferences.FeedPreferences
 import com.dluvian.voyage.data.room.dao.AccountDao
 import com.dluvian.voyage.data.room.dao.DeleteDao
 import com.dluvian.voyage.data.room.entity.AccountEntity
@@ -30,6 +30,7 @@ class AccountSwitcher(
     private val idCacheClearer: IdCacheClearer,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val nostrSubscriber: NostrSubscriber,
+    private val feedPreferences: FeedPreferences,
 ) {
 
     val accountType: State<AccountType> = accountManager.accountType
@@ -80,7 +81,7 @@ class AccountSwitcher(
         nostrSubscriber.subFeed(
             until = getCurrentSecs(),
             limit = FEED_PAGE_SIZE,
-            setting = HomeFeedSetting
+            setting = feedPreferences.getHomeFeedSetting()
         )
     }
 }

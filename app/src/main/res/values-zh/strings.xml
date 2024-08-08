@@ -232,4 +232,8 @@
     <string name="max_num_of_relays_autopilot_is_allowed_to_select">自动驾驶仪允许选择的最大继电器数量</string>
     <string name="max_relays">最大继电器数量</string>
     <string name="filter">筛选</string>
+    <string name="my_friends">我的朋友</string>
+    <string name="none">没有任何</string>
+    <string name="web_of_trust">信任网络</string>
+    <string name="global">全球的</string>
 </resources>

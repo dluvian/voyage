@@ -15,7 +15,7 @@ import com.dluvian.voyage.core.navigator.TopicNavView
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.core.utils.normalizeTopic
 import com.dluvian.voyage.data.model.ItemSetMeta
-import com.dluvian.voyage.data.model.TopicFeedSetting
+import com.dluvian.voyage.data.model.feed.TopicFeedSetting
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.ItemSetProvider

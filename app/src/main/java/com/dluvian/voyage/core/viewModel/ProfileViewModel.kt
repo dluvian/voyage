@@ -20,8 +20,8 @@ import com.dluvian.voyage.core.navigator.ProfileNavView
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.model.FullProfileUI
 import com.dluvian.voyage.data.model.ItemSetMeta
-import com.dluvian.voyage.data.model.ProfileRootFeedSetting
-import com.dluvian.voyage.data.model.ReplyFeedSetting
+import com.dluvian.voyage.data.model.feed.ProfileRootFeedSetting
+import com.dluvian.voyage.data.model.feed.ReplyFeedSetting
 import com.dluvian.voyage.data.nostr.Nip65Relay
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.nostr.RelayUrl

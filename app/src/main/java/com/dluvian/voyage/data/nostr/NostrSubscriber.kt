@@ -7,14 +7,14 @@ import com.dluvian.voyage.core.MAX_KEYS
 import com.dluvian.voyage.core.RESUB_TIMEOUT
 import com.dluvian.voyage.core.utils.textNoteAndRepostKinds
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
-import com.dluvian.voyage.data.model.BookmarksFeedSetting
-import com.dluvian.voyage.data.model.FeedSetting
-import com.dluvian.voyage.data.model.HomeFeedSetting
-import com.dluvian.voyage.data.model.InboxFeedSetting
-import com.dluvian.voyage.data.model.ListFeedSetting
-import com.dluvian.voyage.data.model.ProfileRootFeedSetting
-import com.dluvian.voyage.data.model.ReplyFeedSetting
-import com.dluvian.voyage.data.model.TopicFeedSetting
+import com.dluvian.voyage.data.model.feed.BookmarksFeedSetting
+import com.dluvian.voyage.data.model.feed.FeedSetting
+import com.dluvian.voyage.data.model.feed.HomeFeedSetting
+import com.dluvian.voyage.data.model.feed.InboxFeedSetting
+import com.dluvian.voyage.data.model.feed.ListFeedSetting
+import com.dluvian.voyage.data.model.feed.ProfileRootFeedSetting
+import com.dluvian.voyage.data.model.feed.ReplyFeedSetting
+import com.dluvian.voyage.data.model.feed.TopicFeedSetting
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
@@ -204,7 +204,7 @@ class NostrSubscriber(
         val pageSizePlusOffset = pageSize + FEED_OFFSET
 
         val timestamps = when (setting) {
-            HomeFeedSetting -> room.rootPostDao().getHomeRootPostsCreatedAt(
+            is HomeFeedSetting -> room.rootPostDao().getHomeRootPostsCreatedAt(
                 until = until,
                 size = pageSizePlusOffset
             )

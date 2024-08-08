@@ -8,13 +8,16 @@ import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.core.DELAY_10SEC
 import com.dluvian.voyage.core.HomeViewAction
 import com.dluvian.voyage.core.HomeViewAppend
+import com.dluvian.voyage.core.HomeViewApplyFilter
+import com.dluvian.voyage.core.HomeViewDismissFilter
 import com.dluvian.voyage.core.HomeViewOpenFilter
 import com.dluvian.voyage.core.HomeViewRefresh
 import com.dluvian.voyage.core.HomeViewSubAccountAndTrustData
 import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.core.utils.launchIO
-import com.dluvian.voyage.data.model.HomeFeedSetting
+import com.dluvian.voyage.data.model.feed.HomeFeedSetting
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
+import com.dluvian.voyage.data.preferences.FeedPreferences
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.MuteProvider
 import kotlinx.coroutines.Job
@@ -26,8 +29,11 @@ class HomeViewModel(
     muteProvider: MuteProvider,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
     val feedState: LazyListState,
+    private val feedPreferences: FeedPreferences,
 ) : ViewModel() {
     val showFilterMenu: MutableState<Boolean> = mutableStateOf(false)
+    val setting: MutableState<HomeFeedSetting> =
+        mutableStateOf(feedPreferences.getHomeFeedSetting())
     val paginator = Paginator(
         feedProvider = feedProvider,
         muteProvider = muteProvider,
@@ -36,7 +42,7 @@ class HomeViewModel(
     )
 
     init {
-        paginator.init(setting = HomeFeedSetting)
+        paginator.init(setting = setting.value)
     }
 
     fun handle(action: HomeViewAction) {
@@ -45,6 +51,13 @@ class HomeViewModel(
             is HomeViewAppend -> paginator.append()
             is HomeViewSubAccountAndTrustData -> subMyAccountAndTrustData()
             HomeViewOpenFilter -> showFilterMenu.value = true
+            HomeViewDismissFilter -> showFilterMenu.value = false
+            is HomeViewApplyFilter -> {
+                feedPreferences.setHomeFeedSettings(setting = action.setting)
+                showFilterMenu.value = false
+                setting.value = action.setting
+                paginator.reinit(setting = action.setting)
+            }
         }
     }
 

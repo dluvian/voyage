@@ -41,6 +41,7 @@ import com.dluvian.voyage.data.nostr.SubId
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.preferences.DatabasePreferences
 import com.dluvian.voyage.data.preferences.EventPreferences
+import com.dluvian.voyage.data.preferences.FeedPreferences
 import com.dluvian.voyage.data.preferences.RelayPreferences
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 import com.dluvian.voyage.data.provider.DatabaseInteractor
@@ -91,6 +92,11 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
     private val forcedFollowTopicStates = MutableStateFlow(emptyMap<Topic, Boolean>())
     private val forcedMuteTopicStates = MutableStateFlow(emptyMap<Topic, Boolean>())
 
+    val feedPreferences = FeedPreferences(context = context)
+    val databasePreferences = DatabasePreferences(context = context)
+    val relayPreferences = RelayPreferences(context = context)
+    val eventPreferences = EventPreferences(context = context)
+
     private val accountManager = AccountManager(
         mnemonicSigner = mnemonicSigner,
         externalSigner = externalSigner,
@@ -113,9 +119,6 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
 
     private val annotatedStringProvider = AnnotatedStringProvider(nameProvider = nameProvider)
     private val pubkeyProvider = PubkeyProvider(friendProvider = friendProvider)
-
-    val relayPreferences = RelayPreferences(context = context)
-    val eventPreferences = EventPreferences(context = context)
 
     val relayProvider = RelayProvider(
         nip65Dao = roomDb.nip65Dao(),
@@ -188,7 +191,8 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
         deleteDao = roomDb.deleteDao(),
         idCacheClearer = idCacheClearer,
         lazyNostrSubscriber = lazyNostrSubscriber,
-        nostrSubscriber = nostrSubscriber
+        nostrSubscriber = nostrSubscriber,
+        feedPreferences = feedPreferences,
     )
 
     private val eventValidator = EventValidator(
@@ -207,7 +211,6 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
     )
     private val eventMaker = EventMaker(accountManager = accountManager)
 
-    val databasePreferences = DatabasePreferences(context = context)
     val databaseInteractor = DatabaseInteractor(
         room = roomDb,
         context = context,

@@ -9,14 +9,14 @@ import com.dluvian.voyage.core.FEED_PAGE_SIZE
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.utils.containsNoneIgnoreCase
 import com.dluvian.voyage.core.utils.launchIO
-import com.dluvian.voyage.data.model.BookmarksFeedSetting
-import com.dluvian.voyage.data.model.FeedSetting
-import com.dluvian.voyage.data.model.HomeFeedSetting
-import com.dluvian.voyage.data.model.InboxFeedSetting
-import com.dluvian.voyage.data.model.ListFeedSetting
-import com.dluvian.voyage.data.model.ProfileRootFeedSetting
-import com.dluvian.voyage.data.model.ReplyFeedSetting
-import com.dluvian.voyage.data.model.TopicFeedSetting
+import com.dluvian.voyage.data.model.feed.BookmarksFeedSetting
+import com.dluvian.voyage.data.model.feed.FeedSetting
+import com.dluvian.voyage.data.model.feed.HomeFeedSetting
+import com.dluvian.voyage.data.model.feed.InboxFeedSetting
+import com.dluvian.voyage.data.model.feed.ListFeedSetting
+import com.dluvian.voyage.data.model.feed.ProfileRootFeedSetting
+import com.dluvian.voyage.data.model.feed.ReplyFeedSetting
+import com.dluvian.voyage.data.model.feed.TopicFeedSetting
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.nostr.getCurrentSecs
 import com.dluvian.voyage.data.provider.FeedProvider
@@ -60,7 +60,8 @@ class Paginator(
     fun reinit(setting: FeedSetting) {
         isInitialized.value = true
         val isSame = when (setting) {
-            HomeFeedSetting, InboxFeedSetting, BookmarksFeedSetting -> page.value.value.isNotEmpty()
+            InboxFeedSetting, BookmarksFeedSetting -> page.value.value.isNotEmpty()
+            is HomeFeedSetting,
             is TopicFeedSetting,
             is ProfileRootFeedSetting,
             is ReplyFeedSetting,
@@ -157,7 +158,7 @@ class Paginator(
             .map { posts ->
                 when (feedSetting) {
                     // No muted words
-                    HomeFeedSetting, is TopicFeedSetting, InboxFeedSetting, is ListFeedSetting -> {
+                    is HomeFeedSetting, is TopicFeedSetting, InboxFeedSetting, is ListFeedSetting -> {
                         posts.filter { post ->
                             post.content.text.containsNoneIgnoreCase(strs = mutedWords)
                         }

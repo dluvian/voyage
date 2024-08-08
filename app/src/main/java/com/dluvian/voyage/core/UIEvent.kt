@@ -29,6 +29,7 @@ import com.dluvian.voyage.core.navigator.SettingsNavView
 import com.dluvian.voyage.core.navigator.ThreadNavView
 import com.dluvian.voyage.core.navigator.ThreadRawNavView
 import com.dluvian.voyage.core.navigator.TopicNavView
+import com.dluvian.voyage.data.model.feed.HomeFeedSetting
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import kotlinx.coroutines.CoroutineScope
@@ -146,6 +147,8 @@ data object HomeViewRefresh : HomeViewAction()
 data object HomeViewAppend : HomeViewAction()
 data object HomeViewSubAccountAndTrustData : HomeViewAction()
 data object HomeViewOpenFilter : HomeViewAction()
+data object HomeViewDismissFilter : HomeViewAction()
+data class HomeViewApplyFilter(val setting: HomeFeedSetting) : HomeViewAction()
 
 
 sealed class ThreadViewAction : UIEvent()
