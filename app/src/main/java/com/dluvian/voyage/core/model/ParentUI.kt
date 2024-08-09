@@ -19,6 +19,7 @@ sealed class ParentUI(
     open val trustType: TrustType,
     open val relayUrl: RelayUrl,
     open val replyCount: Int,
+    open val upvoteCount: Int,
     open val createdAt: Long,
     open val isBookmarked: Boolean,
 ) {
@@ -55,7 +56,7 @@ data class RootPostUI(
     val subject: AnnotatedString,
     override val content: AnnotatedString,
     val isUpvoted: Boolean,
-    val upvoteCount: Int,
+    override val upvoteCount: Int,
     override val replyCount: Int,
     override val relayUrl: RelayUrl,
     val crossPostedId: EventIdHex?,
@@ -70,6 +71,7 @@ data class RootPostUI(
     trustType = trustType,
     relayUrl = relayUrl,
     replyCount = replyCount,
+    upvoteCount = upvoteCount,
     createdAt = createdAt,
     isBookmarked = isBookmarked
 ) {
@@ -122,7 +124,7 @@ data class ReplyUI(
     override val createdAt: Long,
     override val content: AnnotatedString,
     val isUpvoted: Boolean,
-    val upvoteCount: Int,
+    override val upvoteCount: Int,
     override val replyCount: Int,
     override val relayUrl: RelayUrl,
     override val isBookmarked: Boolean,
@@ -134,6 +136,7 @@ data class ReplyUI(
     trustType = trustType,
     relayUrl = relayUrl,
     replyCount = replyCount,
+    upvoteCount = upvoteCount,
     createdAt = createdAt,
     isBookmarked = isBookmarked,
 ) {

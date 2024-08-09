@@ -150,7 +150,7 @@ class ThreadProvider(
             result
         }
             .onEach {
-                nostrSubscriber.subVotesAndReplies( // TODO
+                nostrSubscriber.subVotesAndReplies(
                     parentIds = it.map { reply -> reply.reply.getRelevantId() }
                 )
             }

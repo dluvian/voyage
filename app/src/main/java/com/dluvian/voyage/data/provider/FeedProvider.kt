@@ -87,7 +87,7 @@ class FeedProvider(
             .onEach { posts ->
                 oldestUsedEvent.updateOldestCreatedAt(posts.minOfOrNull { it.createdAt })
                 nostrSubscriber.subVotesAndReplies(
-                    parentIds = posts.filter { it.replyCount == 0 } // TODO
+                    parentIds = posts.filter { it.replyCount == 0 && it.upvoteCount == 0 }
                         .filter { it.content.text.containsNoneIgnoreCase(strs = mutedWords) }
                         .map { it.getRelevantId() }
                 )
