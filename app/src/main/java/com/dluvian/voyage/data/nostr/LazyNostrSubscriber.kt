@@ -136,8 +136,6 @@ class LazyNostrSubscriber(
         Log.d(TAG, "lazySubRepliesAndVotes for parent $parentId")
         val newestReplyTime = room.replyDao().getNewestReplyCreatedAt(parentId = parentId) ?: 1L
         val newestVoteTime = room.voteDao().getNewestVoteCreatedAt(postId = parentId) ?: 1L
-        val votePubkeys = webOfTrustProvider
-            .getFriendsAndWebOfTrustPubkeys(includeMyself = true, max = MAX_KEYS)
 
         val now = Timestamp.now()
         val ids = listOf(EventId.fromHex(hex = parentId))
@@ -150,7 +148,6 @@ class LazyNostrSubscriber(
         val voteFilter = Filter()
             .kind(kind = Kind.fromEnum(KindEnum.Reaction))
             .events(ids = ids)
-            .authors(authors = votePubkeys.map { PublicKey.fromHex(hex = it) })
             .since(timestamp = Timestamp.fromSecs((newestVoteTime + 1).toULong()))
             .until(timestamp = now)
             .limitRestricted(limit = MAX_EVENTS_TO_SUB)

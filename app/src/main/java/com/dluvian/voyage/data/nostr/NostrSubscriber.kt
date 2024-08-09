@@ -3,7 +3,6 @@ package com.dluvian.voyage.data.nostr
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.FEED_OFFSET
 import com.dluvian.voyage.core.FEED_RESUB_SPAN_THRESHOLD_SECS
-import com.dluvian.voyage.core.MAX_KEYS
 import com.dluvian.voyage.core.RESUB_TIMEOUT
 import com.dluvian.voyage.core.utils.textNoteAndRepostKinds
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
@@ -181,14 +180,8 @@ class NostrSubscriber(
 
             votesAndRepliesCache.addAll(newIds)
 
-            val votePubkeys = webOfTrustProvider
-                .getFriendsAndWebOfTrustPubkeys(includeMyself = true, max = MAX_KEYS)
             relayProvider.getReadRelays().forEach { relay ->
-                subBatcher.submitVotesAndReplies(
-                    relayUrl = relay,
-                    eventIds = newIds,
-                    votePubkeys = votePubkeys
-                )
+                subBatcher.submitVotesAndReplies(relayUrl = relay, eventIds = newIds)
             }
         }.invokeOnCompletion {
             isSubbingVotesAndReplies.set(false)

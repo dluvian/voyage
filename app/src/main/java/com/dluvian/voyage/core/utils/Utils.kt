@@ -145,13 +145,11 @@ fun shortenUrl(url: String) = url.removePrefix("https://").removePrefix("http://
 
 fun createReplyAndVoteFilters(
     ids: List<EventId>,
-    votePubkeys: List<PublicKey>,
     until: Timestamp,
 ): List<Filter> {
     val voteFilter = Filter()
         .kind(kind = Kind.fromEnum(KindEnum.Reaction))
         .events(ids = ids)
-        .authors(authors = votePubkeys)
         .until(timestamp = until)
         .limitRestricted(limit = MAX_EVENTS_TO_SUB)
 
