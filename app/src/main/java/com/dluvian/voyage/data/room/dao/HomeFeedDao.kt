@@ -16,19 +16,52 @@ import kotlinx.coroutines.flow.flowOf
 
 private const val TAG = "HomeFeedDao"
 
-private const val HOME_FEED_BASE_QUERY = "FROM RootPostView " +
-        "WHERE createdAt <= :until " +
-        "AND (authorIsFriend OR myTopic IS NOT NULL) " +
-        "AND authorIsOneself = 0 " +
+private const val BASE_QUERY = "FROM RootPostView " +
+        "WHERE createdAt <= :until "
+
+private const val BASE_CONDITION = "AND authorIsOneself = 0 " +
         "AND authorIsMuted = 0 " +
         "AND crossPostedAuthorIsMuted = 0 " +
         "AND NOT EXISTS (SELECT * FROM hashtag WHERE postId = id AND hashtag IN (SELECT mutedItem FROM mute WHERE tag IS 't')) " +
         "ORDER BY createdAt DESC " +
         "LIMIT :size"
 
-private const val HOME_FEED_QUERY = "SELECT * $HOME_FEED_BASE_QUERY"
-private const val HOME_FEED_CREATED_AT_QUERY = "SELECT createdAt $HOME_FEED_BASE_QUERY"
-private const val HOME_FEED_EXISTS_QUERY = "SELECT EXISTS($HOME_FEED_QUERY)"
+private const val TOPIC_ONLY_COND = "AND myTopic IS NOT NULL "
+private const val FRIEND_ONLY_COND = "AND authorIsFriend = 1 "
+private const val WOT_ONLY_COND = "AND authorIsTrusted = 1 "
+private const val FRIEND_OR_TOPIC_COND = "AND (authorIsFriend OR myTopic IS NOT NULL) "
+private const val WOT_OR_TOPIC_COND = "AND (authorIsTrusted OR myTopic IS NOT NULL) "
+private const val GLOBAL_COND = " "
+
+private const val TOPIC_ONLY_MAIN_QUERY = "$BASE_QUERY $TOPIC_ONLY_COND $BASE_CONDITION"
+private const val TOPIC_ONLY_QUERY = "SELECT * $TOPIC_ONLY_MAIN_QUERY"
+private const val TOPIC_ONLY_CREATED_AT_QUERY = "SELECT createdAt $TOPIC_ONLY_MAIN_QUERY"
+private const val TOPIC_ONLY_EXISTS_QUERY = "SELECT EXISTS($TOPIC_ONLY_MAIN_QUERY)"
+
+private const val FRIEND_ONLY_MAIN_QUERY = "$BASE_QUERY $FRIEND_ONLY_COND $BASE_CONDITION"
+private const val FRIEND_ONLY_QUERY = "SELECT * $FRIEND_ONLY_MAIN_QUERY"
+private const val FRIEND_ONLY_CREATED_AT_QUERY = "SELECT createdAt $FRIEND_ONLY_MAIN_QUERY"
+private const val FRIEND_ONLY_EXISTS_QUERY = "SELECT EXISTS($FRIEND_ONLY_MAIN_QUERY)"
+
+private const val WOT_ONLY_MAIN_QUERY = "$BASE_QUERY $WOT_ONLY_COND $BASE_CONDITION"
+private const val WOT_ONLY_QUERY = "SELECT * $WOT_ONLY_MAIN_QUERY"
+private const val WOT_ONLY_CREATED_AT_QUERY = "SELECT createdAt $WOT_ONLY_MAIN_QUERY"
+private const val WOT_ONLY_EXISTS_QUERY = "SELECT EXISTS($WOT_ONLY_MAIN_QUERY)"
+
+private const val FRIEND_OR_TOPIC_MAIN_QUERY = "$BASE_QUERY $FRIEND_OR_TOPIC_COND $BASE_CONDITION"
+private const val FRIEND_OR_TOPIC_QUERY = "SELECT * $FRIEND_OR_TOPIC_MAIN_QUERY"
+private const val FRIEND_OR_TOPIC_CREATED_AT_QUERY = "SELECT createdAt $FRIEND_OR_TOPIC_MAIN_QUERY"
+private const val FRIEND_OR_TOPIC_EXISTS_QUERY = "SELECT EXISTS($FRIEND_OR_TOPIC_MAIN_QUERY)"
+
+private const val WOT_OR_TOPIC_MAIN_QUERY = "$BASE_QUERY $WOT_OR_TOPIC_COND $BASE_CONDITION"
+private const val WOT_OR_TOPIC_QUERY = "SELECT * $WOT_OR_TOPIC_MAIN_QUERY"
+private const val WOT_OR_TOPIC_CREATED_AT_QUERY = "SELECT createdAt $WOT_OR_TOPIC_MAIN_QUERY"
+private const val WOT_OR_TOPIC_EXISTS_QUERY = "SELECT EXISTS($WOT_OR_TOPIC_MAIN_QUERY)"
+
+private const val GLOBAL_MAIN_QUERY = "$BASE_QUERY $GLOBAL_COND $BASE_CONDITION"
+private const val GLOBAL_QUERY = "SELECT * $GLOBAL_MAIN_QUERY"
+private const val GLOBAL_CREATED_AT_QUERY = "SELECT createdAt $GLOBAL_MAIN_QUERY"
+private const val GLOBAL_EXISTS_QUERY = "SELECT EXISTS($GLOBAL_MAIN_QUERY)"
 
 @Dao
 interface HomeFeedDao {
@@ -48,22 +81,18 @@ interface HomeFeedDao {
             }
 
             FriendPubkeys -> if (withMyTopics) {
-                internalGetFriendAndTopicFlow()
+                internalGetFriendOrTopicFlow()
             } else {
                 internalGetFriendFlow()
             }
 
             WebOfTrustPubkeys -> if (withMyTopics) {
-                internalGetWotAndTopicFlow()
+                internalGetWotOrTopicFlow()
             } else {
                 internalGetWotFlow()
             }
 
-            Global -> if (withMyTopics) {
-                internalGetGlobalAndTopicFlow()
-            } else {
-                internalGetGlobalFlow()
-            }
+            Global -> internalGetGlobalFlow()
 
             is CustomPubkeys, is ListPubkeys, is SingularPubkey -> {
                 Log.w(TAG, "Selection ${setting.pubkeySelection} is not supported")
@@ -87,22 +116,18 @@ interface HomeFeedDao {
             }
 
             FriendPubkeys -> if (withMyTopics) {
-                internalGetFriendAndTopic()
+                internalGetFriendOrTopic()
             } else {
                 internalGetFriend()
             }
 
             WebOfTrustPubkeys -> if (withMyTopics) {
-                internalGetWotAndTopic()
+                internalGetWotOrTopic()
             } else {
                 internalGetWot()
             }
 
-            Global -> if (withMyTopics) {
-                internalGetGlobalAndTopic()
-            } else {
-                internalGetGlobal()
-            }
+            Global -> internalGetGlobal()
 
             is CustomPubkeys, is ListPubkeys, is SingularPubkey -> {
                 Log.w(TAG, "Selection ${setting.pubkeySelection} is not supported")
@@ -137,11 +162,7 @@ interface HomeFeedDao {
                 internalHasWot()
             }
 
-            Global -> if (withMyTopics) {
-                internalHasGlobalOrTopic()
-            } else {
-                internalHasGlobal()
-            }
+            Global -> internalHasGlobal()
 
             is CustomPubkeys, is ListPubkeys, is SingularPubkey -> {
                 Log.w(TAG, "Selection ${setting.pubkeySelection} is not supported")
@@ -165,22 +186,18 @@ interface HomeFeedDao {
             }
 
             FriendPubkeys -> if (withMyTopics) {
-                internalGetFriendAndTopicCreatedAt()
+                internalGetFriendOrTopicCreatedAt()
             } else {
                 internalGetFriendCreatedAt()
             }
 
             WebOfTrustPubkeys -> if (withMyTopics) {
-                internalGetWotAndTopicCreatedAt()
+                internalGetWotOrTopicCreatedAt()
             } else {
                 internalGetWotCreatedAt()
             }
 
-            Global -> if (withMyTopics) {
-                internalGetGlobalAndTopicCreatedAt()
-            } else {
-                internalGetGlobalCreatedAt()
-            }
+            Global -> internalGetGlobalCreatedAt()
 
             is CustomPubkeys, is ListPubkeys, is SingularPubkey -> {
                 Log.w(TAG, "Selection ${setting.pubkeySelection} is not supported")
