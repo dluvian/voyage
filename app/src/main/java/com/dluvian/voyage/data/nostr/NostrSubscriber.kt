@@ -6,17 +6,16 @@ import com.dluvian.voyage.core.FEED_RESUB_SPAN_THRESHOLD_SECS
 import com.dluvian.voyage.core.RESUB_TIMEOUT
 import com.dluvian.voyage.core.utils.textNoteAndRepostKinds
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
-import com.dluvian.voyage.data.model.feed.BookmarksFeedSetting
-import com.dluvian.voyage.data.model.feed.FeedSetting
-import com.dluvian.voyage.data.model.feed.HomeFeedSetting
-import com.dluvian.voyage.data.model.feed.InboxFeedSetting
-import com.dluvian.voyage.data.model.feed.ListFeedSetting
-import com.dluvian.voyage.data.model.feed.ProfileRootFeedSetting
-import com.dluvian.voyage.data.model.feed.ReplyFeedSetting
-import com.dluvian.voyage.data.model.feed.TopicFeedSetting
+import com.dluvian.voyage.data.model.BookmarksFeedSetting
+import com.dluvian.voyage.data.model.FeedSetting
+import com.dluvian.voyage.data.model.HomeFeedSetting
+import com.dluvian.voyage.data.model.InboxFeedSetting
+import com.dluvian.voyage.data.model.ListFeedSetting
+import com.dluvian.voyage.data.model.ProfileRootFeedSetting
+import com.dluvian.voyage.data.model.ReplyFeedSetting
+import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
-import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import com.dluvian.voyage.data.room.AppDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +33,6 @@ class NostrSubscriber(
     myPubkeyProvider: IMyPubkeyProvider,
     val subCreator: SubscriptionCreator,
     private val relayProvider: RelayProvider,
-    private val webOfTrustProvider: WebOfTrustProvider,
     private val subBatcher: SubBatcher,
     private val room: AppDatabase
 ) {
@@ -63,6 +61,7 @@ class NostrSubscriber(
 
         val subscriptions = when (setting) {
             is HomeFeedSetting -> feedSubscriber.getHomeFeedSubscriptions(
+                setting = setting,
                 until = until.toULong(),
                 since = since,
                 limit = (4 * limit).toULong() // We don't know if we receive enough root posts
@@ -197,7 +196,8 @@ class NostrSubscriber(
         val pageSizePlusOffset = pageSize + FEED_OFFSET
 
         val timestamps = when (setting) {
-            is HomeFeedSetting -> room.rootPostDao().getHomeRootPostsCreatedAt(
+            is HomeFeedSetting -> room.homeFeedDao().getHomeRootPostsCreatedAt(
+                setting = setting,
                 until = until,
                 size = pageSizePlusOffset
             )

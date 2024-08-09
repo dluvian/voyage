@@ -8,20 +8,6 @@ import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.room.view.RootPostView
 import kotlinx.coroutines.flow.Flow
 
-private const val HOME_FEED_BASE_QUERY = "FROM RootPostView " +
-        "WHERE createdAt <= :until " +
-        "AND (authorIsFriend OR myTopic IS NOT NULL) " +
-        "AND authorIsOneself = 0 " +
-        "AND authorIsMuted = 0 " +
-        "AND crossPostedAuthorIsMuted = 0 " +
-        "AND NOT EXISTS (SELECT * FROM hashtag WHERE postId = id AND hashtag IN (SELECT mutedItem FROM mute WHERE tag IS 't')) " +
-        "ORDER BY createdAt DESC " +
-        "LIMIT :size"
-
-private const val HOME_FEED_QUERY = "SELECT * $HOME_FEED_BASE_QUERY"
-private const val HOME_FEED_CREATED_AT_QUERY = "SELECT createdAt $HOME_FEED_BASE_QUERY"
-private const val HOME_FEED_EXISTS_QUERY = "SELECT EXISTS($HOME_FEED_QUERY)"
-
 private const val TOPIC_FEED_BASE_QUERY = "FROM RootPostView " +
         "WHERE createdAt <= :until " +
         "AND authorIsMuted = 0 " +
@@ -68,19 +54,6 @@ interface RootPostDao {
 
     @Query("SELECT * FROM RootPostView WHERE id = :id")
     fun getRootPostFlow(id: EventIdHex): Flow<RootPostView?>
-
-    @Query(HOME_FEED_QUERY)
-    fun getHomeRootPostFlow(until: Long, size: Int): Flow<List<RootPostView>>
-
-    @Query(HOME_FEED_QUERY)
-    suspend fun getHomeRootPosts(until: Long, size: Int): List<RootPostView>
-
-    @Query(HOME_FEED_EXISTS_QUERY)
-    fun hasHomeRootPostsFlow(until: Long = Long.MAX_VALUE, size: Int = 1): Flow<Boolean>
-
-    @Query(HOME_FEED_CREATED_AT_QUERY)
-    suspend fun getHomeRootPostsCreatedAt(until: Long, size: Int): List<Long>
-
 
     @Query(TOPIC_FEED_QUERY)
     fun getTopicRootPostFlow(topic: Topic, until: Long, size: Int): Flow<List<RootPostView>>

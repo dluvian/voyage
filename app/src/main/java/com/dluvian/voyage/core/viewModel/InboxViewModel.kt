@@ -8,7 +8,7 @@ import com.dluvian.voyage.core.InboxViewAppend
 import com.dluvian.voyage.core.InboxViewInit
 import com.dluvian.voyage.core.InboxViewRefresh
 import com.dluvian.voyage.core.model.Paginator
-import com.dluvian.voyage.data.model.feed.InboxFeedSetting
+import com.dluvian.voyage.data.model.InboxFeedSetting
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.MuteProvider

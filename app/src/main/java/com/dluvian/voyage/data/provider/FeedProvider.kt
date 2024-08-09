@@ -10,15 +10,15 @@ import com.dluvian.voyage.core.utils.containsNoneIgnoreCase
 import com.dluvian.voyage.core.utils.firstThenDistinctDebounce
 import com.dluvian.voyage.core.utils.mergeToParentUIList
 import com.dluvian.voyage.data.event.OldestUsedEvent
-import com.dluvian.voyage.data.model.feed.BookmarksFeedSetting
-import com.dluvian.voyage.data.model.feed.FeedSetting
-import com.dluvian.voyage.data.model.feed.HomeFeedSetting
-import com.dluvian.voyage.data.model.feed.InboxFeedSetting
-import com.dluvian.voyage.data.model.feed.ListFeedSetting
-import com.dluvian.voyage.data.model.feed.ProfileRootFeedSetting
-import com.dluvian.voyage.data.model.feed.ReplyFeedSetting
-import com.dluvian.voyage.data.model.feed.RootFeedSetting
-import com.dluvian.voyage.data.model.feed.TopicFeedSetting
+import com.dluvian.voyage.data.model.BookmarksFeedSetting
+import com.dluvian.voyage.data.model.FeedSetting
+import com.dluvian.voyage.data.model.HomeFeedSetting
+import com.dluvian.voyage.data.model.InboxFeedSetting
+import com.dluvian.voyage.data.model.ListFeedSetting
+import com.dluvian.voyage.data.model.ProfileRootFeedSetting
+import com.dluvian.voyage.data.model.ReplyFeedSetting
+import com.dluvian.voyage.data.model.RootFeedSetting
+import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.room.AppDatabase
 import kotlinx.coroutines.flow.Flow
@@ -100,7 +100,12 @@ class FeedProvider(
         setting: RootFeedSetting,
     ): Flow<List<RootPostUI>> {
         val flow = when (setting) {
-            is HomeFeedSetting -> room.rootPostDao().getHomeRootPostFlow(until = until, size = size)
+            is HomeFeedSetting -> room.homeFeedDao().getHomeRootPostFlow(
+                setting = setting,
+                until = until,
+                size = size
+            )
+
             is TopicFeedSetting -> room.rootPostDao().getTopicRootPostFlow(
                 topic = setting.topic,
                 until = until,
@@ -215,7 +220,7 @@ class FeedProvider(
 
     fun settingHasPostsFlow(setting: FeedSetting): Flow<Boolean> {
         return when (setting) {
-            is HomeFeedSetting -> room.rootPostDao().hasHomeRootPostsFlow()
+            is HomeFeedSetting -> room.homeFeedDao().hasHomeRootPostsFlow(setting = setting)
             is TopicFeedSetting -> room.rootPostDao().hasTopicRootPostsFlow(topic = setting.topic)
             is ProfileRootFeedSetting -> room.rootPostDao()
                 .hasProfileRootPostsFlow(pubkey = setting.nprofile.publicKey().toHex())

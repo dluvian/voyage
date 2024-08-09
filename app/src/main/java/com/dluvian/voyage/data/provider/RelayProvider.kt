@@ -17,9 +17,12 @@ import com.dluvian.voyage.core.utils.putOrAdd
 import com.dluvian.voyage.core.utils.takeRandom
 import com.dluvian.voyage.data.model.CustomPubkeys
 import com.dluvian.voyage.data.model.FriendPubkeys
+import com.dluvian.voyage.data.model.Global
 import com.dluvian.voyage.data.model.ListPubkeys
+import com.dluvian.voyage.data.model.NoPubkeys
 import com.dluvian.voyage.data.model.PubkeySelection
 import com.dluvian.voyage.data.model.SingularPubkey
+import com.dluvian.voyage.data.model.WebOfTrustPubkeys
 import com.dluvian.voyage.data.nostr.LOCAL_WEBSOCKET
 import com.dluvian.voyage.data.nostr.Nip65Relay
 import com.dluvian.voyage.data.nostr.NostrClient
@@ -45,6 +48,7 @@ class RelayProvider(
     private val connectionStatuses: State<Map<RelayUrl, ConnectionStatus>>,
     private val pubkeyProvider: PubkeyProvider,
     private val relayPreferences: RelayPreferences,
+    private val webOfTrustProvider: WebOfTrustProvider,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val myNip65 =
@@ -158,6 +162,16 @@ class RelayProvider(
                     return getObserveRelays(pubkey = pubkey).associateWith { setOf(pubkey) }
                 }
             }
+
+            Global -> return getReadRelays().associateWith { emptySet() }
+            NoPubkeys -> return emptyMap()
+            WebOfTrustPubkeys -> return getReadRelays().associateWith {
+                webOfTrustProvider.getFriendsAndWebOfTrustPubkeys(
+                    includeMyself = false,
+                    max = MAX_KEYS,
+                    friendsFirst = false
+                ).toSet()
+            }
         }
 
         val result = mutableMapOf<RelayUrl, MutableSet<PubkeyHex>>()
@@ -174,6 +188,11 @@ class RelayProvider(
             is ListPubkeys -> eventRelayDao.getEventRelayAuthorViewFromList(
                 identifier = selection.identifier
             )
+
+            Global, NoPubkeys, WebOfTrustPubkeys -> {
+                Log.w(TAG, "Case $selection should already be returned")
+                emptyList()
+            }
         }
 
         val eventRelays = eventRelaysView.map { it.relayUrl }.toSet()
@@ -186,6 +205,11 @@ class RelayProvider(
 
             is SingularPubkey -> nip65Dao.getWriteRelays(pubkeys = selection.asList())
             is ListPubkeys -> nip65Dao.getWriteRelaysFromList(identifier = selection.identifier)
+
+            Global, NoPubkeys, WebOfTrustPubkeys -> {
+                Log.w(TAG, "Case $selection should already be returned")
+                emptyList()
+            }
         }
 
         val numToSelect = relayPreferences.getAutopilotRelays()

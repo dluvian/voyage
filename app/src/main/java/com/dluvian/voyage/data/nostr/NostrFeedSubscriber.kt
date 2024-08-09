@@ -9,10 +9,11 @@ import com.dluvian.voyage.core.utils.syncedPutOrAdd
 import com.dluvian.voyage.core.utils.takeRandom
 import com.dluvian.voyage.core.utils.textNoteAndRepostKinds
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
-import com.dluvian.voyage.data.model.FriendPubkeys
+import com.dluvian.voyage.data.model.Global
+import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.ListPubkeys
 import com.dluvian.voyage.data.model.ListTopics
-import com.dluvian.voyage.data.model.MyTopics
+import com.dluvian.voyage.data.model.NoPubkeys
 import com.dluvian.voyage.data.model.PubkeySelection
 import com.dluvian.voyage.data.model.TopicSelection
 import com.dluvian.voyage.data.provider.RelayProvider
@@ -38,13 +39,14 @@ class NostrFeedSubscriber(
     private val bookmarkDao: BookmarkDao,
 ) {
     suspend fun getHomeFeedSubscriptions(
+        setting: HomeFeedSetting,
         until: ULong,
         since: ULong,
         limit: ULong
     ): Map<RelayUrl, List<Filter>> {
         return getPeopleAndTopicFeed(
-            pubkeySelection = FriendPubkeys,
-            topicSelection = MyTopics,
+            pubkeySelection = setting.pubkeySelection,
+            topicSelection = setting.topicSelection,
             until = until,
             since = since,
             limit = limit
@@ -80,22 +82,24 @@ class NostrFeedSubscriber(
         val sinceTimestamp = Timestamp.fromSecs(since)
         val untilTimestamp = Timestamp.fromSecs(until)
 
-        val peopleJob = scope.launch {
-            relayProvider
-                .getObserveRelays(selection = pubkeySelection)
-                .filter { (_, pubkeys) -> pubkeys.isNotEmpty() }
-                .forEach { (relayUrl, pubkeys) ->
-                    val publicKeys = pubkeys.takeRandom(MAX_KEYS).map { PublicKey.fromHex(it) }
-                    val pubkeysNoteFilter = Filter()
-                        .kinds(kinds = textNoteAndRepostKinds)
-                        .authors(authors = publicKeys)
-                        .since(timestamp = sinceTimestamp)
-                        .until(timestamp = untilTimestamp)
-                        .limitRestricted(limit = limit)
-                    val pubkeysNoteFilters = mutableListOf(pubkeysNoteFilter)
-                    result.syncedPutOrAdd(relayUrl, pubkeysNoteFilters)
-                }
-        }
+        val peopleJob = if (pubkeySelection !is NoPubkeys) {
+            scope.launch {
+                relayProvider
+                    .getObserveRelays(selection = pubkeySelection)
+                    .filter { (_, pubkeys) -> pubkeys.isNotEmpty() || pubkeySelection is Global }
+                    .forEach { (relayUrl, pubkeys) ->
+                        val publicKeys = pubkeys.takeRandom(MAX_KEYS).map { PublicKey.fromHex(it) }
+                        val pubkeysNoteFilter = Filter()
+                            .kinds(kinds = textNoteAndRepostKinds)
+                            .authors(authors = publicKeys)
+                            .since(timestamp = sinceTimestamp)
+                            .until(timestamp = untilTimestamp)
+                            .limitRestricted(limit = limit)
+                        val pubkeysNoteFilters = mutableListOf(pubkeysNoteFilter)
+                        result.syncedPutOrAdd(relayUrl, pubkeysNoteFilters)
+                    }
+            }
+        } else null
 
         val topics = topicProvider.getTopicSelection(
             topicSelection = topicSelection,
@@ -115,7 +119,7 @@ class NostrFeedSubscriber(
             }
         }
 
-        peopleJob.join()
+        peopleJob?.join()
 
         return result
     }

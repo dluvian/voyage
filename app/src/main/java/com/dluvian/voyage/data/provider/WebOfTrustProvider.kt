@@ -20,7 +20,8 @@ class WebOfTrustProvider(
 
     fun getFriendsAndWebOfTrustPubkeys(
         includeMyself: Boolean,
-        max: Int = Int.MAX_VALUE
+        max: Int = Int.MAX_VALUE,
+        friendsFirst: Boolean = true,
     ): List<PubkeyHex> {
         val result = if (includeMyself) mutableListOf(myPubkeyProvider.getPubkeyHex())
         else mutableListOf()
@@ -28,7 +29,11 @@ class WebOfTrustProvider(
         result.addAll(friendProvider.getFriendPubkeys(max = max))
         result.addAll(webOfTrust.value.takeRandom(max))
 
-        return result.take(max)
+        return if (friendsFirst) {
+            result.take(max)
+        } else {
+            result.takeRandom(max)
+        }
     }
 
     suspend fun getWotWithMissingProfile() = webOfTrustDao.getWotWithMissingProfile()

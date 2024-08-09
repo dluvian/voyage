@@ -1,7 +1,6 @@
-package com.dluvian.voyage.data.model.feed
+package com.dluvian.voyage.data.model
 
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.data.model.TopicSelection
 import rust.nostr.protocol.Nip19Profile
 
 sealed class FeedSetting
@@ -15,7 +14,7 @@ sealed class RootFeedSetting : FeedSetting()
 
 data class HomeFeedSetting(
     val topicSelection: TopicSelection,
-    val feedPubkeySelection: FeedPubkeySelection
+    val pubkeySelection: PubkeySelection,
 ) : RootFeedSetting()
 
 data class TopicFeedSetting(val topic: Topic) : RootFeedSetting()

@@ -13,8 +13,8 @@ import com.dluvian.voyage.core.ListViewRefresh
 import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.model.CustomPubkeys
+import com.dluvian.voyage.data.model.ListFeedSetting
 import com.dluvian.voyage.data.model.ListPubkeys
-import com.dluvian.voyage.data.model.feed.ListFeedSetting
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.ItemSetProvider

@@ -14,6 +14,7 @@ import com.dluvian.voyage.data.room.dao.EventRelayDao
 import com.dluvian.voyage.data.room.dao.ExistsDao
 import com.dluvian.voyage.data.room.dao.FriendDao
 import com.dluvian.voyage.data.room.dao.FullProfileDao
+import com.dluvian.voyage.data.room.dao.HomeFeedDao
 import com.dluvian.voyage.data.room.dao.InboxDao
 import com.dluvian.voyage.data.room.dao.ItemSetDao
 import com.dluvian.voyage.data.room.dao.MuteDao
@@ -115,6 +116,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun accountDao(): AccountDao
     abstract fun voteDao(): VoteDao
     abstract fun rootPostDao(): RootPostDao
+    abstract fun homeFeedDao(): HomeFeedDao
     abstract fun topicDao(): TopicDao
     abstract fun friendDao(): FriendDao
     abstract fun webOfTrustDao(): WebOfTrustDao

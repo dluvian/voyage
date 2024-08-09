@@ -17,14 +17,17 @@ import com.dluvian.voyage.core.HomeViewRefresh
 import com.dluvian.voyage.core.HomeViewSubAccountAndTrustData
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.viewModel.HomeViewModel
+import com.dluvian.voyage.data.model.CustomPubkeys
+import com.dluvian.voyage.data.model.FriendPubkeys
+import com.dluvian.voyage.data.model.Global
+import com.dluvian.voyage.data.model.HomeFeedSetting
+import com.dluvian.voyage.data.model.ListPubkeys
 import com.dluvian.voyage.data.model.ListTopics
 import com.dluvian.voyage.data.model.MyTopics
+import com.dluvian.voyage.data.model.NoPubkeys
 import com.dluvian.voyage.data.model.NoTopics
-import com.dluvian.voyage.data.model.feed.Friends
-import com.dluvian.voyage.data.model.feed.Global
-import com.dluvian.voyage.data.model.feed.HomeFeedSetting
-import com.dluvian.voyage.data.model.feed.NoPubkeys
-import com.dluvian.voyage.data.model.feed.WebOfTrust
+import com.dluvian.voyage.data.model.SingularPubkey
+import com.dluvian.voyage.data.model.WebOfTrustPubkeys
 import com.dluvian.voyage.ui.components.Feed
 import com.dluvian.voyage.ui.components.NamedCheckbox
 import com.dluvian.voyage.ui.components.NamedRadio
@@ -78,40 +81,44 @@ private fun Filter(setting: MutableState<HomeFeedSetting>) {
             header = stringResource(id = R.string.profiles)
         )
         NamedRadio(
-            isSelected = when (setting.value.feedPubkeySelection) {
+            isSelected = when (setting.value.pubkeySelection) {
                 NoPubkeys -> true
-                Friends, WebOfTrust, Global -> false
+                FriendPubkeys, WebOfTrustPubkeys, Global -> false
+                is CustomPubkeys, is ListPubkeys, is SingularPubkey -> false
             },
             name = stringResource(id = R.string.none),
             onClick = {
-                setting.value = setting.value.copy(feedPubkeySelection = NoPubkeys)
+                setting.value = setting.value.copy(pubkeySelection = NoPubkeys)
             })
         NamedRadio(
-            isSelected = when (setting.value.feedPubkeySelection) {
-                Friends -> true
-                NoPubkeys, WebOfTrust, Global -> false
+            isSelected = when (setting.value.pubkeySelection) {
+                FriendPubkeys -> true
+                NoPubkeys, WebOfTrustPubkeys, Global -> false
+                is CustomPubkeys, is ListPubkeys, is SingularPubkey -> false
             },
             name = stringResource(id = R.string.my_friends),
             onClick = {
-                setting.value = setting.value.copy(feedPubkeySelection = Friends)
+                setting.value = setting.value.copy(pubkeySelection = FriendPubkeys)
             })
         NamedRadio(
-            isSelected = when (setting.value.feedPubkeySelection) {
-                WebOfTrust -> true
-                NoPubkeys, Friends, Global -> false
+            isSelected = when (setting.value.pubkeySelection) {
+                WebOfTrustPubkeys -> true
+                NoPubkeys, FriendPubkeys, Global -> false
+                is CustomPubkeys, is ListPubkeys, is SingularPubkey -> false
             },
             name = stringResource(id = R.string.web_of_trust),
             onClick = {
-                setting.value = setting.value.copy(feedPubkeySelection = WebOfTrust)
+                setting.value = setting.value.copy(pubkeySelection = WebOfTrustPubkeys)
             })
         NamedRadio(
-            isSelected = when (setting.value.feedPubkeySelection) {
+            isSelected = when (setting.value.pubkeySelection) {
                 Global -> true
-                NoPubkeys, Friends, WebOfTrust -> false
+                NoPubkeys, FriendPubkeys, WebOfTrustPubkeys -> false
+                is CustomPubkeys, is ListPubkeys, is SingularPubkey -> false
             },
             name = stringResource(id = R.string.global),
             onClick = {
-                setting.value = setting.value.copy(feedPubkeySelection = Global)
+                setting.value = setting.value.copy(pubkeySelection = Global)
             })
     }
 } 

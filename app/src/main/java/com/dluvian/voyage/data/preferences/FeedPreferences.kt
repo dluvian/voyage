@@ -1,14 +1,20 @@
 package com.dluvian.voyage.data.preferences
 
 import android.content.Context
+import android.util.Log
+import com.dluvian.voyage.data.model.CustomPubkeys
+import com.dluvian.voyage.data.model.FriendPubkeys
+import com.dluvian.voyage.data.model.Global
+import com.dluvian.voyage.data.model.HomeFeedSetting
+import com.dluvian.voyage.data.model.ListPubkeys
 import com.dluvian.voyage.data.model.ListTopics
 import com.dluvian.voyage.data.model.MyTopics
+import com.dluvian.voyage.data.model.NoPubkeys
 import com.dluvian.voyage.data.model.NoTopics
-import com.dluvian.voyage.data.model.feed.Friends
-import com.dluvian.voyage.data.model.feed.Global
-import com.dluvian.voyage.data.model.feed.HomeFeedSetting
-import com.dluvian.voyage.data.model.feed.NoPubkeys
-import com.dluvian.voyage.data.model.feed.WebOfTrust
+import com.dluvian.voyage.data.model.SingularPubkey
+import com.dluvian.voyage.data.model.WebOfTrustPubkeys
+
+private const val TAG = "FeedPreferences"
 
 private const val TOPICS = "topics"
 private const val NO_TOPICS = "no_topics"
@@ -31,12 +37,12 @@ class FeedPreferences(context: Context) {
         }
         val pubkeys = when (preferences.getString(PUBKEYS, FRIENDS)) {
             NO_PUBKEYS -> NoPubkeys
-            FRIENDS -> Friends
-            WEB_OF_TRUST -> WebOfTrust
+            FRIENDS -> FriendPubkeys
+            WEB_OF_TRUST -> WebOfTrustPubkeys
             GLOBAL -> Global
-            else -> Friends
+            else -> FriendPubkeys
         }
-        return HomeFeedSetting(topicSelection = topics, feedPubkeySelection = pubkeys)
+        return HomeFeedSetting(topicSelection = topics, pubkeySelection = pubkeys)
     }
 
     fun setHomeFeedSettings(setting: HomeFeedSetting) {
@@ -44,11 +50,16 @@ class FeedPreferences(context: Context) {
             MyTopics, is ListTopics -> MY_TOPICS
             NoTopics -> NO_TOPICS
         }
-        val pubkeys = when (setting.feedPubkeySelection) {
+        val pubkeys = when (setting.pubkeySelection) {
             NoPubkeys -> NO_PUBKEYS
-            Friends -> FRIENDS
-            WebOfTrust -> WEB_OF_TRUST
+            FriendPubkeys -> FRIENDS
+            WebOfTrustPubkeys -> WEB_OF_TRUST
             Global -> GLOBAL
+
+            is CustomPubkeys, is ListPubkeys, is SingularPubkey -> {
+                Log.w(TAG, "Case ${setting.pubkeySelection} is not supported")
+                FRIENDS
+            }
         }
         preferences.edit()
             .putString(TOPICS, topics)

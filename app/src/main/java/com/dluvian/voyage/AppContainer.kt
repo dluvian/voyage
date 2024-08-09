@@ -120,6 +120,12 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
     private val annotatedStringProvider = AnnotatedStringProvider(nameProvider = nameProvider)
     private val pubkeyProvider = PubkeyProvider(friendProvider = friendProvider)
 
+    private val webOfTrustProvider = WebOfTrustProvider(
+        myPubkeyProvider = accountManager,
+        friendProvider = friendProvider,
+        webOfTrustDao = roomDb.webOfTrustDao()
+    )
+
     val relayProvider = RelayProvider(
         nip65Dao = roomDb.nip65Dao(),
         eventRelayDao = roomDb.eventRelayDao(),
@@ -127,6 +133,7 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
         connectionStatuses = connectionStatuses,
         pubkeyProvider = pubkeyProvider,
         relayPreferences = relayPreferences,
+        webOfTrustProvider = webOfTrustProvider
     )
 
     val itemSetProvider = ItemSetProvider(
@@ -155,12 +162,6 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
         eventCounter = eventCounter
     )
 
-    private val webOfTrustProvider = WebOfTrustProvider(
-        myPubkeyProvider = accountManager,
-        friendProvider = friendProvider,
-        webOfTrustDao = roomDb.webOfTrustDao()
-    )
-
     val lazyNostrSubscriber = LazyNostrSubscriber(
         room = roomDb,
         relayProvider = relayProvider,
@@ -180,7 +181,6 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
         myPubkeyProvider = accountManager,
         subCreator = subCreator,
         relayProvider = relayProvider,
-        webOfTrustProvider = webOfTrustProvider,
         subBatcher = subBatcher,
         room = roomDb,
     )

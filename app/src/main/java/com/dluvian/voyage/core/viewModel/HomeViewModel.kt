@@ -15,7 +15,7 @@ import com.dluvian.voyage.core.HomeViewRefresh
 import com.dluvian.voyage.core.HomeViewSubAccountAndTrustData
 import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.core.utils.launchIO
-import com.dluvian.voyage.data.model.feed.HomeFeedSetting
+import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.preferences.FeedPreferences
 import com.dluvian.voyage.data.provider.FeedProvider
@@ -47,12 +47,13 @@ class HomeViewModel(
 
     fun handle(action: HomeViewAction) {
         when (action) {
-            is HomeViewRefresh -> refresh()
-            is HomeViewAppend -> paginator.append()
-            is HomeViewSubAccountAndTrustData -> subMyAccountAndTrustData()
+            HomeViewRefresh -> refresh()
+            HomeViewAppend -> paginator.append()
+            HomeViewSubAccountAndTrustData -> subMyAccountAndTrustData()
             HomeViewOpenFilter -> showFilterMenu.value = true
             HomeViewDismissFilter -> showFilterMenu.value = false
-            is HomeViewApplyFilter -> {
+
+            is HomeViewApplyFilter -> if (setting.value != action.setting) {
                 feedPreferences.setHomeFeedSettings(setting = action.setting)
                 showFilterMenu.value = false
                 setting.value = action.setting
