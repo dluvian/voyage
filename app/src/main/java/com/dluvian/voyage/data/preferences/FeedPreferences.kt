@@ -1,20 +1,13 @@
 package com.dluvian.voyage.data.preferences
 
 import android.content.Context
-import android.util.Log
-import com.dluvian.voyage.data.model.CustomPubkeys
 import com.dluvian.voyage.data.model.FriendPubkeys
 import com.dluvian.voyage.data.model.Global
 import com.dluvian.voyage.data.model.HomeFeedSetting
-import com.dluvian.voyage.data.model.ListPubkeys
-import com.dluvian.voyage.data.model.ListTopics
 import com.dluvian.voyage.data.model.MyTopics
 import com.dluvian.voyage.data.model.NoPubkeys
 import com.dluvian.voyage.data.model.NoTopics
-import com.dluvian.voyage.data.model.SingularPubkey
 import com.dluvian.voyage.data.model.WebOfTrustPubkeys
-
-private const val TAG = "FeedPreferences"
 
 private const val TOPICS = "topics"
 private const val NO_TOPICS = "no_topics"
@@ -47,7 +40,7 @@ class FeedPreferences(context: Context) {
 
     fun setHomeFeedSettings(setting: HomeFeedSetting) {
         val topics = when (setting.topicSelection) {
-            MyTopics, is ListTopics -> MY_TOPICS
+            MyTopics -> MY_TOPICS
             NoTopics -> NO_TOPICS
         }
         val pubkeys = when (setting.pubkeySelection) {
@@ -55,11 +48,6 @@ class FeedPreferences(context: Context) {
             FriendPubkeys -> FRIENDS
             WebOfTrustPubkeys -> WEB_OF_TRUST
             Global -> GLOBAL
-
-            is CustomPubkeys, is ListPubkeys, is SingularPubkey -> {
-                Log.w(TAG, "Case ${setting.pubkeySelection} is not supported")
-                FRIENDS
-            }
         }
         preferences.edit()
             .putString(TOPICS, topics)

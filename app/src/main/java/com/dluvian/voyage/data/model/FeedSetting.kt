@@ -13,8 +13,8 @@ data class ReplyFeedSetting(val nprofile: Nip19Profile) : FeedSetting()
 sealed class RootFeedSetting : FeedSetting()
 
 data class HomeFeedSetting(
-    val topicSelection: TopicSelection,
-    val pubkeySelection: PubkeySelection,
+    val topicSelection: HomeFeedTopicSelection,
+    val pubkeySelection: HomeFeedPubkeySelection,
 ) : RootFeedSetting()
 
 data class TopicFeedSetting(val topic: Topic) : RootFeedSetting()

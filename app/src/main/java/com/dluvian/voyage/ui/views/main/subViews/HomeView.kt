@@ -17,16 +17,12 @@ import com.dluvian.voyage.core.HomeViewRefresh
 import com.dluvian.voyage.core.HomeViewSubAccountAndTrustData
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.viewModel.HomeViewModel
-import com.dluvian.voyage.data.model.CustomPubkeys
 import com.dluvian.voyage.data.model.FriendPubkeys
 import com.dluvian.voyage.data.model.Global
 import com.dluvian.voyage.data.model.HomeFeedSetting
-import com.dluvian.voyage.data.model.ListPubkeys
-import com.dluvian.voyage.data.model.ListTopics
 import com.dluvian.voyage.data.model.MyTopics
 import com.dluvian.voyage.data.model.NoPubkeys
 import com.dluvian.voyage.data.model.NoTopics
-import com.dluvian.voyage.data.model.SingularPubkey
 import com.dluvian.voyage.data.model.WebOfTrustPubkeys
 import com.dluvian.voyage.ui.components.Feed
 import com.dluvian.voyage.ui.components.NamedCheckbox
@@ -64,15 +60,12 @@ private fun Filter(setting: MutableState<HomeFeedSetting>) {
     Column {
         SmallHeader(header = stringResource(id = R.string.topics))
         NamedCheckbox(
-            isChecked = when (setting.value.topicSelection) {
-                MyTopics -> true
-                is ListTopics, NoTopics -> false
-            },
+            isChecked = setting.value.topicSelection.isMyTopics(),
             name = stringResource(id = R.string.my_topics),
             onClick = {
                 setting.value = when (setting.value.topicSelection) {
                     MyTopics -> setting.value.copy(topicSelection = NoTopics)
-                    is ListTopics, NoTopics -> setting.value.copy(topicSelection = MyTopics)
+                    NoTopics -> setting.value.copy(topicSelection = MyTopics)
                 }
             })
 
@@ -84,7 +77,6 @@ private fun Filter(setting: MutableState<HomeFeedSetting>) {
             isSelected = when (setting.value.pubkeySelection) {
                 NoPubkeys -> true
                 FriendPubkeys, WebOfTrustPubkeys, Global -> false
-                is CustomPubkeys, is ListPubkeys, is SingularPubkey -> false
             },
             name = stringResource(id = R.string.none),
             onClick = {
@@ -94,7 +86,6 @@ private fun Filter(setting: MutableState<HomeFeedSetting>) {
             isSelected = when (setting.value.pubkeySelection) {
                 FriendPubkeys -> true
                 NoPubkeys, WebOfTrustPubkeys, Global -> false
-                is CustomPubkeys, is ListPubkeys, is SingularPubkey -> false
             },
             name = stringResource(id = R.string.my_friends),
             onClick = {
@@ -104,7 +95,6 @@ private fun Filter(setting: MutableState<HomeFeedSetting>) {
             isSelected = when (setting.value.pubkeySelection) {
                 WebOfTrustPubkeys -> true
                 NoPubkeys, FriendPubkeys, Global -> false
-                is CustomPubkeys, is ListPubkeys, is SingularPubkey -> false
             },
             name = stringResource(id = R.string.web_of_trust),
             onClick = {
@@ -114,7 +104,6 @@ private fun Filter(setting: MutableState<HomeFeedSetting>) {
             isSelected = when (setting.value.pubkeySelection) {
                 Global -> true
                 NoPubkeys, FriendPubkeys, WebOfTrustPubkeys -> false
-                is CustomPubkeys, is ListPubkeys, is SingularPubkey -> false
             },
             name = stringResource(id = R.string.global),
             onClick = {

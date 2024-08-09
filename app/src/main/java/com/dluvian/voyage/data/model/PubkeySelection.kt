@@ -4,10 +4,13 @@ import com.dluvian.voyage.core.PubkeyHex
 
 sealed class PubkeySelection
 
-data object NoPubkeys : PubkeySelection()
-data object WebOfTrustPubkeys : PubkeySelection()
-data object Global : PubkeySelection()
-data object FriendPubkeys : PubkeySelection()
+sealed class HomeFeedPubkeySelection : PubkeySelection()
+
+data object NoPubkeys : HomeFeedPubkeySelection()
+data object FriendPubkeys : HomeFeedPubkeySelection()
+data object WebOfTrustPubkeys : HomeFeedPubkeySelection()
+data object Global : HomeFeedPubkeySelection()
+
 data class CustomPubkeys(val pubkeys: Collection<PubkeyHex>) : PubkeySelection()
 data class ListPubkeys(val identifier: String) : PubkeySelection()
 data class SingularPubkey(val pubkey: PubkeyHex) : PubkeySelection() {

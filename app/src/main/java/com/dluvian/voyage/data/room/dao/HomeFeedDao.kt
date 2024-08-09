@@ -1,20 +1,14 @@
 package com.dluvian.voyage.data.room.dao
 
-import android.util.Log
 import androidx.room.Dao
-import com.dluvian.voyage.data.model.CustomPubkeys
 import com.dluvian.voyage.data.model.FriendPubkeys
 import com.dluvian.voyage.data.model.Global
 import com.dluvian.voyage.data.model.HomeFeedSetting
-import com.dluvian.voyage.data.model.ListPubkeys
 import com.dluvian.voyage.data.model.NoPubkeys
-import com.dluvian.voyage.data.model.SingularPubkey
 import com.dluvian.voyage.data.model.WebOfTrustPubkeys
 import com.dluvian.voyage.data.room.view.RootPostView
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-
-private const val TAG = "HomeFeedDao"
 
 private const val BASE_QUERY = "FROM RootPostView " +
         "WHERE createdAt <= :until "
@@ -93,11 +87,6 @@ interface HomeFeedDao {
             }
 
             Global -> internalGetGlobalFlow()
-
-            is CustomPubkeys, is ListPubkeys, is SingularPubkey -> {
-                Log.w(TAG, "Selection ${setting.pubkeySelection} is not supported")
-                flowOf(emptyList())
-            }
         }
     }
 
@@ -128,11 +117,6 @@ interface HomeFeedDao {
             }
 
             Global -> internalGetGlobal()
-
-            is CustomPubkeys, is ListPubkeys, is SingularPubkey -> {
-                Log.w(TAG, "Selection ${setting.pubkeySelection} is not supported")
-                emptyList()
-            }
         }
     }
 
@@ -163,11 +147,6 @@ interface HomeFeedDao {
             }
 
             Global -> internalHasGlobal()
-
-            is CustomPubkeys, is ListPubkeys, is SingularPubkey -> {
-                Log.w(TAG, "Selection ${setting.pubkeySelection} is not supported")
-                flowOf(false)
-            }
         }
     }
 
@@ -198,11 +177,6 @@ interface HomeFeedDao {
             }
 
             Global -> internalGetGlobalCreatedAt()
-
-            is CustomPubkeys, is ListPubkeys, is SingularPubkey -> {
-                Log.w(TAG, "Selection ${setting.pubkeySelection} is not supported")
-                emptyList()
-            }
         }
     }
 }
