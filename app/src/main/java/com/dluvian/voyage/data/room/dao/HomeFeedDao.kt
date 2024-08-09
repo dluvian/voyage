@@ -21,11 +21,11 @@ private const val BASE_CONDITION = "AND authorIsOneself = 0 " +
         "LIMIT :size"
 
 private const val TOPIC_ONLY_COND = "AND myTopic IS NOT NULL "
-private const val FRIEND_ONLY_COND = "AND authorIsFriend = 1 "
-private const val WOT_ONLY_COND = "AND authorIsTrusted = 1 "
+private const val FRIEND_ONLY_COND = "AND authorIsFriend "
+private const val WOT_ONLY_COND = "AND (authorIsTrusted OR authorIsFriend)"
 private const val FRIEND_OR_TOPIC_COND = "AND (authorIsFriend OR myTopic IS NOT NULL) "
-private const val WOT_OR_TOPIC_COND = "AND (authorIsTrusted OR myTopic IS NOT NULL) "
-private const val GLOBAL_COND = " "
+private const val WOT_OR_TOPIC_COND =
+    "AND (authorIsTrusted OR authorIsFriend OR myTopic IS NOT NULL) "
 
 private const val TOPIC_ONLY_MAIN_QUERY = "$BASE_QUERY $TOPIC_ONLY_COND $BASE_CONDITION"
 private const val TOPIC_ONLY_QUERY = "SELECT * $TOPIC_ONLY_MAIN_QUERY"
@@ -52,7 +52,7 @@ private const val WOT_OR_TOPIC_QUERY = "SELECT * $WOT_OR_TOPIC_MAIN_QUERY"
 private const val WOT_OR_TOPIC_CREATED_AT_QUERY = "SELECT createdAt $WOT_OR_TOPIC_MAIN_QUERY"
 private const val WOT_OR_TOPIC_EXISTS_QUERY = "SELECT EXISTS($WOT_OR_TOPIC_MAIN_QUERY)"
 
-private const val GLOBAL_MAIN_QUERY = "$BASE_QUERY $GLOBAL_COND $BASE_CONDITION"
+private const val GLOBAL_MAIN_QUERY = "$BASE_QUERY $BASE_CONDITION"
 private const val GLOBAL_QUERY = "SELECT * $GLOBAL_MAIN_QUERY"
 private const val GLOBAL_CREATED_AT_QUERY = "SELECT createdAt $GLOBAL_MAIN_QUERY"
 private const val GLOBAL_EXISTS_QUERY = "SELECT EXISTS($GLOBAL_MAIN_QUERY)"
