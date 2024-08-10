@@ -22,7 +22,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             post.crossPostedPubkey, 
             post.isMentioningMe, 
             profile.name AS authorName,
-            ht.hashtag AS myTopic,
+            ht.min_hashtag AS myTopic,
             CASE WHEN account.pubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsOneself,
             CASE WHEN friend.friendPubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsFriend,
             CASE WHEN weboftrust.webOfTrustPubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsTrusted,
@@ -40,11 +40,11 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
         FROM post
         LEFT JOIN profile ON profile.pubkey = post.pubkey
         LEFT JOIN (
-            SELECT hashtag.postId, hashtag.hashtag 
+            SELECT DISTINCT hashtag.postId, MIN(hashtag.hashtag) AS min_hashtag
             FROM hashtag 
             JOIN topic ON hashtag.hashtag = topic.topic
             WHERE topic.myPubkey = (SELECT pubkey FROM account LIMIT 1)
-            LIMIT 1
+            GROUP BY hashtag.postId
         ) AS ht ON ht.postId = post.id
         LEFT JOIN account ON account.pubkey = post.pubkey
         LEFT JOIN friend ON friend.friendPubkey = post.pubkey
