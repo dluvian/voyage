@@ -57,7 +57,7 @@ class HomeViewModel(
                 feedPreferences.setHomeFeedSettings(setting = action.setting)
                 showFilterMenu.value = false
                 setting.value = action.setting
-                paginator.reinit(setting = action.setting)
+                paginator.reinit(setting = action.setting, showRefreshIndicator = true)
             }
         }
     }

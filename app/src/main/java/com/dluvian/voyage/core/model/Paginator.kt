@@ -57,7 +57,7 @@ class Paginator(
         reinit(setting = setting)
     }
 
-    fun reinit(setting: FeedSetting) {
+    fun reinit(setting: FeedSetting, showRefreshIndicator: Boolean = false) {
         isInitialized.value = true
         val isSame = when (setting) {
             InboxFeedSetting, BookmarksFeedSetting -> page.value.value.isNotEmpty()
@@ -71,6 +71,7 @@ class Paginator(
             Log.i(TAG, "Skip init. Settings are the same")
             return
         }
+        if (showRefreshIndicator) isRefreshing.value = true
 
         hasPosts.value = getHasPosts(setting = setting)
         hasMoreRecentPosts.value = false
@@ -84,6 +85,9 @@ class Paginator(
                 subUntil = now,
                 subscribe = feedSetting !is ReplyFeedSetting,
             )
+            delay(DELAY_1SEC)
+        }.invokeOnCompletion {
+            isRefreshing.value = false
         }
     }
 
