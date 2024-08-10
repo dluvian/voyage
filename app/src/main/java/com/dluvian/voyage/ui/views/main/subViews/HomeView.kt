@@ -7,6 +7,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
@@ -30,12 +31,14 @@ import com.dluvian.voyage.ui.components.NamedRadio
 import com.dluvian.voyage.ui.components.dialog.BaseActionDialog
 import com.dluvian.voyage.ui.components.text.SmallHeader
 import com.dluvian.voyage.ui.theme.spacing
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeView(vm: HomeViewModel, onUpdate: OnUpdate) {
     LaunchedEffect(key1 = Unit) {
         onUpdate(HomeViewSubAccountAndTrustData)
     }
+    val scope = rememberCoroutineScope()
 
     Feed(
         paginator = vm.paginator,
@@ -50,7 +53,10 @@ fun HomeView(vm: HomeViewModel, onUpdate: OnUpdate) {
         BaseActionDialog(
             title = stringResource(id = R.string.filter),
             main = { Filter(setting = currentSetting) },
-            onConfirm = { onUpdate(HomeViewApplyFilter(setting = currentSetting.value)) },
+            onConfirm = {
+                onUpdate(HomeViewApplyFilter(setting = currentSetting.value))
+                scope.launch { vm.feedState.animateScrollToItem(index = 0) }
+            },
             onDismiss = { onUpdate(HomeViewDismissFilter) })
     }
 }
