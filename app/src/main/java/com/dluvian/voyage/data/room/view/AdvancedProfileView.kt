@@ -28,4 +28,6 @@ data class AdvancedProfileView(
     fun toNip19(): Nip19Profile {
         return createNprofile(hex = pubkey)
     }
+
+    fun showTrustedBy() = isWebOfTrust && !isFriend && !isMe
 }

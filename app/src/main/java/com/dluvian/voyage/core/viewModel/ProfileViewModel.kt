@@ -18,6 +18,7 @@ import com.dluvian.voyage.core.model.ItemSetProfile
 import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.core.navigator.ProfileNavView
 import com.dluvian.voyage.core.utils.launchIO
+import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.model.FullProfileUI
 import com.dluvian.voyage.data.model.ItemSetMeta
 import com.dluvian.voyage.data.model.ProfileRootFeedSetting
@@ -53,6 +54,7 @@ class ProfileViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
     private val nip65Dao: Nip65Dao,
     private val eventRelayDao: EventRelayDao,
     private val itemSetProvider: ItemSetProvider,
+    private val myPubkeyProvider: IMyPubkeyProvider,
 ) : ViewModel() {
     val tabIndex = mutableIntStateOf(0)
     val addableLists = mutableStateOf(emptyList<ItemSetMeta>())
@@ -94,8 +96,12 @@ class ProfileViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
         tabIndex.intValue = 0
         viewModelScope.launch {
             pagerState.scrollToPage(0)
-            trustedBy.value = profileProvider.getTrustedByFlow(pubkey = pubkeyHex)
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
+            trustedBy.value = if (pubkeyHex != myPubkeyProvider.getPubkeyHex()) {
+                profileProvider.getTrustedByFlow(pubkey = pubkeyHex)
+                    .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
+            } else {
+                MutableStateFlow(null)
+            }
         }
         rootPaginator.reinit(setting = ProfileRootFeedSetting(nprofile = profileNavView.nprofile))
         replyPaginator.reinit(setting = ReplyFeedSetting(nprofile = profileNavView.nprofile))

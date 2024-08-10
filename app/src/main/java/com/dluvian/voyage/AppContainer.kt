@@ -97,7 +97,7 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
     val relayPreferences = RelayPreferences(context = context)
     val eventPreferences = EventPreferences(context = context)
 
-    private val accountManager = AccountManager(
+    val accountManager = AccountManager(
         mnemonicSigner = mnemonicSigner,
         externalSigner = externalSigner,
         accountDao = roomDb.accountDao(),

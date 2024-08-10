@@ -134,7 +134,7 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
                         ).toBech32()
                     },
                     lightning = profile.lightning,
-                    trustedBy = if (profile.inner.isWebOfTrust && !profile.inner.isFriend) {
+                    trustedBy = if (profile.inner.showTrustedBy()) {
                         vm.trustedBy.value.collectAsState().value
                     } else {
                         null
