@@ -14,9 +14,12 @@ import com.dluvian.voyage.core.utils.takeRandom
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.model.CustomPubkeys
 import com.dluvian.voyage.data.model.FriendPubkeys
+import com.dluvian.voyage.data.model.Global
 import com.dluvian.voyage.data.model.ListPubkeys
+import com.dluvian.voyage.data.model.NoPubkeys
 import com.dluvian.voyage.data.model.PubkeySelection
 import com.dluvian.voyage.data.model.SingularPubkey
+import com.dluvian.voyage.data.model.WebOfTrustPubkeys
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.ItemSetProvider
 import com.dluvian.voyage.data.provider.PubkeyProvider
@@ -214,6 +217,13 @@ class LazyNostrSubscriber(
             is ListPubkeys -> itemSetProvider.getPubkeysWithMissingNip65(
                 identifier = selection.identifier
             )
+
+            Global -> emptyList()
+            NoPubkeys -> emptyList()
+            WebOfTrustPubkeys -> {
+                Log.w(TAG, "We don't lazy sub nip65 of web of trust")
+                emptyList()
+            }
         }.toSet()
 
         Log.d(TAG, "Missing nip65s of ${missingPubkeys.size} pubkeys")
