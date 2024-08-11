@@ -18,7 +18,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.GoBack
@@ -102,15 +101,15 @@ private fun CreatePostContent(
         )
         Spacer(modifier = Modifier.height(spacing.medium))
         TextInput(
-            modifier = Modifier.focusRequester(focusRequester),
             value = header.value,
             onValueChange = { txt -> header.value = txt },
             placeholder = stringResource(id = R.string.subject_optional),
             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-            imeAction = ImeAction.Next
         )
         TextInput(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .focusRequester(focusRequester),
             value = body.value,
             onValueChange = { str -> body.value = str },
             placeholder = stringResource(id = R.string.body_text),
