@@ -7,7 +7,7 @@ private const val UPVOTE_CONTENT = "upvote_content"
 private const val DEFAULT_UPVOTE_CONTENT = "+"
 
 class EventPreferences(context: Context) {
-    private val preferences = context.getSharedPreferences(DATABASE_FILE, Context.MODE_PRIVATE)
+    private val preferences = context.getSharedPreferences(EVENT_FILE, Context.MODE_PRIVATE)
 
     fun getUpvoteContent(): String {
         return preferences.getString(UPVOTE_CONTENT, DEFAULT_UPVOTE_CONTENT)

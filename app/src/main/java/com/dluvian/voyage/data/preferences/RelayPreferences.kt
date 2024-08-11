@@ -15,7 +15,7 @@ private const val AUTOPILOT_RELAYS = "autopilot_relays"
 private const val DEFAULT_LOCAL_RELAY_PORT = 4869
 
 class RelayPreferences(context: Context) {
-    private val preferences = context.getSharedPreferences(DATABASE_FILE, Context.MODE_PRIVATE)
+    private val preferences = context.getSharedPreferences(RELAY_FILE, Context.MODE_PRIVATE)
 
     fun getSendAuth(): Boolean {
         return preferences.getBoolean(SEND_AUTH, false)
