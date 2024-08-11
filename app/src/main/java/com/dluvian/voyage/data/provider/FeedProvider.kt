@@ -79,7 +79,7 @@ class FeedProvider(
 
             is ReplyFeedSetting -> getReplyFeedFlow(until = until, size = size, setting = setting)
 
-            InboxFeedSetting -> getInboxFeedFlow(until = until, size = size)
+            is InboxFeedSetting -> getInboxFeedFlow(until = until, size = size)
 
             BookmarksFeedSetting -> getBookmarksFeedFlow(until = until, size = size)
         }
@@ -231,7 +231,7 @@ class FeedProvider(
             is ListFeedSetting -> room.rootPostDao()
                 .hasListRootPostsFlow(identifier = setting.identifier)
 
-            InboxFeedSetting -> room.inboxDao().hasInboxFlow()
+            is InboxFeedSetting -> room.inboxDao().hasInboxFlow()
 
             BookmarksFeedSetting -> room.bookmarkDao().hasBookmarkedPostsFlow()
 

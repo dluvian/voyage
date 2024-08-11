@@ -17,7 +17,7 @@ import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
-import com.dluvian.voyage.data.preferences.FeedPreferences
+import com.dluvian.voyage.data.preferences.HomePreferences
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.MuteProvider
 import kotlinx.coroutines.Job
@@ -29,11 +29,11 @@ class HomeViewModel(
     muteProvider: MuteProvider,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
     val feedState: LazyListState,
-    private val feedPreferences: FeedPreferences,
+    private val homePreferences: HomePreferences,
 ) : ViewModel() {
     val showFilterMenu: MutableState<Boolean> = mutableStateOf(false)
     val setting: MutableState<HomeFeedSetting> =
-        mutableStateOf(feedPreferences.getHomeFeedSetting())
+        mutableStateOf(homePreferences.getHomeFeedSetting())
     val paginator = Paginator(
         feedProvider = feedProvider,
         muteProvider = muteProvider,
@@ -54,7 +54,7 @@ class HomeViewModel(
             HomeViewDismissFilter -> showFilterMenu.value = false
 
             is HomeViewApplyFilter -> if (setting.value != action.setting) {
-                feedPreferences.setHomeFeedSettings(setting = action.setting)
+                homePreferences.setHomeFeedSettings(setting = action.setting)
                 showFilterMenu.value = false
                 setting.value = action.setting
                 paginator.reinit(setting = action.setting, showRefreshIndicator = true)

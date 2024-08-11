@@ -30,6 +30,7 @@ import com.dluvian.voyage.core.navigator.ThreadNavView
 import com.dluvian.voyage.core.navigator.ThreadRawNavView
 import com.dluvian.voyage.core.navigator.TopicNavView
 import com.dluvian.voyage.data.model.HomeFeedSetting
+import com.dluvian.voyage.data.model.InboxFeedSetting
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import kotlinx.coroutines.CoroutineScope
@@ -161,6 +162,9 @@ sealed class InboxViewAction : UIEvent()
 data object InboxViewInit : InboxViewAction()
 data object InboxViewRefresh : InboxViewAction()
 data object InboxViewAppend : InboxViewAction()
+data object InboxViewOpenFilter : InboxViewAction()
+data object InboxViewDismissFilter : InboxViewAction()
+data class InboxViewApplyFilter(val setting: InboxFeedSetting) : InboxViewAction()
 
 
 sealed class DiscoverViewAction : UIEvent()

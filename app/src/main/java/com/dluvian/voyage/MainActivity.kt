@@ -119,7 +119,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 muteProvider = appContainer.muteProvider,
                 lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
                 feedState = homeFeedState,
-                feedPreferences = appContainer.feedPreferences
+                homePreferences = appContainer.homePreferences
             )
         },
         discoverVM = viewModel {
@@ -236,6 +236,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 muteProvider = appContainer.muteProvider,
                 subCreator = appContainer.lazyNostrSubscriber.subCreator,
                 feedState = inboxFeedState,
+                inboxPreferences = appContainer.inboxPreferences
             )
         },
         drawerVM = viewModel {

@@ -60,8 +60,9 @@ class Paginator(
     fun reinit(setting: FeedSetting, showRefreshIndicator: Boolean = false) {
         isInitialized.value = true
         val isSame = when (setting) {
-            InboxFeedSetting, BookmarksFeedSetting -> page.value.value.isNotEmpty()
+            BookmarksFeedSetting -> page.value.value.isNotEmpty()
             is HomeFeedSetting,
+            is InboxFeedSetting,
             is TopicFeedSetting,
             is ProfileRootFeedSetting,
             is ReplyFeedSetting,
@@ -162,7 +163,8 @@ class Paginator(
             .map { posts ->
                 when (feedSetting) {
                     // No muted words
-                    is HomeFeedSetting, is TopicFeedSetting, InboxFeedSetting, is ListFeedSetting -> {
+                    is HomeFeedSetting, is TopicFeedSetting,
+                    is InboxFeedSetting, is ListFeedSetting -> {
                         posts.filter { post ->
                             post.content.text.containsNoneIgnoreCase(strs = mutedWords)
                         }

@@ -54,8 +54,8 @@ import com.dluvian.voyage.data.nostr.LOCAL_WEBSOCKET
 import com.dluvian.voyage.data.nostr.Nip65Relay
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.ui.components.ConnectionDot
-import com.dluvian.voyage.ui.components.NamedCheckbox
 import com.dluvian.voyage.ui.components.scaffold.SaveableScaffold
+import com.dluvian.voyage.ui.components.selection.NamedCheckbox
 import com.dluvian.voyage.ui.components.text.SectionHeader
 import com.dluvian.voyage.ui.theme.AddIcon
 import com.dluvian.voyage.ui.theme.DeleteIcon

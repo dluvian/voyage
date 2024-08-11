@@ -13,7 +13,7 @@ import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.model.ItemSetItem
 import com.dluvian.voyage.data.model.ItemSetMeta
-import com.dluvian.voyage.ui.components.NamedCheckbox
+import com.dluvian.voyage.ui.components.selection.NamedCheckbox
 import kotlinx.coroutines.CoroutineScope
 
 @Composable

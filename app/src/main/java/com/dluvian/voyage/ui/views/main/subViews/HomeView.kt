@@ -26,9 +26,9 @@ import com.dluvian.voyage.data.model.NoPubkeys
 import com.dluvian.voyage.data.model.NoTopics
 import com.dluvian.voyage.data.model.WebOfTrustPubkeys
 import com.dluvian.voyage.ui.components.Feed
-import com.dluvian.voyage.ui.components.NamedCheckbox
-import com.dluvian.voyage.ui.components.NamedRadio
 import com.dluvian.voyage.ui.components.dialog.BaseActionDialog
+import com.dluvian.voyage.ui.components.selection.FeedPubkeySelectionRadio
+import com.dluvian.voyage.ui.components.selection.NamedCheckbox
 import com.dluvian.voyage.ui.components.text.SmallHeader
 import com.dluvian.voyage.ui.theme.spacing
 import kotlinx.coroutines.launch
@@ -38,7 +38,6 @@ fun HomeView(vm: HomeViewModel, onUpdate: OnUpdate) {
     LaunchedEffect(key1 = Unit) {
         onUpdate(HomeViewSubAccountAndTrustData)
     }
-    val scope = rememberCoroutineScope()
 
     Feed(
         paginator = vm.paginator,
@@ -48,6 +47,7 @@ fun HomeView(vm: HomeViewModel, onUpdate: OnUpdate) {
         onUpdate = onUpdate
     )
 
+    val scope = rememberCoroutineScope()
     if (vm.showFilterMenu.value) {
         val currentSetting = remember(vm.setting.value) { mutableStateOf(vm.setting.value) }
         BaseActionDialog(
@@ -79,41 +79,22 @@ private fun Filter(setting: MutableState<HomeFeedSetting>) {
             modifier = Modifier.padding(top = spacing.small),
             header = stringResource(id = R.string.profiles)
         )
-        NamedRadio(
-            isSelected = when (setting.value.pubkeySelection) {
-                NoPubkeys -> true
-                FriendPubkeys, WebOfTrustPubkeys, Global -> false
-            },
-            name = stringResource(id = R.string.none),
-            onClick = {
-                setting.value = setting.value.copy(pubkeySelection = NoPubkeys)
-            })
-        NamedRadio(
-            isSelected = when (setting.value.pubkeySelection) {
-                FriendPubkeys -> true
-                NoPubkeys, WebOfTrustPubkeys, Global -> false
-            },
-            name = stringResource(id = R.string.my_friends),
-            onClick = {
-                setting.value = setting.value.copy(pubkeySelection = FriendPubkeys)
-            })
-        NamedRadio(
-            isSelected = when (setting.value.pubkeySelection) {
-                WebOfTrustPubkeys -> true
-                NoPubkeys, FriendPubkeys, Global -> false
-            },
-            name = stringResource(id = R.string.web_of_trust),
-            onClick = {
-                setting.value = setting.value.copy(pubkeySelection = WebOfTrustPubkeys)
-            })
-        NamedRadio(
-            isSelected = when (setting.value.pubkeySelection) {
-                Global -> true
-                NoPubkeys, FriendPubkeys, WebOfTrustPubkeys -> false
-            },
-            name = stringResource(id = R.string.global),
-            onClick = {
-                setting.value = setting.value.copy(pubkeySelection = Global)
-            })
+        FeedPubkeySelectionRadio(
+            current = setting.value.pubkeySelection,
+            target = NoPubkeys,
+            onClick = { setting.value = setting.value.copy(pubkeySelection = NoPubkeys) })
+        FeedPubkeySelectionRadio(
+            current = setting.value.pubkeySelection,
+            target = FriendPubkeys,
+            onClick = { setting.value = setting.value.copy(pubkeySelection = FriendPubkeys) })
+        FeedPubkeySelectionRadio(
+            current = setting.value.pubkeySelection,
+            target = WebOfTrustPubkeys,
+            onClick = { setting.value = setting.value.copy(pubkeySelection = WebOfTrustPubkeys) })
+        FeedPubkeySelectionRadio(
+            current = setting.value.pubkeySelection,
+            target = Global,
+            onClick = { setting.value = setting.value.copy(pubkeySelection = Global) })
+
     }
-} 
+}

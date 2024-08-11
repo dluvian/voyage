@@ -27,7 +27,7 @@ class StaticFeedProvider(
         return when (setting) {
             is RootFeedSetting -> getStaticRootFeed(until = until, size = size, setting = setting)
             is ReplyFeedSetting -> getStaticReplyFeed(until = until, size = size, setting = setting)
-            InboxFeedSetting -> getStaticInboxFeed(until = until, size = size)
+            is InboxFeedSetting -> getStaticInboxFeed(until = until, size = size)
             BookmarksFeedSetting -> getStaticBooksmarksFeed(until = until, size = size)
         }
     }

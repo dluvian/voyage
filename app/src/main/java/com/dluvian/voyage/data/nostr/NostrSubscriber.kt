@@ -96,7 +96,7 @@ class NostrSubscriber(
                 limit = (4 * limit).toULong()
             )
 
-            InboxFeedSetting -> feedSubscriber.getInboxFeedSubscription(
+            is InboxFeedSetting -> feedSubscriber.getInboxFeedSubscription(
                 until = until.toULong(),
                 since = since,
                 limit = limit.toULong()
@@ -226,7 +226,7 @@ class NostrSubscriber(
                 size = pageSizePlusOffset,
             )
 
-            InboxFeedSetting -> room.postDao().getInboxPostsCreatedAt(
+            is InboxFeedSetting -> room.postDao().getInboxPostsCreatedAt(
                 until = until,
                 size = pageSizePlusOffset
             )

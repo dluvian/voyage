@@ -41,7 +41,8 @@ import com.dluvian.voyage.data.nostr.SubId
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.preferences.DatabasePreferences
 import com.dluvian.voyage.data.preferences.EventPreferences
-import com.dluvian.voyage.data.preferences.FeedPreferences
+import com.dluvian.voyage.data.preferences.HomePreferences
+import com.dluvian.voyage.data.preferences.InboxPreferences
 import com.dluvian.voyage.data.preferences.RelayPreferences
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 import com.dluvian.voyage.data.provider.DatabaseInteractor
@@ -92,7 +93,8 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
     private val forcedFollowTopicStates = MutableStateFlow(emptyMap<Topic, Boolean>())
     private val forcedMuteTopicStates = MutableStateFlow(emptyMap<Topic, Boolean>())
 
-    val feedPreferences = FeedPreferences(context = context)
+    val homePreferences = HomePreferences(context = context)
+    val inboxPreferences = InboxPreferences(context = context)
     val databasePreferences = DatabasePreferences(context = context)
     val relayPreferences = RelayPreferences(context = context)
     val eventPreferences = EventPreferences(context = context)
@@ -196,7 +198,7 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
         idCacheClearer = idCacheClearer,
         lazyNostrSubscriber = lazyNostrSubscriber,
         nostrSubscriber = nostrSubscriber,
-        feedPreferences = feedPreferences,
+        homePreferences = homePreferences,
     )
 
     private val eventValidator = EventValidator(
