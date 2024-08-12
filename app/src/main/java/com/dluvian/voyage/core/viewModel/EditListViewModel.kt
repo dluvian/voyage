@@ -43,7 +43,8 @@ class EditListViewModel(
     val tabIndex = mutableIntStateOf(0)
 
     fun createNew() {
-        _identifier.value = UUID.randomUUID().toString()
+        // Drop first part of UUID just to make the identifier shorter
+        _identifier.value = "voyage" + UUID.randomUUID().toString().dropWhile { it != '-' }
         title.value = ""
         description.value = TextFieldValue()
         profiles.value = emptyList()
