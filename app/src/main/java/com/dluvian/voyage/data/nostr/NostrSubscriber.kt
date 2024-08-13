@@ -1,8 +1,6 @@
 package com.dluvian.voyage.data.nostr
 
 import com.dluvian.voyage.core.EventIdHex
-import com.dluvian.voyage.core.FEED_OFFSET
-import com.dluvian.voyage.core.FEED_RESUB_SPAN_THRESHOLD_SECS
 import com.dluvian.voyage.core.RESUB_TIMEOUT
 import com.dluvian.voyage.core.utils.textNoteAndRepostKinds
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
@@ -193,57 +191,62 @@ class NostrSubscriber(
         pageSize: Int,
         forceSubscription: Boolean,
     ): ULong {
-        val pageSizePlusOffset = pageSize + FEED_OFFSET
+        if (pageSize <= 0) return 1uL
+
+        val eightPages = 8 * pageSize
 
         val timestamps = when (setting) {
             is HomeFeedSetting -> room.homeFeedDao().getHomeRootPostsCreatedAt(
                 setting = setting,
                 until = until,
-                size = pageSizePlusOffset
+                size = eightPages
             )
 
             is TopicFeedSetting -> room.rootPostDao().getTopicRootPostsCreatedAt(
                 topic = setting.topic,
                 until = until,
-                size = pageSizePlusOffset
+                size = eightPages
             )
 
             is ListFeedSetting -> room.rootPostDao().getListRootPostsCreatedAt(
                 identifier = setting.identifier,
                 until = until,
-                size = pageSizePlusOffset
+                size = eightPages
             )
 
             is ProfileRootFeedSetting -> room.rootPostDao().getProfileRootPostsCreatedAt(
                 pubkey = setting.nprofile.publicKey().toHex(),
                 until = until,
-                size = pageSizePlusOffset,
+                size = eightPages,
             )
 
             is ReplyFeedSetting -> room.replyDao().getProfileRepliesCreatedAt(
                 pubkey = setting.nprofile.publicKey().toHex(),
                 until = until,
-                size = pageSizePlusOffset,
+                size = eightPages,
             )
 
             is InboxFeedSetting -> room.postDao().getInboxPostsCreatedAt(
                 until = until,
-                size = pageSizePlusOffset
+                size = eightPages
             )
 
             BookmarksFeedSetting -> room.bookmarkDao().getBookmarkedPostsCreatedAt(
                 until = until,
-                size = pageSizePlusOffset
+                size = eightPages
             )
         }
 
-        if (timestamps.size < pageSizePlusOffset) return 1uL
+        if (timestamps.size < pageSize) return 1uL
 
-        val min = timestamps.min()
-        val max = timestamps.max()
-        val selectedSince = if (forceSubscription) min
-        else if (max - min <= FEED_RESUB_SPAN_THRESHOLD_SECS) max
-        else min
+        val max = timestamps.first()
+        val firstPageMin = timestamps[pageSize - 1]
+        val avgFeedSpan = max.minus(timestamps.last()).div(7) // 8/7 above average
+
+        val selectedSince = if (forceSubscription) firstPageMin
+        // Don't resub page bc it's denser than average + 8/7
+        else if (timestamps.size == eightPages && max - firstPageMin < avgFeedSpan) max
+        else firstPageMin
 
         return (selectedSince + 1).toULong()
     }
