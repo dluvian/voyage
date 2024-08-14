@@ -25,17 +25,17 @@ class StaticFeedProvider(
         setting: FeedSetting,
     ): List<ParentUI> {
         return when (setting) {
-            is RootFeedSetting -> getStaticRootFeed(until = until, size = size, setting = setting)
-            is ReplyFeedSetting -> getStaticReplyFeed(until = until, size = size, setting = setting)
-            is InboxFeedSetting -> getStaticInboxFeed(until = until, size = size)
+            is RootFeedSetting -> getStaticRootFeed(setting = setting, until = until, size = size)
+            is ReplyFeedSetting -> getStaticReplyFeed(setting = setting, until = until, size = size)
+            is InboxFeedSetting -> getStaticInboxFeed(setting = setting, until = until, size = size)
             BookmarksFeedSetting -> getStaticBooksmarksFeed(until = until, size = size)
         }
     }
 
     private suspend fun getStaticRootFeed(
+        setting: RootFeedSetting,
         until: Long,
         size: Int,
-        setting: RootFeedSetting,
     ): List<RootPostUI> {
         return when (setting) {
             is HomeFeedSetting -> room.homeFeedDao().getHomeRootPosts(
@@ -72,9 +72,9 @@ class StaticFeedProvider(
     }
 
     private suspend fun getStaticReplyFeed(
+        setting: ReplyFeedSetting,
         until: Long,
         size: Int,
-        setting: ReplyFeedSetting,
     ): List<ReplyUI> {
         return room.replyDao().getProfileReplies(
             pubkey = setting.nprofile.publicKey().toHex(),
@@ -91,10 +91,22 @@ class StaticFeedProvider(
             }
     }
 
-    private suspend fun getStaticInboxFeed(until: Long, size: Int): List<ParentUI> {
+    private suspend fun getStaticInboxFeed(
+        setting: InboxFeedSetting,
+        until: Long,
+        size: Int
+    ): List<ParentUI> {
         return mergeToParentUIList(
-            replies = room.inboxDao().getMentionReplies(until = until, size = size),
-            roots = room.inboxDao().getMentionRoots(until = until, size = size),
+            replies = room.inboxDao().getInboxReplies(
+                setting = setting,
+                until = until,
+                size = size
+            ),
+            roots = room.inboxDao().getMentionRoots(
+                setting = setting,
+                until = until,
+                size = size
+            ),
             votes = emptyMap(),
             follows = emptyMap(),
             bookmarks = emptyMap(),

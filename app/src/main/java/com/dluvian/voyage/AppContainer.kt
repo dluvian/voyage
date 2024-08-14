@@ -185,6 +185,7 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
     val nostrSubscriber = NostrSubscriber(
         topicProvider = topicProvider,
         myPubkeyProvider = accountManager,
+        friendProvider = friendProvider,
         subCreator = subCreator,
         relayProvider = relayProvider,
         subBatcher = subBatcher,

@@ -12,6 +12,7 @@ import com.dluvian.voyage.data.model.ListFeedSetting
 import com.dluvian.voyage.data.model.ProfileRootFeedSetting
 import com.dluvian.voyage.data.model.ReplyFeedSetting
 import com.dluvian.voyage.data.model.TopicFeedSetting
+import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.room.AppDatabase
@@ -29,10 +30,11 @@ import java.util.concurrent.atomic.AtomicBoolean
 class NostrSubscriber(
     topicProvider: TopicProvider,
     myPubkeyProvider: IMyPubkeyProvider,
+    friendProvider: FriendProvider,
     val subCreator: SubscriptionCreator,
     private val relayProvider: RelayProvider,
     private val subBatcher: SubBatcher,
-    private val room: AppDatabase
+    private val room: AppDatabase,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -42,6 +44,7 @@ class NostrSubscriber(
         topicProvider = topicProvider,
         myPubkeyProvider = myPubkeyProvider,
         bookmarkDao = room.bookmarkDao(),
+        friendProvider = friendProvider,
     )
 
     suspend fun subFeed(
@@ -95,6 +98,7 @@ class NostrSubscriber(
             )
 
             is InboxFeedSetting -> feedSubscriber.getInboxFeedSubscription(
+                setting = setting,
                 until = until.toULong(),
                 since = since,
                 limit = limit.toULong()

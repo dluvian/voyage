@@ -59,15 +59,7 @@ class Paginator(
 
     fun reinit(setting: FeedSetting, showRefreshIndicator: Boolean = false) {
         isInitialized.value = true
-        val isSame = when (setting) {
-            BookmarksFeedSetting -> page.value.value.isNotEmpty()
-            is HomeFeedSetting,
-            is InboxFeedSetting,
-            is TopicFeedSetting,
-            is ProfileRootFeedSetting,
-            is ReplyFeedSetting,
-            is ListFeedSetting -> page.value.value.isNotEmpty() && feedSetting == setting
-        }
+        val isSame = page.value.value.isNotEmpty() && feedSetting == setting
         if (isSame) {
             Log.i(TAG, "Skip init. Settings are the same")
             return

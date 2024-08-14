@@ -77,9 +77,9 @@ class FeedProvider(
                 setting = setting
             )
 
-            is ReplyFeedSetting -> getReplyFeedFlow(until = until, size = size, setting = setting)
+            is ReplyFeedSetting -> getReplyFeedFlow(setting = setting, until = until, size = size)
 
-            is InboxFeedSetting -> getInboxFeedFlow(until = until, size = size)
+            is InboxFeedSetting -> getInboxFeedFlow(setting = setting, until = until, size = size)
 
             BookmarksFeedSetting -> getBookmarksFeedFlow(until = until, size = size)
         }
@@ -143,9 +143,9 @@ class FeedProvider(
     }
 
     private fun getReplyFeedFlow(
+        setting: ReplyFeedSetting,
         until: Long,
         size: Int,
-        setting: ReplyFeedSetting,
     ): Flow<List<ReplyUI>> {
         val flow = room.replyDao().getProfileReplyFlow(
             pubkey = setting.nprofile.publicKey().toHex(),
@@ -170,13 +170,17 @@ class FeedProvider(
         }
     }
 
-    private fun getInboxFeedFlow(until: Long, size: Int): Flow<List<ParentUI>> {
+    private fun getInboxFeedFlow(
+        setting: InboxFeedSetting,
+        until: Long,
+        size: Int
+    ): Flow<List<ParentUI>> {
         return combine(
             room.inboxDao()
-                .getMentionReplyFlow(until = until, size = size)
+                .getInboxReplyFlow(setting = setting, until = until, size = size)
                 .firstThenDistinctDebounce(SHORT_DEBOUNCE),
             room.inboxDao()
-                .getMentionRootFlow(until = until, size = size)
+                .getMentionRootFlow(setting = setting, until = until, size = size)
                 .firstThenDistinctDebounce(SHORT_DEBOUNCE),
             forcedVotes,
             forcedFollows,
@@ -231,7 +235,7 @@ class FeedProvider(
             is ListFeedSetting -> room.rootPostDao()
                 .hasListRootPostsFlow(identifier = setting.identifier)
 
-            is InboxFeedSetting -> room.inboxDao().hasInboxFlow()
+            is InboxFeedSetting -> room.inboxDao().hasInboxFlow(setting = setting)
 
             BookmarksFeedSetting -> room.bookmarkDao().hasBookmarkedPostsFlow()
 

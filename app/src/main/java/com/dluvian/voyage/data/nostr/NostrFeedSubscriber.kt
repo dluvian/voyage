@@ -9,13 +9,17 @@ import com.dluvian.voyage.core.utils.syncedPutOrAdd
 import com.dluvian.voyage.core.utils.takeRandom
 import com.dluvian.voyage.core.utils.textNoteAndRepostKinds
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
+import com.dluvian.voyage.data.model.FriendPubkeys
 import com.dluvian.voyage.data.model.Global
 import com.dluvian.voyage.data.model.HomeFeedSetting
+import com.dluvian.voyage.data.model.InboxFeedSetting
 import com.dluvian.voyage.data.model.ListPubkeys
 import com.dluvian.voyage.data.model.ListTopics
 import com.dluvian.voyage.data.model.NoPubkeys
 import com.dluvian.voyage.data.model.PubkeySelection
 import com.dluvian.voyage.data.model.TopicSelection
+import com.dluvian.voyage.data.model.WebOfTrustPubkeys
+import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.room.dao.BookmarkDao
@@ -37,6 +41,7 @@ class NostrFeedSubscriber(
     private val topicProvider: TopicProvider,
     private val myPubkeyProvider: IMyPubkeyProvider,
     private val bookmarkDao: BookmarkDao,
+    private val friendProvider: FriendProvider
 ) {
     suspend fun getHomeFeedSubscriptions(
         setting: HomeFeedSetting,
@@ -176,12 +181,19 @@ class NostrFeedSubscriber(
     }
 
     fun getInboxFeedSubscription(
+        setting: InboxFeedSetting,
         until: ULong,
         since: ULong,
         limit: ULong
     ): Map<RelayUrl, List<Filter>> {
         if (limit <= 0u || since >= until) return emptyMap()
-        Log.d(TAG, "getInboxFeedSubscription")
+
+        val pubkeys = when (setting.pubkeySelection) {
+            FriendPubkeys -> friendProvider.getFriendPubkeys()
+            Global -> null
+            WebOfTrustPubkeys -> null
+            NoPubkeys -> return emptyMap()
+        }?.map { PublicKey.fromHex(it) }
 
         val mentionFilter = Filter()
             .kind(kind = Kind.fromEnum(KindEnum.TextNote))
@@ -189,9 +201,15 @@ class NostrFeedSubscriber(
             .since(timestamp = Timestamp.fromSecs(since))
             .until(timestamp = Timestamp.fromSecs(until))
             .limitRestricted(limit = MAX_EVENTS_TO_SUB)
-        val filters = listOf(mentionFilter)
 
-        return relayProvider.getReadRelays().associateWith { filters }
+        return relayProvider.getReadRelays()
+            .associateWith {
+                val filter = if (pubkeys != null) {
+                    mentionFilter.authors(pubkeys.takeRandom(MAX_KEYS))
+                } else mentionFilter
+
+                listOf(filter)
+            }
     }
 
     suspend fun getBookmarksFeedSubscription(
