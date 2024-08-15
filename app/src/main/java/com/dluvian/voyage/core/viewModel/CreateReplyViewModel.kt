@@ -10,12 +10,15 @@ import com.dluvian.voyage.core.CreateReplyViewAction
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.SendReply
 import com.dluvian.voyage.core.model.ParentUI
+import com.dluvian.voyage.core.model.ReplyUI
+import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.core.utils.showToast
 import com.dluvian.voyage.data.interactor.PostSender
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.data.room.dao.EventRelayDao
+import com.dluvian.voyage.data.room.dao.PostDao
 import kotlinx.coroutines.delay
 
 class CreateReplyViewModel(
@@ -23,6 +26,7 @@ class CreateReplyViewModel(
     private val postSender: PostSender,
     private val snackbar: SnackbarHostState,
     private val eventRelayDao: EventRelayDao,
+    private val postDao: PostDao,
 ) : ViewModel() {
     val isSendingReply = mutableStateOf(false)
     val parent: MutableState<ParentUI?> = mutableStateOf(null)
@@ -37,6 +41,19 @@ class CreateReplyViewModel(
                 lazyNostrSubscriber.lazySubNip65(nprofile = createNprofile(hex = relevantPubkey))
             }
         }
+        when (newParent) {
+            is ReplyUI -> {
+                viewModelScope.launchIO {
+                    val grandparentAuthor = postDao.getParentAuthor(id = relevantId)
+                    if (grandparentAuthor != null && relevantPubkey != grandparentAuthor) {
+                        lazyNostrSubscriber.lazySubNip65(createNprofile(hex = grandparentAuthor))
+                    }
+                }
+            }
+
+            is RootPostUI -> {}
+        }
+
 
         this.parent.value = newParent
     }
