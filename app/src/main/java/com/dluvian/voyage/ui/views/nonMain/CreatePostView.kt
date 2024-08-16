@@ -43,6 +43,7 @@ fun CreatePostView(
 ) {
     val header = remember { mutableStateOf(TextFieldValue()) }
     val body = remember { mutableStateOf(TextFieldValue()) }
+    val isAnon = remember { mutableStateOf(false) }
     val topics = remember { mutableStateOf(emptyList<Topic>()) }
     val isSendingPost by vm.isSendingPost
     val suggestions by searchSuggestions
@@ -54,7 +55,6 @@ fun CreatePostView(
         onUpdate(UpdatePostTopics)
     }
 
-
     ContentCreationScaffold(
         showSendButton = body.value.text.isNotBlank(),
         isSendingContent = isSendingPost,
@@ -65,6 +65,7 @@ fun CreatePostView(
                     header = header.value.text,
                     body = body.value.text,
                     topics = topics.value,
+                    isAnon = isAnon.value,
                     context = context,
                 ) { onUpdate(GoBack) }
             )
@@ -77,6 +78,7 @@ fun CreatePostView(
             topicSuggestions = topicSuggestions.value,
             selectedTopics = topics,
             searchSuggestions = suggestions,
+            isAnon = isAnon,
             focusRequester = focusRequester,
             onUpdate = onUpdate
         )
@@ -90,10 +92,16 @@ private fun CreatePostContent(
     topicSuggestions: List<Topic>,
     selectedTopics: MutableState<List<Topic>>,
     searchSuggestions: List<AdvancedProfileView>,
+    isAnon: MutableState<Boolean>,
     focusRequester: FocusRequester,
     onUpdate: OnUpdate,
 ) {
-    InputWithSuggestions(body = body, searchSuggestions = searchSuggestions, onUpdate = onUpdate) {
+    InputWithSuggestions(
+        body = body,
+        searchSuggestions = searchSuggestions,
+        isAnon = isAnon,
+        onUpdate = onUpdate
+    ) {
         TopicSelectionRow(
             topicSuggestions = topicSuggestions,
             selectedTopics = selectedTopics,

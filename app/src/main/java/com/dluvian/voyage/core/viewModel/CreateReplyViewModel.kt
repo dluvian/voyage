@@ -74,6 +74,7 @@ class CreateReplyViewModel(
                 recipient = action.parent.getRelevantPubkey(),
                 body = action.body,
                 relayHint = eventRelayDao.getEventRelay(eventId = action.parent.id).orEmpty(),
+                isAnon = action.isAnon
             )
             delay(DELAY_1SEC)
             action.onGoBack()

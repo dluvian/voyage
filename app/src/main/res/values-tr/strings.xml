@@ -235,4 +235,5 @@
     <string name="none">Hiçbiri</string>
     <string name="web_of_trust">Güven ağı</string>
     <string name="global">Küresel</string>
+    <string name="create_anonymously">Anonim olarak oluştur</string>
 </resources>

@@ -129,12 +129,14 @@ class NostrService(
         topics: List<Topic>,
         mentions: List<PubkeyHex>,
         relayUrls: Collection<RelayUrl>,
+        isAnon: Boolean,
     ): Result<Event> {
         return eventMaker.buildPost(
             subject = subject,
             content = content,
             topics = topics,
             mentions = mentions,
+            isAnon = isAnon,
         )
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
@@ -146,6 +148,7 @@ class NostrService(
         relayHint: RelayUrl,
         pubkeyHint: PubkeyHex,
         relayUrls: Collection<RelayUrl>,
+        isAnon: Boolean,
     ): Result<Event> {
         return eventMaker.buildReply(
             parentId = EventId.fromHex(parentId),
@@ -153,6 +156,7 @@ class NostrService(
             relayHint = relayHint,
             pubkeyHint = pubkeyHint,
             content = content,
+            isAnon = isAnon,
         )
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
@@ -162,11 +166,13 @@ class NostrService(
         topics: List<Topic>,
         relayHint: RelayUrl,
         relayUrls: Collection<RelayUrl>,
+        isAnon: Boolean,
     ): Result<Event> {
         return eventMaker.buildCrossPost(
             crossPostedEvent = crossPostedEvent,
             topics = topics,
             relayHint = relayHint,
+            isAnon = isAnon,
         )
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }

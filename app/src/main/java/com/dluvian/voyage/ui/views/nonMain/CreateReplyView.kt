@@ -47,6 +47,7 @@ fun CreateReplyView(
 ) {
     val isSendingResponse by vm.isSendingReply
     val response = remember { mutableStateOf(TextFieldValue()) }
+    val isAnon = remember { mutableStateOf(false) }
     val parent by vm.parent
     val suggestions by searchSuggestions
     val context = LocalContext.current
@@ -66,6 +67,7 @@ fun CreateReplyView(
                     SendReply(
                         parent = it,
                         body = response.value.text,
+                        isAnon = isAnon.value,
                         context = context,
                         onGoBack = { onUpdate(GoBack) })
                 )
@@ -77,6 +79,7 @@ fun CreateReplyView(
             parent = parent,
             response = response,
             searchSuggestions = suggestions,
+            isAnon = isAnon,
             focusRequester = focusRequester,
             onUpdate = onUpdate
         )
@@ -88,12 +91,14 @@ private fun CreateResponseViewContent(
     parent: ParentUI?,
     response: MutableState<TextFieldValue>,
     searchSuggestions: List<AdvancedProfileView>,
+    isAnon: MutableState<Boolean>,
     focusRequester: FocusRequester,
     onUpdate: OnUpdate,
 ) {
     InputWithSuggestions(
         body = response,
         searchSuggestions = searchSuggestions,
+        isAnon = isAnon,
         onUpdate = onUpdate
     ) {
         if (parent != null) {

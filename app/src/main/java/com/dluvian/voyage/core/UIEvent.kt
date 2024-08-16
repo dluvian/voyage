@@ -245,6 +245,7 @@ data class SendPost(
     val header: String,
     val body: String,
     val topics: List<Topic>,
+    val isAnon: Boolean,
     val context: Context,
     val onGoBack: Fn
 ) : CreatePostViewAction()
@@ -256,6 +257,7 @@ sealed class CreateReplyViewAction : UIEvent()
 data class SendReply(
     val parent: ParentUI,
     val body: String,
+    val isAnon: Boolean,
     val context: Context,
     val onGoBack: Fn
 ) : CreateReplyViewAction()
@@ -264,6 +266,7 @@ data class SendReply(
 sealed class CreateCrossPostViewAction : UIEvent()
 data class SendCrossPost(
     val topics: List<Topic>,
+    val isAnon: Boolean,
     val context: Context,
     val onGoBack: Fn
 ) : CreateCrossPostViewAction()

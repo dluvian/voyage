@@ -37,13 +37,16 @@ class PostSender(
         header: String,
         body: String,
         topics: List<Topic>,
+        isAnon: Boolean,
     ): Result<Event> {
         val trimmedHeader = header.trim()
         val trimmedBody = body.trim()
         val concat = "$trimmedHeader $trimmedBody"
 
-        val mentions = extractMentionPubkeys(content = concat)
-            .filter { it != myPubkeyProvider.getPubkeyHex() }
+        val mentions = extractMentionPubkeys(content = concat).let { pubkeys ->
+            if (!isAnon) pubkeys.filter { it != myPubkeyProvider.getPubkeyHex() }
+            else pubkeys
+        }
         val allTopics = topics.toMutableList()
         allTopics.addAll(extractCleanHashtags(content = concat))
 
@@ -53,6 +56,7 @@ class PostSender(
             topics = allTopics.distinct().take(MAX_TOPICS),
             mentions = mentions,
             relayUrls = relayProvider.getPublishRelays(publishTo = mentions),
+            isAnon = isAnon,
         ).onSuccess { event ->
             val validatedPost = ValidatedRootPost(
                 id = event.id().toHex(),
@@ -76,6 +80,7 @@ class PostSender(
         recipient: PubkeyHex,
         body: String,
         relayHint: RelayUrl,
+        isAnon: Boolean,
     ): Result<Event> {
         val trimmedBody = body.trim()
         val mentions = mutableListOf(recipient).apply {
@@ -83,9 +88,8 @@ class PostSender(
             postDao.getParentAuthor(id = parentId)?.let { grandparentAuthor ->
                 add(grandparentAuthor)
             }
-            distinct()
-            removeIf { it == myPubkeyProvider.getPubkeyHex() }
-        }
+            if (!isAnon) removeIf { it == myPubkeyProvider.getPubkeyHex() }
+        }.distinct()
 
         return nostrService.publishReply(
             content = trimmedBody,
@@ -94,6 +98,7 @@ class PostSender(
             relayHint = relayHint,
             pubkeyHint = recipient,
             relayUrls = relayProvider.getPublishRelays(publishTo = mentions),
+            isAnon = isAnon,
         ).onSuccess { event ->
             val validatedReply = ValidatedReply(
                 id = event.id().toHex(),
@@ -114,6 +119,7 @@ class PostSender(
     suspend fun sendCrossPost(
         id: EventIdHex,
         topics: List<Topic>,
+        isAnon: Boolean,
     ): Result<Event> {
         val post = postDao.getPost(id = id)
             ?: return Result.failure(IllegalStateException("Post not found"))
@@ -137,6 +143,7 @@ class PostSender(
             topics = topics,
             relayHint = post.relayUrl,
             relayUrls = relayProvider.getPublishRelays(),
+            isAnon = isAnon,
         ).onSuccess { event ->
             val validatedCrossPost = ValidatedCrossPost(
                 id = event.id().toHex(),

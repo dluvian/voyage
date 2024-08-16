@@ -20,6 +20,7 @@ import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventBuilder
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Interests
+import rust.nostr.protocol.Keys
 import rust.nostr.protocol.Kind
 import rust.nostr.protocol.KindEnum
 import rust.nostr.protocol.Metadata
@@ -36,25 +37,27 @@ class EventMaker(
     suspend fun buildPost(
         subject: String, content: String,
         topics: List<Topic>,
-        mentions: List<PubkeyHex>
+        mentions: List<PubkeyHex>,
+        isAnon: Boolean,
     ): Result<Event> {
         val tags = mutableListOf<Tag>()
         if (subject.isNotEmpty()) tags.add(createSubjectTag(subject = subject))
         topics.forEach { tags.add(createHashtagTag(it)) }
         if (mentions.isNotEmpty()) tags.addAll(createMentionTag(pubkeys = mentions))
 
-        val unsignedEvent = EventBuilder
-            .textNote(content = content, tags = tags)
-            .toUnsignedEvent(accountManager.getPublicKey())
-
-        return accountManager.sign(unsignedEvent = unsignedEvent)
+        return signEvent(
+            eventBuilder = EventBuilder.textNote(content = content, tags = tags),
+            isAnon = isAnon
+        )
     }
 
     suspend fun buildReply(
-        parentId: EventId, mentions: Collection<PublicKey>,
+        parentId: EventId,
+        mentions: Collection<PublicKey>,
         relayHint: RelayUrl,
         pubkeyHint: PubkeyHex,
-        content: String
+        content: String,
+        isAnon: Boolean,
     ): Result<Event> {
         val tags = mutableListOf(
             createReplyTag(
@@ -65,23 +68,24 @@ class EventMaker(
         )
         mentions.forEach { tags.add(Tag.publicKey(publicKey = it)) }
 
-        val unsignedEvent = EventBuilder
-            .textNote(content = content, tags = tags)
-            .toUnsignedEvent(accountManager.getPublicKey())
-
-        return accountManager.sign(unsignedEvent = unsignedEvent)
+        return signEvent(
+            eventBuilder = EventBuilder.textNote(content = content, tags = tags),
+            isAnon = isAnon
+        )
     }
 
     suspend fun buildCrossPost(
         crossPostedEvent: Event, topics: List<Topic>,
-        relayHint: RelayUrl
+        relayHint: RelayUrl,
+        isAnon: Boolean,
     ): Result<Event> {
-        val unsignedEvent = EventBuilder
-            .repost(event = crossPostedEvent, relayUrl = relayHint)
-            .addTags(tags = topics.map { createHashtagTag(hashtag = it) })
-            .toUnsignedEvent(accountManager.getPublicKey())
+        return signEvent(
+            eventBuilder = EventBuilder
+                .repost(event = crossPostedEvent, relayUrl = relayHint)
+                .addTags(tags = topics.map { createHashtagTag(hashtag = it) }),
+            isAnon = isAnon
+        )
 
-        return accountManager.sign(unsignedEvent = unsignedEvent)
     }
 
     suspend fun buildVote(eventId: EventId, content: String, mention: PublicKey): Result<Event> {
@@ -231,5 +235,14 @@ class EventMaker(
             .toUnsignedEvent(publicKey = accountManager.getPublicKey())
 
         return accountManager.sign(unsignedEvent = unsignedEvent)
+    }
+
+    private suspend fun signEvent(eventBuilder: EventBuilder, isAnon: Boolean): Result<Event> {
+        return if (isAnon) {
+            Result.success(eventBuilder.toEvent(keys = Keys.generate()))
+        } else {
+            val unsignedEvent = eventBuilder.toUnsignedEvent(accountManager.getPublicKey())
+            accountManager.sign(unsignedEvent = unsignedEvent)
+        }
     }
 }
