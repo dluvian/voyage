@@ -1,7 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="app_name" translatable="false">Voyage</string>
     <string name="version">Version</string>
-    <string name="version_nr" translatable="false">v0.11.0</string>
+    <string name="version_nr" translatable="false">v0.12.0</string>
     <string name="home">Home</string>
     <string name="inbox">Inbox</string>
     <string name="settings">Settings</string>
