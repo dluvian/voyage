@@ -33,9 +33,9 @@ import rust.nostr.protocol.Nip19Profile
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Timestamp
 
-private const val TAG = "NostrFeedSubscriber"
+private const val TAG = "FeedSubscriber"
 
-class NostrFeedSubscriber(
+class FeedSubscriber(
     private val scope: CoroutineScope,
     private val relayProvider: RelayProvider,
     private val topicProvider: TopicProvider,
