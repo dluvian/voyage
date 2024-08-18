@@ -65,14 +65,14 @@ class NostrSubscriber(
                 setting = setting,
                 until = until.toULong(),
                 since = since,
-                limit = (4 * limit).toULong() // We don't know if we receive enough root posts
+                limit = (3 * limit).toULong() // We don't know if we receive enough root posts
             )
 
             is ListFeedSetting -> feedSubscriber.getListFeedSubscriptions(
                 identifier = setting.identifier,
                 until = until.toULong(),
                 since = since,
-                limit = (4 * limit).toULong() // We don't know if we receive enough root posts
+                limit = (3 * limit).toULong() // We don't know if we receive enough root posts
             )
 
             is TopicFeedSetting -> feedSubscriber.getTopicFeedSubscription(
@@ -87,14 +87,14 @@ class NostrSubscriber(
                 nprofile = setting.nprofile,
                 until = until.toULong(),
                 since = since,
-                limit = (3 * limit).toULong()
+                limit = (2 * limit).toULong()
             )
 
             is ProfileRootFeedSetting -> feedSubscriber.getProfileFeedSubscription(
                 nprofile = setting.nprofile,
                 until = until.toULong(),
                 since = since,
-                limit = (4 * limit).toULong()
+                limit = (3 * limit).toULong()
             )
 
             is InboxFeedSetting -> feedSubscriber.getInboxFeedSubscription(
