@@ -197,60 +197,56 @@ class NostrSubscriber(
     ): ULong {
         if (pageSize <= 0) return 1uL
 
-        val eightPages = 8 * pageSize
-
         val timestamps = when (setting) {
             is HomeFeedSetting -> room.homeFeedDao().getHomeRootPostsCreatedAt(
                 setting = setting,
                 until = until,
-                size = eightPages
+                size = pageSize
             )
 
             is TopicFeedSetting -> room.rootPostDao().getTopicRootPostsCreatedAt(
                 topic = setting.topic,
                 until = until,
-                size = eightPages
+                size = pageSize
             )
 
             is ListFeedSetting -> room.rootPostDao().getListRootPostsCreatedAt(
                 identifier = setting.identifier,
                 until = until,
-                size = eightPages
+                size = pageSize
             )
 
             is ProfileRootFeedSetting -> room.rootPostDao().getProfileRootPostsCreatedAt(
                 pubkey = setting.nprofile.publicKey().toHex(),
                 until = until,
-                size = eightPages,
+                size = pageSize,
             )
 
             is ReplyFeedSetting -> room.replyDao().getProfileRepliesCreatedAt(
                 pubkey = setting.nprofile.publicKey().toHex(),
                 until = until,
-                size = eightPages,
+                size = pageSize,
             )
 
             is InboxFeedSetting -> room.postDao().getInboxPostsCreatedAt(
                 until = until,
-                size = eightPages
+                size = pageSize
             )
 
             BookmarksFeedSetting -> room.bookmarkDao().getBookmarkedPostsCreatedAt(
                 until = until,
-                size = eightPages
+                size = pageSize
             )
         }
-
         if (timestamps.size < pageSize) return 1uL
 
         val max = timestamps.first()
-        val firstPageMin = timestamps[pageSize - 1]
-        val avgFeedSpan = max.minus(timestamps.last()).div(7) // 8/7 above average
+        val min = timestamps.last()
 
-        val selectedSince = if (forceSubscription) firstPageMin
-        // Don't resub page bc it's denser than average + 8/7
-        else if (timestamps.size == eightPages && max - firstPageMin < avgFeedSpan) max
-        else firstPageMin
+        val selectedSince = if (forceSubscription) min
+        // Don't resub page when it's denser than 1h
+        else if (timestamps.size == pageSize && max - min < 60 * 60) max
+        else min
 
         return (selectedSince + 1).toULong()
     }
