@@ -240,4 +240,8 @@
     <string name="post_details">Gönderi detayları</string>
     <string name="first_seen_in">İlk olarak görüldü</string>
     <string name="event_json">Olay JSON\'u</string>
+    <string name="lock_your_account">Hesabınızı kilitleyin</string>
+    <string name="lock_your_account_in_case_your_keys_are_compromised">Anahtarlarınızın tehlikeye girmesi durumunda hesabınızı kilitleyin</string>
+    <string name="lock_your_account_warning">Bu işlem geri döndürülemez! Yalnızca anahtarlarınız tehlikeye girerse devam edin.\n\nHesabınızı kilitlemek istediğinizden emin misiniz?</string>
+    <string name="lock_my_account">Hesabımı kilitle</string>
 </resources>

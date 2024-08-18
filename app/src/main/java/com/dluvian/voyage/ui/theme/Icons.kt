@@ -40,6 +40,7 @@ import androidx.compose.material.icons.filled.ThumbUpOffAlt
 import androidx.compose.material.icons.filled.TravelExplore
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.VerifiedUser
+import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -87,6 +88,7 @@ val EditIcon = Icons.Default.Edit
 val MuteIcon = Icons.AutoMirrored.Filled.VolumeOff
 val WordIcon = Icons.Default.Abc
 val FilterIcon = Icons.Default.Tune
+val WarningIcon = Icons.Default.WarningAmber
 
 
 @Stable

@@ -65,6 +65,7 @@ import com.dluvian.voyage.ui.components.indicator.SmallCircleProgressIndicator
 import com.dluvian.voyage.ui.components.row.ClickableRow
 import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.ui.theme.AccountIcon
+import com.dluvian.voyage.ui.theme.WarningIcon
 import com.dluvian.voyage.ui.theme.spacing
 import kotlinx.coroutines.CoroutineScope
 
@@ -136,6 +137,23 @@ private fun AccountSection(
                 onLoadSeed = { onUpdate(LoadSeed) },
                 onDismiss = { showSeed.value = false })
         }
+
+        val showLockDialog = remember { mutableStateOf(false) }
+        if (showLockDialog.value) BaseActionDialog(
+            title = stringResource(id = R.string.lock_your_account),
+            icon = WarningIcon,
+            text = stringResource(id = R.string.lock_your_account_warning),
+            confirmText = stringResource(id = R.string.lock_my_account),
+            onConfirm = {
+//              onUpdate(LockAccount)
+                showLockDialog.value = false
+            },
+            onDismiss = { showLockDialog.value = false })
+        ClickableRow(
+            header = stringResource(id = R.string.lock_your_account),
+            text = stringResource(id = R.string.lock_your_account_in_case_your_keys_are_compromised),
+            onClick = { showLockDialog.value = true }
+        )
     }
 }
 

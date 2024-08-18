@@ -245,4 +245,8 @@
     <string name="post_details">Post details</string>
     <string name="first_seen_in">First seen in</string>
     <string name="event_json">Event JSON</string>
+    <string name="lock_your_account">Lock your account</string>
+    <string name="lock_your_account_in_case_your_keys_are_compromised">Lock your account in case your keys are compromised</string>
+    <string name="lock_your_account_warning">This process is irreversible! Only continue if your keys are compromised.\n\nAre you sure you want to lock your account?</string>
+    <string name="lock_my_account">Lock my account</string>
 </resources>

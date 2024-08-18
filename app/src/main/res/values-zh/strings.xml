@@ -241,4 +241,8 @@
     <string name="post_details">帖子详细信息</string>
     <string name="first_seen_in">首次出现于</string>
     <string name="event_json">事件 JSON</string>
+    <string name="lock_your_account">锁定您的帐户</string>
+    <string name="lock_your_account_in_case_your_keys_are_compromised">锁定你的帐户，以防你的密钥被泄露</string>
+    <string name="lock_your_account_warning">此过程不可逆转！仅当您的密钥被泄露时才可继续。\n\n您确定要锁定您的帐户吗？</string>
+    <string name="lock_my_account">锁定我的帐户</string>
 </resources>

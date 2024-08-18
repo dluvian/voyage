@@ -1,9 +1,11 @@
 package com.dluvian.voyage.ui.components.dialog
 
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ComposableContent
@@ -16,6 +18,7 @@ fun BaseActionDialog(
     confirmIsEnabled: Boolean = true,
     confirmText: String = stringResource(id = R.string.confirm),
     cancelText: String = stringResource(id = R.string.cancel),
+    icon: ImageVector? = null,
     onConfirm: Fn,
     onDismiss: Fn,
 ) {
@@ -33,6 +36,7 @@ fun BaseActionDialog(
                 Text(text = confirmText)
             }
         },
+        icon = { icon?.let { Icon(imageVector = it, contentDescription = null) } },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text(text = cancelText) }
         },
@@ -46,6 +50,7 @@ fun BaseActionDialog(
     confirmIsEnabled: Boolean = true,
     confirmText: String = stringResource(id = R.string.confirm),
     cancelText: String = stringResource(id = R.string.cancel),
+    icon: ImageVector? = null,
     onConfirm: Fn,
     onDismiss: Fn,
 ) {
@@ -55,6 +60,7 @@ fun BaseActionDialog(
         confirmIsEnabled = confirmIsEnabled,
         confirmText = confirmText,
         cancelText = cancelText,
+        icon = icon,
         onConfirm = onConfirm,
         onDismiss = onDismiss
     )

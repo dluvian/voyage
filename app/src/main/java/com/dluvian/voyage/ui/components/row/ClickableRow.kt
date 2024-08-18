@@ -117,6 +117,7 @@ private fun ClickableBaseRow(
             }
         }
         if (trailingContent != null) {
+            Spacer(modifier = Modifier.width(spacing.xl))
             trailingContent()
         }
     }
