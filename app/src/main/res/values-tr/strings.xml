@@ -57,7 +57,7 @@
     <string name="post_created">Gönderi oluşturuldu</string>
     <string name="reply_created">Yanıt oluşturuldu</string>
     <string name="failed_to_create_reply">Yanıt oluşturulamadı</string>
-    <string name="original_post">ORİJİNAL GÖNDERİ</string>
+    <string name="original_post">Orijinal gönderi</string>
     <string name="database">Veritabanı</string>
     <string name="keep_at_least_n_root_posts">En az %d ana gönderiyi sakla</string>
     <string name="currently_n_root_posts_in_db">Şu anda veritabanında %d ana gönderi var</string>

@@ -1,7 +1,12 @@
 package com.dluvian.voyage.ui.components.bottomSheet
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
@@ -27,17 +32,24 @@ fun PostDetailsBottomSheet(postDetails: PostDetails, onUpdate: OnUpdate) {
             if (postDetails.firstSeenIn.isEmpty() || postDetails.json.isEmpty()) {
                 FullLinearProgressIndicator()
             } else {
-                SmallHeader(header = stringResource(id = R.string.first_seen_in))
-                ClickableRelayUrl(
-                    relayUrl = postDetails.firstSeenIn,
-                    onUpdate = onUpdate,
-                    onClickAddition = onDismiss
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(state = rememberScrollState())
+                        .padding(bottom = spacing.xxl)
+                ) {
+                    SmallHeader(header = stringResource(id = R.string.first_seen_in))
+                    ClickableRelayUrl(
+                        relayUrl = postDetails.firstSeenIn,
+                        onUpdate = onUpdate,
+                        onClickAddition = onDismiss
+                    )
 
-                Spacer(modifier = Modifier.height(spacing.medium))
+                    Spacer(modifier = Modifier.height(spacing.medium))
 
-                SmallHeader(header = stringResource(id = R.string.event_json))
-                CopyableText(text = postDetails.json)
+                    SmallHeader(header = stringResource(id = R.string.event_json))
+                    CopyableText(text = postDetails.json)
+                }
             }
         }
     }

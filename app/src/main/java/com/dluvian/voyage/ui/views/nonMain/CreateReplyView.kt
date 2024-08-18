@@ -75,7 +75,7 @@ fun CreateReplyView(
         },
         onUpdate = onUpdate,
     ) {
-        CreateResponseViewContent(
+        CreateReplyViewContent(
             parent = parent,
             response = response,
             searchSuggestions = suggestions,
@@ -87,7 +87,7 @@ fun CreateReplyView(
 }
 
 @Composable
-private fun CreateResponseViewContent(
+private fun CreateReplyViewContent(
     parent: ParentUI?,
     response: MutableState<TextFieldValue>,
     searchSuggestions: List<AdvancedProfileView>,

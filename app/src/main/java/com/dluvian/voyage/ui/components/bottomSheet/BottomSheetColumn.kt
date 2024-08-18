@@ -16,6 +16,7 @@ import com.dluvian.voyage.ui.theme.spacing
 @Composable
 fun BottomSheetColumn(header: String, content: ComposableContent) {
     Column(
+        // Don't put verticalScroll in Modifier because we use LazyGrid in seed sheet
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = spacing.bigScreenEdge)
