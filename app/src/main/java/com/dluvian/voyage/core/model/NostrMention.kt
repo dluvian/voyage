@@ -1,17 +1,15 @@
 package com.dluvian.voyage.core.model
 
-import com.dluvian.voyage.data.nostr.RelayUrl
-import com.dluvian.voyage.data.nostr.removeMentionChar
-import com.dluvian.voyage.data.nostr.removeNostrUri
-import com.dluvian.voyage.data.nostr.removeTrailingSlashes
 import com.dluvian.voyage.core.Bech32
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.data.nostr.RelayUrl
+import com.dluvian.voyage.data.nostr.removeMentionChar
+import com.dluvian.voyage.data.nostr.removeNostrUri
 import rust.nostr.protocol.Coordinate
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Nip19Event
 import rust.nostr.protocol.Nip19Profile
-import rust.nostr.protocol.Nip19Relay
 import rust.nostr.protocol.PublicKey
 
 sealed class NostrMention(open val bech32: Bech32, open val hex: String) {
@@ -51,11 +49,6 @@ sealed class NostrMention(open val bech32: Bech32, open val hex: String) {
                     hex = result.publicKey().toHex(),
                     identifier = result.identifier().trim()
                 )
-            } else if (trimmed.startsWith("nrelay")) {
-                val result = kotlin.runCatching {
-                    Nip19Relay.fromBech32(bech32 = trimmed)
-                }.getOrNull() ?: return null
-                RelayMention(bech32 = trimmed, relay = result.url().removeTrailingSlashes())
             } else null
         }
     }
