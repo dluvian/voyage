@@ -237,4 +237,8 @@
     <string name="web_of_trust">信任网络</string>
     <string name="global">全球的</string>
     <string name="create_anonymously">匿名创作</string>
+    <string name="more">更多的</string>
+    <string name="post_details">帖子详细信息</string>
+    <string name="first_seen_in">首次出现于</string>
+    <string name="event_json">事件 JSON</string>
 </resources>

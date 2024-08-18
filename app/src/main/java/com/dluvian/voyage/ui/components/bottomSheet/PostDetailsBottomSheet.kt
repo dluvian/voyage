@@ -1,8 +1,11 @@
 package com.dluvian.voyage.ui.components.bottomSheet
 
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ClosePostInfo
@@ -10,7 +13,9 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.data.model.PostDetails
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import com.dluvian.voyage.ui.components.text.ClickableRelayUrl
+import com.dluvian.voyage.ui.components.text.CopyableText
 import com.dluvian.voyage.ui.components.text.SmallHeader
+import com.dluvian.voyage.ui.theme.spacing
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -28,6 +33,11 @@ fun PostDetailsBottomSheet(postDetails: PostDetails, onUpdate: OnUpdate) {
                     onUpdate = onUpdate,
                     onClickAddition = onDismiss
                 )
+
+                Spacer(modifier = Modifier.height(spacing.medium))
+
+                SmallHeader(header = stringResource(id = R.string.event_json))
+                CopyableText(text = postDetails.json)
             }
         }
     }

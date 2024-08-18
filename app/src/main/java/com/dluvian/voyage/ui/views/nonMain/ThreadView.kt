@@ -37,6 +37,7 @@ import com.dluvian.voyage.core.viewModel.ThreadViewModel
 import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.ui.components.FullHorizontalDivider
 import com.dluvian.voyage.ui.components.PullRefreshBox
+import com.dluvian.voyage.ui.components.bottomSheet.PostDetailsBottomSheet
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import com.dluvian.voyage.ui.components.row.post.ThreadReplyRow
@@ -55,6 +56,9 @@ fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpd
         onUpdate = onUpdate
     ) {
         if (localRoot == null) FullLinearProgressIndicator()
+        vm.postDetails.value?.let { details ->
+            PostDetailsBottomSheet(postDetails = details, onUpdate = onUpdate)
+        }
         localRoot?.let {
             ThreadViewContent(
                 localRoot = it,

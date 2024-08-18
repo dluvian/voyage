@@ -236,4 +236,8 @@
     <string name="web_of_trust">Güven ağı</string>
     <string name="global">Küresel</string>
     <string name="create_anonymously">Anonim olarak oluştur</string>
+    <string name="more">Daha</string>
+    <string name="post_details">Gönderi detayları</string>
+    <string name="first_seen_in">İlk olarak görüldü</string>
+    <string name="event_json">Olay JSON\'u</string>
 </resources>
