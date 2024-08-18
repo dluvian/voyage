@@ -137,6 +137,11 @@ class Core(
                 )
             }
 
+            ClosePostInfo -> appContainer.postDetailInspector.closePostDetails()
+            is OpenPostInfo -> viewModelScope.launchIO {
+                appContainer.postDetailInspector.setPostDetails(postId = uiEvent.postId)
+            }
+
             is OpenLightningWallet -> {
                 val intent = Intent(
                     Intent.ACTION_VIEW,

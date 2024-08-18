@@ -41,6 +41,7 @@ fun HomeView(vm: HomeViewModel, onUpdate: OnUpdate) {
 
     Feed(
         paginator = vm.paginator,
+        postDetails = vm.postDetails,
         state = vm.feedState,
         onRefresh = { onUpdate(HomeViewRefresh) },
         onAppend = { onUpdate(HomeViewAppend) },

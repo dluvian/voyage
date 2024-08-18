@@ -115,10 +115,11 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
     return VMContainer(
         homeVM = viewModel {
             HomeViewModel(
-                feedProvider = appContainer.feedProvider,
                 muteProvider = appContainer.muteProvider,
-                lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
+                feedProvider = appContainer.feedProvider,
+                postDetails = appContainer.postDetailInspector.currentDetails,
                 feedState = homeFeedState,
+                lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
                 homePreferences = appContainer.homePreferences
             )
         },
@@ -152,6 +153,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             ProfileViewModel(
                 feedProvider = appContainer.feedProvider,
                 muteProvider = appContainer.muteProvider,
+                postDetails = appContainer.postDetailInspector.currentDetails,
                 rootFeedState = profileRootFeedState,
                 replyFeedState = profileReplyFeedState,
                 profileAboutState = profileAboutState,
@@ -169,6 +171,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             ThreadViewModel(
                 threadProvider = appContainer.threadProvider,
                 threadCollapser = appContainer.threadCollapser,
+                postDetails = appContainer.postDetailInspector.currentDetails,
                 threadState = threadState
             )
         },
@@ -176,6 +179,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             TopicViewModel(
                 feedProvider = appContainer.feedProvider,
                 muteProvider = appContainer.muteProvider,
+                postDetails = appContainer.postDetailInspector.currentDetails,
                 feedState = topicFeedState,
                 subCreator = appContainer.subCreator,
                 topicProvider = appContainer.topicProvider,
@@ -236,6 +240,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 feedProvider = appContainer.feedProvider,
                 muteProvider = appContainer.muteProvider,
                 subCreator = appContainer.lazyNostrSubscriber.subCreator,
+                postDetails = appContainer.postDetailInspector.currentDetails,
                 feedState = inboxFeedState,
                 inboxPreferences = appContainer.inboxPreferences
             )
@@ -263,6 +268,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 feedProvider = appContainer.feedProvider,
                 muteProvider = appContainer.muteProvider,
                 feedState = bookmarksFeedState,
+                postDetails = appContainer.postDetailInspector.currentDetails,
                 lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
             )
         },
@@ -278,6 +284,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             ListViewModel(
                 feedProvider = appContainer.feedProvider,
                 muteProvider = appContainer.muteProvider,
+                postDetails = appContainer.postDetailInspector.currentDetails,
                 feedState = listFeedState,
                 profileState = listProfileState,
                 topicState = listTopicState,

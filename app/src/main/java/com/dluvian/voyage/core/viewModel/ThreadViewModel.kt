@@ -2,6 +2,7 @@ package com.dluvian.voyage.core.viewModel
 
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,6 +17,7 @@ import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.interactor.ThreadCollapser
+import com.dluvian.voyage.data.model.PostDetails
 import com.dluvian.voyage.data.provider.ThreadProvider
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +29,7 @@ import rust.nostr.protocol.Nip19Event
 class ThreadViewModel(
     private val threadProvider: ThreadProvider,
     private val threadCollapser: ThreadCollapser,
+    val postDetails: State<PostDetails?>,
     val threadState: LazyListState,
 ) : ViewModel() {
     val isRefreshing = mutableStateOf(false)

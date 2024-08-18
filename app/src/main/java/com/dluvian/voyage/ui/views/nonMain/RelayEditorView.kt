@@ -1,6 +1,5 @@
 package com.dluvian.voyage.ui.views.nonMain
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,7 +40,6 @@ import com.dluvian.voyage.core.AddRelay
 import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.LoadRelays
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.OpenRelayProfile
 import com.dluvian.voyage.core.RemoveRelay
 import com.dluvian.voyage.core.SaveRelays
 import com.dluvian.voyage.core.ToggleReadRelay
@@ -56,6 +54,7 @@ import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.ui.components.ConnectionDot
 import com.dluvian.voyage.ui.components.scaffold.SaveableScaffold
 import com.dluvian.voyage.ui.components.selection.NamedCheckbox
+import com.dluvian.voyage.ui.components.text.ClickableRelayUrl
 import com.dluvian.voyage.ui.components.text.SectionHeader
 import com.dluvian.voyage.ui.theme.AddIcon
 import com.dluvian.voyage.ui.theme.DeleteIcon
@@ -316,10 +315,7 @@ private fun RelayRow(
                     ConnectionDot(connectionStatus = connectionStatus)
                     Spacer(modifier = Modifier.width(spacing.medium))
                 }
-                Text(
-                    modifier = Modifier.clickable { onUpdate(OpenRelayProfile(relayUrl = relayUrl)) },
-                    text = relayUrl
-                )
+                ClickableRelayUrl(relayUrl = relayUrl, onUpdate = onUpdate)
             }
             secondRow()
         }

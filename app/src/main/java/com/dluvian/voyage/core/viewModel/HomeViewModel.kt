@@ -2,6 +2,7 @@ package com.dluvian.voyage.core.viewModel
 
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,6 +17,7 @@ import com.dluvian.voyage.core.HomeViewSubAccountAndTrustData
 import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.model.HomeFeedSetting
+import com.dluvian.voyage.data.model.PostDetails
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.preferences.HomePreferences
 import com.dluvian.voyage.data.provider.FeedProvider
@@ -25,10 +27,11 @@ import kotlinx.coroutines.delay
 
 
 class HomeViewModel(
-    feedProvider: FeedProvider,
     muteProvider: MuteProvider,
-    private val lazyNostrSubscriber: LazyNostrSubscriber,
+    feedProvider: FeedProvider,
+    val postDetails: State<PostDetails?>,
     val feedState: LazyListState,
+    private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val homePreferences: HomePreferences,
 ) : ViewModel() {
     val showFilterMenu: MutableState<Boolean> = mutableStateOf(false)

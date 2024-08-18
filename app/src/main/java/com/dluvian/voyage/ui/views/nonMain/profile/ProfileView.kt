@@ -106,6 +106,7 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
             when (it) {
                 0 -> Feed(
                     paginator = vm.rootPaginator,
+                    postDetails = vm.postDetails,
                     state = vm.rootFeedState,
                     onRefresh = { onUpdate(ProfileViewRefresh) },
                     onAppend = { onUpdate(ProfileViewRootAppend) },
@@ -114,6 +115,7 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
 
                 1 -> Feed(
                     paginator = vm.replyPaginator,
+                    postDetails = vm.postDetails,
                     state = vm.replyFeedState,
                     onRefresh = { onUpdate(ProfileViewRefresh) },
                     onAppend = { onUpdate(ProfileViewReplyAppend) },

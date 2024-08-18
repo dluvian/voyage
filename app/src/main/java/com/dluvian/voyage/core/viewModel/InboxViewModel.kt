@@ -2,6 +2,7 @@ package com.dluvian.voyage.core.viewModel
 
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,6 +15,7 @@ import com.dluvian.voyage.core.InboxViewOpenFilter
 import com.dluvian.voyage.core.InboxViewRefresh
 import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.data.model.InboxFeedSetting
+import com.dluvian.voyage.data.model.PostDetails
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.preferences.InboxPreferences
 import com.dluvian.voyage.data.provider.FeedProvider
@@ -23,6 +25,7 @@ class InboxViewModel(
     feedProvider: FeedProvider,
     muteProvider: MuteProvider,
     subCreator: SubscriptionCreator,
+    val postDetails: State<PostDetails?>,
     val feedState: LazyListState,
     private val inboxPreferences: InboxPreferences
 ) : ViewModel() {

@@ -3,6 +3,7 @@ package com.dluvian.voyage.core.viewModel
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -15,6 +16,7 @@ import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.model.CustomPubkeys
 import com.dluvian.voyage.data.model.ListFeedSetting
 import com.dluvian.voyage.data.model.ListPubkeys
+import com.dluvian.voyage.data.model.PostDetails
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.ItemSetProvider
@@ -23,6 +25,7 @@ import com.dluvian.voyage.data.provider.MuteProvider
 class ListViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
     feedProvider: FeedProvider,
     muteProvider: MuteProvider,
+    val postDetails: State<PostDetails?>,
     val feedState: LazyListState,
     val profileState: LazyListState,
     val topicState: LazyListState,

@@ -14,6 +14,7 @@ import com.dluvian.voyage.core.DeletePost
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.FollowProfile
 import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.core.OpenPostInfo
 import com.dluvian.voyage.core.OpenThreadRaw
 import com.dluvian.voyage.core.RebroadcastPost
 import com.dluvian.voyage.core.UnfollowProfile
@@ -141,6 +142,13 @@ fun ParentRowDropdown(
                 )
             }
         }
+        SimpleDropdownItem(
+            text = stringResource(id = R.string.more),
+            onClick = {
+                onUpdate(OpenPostInfo(postId = parent.getRelevantId()))
+                onDismiss()
+            }
+        )
     }
 }
 

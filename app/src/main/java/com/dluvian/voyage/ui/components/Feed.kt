@@ -18,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -36,6 +37,8 @@ import com.dluvian.voyage.core.model.IPaginator
 import com.dluvian.voyage.core.model.ReplyUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.utils.showScrollButton
+import com.dluvian.voyage.data.model.PostDetails
+import com.dluvian.voyage.ui.components.bottomSheet.PostDetailsBottomSheet
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import com.dluvian.voyage.ui.components.row.post.FeedReplyRow
@@ -48,6 +51,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun Feed(
     paginator: IPaginator,
+    postDetails: State<PostDetails?>,
     state: LazyListState,
     onRefresh: Fn,
     onAppend: Fn,
@@ -67,6 +71,9 @@ fun Feed(
     PullRefreshBox(isRefreshing = isRefreshing, onRefresh = onRefresh) {
         if (showProgressIndicator) FullLinearProgressIndicator()
         if (!hasPosts && posts.isEmpty()) BaseHint(stringResource(id = R.string.no_posts_found))
+        postDetails.value?.let { details ->
+            PostDetailsBottomSheet(postDetails = details, onUpdate = onUpdate)
+        }
 
         LazyColumn(modifier = Modifier.fillMaxSize(), state = state) {
             if (hasMoreRecentPosts) item { MostRecentPostsTextButton(onClick = onRefresh) }

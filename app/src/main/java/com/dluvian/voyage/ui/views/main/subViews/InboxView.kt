@@ -37,6 +37,7 @@ fun InboxView(vm: InboxViewModel, onUpdate: OnUpdate) {
 
     Feed(
         paginator = vm.paginator,
+        postDetails = vm.postDetails,
         state = vm.feedState,
         onRefresh = { onUpdate(InboxViewRefresh) },
         onAppend = { onUpdate(InboxViewAppend) },

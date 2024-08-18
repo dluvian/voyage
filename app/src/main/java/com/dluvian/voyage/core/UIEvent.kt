@@ -329,6 +329,8 @@ data class RegisterAccountLauncher(val launcher: ManagedLauncher) : UIEvent()
 data class RebroadcastPost(val postId: EventIdHex, val context: Context) : UIEvent()
 data class DeleteList(val identifier: String, val onCloseDrawer: Fn) : UIEvent()
 data class DeletePost(val id: EventIdHex) : UIEvent()
+data class OpenPostInfo(val postId: EventIdHex) : UIEvent()
+data object ClosePostInfo : UIEvent()
 
 data class OpenLightningWallet(
     val address: String,

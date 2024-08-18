@@ -1,6 +1,7 @@
 package com.dluvian.voyage.core.viewModel
 
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,6 +16,7 @@ import com.dluvian.voyage.core.navigator.TopicNavView
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.core.utils.normalizeTopic
 import com.dluvian.voyage.data.model.ItemSetMeta
+import com.dluvian.voyage.data.model.PostDetails
 import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.provider.FeedProvider
@@ -29,6 +31,7 @@ import kotlinx.coroutines.flow.stateIn
 class TopicViewModel(
     feedProvider: FeedProvider,
     muteProvider: MuteProvider,
+    val postDetails: State<PostDetails?>,
     val feedState: LazyListState,
     private val subCreator: SubscriptionCreator,
     private val topicProvider: TopicProvider,

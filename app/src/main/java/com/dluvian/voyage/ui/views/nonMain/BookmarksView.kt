@@ -25,6 +25,7 @@ fun BookmarksView(vm: BookmarksViewModel, snackbar: SnackbarHostState, onUpdate:
     ) {
         Feed(
             paginator = vm.paginator,
+            postDetails = vm.postDetails,
             state = vm.feedState,
             onRefresh = { onUpdate(BookmarksViewRefresh) },
             onAppend = { onUpdate(BookmarksViewAppend) },

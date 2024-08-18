@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -21,6 +22,7 @@ import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.model.FullProfileUI
 import com.dluvian.voyage.data.model.ItemSetMeta
+import com.dluvian.voyage.data.model.PostDetails
 import com.dluvian.voyage.data.model.ProfileRootFeedSetting
 import com.dluvian.voyage.data.model.ReplyFeedSetting
 import com.dluvian.voyage.data.nostr.Nip65Relay
@@ -44,6 +46,7 @@ import kotlinx.coroutines.launch
 class ProfileViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
     feedProvider: FeedProvider,
     muteProvider: MuteProvider,
+    val postDetails: State<PostDetails?>,
     val rootFeedState: LazyListState,
     val replyFeedState: LazyListState,
     val profileAboutState: LazyListState,
