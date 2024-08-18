@@ -66,15 +66,15 @@ private fun Filter(setting: MutableState<InboxFeedSetting>) {
         )
         FeedPubkeySelectionRadio(
             current = setting.value.pubkeySelection,
-            target = Global,
-            onClick = { setting.value = setting.value.copy(pubkeySelection = Global) })
+            target = FriendPubkeys,
+            onClick = { setting.value = setting.value.copy(pubkeySelection = FriendPubkeys) })
         FeedPubkeySelectionRadio(
             current = setting.value.pubkeySelection,
             target = WebOfTrustPubkeys,
             onClick = { setting.value = setting.value.copy(pubkeySelection = WebOfTrustPubkeys) })
         FeedPubkeySelectionRadio(
             current = setting.value.pubkeySelection,
-            target = FriendPubkeys,
-            onClick = { setting.value = setting.value.copy(pubkeySelection = FriendPubkeys) })
+            target = Global,
+            onClick = { setting.value = setting.value.copy(pubkeySelection = Global) })
     }
 }
