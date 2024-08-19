@@ -130,3 +130,5 @@ data class ValidatedTopicSet(
     identifier = identifier,
     createdAt = createdAt
 )
+
+data class ValidatedLock(val pubkey: PubkeyHex, val json: String) : ValidatedEvent()

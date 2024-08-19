@@ -221,6 +221,14 @@ class EventMaker(
         )
     }
 
+    suspend fun buildLock(): Result<Event> {
+        // Enhancement request in rust-nostr once nip has been merged
+        return signEvent(
+            eventBuilder = EventBuilder(kind = Kind(1000u), content = "", tags = emptyList()),
+            isAnon = false
+        )
+    }
+
     private suspend fun buildSet(
         title: String,
         description: String,

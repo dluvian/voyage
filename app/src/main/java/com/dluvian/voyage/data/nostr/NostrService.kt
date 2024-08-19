@@ -313,6 +313,11 @@ class NostrService(
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
+    suspend fun publishLock(relayUrls: Collection<RelayUrl>): Result<Event> {
+        return eventMaker.buildLock()
+            .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
+    }
+
     fun addRelay(relayUrl: String) {
         nostrClient.addRelay(relayUrl = relayUrl)
     }

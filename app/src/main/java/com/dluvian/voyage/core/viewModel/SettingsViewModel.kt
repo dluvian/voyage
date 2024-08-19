@@ -12,11 +12,14 @@ import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ChangeUpvoteContent
 import com.dluvian.voyage.core.DEBOUNCE
+import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.DeleteAllPosts
 import com.dluvian.voyage.core.ExportDatabase
 import com.dluvian.voyage.core.ExternalSignerHandler
 import com.dluvian.voyage.core.LoadSeed
+import com.dluvian.voyage.core.LockAccount
 import com.dluvian.voyage.core.ProcessExternalAccount
+import com.dluvian.voyage.core.RebroadcastMyLockEvent
 import com.dluvian.voyage.core.RequestExternalAccount
 import com.dluvian.voyage.core.SendAuth
 import com.dluvian.voyage.core.SendBookmarkedToLocalRelay
@@ -31,6 +34,7 @@ import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.core.utils.showToast
+import com.dluvian.voyage.data.account.AccountLocker
 import com.dluvian.voyage.data.account.AccountSwitcher
 import com.dluvian.voyage.data.account.MnemonicSigner
 import com.dluvian.voyage.data.preferences.DatabasePreferences
@@ -55,6 +59,7 @@ class SettingsViewModel(
     private val databaseInteractor: DatabaseInteractor,
     private val externalSignerHandler: ExternalSignerHandler,
     private val mnemonicSigner: MnemonicSigner,
+    private val accountLocker: AccountLocker,
 ) : ViewModel() {
     val accountType: State<AccountType> = accountSwitcher.accountType
     val rootPostThreshold = mutableIntStateOf(databasePreferences.getSweepThreshold())
@@ -71,6 +76,9 @@ class SettingsViewModel(
     val isExporting = mutableStateOf(false)
     val exportCount = mutableIntStateOf(0)
     val currentUpvote = mutableStateOf(eventPreferences.getUpvoteContent())
+    val isLocking = mutableStateOf(false)
+    val isLocked = accountLocker.isLocked
+    val isLockedForced = mutableStateOf(false)
 
     val isLoadingAccount = mutableStateOf(false)
 
@@ -126,6 +134,10 @@ class SettingsViewModel(
             is ExportDatabase -> exportDatabase(uiScope = action.uiScope)
 
             is DeleteAllPosts -> deleteAllPosts(uiScope = action.uiScope)
+
+            is LockAccount -> lockAccount(uiScope = action.uiScope)
+
+            is RebroadcastMyLockEvent -> rebroadcastMyLock(uiScope = action.uiScope)
         }
     }
 
@@ -212,6 +224,30 @@ class SettingsViewModel(
             databaseInteractor.deleteAllPosts(uiScope = uiScope)
         }.invokeOnCompletion {
             isDeleting.value = false
+        }
+    }
+
+    private fun lockAccount(uiScope: CoroutineScope) {
+        if (isLocking.value) return
+        isLocking.value = true
+
+        viewModelScope.launchIO {
+            isLockedForced.value = accountLocker.lockMyAccount(uiScope = uiScope)
+            delay(DELAY_1SEC)
+        }.invokeOnCompletion {
+            isLocking.value = false
+        }
+    }
+
+    private val isRebroadcasting = AtomicBoolean(false)
+    private fun rebroadcastMyLock(uiScope: CoroutineScope) {
+        if (!isRebroadcasting.compareAndSet(false, true)) return
+
+        viewModelScope.launchIO {
+            accountLocker.rebroadcastMyLock(uiScope = uiScope)
+            delay(2 * DELAY_1SEC)
+        }.invokeOnCompletion {
+            isRebroadcasting.set(false)
         }
     }
 }

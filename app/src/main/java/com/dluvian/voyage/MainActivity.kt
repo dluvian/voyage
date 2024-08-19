@@ -140,6 +140,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 databaseInteractor = appContainer.databaseInteractor,
                 externalSignerHandler = appContainer.externalSignerHandler,
                 mnemonicSigner = appContainer.mnemonicSigner,
+                accountLocker = appContainer.accountLocker
             )
         },
         searchVM = viewModel {

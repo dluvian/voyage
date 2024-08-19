@@ -21,6 +21,7 @@ import com.dluvian.voyage.data.nostr.secs
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
+import rust.nostr.protocol.Kind
 import rust.nostr.protocol.KindEnum
 import rust.nostr.protocol.PublicKey
 
@@ -67,16 +68,30 @@ class EventValidator(
         return filters.any { it.matchEvent(event = event) }
     }
 
+    private val TEXT_NOTE_U64 = Kind.fromEnum(KindEnum.TextNote).asU64()
+    private val REPOST_U64 = Kind.fromEnum(KindEnum.Repost).asU64()
+    private val REACTION_U64 = Kind.fromEnum(KindEnum.Reaction).asU64()
+    private val CONTACT_U64 = Kind.fromEnum(KindEnum.ContactList).asU64()
+    private val RELAYS_U64 = Kind.fromEnum(KindEnum.RelayList).asU64()
+    private val METADATA_U64 = Kind.fromEnum(KindEnum.Metadata).asU64()
+    private val FOLLOW_SET_U64 = Kind.fromEnum(KindEnum.FollowSet).asU64()
+    private val INTEREST_SET_U64 = Kind.fromEnum(KindEnum.InterestSet).asU64()
+    private val INTERESTS_U64 = Kind.fromEnum(KindEnum.Interests).asU64()
+    private val BOOKMARKS_U64 = Kind.fromEnum(KindEnum.Bookmarks).asU64()
+    private val MUTE_LIST_U64 = Kind.fromEnum(KindEnum.MuteList).asU64()
+    private val LOCK_U64 = 1000uL
+
     private fun validate(event: Event, relayUrl: RelayUrl): ValidatedEvent? {
-        val validatedEvent = when (event.kind().asEnum()) {
-            is KindEnum.TextNote -> createValidatedMainPost(
+        // Match against enum once included in rust-nostr
+        val validatedEvent = when (event.kind().asU64()) {
+            TEXT_NOTE_U64 -> createValidatedMainPost(
                 event = event,
                 relayUrl = relayUrl,
                 myPubkey = myPubkeyProvider.getPublicKey()
             )
 
-            is KindEnum.Repost -> createValidatedRepost(event = event, relayUrl = relayUrl)
-            is KindEnum.Reaction -> {
+            REPOST_U64 -> createValidatedRepost(event = event, relayUrl = relayUrl)
+            REACTION_U64 -> {
                 if (event.content() == "-") return null
                 val postId = event.eventIds().firstOrNull() ?: return null
                 ValidatedVote(
@@ -87,7 +102,7 @@ class EventValidator(
                 )
             }
 
-            is KindEnum.ContactList -> {
+            CONTACT_U64 -> {
                 val author = event.author()
                 ValidatedContactList(
                     pubkey = author.toHex(),
@@ -101,7 +116,7 @@ class EventValidator(
                 )
             }
 
-            is KindEnum.RelayList -> {
+            RELAYS_U64 -> {
                 val relays = event.getNip65s()
                 if (relays.isEmpty()) return null
                 ValidatedNip65(
@@ -111,7 +126,7 @@ class EventValidator(
                 )
             }
 
-            is KindEnum.Metadata -> {
+            METADATA_U64 -> {
                 val metadata = event.getMetadata() ?: return null
                 ValidatedProfile(
                     id = event.id().toHex(),
@@ -121,17 +136,17 @@ class EventValidator(
                 )
             }
 
-            is KindEnum.FollowSet -> {
+            FOLLOW_SET_U64 -> {
                 if (event.author().toHex() != myPubkeyProvider.getPubkeyHex()) return null
                 createValidatedProfileSet(event = event)
             }
 
-            is KindEnum.InterestSet -> {
+            INTEREST_SET_U64 -> {
                 if (event.author().toHex() != myPubkeyProvider.getPubkeyHex()) return null
                 createValidatedTopicSet(event = event)
             }
 
-            is KindEnum.Interests -> {
+            INTERESTS_U64 -> {
                 val authorHex = event.author().toHex()
                 if (authorHex != myPubkeyProvider.getPubkeyHex()) return null
                 ValidatedTopicList(
@@ -144,7 +159,7 @@ class EventValidator(
                 )
             }
 
-            is KindEnum.Bookmarks -> {
+            BOOKMARKS_U64 -> {
                 val authorHex = event.author().toHex()
                 if (authorHex != myPubkeyProvider.getPubkeyHex()) return null
                 ValidatedBookmarkList(
@@ -158,7 +173,7 @@ class EventValidator(
                 )
             }
 
-            is KindEnum.MuteList -> {
+            MUTE_LIST_U64 -> {
                 val authorHex = event.author().toHex()
                 if (authorHex != myPubkeyProvider.getPubkeyHex()) return null
                 ValidatedMuteList(
@@ -172,6 +187,8 @@ class EventValidator(
                     createdAt = event.createdAt().secs()
                 )
             }
+
+            LOCK_U64 -> ValidatedLock(pubkey = event.author().toHex(), json = event.asJson())
 
             else -> {
                 Log.w(TAG, "Invalid event kind ${event.asJson()}")

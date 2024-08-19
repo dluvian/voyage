@@ -36,12 +36,14 @@ import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.DeleteAllPosts
 import com.dluvian.voyage.core.ExportDatabase
 import com.dluvian.voyage.core.LoadSeed
+import com.dluvian.voyage.core.LockAccount
 import com.dluvian.voyage.core.MAX_AUTOPILOT_RELAYS
 import com.dluvian.voyage.core.MAX_RETAIN_ROOT
 import com.dluvian.voyage.core.MIN_AUTOPILOT_RELAYS
 import com.dluvian.voyage.core.MIN_RETAIN_ROOT
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
+import com.dluvian.voyage.core.RebroadcastMyLockEvent
 import com.dluvian.voyage.core.RequestExternalAccount
 import com.dluvian.voyage.core.SendAuth
 import com.dluvian.voyage.core.SendBookmarkedToLocalRelay
@@ -83,12 +85,16 @@ fun SettingsView(vm: SettingsViewModel, snackbar: SnackbarHostState, onUpdate: O
 @Composable
 private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: OnUpdate) {
     val scope = rememberCoroutineScope()
+    val isLocked = vm.isLocked.collectAsState()
     LazyColumn {
         if (vm.isLoadingAccount.value) item { FullLinearProgressIndicator() }
         item {
             AccountSection(
                 accountType = vm.accountType.value,
                 seed = vm.seed.value,
+                isLocking = vm.isLocking.value,
+                isLocked = vm.isLockedForced.value || isLocked.value,
+                scope = scope,
                 onUpdate = onUpdate
             )
         }
@@ -108,6 +114,9 @@ private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: OnUpdate) {
 private fun AccountSection(
     accountType: AccountType,
     seed: List<String>,
+    isLocking: Boolean,
+    isLocked: Boolean,
+    scope: CoroutineScope,
     onUpdate: OnUpdate
 ) {
     SettingsSection(header = stringResource(id = R.string.account)) {
@@ -145,15 +154,19 @@ private fun AccountSection(
             text = stringResource(id = R.string.lock_your_account_warning),
             confirmText = stringResource(id = R.string.lock_my_account),
             onConfirm = {
-//              onUpdate(LockAccount)
+                onUpdate(LockAccount(uiScope = scope))
                 showLockDialog.value = false
             },
             onDismiss = { showLockDialog.value = false })
-        ClickableRow(
+        if (!isLocked) ClickableRow(
             header = stringResource(id = R.string.lock_your_account),
             text = stringResource(id = R.string.lock_your_account_in_case_your_keys_are_compromised),
-            onClick = { showLockDialog.value = true }
-        )
+            trailingContent = { if (isLocking) SmallCircleProgressIndicator() },
+            onClick = { showLockDialog.value = true })
+        else ClickableRow(
+            header = stringResource(id = R.string.rebroadcast_your_lock_event),
+            text = stringResource(id = R.string.your_account_is_locked_click_to_rebroadcast),
+            onClick = { onUpdate(RebroadcastMyLockEvent(uiScope = scope)) })
     }
 }
 

@@ -133,7 +133,7 @@ class Core(
                 appContainer.eventRebroadcaster.rebroadcast(
                     postId = uiEvent.postId,
                     context = uiEvent.context,
-                    scope = viewModelScope
+                    uiScope = viewModelScope
                 )
             }
 

@@ -8,6 +8,7 @@ import com.anggrayudi.storage.SimpleStorageHelper
 import com.dluvian.voyage.core.ExternalSignerHandler
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.ConnectionStatus
+import com.dluvian.voyage.data.account.AccountLocker
 import com.dluvian.voyage.data.account.AccountManager
 import com.dluvian.voyage.data.account.AccountSwitcher
 import com.dluvian.voyage.data.account.ExternalSigner
@@ -257,6 +258,16 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
         postDao = roomDb.postDao(),
         relayProvider = relayProvider,
         snackbar = snackbar,
+    )
+
+    val accountLocker = AccountLocker(
+        context = context,
+        myPubkeyProvider = accountManager,
+        snackbar = snackbar,
+        eventRebroadcaster = eventRebroadcaster,
+        lockDao = roomDb.lockDao(),
+        nostrService = nostrService,
+        relayProvider = relayProvider,
     )
 
     val postVoter = PostVoter(
