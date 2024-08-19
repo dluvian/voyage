@@ -245,4 +245,9 @@
     <string name="lock_your_account_in_case_your_keys_are_compromised">锁定你的帐户，以防你的密钥被泄露</string>
     <string name="lock_your_account_warning">此过程不可逆转！仅当您的密钥被泄露时才可继续。\n\n您确定要锁定您的帐户吗？</string>
     <string name="lock_my_account">锁定我的帐户</string>
+    <string name="rebroadcast_your_lock_event">重新广播您的锁定事件</string>
+    <string name="your_account_is_locked_click_to_rebroadcast">您的帐号已被锁定。点击可重新广播锁定事件。</string>
+    <string name="your_account_is_now_locked">您的帐户现已锁定</string>
+    <string name="failed_to_create_lock">无法创建锁</string>
+    <string name="your_account_is_already_locked">您的帐户已被锁定</string>
 </resources>

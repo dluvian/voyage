@@ -244,4 +244,9 @@
     <string name="lock_your_account_in_case_your_keys_are_compromised">Anahtarlarınızın tehlikeye girmesi durumunda hesabınızı kilitleyin</string>
     <string name="lock_your_account_warning">Bu işlem geri döndürülemez! Yalnızca anahtarlarınız tehlikeye girerse devam edin.\n\nHesabınızı kilitlemek istediğinizden emin misiniz?</string>
     <string name="lock_my_account">Hesabımı kilitle</string>
+    <string name="rebroadcast_your_lock_event">Kilit etkinliğinizi yeniden yayınlayın</string>
+    <string name="your_account_is_locked_click_to_rebroadcast">Hesabınız kilitlendi. Kilit olayını yeniden yayınlamak için tıklayın.</string>
+    <string name="your_account_is_now_locked">Hesabınız artık kilitli</string>
+    <string name="failed_to_create_lock">Kilit oluşturulamadı</string>
+    <string name="your_account_is_already_locked">Hesabınız zaten kilitli</string>
 </resources>
