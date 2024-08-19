@@ -13,8 +13,11 @@ sealed class TrustType {
             isWebOfTrust: Boolean,
             isMuted: Boolean,
             isInList: Boolean,
+            isLocked: Boolean,
         ): TrustType {
-            return if (isOneself) Oneself
+            return if (isOneself && isLocked) LockedOneself
+            else if (isOneself) Oneself
+            else if (isLocked) Locked
             else if (isMuted) Muted
             else if (isFriend) FriendTrust
             else if (isInList) IsInListTrust
@@ -24,9 +27,11 @@ sealed class TrustType {
     }
 }
 
+data object LockedOneself : TrustType()
 data object Oneself : TrustType()
 data object FriendTrust : TrustType()
 data object IsInListTrust : TrustType()
 data object WebTrust : TrustType()
 data object Muted : TrustType()
 data object NoTrust : TrustType()
+data object Locked : TrustType()

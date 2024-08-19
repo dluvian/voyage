@@ -8,6 +8,8 @@ import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.model.FriendTrust
 import com.dluvian.voyage.core.model.IsInListTrust
+import com.dluvian.voyage.core.model.Locked
+import com.dluvian.voyage.core.model.LockedOneself
 import com.dluvian.voyage.core.model.Muted
 import com.dluvian.voyage.core.model.NoTrust
 import com.dluvian.voyage.core.model.Oneself
@@ -28,6 +30,7 @@ fun TrustIcon(modifier: Modifier = Modifier, trustType: TrustType) {
         WebTrust -> stringResource(id = R.string.trusted)
         Muted -> stringResource(id = R.string.muted)
         NoTrust -> stringResource(id = R.string.unknown)
+        Locked, LockedOneself -> stringResource(id = R.string.locked)
     }
 
     Icon(
@@ -47,7 +50,8 @@ fun TrustIcon(modifier: Modifier = Modifier, profile: AdvancedProfileView) {
             isFriend = profile.isFriend,
             isWebOfTrust = profile.isWebOfTrust,
             isMuted = profile.isMuted,
-            isInList = profile.isInList
+            isInList = profile.isInList,
+            isLocked = profile.isLocked,
         )
     )
 }

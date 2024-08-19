@@ -22,7 +22,9 @@ I don't plan to publish this app in the Google Play Store.
   relay connections to a minimum, fetch events only from their respective outbox and not refetch
   locally cached events.
 - Trust indicator: Each profile has a colored badge which indicates their trust level.
-  - Green star: Yourself
+  - Red star: Yourself but you published a lock event.
+  - Green star: Yourself.
+  - Red warning: This profile is locked.
   - Red mute: This profile is in your mute list.
   - Green check: You follow this profile (friend).
   - Green list: This profile is in one of your lists but not your friend.
@@ -47,6 +49,7 @@ I don't plan to publish this app in the Google Play Store.
 - [NIP-51: Lists](https://github.com/nostr-protocol/nips/blob/master/51.md)
 - [NIP-55: Android Signer Application](https://github.com/nostr-protocol/nips/blob/master/55.md)
 - [NIP-65: Relay List Metadata](https://github.com/nostr-protocol/nips/blob/master/65.md)
+- [Pull request: Lock users](https://github.com/nostr-protocol/nips/pull/1411)
 
 ## Screenshots
 

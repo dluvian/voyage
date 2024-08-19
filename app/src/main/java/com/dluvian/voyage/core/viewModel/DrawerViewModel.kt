@@ -9,6 +9,7 @@ import com.dluvian.voyage.core.DrawerViewAction
 import com.dluvian.voyage.core.DrawerViewSubscribeSets
 import com.dluvian.voyage.core.OpenDrawer
 import com.dluvian.voyage.core.utils.launchIO
+import com.dluvian.voyage.data.account.AccountLocker
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.ItemSetProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
@@ -21,6 +22,7 @@ import kotlinx.coroutines.launch
 class DrawerViewModel(
     profileProvider: ProfileProvider,
     itemSetProvider: ItemSetProvider,
+    accountLocker: AccountLocker,
     val drawerState: DrawerState,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
 ) :
@@ -29,6 +31,7 @@ class DrawerViewModel(
         .stateIn(viewModelScope, SharingStarted.Eagerly, profileProvider.getDefaultProfile())
     val itemSetMetas = itemSetProvider.getMySetsFlow()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+    val isLocked = accountLocker.isLocked
 
     fun handle(action: DrawerViewAction) {
         when (action) {

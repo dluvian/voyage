@@ -1,12 +1,15 @@
 package com.dluvian.voyage.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
 import com.dluvian.voyage.core.model.FriendTrust
 import com.dluvian.voyage.core.model.IsInListTrust
+import com.dluvian.voyage.core.model.Locked
+import com.dluvian.voyage.core.model.LockedOneself
 import com.dluvian.voyage.core.model.Muted
 import com.dluvian.voyage.core.model.NoTrust
 import com.dluvian.voyage.core.model.Oneself
@@ -95,7 +98,14 @@ fun getTrustColor(trustType: TrustType): Color {
         Oneself -> Color.Green
         FriendTrust, IsInListTrust -> Color.Green
         WebTrust -> Orange
-        Muted -> Color.Red
+        Muted, Locked, LockedOneself -> Color.Red
         NoTrust -> MaterialTheme.colorScheme.onBackground.light()
     }
 }
+
+@Stable
+@Composable
+fun getAccountColor(isLocked: Boolean): Color {
+    return if (isLocked) getTrustColor(trustType = Locked) else LocalContentColor.current
+}
+

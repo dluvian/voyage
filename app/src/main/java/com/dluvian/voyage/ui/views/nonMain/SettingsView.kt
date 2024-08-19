@@ -66,8 +66,9 @@ import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import com.dluvian.voyage.ui.components.indicator.SmallCircleProgressIndicator
 import com.dluvian.voyage.ui.components.row.ClickableRow
 import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
-import com.dluvian.voyage.ui.theme.AccountIcon
 import com.dluvian.voyage.ui.theme.WarningIcon
+import com.dluvian.voyage.ui.theme.getAccountColor
+import com.dluvian.voyage.ui.theme.getAccountIcon
 import com.dluvian.voyage.ui.theme.spacing
 import kotlinx.coroutines.CoroutineScope
 
@@ -127,7 +128,8 @@ private fun AccountSection(
                 is DefaultAccount -> stringResource(id = R.string.default_account)
             },
             text = shortenedNpub,
-            leadingIcon = AccountIcon,
+            leadingIcon = getAccountIcon(isLocked = isLocked),
+            iconTint = getAccountColor(isLocked = isLocked),
             onClick = {
                 onUpdate(OpenProfile(nprofile = createNprofile(pubkey = accountType.publicKey)))
             }

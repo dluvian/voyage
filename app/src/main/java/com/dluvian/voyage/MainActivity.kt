@@ -250,8 +250,9 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             DrawerViewModel(
                 profileProvider = appContainer.profileProvider,
                 itemSetProvider = appContainer.itemSetProvider,
+                accountLocker = appContainer.accountLocker,
                 drawerState = drawerState,
-                lazyNostrSubscriber = appContainer.lazyNostrSubscriber
+                lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
             )
         },
         followListsVM = viewModel {

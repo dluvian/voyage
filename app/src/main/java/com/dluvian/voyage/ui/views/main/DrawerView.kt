@@ -13,6 +13,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Text
@@ -23,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
@@ -44,22 +46,27 @@ import com.dluvian.voyage.core.viewModel.DrawerViewModel
 import com.dluvian.voyage.data.model.ItemSetMeta
 import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.ui.components.row.ClickableRow
-import com.dluvian.voyage.ui.theme.AccountIcon
 import com.dluvian.voyage.ui.theme.AddIcon
 import com.dluvian.voyage.ui.theme.BookmarksIcon
 import com.dluvian.voyage.ui.theme.ListIcon
 import com.dluvian.voyage.ui.theme.MuteIcon
 import com.dluvian.voyage.ui.theme.RelayIcon
 import com.dluvian.voyage.ui.theme.ViewListIcon
+import com.dluvian.voyage.ui.theme.getAccountColor
+import com.dluvian.voyage.ui.theme.getAccountIcon
 import com.dluvian.voyage.ui.theme.spacing
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun MainDrawer(
-    vm: DrawerViewModel, scope: CoroutineScope, onUpdate: OnUpdate, content: ComposableContent
+    vm: DrawerViewModel,
+    scope: CoroutineScope,
+    onUpdate: OnUpdate,
+    content: ComposableContent
 ) {
     val personalProfile by vm.personalProfile.collectAsState()
     val itemSets by vm.itemSetMetas.collectAsState()
+    val isLocked by vm.isLocked.collectAsState()
     ModalNavigationDrawer(drawerState = vm.drawerState, drawerContent = {
         ModalDrawerSheet {
             LaunchedEffect(key1 = vm.drawerState.isOpen) {
@@ -70,7 +77,8 @@ fun MainDrawer(
                 item {
                     DrawerItem(
                         label = personalProfile.name,
-                        icon = AccountIcon,
+                        icon = getAccountIcon(isLocked = isLocked),
+                        iconTint = getAccountColor(isLocked = isLocked),
                         onClick = {
                             onUpdate(
                                 OpenProfile(nprofile = createNprofile(hex = personalProfile.pubkey))
@@ -145,6 +153,7 @@ private fun DrawerItem(
     label: String,
     icon: ImageVector,
     modifier: Modifier = Modifier,
+    iconTint: Color = LocalContentColor.current,
     onClick: Fn,
     onLongClick: Fn = {},
 ) {
@@ -154,7 +163,7 @@ private fun DrawerItem(
             .combinedClickable(onLongClick = onLongClick, onClick = onClick),
         header = label,
         leadingContent = {
-            Icon(imageVector = icon, contentDescription = null)
+            Icon(imageVector = icon, tint = iconTint, contentDescription = null)
         },
         onClick = onClick,
         onLongClick = onLongClick

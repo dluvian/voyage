@@ -249,4 +249,5 @@
     <string name="your_account_is_now_locked">Hesabınız artık kilitli</string>
     <string name="failed_to_create_lock">Kilit oluşturulamadı</string>
     <string name="your_account_is_already_locked">Hesabınız zaten kilitli</string>
+    <string name="locked">Kilitli</string>
 </resources>

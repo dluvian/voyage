@@ -46,6 +46,8 @@ import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.dluvian.voyage.core.model.FriendTrust
 import com.dluvian.voyage.core.model.IsInListTrust
+import com.dluvian.voyage.core.model.Locked
+import com.dluvian.voyage.core.model.LockedOneself
 import com.dluvian.voyage.core.model.Muted
 import com.dluvian.voyage.core.model.NoTrust
 import com.dluvian.voyage.core.model.Oneself
@@ -95,10 +97,17 @@ val WarningIcon = Icons.Default.WarningAmber
 @Composable
 fun getTrustIcon(trustType: TrustType): ImageVector {
     return when (trustType) {
-        Oneself -> Icons.Default.Star
+        Oneself, LockedOneself -> Icons.Default.Star
         FriendTrust, WebTrust -> Icons.Filled.VerifiedUser
         IsInListTrust -> ListIcon
         NoTrust -> Icons.Default.QuestionMark
         Muted -> MuteIcon
+        Locked -> WarningIcon
     }
+}
+
+@Stable
+@Composable
+fun getAccountIcon(isLocked: Boolean): ImageVector {
+    return if (isLocked) getTrustIcon(trustType = Locked) else AccountIcon
 }

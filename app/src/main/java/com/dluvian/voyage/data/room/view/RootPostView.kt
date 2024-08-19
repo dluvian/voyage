@@ -28,6 +28,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             CASE WHEN weboftrust.webOfTrustPubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsTrusted,
             CASE WHEN mute.mutedItem IS NOT NULL THEN 1 ELSE 0 END AS authorIsMuted,
             CASE WHEN profileSetItem.pubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsInList,
+            CASE WHEN lock.pubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsLocked,
             CASE WHEN vote.postId IS NOT NULL THEN 1 ELSE 0 END isUpvoted,
             upvotes.upvoteCount,
             replies.replyCount,
@@ -36,6 +37,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             CASE WHEN cross_posted_wot.webOfTrustPubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsTrusted,
             CASE WHEN cross_posted_mute.mutedItem IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsMuted,
             CASE WHEN cross_posted_profile_set_item.pubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsInList,
+            CASE WHEN cross_posted_lock.pubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsLocked,
             (SELECT EXISTS(SELECT * FROM bookmark WHERE bookmark.postId = IFNULL(post.crossPostedId, post.id))) AS isBookmarked 
         FROM post
         LEFT JOIN profile ON profile.pubkey = post.pubkey
@@ -51,6 +53,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
         LEFT JOIN weboftrust ON weboftrust.webOfTrustPubkey = post.pubkey
         LEFT JOIN mute ON mute.mutedItem = post.pubkey AND mute.tag IS 'p'
         LEFT JOIN profileSetItem ON profileSetItem.pubkey = post.pubkey
+        LEFT JOIN lock ON lock.pubkey = post.pubkey
         LEFT JOIN vote ON vote.postId = IFNULL(post.crossPostedId, post.id) AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)
         LEFT JOIN (
             SELECT vote.postId, COUNT(*) AS upvoteCount 
@@ -69,6 +72,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
         LEFT JOIN weboftrust AS cross_posted_wot ON cross_posted_wot.webOfTrustPubkey = post.crossPostedPubkey
         LEFT JOIN mute AS cross_posted_mute ON cross_posted_mute.mutedItem = post.crossPostedPubkey AND cross_posted_mute.tag IS 'p'
         LEFT JOIN profileSetItem AS cross_posted_profile_set_item ON cross_posted_profile_set_item.pubkey = post.crossPostedPubkey
+        LEFT JOIN lock AS cross_posted_lock ON cross_posted_lock.pubkey = post.crossPostedPubkey
         WHERE post.parentId IS NULL
 """
 )
@@ -81,6 +85,7 @@ data class RootPostView(
     val authorIsTrusted: Boolean,
     val authorIsMuted: Boolean,
     val authorIsInList: Boolean,
+    val authorIsLocked: Boolean,
     val myTopic: Topic?,
     val subject: String?,
     val content: String,
@@ -96,6 +101,7 @@ data class RootPostView(
     val crossPostedAuthorIsTrusted: Boolean,
     val crossPostedAuthorIsMuted: Boolean,
     val crossPostedAuthorIsInList: Boolean,
+    val crossPostedAuthorIsLocked: Boolean,
     val isBookmarked: Boolean,
     val isMentioningMe: Boolean,
 ) {
@@ -119,7 +125,8 @@ data class RootPostView(
                 isFriend = follow ?: this.authorIsFriend,
                 isWebOfTrust = this.authorIsTrusted,
                 isMuted = this.authorIsMuted,
-                isInList = this.authorIsInList
+                isInList = this.authorIsInList,
+                isLocked = this.authorIsLocked,
             ),
             isBookmarked = bookmark ?: rootPostUI.isBookmarked
         )
