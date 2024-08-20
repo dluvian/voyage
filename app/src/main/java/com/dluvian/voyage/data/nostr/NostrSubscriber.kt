@@ -228,7 +228,8 @@ class NostrSubscriber(
                 size = pageSize,
             )
 
-            is InboxFeedSetting -> room.postDao().getInboxPostsCreatedAt(
+            is InboxFeedSetting -> room.inboxDao().getInboxCreatedAt(
+                setting = setting,
                 until = until,
                 size = pageSize
             )

@@ -16,7 +16,8 @@ import kotlinx.coroutines.flow.flowOf
 private const val INBOX_CONDITION = "WHERE createdAt <= :until " +
         "AND isMentioningMe = 1 " +
         "AND authorIsOneself = 0 " +
-        "AND authorIsMuted = 0 "
+        "AND authorIsMuted = 0 " +
+        "AND authorIsLocked = 0 "
 
 private const val INBOX_ORDER = "ORDER BY createdAt DESC LIMIT :size "
 
@@ -31,6 +32,8 @@ private const val SELECT_ROOT = "SELECT * FROM RootPostView "
 private const val SELECT_REPLY = "SELECT * FROM ReplyView "
 private const val SELECT_ROOT_ID = "SELECT id FROM RootPostView "
 private const val SELECT_REPLY_ID = "SELECT id FROM ReplyView "
+private const val SELECT_ROOT_CREATED_AT = "SELECT createdAt FROM RootPostView "
+private const val SELECT_REPLY_CREATED_AT = "SELECT createdAt FROM ReplyView "
 
 private const val FRIEND_ROOT_QUERY = SELECT_ROOT + FRIEND_MAIN_QUERY
 private const val FRIEND_REPLY_QUERY = SELECT_REPLY + FRIEND_MAIN_QUERY
@@ -56,6 +59,18 @@ private const val WOT_INBOX_EXISTS_QUERY =
     "SELECT EXISTS($WOT_REPLY_ID_QUERY UNION $WOT_ROOT_ID_QUERY)"
 private const val GLOBAL_INBOX_EXISTS_QUERY =
     "SELECT EXISTS($GLOBAL_REPLY_ID_QUERY UNION $GLOBAL_ROOT_ID_QUERY)"
+
+private const val FRIEND_ROOT_INBOX_CREATED_AT_QUERY = "$SELECT_ROOT_CREATED_AT $FRIEND_MAIN_QUERY"
+private const val FRIEND_REPLY_INBOX_CREATED_AT_QUERY =
+    "$SELECT_REPLY_CREATED_AT $FRIEND_MAIN_QUERY"
+
+private const val WOT_ROOT_INBOX_CREATED_AT_QUERY = "$SELECT_ROOT_CREATED_AT $WOT_MAIN_QUERY"
+private const val WOT_REPLY_INBOX_CREATED_AT_QUERY = "$SELECT_REPLY_CREATED_AT $WOT_MAIN_QUERY"
+
+private const val GLOBAL_ROOT_INBOX_CREATED_AT_QUERY = "$SELECT_ROOT_CREATED_AT $GLOBAL_MAIN_QUERY"
+private const val GLOBAL_REPLY_INBOX_CREATED_AT_QUERY =
+    "$SELECT_REPLY_CREATED_AT $GLOBAL_MAIN_QUERY"
+
 
 @Dao
 interface InboxDao {
@@ -120,6 +135,25 @@ interface InboxDao {
         }
     }
 
+    suspend fun getInboxCreatedAt(
+        setting: InboxFeedSetting,
+        until: Long,
+        size: Int
+    ): List<Long> {
+        return when (setting.pubkeySelection) {
+            FriendPubkeys -> internalGetFriendRootCreatedAt(until = until, size = size)
+                .plus(internalGetFriendReplyCreatedAt(until = until, size = size))
+
+            WebOfTrustPubkeys -> internalGetWotRootCreatedAt(until = until, size = size)
+                .plus(internalGetWotReplyCreatedAt(until = until, size = size))
+
+            Global, NoPubkeys -> internalGetGlobalRootCreatedAt(until = until, size = size)
+                .plus(internalGetGlobalReplyCreatedAt(until = until, size = size))
+        }
+            .sortedDescending()
+            .take(size)
+    }
+
     @Query(FRIEND_REPLY_QUERY)
     fun internalGetFriendReplyFlow(until: Long, size: Int): Flow<List<ReplyView>>
 
@@ -164,4 +198,22 @@ interface InboxDao {
 
     @Query(GLOBAL_INBOX_EXISTS_QUERY)
     fun internalHasGlobalInboxFlow(until: Long): Flow<Boolean>
+
+    @Query(FRIEND_ROOT_INBOX_CREATED_AT_QUERY)
+    suspend fun internalGetFriendRootCreatedAt(until: Long, size: Int): List<Long>
+
+    @Query(WOT_ROOT_INBOX_CREATED_AT_QUERY)
+    suspend fun internalGetWotRootCreatedAt(until: Long, size: Int): List<Long>
+
+    @Query(GLOBAL_ROOT_INBOX_CREATED_AT_QUERY)
+    suspend fun internalGetGlobalRootCreatedAt(until: Long, size: Int): List<Long>
+
+    @Query(FRIEND_REPLY_INBOX_CREATED_AT_QUERY)
+    suspend fun internalGetFriendReplyCreatedAt(until: Long, size: Int): List<Long>
+
+    @Query(WOT_REPLY_INBOX_CREATED_AT_QUERY)
+    suspend fun internalGetWotReplyCreatedAt(until: Long, size: Int): List<Long>
+
+    @Query(GLOBAL_REPLY_INBOX_CREATED_AT_QUERY)
+    suspend fun internalGetGlobalReplyCreatedAt(until: Long, size: Int): List<Long>
 }
