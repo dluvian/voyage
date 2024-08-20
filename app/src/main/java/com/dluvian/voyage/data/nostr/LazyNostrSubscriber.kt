@@ -12,6 +12,7 @@ import com.dluvian.voyage.core.utils.limitRestricted
 import com.dluvian.voyage.core.utils.mergeRelayFilters
 import com.dluvian.voyage.core.utils.takeRandom
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
+import com.dluvian.voyage.data.event.LOCK_U64
 import com.dluvian.voyage.data.model.CustomPubkeys
 import com.dluvian.voyage.data.model.FriendPubkeys
 import com.dluvian.voyage.data.model.Global
@@ -67,14 +68,17 @@ class LazyNostrSubscriber(
         val topicSince = topicProvider.getCreatedAt()?.toULong() ?: 1uL
         val nip65Since = relayProvider.getCreatedAt(pubkey = hex)?.toULong() ?: 1uL
         val profileSince = room.profileDao().getMaxCreatedAt(pubkey = hex)?.toULong() ?: 1uL
+        val isLocked = room.lockDao().isLocked(pubkey = hex)
 
         lazySubMyKind(
             kindAndSince = listOf(
-                Pair(Kind.fromEnum(KindEnum.ContactList), contactSince + 1uL),
-                Pair(Kind.fromEnum(KindEnum.Interests), topicSince + 1uL),
-                Pair(Kind.fromEnum(KindEnum.RelayList), nip65Since + 1uL),
-                Pair(Kind.fromEnum(KindEnum.Metadata), profileSince + 1uL),
-            )
+                Pair(Kind.fromEnum(KindEnum.ContactList).asU16(), contactSince + 1uL),
+                Pair(Kind.fromEnum(KindEnum.Interests).asU16(), topicSince + 1uL),
+                Pair(Kind.fromEnum(KindEnum.RelayList).asU16(), nip65Since + 1uL),
+                Pair(Kind.fromEnum(KindEnum.Metadata).asU16(), profileSince + 1uL),
+            ).let {
+                if (isLocked) it else it + Pair(LOCK_U64.toUShort(), 1uL)
+            }
         )
     }
 
@@ -84,8 +88,8 @@ class LazyNostrSubscriber(
         val muteSince = room.muteDao().getMaxCreatedAt()?.toULong() ?: 1uL
         lazySubMyKind(
             kindAndSince = listOf(
-                Pair(Kind.fromEnum(KindEnum.Bookmarks), bookmarksSince + 1uL),
-                Pair(Kind.fromEnum(KindEnum.MuteList), muteSince + 1uL)
+                Pair(Kind.fromEnum(KindEnum.Bookmarks).asU16(), bookmarksSince + 1uL),
+                Pair(Kind.fromEnum(KindEnum.MuteList).asU16(), muteSince + 1uL)
             )
         )
     }
@@ -95,7 +99,7 @@ class LazyNostrSubscriber(
         val bookmarksSince = room.bookmarkDao().getMaxCreatedAt()?.toULong() ?: 1uL
         lazySubMyKind(
             kindAndSince = listOf(
-                Pair(Kind.fromEnum(KindEnum.Bookmarks), bookmarksSince + 1uL)
+                Pair(Kind.fromEnum(KindEnum.Bookmarks).asU16(), bookmarksSince + 1uL)
             )
         )
     }
@@ -105,7 +109,7 @@ class LazyNostrSubscriber(
         val muteSince = room.muteDao().getMaxCreatedAt()?.toULong() ?: 1uL
         lazySubMyKind(
             kindAndSince = listOf(
-                Pair(Kind.fromEnum(KindEnum.MuteList), muteSince + 1uL)
+                Pair(Kind.fromEnum(KindEnum.MuteList).asU16(), muteSince + 1uL)
             )
         )
     }
@@ -253,11 +257,11 @@ class LazyNostrSubscriber(
         }
     }
 
-    private fun lazySubMyKind(kindAndSince: Collection<Pair<Kind, ULong>>) {
+    private fun lazySubMyKind(kindAndSince: Collection<Pair<UShort, ULong>>) {
         if (kindAndSince.isEmpty()) return
 
         val filters = kindAndSince.map { (kind, since) ->
-            Filter().kind(kind = kind)
+            Filter().kind(kind = Kind(kind = kind))
                 .author(author = myPubkeyProvider.getPublicKey())
                 .until(timestamp = Timestamp.now())
                 .since(timestamp = Timestamp.fromSecs(secs = since))

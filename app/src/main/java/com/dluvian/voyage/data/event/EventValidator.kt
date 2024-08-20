@@ -28,6 +28,19 @@ import rust.nostr.protocol.PublicKey
 
 private const val TAG = "EventValidator"
 
+private val TEXT_NOTE_U64 = Kind.fromEnum(KindEnum.TextNote).asU64()
+private val REPOST_U64 = Kind.fromEnum(KindEnum.Repost).asU64()
+private val REACTION_U64 = Kind.fromEnum(KindEnum.Reaction).asU64()
+private val CONTACT_U64 = Kind.fromEnum(KindEnum.ContactList).asU64()
+private val RELAYS_U64 = Kind.fromEnum(KindEnum.RelayList).asU64()
+private val METADATA_U64 = Kind.fromEnum(KindEnum.Metadata).asU64()
+private val FOLLOW_SET_U64 = Kind.fromEnum(KindEnum.FollowSet).asU64()
+private val INTEREST_SET_U64 = Kind.fromEnum(KindEnum.InterestSet).asU64()
+private val INTERESTS_U64 = Kind.fromEnum(KindEnum.Interests).asU64()
+private val BOOKMARKS_U64 = Kind.fromEnum(KindEnum.Bookmarks).asU64()
+private val MUTE_LIST_U64 = Kind.fromEnum(KindEnum.MuteList).asU64()
+val LOCK_U64 = 1000uL
+
 class EventValidator(
     private val syncedFilterCache: Map<SubId, List<Filter>>,
     private val syncedIdCache: MutableSet<EventId>,
@@ -67,19 +80,6 @@ class EventValidator(
 
         return filters.any { it.matchEvent(event = event) }
     }
-
-    private val TEXT_NOTE_U64 = Kind.fromEnum(KindEnum.TextNote).asU64()
-    private val REPOST_U64 = Kind.fromEnum(KindEnum.Repost).asU64()
-    private val REACTION_U64 = Kind.fromEnum(KindEnum.Reaction).asU64()
-    private val CONTACT_U64 = Kind.fromEnum(KindEnum.ContactList).asU64()
-    private val RELAYS_U64 = Kind.fromEnum(KindEnum.RelayList).asU64()
-    private val METADATA_U64 = Kind.fromEnum(KindEnum.Metadata).asU64()
-    private val FOLLOW_SET_U64 = Kind.fromEnum(KindEnum.FollowSet).asU64()
-    private val INTEREST_SET_U64 = Kind.fromEnum(KindEnum.InterestSet).asU64()
-    private val INTERESTS_U64 = Kind.fromEnum(KindEnum.Interests).asU64()
-    private val BOOKMARKS_U64 = Kind.fromEnum(KindEnum.Bookmarks).asU64()
-    private val MUTE_LIST_U64 = Kind.fromEnum(KindEnum.MuteList).asU64()
-    private val LOCK_U64 = 1000uL
 
     private fun validate(event: Event, relayUrl: RelayUrl): ValidatedEvent? {
         // Match against enum once included in rust-nostr

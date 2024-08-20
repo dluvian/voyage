@@ -14,6 +14,9 @@ interface LockDao {
     @Query("SELECT json FROM lock WHERE pubkey = :pubkey")
     suspend fun getLockJson(pubkey: PubkeyHex): String?
 
+    @Query("SELECT EXISTS(SELECT pubkey FROM lock WHERE pubkey = :pubkey)")
+    suspend fun isLocked(pubkey: PubkeyHex): Boolean
+
     @Query("SELECT EXISTS(SELECT pubkey FROM lock WHERE pubkey IN (SELECT pubkey FROM account))")
     fun getMyLockFlow(): Flow<Boolean>
 
