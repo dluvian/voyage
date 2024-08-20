@@ -1,6 +1,6 @@
 # voyage
 
-Voyage is a lightweight nostr client for Android with a Reddit-like UI.
+Voyage is a lightweight nostr client for Android.
 
 ## Installation
 
@@ -16,7 +16,6 @@ I don't plan to publish this app in the Google Play Store.
 - Outbox model: Voyage discovers relays through nip-65 events and encoded relays in
   nprofiles/nevents. It fetches data only from relays expected to contain the desired information.
 - Sign-in only via an external signer.
-- Reddit-like UI.
 - App can be used offline because posts are stored locally.
 - Mobile data friendly: Only text is displayed, no videos and no pictures. It also attempts to keep
   relay connections to a minimum, fetch events only from their respective outbox and not refetch
