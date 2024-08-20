@@ -16,6 +16,7 @@ private const val BASE_QUERY = "FROM RootPostView " +
 
 private const val BASE_CONDITION = "AND authorIsOneself = 0 " +
         "AND authorIsMuted = 0 " +
+        "AND authorIsLocked = 0 " +
         "AND crossPostedAuthorIsMuted = 0 " +
         "AND NOT EXISTS (SELECT * FROM hashtag WHERE postId = id AND hashtag IN (SELECT mutedItem FROM mute WHERE tag IS 't')) " +
         "ORDER BY createdAt DESC " +

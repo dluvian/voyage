@@ -25,16 +25,6 @@ interface PostDao {
     @Query("SELECT id, relayUrl AS firstSeenIn, json FROM post WHERE id = :id")
     suspend fun getPostDetails(id: EventIdHex): PostDetails?
 
-    @Query(
-        "SELECT createdAt " +
-                "FROM post " +
-                "WHERE createdAt <= :until " +
-                "AND (crossPostedPubkey IN (SELECT pubkey FROM account) OR parentId IN (SELECT id FROM post WHERE pubkey IN (SELECT pubkey FROM account))) " +
-                "AND pubkey NOT IN (SELECT pubkey FROM account) " +
-                "LIMIT :size"
-    )
-    suspend fun getInboxPostsCreatedAt(until: Long, size: Int): List<Long>
-
     suspend fun getPostsByContent(content: String, limit: Int): List<SimplePostView> {
         if (limit <= 0) return emptyList()
 

@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 private const val TOPIC_FEED_BASE_QUERY = "FROM RootPostView " +
         "WHERE createdAt <= :until " +
         "AND authorIsMuted = 0 " +
+        "AND authorIsLocked = 0 " +
         "AND crossPostedAuthorIsMuted = 0 " +
         "AND id IN (SELECT postId FROM hashtag WHERE hashtag = :topic) " +
         "AND NOT EXISTS (SELECT * FROM hashtag WHERE postId = id AND hashtag IN (SELECT mutedItem FROM mute WHERE tag IS 't' AND mutedItem IS NOT :topic)) " +
@@ -40,6 +41,7 @@ private const val LIST_FEED_BASE_QUERY = """
         OR id IN (SELECT postId FROM hashtag WHERE hashtag IN (SELECT topic FROM topicSetItem WHERE identifier = :identifier))
     )
     AND authorIsMuted = 0 
+    AND authorIsLocked = 0 
     AND crossPostedAuthorIsMuted = 0 
     AND NOT EXISTS (SELECT * FROM hashtag WHERE postId = id AND hashtag IN (SELECT mutedItem FROM mute WHERE tag IS 't'))
     ORDER BY createdAt DESC
