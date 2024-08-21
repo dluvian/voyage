@@ -238,8 +238,6 @@ private fun AboutPage(
                     description = stringResource(id = R.string.lightning_address),
                     trailingIcon = {
                         val launcher = getSimpleLauncher()
-                        val err =
-                            stringResource(id = R.string.you_dont_have_a_lightning_wallet_installed)
                         Icon(
                             modifier = Modifier
                                 .padding(start = spacing.medium)
@@ -250,7 +248,6 @@ private fun AboutPage(
                                             address = lightning,
                                             launcher = launcher,
                                             scope = scope,
-                                            err = err
                                         )
                                     )
                                 },

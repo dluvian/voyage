@@ -339,5 +339,4 @@ data class OpenLightningWallet(
     val address: String,
     val launcher: ManagedLauncher,
     val scope: CoroutineScope,
-    val err: String
 ) : UIEvent()

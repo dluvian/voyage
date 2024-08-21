@@ -149,7 +149,10 @@ class Core(
                 )
                 runCatching { uiEvent.launcher.launch(intent) }
                     .onFailure {
-                        appContainer.snackbar.showToast(scope = uiEvent.scope, msg = uiEvent.err)
+                        appContainer.snackbar.showToast(
+                            scope = uiEvent.scope,
+                            msg = appContainer.context.getString(R.string.you_dont_have_a_lightning_wallet_installed)
+                        )
                     }
             }
         }

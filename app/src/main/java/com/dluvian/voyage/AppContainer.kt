@@ -69,7 +69,7 @@ import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
 import java.util.Collections
 
-class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
+class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
     val roomDb: AppDatabase = Room.databaseBuilder(
         context = context,
         klass = AppDatabase::class.java,
