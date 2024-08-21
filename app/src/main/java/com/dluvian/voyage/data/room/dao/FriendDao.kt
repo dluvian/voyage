@@ -10,6 +10,9 @@ interface FriendDao {
     @Query("SELECT friendPubkey FROM friend WHERE friendPubkey NOT IN (SELECT pubkey FROM lock)")
     fun getFriendsNoLockFlow(): Flow<List<PubkeyHex>>
 
+    @Query("SELECT friendPubkey FROM friend WHERE friendPubkey")
+    fun getFriendsWithLockFlow(): Flow<List<PubkeyHex>>
+
     @Query(
         "SELECT friendPubkey " +
                 "FROM friend " +

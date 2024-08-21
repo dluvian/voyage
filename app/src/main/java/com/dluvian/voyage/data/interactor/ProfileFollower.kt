@@ -85,7 +85,8 @@ class ProfileFollower(
                 toHandle = _forcedFollows.value.toMap()
             }
 
-            val friendsBefore = friendProvider.getFriendPubkeysNoLock().toSet()
+            // With lock or unfollowing wont work
+            val friendsBefore = friendProvider.getFriendPubkeysWithLock().toSet()
             val friendsAdjusted = friendsBefore.toMutableSet()
             val toAdd = toHandle.filter { (_, bool) -> bool }.map { (pubkey, _) -> pubkey }
             friendsAdjusted.addAll(toAdd)

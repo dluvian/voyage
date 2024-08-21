@@ -16,9 +16,15 @@ class FriendProvider(
     private val scope = CoroutineScope(Dispatchers.IO)
     private val friendsNoLock = friendDao.getFriendsNoLockFlow()
         .stateIn(scope, SharingStarted.Eagerly, emptyList())
+    private val friendsWithLock = friendDao.getFriendsWithLockFlow()
+        .stateIn(scope, SharingStarted.Eagerly, emptyList())
 
     fun getFriendPubkeysNoLock(max: Int = Int.MAX_VALUE): List<PubkeyHex> {
         return (friendsNoLock.value - myPubkeyProvider.getPubkeyHex()).takeRandom(max)
+    }
+
+    fun getFriendPubkeysWithLock(max: Int = Int.MAX_VALUE): List<PubkeyHex> {
+        return (friendsWithLock.value - myPubkeyProvider.getPubkeyHex()).takeRandom(max)
     }
 
     suspend fun getFriendsWithMissingContactList() = friendDao.getFriendsWithMissingContactList()
@@ -31,6 +37,6 @@ class FriendProvider(
     suspend fun getCreatedAt() = friendDao.getMaxCreatedAt()
 
     fun isFriend(pubkey: PubkeyHex): Boolean {
-        return getFriendPubkeysNoLock().contains(pubkey)
+        return getFriendPubkeysWithLock().contains(pubkey)
     }
 }
