@@ -45,7 +45,7 @@ fun PostDetailsBottomSheet(postDetails: PostDetails, onUpdate: OnUpdate) {
                         onClickAddition = onDismiss
                     )
 
-                    Spacer(modifier = Modifier.height(spacing.medium))
+                    Spacer(modifier = Modifier.height(spacing.large))
 
                     SmallHeader(header = stringResource(id = R.string.event_json))
                     CopyableText(text = postDetails.json)
