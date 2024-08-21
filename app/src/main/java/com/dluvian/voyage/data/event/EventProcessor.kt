@@ -154,7 +154,7 @@ class EventProcessor(
 
         scope.launch {
             Log.i(TAG, "Insert ${unique.size} locks")
-            room.lockDao().insertLocksTx(locks = locks)
+            room.lockInsertDao().insertLocksTx(locks = locks)
         }
     }
 

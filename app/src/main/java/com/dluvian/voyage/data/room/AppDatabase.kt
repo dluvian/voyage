@@ -30,6 +30,7 @@ import com.dluvian.voyage.data.room.dao.WebOfTrustDao
 import com.dluvian.voyage.data.room.dao.tx.BookmarkUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.FriendUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.FullProfileUpsertDao
+import com.dluvian.voyage.data.room.dao.tx.LockInsertDao
 import com.dluvian.voyage.data.room.dao.tx.MuteUpsertDao
 import com.dluvian.voyage.data.room.dao.tx.Nip65UpsertDao
 import com.dluvian.voyage.data.room.dao.tx.PostInsertDao
@@ -156,4 +157,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun profileSetUpsertDao(): ProfileSetUpsertDao
     abstract fun topicSetUpsertDao(): TopicSetUpsertDao
     abstract fun muteUpsertDao(): MuteUpsertDao
+    abstract fun lockInsertDao(): LockInsertDao
 }
