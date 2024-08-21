@@ -238,6 +238,7 @@ data object ProfileViewRefresh : ProfileViewAction()
 data object ProfileViewRootAppend : ProfileViewAction()
 data object ProfileViewReplyAppend : ProfileViewAction()
 data object ProfileViewLoadLists : ProfileViewAction()
+data class ProfileViewRebroadcastLock(val uiScope: CoroutineScope) : ProfileViewAction()
 
 
 sealed class CreatePostViewAction : UIEvent()

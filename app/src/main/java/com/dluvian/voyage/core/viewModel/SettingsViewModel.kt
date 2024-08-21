@@ -19,6 +19,7 @@ import com.dluvian.voyage.core.ExternalSignerHandler
 import com.dluvian.voyage.core.LoadSeed
 import com.dluvian.voyage.core.LockAccount
 import com.dluvian.voyage.core.ProcessExternalAccount
+import com.dluvian.voyage.core.REBROADCAST_DELAY
 import com.dluvian.voyage.core.RebroadcastMyLockEvent
 import com.dluvian.voyage.core.RequestExternalAccount
 import com.dluvian.voyage.core.SendAuth
@@ -245,7 +246,7 @@ class SettingsViewModel(
 
         viewModelScope.launchIO {
             accountLocker.rebroadcastMyLock(uiScope = uiScope)
-            delay(2 * DELAY_1SEC)
+            delay(REBROADCAST_DELAY)
         }.invokeOnCompletion {
             isRebroadcasting.set(false)
         }

@@ -250,4 +250,6 @@
     <string name="failed_to_create_lock">Kilit oluşturulamadı</string>
     <string name="your_account_is_already_locked">Hesabınız zaten kilitli</string>
     <string name="locked">Kilitli</string>
+    <string name="this_user_is_locked_and_should_not_be_trusted">Bu kullanıcı kilitlendi ve artık güvenilmemeli.</string>
+    <string name="rebroadcast_lock_event">Kilit olayını yeniden yayınla</string>
 </resources>

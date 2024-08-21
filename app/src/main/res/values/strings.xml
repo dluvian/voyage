@@ -255,4 +255,6 @@
     <string name="failed_to_create_lock">Failed to create lock</string>
     <string name="your_account_is_already_locked">Your account is already locked</string>
     <string name="locked">Locked</string>
+    <string name="this_user_is_locked_and_should_not_be_trusted">This user is locked and should not be trusted anymore.</string>
+    <string name="rebroadcast_lock_event">Rebroadcast lock event</string>
 </resources>

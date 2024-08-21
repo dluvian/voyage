@@ -251,4 +251,6 @@
     <string name="failed_to_create_lock">无法创建锁</string>
     <string name="your_account_is_already_locked">您的帐户已被锁定</string>
     <string name="locked">已锁定</string>
+    <string name="this_user_is_locked_and_should_not_be_trusted">此用户已被锁定，不应再被信任。</string>
+    <string name="rebroadcast_lock_event">重新广播锁定事件</string>
 </resources>

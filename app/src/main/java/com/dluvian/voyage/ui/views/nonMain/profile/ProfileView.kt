@@ -1,7 +1,10 @@
 package com.dluvian.voyage.ui.views.nonMain.profile
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -14,9 +17,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -24,12 +29,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Bech32
@@ -39,10 +46,12 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenLightningWallet
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenRelayProfile
+import com.dluvian.voyage.core.ProfileViewRebroadcastLock
 import com.dluvian.voyage.core.ProfileViewRefresh
 import com.dluvian.voyage.core.ProfileViewReplyAppend
 import com.dluvian.voyage.core.ProfileViewRootAppend
 import com.dluvian.voyage.core.model.FriendTrust
+import com.dluvian.voyage.core.model.Locked
 import com.dluvian.voyage.core.utils.copyAndToast
 import com.dluvian.voyage.core.utils.getSimpleLauncher
 import com.dluvian.voyage.core.utils.shortenBech32
@@ -65,8 +74,11 @@ import com.dluvian.voyage.ui.components.text.SmallHeader
 import com.dluvian.voyage.ui.theme.KeyIcon
 import com.dluvian.voyage.ui.theme.LightningIcon
 import com.dluvian.voyage.ui.theme.OpenIcon
+import com.dluvian.voyage.ui.theme.getTrustColor
+import com.dluvian.voyage.ui.theme.light
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -91,6 +103,7 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
     ) {
         SimpleTabPager(
             headers = headers,
+            redHeader = if (profile.inner.isLocked) stringResource(id = R.string.about) else null,
             index = vm.tabIndex,
             pagerState = vm.pagerState,
             onScrollUp = {
@@ -142,8 +155,10 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
                         null
                     },
                     about = profile.about,
+                    isLocked = profile.inner.isLocked,
                     isRefreshing = vm.rootPaginator.isRefreshing.value,
                     state = vm.profileAboutState,
+                    scope = scope,
                     onUpdate = onUpdate
                 )
 
@@ -183,13 +198,18 @@ private fun AboutPage(
     lightning: String?,
     trustedBy: AdvancedProfileView?,
     about: AnnotatedString?,
+    isLocked: Boolean,
     isRefreshing: Boolean,
     state: LazyListState,
+    scope: CoroutineScope,
     modifier: Modifier = Modifier,
     onUpdate: OnUpdate
 ) {
     ProfileViewPage(isRefreshing = isRefreshing, onUpdate = onUpdate) {
         LazyColumn(modifier = modifier, state = state) {
+            if (isLocked) item {
+                LockHint(scope = scope, onUpdate = onUpdate)
+            }
             item {
                 AboutPageTextRow(
                     modifier = Modifier
@@ -218,7 +238,6 @@ private fun AboutPage(
                     description = stringResource(id = R.string.lightning_address),
                     trailingIcon = {
                         val launcher = getSimpleLauncher()
-                        val scope = rememberCoroutineScope()
                         val err =
                             stringResource(id = R.string.you_dont_have_a_lightning_wallet_installed)
                         Icon(
@@ -263,6 +282,39 @@ private fun AboutPage(
                     onUpdate = onUpdate
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun LockHint(scope: CoroutineScope, onUpdate: OnUpdate) {
+    Column(
+        modifier = Modifier
+            .padding(top = spacing.large)
+            .background(
+                color = Color.Red
+                    .light()
+                    .light(),
+                shape = CardDefaults.outlinedShape
+            )
+            .border(
+                width = spacing.small,
+                color = getTrustColor(trustType = Locked),
+                shape = CardDefaults.outlinedShape
+            )
+            .padding(horizontal = spacing.screenEdge)
+            .padding(top = spacing.screenEdge)
+            .padding(bottom = spacing.small)
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            textAlign = TextAlign.Center,
+            text = stringResource(id = R.string.this_user_is_locked_and_should_not_be_trusted)
+        )
+        TextButton(onClick = { onUpdate(ProfileViewRebroadcastLock(uiScope = scope)) }) {
+            Text(text = stringResource(id = R.string.rebroadcast_lock_event))
         }
     }
 }

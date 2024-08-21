@@ -165,7 +165,8 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 nip65Dao = appContainer.roomDb.nip65Dao(),
                 eventRelayDao = appContainer.roomDb.eventRelayDao(),
                 itemSetProvider = appContainer.itemSetProvider,
-                myPubkeyProvider = appContainer.accountManager
+                myPubkeyProvider = appContainer.accountManager,
+                accountLocker = appContainer.accountLocker,
             )
         },
         threadVM = viewModel {

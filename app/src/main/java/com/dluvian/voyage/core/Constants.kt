@@ -11,6 +11,8 @@ const val MAX_TOPICS = 5
 const val DELAY_1SEC = 1000L
 const val DELAY_10SEC = 10 * DELAY_1SEC
 
+const val REBROADCAST_DELAY = 2 * DELAY_1SEC
+
 const val RESUB_TIMEOUT = 2 * DELAY_10SEC
 
 const val SHORT_DEBOUNCE = 300L
