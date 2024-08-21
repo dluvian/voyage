@@ -150,10 +150,8 @@ class EventProcessor(
     private fun processLocks(locks: Collection<ValidatedLock>) {
         if (locks.isEmpty()) return
 
-        val unique = locks.distinctBy { it.pubkey }
-
         scope.launch {
-            Log.i(TAG, "Insert ${unique.size} locks")
+            Log.i(TAG, "Insert ${locks.size} locks")
             room.lockInsertDao().insertLocksTx(locks = locks)
         }
     }

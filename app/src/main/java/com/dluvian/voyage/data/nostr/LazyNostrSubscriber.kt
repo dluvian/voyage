@@ -36,6 +36,7 @@ import rust.nostr.protocol.KindEnum
 import rust.nostr.protocol.Nip19Profile
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Timestamp
+import kotlin.random.Random
 
 private const val TAG = "LazyNostrSubscriber"
 
@@ -56,7 +57,7 @@ class LazyNostrSubscriber(
         delay(DELAY_1SEC)
         lazySubNip65s(selection = FriendPubkeysNoLock)
         delay(DELAY_1SEC)
-        lazySubWebOfTrustPubkeys()
+        lazySubWebOfTrust()
     }
 
     suspend fun lazySubMyAccount() {
@@ -298,7 +299,7 @@ class LazyNostrSubscriber(
             .associateWith { newNip65Filter }
     }
 
-    private suspend fun lazySubWebOfTrustPubkeys() {
+    private suspend fun lazySubWebOfTrust() {
         val friendsWithMissingContacts = friendProvider.getFriendsWithMissingContactList()
         Log.d(TAG, "Missing contact lists of ${friendsWithMissingContacts.size} pubkeys")
         // Don't return early. We need to call lazySubNewestWotPubkeys later
@@ -316,11 +317,28 @@ class LazyNostrSubscriber(
                         .limitRestricted(limit = limitedPubkeys.size.toULong())
                 )
             }
-        val newestSubs = lazySubNewestWotPubkeys(until = timestamp)
 
-        mergeRelayFilters(missingSubs, newestSubs).forEach { (relay, filters) ->
+        mergeRelayFilters(
+            missingSubs,
+            lazySubNewestWotPubkeys(until = timestamp),
+            lazySubLocks()
+        ).forEach { (relay, filters) ->
             subCreator.subscribe(relayUrl = relay, filters = filters)
         }
+    }
+
+    private fun lazySubLocks(): Map<RelayUrl, List<Filter>> {
+        val pubkeys = webOfTrustProvider.getFriendsAndWebOfTrustPubkeys(
+            includeMyself = false,
+            friendsFirst = Random.nextBoolean() // Prioritize friends half of the time
+        ).map { PublicKey.fromHex(it) }
+        val lockFilter = listOf(
+            Filter()
+                .kind(kind = Kind(LOCK_U64.toUShort()))
+                .authors(authors = pubkeys)
+                .limitRestricted(limit = MAX_EVENTS_TO_SUB)
+        )
+        return relayProvider.getReadRelays().associateWith { lockFilter }
     }
 
     private suspend fun lazySubNewestWotPubkeys(until: Timestamp): Map<RelayUrl, List<Filter>> {

@@ -14,11 +14,13 @@ interface LockInsertDao {
     suspend fun insertLocksTx(locks: Collection<ValidatedLock>) {
         if (locks.isEmpty()) return
 
-        val lockedPubkeys = locks.map { it.pubkey }
-        val alreadyLocked = internalFilterLockedPubkeys(pubkeys = lockedPubkeys)
-        if (locks.size == alreadyLocked.size) return
+        val unique = locks.distinctBy { it.pubkey }
 
-        val filtered = locks.filter { !alreadyLocked.contains(it.pubkey) }
+        val lockedPubkeys = unique.map { it.pubkey }
+        val alreadyLocked = internalFilterLockedPubkeys(pubkeys = lockedPubkeys)
+        if (unique.size == alreadyLocked.size) return
+
+        val filtered = unique.filter { !alreadyLocked.contains(it.pubkey) }
             .map { LockEntity.from(validatedLock = it) }
 
         internalDeleteContactList(lockedPubkeys = lockedPubkeys)
