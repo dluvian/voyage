@@ -27,7 +27,7 @@ class WebOfTrustProvider(
         else mutableListOf()
 
         result.addAll(friendProvider.getFriendPubkeys(max = max))
-        result.addAll(webOfTrust.value.takeRandom(max))
+        result.addAll(webOfTrust.value.minus(result.toSet()).takeRandom(max))
 
         return if (friendsFirst) {
             result.take(max)
