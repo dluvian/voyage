@@ -16,12 +16,14 @@ fun ActionButton(
     isActive: Boolean,
     activeLabel: String,
     unactiveLabel: String,
+    isEnabled: Boolean = true,
     onActivate: Fn,
     onDeactivate: Fn
 ) {
     Button(
         modifier = Modifier.height(ButtonDefaults.MinHeight),
         onClick = { if (isActive) onDeactivate() else onActivate() },
+        enabled = isEnabled,
         colors = if (isActive) ButtonDefaults.buttonColors().copy(
             containerColor = MaterialTheme.colorScheme.background,
             contentColor = MaterialTheme.colorScheme.onBackground

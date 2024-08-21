@@ -129,6 +129,7 @@ class ProfileProvider(
                 val default = defaultPubkeys.toMutableSet()
                 default.removeAll(friendProvider.getFriendPubkeysNoLock().toSet())
                 default.remove(myPubkeyProvider.getPubkeyHex())
+                default.removeAll(lockProvider.getLockedPubkeys().toSet())
                 default
             }
         lazyNostrSubscriber

@@ -9,8 +9,10 @@ import kotlinx.coroutines.flow.stateIn
 
 class LockProvider(lockDao: LockDao) {
     private val scope = CoroutineScope(Dispatchers.IO)
-    private val lockedPubeys = lockDao.getLockedPubkeysFlow()
+    private val lockedPubkeys = lockDao.getLockedPubkeysFlow()
         .stateIn(scope, SharingStarted.Eagerly, emptyList())
 
-    fun isLocked(pubkey: PubkeyHex) = lockedPubeys.value.contains(pubkey)
+    fun isLocked(pubkey: PubkeyHex) = lockedPubkeys.value.contains(pubkey)
+
+    fun getLockedPubkeys() = lockedPubkeys.value
 }
