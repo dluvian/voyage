@@ -32,6 +32,7 @@ class ItemSetProvider(
     private val muteProvider: MuteProvider,
     private val annotatedStringProvider: AnnotatedStringProvider,
     private val relayProvider: RelayProvider,
+    private val lockProvider: LockProvider,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val allPubkeys = room.itemSetDao().getAllPubkeysFlow()
@@ -121,8 +122,9 @@ class ItemSetProvider(
                 metadata = null,
                 myPubkey = myPubkeyProvider.getPubkeyHex(),
                 friendProvider = friendProvider,
-                muteProvider = muteProvider, // TODO: lockProvider
-                itemSetProvider = this
+                muteProvider = muteProvider,
+                itemSetProvider = this,
+                lockProvider = lockProvider,
             )
         }
     }

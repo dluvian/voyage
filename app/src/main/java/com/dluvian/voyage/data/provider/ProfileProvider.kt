@@ -33,6 +33,7 @@ class ProfileProvider(
     private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val nostrSubscriber: NostrSubscriber,
     private val annotatedStringProvider: AnnotatedStringProvider,
+    private val lockProvider: LockProvider,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -85,7 +86,8 @@ class ProfileProvider(
                 myPubkey = myPubkeyProvider.getPubkeyHex(),
                 friendProvider = friendProvider,
                 muteProvider = muteProvider,
-                itemSetProvider = itemSetProvider
+                itemSetProvider = itemSetProvider,
+                lockProvider = lockProvider,
             )
 
         }
@@ -159,7 +161,8 @@ class ProfileProvider(
                     myPubkey = myPubkeyProvider.getPubkeyHex(),
                     friendProvider = friendProvider,
                     muteProvider = muteProvider,
-                    itemSetProvider = itemSetProvider
+                    itemSetProvider = itemSetProvider,
+                    lockProvider = lockProvider,
                 )
             }
         }
@@ -183,7 +186,8 @@ class ProfileProvider(
                     myPubkey = myPubkeyProvider.getPubkeyHex(),
                     friendProvider = friendProvider,
                     muteProvider = muteProvider,
-                    itemSetProvider = itemSetProvider
+                    itemSetProvider = itemSetProvider,
+                    lockProvider = lockProvider,
                 )
             }
         }
@@ -207,7 +211,8 @@ class ProfileProvider(
                     myPubkey = myPubkeyProvider.getPubkeyHex(),
                     friendProvider = friendProvider,
                     muteProvider = muteProvider,
-                    itemSetProvider = itemSetProvider
+                    itemSetProvider = itemSetProvider,
+                    lockProvider = lockProvider,
                 )
             }
         }
@@ -229,7 +234,8 @@ class ProfileProvider(
             myPubkey = myPubkeyProvider.getPubkeyHex(),
             friendProvider = friendProvider,
             muteProvider = muteProvider,
-            itemSetProvider = itemSetProvider
+            itemSetProvider = itemSetProvider,
+            lockProvider = lockProvider,
         )
         return FullProfileUI(
             inner = inner,

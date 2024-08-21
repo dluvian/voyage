@@ -20,6 +20,9 @@ interface LockDao {
     @Query("SELECT EXISTS(SELECT pubkey FROM lock WHERE pubkey IN (SELECT pubkey FROM account))")
     fun getMyLockFlow(): Flow<Boolean>
 
+    @Query("SELECT pubkey FROM lock")
+    fun getLockedPubkeysFlow(): Flow<List<PubkeyHex>>
+
     @Insert
     suspend fun insertLock(vararg lock: LockEntity)
 

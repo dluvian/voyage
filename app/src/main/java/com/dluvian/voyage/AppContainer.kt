@@ -51,6 +51,7 @@ import com.dluvian.voyage.data.provider.DatabaseInteractor
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.ItemSetProvider
+import com.dluvian.voyage.data.provider.LockProvider
 import com.dluvian.voyage.data.provider.MuteProvider
 import com.dluvian.voyage.data.provider.NameProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
@@ -114,12 +115,15 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
 
     val muteProvider = MuteProvider(muteDao = roomDb.muteDao())
 
+    val lockProvider = LockProvider(lockDao = roomDb.lockDao())
+
     val metadataInMemory = MetadataInMemory()
 
     private val nameProvider = NameProvider(
         profileDao = roomDb.profileDao(),
         metadataInMemory = metadataInMemory,
     )
+
 
     private val annotatedStringProvider = AnnotatedStringProvider(nameProvider = nameProvider)
 
@@ -150,7 +154,8 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
         friendProvider = friendProvider,
         muteProvider = muteProvider,
         annotatedStringProvider = annotatedStringProvider,
-        relayProvider = relayProvider
+        relayProvider = relayProvider,
+        lockProvider = lockProvider,
     )
 
     val topicProvider = TopicProvider(
@@ -362,6 +367,7 @@ class AppContainer(context: Context, storageHelper: SimpleStorageHelper) {
         lazyNostrSubscriber = lazyNostrSubscriber,
         nostrSubscriber = nostrSubscriber,
         annotatedStringProvider = annotatedStringProvider,
+        lockProvider = lockProvider,
     )
 
     val searchProvider = SearchProvider(
