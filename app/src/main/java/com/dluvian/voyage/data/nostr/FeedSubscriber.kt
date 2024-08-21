@@ -9,7 +9,7 @@ import com.dluvian.voyage.core.utils.syncedPutOrAdd
 import com.dluvian.voyage.core.utils.takeRandom
 import com.dluvian.voyage.core.utils.textNoteAndRepostKinds
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
-import com.dluvian.voyage.data.model.FriendPubkeys
+import com.dluvian.voyage.data.model.FriendPubkeysNoLock
 import com.dluvian.voyage.data.model.Global
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.InboxFeedSetting
@@ -189,7 +189,7 @@ class FeedSubscriber(
         if (limit <= 0u || since >= until) return emptyMap()
 
         val pubkeys = when (setting.pubkeySelection) {
-            FriendPubkeys -> friendProvider.getFriendPubkeys()
+            FriendPubkeysNoLock -> friendProvider.getFriendPubkeysNoLock()
             Global -> null
             WebOfTrustPubkeys -> null
             NoPubkeys -> return emptyMap()

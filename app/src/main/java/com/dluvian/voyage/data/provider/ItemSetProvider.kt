@@ -109,7 +109,7 @@ class ItemSetProvider(
     private suspend fun getProfilesFromList(identifier: String): List<AdvancedProfileView> {
         val known = room.profileDao().getAdvancedProfilesOfList(identifier = identifier)
         val unknown = room.profileDao().getUnknownPubkeysFromList(identifier = identifier)
-        val friendPubkeys = friendProvider.getFriendPubkeys()
+        val friendPubkeys = friendProvider.getFriendPubkeysNoLock()
         val mutedPubkeys = room.muteDao().getMyProfileMutes()
 
         return known + unknown.map { unknownPubkey ->
@@ -121,7 +121,7 @@ class ItemSetProvider(
                 metadata = null,
                 myPubkey = myPubkeyProvider.getPubkeyHex(),
                 friendProvider = friendProvider,
-                muteProvider = muteProvider,
+                muteProvider = muteProvider, // TODO: lockProvider
                 itemSetProvider = this
             )
         }

@@ -2,7 +2,7 @@ package com.dluvian.voyage.data.room.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.dluvian.voyage.data.model.FriendPubkeys
+import com.dluvian.voyage.data.model.FriendPubkeysNoLock
 import com.dluvian.voyage.data.model.Global
 import com.dluvian.voyage.data.model.InboxFeedSetting
 import com.dluvian.voyage.data.model.NoPubkeys
@@ -80,7 +80,7 @@ interface InboxDao {
         size: Int
     ): Flow<List<ReplyView>> {
         return when (setting.pubkeySelection) {
-            FriendPubkeys -> internalGetFriendReplyFlow(until = until, size = size)
+            FriendPubkeysNoLock -> internalGetFriendReplyFlow(until = until, size = size)
             WebOfTrustPubkeys -> internalGetWotReplyFlow(until = until, size = size)
             Global -> internalGetGlobalReplyFlow(until = until, size = size)
             NoPubkeys -> flowOf(emptyList())
@@ -93,7 +93,7 @@ interface InboxDao {
         size: Int
     ): List<ReplyView> {
         return when (setting.pubkeySelection) {
-            FriendPubkeys -> internalGetFriendReply(until = until, size = size)
+            FriendPubkeysNoLock -> internalGetFriendReply(until = until, size = size)
             WebOfTrustPubkeys -> internalGetWotReply(until = until, size = size)
             Global -> internalGetGlobalReply(until = until, size = size)
             NoPubkeys -> emptyList()
@@ -106,7 +106,7 @@ interface InboxDao {
         size: Int
     ): Flow<List<RootPostView>> {
         return when (setting.pubkeySelection) {
-            FriendPubkeys -> internalGetFriendRootFlow(until = until, size = size)
+            FriendPubkeysNoLock -> internalGetFriendRootFlow(until = until, size = size)
             WebOfTrustPubkeys -> internalGetWotRootFlow(until = until, size = size)
             Global -> internalGetGlobalRootFlow(until = until, size = size)
             NoPubkeys -> flowOf(emptyList())
@@ -119,7 +119,7 @@ interface InboxDao {
         size: Int
     ): List<RootPostView> {
         return when (setting.pubkeySelection) {
-            FriendPubkeys -> internalGetFriendRoot(until = until, size = size)
+            FriendPubkeysNoLock -> internalGetFriendRoot(until = until, size = size)
             WebOfTrustPubkeys -> internalGetWotRoot(until = until, size = size)
             Global -> internalGetGlobalRoot(until = until, size = size)
             NoPubkeys -> emptyList()
@@ -128,7 +128,7 @@ interface InboxDao {
 
     fun hasInboxFlow(setting: InboxFeedSetting, until: Long = Long.MAX_VALUE): Flow<Boolean> {
         return when (setting.pubkeySelection) {
-            FriendPubkeys -> internalHasFriendInboxFlow(until = until)
+            FriendPubkeysNoLock -> internalHasFriendInboxFlow(until = until)
             WebOfTrustPubkeys -> internalHasWotInboxFlow(until = until)
             Global -> internalHasGlobalInboxFlow(until = until)
             NoPubkeys -> flowOf(false)
@@ -141,7 +141,7 @@ interface InboxDao {
         size: Int
     ): List<Long> {
         return when (setting.pubkeySelection) {
-            FriendPubkeys -> internalGetFriendRootCreatedAt(until = until, size = size)
+            FriendPubkeysNoLock -> internalGetFriendRootCreatedAt(until = until, size = size)
                 .plus(internalGetFriendReplyCreatedAt(until = until, size = size))
 
             WebOfTrustPubkeys -> internalGetWotRootCreatedAt(until = until, size = size)

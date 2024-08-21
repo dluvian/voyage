@@ -18,7 +18,7 @@ import com.dluvian.voyage.core.InboxViewInit
 import com.dluvian.voyage.core.InboxViewRefresh
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.viewModel.InboxViewModel
-import com.dluvian.voyage.data.model.FriendPubkeys
+import com.dluvian.voyage.data.model.FriendPubkeysNoLock
 import com.dluvian.voyage.data.model.Global
 import com.dluvian.voyage.data.model.InboxFeedSetting
 import com.dluvian.voyage.data.model.WebOfTrustPubkeys
@@ -67,8 +67,8 @@ private fun Filter(setting: MutableState<InboxFeedSetting>) {
         )
         FeedPubkeySelectionRadio(
             current = setting.value.pubkeySelection,
-            target = FriendPubkeys,
-            onClick = { setting.value = setting.value.copy(pubkeySelection = FriendPubkeys) })
+            target = FriendPubkeysNoLock,
+            onClick = { setting.value = setting.value.copy(pubkeySelection = FriendPubkeysNoLock) })
         FeedPubkeySelectionRadio(
             current = setting.value.pubkeySelection,
             target = WebOfTrustPubkeys,

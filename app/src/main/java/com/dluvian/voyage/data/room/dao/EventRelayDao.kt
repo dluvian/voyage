@@ -2,9 +2,9 @@ package com.dluvian.voyage.data.room.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.room.view.EventRelayAuthorView
 import kotlinx.coroutines.flow.Flow
 
@@ -13,14 +13,19 @@ interface EventRelayDao {
     @Query("SELECT * FROM EventRelayAuthorView WHERE pubkey IN (:authors)")
     suspend fun getEventRelayAuthorView(authors: Collection<PubkeyHex>): List<EventRelayAuthorView>
 
-    @Query("SELECT * FROM EventRelayAuthorView WHERE pubkey IN (SELECT friendPubkey FROM friend)")
+    @Query(
+        "SELECT * FROM EventRelayAuthorView " +
+                "WHERE pubkey IN (SELECT friendPubkey FROM friend) " +
+                "AND pubkey NOT IN (SELECT pubkey FROM lock)"
+    )
     suspend fun getFriendsEventRelayAuthorView(): List<EventRelayAuthorView>
 
     @Query(
         "SELECT * " +
                 "FROM EventRelayAuthorView " +
                 "WHERE pubkey " +
-                "IN (SELECT pubkey FROM profileSetItem WHERE identifier = :identifier)"
+                "IN (SELECT pubkey FROM profileSetItem WHERE identifier = :identifier) " +
+                "AND pubkey NOT IN (SELECT pubkey FROM lock)"
     )
     suspend fun getEventRelayAuthorViewFromList(identifier: String): List<EventRelayAuthorView>
 

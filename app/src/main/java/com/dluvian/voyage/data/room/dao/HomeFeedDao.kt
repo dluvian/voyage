@@ -2,7 +2,7 @@ package com.dluvian.voyage.data.room.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.dluvian.voyage.data.model.FriendPubkeys
+import com.dluvian.voyage.data.model.FriendPubkeysNoLock
 import com.dluvian.voyage.data.model.Global
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.NoPubkeys
@@ -76,7 +76,7 @@ interface HomeFeedDao {
                 flowOf(emptyList())
             }
 
-            FriendPubkeys -> if (withMyTopics) {
+            FriendPubkeysNoLock -> if (withMyTopics) {
                 internalGetFriendOrTopicFlow(until = until, size = size)
             } else {
                 internalGetFriendFlow(until = until, size = size)
@@ -106,7 +106,7 @@ interface HomeFeedDao {
                 emptyList()
             }
 
-            FriendPubkeys -> if (withMyTopics) {
+            FriendPubkeysNoLock -> if (withMyTopics) {
                 internalGetFriendOrTopic(until = until, size = size)
             } else {
                 internalGetFriend(until = until, size = size)
@@ -136,7 +136,7 @@ interface HomeFeedDao {
                 flowOf(false)
             }
 
-            FriendPubkeys -> if (withMyTopics) {
+            FriendPubkeysNoLock -> if (withMyTopics) {
                 internalHasFriendOrTopicFlow(until = until, size = size)
             } else {
                 internalHasFriendFlow(until = until, size = size)
@@ -166,7 +166,7 @@ interface HomeFeedDao {
                 emptyList()
             }
 
-            FriendPubkeys -> if (withMyTopics) {
+            FriendPubkeysNoLock -> if (withMyTopics) {
                 internalGetFriendOrTopicCreatedAt(until = until, size = size)
             } else {
                 internalGetFriendCreatedAt(until = until, size = size)

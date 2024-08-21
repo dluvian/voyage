@@ -14,7 +14,7 @@ import com.dluvian.voyage.core.utils.takeRandom
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.event.LOCK_U64
 import com.dluvian.voyage.data.model.CustomPubkeys
-import com.dluvian.voyage.data.model.FriendPubkeys
+import com.dluvian.voyage.data.model.FriendPubkeysNoLock
 import com.dluvian.voyage.data.model.Global
 import com.dluvian.voyage.data.model.ListPubkeys
 import com.dluvian.voyage.data.model.NoPubkeys
@@ -54,7 +54,7 @@ class LazyNostrSubscriber(
         Log.d(TAG, "subMyAccountAndTrustData")
         lazySubMyAccount()
         delay(DELAY_1SEC)
-        lazySubNip65s(selection = FriendPubkeys)
+        lazySubNip65s(selection = FriendPubkeysNoLock)
         delay(DELAY_1SEC)
         lazySubWebOfTrustPubkeys()
     }
@@ -210,7 +210,7 @@ class LazyNostrSubscriber(
 
     suspend fun lazySubNip65s(selection: PubkeySelection) {
         val missingPubkeys = when (selection) {
-            FriendPubkeys -> friendProvider.getFriendsWithMissingNip65()
+            FriendPubkeysNoLock -> friendProvider.getFriendsWithMissingNip65()
 
             is CustomPubkeys -> relayProvider.filterMissingPubkeys(
                 pubkeys = selection.pubkeys.toList()
@@ -329,7 +329,7 @@ class LazyNostrSubscriber(
         if (newestCreatedAt >= until.asSecs()) return emptyMap()
 
         val friendPubkeys = friendProvider
-            .getFriendPubkeys(max = MAX_KEYS)
+            .getFriendPubkeysNoLock(max = MAX_KEYS)
             .map { PublicKey.fromHex(it) }
         val newWotFilter = listOf(
             Filter()

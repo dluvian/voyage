@@ -26,7 +26,7 @@ class WebOfTrustProvider(
         val result = if (includeMyself) mutableListOf(myPubkeyProvider.getPubkeyHex())
         else mutableListOf()
 
-        result.addAll(friendProvider.getFriendPubkeys(max = max))
+        result.addAll(friendProvider.getFriendPubkeysNoLock(max = max))
         result.addAll(webOfTrust.value.minus(result.toSet()).takeRandom(max))
 
         return if (friendsFirst) {

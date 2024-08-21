@@ -125,7 +125,7 @@ class ProfileProvider(
         val unfollowedPubkeys = room.profileDao().getPopularUnfollowedPubkeys(limit = limit)
             .ifEmpty {
                 val default = defaultPubkeys.toMutableSet()
-                default.removeAll(friendProvider.getFriendPubkeys().toSet())
+                default.removeAll(friendProvider.getFriendPubkeysNoLock().toSet())
                 default.remove(myPubkeyProvider.getPubkeyHex())
                 default
             }

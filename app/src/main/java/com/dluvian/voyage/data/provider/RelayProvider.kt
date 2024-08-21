@@ -16,7 +16,7 @@ import com.dluvian.voyage.core.utils.createLocalRelayUrl
 import com.dluvian.voyage.core.utils.putOrAdd
 import com.dluvian.voyage.core.utils.takeRandom
 import com.dluvian.voyage.data.model.CustomPubkeys
-import com.dluvian.voyage.data.model.FriendPubkeys
+import com.dluvian.voyage.data.model.FriendPubkeysNoLock
 import com.dluvian.voyage.data.model.Global
 import com.dluvian.voyage.data.model.ListPubkeys
 import com.dluvian.voyage.data.model.NoPubkeys
@@ -147,7 +147,7 @@ class RelayProvider(
 
     suspend fun getObserveRelays(selection: PubkeySelection): Map<RelayUrl, Set<PubkeyHex>> {
         when (selection) {
-            FriendPubkeys, is ListPubkeys -> {}
+            FriendPubkeysNoLock, is ListPubkeys -> {}
             is SingularPubkey -> {
                 return getObserveRelays(pubkey = selection.pubkey)
                     .associateWith { setOf(selection.pubkey) }
@@ -178,7 +178,7 @@ class RelayProvider(
         val connectedRelays = nostrClient.getAllConnectedUrls().toSet()
 
         val eventRelaysView = when (selection) {
-            is FriendPubkeys -> eventRelayDao.getFriendsEventRelayAuthorView()
+            is FriendPubkeysNoLock -> eventRelayDao.getFriendsEventRelayAuthorView()
             is CustomPubkeys -> eventRelayDao.getEventRelayAuthorView(
                 authors = selection.pubkeys.takeRandom(MAX_KEYS_SQL)
             )
@@ -198,7 +198,7 @@ class RelayProvider(
         val eventRelays = eventRelaysView.map { it.relayUrl }.toSet()
 
         val writeRelays = when (selection) {
-            is FriendPubkeys -> nip65Dao.getFriendsWriteRelays()
+            is FriendPubkeysNoLock -> nip65Dao.getFriendsWriteRelays()
             is CustomPubkeys -> nip65Dao.getWriteRelays(
                 pubkeys = selection.pubkeys.takeRandom(MAX_KEYS_SQL)
             )
