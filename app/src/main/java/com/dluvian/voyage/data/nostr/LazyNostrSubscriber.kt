@@ -169,7 +169,7 @@ class LazyNostrSubscriber(
     suspend fun lazySubUnknownProfiles() {
         val pubkeys = mutableListOf<PubkeyHex>()
         pubkeys.addAll(friendProvider.getFriendsWithMissingProfile())
-        pubkeys.addAll(webOfTrustProvider.getWotWithMissingProfile())
+        pubkeys.addAll(webOfTrustProvider.getWotWithMissingProfile().minus(pubkeys.toSet()))
 
         lazySubUnknownProfiles(selection = CustomPubkeys(pubkeys = pubkeys))
     }
@@ -185,14 +185,16 @@ class LazyNostrSubscriber(
 
         relayProvider.getObserveRelays(selection = CustomPubkeys(pubkeys = unknownPubkeys))
             .forEach { (relay, pubkeyBatch) ->
-                val limitedPubkeys = pubkeyBatch.takeRandom(MAX_KEYS)
-                val profileFilter = Filter()
-                    .kind(kind = Kind.fromEnum(KindEnum.Metadata))
-                    .authors(authors = limitedPubkeys.map { PublicKey.fromHex(it) })
-                    .until(timestamp = timestamp)
-                    .limitRestricted(limit = limitedPubkeys.size.toULong())
-                val filters = listOf(profileFilter)
-                subCreator.subscribe(relayUrl = relay, filters = filters)
+                if (pubkeyBatch.isNotEmpty()) {
+                    val limitedPubkeys = pubkeyBatch.takeRandom(MAX_KEYS)
+                    val profileFilter = Filter()
+                        .kind(kind = Kind.fromEnum(KindEnum.Metadata))
+                        .authors(authors = limitedPubkeys.map { PublicKey.fromHex(it) })
+                        .until(timestamp = timestamp)
+                        .limitRestricted(limit = limitedPubkeys.size.toULong())
+                    val filters = listOf(profileFilter)
+                    subCreator.subscribe(relayUrl = relay, filters = filters)
+                }
             }
     }
 
