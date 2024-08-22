@@ -332,6 +332,9 @@ class LazyNostrSubscriber(
             includeMyself = false,
             friendsFirst = Random.nextBoolean() // Prioritize friends half of the time
         ).map { PublicKey.fromHex(it) }
+
+        if (pubkeys.isEmpty()) return emptyMap()
+
         val lockFilter = listOf(
             Filter()
                 .kind(kind = Kind(LOCK_U64.toUShort()))
@@ -349,6 +352,9 @@ class LazyNostrSubscriber(
         val friendPubkeys = friendProvider
             .getFriendPubkeysNoLock(max = MAX_KEYS)
             .map { PublicKey.fromHex(it) }
+
+        if (friendPubkeys.isEmpty()) return emptyMap()
+
         val newWotFilter = listOf(
             Filter()
                 .kind(kind = Kind.fromEnum(KindEnum.ContactList))
