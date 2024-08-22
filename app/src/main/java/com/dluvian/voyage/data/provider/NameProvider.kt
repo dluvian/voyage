@@ -4,7 +4,7 @@ import android.util.Log
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
-import com.dluvian.voyage.data.nostr.NostrSubscriber
+import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.room.dao.ProfileDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +23,7 @@ class NameProvider(
     private val nameCache = Collections.synchronizedMap(mutableMapOf<PublicKey, String?>())
     private val subCache = Collections.synchronizedSet(mutableSetOf<PubkeyHex>())
     private val jobs = Collections.synchronizedMap(mutableMapOf<PublicKey, Job>())
-    lateinit var nostrSubscriber: NostrSubscriber
+    lateinit var lazyNostrSubscriber: LazyNostrSubscriber
 
 
     fun getName(nprofile: Nip19Profile): String? {
@@ -49,7 +49,7 @@ class NameProvider(
 
             if (subCache.add(hex)) {
                 Log.d(TAG, "Sub unknown profile $hex")
-                nostrSubscriber.subProfile(nprofile = nprofile)
+                lazyNostrSubscriber.semiLazySubProfile(nprofile = nprofile)
             }
         }
 

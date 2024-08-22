@@ -33,6 +33,7 @@ import com.dluvian.voyage.data.interactor.PostVoter
 import com.dluvian.voyage.data.interactor.ProfileFollower
 import com.dluvian.voyage.data.interactor.ThreadCollapser
 import com.dluvian.voyage.data.interactor.TopicFollower
+import com.dluvian.voyage.data.nostr.FilterCreator
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.nostr.NostrClient
 import com.dluvian.voyage.data.nostr.NostrService
@@ -124,7 +125,6 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
         metadataInMemory = metadataInMemory,
     )
 
-
     private val annotatedStringProvider = AnnotatedStringProvider(nameProvider = nameProvider)
 
     private val webOfTrustProvider = WebOfTrustProvider(
@@ -175,17 +175,24 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
         eventCounter = eventCounter
     )
 
+    private val filterCreator = FilterCreator(
+        room = roomDb,
+        myPubkeyProvider = accountManager,
+        lockProvider = lockProvider,
+        relayProvider = relayProvider,
+    )
+
     val lazyNostrSubscriber = LazyNostrSubscriber(
+        subCreator = subCreator,
         room = roomDb,
         relayProvider = relayProvider,
-        subCreator = subCreator,
+        filterCreator = filterCreator,
         webOfTrustProvider = webOfTrustProvider,
         friendProvider = friendProvider,
         topicProvider = topicProvider,
         myPubkeyProvider = accountManager,
         itemSetProvider = itemSetProvider,
         pubkeyProvider = pubkeyProvider,
-        lockProvider = lockProvider,
     )
 
     private val subBatcher = SubBatcher(subCreator = subCreator)
@@ -198,6 +205,7 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
         relayProvider = relayProvider,
         subBatcher = subBatcher,
         room = roomDb,
+        filterCreator = filterCreator,
     )
 
     val accountSwitcher = AccountSwitcher(
@@ -244,7 +252,7 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
     )
 
     init {
-        nameProvider.nostrSubscriber = nostrSubscriber
+        nameProvider.lazyNostrSubscriber = lazyNostrSubscriber
         pubkeyProvider.itemSetProvider = itemSetProvider
         nostrService.initialize(initRelayUrls = relayProvider.getReadRelays())
     }

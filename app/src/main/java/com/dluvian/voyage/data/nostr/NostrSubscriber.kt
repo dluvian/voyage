@@ -2,7 +2,6 @@ package com.dluvian.voyage.data.nostr
 
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.RESUB_TIMEOUT
-import com.dluvian.voyage.core.utils.textNoteAndRepostKinds
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.model.BookmarksFeedSetting
 import com.dluvian.voyage.data.model.FeedSetting
@@ -19,12 +18,8 @@ import com.dluvian.voyage.data.room.AppDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import rust.nostr.protocol.Filter
-import rust.nostr.protocol.Kind
-import rust.nostr.protocol.KindEnum
 import rust.nostr.protocol.Nip19Event
 import rust.nostr.protocol.Nip19Profile
-import rust.nostr.protocol.Timestamp
 import java.util.concurrent.atomic.AtomicBoolean
 
 class NostrSubscriber(
@@ -35,6 +30,7 @@ class NostrSubscriber(
     private val relayProvider: RelayProvider,
     private val subBatcher: SubBatcher,
     private val room: AppDatabase,
+    private val filterCreator: FilterCreator,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -116,33 +112,8 @@ class NostrSubscriber(
         }
     }
 
-    suspend fun subProfile(nprofile: Nip19Profile) {
-        val profileSince = room.profileDao()
-            .getMaxCreatedAt(pubkey = nprofile.publicKey().toHex())
-            ?.toULong()
-            ?: 1uL
-
-        val profileFilter = Filter()
-            .kind(kind = Kind.fromEnum(KindEnum.Metadata))
-            .author(author = nprofile.publicKey())
-            // No +1 because we don't cache all fields
-            .since(timestamp = Timestamp.fromSecs(profileSince))
-            .until(timestamp = Timestamp.now())
-            .limit(1u)
-        val filters = listOf(profileFilter)
-
-        relayProvider.getObserveRelays(nprofile = nprofile).forEach { relay ->
-            subCreator.subscribe(relayUrl = relay, filters = filters)
-        }
-    }
-
     suspend fun subPost(nevent: Nip19Event) {
-        val postFilter = Filter()
-            .kinds(kinds = textNoteAndRepostKinds)
-            .id(id = nevent.eventId())
-            .until(timestamp = Timestamp.now())
-            .limit(limit = 1u)
-        val filters = listOf(postFilter)
+        val filters = listOf(filterCreator.getPostFilter(eventId = nevent.eventId()))
 
         relayProvider.getObserveRelays(nevent = nevent, includeConnected = true).forEach { relay ->
             subCreator.subscribe(relayUrl = relay, filters = filters)
@@ -150,11 +121,7 @@ class NostrSubscriber(
     }
 
     suspend fun subContactList(nprofile: Nip19Profile) {
-        val contactFilter = Filter()
-            .kind(kind = Kind.fromEnum(KindEnum.ContactList))
-            .author(author = nprofile.publicKey())
-            .until(timestamp = Timestamp.now())
-            .limit(limit = 1u)
+        val contactFilter = filterCreator.getContactFilter(pubkeys = listOf(nprofile.publicKey()))
         val filters = listOf(contactFilter)
 
         relayProvider.getObserveRelays(nprofile = nprofile, includeConnected = false)
