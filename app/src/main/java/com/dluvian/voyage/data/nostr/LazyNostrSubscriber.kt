@@ -307,6 +307,7 @@ class LazyNostrSubscriber(
     ): Map<RelayUrl, List<Filter>> {
         val pubkeys = webOfTrustProvider.getFriendsAndWebOfTrustPubkeys(
             includeMyself = false,
+            max = MAX_KEYS,
             friendsFirst = prioritizeFriends,
         ).map { PublicKey.fromHex(it) }
 
