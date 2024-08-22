@@ -40,6 +40,7 @@ class ProfileProvider(
     fun getProfileFlow(nprofile: Nip19Profile, subProfile: Boolean): Flow<FullProfileUI> {
         val hex = nprofile.publicKey().toHex()
         scope.launchIO {
+            lazyNostrSubscriber.lazySubLock(nprofile = nprofile)
             lazyNostrSubscriber.lazySubNip65(nprofile = nprofile)
             var isNotInMemory = metadataInMemory.getMetadata(pubkey = hex) == null
             if (isNotInMemory && hex == myPubkeyProvider.getPubkeyHex()) {

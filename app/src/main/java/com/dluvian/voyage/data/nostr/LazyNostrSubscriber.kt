@@ -23,6 +23,7 @@ import com.dluvian.voyage.data.model.SingularPubkey
 import com.dluvian.voyage.data.model.WebOfTrustPubkeys
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.ItemSetProvider
+import com.dluvian.voyage.data.provider.LockProvider
 import com.dluvian.voyage.data.provider.PubkeyProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
@@ -50,6 +51,7 @@ class LazyNostrSubscriber(
     private val myPubkeyProvider: IMyPubkeyProvider,
     private val itemSetProvider: ItemSetProvider,
     private val pubkeyProvider: PubkeyProvider,
+    private val lockProvider: LockProvider,
 ) {
     suspend fun lazySubMyAccountAndTrustData() {
         Log.d(TAG, "subMyAccountAndTrustData")
@@ -119,6 +121,21 @@ class LazyNostrSubscriber(
         getWotLockFilters(prioritizeFriends = prioritizeFriends).forEach { (relay, filters) ->
             subCreator.subscribe(relayUrl = relay, filters = filters)
         }
+    }
+
+    suspend fun lazySubLock(nprofile: Nip19Profile) {
+        if (lockProvider.isLocked(pubkey = nprofile.publicKey().toHex())) return
+
+        val lockFilter = listOf(
+            Filter()
+                .kind(kind = Kind(LOCK_U64.toUShort()))
+                .author(author = nprofile.publicKey())
+                .limitRestricted(limit = 1uL)
+        )
+        relayProvider.getObserveRelays(nprofile = nprofile)
+            .forEach { relay ->
+                subCreator.subscribe(relayUrl = relay, filters = lockFilter)
+            }
     }
 
     suspend fun lazySubMySets() {

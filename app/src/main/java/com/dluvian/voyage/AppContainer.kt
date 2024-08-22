@@ -184,7 +184,8 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
         topicProvider = topicProvider,
         myPubkeyProvider = accountManager,
         itemSetProvider = itemSetProvider,
-        pubkeyProvider = pubkeyProvider
+        pubkeyProvider = pubkeyProvider,
+        lockProvider = lockProvider,
     )
 
     private val subBatcher = SubBatcher(subCreator = subCreator)
