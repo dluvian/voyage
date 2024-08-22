@@ -374,7 +374,6 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
         muteProvider = muteProvider,
         itemSetProvider = itemSetProvider,
         lazyNostrSubscriber = lazyNostrSubscriber,
-        nostrSubscriber = nostrSubscriber,
         annotatedStringProvider = annotatedStringProvider,
         lockProvider = lockProvider,
     )

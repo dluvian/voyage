@@ -10,7 +10,6 @@ import com.dluvian.voyage.data.model.CustomPubkeys
 import com.dluvian.voyage.data.model.FullProfileUI
 import com.dluvian.voyage.data.model.RelevantMetadata
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
-import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.room.AppDatabase
 import com.dluvian.voyage.data.room.entity.ProfileEntity
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
@@ -31,7 +30,6 @@ class ProfileProvider(
     private val muteProvider: MuteProvider,
     private val itemSetProvider: ItemSetProvider,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
-    private val nostrSubscriber: NostrSubscriber,
     private val annotatedStringProvider: AnnotatedStringProvider,
     private val lockProvider: LockProvider,
 ) {
@@ -40,8 +38,6 @@ class ProfileProvider(
     fun getProfileFlow(nprofile: Nip19Profile, subProfile: Boolean): Flow<FullProfileUI> {
         val hex = nprofile.publicKey().toHex()
         scope.launchIO {
-            lazyNostrSubscriber.lazySubLock(nprofile = nprofile)
-            lazyNostrSubscriber.lazySubNip65(nprofile = nprofile)
             var isNotInMemory = metadataInMemory.getMetadata(pubkey = hex) == null
             if (isNotInMemory && hex == myPubkeyProvider.getPubkeyHex()) {
                 val dbMeta = room.fullProfileDao().getFullProfile()?.toRelevantMetadata()
@@ -50,9 +46,10 @@ class ProfileProvider(
                     isNotInMemory = false
                 }
             }
-            if (!subProfile || isNotInMemory) {
-                nostrSubscriber.subProfile(nprofile = nprofile)
-            }
+            lazyNostrSubscriber.lazySubOpenProfile(
+                nprofile = nprofile,
+                subMeta = subProfile || isNotInMemory
+            )
         }
         return combine(
             room.profileDao().getAdvancedProfileFlow(pubkey = hex),
