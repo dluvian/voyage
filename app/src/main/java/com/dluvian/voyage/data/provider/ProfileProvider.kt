@@ -146,8 +146,8 @@ class ProfileProvider(
                 else friend
             }
         val friendsWithoutProfile = room.profileDao().getUnknownFriends()
-        lazyNostrSubscriber
-            .lazySubUnknownProfiles(selection = CustomPubkeys(pubkeys = friendsWithoutProfile))
+        lazyNostrSubscriber.lazySubUnknownProfiles(CustomPubkeys(pubkeys = friendsWithoutProfile))
+        lazyNostrSubscriber.lazySubWotLocks(prioritizeFriends = true)
 
         return combine(forcedFollowFlow, forcedMuteFlow) { forcedFollows, forcedMutes ->
             friends.map {
@@ -173,6 +173,7 @@ class ProfileProvider(
         // We want to be able to unmute on the same list
         val mutedProfiles = room.profileDao().getAdvancedProfilesOfMutes()
         val mutesWithoutProfile = room.profileDao().getUnknownMutes()
+        lazyNostrSubscriber.lazySubWotLocks(prioritizeFriends = false)
 
         return combine(forcedFollowFlow, forcedMuteFlow) { forcedFollows, forcedMutes ->
             mutedProfiles.map {

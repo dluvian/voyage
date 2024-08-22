@@ -115,6 +115,12 @@ class LazyNostrSubscriber(
         )
     }
 
+    fun lazySubWotLocks(prioritizeFriends: Boolean) {
+        getWotLockFilters(prioritizeFriends = prioritizeFriends).forEach { (relay, filters) ->
+            subCreator.subscribe(relayUrl = relay, filters = filters)
+        }
+    }
+
     suspend fun lazySubMySets() {
         Log.d(TAG, "lazySubMySets")
         val timestamp = Timestamp.now()
@@ -249,7 +255,7 @@ class LazyNostrSubscriber(
                         .limitRestricted(limit = limitedPubkeys.size.toULong())
                 )
             }
-        val newestSubs = semiLazySubNewestNip65s(
+        val newestSubs = getNewestNip65sFilters(
             until = now,
             selection = selection,
             excludePubkeys = missingPubkeys
@@ -276,7 +282,7 @@ class LazyNostrSubscriber(
         }
     }
 
-    private suspend fun semiLazySubNewestNip65s(
+    private suspend fun getNewestNip65sFilters(
         until: Timestamp,
         selection: PubkeySelection,
         excludePubkeys: Set<PubkeyHex> = emptySet()
@@ -322,17 +328,19 @@ class LazyNostrSubscriber(
 
         mergeRelayFilters(
             missingSubs,
-            lazySubNewestWotPubkeys(until = timestamp),
-            lazySubLocks()
+            getNewestWotPubkeysFilters(until = timestamp),
+            getWotLockFilters()
         ).forEach { (relay, filters) ->
             subCreator.subscribe(relayUrl = relay, filters = filters)
         }
     }
 
-    private fun lazySubLocks(): Map<RelayUrl, List<Filter>> {
+    private fun getWotLockFilters(
+        prioritizeFriends: Boolean = Random.nextBoolean() // Prioritize friends half of the time
+    ): Map<RelayUrl, List<Filter>> {
         val pubkeys = webOfTrustProvider.getFriendsAndWebOfTrustPubkeys(
             includeMyself = false,
-            friendsFirst = Random.nextBoolean() // Prioritize friends half of the time
+            friendsFirst = prioritizeFriends,
         ).map { PublicKey.fromHex(it) }
 
         if (pubkeys.isEmpty()) return emptyMap()
@@ -346,7 +354,7 @@ class LazyNostrSubscriber(
         return relayProvider.getReadRelays().associateWith { lockFilter }
     }
 
-    private suspend fun lazySubNewestWotPubkeys(until: Timestamp): Map<RelayUrl, List<Filter>> {
+    private suspend fun getNewestWotPubkeysFilters(until: Timestamp): Map<RelayUrl, List<Filter>> {
         val newestCreatedAt = webOfTrustProvider.getNewestCreatedAt()?.toULong()
             ?: return emptyMap()
         if (newestCreatedAt >= until.asSecs()) return emptyMap()
