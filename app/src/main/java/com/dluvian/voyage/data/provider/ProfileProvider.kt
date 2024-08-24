@@ -18,6 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import rust.nostr.protocol.Nip19Profile
 
 class ProfileProvider(
@@ -164,6 +165,8 @@ class ProfileProvider(
                     lockProvider = lockProvider,
                 )
             }
+        }.map { friendList ->
+            friendList.sortedByDescending { it.isLocked || it.isMuted }
         }
     }
 
