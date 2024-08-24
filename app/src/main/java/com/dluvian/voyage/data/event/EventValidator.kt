@@ -39,7 +39,7 @@ private val INTEREST_SET_U16 = Kind.fromEnum(KindEnum.InterestSet).asU16()
 private val INTERESTS_U16 = Kind.fromEnum(KindEnum.Interests).asU16()
 private val BOOKMARKS_U16 = Kind.fromEnum(KindEnum.Bookmarks).asU16()
 private val MUTE_LIST_U16 = Kind.fromEnum(KindEnum.MuteList).asU16()
-val LOCK_U16: UShort = 555u
+val LOCK_U16: UShort = 398u
 
 class EventValidator(
     private val syncedFilterCache: Map<SubId, List<Filter>>,
