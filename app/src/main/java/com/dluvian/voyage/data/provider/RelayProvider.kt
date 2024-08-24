@@ -167,7 +167,6 @@ class RelayProvider(
             NoPubkeys -> return emptyMap()
             WebOfTrustPubkeys -> return getReadRelays().associateWith {
                 webOfTrustProvider.getFriendsAndWebOfTrustPubkeys(
-                    includeMyself = false,
                     max = MAX_KEYS,
                     friendsFirst = false
                 ).toSet()

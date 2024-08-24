@@ -128,7 +128,6 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
     private val annotatedStringProvider = AnnotatedStringProvider(nameProvider = nameProvider)
 
     private val webOfTrustProvider = WebOfTrustProvider(
-        myPubkeyProvider = accountManager,
         friendProvider = friendProvider,
         webOfTrustDao = roomDb.webOfTrustDao()
     )

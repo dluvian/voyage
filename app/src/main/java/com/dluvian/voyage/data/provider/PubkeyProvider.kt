@@ -24,7 +24,7 @@ class PubkeyProvider(
             is SingularPubkey -> selection.asList()
             Global -> emptyList()
             NoPubkeys -> emptyList()
-            WebOfTrustPubkeys -> webOfTrustProvider.getFriendsAndWebOfTrustPubkeys(includeMyself = false)
+            WebOfTrustPubkeys -> webOfTrustProvider.getFriendsAndWebOfTrustPubkeys()
         }
     }
 }
