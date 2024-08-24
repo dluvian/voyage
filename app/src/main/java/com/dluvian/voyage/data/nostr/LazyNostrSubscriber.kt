@@ -10,7 +10,7 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.utils.mergeRelayFilters
 import com.dluvian.voyage.core.utils.takeRandom
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
-import com.dluvian.voyage.data.event.LOCK_U64
+import com.dluvian.voyage.data.event.LOCK_U16
 import com.dluvian.voyage.data.model.CustomPubkeys
 import com.dluvian.voyage.data.model.FriendPubkeysNoLock
 import com.dluvian.voyage.data.model.Global
@@ -77,7 +77,7 @@ class LazyNostrSubscriber(
                 Pair(Kind.fromEnum(KindEnum.RelayList).asU16(), nip65Since + 1uL),
                 Pair(Kind.fromEnum(KindEnum.Metadata).asU16(), profileSince + 1uL),
             ).let {
-                if (isLocked) it else it + Pair(LOCK_U64.toUShort(), 1uL)
+                if (isLocked) it else it + Pair(LOCK_U16, 1uL)
             }
         )
     }

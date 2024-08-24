@@ -28,18 +28,18 @@ import rust.nostr.protocol.PublicKey
 
 private const val TAG = "EventValidator"
 
-private val TEXT_NOTE_U64 = Kind.fromEnum(KindEnum.TextNote).asU64()
-private val REPOST_U64 = Kind.fromEnum(KindEnum.Repost).asU64()
-private val REACTION_U64 = Kind.fromEnum(KindEnum.Reaction).asU64()
-private val CONTACT_U64 = Kind.fromEnum(KindEnum.ContactList).asU64()
-private val RELAYS_U64 = Kind.fromEnum(KindEnum.RelayList).asU64()
-private val METADATA_U64 = Kind.fromEnum(KindEnum.Metadata).asU64()
-private val FOLLOW_SET_U64 = Kind.fromEnum(KindEnum.FollowSet).asU64()
-private val INTEREST_SET_U64 = Kind.fromEnum(KindEnum.InterestSet).asU64()
-private val INTERESTS_U64 = Kind.fromEnum(KindEnum.Interests).asU64()
-private val BOOKMARKS_U64 = Kind.fromEnum(KindEnum.Bookmarks).asU64()
-private val MUTE_LIST_U64 = Kind.fromEnum(KindEnum.MuteList).asU64()
-val LOCK_U64 = 1000uL
+private val TEXT_NOTE_U16 = Kind.fromEnum(KindEnum.TextNote).asU16()
+private val REPOST_U16 = Kind.fromEnum(KindEnum.Repost).asU16()
+private val REACTION_U16 = Kind.fromEnum(KindEnum.Reaction).asU16()
+private val CONTACT_U16 = Kind.fromEnum(KindEnum.ContactList).asU16()
+private val RELAYS_U16 = Kind.fromEnum(KindEnum.RelayList).asU16()
+private val METADATA_U16 = Kind.fromEnum(KindEnum.Metadata).asU16()
+private val FOLLOW_SET_U16 = Kind.fromEnum(KindEnum.FollowSet).asU16()
+private val INTEREST_SET_U16 = Kind.fromEnum(KindEnum.InterestSet).asU16()
+private val INTERESTS_U16 = Kind.fromEnum(KindEnum.Interests).asU16()
+private val BOOKMARKS_U16 = Kind.fromEnum(KindEnum.Bookmarks).asU16()
+private val MUTE_LIST_U16 = Kind.fromEnum(KindEnum.MuteList).asU16()
+val LOCK_U16: UShort = 555u
 
 class EventValidator(
     private val syncedFilterCache: Map<SubId, List<Filter>>,
@@ -83,15 +83,15 @@ class EventValidator(
 
     private fun validate(event: Event, relayUrl: RelayUrl): ValidatedEvent? {
         // Match against enum once included in rust-nostr
-        val validatedEvent = when (event.kind().asU64()) {
-            TEXT_NOTE_U64 -> createValidatedMainPost(
+        val validatedEvent = when (event.kind().asU16()) {
+            TEXT_NOTE_U16 -> createValidatedMainPost(
                 event = event,
                 relayUrl = relayUrl,
                 myPubkey = myPubkeyProvider.getPublicKey()
             )
 
-            REPOST_U64 -> createValidatedRepost(event = event, relayUrl = relayUrl)
-            REACTION_U64 -> {
+            REPOST_U16 -> createValidatedRepost(event = event, relayUrl = relayUrl)
+            REACTION_U16 -> {
                 if (event.content() == "-") return null
                 val postId = event.eventIds().firstOrNull() ?: return null
                 ValidatedVote(
@@ -102,7 +102,7 @@ class EventValidator(
                 )
             }
 
-            CONTACT_U64 -> {
+            CONTACT_U16 -> {
                 val author = event.author()
                 ValidatedContactList(
                     pubkey = author.toHex(),
@@ -116,7 +116,7 @@ class EventValidator(
                 )
             }
 
-            RELAYS_U64 -> {
+            RELAYS_U16 -> {
                 val relays = event.getNip65s()
                 if (relays.isEmpty()) return null
                 ValidatedNip65(
@@ -126,7 +126,7 @@ class EventValidator(
                 )
             }
 
-            METADATA_U64 -> {
+            METADATA_U16 -> {
                 val metadata = event.getMetadata() ?: return null
                 ValidatedProfile(
                     id = event.id().toHex(),
@@ -136,17 +136,17 @@ class EventValidator(
                 )
             }
 
-            FOLLOW_SET_U64 -> {
+            FOLLOW_SET_U16 -> {
                 if (event.author().toHex() != myPubkeyProvider.getPubkeyHex()) return null
                 createValidatedProfileSet(event = event)
             }
 
-            INTEREST_SET_U64 -> {
+            INTEREST_SET_U16 -> {
                 if (event.author().toHex() != myPubkeyProvider.getPubkeyHex()) return null
                 createValidatedTopicSet(event = event)
             }
 
-            INTERESTS_U64 -> {
+            INTERESTS_U16 -> {
                 val authorHex = event.author().toHex()
                 if (authorHex != myPubkeyProvider.getPubkeyHex()) return null
                 ValidatedTopicList(
@@ -159,7 +159,7 @@ class EventValidator(
                 )
             }
 
-            BOOKMARKS_U64 -> {
+            BOOKMARKS_U16 -> {
                 val authorHex = event.author().toHex()
                 if (authorHex != myPubkeyProvider.getPubkeyHex()) return null
                 ValidatedBookmarkList(
@@ -173,7 +173,7 @@ class EventValidator(
                 )
             }
 
-            MUTE_LIST_U64 -> {
+            MUTE_LIST_U16 -> {
                 val authorHex = event.author().toHex()
                 if (authorHex != myPubkeyProvider.getPubkeyHex()) return null
                 ValidatedMuteList(
@@ -188,7 +188,7 @@ class EventValidator(
                 )
             }
 
-            LOCK_U64 -> ValidatedLock(pubkey = event.author().toHex(), json = event.asJson())
+            LOCK_U16 -> ValidatedLock(pubkey = event.author().toHex(), json = event.asJson())
 
             else -> {
                 Log.w(TAG, "Invalid event kind ${event.asJson()}")

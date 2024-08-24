@@ -4,7 +4,7 @@ import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
 import com.dluvian.voyage.core.utils.limitRestricted
 import com.dluvian.voyage.core.utils.textNoteAndRepostKinds
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
-import com.dluvian.voyage.data.event.LOCK_U64
+import com.dluvian.voyage.data.event.LOCK_U16
 import com.dluvian.voyage.data.provider.LockProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.AppDatabase
@@ -71,7 +71,7 @@ class FilterCreator(
         if (pubkeys.isEmpty()) return null
 
         return Filter()
-            .kind(kind = Kind(LOCK_U64.toUShort()))
+            .kind(kind = Kind(LOCK_U16))
             .authors(authors = pubkeys)
             .limitRestricted(limit = pubkeys.size.toULong())
     }
