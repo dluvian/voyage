@@ -55,6 +55,7 @@ import com.dluvian.voyage.core.UseDefaultAccount
 import com.dluvian.voyage.core.model.AccountType
 import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
+import com.dluvian.voyage.core.model.Locked
 import com.dluvian.voyage.core.utils.toShortenedNpub
 import com.dluvian.voyage.core.utils.toTextFieldValue
 import com.dluvian.voyage.core.viewModel.SettingsViewModel
@@ -69,6 +70,7 @@ import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.ui.theme.WarningIcon
 import com.dluvian.voyage.ui.theme.getAccountColor
 import com.dluvian.voyage.ui.theme.getAccountIcon
+import com.dluvian.voyage.ui.theme.getTrustColor
 import com.dluvian.voyage.ui.theme.spacing
 import kotlinx.coroutines.CoroutineScope
 
@@ -153,6 +155,7 @@ private fun AccountSection(
         if (showLockDialog.value) BaseActionDialog(
             title = stringResource(id = R.string.lock_your_account),
             icon = WarningIcon,
+            iconTint = getTrustColor(trustType = Locked),
             text = stringResource(id = R.string.lock_your_account_warning),
             confirmText = stringResource(id = R.string.lock_my_account),
             onConfirm = {

@@ -2,9 +2,11 @@ package com.dluvian.voyage.ui.components.dialog
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
@@ -19,6 +21,7 @@ fun BaseActionDialog(
     confirmText: String = stringResource(id = R.string.confirm),
     cancelText: String = stringResource(id = R.string.cancel),
     icon: ImageVector? = null,
+    iconTint: Color? = null,
     onConfirm: Fn,
     onDismiss: Fn,
 ) {
@@ -36,7 +39,15 @@ fun BaseActionDialog(
                 Text(text = confirmText)
             }
         },
-        icon = { icon?.let { Icon(imageVector = it, contentDescription = null) } },
+        icon = {
+            icon?.let {
+                Icon(
+                    imageVector = it,
+                    tint = iconTint ?: LocalContentColor.current,
+                    contentDescription = null
+                )
+            }
+        },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text(text = cancelText) }
         },
@@ -51,6 +62,7 @@ fun BaseActionDialog(
     confirmText: String = stringResource(id = R.string.confirm),
     cancelText: String = stringResource(id = R.string.cancel),
     icon: ImageVector? = null,
+    iconTint: Color? = null,
     onConfirm: Fn,
     onDismiss: Fn,
 ) {
@@ -61,6 +73,7 @@ fun BaseActionDialog(
         confirmText = confirmText,
         cancelText = cancelText,
         icon = icon,
+        iconTint = iconTint,
         onConfirm = onConfirm,
         onDismiss = onDismiss
     )
