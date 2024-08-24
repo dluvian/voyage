@@ -61,14 +61,14 @@ class NostrSubscriber(
                 setting = setting,
                 until = until.toULong(),
                 since = since,
-                limit = (3 * limit).toULong() // We don't know if we receive enough root posts
+                limit = (4 * limit).toULong() // We don't know if we receive enough root posts
             )
 
             is ListFeedSetting -> feedSubscriber.getListFeedSubscriptions(
                 identifier = setting.identifier,
                 until = until.toULong(),
                 since = since,
-                limit = (3 * limit).toULong() // We don't know if we receive enough root posts
+                limit = (4 * limit).toULong() // We don't know if we receive enough root posts
             )
 
             is TopicFeedSetting -> feedSubscriber.getTopicFeedSubscription(
@@ -76,21 +76,21 @@ class NostrSubscriber(
                 until = until.toULong(),
                 since = since,
                 // Smaller than adjustedLimit, bc posts with topics tend to be root
-                limit = (2 * limit).toULong()
+                limit = (3 * limit).toULong()
             )
 
             is ReplyFeedSetting -> feedSubscriber.getProfileFeedSubscription(
                 nprofile = setting.nprofile,
                 until = until.toULong(),
                 since = since,
-                limit = (2 * limit).toULong()
+                limit = (3 * limit).toULong()
             )
 
             is ProfileRootFeedSetting -> feedSubscriber.getProfileFeedSubscription(
                 nprofile = setting.nprofile,
                 until = until.toULong(),
                 since = since,
-                limit = (3 * limit).toULong()
+                limit = (4 * limit).toULong()
             )
 
             is InboxFeedSetting -> feedSubscriber.getInboxFeedSubscription(
@@ -205,7 +205,7 @@ class NostrSubscriber(
                 until = until,
                 size = pageSize
             )
-        }
+        }.sortedDescending()
         if (timestamps.size < pageSize) return 1uL
 
         val max = timestamps.first()
