@@ -24,7 +24,6 @@ import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.SendPost
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.UpdatePostTopics
 import com.dluvian.voyage.core.viewModel.CreatePostViewModel
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.ui.components.row.TopicSelectionRow
@@ -52,7 +51,6 @@ fun CreatePostView(
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(key1 = Unit) {
         focusRequester.requestFocus()
-        onUpdate(UpdatePostTopics)
     }
 
     ContentCreationScaffold(
