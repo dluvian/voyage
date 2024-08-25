@@ -257,4 +257,6 @@
     <string name="locked">Locked</string>
     <string name="this_user_is_locked_and_should_not_be_trusted">This user is locked and should not be trusted anymore.</string>
     <string name="rebroadcast_lock_event">Rebroadcast lock event</string>
+    <string name="give_us_feedback">Give us feedback</string>
+    <string name="write_a_bug_report_or_feature_request">Write a bug report or feature request</string>
 </resources>

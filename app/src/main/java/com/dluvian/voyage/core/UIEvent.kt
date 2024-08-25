@@ -8,6 +8,7 @@ import com.dluvian.voyage.core.model.ItemSetItem
 import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.navigator.BookmarksNavView
+import com.dluvian.voyage.core.navigator.CreateGitIssueNavView
 import com.dluvian.voyage.core.navigator.CreatePostNavView
 import com.dluvian.voyage.core.navigator.CrossPostCreationNavView
 import com.dluvian.voyage.core.navigator.DiscoverNavView
@@ -63,6 +64,7 @@ sealed class PushNavEvent : NavEvent() {
             ClickBookmarks -> BookmarksNavView
             ClickMuteList -> MuteListNavView
             ClickCreateList -> EditNewListNavView
+            ClickCreateGitIssue -> CreateGitIssueNavView
             is OpenThread -> ThreadNavView(rootPost = this.rootPost)
             is OpenProfile -> ProfileNavView(nprofile = this.nprofile)
             is OpenTopic -> TopicNavView(topic = this.topic)
@@ -88,6 +90,7 @@ data object ClickFollowLists : PushNavEvent()
 data object ClickBookmarks : PushNavEvent()
 data object ClickMuteList : PushNavEvent()
 data object ClickCreateList : PushNavEvent()
+data object ClickCreateGitIssue : PushNavEvent()
 
 
 sealed class AdvancedPushNavEvent : PushNavEvent()

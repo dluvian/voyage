@@ -42,6 +42,7 @@ data object RelayEditorNavView : SimpleNonMainNavView()
 data object FollowListsNavView : SimpleNonMainNavView()
 data object BookmarksNavView : SimpleNonMainNavView()
 data object MuteListNavView : SimpleNonMainNavView()
+data object CreateGitIssueNavView : SimpleNonMainNavView()
 
 
 sealed class AdvancedNonMainNavView : NonMainNavView()

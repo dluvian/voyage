@@ -32,6 +32,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ChangeUpvoteContent
+import com.dluvian.voyage.core.ClickCreateGitIssue
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.DeleteAllPosts
 import com.dluvian.voyage.core.ExportDatabase
@@ -395,6 +396,12 @@ private fun AppSection(currentUpvote: String, onUpdate: OnUpdate) {
             header = stringResource(id = R.string.upvote_event_content) + ": $currentUpvote",
             text = stringResource(id = R.string.this_affects_how_other_clients_render_your_upvotes),
             onClick = { showUpvoteDialog.value = true }
+        )
+
+        ClickableRow(
+            header = stringResource(id = R.string.give_us_feedback),
+            text = stringResource(id = R.string.write_a_bug_report_or_feature_request),
+            onClick = { onUpdate(ClickCreateGitIssue) }
         )
 
         ClickableRow(
