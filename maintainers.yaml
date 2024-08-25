@@ -1,0 +1,9 @@
+identifier: voyage
+maintainers:
+  - npub1useke4f9maul5nf67dj0m9sq6jcsmnjzzk4ycvldwl4qss35fvgqjdk5ks
+relays:
+  - wss://relay.mutinywallet.com/
+  - wss://nostr.einundzwanzig.space/
+  - wss://nos.lol/
+  - wss://nostr.bitcoiner.social/
+  - wss://relay.nostr.wirednet.jp/
