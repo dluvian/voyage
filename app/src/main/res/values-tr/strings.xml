@@ -42,8 +42,10 @@
     <string name="popular_profiles">Popüler profiller</string>
     <string name="no_profiles_found">Profil bulunamadı</string>
     <string name="no_topics_found">Konu bulunamadı</string>
+    <string name="subject">Konu</string>
     <string name="subject_optional">Konu (isteğe bağlı)</string>
     <string name="body_text">Gövde metni</string>
+    <string name="body_text_optional">Gövde metni (isteğe bağlı)</string>
     <string name="send">Gönder</string>
     <string name="failed_to_create_post">Gönderi oluşturulamadı</string>
     <string name="edit">Düzenle</string>
@@ -252,4 +254,8 @@
     <string name="locked">Kilitli</string>
     <string name="this_user_is_locked_and_should_not_be_trusted">Bu kullanıcı kilitlendi ve artık güvenilmemeli.</string>
     <string name="rebroadcast_lock_event">Kilit olayını yeniden yayınla</string>
+    <string name="give_us_feedback">Bize geri bildirimde bulunun</string>
+    <string name="write_a_bug_report_or_feature_request">Bir hata raporu veya özellik talebi yazın</string>
+    <string name="issue_created">Sorun oluşturuldu</string>
+    <string name="failed_to_create_issue">Sorun oluşturulamadı</string>
 </resources>

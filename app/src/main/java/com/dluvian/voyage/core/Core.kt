@@ -99,6 +99,7 @@ class Core(
             is ProfileViewAction -> vmContainer.profileVM.handle(action = uiEvent)
             is SettingsViewAction -> vmContainer.settingsVM.handle(action = uiEvent)
             is CreatePostViewAction -> vmContainer.createPostVM.handle(action = uiEvent)
+            is CreateGitIssueViewAction -> vmContainer.createGitIssueVM.handle(action = uiEvent)
             is CreateReplyViewAction -> vmContainer.createReplyVM.handle(action = uiEvent)
             is CreateCrossPostViewAction -> vmContainer.createCrossPostVM.handle(action = uiEvent)
             is SearchViewAction -> vmContainer.searchVM.handle(action = uiEvent)

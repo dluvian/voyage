@@ -5,6 +5,7 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.core.model.GitIssue
 import com.dluvian.voyage.core.utils.extractCleanHashtags
 import com.dluvian.voyage.core.utils.getNormalizedTopics
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
@@ -43,10 +44,7 @@ class PostSender(
         val trimmedBody = body.trim()
         val concat = "$trimmedHeader $trimmedBody"
 
-        val mentions = extractMentionPubkeys(content = concat).let { pubkeys ->
-            if (!isAnon) pubkeys.filter { it != myPubkeyProvider.getPubkeyHex() }
-            else pubkeys
-        }
+        val mentions = extractMentionsFromString(content = concat, isAnon = isAnon)
         val allTopics = topics.toMutableList()
         allTopics.addAll(extractCleanHashtags(content = concat))
 
@@ -159,6 +157,21 @@ class PostSender(
         }
     }
 
+    suspend fun sendGitIssue(
+        issue: GitIssue,
+        isAnon: Boolean,
+    ): Result<Event> {
+        val trimmedHeader = issue.header.trim()
+        val trimmedBody = issue.body.trim()
+
+        val mentions = extractMentionsFromString(
+            content = "$trimmedHeader $trimmedBody",
+            isAnon = isAnon
+        )
+
+        return Result.failure(IllegalStateException("TODO"))
+    }
+
     private fun extractMentionPubkeys(content: String): List<PubkeyHex> {
         return extractMentions(content = content)
             .mapNotNull {
@@ -166,5 +179,12 @@ class PostSender(
                     ?: kotlin.runCatching { Nip19Profile.fromBech32(it).publicKey().toHex() }
                         .getOrNull()
             }.distinct()
+    }
+
+    private fun extractMentionsFromString(content: String, isAnon: Boolean): List<PubkeyHex> {
+        return extractMentionPubkeys(content = content).let { pubkeys ->
+            if (!isAnon) pubkeys.filter { it != myPubkeyProvider.getPubkeyHex() }
+            else pubkeys
+        }
     }
 }

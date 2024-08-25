@@ -1,8 +1,7 @@
 package com.dluvian.voyage.ui.views.nonMain
 
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -21,28 +20,25 @@ import androidx.compose.ui.text.input.TextFieldValue
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.SendPost
-import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.viewModel.CreatePostViewModel
+import com.dluvian.voyage.core.SendGitIssue
+import com.dluvian.voyage.core.model.BugReport
+import com.dluvian.voyage.core.viewModel.CreateGitIssueViewModel
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
-import com.dluvian.voyage.ui.components.row.TopicSelectionRow
 import com.dluvian.voyage.ui.components.scaffold.ContentCreationScaffold
 import com.dluvian.voyage.ui.components.text.InputWithSuggestions
 import com.dluvian.voyage.ui.components.text.TextInput
-import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
-fun CreatePostView(
-    vm: CreatePostViewModel,
+fun CreateGitIsueView(
+    vm: CreateGitIssueViewModel,
     searchSuggestions: State<List<AdvancedProfileView>>,
-    topicSuggestions: State<List<Topic>>,
     snackbar: SnackbarHostState,
     onUpdate: OnUpdate
 ) {
     val header = remember { mutableStateOf(TextFieldValue()) }
     val body = remember { mutableStateOf(TextFieldValue()) }
-    val isAnon = remember { mutableStateOf(false) }
-    val topics = remember { mutableStateOf(emptyList<Topic>()) }
+    val issue = remember { mutableStateOf(BugReport()) }
+    val isAnon = remember { mutableStateOf(true) }
     val context = LocalContext.current
 
     val focusRequester = remember { FocusRequester() }
@@ -51,27 +47,24 @@ fun CreatePostView(
     }
 
     ContentCreationScaffold(
-        showSendButton = body.value.text.isNotBlank(),
-        isSendingContent = vm.isSendingPost.value,
+        showSendButton = header.value.text.isNotBlank(),
+        isSendingContent = vm.isSendingIssue.value,
         snackbar = snackbar,
         onSend = {
             onUpdate(
-                SendPost(
-                    header = header.value.text,
-                    body = body.value.text,
-                    topics = topics.value,
+                SendGitIssue(
+                    issue = issue.value.copy(header = header.value.text, body = body.value.text),
                     isAnon = isAnon.value,
                     context = context,
-                ) { onUpdate(GoBack) }
+                    onGoBack = { onUpdate(GoBack) }
+                )
             )
         },
         onUpdate = onUpdate,
     ) {
-        CreatePostContent(
+        CreateGitIssueContent(
             header = header,
             body = body,
-            topicSuggestions = topicSuggestions.value,
-            selectedTopics = topics,
             searchSuggestions = searchSuggestions.value,
             isAnon = isAnon,
             focusRequester = focusRequester,
@@ -81,11 +74,9 @@ fun CreatePostView(
 }
 
 @Composable
-private fun CreatePostContent(
+private fun CreateGitIssueContent(
     header: MutableState<TextFieldValue>,
     body: MutableState<TextFieldValue>,
-    topicSuggestions: List<Topic>,
-    selectedTopics: MutableState<List<Topic>>,
     searchSuggestions: List<AdvancedProfileView>,
     isAnon: MutableState<Boolean>,
     focusRequester: FocusRequester,
@@ -97,25 +88,21 @@ private fun CreatePostContent(
         isAnon = isAnon,
         onUpdate = onUpdate
     ) {
-        TopicSelectionRow(
-            topicSuggestions = topicSuggestions,
-            selectedTopics = selectedTopics,
-            onUpdate = onUpdate
-        )
-        Spacer(modifier = Modifier.height(spacing.medium))
+        // TODO: Issue type radios
         TextInput(
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequester),
             value = header.value,
             onValueChange = { txt -> header.value = txt },
-            placeholder = stringResource(id = R.string.subject_optional),
+            placeholder = stringResource(id = R.string.subject),
             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
         )
         TextInput(
-            modifier = Modifier
-                .fillMaxSize()
-                .focusRequester(focusRequester),
+            modifier = Modifier.fillMaxSize(),
             value = body.value,
             onValueChange = { str -> body.value = str },
-            placeholder = stringResource(id = R.string.body_text),
+            placeholder = stringResource(id = R.string.body_text_optional),
         )
     }
 }

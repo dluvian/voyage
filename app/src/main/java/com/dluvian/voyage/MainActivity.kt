@@ -18,6 +18,7 @@ import com.dluvian.voyage.core.Core
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.viewModel.BookmarksViewModel
 import com.dluvian.voyage.core.viewModel.CreateCrossPostViewModel
+import com.dluvian.voyage.core.viewModel.CreateGitIssueViewModel
 import com.dluvian.voyage.core.viewModel.CreatePostViewModel
 import com.dluvian.voyage.core.viewModel.CreateReplyViewModel
 import com.dluvian.voyage.core.viewModel.DiscoverViewModel
@@ -305,6 +306,12 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 profileProvider = appContainer.profileProvider,
                 topicProvider = appContainer.topicProvider,
                 muteProvider = appContainer.muteProvider
+            )
+        },
+        createGitIssueVM = viewModel {
+            CreateGitIssueViewModel(
+                postSender = appContainer.postSender,
+                snackbar = appContainer.snackbar,
             )
         },
     )

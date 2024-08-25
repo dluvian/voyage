@@ -2,6 +2,7 @@ package com.dluvian.voyage
 
 import com.dluvian.voyage.core.viewModel.BookmarksViewModel
 import com.dluvian.voyage.core.viewModel.CreateCrossPostViewModel
+import com.dluvian.voyage.core.viewModel.CreateGitIssueViewModel
 import com.dluvian.voyage.core.viewModel.CreatePostViewModel
 import com.dluvian.voyage.core.viewModel.CreateReplyViewModel
 import com.dluvian.voyage.core.viewModel.DiscoverViewModel
@@ -42,4 +43,5 @@ data class VMContainer(
     val editListVM: EditListViewModel,
     val listVM: ListViewModel,
     val muteListVM: MuteListViewModel,
+    val createGitIssueVM: CreateGitIssueViewModel,
 )

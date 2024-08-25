@@ -22,7 +22,6 @@ import com.dluvian.voyage.core.navigator.SettingsNavView
 import com.dluvian.voyage.core.navigator.ThreadNavView
 import com.dluvian.voyage.core.navigator.ThreadRawNavView
 import com.dluvian.voyage.core.navigator.TopicNavView
-import com.dluvian.voyage.ui.components.indicator.ComingSoon
 import com.dluvian.voyage.ui.views.nonMain.editList.EditListView
 import com.dluvian.voyage.ui.views.nonMain.list.ListView
 import com.dluvian.voyage.ui.views.nonMain.profile.ProfileView
@@ -137,6 +136,11 @@ fun NonMainView(
             onUpdate = core.onUpdate
         )
 
-        CreateGitIssueNavView -> ComingSoon()
+        CreateGitIssueNavView -> CreateGitIsueView(
+            vm = core.vmContainer.createGitIssueVM,
+            snackbar = core.appContainer.snackbar,
+            searchSuggestions = core.appContainer.suggestionProvider.profileSuggestions,
+            onUpdate = core.onUpdate
+        )
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.activity.result.ActivityResult
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.text.AnnotatedString
+import com.dluvian.voyage.core.model.GitIssue
 import com.dluvian.voyage.core.model.ItemSetItem
 import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.core.model.RootPostUI
@@ -254,8 +255,14 @@ data class SendPost(
     val onGoBack: Fn
 ) : CreatePostViewAction()
 
-data object UpdatePostTopics : CreatePostViewAction()
 
+sealed class CreateGitIssueViewAction : UIEvent()
+data class SendGitIssue(
+    val issue: GitIssue,
+    val isAnon: Boolean,
+    val context: Context,
+    val onGoBack: Fn
+) : CreateGitIssueViewAction()
 
 sealed class CreateReplyViewAction : UIEvent()
 data class SendReply(

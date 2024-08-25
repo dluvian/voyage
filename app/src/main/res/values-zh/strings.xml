@@ -44,8 +44,10 @@
     <string name="popular_profiles">热门个人资料</string>
     <string name="no_profiles_found">未找到个人资料</string>
     <string name="no_topics_found">未找到话题</string>
+    <string name="subject">主题</string>
     <string name="subject_optional">主题（可选）</string>
     <string name="body_text">正文文本</string>
+    <string name="body_text_optional">正文文本（可选）</string>
     <string name="send">发送</string>
     <string name="failed_to_create_post">创建帖子失败</string>
     <string name="edit">编辑</string>
@@ -253,4 +255,8 @@
     <string name="locked">已锁定</string>
     <string name="this_user_is_locked_and_should_not_be_trusted">此用户已被锁定，不应再被信任。</string>
     <string name="rebroadcast_lock_event">重新广播锁定事件</string>
+    <string name="give_us_feedback">向我们提供反馈</string>
+    <string name="write_a_bug_report_or_feature_request">撰写错误报告或功能请求</string>
+    <string name="issue_created">问题已创建</string>
+    <string name="failed_to_create_issue">无法创建问题</string>
 </resources>
