@@ -20,6 +20,7 @@ import com.dluvian.voyage.data.event.EventQueue
 import com.dluvian.voyage.data.preferences.RelayPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import rust.nostr.protocol.Coordinate
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
@@ -315,6 +316,26 @@ class NostrService(
 
     suspend fun publishLock(relayUrls: Collection<RelayUrl>): Result<Event> {
         return eventMaker.buildLock()
+            .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
+    }
+
+    suspend fun publishGitIssue(
+        repoCoordinate: Coordinate,
+        subject: String,
+        content: String,
+        label: String,
+        mentions: List<PubkeyHex>,
+        relayUrls: Collection<RelayUrl>,
+        isAnon: Boolean,
+    ): Result<Event> {
+        return eventMaker.buildGitIssue(
+            repoCoordinate = repoCoordinate,
+            subject = subject,
+            content = content,
+            label = label,
+            mentions = mentions,
+            isAnon = isAnon,
+        )
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 

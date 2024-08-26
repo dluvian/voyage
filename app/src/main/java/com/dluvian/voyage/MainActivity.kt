@@ -312,6 +312,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             CreateGitIssueViewModel(
                 postSender = appContainer.postSender,
                 snackbar = appContainer.snackbar,
+                lazyNostrSubscriber = appContainer.lazyNostrSubscriber
             )
         },
     )

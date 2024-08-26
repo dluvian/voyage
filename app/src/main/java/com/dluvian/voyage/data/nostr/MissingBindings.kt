@@ -20,6 +20,10 @@ fun createSubjectTag(subject: String): Tag {
     return Tag.fromStandardized(TagStandard.Subject(subject = subject))
 }
 
+fun createLabelTag(label: String): Tag {
+    return Tag.fromStandardized(TagStandard.Label(label = listOf(label)))
+}
+
 fun createHashtagTag(hashtag: String): Tag {
     return Tag.fromStandardized(TagStandard.Hashtag(hashtag = hashtag))
 }

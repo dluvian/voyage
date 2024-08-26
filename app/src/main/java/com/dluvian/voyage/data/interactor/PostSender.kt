@@ -1,6 +1,7 @@
 package com.dluvian.voyage.data.interactor
 
 import android.util.Log
+import com.dluvian.voyage.core.DLUVIAN_HEX
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.PubkeyHex
@@ -21,7 +22,10 @@ import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.PostDao
 import com.dluvian.voyage.data.room.dao.tx.PostInsertDao
+import rust.nostr.protocol.Coordinate
 import rust.nostr.protocol.Event
+import rust.nostr.protocol.Kind
+import rust.nostr.protocol.KindEnum
 import rust.nostr.protocol.Nip19Profile
 import rust.nostr.protocol.PublicKey
 
@@ -157,19 +161,31 @@ class PostSender(
         }
     }
 
+    private val repoCoordinate = Coordinate(
+        kind = Kind.fromEnum(KindEnum.GitRepoAnnouncement),
+        publicKey = PublicKey.fromHex(hex = DLUVIAN_HEX),
+        identifier = "voyage"
+    )
     suspend fun sendGitIssue(
         issue: LabledGitIssue,
         isAnon: Boolean,
     ): Result<Event> {
         val trimmedHeader = issue.header.trim()
         val trimmedBody = issue.body.trim()
-
         val mentions = extractMentionsFromString(
             content = "$trimmedHeader $trimmedBody",
             isAnon = isAnon
         )
 
-        return Result.failure(IllegalStateException("TODO"))
+        return nostrService.publishGitIssue(
+            repoCoordinate = repoCoordinate,
+            subject = trimmedHeader,
+            content = trimmedBody,
+            label = issue.getLabel(),
+            mentions = mentions,
+            relayUrls = relayProvider.getPublishRelays(publishTo = listOf(DLUVIAN_HEX)),
+            isAnon = isAnon,
+        )
     }
 
     private fun extractMentionPubkeys(content: String): List<PubkeyHex> {

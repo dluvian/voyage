@@ -9,6 +9,7 @@ import com.dluvian.voyage.data.nostr.Nip65Relay
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.createDescriptionTag
 import com.dluvian.voyage.data.nostr.createHashtagTag
+import com.dluvian.voyage.data.nostr.createLabelTag
 import com.dluvian.voyage.data.nostr.createMentionTag
 import com.dluvian.voyage.data.nostr.createReplyTag
 import com.dluvian.voyage.data.nostr.createSubjectTag
@@ -35,7 +36,8 @@ class EventMaker(
     private val accountManager: AccountManager,
 ) {
     suspend fun buildPost(
-        subject: String, content: String,
+        subject: String,
+        content: String,
         topics: List<Topic>,
         mentions: List<PubkeyHex>,
         isAnon: Boolean,
@@ -75,7 +77,8 @@ class EventMaker(
     }
 
     suspend fun buildCrossPost(
-        crossPostedEvent: Event, topics: List<Topic>,
+        crossPostedEvent: Event,
+        topics: List<Topic>,
         relayHint: RelayUrl,
         isAnon: Boolean,
     ): Result<Event> {
@@ -85,7 +88,6 @@ class EventMaker(
                 .addTags(tags = topics.map { createHashtagTag(hashtag = it) }),
             isAnon = isAnon
         )
-
     }
 
     suspend fun buildVote(eventId: EventId, content: String, mention: PublicKey): Result<Event> {
@@ -226,6 +228,34 @@ class EventMaker(
         return signEvent(
             eventBuilder = EventBuilder(kind = Kind(LOCK_U16), content = "", tags = emptyList()),
             isAnon = false
+        )
+    }
+
+    suspend fun buildGitIssue(
+        repoCoordinate: Coordinate,
+        subject: String,
+        content: String,
+        label: String,
+        mentions: List<PubkeyHex>,
+        isAnon: Boolean,
+    ): Result<Event> {
+        val tags = mutableListOf<Tag>()
+        tags.add(Tag.coordinate(coordinate = repoCoordinate))
+        tags.add(createSubjectTag(subject = subject))
+        tags.add(createLabelTag(label = label))
+        tags.add(Tag.publicKey(publicKey = repoCoordinate.publicKey()))
+
+        val repoOwner = repoCoordinate.publicKey().toHex()
+        val filteredMentions = mentions.distinct().filterNot { it == repoOwner }
+        if (filteredMentions.isNotEmpty()) tags.addAll(createMentionTag(pubkeys = filteredMentions))
+
+        return signEvent(
+            eventBuilder = EventBuilder(
+                kind = Kind.fromEnum(KindEnum.GitIssue),
+                content = content,
+                tags = tags
+            ),
+            isAnon = isAnon
         )
     }
 

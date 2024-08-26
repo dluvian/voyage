@@ -263,6 +263,7 @@ data class SendGitIssue(
     val context: Context,
     val onGoBack: Fn
 ) : CreateGitIssueViewAction()
+data object SubRepoOwnerRelays : CreateGitIssueViewAction()
 
 sealed class CreateReplyViewAction : UIEvent()
 data class SendReply(

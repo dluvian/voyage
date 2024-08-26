@@ -24,6 +24,7 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.SendGitIssue
+import com.dluvian.voyage.core.SubRepoOwnerRelays
 import com.dluvian.voyage.core.model.BugReport
 import com.dluvian.voyage.core.model.EnhancementRequest
 import com.dluvian.voyage.core.model.LabledGitIssue
@@ -50,6 +51,7 @@ fun CreateGitIsueView(
 
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(key1 = Unit) {
+        onUpdate(SubRepoOwnerRelays)
         focusRequester.requestFocus()
     }
 
@@ -63,12 +65,12 @@ fun CreateGitIsueView(
                     issue = when (val issue = type.value) {
                         is BugReport -> issue.copy(
                             header = header.value.text,
-                            body = header.value.text
+                            body = body.value.text
                         )
 
                         is EnhancementRequest -> issue.copy(
                             header = header.value.text,
-                            body = header.value.text
+                            body = body.value.text
                         )
                     },
                     isAnon = isAnon.value,
