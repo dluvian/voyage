@@ -37,7 +37,7 @@ import com.dluvian.voyage.ui.components.text.TextInput
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
-fun CreateGitIsueView(
+fun CreateGitIssueView(
     vm: CreateGitIssueViewModel,
     searchSuggestions: State<List<AdvancedProfileView>>,
     snackbar: SnackbarHostState,

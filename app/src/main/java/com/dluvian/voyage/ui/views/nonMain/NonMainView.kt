@@ -136,7 +136,7 @@ fun NonMainView(
             onUpdate = core.onUpdate
         )
 
-        CreateGitIssueNavView -> CreateGitIsueView(
+        CreateGitIssueNavView -> CreateGitIssueView(
             vm = core.vmContainer.createGitIssueVM,
             snackbar = core.appContainer.snackbar,
             searchSuggestions = core.appContainer.suggestionProvider.profileSuggestions,
