@@ -259,4 +259,6 @@
     <string name="write_a_bug_report_or_feature_request">撰写错误报告或功能请求</string>
     <string name="issue_created">问题已创建</string>
     <string name="failed_to_create_issue">无法创建问题</string>
+    <string name="bug_report">错误报告</string>
+    <string name="enhancement_request">增强请求</string>
 </resources>

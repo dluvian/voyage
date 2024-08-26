@@ -5,7 +5,7 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.model.GitIssue
+import com.dluvian.voyage.core.model.LabledGitIssue
 import com.dluvian.voyage.core.utils.extractCleanHashtags
 import com.dluvian.voyage.core.utils.getNormalizedTopics
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
@@ -158,7 +158,7 @@ class PostSender(
     }
 
     suspend fun sendGitIssue(
-        issue: GitIssue,
+        issue: LabledGitIssue,
         isAnon: Boolean,
     ): Result<Event> {
         val trimmedHeader = issue.header.trim()

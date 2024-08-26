@@ -1,7 +1,10 @@
 package com.dluvian.voyage.ui.views.nonMain
 
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -22,11 +25,15 @@ import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.SendGitIssue
 import com.dluvian.voyage.core.model.BugReport
+import com.dluvian.voyage.core.model.EnhancementRequest
+import com.dluvian.voyage.core.model.LabledGitIssue
 import com.dluvian.voyage.core.viewModel.CreateGitIssueViewModel
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.ui.components.scaffold.ContentCreationScaffold
+import com.dluvian.voyage.ui.components.selection.NamedRadio
 import com.dluvian.voyage.ui.components.text.InputWithSuggestions
 import com.dluvian.voyage.ui.components.text.TextInput
+import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
 fun CreateGitIsueView(
@@ -37,8 +44,8 @@ fun CreateGitIsueView(
 ) {
     val header = remember { mutableStateOf(TextFieldValue()) }
     val body = remember { mutableStateOf(TextFieldValue()) }
-    val issue = remember { mutableStateOf(BugReport()) }
-    val isAnon = remember { mutableStateOf(true) }
+    val type: MutableState<LabledGitIssue> = remember { mutableStateOf(BugReport()) }
+    val isAnon = remember { mutableStateOf(false) }
     val context = LocalContext.current
 
     val focusRequester = remember { FocusRequester() }
@@ -53,7 +60,17 @@ fun CreateGitIsueView(
         onSend = {
             onUpdate(
                 SendGitIssue(
-                    issue = issue.value.copy(header = header.value.text, body = body.value.text),
+                    issue = when (val issue = type.value) {
+                        is BugReport -> issue.copy(
+                            header = header.value.text,
+                            body = header.value.text
+                        )
+
+                        is EnhancementRequest -> issue.copy(
+                            header = header.value.text,
+                            body = header.value.text
+                        )
+                    },
                     isAnon = isAnon.value,
                     context = context,
                     onGoBack = { onUpdate(GoBack) }
@@ -65,6 +82,7 @@ fun CreateGitIsueView(
         CreateGitIssueContent(
             header = header,
             body = body,
+            type = type,
             searchSuggestions = searchSuggestions.value,
             isAnon = isAnon,
             focusRequester = focusRequester,
@@ -77,6 +95,7 @@ fun CreateGitIsueView(
 private fun CreateGitIssueContent(
     header: MutableState<TextFieldValue>,
     body: MutableState<TextFieldValue>,
+    type: MutableState<LabledGitIssue>,
     searchSuggestions: List<AdvancedProfileView>,
     isAnon: MutableState<Boolean>,
     focusRequester: FocusRequester,
@@ -88,7 +107,7 @@ private fun CreateGitIssueContent(
         isAnon = isAnon,
         onUpdate = onUpdate
     ) {
-        // TODO: Issue type radios
+        IssueTypeSelection(type = type)
         TextInput(
             modifier = Modifier
                 .fillMaxWidth()
@@ -104,5 +123,24 @@ private fun CreateGitIssueContent(
             onValueChange = { str -> body.value = str },
             placeholder = stringResource(id = R.string.body_text_optional),
         )
+    }
+}
+
+@Composable
+private fun IssueTypeSelection(type: MutableState<LabledGitIssue>) {
+    LazyRow(modifier = Modifier.fillMaxWidth()) {
+        item {
+            NamedRadio(
+                isSelected = type.value is BugReport,
+                name = stringResource(id = R.string.bug_report),
+                onClick = { type.value = BugReport() })
+        }
+        item { Spacer(modifier = Modifier.width(spacing.large)) }
+        item {
+            NamedRadio(
+                isSelected = type.value is EnhancementRequest,
+                name = stringResource(id = R.string.enhancement_request),
+                onClick = { type.value = EnhancementRequest() })
+        }
     }
 }

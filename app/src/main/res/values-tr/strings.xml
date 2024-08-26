@@ -258,4 +258,6 @@
     <string name="write_a_bug_report_or_feature_request">Bir hata raporu veya özellik talebi yazın</string>
     <string name="issue_created">Sorun oluşturuldu</string>
     <string name="failed_to_create_issue">Sorun oluşturulamadı</string>
+    <string name="bug_report">Hata raporu</string>
+    <string name="enhancement_request">Geliştirme isteği</string>
 </resources>

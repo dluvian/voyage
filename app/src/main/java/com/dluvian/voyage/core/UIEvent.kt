@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.activity.result.ActivityResult
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.text.AnnotatedString
-import com.dluvian.voyage.core.model.GitIssue
 import com.dluvian.voyage.core.model.ItemSetItem
+import com.dluvian.voyage.core.model.LabledGitIssue
 import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.navigator.BookmarksNavView
@@ -258,7 +258,7 @@ data class SendPost(
 
 sealed class CreateGitIssueViewAction : UIEvent()
 data class SendGitIssue(
-    val issue: GitIssue,
+    val issue: LabledGitIssue,
     val isAnon: Boolean,
     val context: Context,
     val onGoBack: Fn

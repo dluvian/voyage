@@ -263,4 +263,6 @@
     <string name="write_a_bug_report_or_feature_request">Write a bug report or feature request</string>
     <string name="issue_created">Issue created</string>
     <string name="failed_to_create_issue">Failed to create issue</string>
+    <string name="bug_report">Bug report</string>
+    <string name="enhancement_request">Enhancement request</string>
 </resources>
