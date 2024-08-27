@@ -8,8 +8,6 @@ import com.dluvian.voyage.data.account.AccountManager
 import com.dluvian.voyage.data.nostr.Nip65Relay
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.createDescriptionTag
-import com.dluvian.voyage.data.nostr.createHashtagTag
-import com.dluvian.voyage.data.nostr.createLabelTag
 import com.dluvian.voyage.data.nostr.createMentionTag
 import com.dluvian.voyage.data.nostr.createReplyTag
 import com.dluvian.voyage.data.nostr.createSubjectTag
@@ -44,7 +42,7 @@ class EventMaker(
     ): Result<Event> {
         val tags = mutableListOf<Tag>()
         if (subject.isNotEmpty()) tags.add(createSubjectTag(subject = subject))
-        topics.forEach { tags.add(createHashtagTag(it)) }
+        topics.forEach { tags.add(Tag.hashtag(hashtag = it)) }
         if (mentions.isNotEmpty()) tags.addAll(createMentionTag(pubkeys = mentions))
 
         return signEvent(
@@ -85,7 +83,7 @@ class EventMaker(
         return signEvent(
             eventBuilder = EventBuilder
                 .repost(event = crossPostedEvent, relayUrl = relayHint)
-                .addTags(tags = topics.map { createHashtagTag(hashtag = it) }),
+                .addTags(tags = topics.map { Tag.hashtag(hashtag = it) }),
             isAnon = isAnon
         )
     }
@@ -242,7 +240,7 @@ class EventMaker(
         val tags = mutableListOf<Tag>()
         tags.add(Tag.coordinate(coordinate = repoCoordinate))
         tags.add(createSubjectTag(subject = subject))
-        tags.add(createLabelTag(label = label))
+        tags.add(Tag.hashtag(hashtag = label))
         tags.add(Tag.publicKey(publicKey = repoCoordinate.publicKey()))
 
         val repoOwner = repoCoordinate.publicKey().toHex()
