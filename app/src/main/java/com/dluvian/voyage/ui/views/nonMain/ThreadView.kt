@@ -17,7 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -48,27 +47,27 @@ import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
 fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
-    val localRoot by vm.localRoot.collectAsState()
-
     SimpleGoBackScaffold(
         header = stringResource(id = R.string.thread),
         snackbar = snackbar,
         onUpdate = onUpdate
     ) {
-        if (localRoot == null) FullLinearProgressIndicator()
-        vm.postDetails.value?.let { details ->
-            PostDetailsBottomSheet(postDetails = details, onUpdate = onUpdate)
-        }
-        localRoot?.let {
-            ThreadViewContent(
-                localRoot = it,
-                leveledReplies = vm.leveledReplies.value.collectAsState().value,
-                totalReplyCount = vm.totalReplyCount.value.collectAsState().value,
-                parentIsAvailable = vm.parentIsAvailable.collectAsState().value,
-                isRefreshing = vm.isRefreshing.value,
-                state = vm.threadState,
-                onUpdate = onUpdate
-            )
+        vm.localRoot.collectAsState().value.let { localRoot ->
+            if (localRoot == null) FullLinearProgressIndicator()
+            vm.postDetails.value?.let { details ->
+                PostDetailsBottomSheet(postDetails = details, onUpdate = onUpdate)
+            }
+            localRoot?.let {
+                ThreadViewContent(
+                    localRoot = it,
+                    leveledReplies = vm.leveledReplies.value.collectAsState().value,
+                    totalReplyCount = vm.totalReplyCount.value.collectAsState().value,
+                    parentIsAvailable = vm.parentIsAvailable.collectAsState().value,
+                    isRefreshing = vm.isRefreshing.value,
+                    state = vm.threadState,
+                    onUpdate = onUpdate
+                )
+            }
         }
     }
 }
