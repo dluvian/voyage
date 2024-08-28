@@ -16,7 +16,6 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ClosePostInfo
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.data.model.PostDetails
-import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import com.dluvian.voyage.ui.components.text.ClickableRelayUrl
 import com.dluvian.voyage.ui.components.text.CopyableText
 import com.dluvian.voyage.ui.components.text.SmallHeader
@@ -29,27 +28,25 @@ fun PostDetailsBottomSheet(postDetails: PostDetails, onUpdate: OnUpdate) {
     val onDismiss = { onUpdate(ClosePostInfo) }
     ModalBottomSheet(onDismissRequest = onDismiss) {
         BottomSheetColumn(header = stringResource(id = R.string.post_details)) {
-            if (postDetails.firstSeenIn.isEmpty() || postDetails.json.isEmpty()) {
-                FullLinearProgressIndicator()
-            } else {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(state = rememberScrollState())
-                        .padding(bottom = spacing.xxl)
-                ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(state = rememberScrollState())
+                    .padding(bottom = spacing.xxl)
+            ) {
+                if (postDetails.firstSeenIn.isNotEmpty()) {
                     SmallHeader(header = stringResource(id = R.string.first_seen_in))
                     ClickableRelayUrl(
                         relayUrl = postDetails.firstSeenIn,
                         onUpdate = onUpdate,
                         onClickAddition = onDismiss
                     )
-
-                    Spacer(modifier = Modifier.height(spacing.large))
-
-                    SmallHeader(header = stringResource(id = R.string.event_json))
-                    CopyableText(text = postDetails.json)
                 }
+
+                Spacer(modifier = Modifier.height(spacing.large))
+
+                SmallHeader(header = stringResource(id = R.string.event_json))
+                CopyableText(text = postDetails.json)
             }
         }
     }
