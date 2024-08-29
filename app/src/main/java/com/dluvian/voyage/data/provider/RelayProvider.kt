@@ -194,7 +194,9 @@ class RelayProvider(
             }
         }
 
-        val eventRelays = eventRelaysView.map { it.relayUrl }.toSet()
+        val eventRelays = eventRelaysView.map { it.relayUrl }
+            .filterNot { it.startsWith(LOCAL_WEBSOCKET) }
+            .toSet()
 
         val writeRelays = when (selection) {
             is FriendPubkeysNoLock -> nip65Dao.getFriendsWriteRelays()
@@ -265,6 +267,30 @@ class RelayProvider(
                 }
         }
 
+        // Cover pubkeys with only one mapped relay to another relay
+        val singleSelectedPubkeys = result.flatMap { (_, pubkey) -> pubkey }
+            .groupingBy { it }
+            .eachCount()
+            .filter { it.value == 1 }
+            .map { (pubkey, _) -> pubkey }
+            .toMutableSet()
+        if (singleSelectedPubkeys.isNotEmpty()) {
+            getReadRelays()
+                .plus(result.keys)
+                .distinct()
+                .shuffled()
+                .forEach { relay ->
+                    val selectedPubkeys = result[relay].orEmpty()
+                    val maxKeys = MAX_KEYS - selectedPubkeys.size
+                    val addable = singleSelectedPubkeys
+                        .minus(selectedPubkeys)
+                        .takeRandom(maxKeys)
+                        .toSet()
+                    result.putOrAdd(relay, addable)
+                    singleSelectedPubkeys.removeAll(addable)
+                }
+        }
+
         val localRelay = createLocalRelayUrl(port = relayPreferences.getLocalRelayPort())
         if (localRelay != null) {
             result.putOrAdd(localRelay, result.values.flatten().toSet())
@@ -274,7 +300,7 @@ class RelayProvider(
 
         nostrClient.addRelays(relayUrls = result.keys)
 
-        return result
+        return result.filter { (_, pubkeys) -> pubkeys.isNotEmpty() }
     }
 
     suspend fun getNewestCreatedAt() = nip65Dao.getNewestCreatedAt()

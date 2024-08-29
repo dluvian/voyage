@@ -108,9 +108,9 @@ fun <K, V> MutableMap<K, MutableSet<V>>.syncedPutOrAdd(key: K, value: Collection
     }
 }
 
-fun <K, V> MutableMap<K, MutableSet<V>>.putOrAdd(key: K, value: Collection<V>) {
+fun <K, V> MutableMap<K, MutableSet<V>>.putOrAdd(key: K, value: Collection<V>): Boolean {
     val alreadyPresent = this.putIfAbsent(key, value.toMutableSet())
-    alreadyPresent?.addAll(value)
+    return alreadyPresent?.addAll(value) ?: false
 }
 
 @OptIn(FlowPreview::class)
@@ -130,7 +130,7 @@ fun CoroutineScope.launchIO(block: suspend CoroutineScope.() -> Unit): Job {
 }
 
 fun <T> Collection<T>.takeRandom(n: Int): List<T> {
-    return if (this.size <= n) return this.toList() else this.shuffled().take(n)
+    return if (this.size <= n || n < 0) this.toList() else this.shuffled().take(n)
 }
 
 private val urlRegex = Regex(pattern = "https?://[^\\s]+[a-zA-Z0-9/]")
