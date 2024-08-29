@@ -96,7 +96,10 @@ class FeedSubscriber(
                         val publicKeys = pubkeys.takeRandom(MAX_KEYS).map { PublicKey.fromHex(it) }
                         val pubkeysNoteFilter = Filter()
                             .kinds(kinds = textNoteAndRepostKinds)
-                            .apply { if (publicKeys.isNotEmpty()) authors(authors = publicKeys) }
+                            .let {
+                                if (publicKeys.isNotEmpty()) it.authors(authors = publicKeys)
+                                else it
+                            }
                             .since(timestamp = sinceTimestamp)
                             .until(timestamp = untilTimestamp)
                             .limitRestricted(limit = limit)
