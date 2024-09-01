@@ -276,8 +276,7 @@ class RelayProvider(
             .toMutableSet()
         if (singleSelectedPubkeys.isNotEmpty()) {
             getReadRelays()
-                .plus(result.keys)
-                .distinct()
+                .filterNot { it.startsWith(LOCAL_WEBSOCKET) }
                 .shuffled()
                 .forEach { relay ->
                     val selectedPubkeys = result[relay].orEmpty()
