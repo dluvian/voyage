@@ -188,7 +188,11 @@ class EventValidator(
                 )
             }
 
-            LOCK_U16 -> ValidatedLock(pubkey = event.author().toHex(), json = event.asJson())
+            LOCK_U16 -> {
+                if (event.tags().isNotEmpty() || event.content().isNotEmpty()) return null
+
+                ValidatedLock(pubkey = event.author().toHex(), json = event.asJson())
+            }
 
             else -> {
                 Log.w(TAG, "Invalid event kind ${event.asJson()}")
