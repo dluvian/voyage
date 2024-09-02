@@ -264,7 +264,10 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
         deleteDao = roomDb.deleteDao()
     )
 
-    val postDetailInspector = PostDetailInspector(postDao = roomDb.postDao())
+    val postDetailInspector = PostDetailInspector(
+        postDao = roomDb.postDao(),
+        hashtagDao = roomDb.hashtagDao(),
+    )
 
     val eventRebroadcaster = EventRebroadcaster(
         nostrService = nostrService,

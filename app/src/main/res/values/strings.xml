@@ -265,4 +265,5 @@
     <string name="failed_to_create_issue">Failed to create issue</string>
     <string name="bug_report">Bug report</string>
     <string name="enhancement_request">Enhancement request</string>
+    <string name="indexed_topics">Indexed topics</string>
 </resources>

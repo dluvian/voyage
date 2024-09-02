@@ -14,6 +14,7 @@ import com.dluvian.voyage.data.room.dao.EventRelayDao
 import com.dluvian.voyage.data.room.dao.ExistsDao
 import com.dluvian.voyage.data.room.dao.FriendDao
 import com.dluvian.voyage.data.room.dao.FullProfileDao
+import com.dluvian.voyage.data.room.dao.HashtagDao
 import com.dluvian.voyage.data.room.dao.HomeFeedDao
 import com.dluvian.voyage.data.room.dao.InboxDao
 import com.dluvian.voyage.data.room.dao.ItemSetDao
@@ -139,6 +140,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun itemSetDao(): ItemSetDao
     abstract fun muteDao(): MuteDao
     abstract fun lockDao(): LockDao
+    abstract fun hashtagDao(): HashtagDao
 
     // Util
     abstract fun deleteDao(): DeleteDao

@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.data.model.PostDetails
+import com.dluvian.voyage.data.model.PostDetailsBase
 import com.dluvian.voyage.data.room.entity.PostEntity
 import com.dluvian.voyage.data.room.view.SimplePostView
 
@@ -23,7 +23,7 @@ interface PostDao {
     suspend fun getJson(id: EventIdHex): String?
 
     @Query("SELECT id, relayUrl AS firstSeenIn, json FROM post WHERE id = :id")
-    suspend fun getPostDetails(id: EventIdHex): PostDetails?
+    suspend fun getPostDetails(id: EventIdHex): PostDetailsBase?
 
     suspend fun getPostsByContent(content: String, limit: Int): List<SimplePostView> {
         if (limit <= 0) return emptyList()

@@ -260,4 +260,5 @@
     <string name="failed_to_create_issue">Sorun oluşturulamadı</string>
     <string name="bug_report">Hata raporu</string>
     <string name="enhancement_request">Geliştirme isteği</string>
+    <string name="indexed_topics">Dizinlenmiş konular</string>
 </resources>
