@@ -178,79 +178,75 @@ private fun AccountSection(
 
 @Composable
 private fun RelaySection(vm: SettingsViewModel, onUpdate: OnUpdate) {
-    val newAutoRelays = remember(vm.autopilotRelays.intValue) {
-        mutableFloatStateOf(vm.autopilotRelays.intValue.toFloat())
-    }
-    val newPort = remember(vm.localRelayPort.value) {
-        mutableStateOf(vm.localRelayPort.value?.toString().orEmpty().toTextFieldValue())
-    }
-    val parsedNewPort = remember(newPort.value) {
-        runCatching { newPort.value.text.toUShort() }.getOrNull()
-    }
     val focusRequester = remember { FocusRequester() }
 
     SettingsSection(header = stringResource(id = R.string.relays)) {
         val showAutopilotDialog = remember { mutableStateOf(false) }
-        if (showAutopilotDialog.value) BaseActionDialog(
-            title = stringResource(id = R.string.max_relays) + ": ${newAutoRelays.floatValue.toInt()}",
-            main = {
-                Slider(
-                    modifier = Modifier.padding(horizontal = spacing.bigScreenEdge),
-                    value = newAutoRelays.floatValue,
-                    onValueChange = { newAutoRelays.floatValue = it },
-                    valueRange = MIN_AUTOPILOT_RELAYS.toFloat()..MAX_AUTOPILOT_RELAYS.toFloat()
-                )
-            },
-            onConfirm = {
-                onUpdate(UpdateAutopilotRelays(numberOfRelays = newAutoRelays.floatValue.toInt()))
-            },
-            onDismiss = { showAutopilotDialog.value = false })
-        val autoHeader =
-            remember(vm.autopilotRelays.intValue) { ": ${vm.autopilotRelays.intValue}" }
+        if (showAutopilotDialog.value) {
+            val newVal = remember { mutableFloatStateOf(vm.autopilotRelays.intValue.toFloat()) }
+            BaseActionDialog(
+                title = stringResource(id = R.string.max_relays) + ": ${newVal.floatValue.toInt()}",
+                main = {
+                    Slider(
+                        modifier = Modifier.padding(horizontal = spacing.bigScreenEdge),
+                        value = newVal.floatValue,
+                        onValueChange = { newVal.floatValue = it },
+                        valueRange = MIN_AUTOPILOT_RELAYS.toFloat()..MAX_AUTOPILOT_RELAYS.toFloat()
+                    )
+                },
+                onConfirm = {
+                    onUpdate(UpdateAutopilotRelays(numberOfRelays = newVal.floatValue.toInt()))
+                },
+                onDismiss = { showAutopilotDialog.value = false })
+        }
         ClickableRow(
-            header = stringResource(id = R.string.max_autopilot_relays) + autoHeader,
+            header = stringResource(id = R.string.max_autopilot_relays) + ": ${vm.autopilotRelays.intValue}",
             text = stringResource(id = R.string.max_num_of_relays_autopilot_is_allowed_to_select),
-            onClick = { showAutopilotDialog.value = true }
-        )
-        val showPortDialog = remember { mutableStateOf(false) }
-        if (showPortDialog.value) BaseActionDialog(
-            title = stringResource(id = R.string.local_relay_port),
-            main = {
-                LaunchedEffect(key1 = Unit) { focusRequester.requestFocus() }
-                TextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .focusRequester(focusRequester = focusRequester),
-                    value = newPort.value,
-                    prefix = { Text(text = LOCAL_WEBSOCKET) },
-                    onValueChange = { newStr ->
-                        if (newStr.text.length <= 5 &&
-                            newStr.text.all { it.isDigit() } &&
-                            !newStr.text.startsWith("0")
-                        ) {
-                            newPort.value = newStr
-                        }
-                    },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Done
-                    ),
-                )
-            },
-            confirmIsEnabled = newPort.value.text.isEmpty() || parsedNewPort != null,
-            onConfirm = { onUpdate(UpdateLocalRelayPort(port = parsedNewPort)) },
-            onDismiss = { showPortDialog.value = false }
-        )
-        val headerSuffix = if (newPort.value.text.isNotEmpty()) ": ${newPort.value.text}" else ""
-        ClickableRow(
-            header = stringResource(id = R.string.local_relay_port) + headerSuffix,
-            text = stringResource(id = R.string.port_number_of_your_local_relay),
-            onClick = { showPortDialog.value = true }
-        )
+            onClick = { showAutopilotDialog.value = true })
 
-        ClickableRow(
-            header = stringResource(id = R.string.authenticate_via_auth),
+        val showPortDialog = remember { mutableStateOf(false) }
+        if (showPortDialog.value) {
+            val newPort = remember {
+                mutableStateOf(vm.localRelayPort.value?.toString().orEmpty().toTextFieldValue())
+            }
+            val parsedNewPort = remember(newPort.value) {
+                runCatching { newPort.value.text.toUShort() }.getOrNull()
+            }
+            BaseActionDialog(title = stringResource(id = R.string.local_relay_port),
+                main = {
+                    LaunchedEffect(key1 = Unit) { focusRequester.requestFocus() }
+                    TextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(focusRequester = focusRequester),
+                        value = newPort.value,
+                        prefix = { Text(text = LOCAL_WEBSOCKET) },
+                        onValueChange = { newStr ->
+                            if (newStr.text.length <= 5 &&
+                                newStr.text.all { it.isDigit() } &&
+                                !newStr.text.startsWith("0")
+                            ) {
+                                newPort.value = newStr
+                            }
+                        },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number, imeAction = ImeAction.Done
+                        ),
+                    )
+                },
+                confirmIsEnabled = newPort.value.text.isEmpty() || parsedNewPort != null,
+                onConfirm = { onUpdate(UpdateLocalRelayPort(port = parsedNewPort)) },
+                onDismiss = { showPortDialog.value = false })
+        }
+        val headerSuffix = remember(vm.localRelayPort.value) {
+            vm.localRelayPort.value.let { if (it != null) ": $it" else "" }
+        }
+        ClickableRow(header = stringResource(id = R.string.local_relay_port) + headerSuffix,
+            text = stringResource(id = R.string.port_number_of_your_local_relay),
+            onClick = { showPortDialog.value = true })
+
+        ClickableRow(header = stringResource(id = R.string.authenticate_via_auth),
             text = stringResource(id = R.string.enable_to_authenticate_yourself_to_relays),
             trailingContent = {
                 Checkbox(
@@ -258,8 +254,7 @@ private fun RelaySection(vm: SettingsViewModel, onUpdate: OnUpdate) {
                     onCheckedChange = { onUpdate(SendAuth(sendAuth = it)) },
                 )
             },
-            onClick = { onUpdate(SendAuth(sendAuth = !vm.sendAuth.value)) }
-        )
+            onClick = { onUpdate(SendAuth(sendAuth = !vm.sendAuth.value)) })
 
         ClickableRow(
             header = stringResource(id = R.string.send_bookmarked_post_to_local_relay),
@@ -274,8 +269,7 @@ private fun RelaySection(vm: SettingsViewModel, onUpdate: OnUpdate) {
             },
             onClick = {
                 onUpdate(SendBookmarkedToLocalRelay(!vm.sendBookmarkedToLocalRelay.value))
-            }
-        )
+            })
 
         ClickableRow(
             header = stringResource(id = R.string.send_upvoted_post_to_local_relay),
@@ -290,8 +284,7 @@ private fun RelaySection(vm: SettingsViewModel, onUpdate: OnUpdate) {
             },
             onClick = {
                 onUpdate(SendUpvotedToLocalRelay(!vm.sendUpvotedToLocalRelay.value))
-            }
-        )
+            })
     }
 }
 
@@ -302,36 +295,29 @@ private fun DatabaseSection(
     onUpdate: OnUpdate
 ) {
     SettingsSection(header = stringResource(id = R.string.database)) {
-        val newNum = remember(vm.rootPostThreshold.intValue) {
-            mutableFloatStateOf(vm.rootPostThreshold.intValue.toFloat())
-        }
         val showThresholdDialog = remember { mutableStateOf(false) }
-        if (showThresholdDialog.value) BaseActionDialog(
-            title = stringResource(id = R.string.threshold) + ": ${newNum.floatValue.toInt()}",
-            main = {
-                Slider(
-                    modifier = Modifier.padding(horizontal = spacing.bigScreenEdge),
-                    value = newNum.floatValue,
-                    onValueChange = { newNum.floatValue = it },
-                    valueRange = MIN_RETAIN_ROOT..MAX_RETAIN_ROOT
-                )
-            },
-            onConfirm = {
-                onUpdate(UpdateRootPostThreshold(threshold = newNum.floatValue))
-            },
-            onDismiss = { showThresholdDialog.value = false }
-        )
-        ClickableRow(
-            header = stringResource(
-                id = R.string.keep_at_least_n_root_posts,
-                vm.rootPostThreshold.intValue
-            ),
-            text = stringResource(
-                id = R.string.currently_n_root_posts_in_db,
-                vm.currentRootPostCount.collectAsState().value
-            ),
-            onClick = { showThresholdDialog.value = true }
-        )
+        if (showThresholdDialog.value) {
+            val newNum = remember { mutableFloatStateOf(vm.rootPostThreshold.intValue.toFloat()) }
+            BaseActionDialog(title = stringResource(id = R.string.threshold) + ": ${newNum.floatValue.toInt()}",
+                main = {
+                    Slider(
+                        modifier = Modifier.padding(horizontal = spacing.bigScreenEdge),
+                        value = newNum.floatValue,
+                        onValueChange = { newNum.floatValue = it },
+                        valueRange = MIN_RETAIN_ROOT..MAX_RETAIN_ROOT
+                    )
+                },
+                onConfirm = {
+                    onUpdate(UpdateRootPostThreshold(threshold = newNum.floatValue))
+                },
+                onDismiss = { showThresholdDialog.value = false })
+        }
+        ClickableRow(header = stringResource(
+            id = R.string.keep_at_least_n_root_posts, vm.rootPostThreshold.intValue
+        ), text = stringResource(
+            id = R.string.currently_n_root_posts_in_db,
+            vm.currentRootPostCount.collectAsState().value
+        ), onClick = { showThresholdDialog.value = true })
 
         val isExporting = vm.isExporting.value
         val exportCount = vm.exportCount.intValue
@@ -345,8 +331,7 @@ private fun DatabaseSection(
             onClick = { onUpdate(ExportDatabase(uiScope = scope)) },
             trailingContent = {
                 if (isExporting) SmallCircleProgressIndicator()
-            }
-        )
+            })
 
         val isDeleting = vm.isDeleting.value
         val showDeleteDialog = remember { mutableStateOf(false) }
@@ -355,16 +340,14 @@ private fun DatabaseSection(
             text = stringResource(id = R.string.are_you_sure_you_want_to_delete_all_posts_from_the_database),
             confirmText = stringResource(id = R.string.delete),
             onConfirm = { onUpdate(DeleteAllPosts(uiScope = scope)) },
-            onDismiss = { showDeleteDialog.value = false }
-        )
+            onDismiss = { showDeleteDialog.value = false })
         ClickableRow(
             header = stringResource(id = R.string.delete_posts),
             text = stringResource(id = R.string.remove_all_posts_from_database),
             onClick = { showDeleteDialog.value = true },
             trailingContent = {
                 if (isDeleting) SmallCircleProgressIndicator()
-            }
-        )
+            })
     }
 }
 
@@ -373,36 +356,34 @@ private fun AppSection(currentUpvote: String, onUpdate: OnUpdate) {
     val focusRequester = remember { FocusRequester() }
 
     SettingsSection(header = stringResource(id = R.string.app)) {
-        val newUpvote = remember { mutableStateOf(currentUpvote.toTextFieldValue()) }
         val showUpvoteDialog = remember { mutableStateOf(false) }
-        if (showUpvoteDialog.value) BaseActionDialog(
-            title = stringResource(id = R.string.upvote_event_content),
-            main = {
-                LaunchedEffect(key1 = Unit) { focusRequester.requestFocus() }
-                TextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .focusRequester(focusRequester = focusRequester),
-                    value = newUpvote.value,
-                    onValueChange = { newUpvote.value = it },
-                    singleLine = true
-                )
-            },
-            confirmIsEnabled = newUpvote.value.text.trim() != "-",
-            onConfirm = { onUpdate(ChangeUpvoteContent(newContent = newUpvote.value.text)) },
-            onDismiss = { showUpvoteDialog.value = false }
-        )
+        if (showUpvoteDialog.value) {
+            val newUpvote = remember { mutableStateOf(currentUpvote.toTextFieldValue()) }
+            BaseActionDialog(title = stringResource(id = R.string.upvote_event_content),
+                main = {
+                    LaunchedEffect(key1 = Unit) { focusRequester.requestFocus() }
+                    TextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(focusRequester = focusRequester),
+                        value = newUpvote.value,
+                        onValueChange = { newUpvote.value = it },
+                        singleLine = true
+                    )
+                },
+                confirmIsEnabled = newUpvote.value.text.trim() != "-",
+                onConfirm = { onUpdate(ChangeUpvoteContent(newContent = newUpvote.value.text)) },
+                onDismiss = { showUpvoteDialog.value = false })
+        }
         ClickableRow(
             header = stringResource(id = R.string.upvote_event_content) + ": $currentUpvote",
             text = stringResource(id = R.string.this_affects_how_other_clients_render_your_upvotes),
-            onClick = { showUpvoteDialog.value = true }
-        )
+            onClick = { showUpvoteDialog.value = true })
 
         ClickableRow(
             header = stringResource(id = R.string.give_us_feedback),
             text = stringResource(id = R.string.write_a_bug_report_or_feature_request),
-            onClick = { onUpdate(ClickCreateGitIssue) }
-        )
+            onClick = { onUpdate(ClickCreateGitIssue) })
 
         ClickableRow(
             header = stringResource(id = R.string.version),
