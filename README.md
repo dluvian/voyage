@@ -2,6 +2,13 @@
 
 Voyage is a lightweight nostr client for Android.
 
+### Where is the issue section?
+
+The issue section on this GitHub repository is disabled.
+Issues can be submitted within the Voyage app (Settings -> Give us feedback) or with any other nip34
+compliant nostr client like
+[gitworkshop.dev](https://gitworkshop.dev/r/naddr1qqr8vmmev9nk2qgdwaehxw309ahx7uewd3hkcq3quseke4f9maul5nf67dj0m9sq6jcsmnjzzk4ycvldwl4qss35fvgqxpqqqpmejktjr8t/issues).
+
 ## Installation
 
 Install it via [zap.store](https://zap.store/download),
