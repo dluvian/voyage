@@ -14,6 +14,7 @@ import com.dluvian.voyage.core.EditListViewAddTopic
 import com.dluvian.voyage.core.EditListViewSave
 import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.core.VOYAGE
 import com.dluvian.voyage.core.utils.isBareTopicStr
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.core.utils.normalizeTopic
@@ -44,7 +45,7 @@ class EditListViewModel(
 
     fun createNew() {
         // Drop first part of UUID just to make the identifier shorter
-        _identifier.value = "voyage" + UUID.randomUUID().toString().dropWhile { it != '-' }
+        _identifier.value = VOYAGE + UUID.randomUUID().toString().dropWhile { it != '-' }
         title.value = ""
         description.value = TextFieldValue()
         profiles.value = emptyList()

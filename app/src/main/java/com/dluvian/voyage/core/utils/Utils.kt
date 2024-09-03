@@ -16,6 +16,7 @@ import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
 import com.dluvian.voyage.core.MAX_SUBJECT_LEN
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.core.VOYAGE
 import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.data.model.RelevantMetadata
 import com.dluvian.voyage.data.nostr.LOCAL_WEBSOCKET
@@ -319,4 +320,4 @@ fun String.containsNoneIgnoreCase(strs: Collection<String>): Boolean {
 
 fun String.toTextFieldValue() = TextFieldValue(text = this, selection = TextRange(this.length))
 
-fun createVoyageClientTag() = Tag.parse(listOf("client", "voyage"))
+fun createVoyageClientTag() = Tag.parse(listOf("client", VOYAGE))

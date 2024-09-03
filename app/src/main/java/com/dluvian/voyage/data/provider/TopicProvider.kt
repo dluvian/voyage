@@ -1,6 +1,7 @@
 package com.dluvian.voyage.data.provider
 
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.core.VOYAGE
 import com.dluvian.voyage.core.model.TopicFollowState
 import com.dluvian.voyage.core.model.TopicMuteState
 import com.dluvian.voyage.core.utils.takeRandom
@@ -98,7 +99,7 @@ class TopicProvider(
     suspend fun getCreatedAt() = topicDao.getMaxCreatedAt()
 
     private val defaultTopics = listOf(
-        "voyage",
+        VOYAGE,
         "nostr",
         "asknostr",
         "introductions",

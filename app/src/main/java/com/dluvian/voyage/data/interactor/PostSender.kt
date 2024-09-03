@@ -6,6 +6,7 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.core.VOYAGE
 import com.dluvian.voyage.core.model.LabledGitIssue
 import com.dluvian.voyage.core.utils.extractCleanHashtags
 import com.dluvian.voyage.core.utils.getNormalizedTopics
@@ -17,6 +18,7 @@ import com.dluvian.voyage.data.event.ValidatedRootPost
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.extractMentions
+import com.dluvian.voyage.data.nostr.extractQuotes
 import com.dluvian.voyage.data.nostr.getSubject
 import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.data.provider.RelayProvider
@@ -24,8 +26,10 @@ import com.dluvian.voyage.data.room.dao.PostDao
 import com.dluvian.voyage.data.room.dao.tx.PostInsertDao
 import rust.nostr.protocol.Coordinate
 import rust.nostr.protocol.Event
+import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Kind
 import rust.nostr.protocol.KindEnum
+import rust.nostr.protocol.Nip19Event
 import rust.nostr.protocol.Nip19Profile
 import rust.nostr.protocol.PublicKey
 
@@ -57,6 +61,7 @@ class PostSender(
             content = trimmedBody,
             topics = allTopics.distinct().take(MAX_TOPICS),
             mentions = mentions,
+            quotes = extractQuotesFromString(content = concat),
             relayUrls = relayProvider.getPublishRelays(publishTo = mentions),
             isAnon = isAnon,
         ).onSuccess { event ->
@@ -97,6 +102,7 @@ class PostSender(
             content = trimmedBody,
             parentId = parentId,
             mentions = mentions,
+            quotes = extractQuotesFromString(content = trimmedBody),
             relayHint = relayHint,
             pubkeyHint = recipient,
             relayUrls = relayProvider.getPublishRelays(publishTo = mentions),
@@ -164,8 +170,9 @@ class PostSender(
     private val repoCoordinate = Coordinate(
         kind = Kind.fromEnum(KindEnum.GitRepoAnnouncement),
         publicKey = PublicKey.fromHex(hex = DLUVIAN_HEX),
-        identifier = "voyage"
+        identifier = VOYAGE
     )
+
     suspend fun sendGitIssue(
         issue: LabledGitIssue,
         isAnon: Boolean,
@@ -183,6 +190,7 @@ class PostSender(
             content = trimmedBody,
             label = issue.getLabel(),
             mentions = mentions,
+            quotes = extractQuotesFromString(content = trimmedBody),
             relayUrls = relayProvider.getPublishRelays(publishTo = listOf(DLUVIAN_HEX)),
             isAnon = isAnon,
         )
@@ -202,5 +210,22 @@ class PostSender(
             if (!isAnon) pubkeys.filter { it != myPubkeyProvider.getPubkeyHex() }
             else pubkeys
         }
+    }
+
+    // Either EventIdHex or Coordinate
+    private fun extractQuotesFromString(content: String): List<String> {
+        return extractQuotes(content = content)
+            .mapNotNull {
+                runCatching { Nip19Event.fromBech32(it).eventId().toHex() }.getOrNull()
+                    ?: runCatching { EventId.fromBech32(it).toHex() }.getOrNull()
+                    ?: runCatching {
+                        Coordinate.fromBech32(it).let { coord ->
+                            val kind = coord.kind().asU16()
+                            val pubkey = coord.publicKey().toHex()
+                            val identifier = coord.identifier()
+                            "$kind:$pubkey:$identifier".removeSuffix(":")
+                        }
+                    }.getOrNull()
+            }.distinct()
     }
 }

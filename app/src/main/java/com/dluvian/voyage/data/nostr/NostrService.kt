@@ -129,6 +129,7 @@ class NostrService(
         content: String,
         topics: List<Topic>,
         mentions: List<PubkeyHex>,
+        quotes: List<String>,
         relayUrls: Collection<RelayUrl>,
         isAnon: Boolean,
     ): Result<Event> {
@@ -137,6 +138,7 @@ class NostrService(
             content = content,
             topics = topics,
             mentions = mentions,
+            quotes = quotes,
             isAnon = isAnon,
         )
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
@@ -146,6 +148,7 @@ class NostrService(
         content: String,
         parentId: EventIdHex,
         mentions: List<PubkeyHex>,
+        quotes: List<String>,
         relayHint: RelayUrl,
         pubkeyHint: PubkeyHex,
         relayUrls: Collection<RelayUrl>,
@@ -153,7 +156,8 @@ class NostrService(
     ): Result<Event> {
         return eventMaker.buildReply(
             parentId = EventId.fromHex(parentId),
-            mentions = mentions.map { PublicKey.fromHex(it) },
+            mentions = mentions,
+            quotes = quotes,
             relayHint = relayHint,
             pubkeyHint = pubkeyHint,
             content = content,
@@ -325,6 +329,7 @@ class NostrService(
         content: String,
         label: String,
         mentions: List<PubkeyHex>,
+        quotes: List<String>,
         relayUrls: Collection<RelayUrl>,
         isAnon: Boolean,
     ): Result<Event> {
@@ -334,6 +339,7 @@ class NostrService(
             content = content,
             label = label,
             mentions = mentions,
+            quotes = quotes,
             isAnon = isAnon,
         )
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }

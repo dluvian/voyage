@@ -1,6 +1,7 @@
 package com.dluvian.voyage.core
 
 const val DLUVIAN_HEX = "e4336cd525df79fa4d3af364fd9600d4b10dce4215aa4c33ed77ea0842344b10"
+const val VOYAGE = "voyage"
 
 const val MAX_CONTENT_LEN = 8_192
 const val MAX_DESCRIPTION_LEN = 1024

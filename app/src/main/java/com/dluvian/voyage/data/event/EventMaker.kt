@@ -9,7 +9,8 @@ import com.dluvian.voyage.data.account.AccountManager
 import com.dluvian.voyage.data.nostr.Nip65Relay
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.createDescriptionTag
-import com.dluvian.voyage.data.nostr.createMentionTag
+import com.dluvian.voyage.data.nostr.createMentionTags
+import com.dluvian.voyage.data.nostr.createQuoteTags
 import com.dluvian.voyage.data.nostr.createReplyTag
 import com.dluvian.voyage.data.nostr.createSubjectTag
 import com.dluvian.voyage.data.nostr.createTitleTag
@@ -41,12 +42,14 @@ class EventMaker(
         content: String,
         topics: List<Topic>,
         mentions: List<PubkeyHex>,
+        quotes: List<String>,
         isAnon: Boolean,
     ): Result<Event> {
         val tags = mutableListOf<Tag>()
         if (subject.isNotEmpty()) tags.add(createSubjectTag(subject = subject))
         topics.forEach { tags.add(Tag.hashtag(hashtag = it)) }
-        if (mentions.isNotEmpty()) tags.addAll(createMentionTag(pubkeys = mentions))
+        if (mentions.isNotEmpty()) tags.addAll(createMentionTags(pubkeys = mentions))
+        if (quotes.isNotEmpty()) tags.addAll(createQuoteTags(eventIdHexOrCoordinates = mentions))
         addClientTag(tags = tags, isAnon = isAnon)
 
         return signEvent(
@@ -57,7 +60,8 @@ class EventMaker(
 
     suspend fun buildReply(
         parentId: EventId,
-        mentions: Collection<PublicKey>,
+        mentions: List<PubkeyHex>,
+        quotes: List<String>,
         relayHint: RelayUrl,
         pubkeyHint: PubkeyHex,
         content: String,
@@ -70,7 +74,8 @@ class EventMaker(
                 pubkeyHint = pubkeyHint
             )
         )
-        mentions.forEach { tags.add(Tag.publicKey(publicKey = it)) }
+        if (mentions.isNotEmpty()) tags.addAll(createMentionTags(pubkeys = mentions))
+        if (quotes.isNotEmpty()) tags.addAll(createQuoteTags(eventIdHexOrCoordinates = mentions))
         addClientTag(tags = tags, isAnon = isAnon)
 
         return signEvent(
@@ -243,6 +248,7 @@ class EventMaker(
         content: String,
         label: String,
         mentions: List<PubkeyHex>,
+        quotes: List<String>,
         isAnon: Boolean,
     ): Result<Event> {
         val tags = mutableListOf<Tag>()
@@ -253,7 +259,8 @@ class EventMaker(
 
         val repoOwner = repoCoordinate.publicKey().toHex()
         val filteredMentions = mentions.distinct().filterNot { it == repoOwner }
-        if (filteredMentions.isNotEmpty()) tags.addAll(createMentionTag(pubkeys = filteredMentions))
+        if (filteredMentions.isNotEmpty()) tags.addAll(createMentionTags(pubkeys = filteredMentions))
+        if (quotes.isNotEmpty()) tags.addAll(createQuoteTags(eventIdHexOrCoordinates = quotes))
 
         return signEvent(
             eventBuilder = EventBuilder(

@@ -1,6 +1,7 @@
 package com.dluvian.voyage.data.nostr
 
 import cash.z.ecc.android.bip39.Mnemonics
+import rust.nostr.protocol.Coordinate
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Kind
@@ -28,8 +29,12 @@ fun createDescriptionTag(description: String): Tag {
     return Tag.fromStandardized(TagStandard.Description(desc = description))
 }
 
-fun createMentionTag(pubkeys: Collection<String>): List<Tag> {
+fun createMentionTags(pubkeys: Collection<String>): List<Tag> {
     return pubkeys.map { Tag.parse(listOf("p", it)) }
+}
+
+fun createQuoteTags(eventIdHexOrCoordinates: List<String>): List<Tag> {
+    return eventIdHexOrCoordinates.map { Tag.parse(listOf("q", it)) }
 }
 
 private val nostrMentionPattern = Regex("(nostr:|@)(npub1|nprofile1)[a-zA-Z0-9]+")
@@ -39,6 +44,17 @@ fun extractMentions(content: String) = nostrMentionPattern.findAll(content)
     .filter {
         runCatching { PublicKey.fromBech32(it) }.isSuccess ||
                 runCatching { Nip19Profile.fromBech32(it) }.isSuccess
+    }
+    .toList()
+
+private val nostrQuotePattern = Regex("(nostr:|@)(nevent1|naddr1)[a-zA-Z0-9]+")
+fun extractQuotes(content: String) = nostrQuotePattern.findAll(content)
+    .map { it.value.removePrefix("@").removePrefix(NOSTR_URI) }
+    .distinct()
+    .filter {
+        runCatching { Nip19Event.fromBech32(it) }.isSuccess ||
+                runCatching { EventId.fromBech32(it) }.isSuccess ||
+                runCatching { Coordinate.fromBech32(it) }.isSuccess
     }
     .toList()
 
