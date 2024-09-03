@@ -4,6 +4,7 @@ import android.util.Log
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.core.utils.createVoyageClientTag
 import com.dluvian.voyage.data.account.AccountManager
 import com.dluvian.voyage.data.nostr.Nip65Relay
 import com.dluvian.voyage.data.nostr.RelayUrl
@@ -12,6 +13,7 @@ import com.dluvian.voyage.data.nostr.createMentionTag
 import com.dluvian.voyage.data.nostr.createReplyTag
 import com.dluvian.voyage.data.nostr.createSubjectTag
 import com.dluvian.voyage.data.nostr.createTitleTag
+import com.dluvian.voyage.data.preferences.EventPreferences
 import rust.nostr.protocol.Bookmarks
 import rust.nostr.protocol.Contact
 import rust.nostr.protocol.Coordinate
@@ -32,6 +34,7 @@ private const val TAG = "EventMaker"
 
 class EventMaker(
     private val accountManager: AccountManager,
+    private val eventPreferences: EventPreferences,
 ) {
     suspend fun buildPost(
         subject: String,
@@ -44,6 +47,7 @@ class EventMaker(
         if (subject.isNotEmpty()) tags.add(createSubjectTag(subject = subject))
         topics.forEach { tags.add(Tag.hashtag(hashtag = it)) }
         if (mentions.isNotEmpty()) tags.addAll(createMentionTag(pubkeys = mentions))
+        addClientTag(tags = tags, isAnon = isAnon)
 
         return signEvent(
             eventBuilder = EventBuilder.textNote(content = content, tags = tags),
@@ -67,6 +71,7 @@ class EventMaker(
             )
         )
         mentions.forEach { tags.add(Tag.publicKey(publicKey = it)) }
+        addClientTag(tags = tags, isAnon = isAnon)
 
         return signEvent(
             eventBuilder = EventBuilder.textNote(content = content, tags = tags),
@@ -80,10 +85,13 @@ class EventMaker(
         relayHint: RelayUrl,
         isAnon: Boolean,
     ): Result<Event> {
+        val tags = topics.map { Tag.hashtag(hashtag = it) }.toMutableList()
+        addClientTag(tags = tags, isAnon = isAnon)
+
         return signEvent(
             eventBuilder = EventBuilder
                 .repost(event = crossPostedEvent, relayUrl = relayHint)
-                .addTags(tags = topics.map { Tag.hashtag(hashtag = it) }),
+                .addTags(tags = tags),
             isAnon = isAnon
         )
     }
@@ -280,5 +288,11 @@ class EventMaker(
             val unsignedEvent = eventBuilder.toUnsignedEvent(accountManager.getPublicKey())
             accountManager.sign(unsignedEvent = unsignedEvent)
         }
+    }
+
+    private fun addClientTag(tags: MutableList<Tag>, isAnon: Boolean) {
+        if (isAnon || !eventPreferences.isAddingClientTag()) return
+
+        tags.add(createVoyageClientTag())
     }
 }

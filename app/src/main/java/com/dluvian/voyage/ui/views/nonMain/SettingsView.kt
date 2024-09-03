@@ -31,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.dluvian.voyage.R
+import com.dluvian.voyage.core.AddClientTag
 import com.dluvian.voyage.core.ChangeUpvoteContent
 import com.dluvian.voyage.core.ClickCreateGitIssue
 import com.dluvian.voyage.core.ComposableContent
@@ -109,7 +110,7 @@ private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: OnUpdate) {
             DatabaseSection(vm = vm, scope = scope, onUpdate = onUpdate)
         }
         item {
-            AppSection(currentUpvote = vm.currentUpvote.value, onUpdate = onUpdate)
+            AppSection(vm = vm, onUpdate = onUpdate)
         }
     }
 }
@@ -352,13 +353,13 @@ private fun DatabaseSection(
 }
 
 @Composable
-private fun AppSection(currentUpvote: String, onUpdate: OnUpdate) {
+private fun AppSection(vm: SettingsViewModel, onUpdate: OnUpdate) {
     val focusRequester = remember { FocusRequester() }
 
     SettingsSection(header = stringResource(id = R.string.app)) {
         val showUpvoteDialog = remember { mutableStateOf(false) }
         if (showUpvoteDialog.value) {
-            val newUpvote = remember { mutableStateOf(currentUpvote.toTextFieldValue()) }
+            val newUpvote = remember { mutableStateOf(vm.currentUpvote.value.toTextFieldValue()) }
             BaseActionDialog(title = stringResource(id = R.string.upvote_event_content),
                 main = {
                     LaunchedEffect(key1 = Unit) { focusRequester.requestFocus() }
@@ -376,9 +377,24 @@ private fun AppSection(currentUpvote: String, onUpdate: OnUpdate) {
                 onDismiss = { showUpvoteDialog.value = false })
         }
         ClickableRow(
-            header = stringResource(id = R.string.upvote_event_content) + ": $currentUpvote",
+            header = stringResource(id = R.string.upvote_event_content) + ": ${vm.currentUpvote.value}",
             text = stringResource(id = R.string.this_affects_how_other_clients_render_your_upvotes),
             onClick = { showUpvoteDialog.value = true })
+
+        ClickableRow(
+            header = stringResource(id = R.string.add_client_tag),
+            text = stringResource(id = R.string.let_other_clients_know_that_you_are_posting_with_voyage),
+            trailingContent = {
+                Checkbox(
+                    checked = vm.isAddingClientTag.value,
+                    onCheckedChange = {
+                        onUpdate(AddClientTag(addClientTag = it))
+                    },
+                )
+            },
+            onClick = {
+                onUpdate(AddClientTag(!vm.isAddingClientTag.value))
+            })
 
         ClickableRow(
             header = stringResource(id = R.string.give_us_feedback),

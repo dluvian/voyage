@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.R
+import com.dluvian.voyage.core.AddClientTag
 import com.dluvian.voyage.core.ChangeUpvoteContent
 import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.DELAY_1SEC
@@ -77,6 +78,7 @@ class SettingsViewModel(
     val isExporting = mutableStateOf(false)
     val exportCount = mutableIntStateOf(0)
     val currentUpvote = mutableStateOf(eventPreferences.getUpvoteContent())
+    val isAddingClientTag = mutableStateOf(eventPreferences.isAddingClientTag())
     val isLocking = mutableStateOf(false)
     val isLocked = accountLocker.isLocked
     val isLockedForced = mutableStateOf(false)
@@ -115,6 +117,11 @@ class SettingsViewModel(
             is ChangeUpvoteContent -> {
                 eventPreferences.setUpvoteContent(newUpvote = action.newContent)
                 this.currentUpvote.value = action.newContent
+            }
+
+            is AddClientTag -> {
+                eventPreferences.setIsAddingClientTag(addClientTag = action.addClientTag)
+                this.isAddingClientTag.value = action.addClientTag
             }
 
             is SendBookmarkedToLocalRelay -> {

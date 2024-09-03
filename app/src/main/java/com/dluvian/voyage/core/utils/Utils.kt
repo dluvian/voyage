@@ -48,6 +48,7 @@ import rust.nostr.protocol.Kind
 import rust.nostr.protocol.KindEnum
 import rust.nostr.protocol.Metadata
 import rust.nostr.protocol.PublicKey
+import rust.nostr.protocol.Tag
 import rust.nostr.protocol.Timestamp
 
 fun PublicKey.toShortenedNpub(): String {
@@ -317,3 +318,5 @@ fun String.containsNoneIgnoreCase(strs: Collection<String>): Boolean {
 }
 
 fun String.toTextFieldValue() = TextFieldValue(text = this, selection = TextRange(this.length))
+
+fun createVoyageClientTag() = Tag.parse(listOf("client", "voyage"))

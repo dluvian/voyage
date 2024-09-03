@@ -231,7 +231,10 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
         eventValidator = eventValidator,
         eventProcessor = eventProcessor
     )
-    private val eventMaker = EventMaker(accountManager = accountManager)
+    private val eventMaker = EventMaker(
+        accountManager = accountManager,
+        eventPreferences = eventPreferences,
+    )
 
     val databaseInteractor = DatabaseInteractor(
         room = roomDb,

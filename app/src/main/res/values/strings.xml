@@ -266,4 +266,6 @@
     <string name="bug_report">Bug report</string>
     <string name="enhancement_request">Enhancement request</string>
     <string name="indexed_topics">Indexed topics</string>
+    <string name="add_client_tag">Add voyage client tag</string>
+    <string name="let_other_clients_know_that_you_are_posting_with_voyage">Let other clients know that you are posting with Voyage. It will not be added when posting anonymously.</string>
 </resources>
