@@ -262,4 +262,6 @@
     <string name="bug_report">错误报告</string>
     <string name="enhancement_request">增强请求</string>
     <string name="indexed_topics">索引主题</string>
+    <string name="add_client_tag">添加 Voyage 客户端标签</string>
+    <string name="let_other_clients_know_that_you_are_posting_with_voyage">让其他客户知道您正在使用 Voyage 发帖。匿名发帖时不会被添加。</string>
 </resources>

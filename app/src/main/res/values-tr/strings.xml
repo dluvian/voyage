@@ -261,4 +261,6 @@
     <string name="bug_report">Hata raporu</string>
     <string name="enhancement_request">Geliştirme isteği</string>
     <string name="indexed_topics">Dizinlenmiş konular</string>
+    <string name="add_client_tag">Voyage istemci etiketini ekle</string>
+    <string name="let_other_clients_know_that_you_are_posting_with_voyage">Diğer müşterilerin Voyage ile gönderi paylaştığınızı bilmelerini sağlayın. Anonim olarak gönderi paylaştığınızda eklenmeyecektir.</string>
 </resources>
