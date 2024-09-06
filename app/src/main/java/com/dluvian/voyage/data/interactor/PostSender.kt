@@ -190,6 +190,7 @@ class PostSender(
             content = trimmedBody,
             label = issue.getLabel(),
             mentions = mentions,
+            // TODO: Once rust-nostr implements it: .filterNot { it == repoCoordinate.toString() },
             quotes = extractQuotesFromString(content = trimmedBody),
             relayUrls = relayProvider.getPublishRelays(publishTo = listOf(DLUVIAN_HEX)),
             isAnon = isAnon,

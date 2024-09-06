@@ -49,7 +49,7 @@ class EventMaker(
         if (subject.isNotEmpty()) tags.add(createSubjectTag(subject = subject))
         topics.forEach { tags.add(Tag.hashtag(hashtag = it)) }
         if (mentions.isNotEmpty()) tags.addAll(createMentionTags(pubkeys = mentions))
-        if (quotes.isNotEmpty()) tags.addAll(createQuoteTags(eventIdHexOrCoordinates = mentions))
+        if (quotes.isNotEmpty()) tags.addAll(createQuoteTags(eventIdHexOrCoordinates = quotes))
         addClientTag(tags = tags, isAnon = isAnon)
 
         return signEvent(
@@ -75,7 +75,7 @@ class EventMaker(
             )
         )
         if (mentions.isNotEmpty()) tags.addAll(createMentionTags(pubkeys = mentions))
-        if (quotes.isNotEmpty()) tags.addAll(createQuoteTags(eventIdHexOrCoordinates = mentions))
+        if (quotes.isNotEmpty()) tags.addAll(createQuoteTags(eventIdHexOrCoordinates = quotes))
         addClientTag(tags = tags, isAnon = isAnon)
 
         return signEvent(

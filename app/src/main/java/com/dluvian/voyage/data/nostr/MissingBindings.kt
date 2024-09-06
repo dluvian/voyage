@@ -47,7 +47,7 @@ fun extractMentions(content: String) = nostrMentionPattern.findAll(content)
     }
     .toList()
 
-private val nostrQuotePattern = Regex("(nostr:|@)(nevent1|naddr1)[a-zA-Z0-9]+")
+private val nostrQuotePattern = Regex("(nostr:|@)(nevent1|naddr1|note1)[a-zA-Z0-9]+")
 fun extractQuotes(content: String) = nostrQuotePattern.findAll(content)
     .map { it.value.removePrefix("@").removePrefix(NOSTR_URI) }
     .distinct()
