@@ -258,30 +258,18 @@ class ProfileProvider(
         "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2",
         // odell
         "04c915daefee38317fa734444acee390a8269fe5810b2241e5e6dd343dfbecc9",
-        // pablof7z
-        "fa984bd7dbb282f07e16e7ae87b26a2a7b9b90b7246a44771f0cf5ae58018f52",
         // gigi
         "6e468422dfb74a5738702a8823b9b28168abab8655faacb6853cd0ee15deee93",
-        // kieran
-        "63fe6318dc58583cfe16810f86dd09e18bfd76aabc24a0081ce2856f330504ed",
         // fishcake
         "8fb140b4e8ddef97ce4b821d247278a1a4353362623f64021484b372f948000c",
         // lynalden
         "eab0e756d32b80bcd464f3d844b8040303075a13eabc3599a762c9ac7ab91f4f",
-        // yonle
-        "347a2370900d19b4e4756221594e8bda706ae5c785de09e59e4605f91a03f49c",
-        // gladstein
-        "58c741aa630c2da35a56a77c1d05381908bd10504fdd2d8b43f725efa6d23196",
-        // tanel
-        "5c508c34f58866ec7341aaf10cc1af52e9232bb9f859c8103ca5ecf2aa93bf78",
         // yukikishimoto
         "68d81165918100b7da43fc28f7d1fc12554466e1115886b9e7bb326f65ec4272",
         // greenart7c3
         "7579076d9aff0a4cfdefa7e2045f2486c7e5d8bc63bfc6b45397233e1bbfcb19",
         // preston
         "85080d3bad70ccdcd7f74c29a44f55bb85cbcd3dd0cbb957da1d215bdb931204",
-        // unclebob
-        "2ef93f01cd2493e04235a6b87b10d3c4a74e2a7eb7c3caf168268f6af73314b5",
         // gsovereignty
         "d91191e30e00444b942c0e82cad470b32af171764c2275bee0bd99377efd4075",
         // american_hodl
@@ -300,8 +288,6 @@ class ProfileProvider(
         "d0debf9fb12def81f43d7c69429bb784812ac1e4d2d53a202db6aac7ea4b466c",
         // cyph3rp9nk
         "fcf70a45cfa817eaa813b9ba8a375d713d3169f4a27f3dcac3d49112df67d37e",
-        // nvk
-        "e88a691e98d9987c964521dff60025f60700378a4879180dcbbb4a5027850411",
         // alex_gleason
         "79c2cae114ea28a981e7559b4fe7854a473521a8d22a66bbab9fa248eb820ff6"
     )
