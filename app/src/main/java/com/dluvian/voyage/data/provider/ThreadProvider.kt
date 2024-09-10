@@ -153,6 +153,10 @@ class ThreadProvider(
                 nostrSubscriber.subVotesAndReplies(
                     parentIds = it.map { reply -> reply.reply.getRelevantId() }
                 )
+                nostrSubscriber.subProfiles(
+                    pubkeys = it.filter { reply -> reply.reply.authorName.isNullOrEmpty() }
+                        .map { reply -> reply.reply.pubkey }
+                )
             }
     }
 }

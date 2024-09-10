@@ -356,6 +356,7 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
         forcedFollows = profileFollower.forcedFollowsFlow,
         forcedBookmarks = bookmarker.forcedBookmarksFlow,
         muteProvider = muteProvider,
+        showAuthorName = appPreferences.showAuthorNameState
     )
 
     val threadProvider = ThreadProvider(

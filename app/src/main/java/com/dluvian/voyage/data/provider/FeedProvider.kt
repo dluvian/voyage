@@ -1,5 +1,6 @@
 package com.dluvian.voyage.data.provider
 
+import androidx.compose.runtime.State
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
@@ -34,6 +35,7 @@ class FeedProvider(
     private val forcedFollows: Flow<Map<PubkeyHex, Boolean>>,
     private val forcedBookmarks: Flow<Map<EventIdHex, Boolean>>,
     private val muteProvider: MuteProvider,
+    private val showAuthorName: State<Boolean>,
 ) {
     private val staticFeedProvider = StaticFeedProvider(
         room = room,
@@ -91,6 +93,11 @@ class FeedProvider(
                         .filter { it.content.text.containsNoneIgnoreCase(strs = mutedWords) }
                         .map { it.getRelevantId() }
                 )
+                if (showAuthorName.value) {
+                    nostrSubscriber.subProfiles(
+                        pubkeys = posts.filter { it.authorName.isNullOrEmpty() }.map { it.pubkey }
+                    )
+                }
             }
     }
 

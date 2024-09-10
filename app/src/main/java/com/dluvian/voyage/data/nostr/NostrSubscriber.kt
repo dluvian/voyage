@@ -1,6 +1,8 @@
 package com.dluvian.voyage.data.nostr
 
+import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.RESUB_TIMEOUT
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.model.BookmarksFeedSetting
@@ -17,9 +19,11 @@ import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.room.AppDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import rust.nostr.protocol.Nip19Event
 import rust.nostr.protocol.Nip19Profile
+import rust.nostr.protocol.PublicKey
 import java.util.concurrent.atomic.AtomicBoolean
 
 class NostrSubscriber(
@@ -153,6 +157,31 @@ class NostrSubscriber(
             }
         }.invokeOnCompletion {
             isSubbingVotesAndReplies.set(false)
+        }
+    }
+
+    private val pubkeyCache = mutableSetOf<PubkeyHex>()
+    private val isSubbingProfiles = AtomicBoolean(false)
+    fun subProfiles(pubkeys: Collection<PubkeyHex>) {
+        if (pubkeys.isEmpty()) return
+
+        val newPubkeys = pubkeys - pubkeyCache
+        if (newPubkeys.isEmpty()) return
+
+        if (!isSubbingProfiles.compareAndSet(false, true)) return
+
+        pubkeyCache.addAll(newPubkeys)
+
+        scope.launch(Dispatchers.Default) {
+            val filter = filterCreator.getProfileFilter(
+                pubkeys = newPubkeys.map { PublicKey.fromHex(it) }
+            )
+            relayProvider.getReadRelays().forEach { relay ->
+                subCreator.subscribe(relayUrl = relay, filters = listOf(filter))
+            }
+            delay(DEBOUNCE)
+        }.invokeOnCompletion {
+            isSubbingProfiles.set(false)
         }
     }
 
