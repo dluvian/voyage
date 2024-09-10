@@ -40,6 +40,7 @@ fun ThreadReplyRow(
                         ThreadViewToggleCollapse(id = leveledReply.reply.id)
                     )
                 },
+                showAuthorName = true,
                 additionalStartAction = {
                     if (leveledReply.reply.replyCount > 0 && !leveledReply.hasLoadedReplies) {
                         MoreRepliesTextButton(

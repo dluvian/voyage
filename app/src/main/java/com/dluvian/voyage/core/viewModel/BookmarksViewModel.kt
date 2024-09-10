@@ -21,6 +21,7 @@ class BookmarksViewModel(
     muteProvider: MuteProvider,
     val feedState: LazyListState,
     val postDetails: State<PostDetails?>,
+    val showAuthorName: State<Boolean>,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
 ) : ViewModel() {
     val paginator = Paginator(

@@ -268,4 +268,6 @@
     <string name="indexed_topics">Indexed topics</string>
     <string name="add_client_tag">Add Voyage client tag</string>
     <string name="let_other_clients_know_that_you_are_posting_with_voyage">Let other clients know that you are posting with Voyage. It will not be added when posting anonymously.</string>
+    <string name="show_usernames_in_feed">Show usernames in feed</string>
+    <string name="show_the_authors_username_in_feeds">Show the author\'s username in feeds</string>
 </resources>

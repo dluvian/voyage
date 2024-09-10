@@ -10,5 +10,11 @@ fun ThreadRootRow(
     isOp: Boolean,
     onUpdate: OnUpdate
 ) {
-    BaseRootRow(post = post, isOp = isOp, isThread = true, onUpdate = onUpdate)
+    BaseRootRow(
+        post = post,
+        isOp = isOp,
+        isThread = true,
+        showAuthorName = true,
+        onUpdate = onUpdate
+    )
 }

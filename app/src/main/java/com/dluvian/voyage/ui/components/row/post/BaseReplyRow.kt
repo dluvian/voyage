@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
-import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ClickText
 import com.dluvian.voyage.core.ComposableContent
@@ -26,6 +25,7 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenReplyCreation
 import com.dluvian.voyage.core.OpenThreadRaw
 import com.dluvian.voyage.core.model.ReplyUI
+import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.theme.ReplyIcon
 import com.dluvian.voyage.ui.theme.spacing
@@ -38,6 +38,7 @@ fun BaseReplyRow(
     isOp: Boolean,
     isThread: Boolean,
     onUpdate: OnUpdate,
+    showAuthorName: Boolean,
     onToggleCollapse: Fn = {},
     additionalStartAction: ComposableContent = {},
 ) {
@@ -58,7 +59,7 @@ fun BaseReplyRow(
             parent = reply,
             myTopic = null,
             isOp = isOp,
-            isThreadView = isThread,
+            showAuthorName = showAuthorName,
             collapsedText = if (isCollapsed) reply.content else null,
             onUpdate = onUpdate
         )

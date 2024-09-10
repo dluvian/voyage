@@ -42,6 +42,7 @@ import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.SubBatcher
 import com.dluvian.voyage.data.nostr.SubId
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
+import com.dluvian.voyage.data.preferences.AppPreferences
 import com.dluvian.voyage.data.preferences.DatabasePreferences
 import com.dluvian.voyage.data.preferences.EventPreferences
 import com.dluvian.voyage.data.preferences.HomePreferences
@@ -102,6 +103,7 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
     val databasePreferences = DatabasePreferences(context = context)
     val relayPreferences = RelayPreferences(context = context)
     val eventPreferences = EventPreferences(context = context)
+    val appPreferences = AppPreferences(context = context)
 
     val accountManager = AccountManager(
         mnemonicSigner = mnemonicSigner,

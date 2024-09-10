@@ -50,6 +50,7 @@ import com.dluvian.voyage.core.RequestExternalAccount
 import com.dluvian.voyage.core.SendAuth
 import com.dluvian.voyage.core.SendBookmarkedToLocalRelay
 import com.dluvian.voyage.core.SendUpvotedToLocalRelay
+import com.dluvian.voyage.core.ShowUsernames
 import com.dluvian.voyage.core.UpdateAutopilotRelays
 import com.dluvian.voyage.core.UpdateLocalRelayPort
 import com.dluvian.voyage.core.UpdateRootPostThreshold
@@ -357,6 +358,21 @@ private fun AppSection(vm: SettingsViewModel, onUpdate: OnUpdate) {
     val focusRequester = remember { FocusRequester() }
 
     SettingsSection(header = stringResource(id = R.string.app)) {
+        ClickableRow(
+            header = stringResource(id = R.string.show_usernames_in_feed),
+            text = stringResource(id = R.string.show_the_authors_username_in_feeds),
+            trailingContent = {
+                Checkbox(
+                    checked = vm.showUsernames.value,
+                    onCheckedChange = {
+                        onUpdate(ShowUsernames(showUsernames = it))
+                    },
+                )
+            },
+            onClick = {
+                onUpdate(ShowUsernames(!vm.showUsernames.value))
+            })
+
         val showUpvoteDialog = remember { mutableStateOf(false) }
         if (showUpvoteDialog.value) {
             val newUpvote = remember { mutableStateOf(vm.currentUpvote.value.toTextFieldValue()) }
@@ -376,10 +392,6 @@ private fun AppSection(vm: SettingsViewModel, onUpdate: OnUpdate) {
                 onConfirm = { onUpdate(ChangeUpvoteContent(newContent = newUpvote.value.text)) },
                 onDismiss = { showUpvoteDialog.value = false })
         }
-        ClickableRow(
-            header = stringResource(id = R.string.upvote_event_content) + ": ${vm.currentUpvote.value}",
-            text = stringResource(id = R.string.this_affects_how_other_clients_render_your_upvotes),
-            onClick = { showUpvoteDialog.value = true })
 
         ClickableRow(
             header = stringResource(id = R.string.add_client_tag),
@@ -395,6 +407,11 @@ private fun AppSection(vm: SettingsViewModel, onUpdate: OnUpdate) {
             onClick = {
                 onUpdate(AddClientTag(!vm.isAddingClientTag.value))
             })
+
+        ClickableRow(
+            header = stringResource(id = R.string.upvote_event_content) + ": ${vm.currentUpvote.value}",
+            text = stringResource(id = R.string.this_affects_how_other_clients_render_your_upvotes),
+            onClick = { showUpvoteDialog.value = true })
 
         ClickableRow(
             header = stringResource(id = R.string.give_us_feedback),

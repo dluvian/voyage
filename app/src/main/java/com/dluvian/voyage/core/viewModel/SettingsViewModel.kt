@@ -27,6 +27,7 @@ import com.dluvian.voyage.core.SendAuth
 import com.dluvian.voyage.core.SendBookmarkedToLocalRelay
 import com.dluvian.voyage.core.SendUpvotedToLocalRelay
 import com.dluvian.voyage.core.SettingsViewAction
+import com.dluvian.voyage.core.ShowUsernames
 import com.dluvian.voyage.core.UpdateAutopilotRelays
 import com.dluvian.voyage.core.UpdateLocalRelayPort
 import com.dluvian.voyage.core.UpdateRootPostThreshold
@@ -39,6 +40,7 @@ import com.dluvian.voyage.core.utils.showToast
 import com.dluvian.voyage.data.account.AccountLocker
 import com.dluvian.voyage.data.account.AccountSwitcher
 import com.dluvian.voyage.data.account.MnemonicSigner
+import com.dluvian.voyage.data.preferences.AppPreferences
 import com.dluvian.voyage.data.preferences.DatabasePreferences
 import com.dluvian.voyage.data.preferences.EventPreferences
 import com.dluvian.voyage.data.preferences.RelayPreferences
@@ -58,6 +60,7 @@ class SettingsViewModel(
     private val databasePreferences: DatabasePreferences,
     private val relayPreferences: RelayPreferences,
     private val eventPreferences: EventPreferences,
+    private val appPreferences: AppPreferences,
     private val databaseInteractor: DatabaseInteractor,
     private val externalSignerHandler: ExternalSignerHandler,
     private val mnemonicSigner: MnemonicSigner,
@@ -79,6 +82,7 @@ class SettingsViewModel(
     val exportCount = mutableIntStateOf(0)
     val currentUpvote = mutableStateOf(eventPreferences.getUpvoteContent())
     val isAddingClientTag = mutableStateOf(eventPreferences.isAddingClientTag())
+    val showUsernames = appPreferences.showAuthorNameState
     val isLocking = mutableStateOf(false)
     val isLocked = accountLocker.isLocked
     val isLockedForced = mutableStateOf(false)
@@ -138,6 +142,8 @@ class SettingsViewModel(
                 relayPreferences.setLocalRelayPort(port = action.port?.toInt())
                 this.localRelayPort.value = action.port?.toInt()
             }
+
+            is ShowUsernames -> appPreferences.setShowAuthorName(showAuthorName = action.showUsernames)
 
             is ExportDatabase -> exportDatabase(uiScope = action.uiScope)
 

@@ -53,6 +53,7 @@ fun Feed(
     paginator: IPaginator,
     postDetails: State<PostDetails?>,
     state: LazyListState,
+    showAuthorName: Boolean,
     onRefresh: Fn,
     onAppend: Fn,
     onUpdate: OnUpdate,
@@ -82,8 +83,17 @@ fun Feed(
                 items = filteredPosts,
                 key = { item -> item.id }) { post ->
                 when (post) {
-                    is RootPostUI -> FeedRootRow(post = post, onUpdate = onUpdate)
-                    is ReplyUI -> FeedReplyRow(reply = post, onUpdate = onUpdate)
+                    is RootPostUI -> FeedRootRow(
+                        post = post,
+                        showAuthorName = showAuthorName,
+                        onUpdate = onUpdate
+                    )
+
+                    is ReplyUI -> FeedReplyRow(
+                        reply = post,
+                        showAuthorName = showAuthorName,
+                        onUpdate = onUpdate
+                    )
                 }
 
                 FullHorizontalDivider()

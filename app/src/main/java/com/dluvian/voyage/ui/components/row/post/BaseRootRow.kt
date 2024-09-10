@@ -12,13 +12,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.core.ClickText
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenReplyCreation
 import com.dluvian.voyage.core.OpenThread
 import com.dluvian.voyage.core.OpenThreadRaw
 import com.dluvian.voyage.core.model.RootPostUI
+import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.ui.components.chip.CommentChip
 import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.theme.spacing
@@ -28,6 +28,7 @@ fun BaseRootRow(
     post: RootPostUI,
     isOp: Boolean,
     isThread: Boolean,
+    showAuthorName: Boolean,
     onUpdate: OnUpdate
 ) {
     val onOpenThread = {
@@ -59,7 +60,7 @@ fun BaseRootRow(
             parent = post,
             myTopic = post.myTopic,
             isOp = isOp,
-            isThreadView = isThread,
+            showAuthorName = showAuthorName,
             onUpdate = onUpdate,
         )
         Spacer(modifier = Modifier.height(spacing.large))

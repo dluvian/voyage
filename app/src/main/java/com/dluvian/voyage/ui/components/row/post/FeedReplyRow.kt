@@ -7,6 +7,7 @@ import com.dluvian.voyage.core.model.ReplyUI
 @Composable
 fun FeedReplyRow(
     reply: ReplyUI,
+    showAuthorName: Boolean,
     onUpdate: OnUpdate,
 ) {
     BaseReplyRow(
@@ -15,6 +16,7 @@ fun FeedReplyRow(
         showFullReplyButton = true,
         isOp = false,
         isThread = false,
+        showAuthorName = showAuthorName,
         onUpdate = onUpdate
     )
 }

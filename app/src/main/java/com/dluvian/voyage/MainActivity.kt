@@ -120,6 +120,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 feedProvider = appContainer.feedProvider,
                 postDetails = appContainer.postDetailInspector.currentDetails,
                 feedState = homeFeedState,
+                showAuthorName = appContainer.appPreferences.showAuthorNameState,
                 lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
                 homePreferences = appContainer.homePreferences
             )
@@ -138,6 +139,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 databasePreferences = appContainer.databasePreferences,
                 relayPreferences = appContainer.relayPreferences,
                 eventPreferences = appContainer.eventPreferences,
+                appPreferences = appContainer.appPreferences,
                 databaseInteractor = appContainer.databaseInteractor,
                 externalSignerHandler = appContainer.externalSignerHandler,
                 mnemonicSigner = appContainer.mnemonicSigner,
@@ -161,6 +163,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 profileAboutState = profileAboutState,
                 profileRelayState = profileRelayState,
                 pagerState = profilePagerState,
+                showAuthorName = appContainer.appPreferences.showAuthorNameState,
                 nostrSubscriber = appContainer.nostrSubscriber,
                 profileProvider = appContainer.profileProvider,
                 nip65Dao = appContainer.roomDb.nip65Dao(),
@@ -184,6 +187,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 muteProvider = appContainer.muteProvider,
                 postDetails = appContainer.postDetailInspector.currentDetails,
                 feedState = topicFeedState,
+                showAuthorName = appContainer.appPreferences.showAuthorNameState,
                 subCreator = appContainer.subCreator,
                 topicProvider = appContainer.topicProvider,
                 itemSetProvider = appContainer.itemSetProvider,
@@ -244,6 +248,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 subCreator = appContainer.lazyNostrSubscriber.subCreator,
                 postDetails = appContainer.postDetailInspector.currentDetails,
                 feedState = inboxFeedState,
+                showAuthorName = appContainer.appPreferences.showAuthorNameState,
                 inboxPreferences = appContainer.inboxPreferences
             )
         },
@@ -272,6 +277,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 muteProvider = appContainer.muteProvider,
                 feedState = bookmarksFeedState,
                 postDetails = appContainer.postDetailInspector.currentDetails,
+                showAuthorName = appContainer.appPreferences.showAuthorNameState,
                 lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
             )
         },
@@ -293,6 +299,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 topicState = listTopicState,
                 itemSetProvider = appContainer.itemSetProvider,
                 pagerState = listViewPagerState,
+                showAuthorName = appContainer.appPreferences.showAuthorNameState,
                 lazyNostrSubscriber = appContainer.lazyNostrSubscriber
             )
         },

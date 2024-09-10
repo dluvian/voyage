@@ -35,7 +35,7 @@ fun ParentRowHeader(
     parent: ParentUI,
     myTopic: String?,
     isOp: Boolean,
-    isThreadView: Boolean,
+    showAuthorName: Boolean,
     collapsedText: AnnotatedString? = null,
     onUpdate: OnUpdate
 ) {
@@ -51,7 +51,7 @@ fun ParentRowHeader(
             CrossPostedTrustIcons(
                 parent = parent,
                 isOp = isOp,
-                isThreadView = isThreadView,
+                showAuthor = showAuthorName,
                 onUpdate = onUpdate
             )
             myTopic?.let { topic ->
@@ -81,14 +81,14 @@ fun ParentRowHeader(
 private fun CrossPostedTrustIcons(
     parent: ParentUI,
     isOp: Boolean,
-    isThreadView: Boolean,
+    showAuthor: Boolean,
     onUpdate: OnUpdate
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         ClickableTrustIcon(
             trustType = parent.trustType,
             isOp = isOp,
-            authorName = if (isThreadView) parent.authorName else null,
+            authorName = if (showAuthor) parent.authorName else null,
             onClick = { onUpdate(OpenProfile(nprofile = createNprofile(hex = parent.pubkey))) }
         )
         if (parent is RootPostUI &&

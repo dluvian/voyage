@@ -5,6 +5,12 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.model.RootPostUI
 
 @Composable
-fun FeedRootRow(post: RootPostUI, onUpdate: OnUpdate) {
-    BaseRootRow(post = post, isOp = false, isThread = false, onUpdate = onUpdate)
+fun FeedRootRow(post: RootPostUI, showAuthorName: Boolean, onUpdate: OnUpdate) {
+    BaseRootRow(
+        post = post,
+        isOp = false,
+        isThread = false,
+        showAuthorName = showAuthorName,
+        onUpdate = onUpdate
+    )
 }
