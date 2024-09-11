@@ -12,9 +12,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -35,7 +37,6 @@ import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.viewModel.ThreadViewModel
 import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.ui.components.FullHorizontalDivider
-import com.dluvian.voyage.ui.components.PullRefreshBox
 import com.dluvian.voyage.ui.components.bottomSheet.PostDetailsBottomSheet
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
@@ -72,6 +73,7 @@ fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpd
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ThreadViewContent(
     localRoot: ParentUI,
@@ -88,7 +90,7 @@ private fun ThreadViewContent(
             is RootPostUI -> leveledReplies
         }
     }
-    PullRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(ThreadViewRefresh) }) {
+    PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(ThreadViewRefresh) }) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(bottom = spacing.xxl),

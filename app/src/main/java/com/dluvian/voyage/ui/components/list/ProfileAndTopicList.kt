@@ -3,7 +3,9 @@ package com.dluvian.voyage.ui.components.list
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
@@ -18,7 +20,6 @@ import com.dluvian.voyage.core.MuteWord
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.UnmuteWord
 import com.dluvian.voyage.core.model.Muted
-import com.dluvian.voyage.ui.components.PullRefreshBox
 import com.dluvian.voyage.ui.components.SimpleTabPager
 import com.dluvian.voyage.ui.components.dialog.AddMuteWordDialog
 import com.dluvian.voyage.ui.components.indicator.ComingSoon
@@ -94,6 +95,7 @@ fun ProfileAndTopicList(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun WordList(
     words: MutableState<List<String>>,
@@ -135,7 +137,7 @@ private fun WordList(
             )
         }
     }
-    PullRefreshBox(isRefreshing = isRefreshing, onRefresh = onRefresh) {
+    PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = onRefresh) {
         ItemList(
             items = mappedWords,
             state = state,

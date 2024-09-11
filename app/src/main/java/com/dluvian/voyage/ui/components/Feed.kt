@@ -14,9 +14,11 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
@@ -48,6 +50,7 @@ import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Feed(
     paginator: IPaginator,
@@ -69,7 +72,7 @@ fun Feed(
         derivedStateOf { isAppending || (hasPosts && posts.isEmpty()) }
     }
 
-    PullRefreshBox(isRefreshing = isRefreshing, onRefresh = onRefresh) {
+    PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = onRefresh) {
         if (showProgressIndicator) FullLinearProgressIndicator()
         if (!hasPosts && posts.isEmpty()) BaseHint(stringResource(id = R.string.no_posts_found))
         postDetails.value?.let { details ->

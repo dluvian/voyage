@@ -52,8 +52,8 @@ fun SearchTopAppBar(focusRequester: FocusRequester, onUpdate: OnUpdate) {
                     unfocusedIndicatorColor = Color.Transparent
                 ),
                 keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Search,
-                    autoCorrect = false,
+                    autoCorrectEnabled = false,
+                    imeAction = ImeAction.Search
                 ),
                 keyboardActions = KeyboardActions(
                     onSearch = {

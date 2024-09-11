@@ -10,6 +10,8 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -22,7 +24,6 @@ import com.dluvian.voyage.core.DiscoverViewInit
 import com.dluvian.voyage.core.DiscoverViewRefresh
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.viewModel.DiscoverViewModel
-import com.dluvian.voyage.ui.components.PullRefreshBox
 import com.dluvian.voyage.ui.components.chip.FollowChip
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.text.SectionHeader
@@ -30,6 +31,7 @@ import com.dluvian.voyage.ui.model.FollowableItem
 import com.dluvian.voyage.ui.model.FollowableProfileItem
 import com.dluvian.voyage.ui.model.FollowableTopicItem
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DiscoverView(vm: DiscoverViewModel, onUpdate: OnUpdate) {
     val isRefreshing by vm.isRefreshing
@@ -58,7 +60,7 @@ fun DiscoverView(vm: DiscoverViewModel, onUpdate: OnUpdate) {
         profiles.map { FollowableProfileItem(profile = it, onUpdate = onUpdate) }
     }
 
-    PullRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(DiscoverViewRefresh) }) {
+    PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(DiscoverViewRefresh) }) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             item { SectionHeader(header = stringResource(id = R.string.popular_topics)) }
             item {

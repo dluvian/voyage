@@ -18,10 +18,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -63,7 +65,6 @@ import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.ui.components.Feed
-import com.dluvian.voyage.ui.components.PullRefreshBox
 import com.dluvian.voyage.ui.components.SimpleTabPager
 import com.dluvian.voyage.ui.components.icon.ClickableTrustIcon
 import com.dluvian.voyage.ui.components.indicator.BaseHint
@@ -432,9 +433,10 @@ private fun RelaySection(
     Spacer(modifier = Modifier.height(spacing.xl))
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProfileViewPage(isRefreshing: Boolean, onUpdate: OnUpdate, content: ComposableContent) {
-    PullRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(ProfileViewRefresh) }) {
+    PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(ProfileViewRefresh) }) {
         content()
     }
 }
