@@ -212,7 +212,7 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
     val accountSwitcher = AccountSwitcher(
         accountManager = accountManager,
         accountDao = roomDb.accountDao(),
-        deleteDao = roomDb.deleteDao(),
+        postDao = roomDb.postDao(),
         idCacheClearer = idCacheClearer,
         lazyNostrSubscriber = lazyNostrSubscriber,
         nostrSubscriber = nostrSubscriber,

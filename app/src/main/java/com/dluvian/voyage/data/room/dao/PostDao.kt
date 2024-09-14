@@ -56,4 +56,7 @@ interface PostDao {
                 "ORDER BY createdAt ASC"
     )
     suspend fun getBookmarkedAndMyPostIds(): List<EventIdHex>
+
+    @Query("UPDATE post SET isMentioningMe = 0")
+    suspend fun resetAllMentions()
 }

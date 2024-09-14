@@ -16,7 +16,7 @@ import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.nostr.getCurrentSecs
 import com.dluvian.voyage.data.preferences.HomePreferences
 import com.dluvian.voyage.data.room.dao.AccountDao
-import com.dluvian.voyage.data.room.dao.DeleteDao
+import com.dluvian.voyage.data.room.dao.PostDao
 import com.dluvian.voyage.data.room.entity.AccountEntity
 import kotlinx.coroutines.delay
 import rust.nostr.protocol.PublicKey
@@ -26,7 +26,7 @@ private const val TAG = "AccountSwitcher"
 class AccountSwitcher(
     private val accountManager: AccountManager,
     private val accountDao: AccountDao,
-    private val deleteDao: DeleteDao,
+    private val postDao: PostDao,
     private val idCacheClearer: IdCacheClearer,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val nostrSubscriber: NostrSubscriber,
@@ -74,7 +74,7 @@ class AccountSwitcher(
         Log.i(TAG, "Update account and reset caches")
         lazyNostrSubscriber.subCreator.unsubAll()
         idCacheClearer.clear()
-        deleteDao.deleteAllPost()
+        postDao.resetAllMentions()
         accountDao.updateAccount(account = account)
         lazyNostrSubscriber.lazySubMyAccount()
         delay(DELAY_1SEC)
