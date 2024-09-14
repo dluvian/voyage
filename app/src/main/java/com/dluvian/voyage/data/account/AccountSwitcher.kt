@@ -74,8 +74,8 @@ class AccountSwitcher(
         Log.i(TAG, "Update account and reset caches")
         lazyNostrSubscriber.subCreator.unsubAll()
         idCacheClearer.clear()
-        postDao.resetAllMentions()
         accountDao.updateAccount(account = account)
+        postDao.reindexMentions(newPubkey = PublicKey.fromHex(account.pubkey))
         lazyNostrSubscriber.lazySubMyAccount()
         delay(DELAY_1SEC)
         nostrSubscriber.subFeed(
