@@ -7,7 +7,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.data.event.ValidatedCrossPost
-import com.dluvian.voyage.data.event.ValidatedPost
+import com.dluvian.voyage.data.event.ValidatedMainEvent
 import com.dluvian.voyage.data.event.ValidatedReply
 import com.dluvian.voyage.data.event.ValidatedRootPost
 import com.dluvian.voyage.data.room.entity.HashtagEntity
@@ -38,7 +38,7 @@ interface PostInsertDao {
         internalInsertPostOrIgnore(posts = newEntities)
     }
 
-    suspend fun internalInsertRootOrCrossPosts(rootOrCross: Collection<ValidatedPost>) {
+    suspend fun internalInsertRootOrCrossPosts(rootOrCross: Collection<ValidatedMainEvent>) {
         if (rootOrCross.isEmpty()) return
 
         val oldIds = filterOld(ids = rootOrCross.map { it.id })

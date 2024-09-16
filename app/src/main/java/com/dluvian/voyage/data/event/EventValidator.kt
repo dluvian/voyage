@@ -28,8 +28,8 @@ import rust.nostr.protocol.PublicKey
 
 private const val TAG = "EventValidator"
 
-private val TEXT_NOTE_U16 = Kind.fromEnum(KindEnum.TextNote).asU16()
-private val REPOST_U16 = Kind.fromEnum(KindEnum.Repost).asU16()
+val TEXT_NOTE_U16 = Kind.fromEnum(KindEnum.TextNote).asU16()
+val REPOST_U16 = Kind.fromEnum(KindEnum.Repost).asU16()
 private val REACTION_U16 = Kind.fromEnum(KindEnum.Reaction).asU16()
 private val CONTACT_U16 = Kind.fromEnum(KindEnum.ContactList).asU16()
 private val RELAYS_U16 = Kind.fromEnum(KindEnum.RelayList).asU16()
@@ -91,6 +91,7 @@ class EventValidator(
             )
 
             REPOST_U16 -> createValidatedRepost(event = event, relayUrl = relayUrl)
+
             REACTION_U16 -> {
                 if (event.content() == "-") return null
                 val postId = event.eventIds().firstOrNull() ?: return null
@@ -210,20 +211,21 @@ class EventValidator(
         val parsedEvent = runCatching { Event.fromJson(event.content()) }.getOrNull()
             ?: return null
         if (!parsedEvent.isPostOrReply()) return null
+
         val validated = createValidatedMainPost(
             event = parsedEvent,
             relayUrl = relayUrl,
             myPubkey = myPubkeyProvider.getPublicKey()
-        )
-            ?: return null
+        ) ?: return null
+
         if (!parsedEvent.verify()) return null
         return ValidatedCrossPost(
             id = event.id().toHex(),
             pubkey = event.author().toHex(),
-            topics = event.getNormalizedTopics(limit = MAX_TOPICS),
             createdAt = event.createdAt().secs(),
             relayUrl = relayUrl,
             crossPosted = validated
+            topics = event.getNormalizedTopics(limit = MAX_TOPICS),
         )
     }
 
