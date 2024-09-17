@@ -17,22 +17,40 @@ sealed class ValidatedMainEvent(
     open val relayUrl: RelayUrl,
 ) : ValidatedEvent()
 
-data class ValidatedPost(
+sealed class ValidatedTextNote(
     override val id: EventIdHex,
     override val pubkey: PubkeyHex,
     override val createdAt: Long,
     override val relayUrl: RelayUrl,
-    val topics: List<String>,
-    val subject: String?,
-    val content: String,
-    val json: String,
-    val isMentioningMe: Boolean,
+    open val content: String,
+    open val json: String,
+    open val isMentioningMe: Boolean,
 ) : ValidatedMainEvent(
     id = id,
     pubkey = pubkey,
     kind = TEXT_NOTE_U16.toInt(),
     createdAt = createdAt,
     relayUrl = relayUrl,
+)
+
+data class ValidatedPost(
+    override val id: EventIdHex,
+    override val pubkey: PubkeyHex,
+    override val createdAt: Long,
+    override val relayUrl: RelayUrl,
+    override val content: String,
+    override val json: String,
+    override val isMentioningMe: Boolean,
+    val topics: List<String>,
+    val subject: String?,
+) : ValidatedTextNote(
+    id = id,
+    pubkey = pubkey,
+    createdAt = createdAt,
+    relayUrl = relayUrl,
+    content = content,
+    json = json,
+    isMentioningMe = isMentioningMe
 )
 
 data class ValidatedLegacyReply(
@@ -40,16 +58,18 @@ data class ValidatedLegacyReply(
     override val pubkey: PubkeyHex,
     override val createdAt: Long,
     override val relayUrl: RelayUrl,
+    override val content: String,
+    override val json: String,
+    override val isMentioningMe: Boolean,
     val parentId: EventIdHex,
-    val content: String,
-    val json: String,
-    val isMentioningMe: Boolean,
-) : ValidatedMainEvent(
+) : ValidatedTextNote(
     id = id,
     pubkey = pubkey,
-    kind = TEXT_NOTE_U16.toInt(),
     createdAt = createdAt,
     relayUrl = relayUrl,
+    content = content,
+    json = json,
+    isMentioningMe = isMentioningMe
 )
 
 data class ValidatedCrossPost(
@@ -57,8 +77,9 @@ data class ValidatedCrossPost(
     override val pubkey: PubkeyHex,
     override val createdAt: Long,
     override val relayUrl: RelayUrl,
-    val crossPostedId: EventIdHex,
     val topics: List<String>,
+    val crossPostedId: EventIdHex,
+    val crossPostedTextNote: ValidatedTextNote?
 ) : ValidatedMainEvent(
     id = id,
     pubkey = pubkey,

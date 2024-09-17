@@ -13,10 +13,10 @@ import com.dluvian.voyage.core.utils.takeRandom
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.SubId
+import com.dluvian.voyage.data.nostr.getLegacyReplyToId
 import com.dluvian.voyage.data.nostr.getMetadata
 import com.dluvian.voyage.data.nostr.getNip65s
-import com.dluvian.voyage.data.nostr.getReplyToId
-import com.dluvian.voyage.data.nostr.isPostOrReply
+import com.dluvian.voyage.data.nostr.isTextNote
 import com.dluvian.voyage.data.nostr.secs
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
@@ -84,7 +84,7 @@ class EventValidator(
     private fun validate(event: Event, relayUrl: RelayUrl): ValidatedEvent? {
         // Match against enum once included in rust-nostr
         val validatedEvent = when (event.kind().asU16()) {
-            TEXT_NOTE_U16 -> createValidatedMainPost(
+            TEXT_NOTE_U16 -> createValidatedTextNote(
                 event = event,
                 relayUrl = relayUrl,
                 myPubkey = myPubkeyProvider.getPublicKey()
@@ -209,60 +209,65 @@ class EventValidator(
 
     private fun createValidatedRepost(event: Event, relayUrl: RelayUrl): ValidatedCrossPost? {
         val parsedEvent = runCatching { Event.fromJson(event.content()) }.getOrNull()
+        val validatedCrossPostedEvent = parsedEvent?.let {
+            createValidatedTextNote(
+                event = it,
+                relayUrl = relayUrl,
+                myPubkey = myPubkeyProvider.getPublicKey()
+            )
+        }
+
+        if (parsedEvent?.verify() == false) return null
+
+        val crossPostedId = event.eventIds().firstOrNull()?.toHex()
+            ?: validatedCrossPostedEvent?.id
             ?: return null
-        if (!parsedEvent.isPostOrReply()) return null
 
-        val validated = createValidatedMainPost(
-            event = parsedEvent,
-            relayUrl = relayUrl,
-            myPubkey = myPubkeyProvider.getPublicKey()
-        ) ?: return null
-
-        if (!parsedEvent.verify()) return null
         return ValidatedCrossPost(
             id = event.id().toHex(),
             pubkey = event.author().toHex(),
             createdAt = event.createdAt().secs(),
             relayUrl = relayUrl,
-            crossPosted = validated
             topics = event.getNormalizedTopics(limit = MAX_TOPICS),
+            crossPostedId = crossPostedId,
+            crossPostedTextNote = validatedCrossPostedEvent,
         )
     }
 
     companion object {
-        fun createValidatedMainPost(
+        fun createValidatedTextNote(
             event: Event,
             relayUrl: RelayUrl,
             myPubkey: PublicKey,
-        ): ValidatedMainPost? {
-            if (!event.isPostOrReply()) return null
-            val replyToId = event.getReplyToId()
+        ): ValidatedTextNote? {
+            if (!event.isTextNote()) return null
+            val replyToId = event.getLegacyReplyToId()
             val content = event.content().trim().take(MAX_CONTENT_LEN)
             return if (replyToId == null) {
                 val subject = event.getTrimmedSubject()
                 if (subject.isNullOrEmpty() && content.isEmpty()) return null
-                ValidatedRootPost(
+                ValidatedPost(
                     id = event.id().toHex(),
                     pubkey = event.author().toHex(),
-                    topics = event.getNormalizedTopics(limit = MAX_TOPICS),
-                    subject = subject,
                     content = content,
                     createdAt = event.createdAt().secs(),
                     relayUrl = relayUrl,
                     json = event.asJson(),
-                    isMentioningMe = event.publicKeys().contains(myPubkey)
+                    isMentioningMe = event.publicKeys().contains(myPubkey),
+                    topics = event.getNormalizedTopics(limit = MAX_TOPICS),
+                    subject = subject,
                 )
             } else {
                 if (content.isEmpty() || replyToId == event.id().toHex()) return null
-                ValidatedReply(
+                ValidatedLegacyReply(
                     id = event.id().toHex(),
                     pubkey = event.author().toHex(),
-                    parentId = replyToId,
                     content = content,
                     createdAt = event.createdAt().secs(),
                     relayUrl = relayUrl,
                     json = event.asJson(),
-                    isMentioningMe = event.publicKeys().contains(myPubkey)
+                    isMentioningMe = event.publicKeys().contains(myPubkey),
+                    parentId = replyToId,
                 )
             }
         }

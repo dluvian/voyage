@@ -80,7 +80,7 @@ fun Timestamp.secs(): Long {
 
 fun getCurrentSecs() = System.currentTimeMillis() / 1000
 
-fun Event.isPostOrReply(): Boolean {
+fun Event.isTextNote(): Boolean {
     return this.kind().asEnum() == KindEnum.TextNote
 }
 
@@ -94,8 +94,8 @@ fun Event.getMuteWords(): List<String> {
         .mapNotNull { it.asVec().getOrNull(1) }
 }
 
-fun Event.getReplyToId(): String? {
-    if (!this.isPostOrReply()) return null
+fun Event.getLegacyReplyToId(): String? {
+    if (!this.isTextNote()) return null
 
     val nip10Tags = this.tags()
         .map { it.asVec() }
