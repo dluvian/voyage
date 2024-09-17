@@ -33,7 +33,7 @@ sealed class ValidatedTextNote(
     relayUrl = relayUrl,
 )
 
-data class ValidatedPost(
+data class ValidatedRootPost(
     override val id: EventIdHex,
     override val pubkey: PubkeyHex,
     override val createdAt: Long,

@@ -33,12 +33,12 @@ class EventProcessor(
         if (events.isEmpty()) return
 
         val crossPosted = events.mapNotNull {
-            if (it is ValidatedCrossPost) it.crossPosted else null
+            if (it is ValidatedCrossPost) it.crossPostedTextNote else null
         }
         val allEvents = (events + crossPosted).distinct()
 
         val rootPosts = mutableListOf<ValidatedRootPost>()
-        val replies = mutableListOf<ValidatedReply>()
+        val replies = mutableListOf<ValidatedLegacyReply>()
         val crossPosts = mutableListOf<ValidatedCrossPost>()
         val votes = mutableListOf<ValidatedVote>()
         val profiles = mutableListOf<ValidatedProfile>()
@@ -50,7 +50,7 @@ class EventProcessor(
         allEvents.forEach { event ->
             when (event) {
                 is ValidatedRootPost -> rootPosts.add(event)
-                is ValidatedReply -> replies.add(event)
+                is ValidatedLegacyReply -> replies.add(event)
                 is ValidatedCrossPost -> crossPosts.add(event)
                 is ValidatedVote -> votes.add(event)
                 is ValidatedProfile -> profiles.add(event)
@@ -81,7 +81,7 @@ class EventProcessor(
         }
     }
 
-    private fun processReplies(replies: Collection<ValidatedReply>) {
+    private fun processReplies(replies: Collection<ValidatedLegacyReply>) {
         if (replies.isEmpty()) return
 
         scope.launch {

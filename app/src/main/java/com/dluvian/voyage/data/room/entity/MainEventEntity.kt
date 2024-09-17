@@ -7,7 +7,7 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.event.ValidatedCrossPost
 import com.dluvian.voyage.data.event.ValidatedLegacyReply
 import com.dluvian.voyage.data.event.ValidatedMainEvent
-import com.dluvian.voyage.data.event.ValidatedPost
+import com.dluvian.voyage.data.event.ValidatedRootPost
 import com.dluvian.voyage.data.nostr.RelayUrl
 
 @Entity(
@@ -37,7 +37,7 @@ data class MainEventEntity(
 
         fun from(mainEvent: ValidatedMainEvent): MainEventEntity {
             return when (mainEvent) {
-                is ValidatedPost -> MainEventEntity(
+                is ValidatedRootPost -> MainEventEntity(
                     id = mainEvent.id,
                     pubkey = mainEvent.pubkey,
                     kind = mainEvent.kind,

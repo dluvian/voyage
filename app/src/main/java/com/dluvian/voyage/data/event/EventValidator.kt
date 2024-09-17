@@ -246,7 +246,7 @@ class EventValidator(
             return if (replyToId == null) {
                 val subject = event.getTrimmedSubject()
                 if (subject.isNullOrEmpty() && content.isEmpty()) return null
-                ValidatedPost(
+                ValidatedRootPost(
                     id = event.id().toHex(),
                     pubkey = event.author().toHex(),
                     content = content,
