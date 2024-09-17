@@ -1,4 +1,4 @@
-package com.dluvian.voyage.data.room.dao.tx
+package com.dluvian.voyage.data.room.dao.upsert
 
 import android.util.Log
 import androidx.room.Dao
@@ -10,9 +10,7 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.event.ValidatedTopicList
 import com.dluvian.voyage.data.room.entity.TopicEntity
 
-
 private const val TAG = "TopicUpsertDao"
-
 
 @Dao
 interface TopicUpsertDao {

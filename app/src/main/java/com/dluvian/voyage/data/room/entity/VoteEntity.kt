@@ -10,7 +10,7 @@ import com.dluvian.voyage.data.event.ValidatedVote
     tableName = "vote",
     primaryKeys = ["postId", "pubkey"],
     foreignKeys = [ForeignKey(
-        entity = PostEntity::class,
+        entity = MainEventEntity::class,
         parentColumns = ["id"],
         childColumns = ["postId"],
         onDelete = ForeignKey.CASCADE,

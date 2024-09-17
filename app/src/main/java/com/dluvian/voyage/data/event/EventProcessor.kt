@@ -75,7 +75,7 @@ class EventProcessor(
         if (rootPosts.isEmpty()) return
 
         scope.launch {
-            room.postInsertDao().insertRootPosts(posts = rootPosts)
+            room.mainEventInsertDao().insertRootPosts(rootPosts = rootPosts)
         }.invokeOnCompletion { exception ->
             if (exception != null) Log.w(TAG, "Failed to process root posts", exception)
         }
@@ -85,7 +85,7 @@ class EventProcessor(
         if (replies.isEmpty()) return
 
         scope.launch {
-            room.postInsertDao().insertReplies(replies = replies)
+            room.mainEventInsertDao().insertLegacyReplies(replies = replies)
         }.invokeOnCompletion { exception ->
             if (exception != null) Log.w(TAG, "Failed to process replies", exception)
         }
@@ -95,7 +95,7 @@ class EventProcessor(
         if (crossPosts.isEmpty()) return
 
         scope.launch {
-            room.postInsertDao().insertCrossPosts(crossPosts = crossPosts)
+            room.mainEventInsertDao().insertCrossPosts(crossPosts = crossPosts)
         }.invokeOnCompletion { exception ->
             if (exception != null) Log.w(TAG, "Failed to process cross posts ", exception)
         }
@@ -108,7 +108,6 @@ class EventProcessor(
         if (entities.isEmpty()) return
 
         scope.launch {
-            Log.d(TAG, "Insert ${entities.size}/${votes.size} votes")
             // We don't update new incoming votes. If a vote is in db, it will stay
             // RunCatching bc EventSweeper might delete parent post
             runCatching { room.voteDao().insertOrIgnoreVotes(voteEntities = entities) }

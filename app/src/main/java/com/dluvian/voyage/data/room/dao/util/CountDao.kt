@@ -1,4 +1,4 @@
-package com.dluvian.voyage.data.room.dao
+package com.dluvian.voyage.data.room.dao.util
 
 import androidx.room.Dao
 import androidx.room.Query

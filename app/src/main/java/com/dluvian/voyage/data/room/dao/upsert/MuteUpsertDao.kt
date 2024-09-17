@@ -1,4 +1,4 @@
-package com.dluvian.voyage.data.room.dao.tx
+package com.dluvian.voyage.data.room.dao.upsert
 
 import android.util.Log
 import androidx.room.Dao
@@ -9,7 +9,9 @@ import androidx.room.Transaction
 import com.dluvian.voyage.data.event.ValidatedMuteList
 import com.dluvian.voyage.data.room.entity.MuteEntity
 
+
 private const val TAG = "MuteUpsertDao"
+
 
 @Dao
 interface MuteUpsertDao {

@@ -6,9 +6,9 @@ import com.dluvian.voyage.core.EventIdHex
 
 @Entity(
     tableName = "hashtag",
-    primaryKeys = ["postId", "hashtag"],
+    primaryKeys = ["eventId", "hashtag"],
     foreignKeys = [ForeignKey(
-        entity = PostEntity::class,
+        entity = MainEventEntity::class,
         parentColumns = ["id"],
         childColumns = ["postId"],
         onDelete = ForeignKey.CASCADE,
@@ -16,6 +16,6 @@ import com.dluvian.voyage.core.EventIdHex
     )]
 )
 data class HashtagEntity(
-    val postId: EventIdHex,
+    val eventId: EventIdHex,
     val hashtag: String,
 )

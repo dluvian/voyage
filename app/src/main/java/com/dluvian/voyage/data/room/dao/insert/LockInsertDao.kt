@@ -1,4 +1,4 @@
-package com.dluvian.voyage.data.room.dao.tx
+package com.dluvian.voyage.data.room.dao.insert
 
 import androidx.room.Dao
 import androidx.room.Insert

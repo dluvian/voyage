@@ -1,4 +1,4 @@
-package com.dluvian.voyage.data.room.dao.tx
+package com.dluvian.voyage.data.room.dao.upsert
 
 import android.util.Log
 import androidx.room.Dao
@@ -10,7 +10,6 @@ import androidx.room.Transaction
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.event.ValidatedContactList
 import com.dluvian.voyage.data.room.entity.WebOfTrustEntity
-
 
 private const val TAG = "WebOfTrustUpsertDao"
 

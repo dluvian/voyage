@@ -11,7 +11,7 @@ import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.SIMPLE_WEBSOCKET_URI
 import com.dluvian.voyage.data.nostr.WEBSOCKET_URI
 import com.dluvian.voyage.data.provider.RelayProfileProvider
-import com.dluvian.voyage.data.room.dao.CountDao
+import com.dluvian.voyage.data.room.dao.util.CountDao
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow

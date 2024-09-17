@@ -29,7 +29,7 @@ import com.dluvian.voyage.data.nostr.getNip65s
 import com.dluvian.voyage.data.nostr.removeTrailingSlashes
 import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.data.provider.RelayProvider
-import com.dluvian.voyage.data.room.dao.tx.Nip65UpsertDao
+import com.dluvian.voyage.data.room.dao.upsert.Nip65UpsertDao
 import kotlinx.coroutines.delay
 
 private const val TAG = "RelayEditorViewModel"

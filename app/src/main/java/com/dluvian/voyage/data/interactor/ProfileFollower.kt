@@ -17,7 +17,7 @@ import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
-import com.dluvian.voyage.data.room.dao.tx.FriendUpsertDao
+import com.dluvian.voyage.data.room.dao.upsert.FriendUpsertDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

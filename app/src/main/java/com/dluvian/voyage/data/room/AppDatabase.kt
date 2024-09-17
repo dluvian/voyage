@@ -8,10 +8,10 @@ import androidx.room.migration.AutoMigrationSpec
 import com.dluvian.voyage.data.room.dao.AccountDao
 import com.dluvian.voyage.data.room.dao.BookmarkDao
 import com.dluvian.voyage.data.room.dao.ContentSetDao
-import com.dluvian.voyage.data.room.dao.CountDao
-import com.dluvian.voyage.data.room.dao.DeleteDao
+import com.dluvian.voyage.data.room.dao.util.CountDao
+import com.dluvian.voyage.data.room.dao.util.DeleteDao
 import com.dluvian.voyage.data.room.dao.EventRelayDao
-import com.dluvian.voyage.data.room.dao.ExistsDao
+import com.dluvian.voyage.data.room.dao.util.ExistsDao
 import com.dluvian.voyage.data.room.dao.FriendDao
 import com.dluvian.voyage.data.room.dao.FullProfileDao
 import com.dluvian.voyage.data.room.dao.HashtagDao
@@ -28,24 +28,25 @@ import com.dluvian.voyage.data.room.dao.RootPostDao
 import com.dluvian.voyage.data.room.dao.TopicDao
 import com.dluvian.voyage.data.room.dao.VoteDao
 import com.dluvian.voyage.data.room.dao.WebOfTrustDao
-import com.dluvian.voyage.data.room.dao.tx.BookmarkUpsertDao
-import com.dluvian.voyage.data.room.dao.tx.FriendUpsertDao
-import com.dluvian.voyage.data.room.dao.tx.FullProfileUpsertDao
-import com.dluvian.voyage.data.room.dao.tx.LockInsertDao
-import com.dluvian.voyage.data.room.dao.tx.MuteUpsertDao
-import com.dluvian.voyage.data.room.dao.tx.Nip65UpsertDao
-import com.dluvian.voyage.data.room.dao.tx.PostInsertDao
-import com.dluvian.voyage.data.room.dao.tx.ProfileSetUpsertDao
-import com.dluvian.voyage.data.room.dao.tx.ProfileUpsertDao
-import com.dluvian.voyage.data.room.dao.tx.TopicSetUpsertDao
-import com.dluvian.voyage.data.room.dao.tx.TopicUpsertDao
-import com.dluvian.voyage.data.room.dao.tx.WebOfTrustUpsertDao
+import com.dluvian.voyage.data.room.dao.upsert.BookmarkUpsertDao
+import com.dluvian.voyage.data.room.dao.upsert.FriendUpsertDao
+import com.dluvian.voyage.data.room.dao.upsert.FullProfileUpsertDao
+import com.dluvian.voyage.data.room.dao.insert.LockInsertDao
+import com.dluvian.voyage.data.room.dao.upsert.MuteUpsertDao
+import com.dluvian.voyage.data.room.dao.upsert.Nip65UpsertDao
+import com.dluvian.voyage.data.room.dao.insert.MainEventInsertDao
+import com.dluvian.voyage.data.room.dao.upsert.ProfileSetUpsertDao
+import com.dluvian.voyage.data.room.dao.upsert.ProfileUpsertDao
+import com.dluvian.voyage.data.room.dao.upsert.TopicSetUpsertDao
+import com.dluvian.voyage.data.room.dao.upsert.TopicUpsertDao
+import com.dluvian.voyage.data.room.dao.upsert.WebOfTrustUpsertDao
 import com.dluvian.voyage.data.room.entity.AccountEntity
 import com.dluvian.voyage.data.room.entity.BookmarkEntity
 import com.dluvian.voyage.data.room.entity.FriendEntity
 import com.dluvian.voyage.data.room.entity.FullProfileEntity
 import com.dluvian.voyage.data.room.entity.HashtagEntity
 import com.dluvian.voyage.data.room.entity.LockEntity
+import com.dluvian.voyage.data.room.entity.MainEventEntity
 import com.dluvian.voyage.data.room.entity.MuteEntity
 import com.dluvian.voyage.data.room.entity.Nip65Entity
 import com.dluvian.voyage.data.room.entity.PostEntity
@@ -67,7 +68,7 @@ import com.dluvian.voyage.data.room.view.SimplePostView
 class V10DeleteVoteIsPositiveColumn : AutoMigrationSpec
 
 @Database(
-    version = 23,
+    version = 24,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -92,9 +93,10 @@ class V10DeleteVoteIsPositiveColumn : AutoMigrationSpec
         AutoMigration(from = 20, to = 21),
         AutoMigration(from = 21, to = 22),
         AutoMigration(from = 22, to = 23),
+        AutoMigration(from = 23, to = 24),
     ],
     entities = [
-        PostEntity::class,
+        MainEventEntity::class,
         VoteEntity::class,
         AccountEntity::class,
         FriendEntity::class,
@@ -147,8 +149,11 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun countDao(): CountDao
     abstract fun existsDao(): ExistsDao
 
-    // TX
-    abstract fun postInsertDao(): PostInsertDao
+    // Insert
+    abstract fun mainEventInsertDao(): MainEventInsertDao
+    abstract fun lockInsertDao(): LockInsertDao
+
+    // Upsert
     abstract fun friendUpsertDao(): FriendUpsertDao
     abstract fun webOfTrustUpsertDao(): WebOfTrustUpsertDao
     abstract fun topicUpsertDao(): TopicUpsertDao
@@ -159,5 +164,4 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun profileSetUpsertDao(): ProfileSetUpsertDao
     abstract fun topicSetUpsertDao(): TopicSetUpsertDao
     abstract fun muteUpsertDao(): MuteUpsertDao
-    abstract fun lockInsertDao(): LockInsertDao
 }

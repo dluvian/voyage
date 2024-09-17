@@ -19,8 +19,8 @@ import com.dluvian.voyage.data.nostr.getMetadata
 import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.FullProfileDao
-import com.dluvian.voyage.data.room.dao.tx.FullProfileUpsertDao
-import com.dluvian.voyage.data.room.dao.tx.ProfileUpsertDao
+import com.dluvian.voyage.data.room.dao.upsert.FullProfileUpsertDao
+import com.dluvian.voyage.data.room.dao.upsert.ProfileUpsertDao
 import com.dluvian.voyage.data.room.entity.FullProfileEntity
 import com.dluvian.voyage.data.room.entity.ProfileEntity
 import kotlinx.coroutines.delay

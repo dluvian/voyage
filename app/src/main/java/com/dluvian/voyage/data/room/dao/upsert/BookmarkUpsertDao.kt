@@ -1,4 +1,4 @@
-package com.dluvian.voyage.data.room.dao.tx
+package com.dluvian.voyage.data.room.dao.upsert
 
 import android.util.Log
 import androidx.room.Dao
@@ -10,7 +10,9 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.event.ValidatedBookmarkList
 import com.dluvian.voyage.data.room.entity.BookmarkEntity
 
+
 private const val TAG = "BookmarkUpsertDao"
+
 
 @Dao
 interface BookmarkUpsertDao {

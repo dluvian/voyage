@@ -42,12 +42,12 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
         FROM post
         LEFT JOIN profile ON profile.pubkey = post.pubkey
         LEFT JOIN (
-            SELECT DISTINCT hashtag.postId, MIN(hashtag.hashtag) AS min_hashtag
+            SELECT DISTINCT hashtag.eventId, MIN(hashtag.hashtag) AS min_hashtag
             FROM hashtag 
             JOIN topic ON hashtag.hashtag = topic.topic
             WHERE topic.myPubkey = (SELECT pubkey FROM account LIMIT 1)
-            GROUP BY hashtag.postId
-        ) AS ht ON ht.postId = post.id
+            GROUP BY hashtag.eventId
+        ) AS ht ON ht.eventId = post.id
         LEFT JOIN account ON account.pubkey = post.pubkey
         LEFT JOIN friend ON friend.friendPubkey = post.pubkey
         LEFT JOIN weboftrust ON weboftrust.webOfTrustPubkey = post.pubkey

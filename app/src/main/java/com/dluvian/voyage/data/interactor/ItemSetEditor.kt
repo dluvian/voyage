@@ -13,8 +13,8 @@ import com.dluvian.voyage.data.event.EventValidator
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.provider.ItemSetProvider
 import com.dluvian.voyage.data.provider.RelayProvider
-import com.dluvian.voyage.data.room.dao.tx.ProfileSetUpsertDao
-import com.dluvian.voyage.data.room.dao.tx.TopicSetUpsertDao
+import com.dluvian.voyage.data.room.dao.upsert.ProfileSetUpsertDao
+import com.dluvian.voyage.data.room.dao.upsert.TopicSetUpsertDao
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.PublicKey
 

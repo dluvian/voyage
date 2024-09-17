@@ -23,7 +23,7 @@ import com.dluvian.voyage.data.nostr.getMuteWords
 import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.MuteDao
-import com.dluvian.voyage.data.room.dao.tx.MuteUpsertDao
+import com.dluvian.voyage.data.room.dao.upsert.MuteUpsertDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

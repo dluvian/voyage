@@ -7,6 +7,6 @@ import com.dluvian.voyage.core.Topic
 
 @Dao
 interface HashtagDao {
-    @Query("SELECT DISTINCT hashtag FROM hashtag WHERE postId = :postId")
+    @Query("SELECT DISTINCT hashtag FROM hashtag WHERE eventId = :postId")
     suspend fun getHashtags(postId: EventIdHex): List<Topic>
 }

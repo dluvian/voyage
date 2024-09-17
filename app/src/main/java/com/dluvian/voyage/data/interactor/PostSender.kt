@@ -23,7 +23,7 @@ import com.dluvian.voyage.data.nostr.getSubject
 import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.PostDao
-import com.dluvian.voyage.data.room.dao.tx.PostInsertDao
+import com.dluvian.voyage.data.room.dao.insert.MainEventInsertDao
 import rust.nostr.protocol.Coordinate
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
@@ -38,7 +38,7 @@ private const val TAG = "PostSender"
 class PostSender(
     private val nostrService: NostrService,
     private val relayProvider: RelayProvider,
-    private val postInsertDao: PostInsertDao,
+    private val postInsertDao: MainEventInsertDao,
     private val postDao: PostDao,
     private val myPubkeyProvider: IMyPubkeyProvider,
 ) {
@@ -76,7 +76,7 @@ class PostSender(
                 json = event.asJson(),
                 isMentioningMe = mentions.contains(myPubkeyProvider.getPubkeyHex())
             )
-            postInsertDao.insertRootPosts(posts = listOf(validatedPost))
+            postInsertDao.insertRootPosts(rootPosts = listOf(validatedPost))
         }.onFailure {
             Log.w(TAG, "Failed to create post event", it)
         }
@@ -118,7 +118,7 @@ class PostSender(
                 json = event.asJson(),
                 isMentioningMe = mentions.contains(myPubkeyProvider.getPubkeyHex())
             )
-            postInsertDao.insertReplies(replies = listOf(validatedReply))
+            postInsertDao.insertLegacyReplies(replies = listOf(validatedReply))
         }.onFailure {
             Log.w(TAG, "Failed to create reply event", it)
         }

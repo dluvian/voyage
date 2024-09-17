@@ -3,7 +3,7 @@ package com.dluvian.voyage.data.event
 import android.util.Log
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.preferences.DatabasePreferences
-import com.dluvian.voyage.data.room.dao.DeleteDao
+import com.dluvian.voyage.data.room.dao.util.DeleteDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
