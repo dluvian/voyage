@@ -44,9 +44,9 @@ class Paginator(
     override val hasMoreRecentPosts = mutableStateOf(false)
     override val hasPosts: MutableState<StateFlow<Boolean>> =
         mutableStateOf(MutableStateFlow(true))
-    override val page: MutableState<StateFlow<List<ParentUI>>> =
+    override val page: MutableState<StateFlow<List<FeedItemUI>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
-    override val filteredPage: MutableState<StateFlow<List<ParentUI>>> =
+    override val filteredPage: MutableState<StateFlow<List<FeedItemUI>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
 
 
@@ -151,7 +151,7 @@ class Paginator(
         page.value = flow.stateIn(scope, SharingStarted.WhileSubscribed(), staticFeed)
         filteredPage.value = flow
             // No duplicate cross-posts
-            .map { posts -> posts.distinctBy(ParentUI::getRelevantId) }
+            .map { posts -> posts.distinctBy(FeedItemUI::getRelevantId) }
             .map { posts ->
                 when (feedSetting) {
                     // No muted words
@@ -168,7 +168,7 @@ class Paginator(
             .stateIn(scope, SharingStarted.WhileSubscribed(), staticFeed)
     }
 
-    private suspend fun getStaticFeed(until: Long): List<ParentUI> {
+    private suspend fun getStaticFeed(until: Long): List<FeedItemUI> {
         return feedProvider.getStaticFeed(
             until = until,
             size = FEED_PAGE_SIZE.div(2),

@@ -36,7 +36,7 @@ import com.dluvian.voyage.core.FEED_PAGE_SIZE
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.model.IPaginator
-import com.dluvian.voyage.core.model.ReplyUI
+import com.dluvian.voyage.core.model.LegacyReplyUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.utils.showScrollButton
 import com.dluvian.voyage.data.model.PostDetails
@@ -92,7 +92,7 @@ fun Feed(
                         onUpdate = onUpdate
                     )
 
-                    is ReplyUI -> FeedReplyRow(
+                    is LegacyReplyUI -> FeedReplyRow(
                         reply = post,
                         showAuthorName = showAuthorName,
                         onUpdate = onUpdate

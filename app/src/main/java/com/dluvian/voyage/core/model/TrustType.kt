@@ -2,6 +2,8 @@ package com.dluvian.voyage.core.model
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
+import com.dluvian.voyage.data.room.view.LegacyReplyView
+import com.dluvian.voyage.data.room.view.RootPostView
 
 @Immutable
 sealed class TrustType {
@@ -23,6 +25,30 @@ sealed class TrustType {
             else if (isInList) IsInListTrust
             else if (isWebOfTrust) WebTrust
             else NoTrust
+        }
+
+        @Stable
+        fun from(rootPostView: RootPostView): TrustType {
+            return from(
+                isOneself = rootPostView.authorIsOneself,
+                isFriend = rootPostView.authorIsFriend,
+                isWebOfTrust = rootPostView.authorIsTrusted,
+                isMuted = rootPostView.authorIsMuted,
+                isInList = rootPostView.authorIsInList,
+                isLocked = rootPostView.authorIsLocked,
+            )
+        }
+
+        @Stable
+        fun from(legacyReplyView: LegacyReplyView): TrustType {
+            return from(
+                isOneself = legacyReplyView.authorIsOneself,
+                isFriend = legacyReplyView.authorIsFriend,
+                isWebOfTrust = legacyReplyView.authorIsTrusted,
+                isMuted = legacyReplyView.authorIsMuted,
+                isInList = legacyReplyView.authorIsInList,
+                isLocked = legacyReplyView.authorIsLocked,
+            )
         }
     }
 }

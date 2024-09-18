@@ -3,8 +3,8 @@ package com.dluvian.voyage.data.room.view
 import androidx.room.DatabaseView
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.core.model.LegacyReplyUI
 import com.dluvian.voyage.core.model.LeveledReplyUI
-import com.dluvian.voyage.core.model.ReplyUI
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
@@ -32,7 +32,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             "FROM post " +
             "WHERE post.parentId IS NOT NULL"
 )
-data class ReplyView(
+data class LegacyReplyView(
     val id: EventIdHex,
     val parentId: EventIdHex,
     val pubkey: PubkeyHex,
@@ -79,9 +79,9 @@ data class ReplyView(
         forcedFollows: Map<PubkeyHex, Boolean>,
         forcedBookmarks: Map<EventIdHex, Boolean>,
         annotatedStringProvider: AnnotatedStringProvider
-    ): ReplyUI {
-        val reply = ReplyUI.from(
-            replyView = this,
+    ): LegacyReplyUI {
+        val reply = LegacyReplyUI.from(
+            legacyReplyView = this,
             annotatedStringProvider = annotatedStringProvider
         )
         val vote = forcedVotes.getOrDefault(this.id, null)

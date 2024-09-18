@@ -9,8 +9,8 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.core.CreateReplyViewAction
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.SendReply
-import com.dluvian.voyage.core.model.ParentUI
-import com.dluvian.voyage.core.model.ReplyUI
+import com.dluvian.voyage.core.model.FeedItemUI
+import com.dluvian.voyage.core.model.LegacyReplyUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.core.utils.showToast
@@ -29,9 +29,9 @@ class CreateReplyViewModel(
     private val postDao: PostDao,
 ) : ViewModel() {
     val isSendingReply = mutableStateOf(false)
-    val parent: MutableState<ParentUI?> = mutableStateOf(null)
+    val parent: MutableState<FeedItemUI?> = mutableStateOf(null)
 
-    fun openParent(newParent: ParentUI) {
+    fun openParent(newParent: FeedItemUI) {
         val relevantId = newParent.getRelevantId()
         if (relevantId == this.parent.value?.id) return
 
@@ -42,7 +42,7 @@ class CreateReplyViewModel(
             }
         }
         when (newParent) {
-            is ReplyUI -> {
+            is LegacyReplyUI -> {
                 viewModelScope.launchIO {
                     val grandparentAuthor = postDao.getParentAuthor(id = relevantId)
                     if (grandparentAuthor != null && relevantPubkey != grandparentAuthor) {

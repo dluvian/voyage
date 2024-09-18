@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.data.room.view.ReplyView
+import com.dluvian.voyage.data.room.view.LegacyReplyView
 import kotlinx.coroutines.flow.Flow
 
 private const val PROFILE_REPLY_FEED_BASE_QUERY = "FROM ReplyView " +
@@ -31,36 +31,36 @@ interface ReplyDao {
         // getReplyCountFlow depends on this
         """
         SELECT * 
-        FROM ReplyView 
+        FROM LegacyReplyView 
         WHERE parentId IN (:parentIds) 
         AND authorIsMuted = 0
         ORDER BY createdAt ASC
     """
     )
-    fun getRepliesFlow(parentIds: Collection<EventIdHex>): Flow<List<ReplyView>>
+    fun getRepliesFlow(parentIds: Collection<EventIdHex>): Flow<List<LegacyReplyView>>
 
     @Query(
         // Should be like getRepliesFlow
         """
         SELECT COUNT(*) 
-        FROM ReplyView 
+        FROM LegacyReplyView 
         WHERE parentId = :parentId
         AND authorIsMuted = 0
     """
     )
     fun getReplyCountFlow(parentId: EventIdHex): Flow<Int>
 
-    @Query("SELECT * FROM ReplyView WHERE id = :id")
-    fun getReplyFlow(id: EventIdHex): Flow<ReplyView?>
+    @Query("SELECT * FROM LegacyReplyView WHERE id = :id")
+    fun getReplyFlow(id: EventIdHex): Flow<LegacyReplyView?>
 
     @Query("SELECT parentId FROM post WHERE id = :id")
     suspend fun getParentId(id: EventIdHex): EventIdHex?
 
     @Query(PROFILE_REPLY_FEED_QUERY)
-    fun getProfileReplyFlow(pubkey: PubkeyHex, until: Long, size: Int): Flow<List<ReplyView>>
+    fun getProfileReplyFlow(pubkey: PubkeyHex, until: Long, size: Int): Flow<List<LegacyReplyView>>
 
     @Query(PROFILE_REPLY_FEED_QUERY)
-    suspend fun getProfileReplies(pubkey: PubkeyHex, until: Long, size: Int): List<ReplyView>
+    suspend fun getProfileReplies(pubkey: PubkeyHex, until: Long, size: Int): List<LegacyReplyView>
 
     @Query(PROFILE_REPLY_FEED_EXISTS_QUERY)
     fun hasProfileRepliesFlow(pubkey: PubkeyHex): Flow<Boolean>

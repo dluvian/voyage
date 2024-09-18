@@ -24,7 +24,7 @@ import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenReplyCreation
 import com.dluvian.voyage.core.OpenThreadRaw
-import com.dluvian.voyage.core.model.ReplyUI
+import com.dluvian.voyage.core.model.LegacyReplyUI
 import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.theme.ReplyIcon
@@ -32,7 +32,7 @@ import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
 fun BaseReplyRow(
-    reply: ReplyUI,
+    reply: LegacyReplyUI,
     isCollapsed: Boolean,
     showFullReplyButton: Boolean,
     isOp: Boolean,

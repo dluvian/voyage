@@ -1,7 +1,7 @@
 package com.dluvian.voyage.data.provider
 
-import com.dluvian.voyage.core.model.ParentUI
-import com.dluvian.voyage.core.model.ReplyUI
+import com.dluvian.voyage.core.model.FeedItemUI
+import com.dluvian.voyage.core.model.LegacyReplyUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.utils.mergeToParentUIList
 import com.dluvian.voyage.data.model.BookmarksFeedSetting
@@ -23,7 +23,7 @@ class StaticFeedProvider(
         until: Long,
         size: Int,
         setting: FeedSetting,
-    ): List<ParentUI> {
+    ): List<FeedItemUI> {
         return when (setting) {
             is RootFeedSetting -> getStaticRootFeed(setting = setting, until = until, size = size)
             is ReplyFeedSetting -> getStaticReplyFeed(setting = setting, until = until, size = size)
@@ -75,7 +75,7 @@ class StaticFeedProvider(
         setting: ReplyFeedSetting,
         until: Long,
         size: Int,
-    ): List<ReplyUI> {
+    ): List<LegacyReplyUI> {
         return room.replyDao().getProfileReplies(
             pubkey = setting.nprofile.publicKey().toHex(),
             until = until,
@@ -95,7 +95,7 @@ class StaticFeedProvider(
         setting: InboxFeedSetting,
         until: Long,
         size: Int
-    ): List<ParentUI> {
+    ): List<FeedItemUI> {
         return mergeToParentUIList(
             replies = room.inboxDao().getInboxReplies(
                 setting = setting,
@@ -115,7 +115,7 @@ class StaticFeedProvider(
         )
     }
 
-    private suspend fun getStaticBooksmarksFeed(until: Long, size: Int): List<ParentUI> {
+    private suspend fun getStaticBooksmarksFeed(until: Long, size: Int): List<FeedItemUI> {
         return mergeToParentUIList(
             replies = room.bookmarkDao().getReplies(until = until, size = size),
             roots = room.bookmarkDao().getRootPosts(until = until, size = size),

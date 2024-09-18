@@ -7,7 +7,7 @@ import com.dluvian.voyage.data.model.Global
 import com.dluvian.voyage.data.model.InboxFeedSetting
 import com.dluvian.voyage.data.model.NoPubkeys
 import com.dluvian.voyage.data.model.WebOfTrustPubkeys
-import com.dluvian.voyage.data.room.view.ReplyView
+import com.dluvian.voyage.data.room.view.LegacyReplyView
 import com.dluvian.voyage.data.room.view.RootPostView
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -78,7 +78,7 @@ interface InboxDao {
         setting: InboxFeedSetting,
         until: Long,
         size: Int
-    ): Flow<List<ReplyView>> {
+    ): Flow<List<LegacyReplyView>> {
         return when (setting.pubkeySelection) {
             FriendPubkeysNoLock -> internalGetFriendReplyFlow(until = until, size = size)
             WebOfTrustPubkeys -> internalGetWotReplyFlow(until = until, size = size)
@@ -91,7 +91,7 @@ interface InboxDao {
         setting: InboxFeedSetting,
         until: Long,
         size: Int
-    ): List<ReplyView> {
+    ): List<LegacyReplyView> {
         return when (setting.pubkeySelection) {
             FriendPubkeysNoLock -> internalGetFriendReply(until = until, size = size)
             WebOfTrustPubkeys -> internalGetWotReply(until = until, size = size)
@@ -155,37 +155,37 @@ interface InboxDao {
     }
 
     @Query(FRIEND_REPLY_QUERY)
-    fun internalGetFriendReplyFlow(until: Long, size: Int): Flow<List<ReplyView>>
+    fun internalGetFriendReplyFlow(until: Long, size: Int): Flow<List<LegacyReplyView>>
 
     @Query(FRIEND_ROOT_QUERY)
     fun internalGetFriendRootFlow(until: Long, size: Int): Flow<List<RootPostView>>
 
     @Query(WOT_REPLY_QUERY)
-    fun internalGetWotReplyFlow(until: Long, size: Int): Flow<List<ReplyView>>
+    fun internalGetWotReplyFlow(until: Long, size: Int): Flow<List<LegacyReplyView>>
 
     @Query(WOT_ROOT_QUERY)
     fun internalGetWotRootFlow(until: Long, size: Int): Flow<List<RootPostView>>
 
     @Query(GLOBAL_REPLY_QUERY)
-    fun internalGetGlobalReplyFlow(until: Long, size: Int): Flow<List<ReplyView>>
+    fun internalGetGlobalReplyFlow(until: Long, size: Int): Flow<List<LegacyReplyView>>
 
     @Query(GLOBAL_ROOT_QUERY)
     fun internalGetGlobalRootFlow(until: Long, size: Int): Flow<List<RootPostView>>
 
     @Query(FRIEND_REPLY_QUERY)
-    suspend fun internalGetFriendReply(until: Long, size: Int): List<ReplyView>
+    suspend fun internalGetFriendReply(until: Long, size: Int): List<LegacyReplyView>
 
     @Query(FRIEND_ROOT_QUERY)
     suspend fun internalGetFriendRoot(until: Long, size: Int): List<RootPostView>
 
     @Query(WOT_REPLY_QUERY)
-    suspend fun internalGetWotReply(until: Long, size: Int): List<ReplyView>
+    suspend fun internalGetWotReply(until: Long, size: Int): List<LegacyReplyView>
 
     @Query(WOT_ROOT_QUERY)
     suspend fun internalGetWotRoot(until: Long, size: Int): List<RootPostView>
 
     @Query(GLOBAL_REPLY_QUERY)
-    suspend fun internalGetGlobalReply(until: Long, size: Int): List<ReplyView>
+    suspend fun internalGetGlobalReply(until: Long, size: Int): List<LegacyReplyView>
 
     @Query(GLOBAL_ROOT_QUERY)
     suspend fun internalGetGlobalRoot(until: Long, size: Int): List<RootPostView>

@@ -18,15 +18,16 @@ import com.dluvian.voyage.core.OpenPostInfo
 import com.dluvian.voyage.core.OpenThreadRaw
 import com.dluvian.voyage.core.RebroadcastPost
 import com.dluvian.voyage.core.UnfollowProfile
+import com.dluvian.voyage.core.model.CrossPostUI
+import com.dluvian.voyage.core.model.FeedItemUI
 import com.dluvian.voyage.core.model.FriendTrust
 import com.dluvian.voyage.core.model.IsInListTrust
+import com.dluvian.voyage.core.model.LegacyReplyUI
 import com.dluvian.voyage.core.model.Locked
 import com.dluvian.voyage.core.model.LockedOneself
 import com.dluvian.voyage.core.model.Muted
 import com.dluvian.voyage.core.model.NoTrust
 import com.dluvian.voyage.core.model.Oneself
-import com.dluvian.voyage.core.model.ParentUI
-import com.dluvian.voyage.core.model.ReplyUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.model.WebTrust
 import com.dluvian.voyage.core.utils.copyAndToast
@@ -36,9 +37,9 @@ import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.data.nostr.createNeventUri
 
 @Composable
-fun ParentRowDropdown(
+fun FeedItemDropdown(
     isOpen: Boolean,
-    parent: ParentUI,
+    feedItem: FeedItemUI,
     onDismiss: () -> Unit,
     onUpdate: OnUpdate
 ) {
@@ -47,24 +48,26 @@ fun ParentRowDropdown(
         onDismissRequest = onDismiss
     ) {
         FollowItem(
-            parent = parent,
+            feedItem = feedItem,
             onDismiss = onDismiss,
             onUpdate = onUpdate
         )
         FollowCrossPostedItem(
-            parent = parent,
+            feedItem = feedItem,
             onDismiss = onDismiss,
             onUpdate = onUpdate
         )
 
-        when (parent) {
-            is ReplyUI -> SimpleDropdownItem(text = stringResource(id = R.string.open_as_root),
+        when (feedItem) {
+            is RootPostUI -> {}
+            is LegacyReplyUI -> SimpleDropdownItem(
+                text = stringResource(id = R.string.open_as_root),
                 onClick = {
-                    onUpdate(OpenThreadRaw(nevent = createNevent(hex = parent.id)))
+                    onUpdate(OpenThreadRaw(nevent = createNevent(hex = feedItem.id)))
                     onDismiss()
                 })
 
-            is RootPostUI -> {}
+            is CrossPostUI -> {}
         }
 
         val clip = LocalClipboardManager.current
@@ -75,10 +78,10 @@ fun ParentRowDropdown(
             onClick = {
                 copyAndToast(
                     text = createNeventUri(
-                        hex = parent.id,
-                        author = parent.pubkey,
-                        relays = listOf(parent.relayUrl).filter { it.isNotEmpty() },
-                        kind = parent.getKind()
+                        hex = feedItem.id,
+                        author = feedItem.pubkey,
+                        relays = listOf(feedItem.relayUrl).filter { it.isNotEmpty() },
+                        kind = feedItem.getKind()
                     ),
                     toast = idCopiedToast,
                     context = context,
@@ -92,7 +95,7 @@ fun ParentRowDropdown(
             text = stringResource(id = R.string.copy_content),
             onClick = {
                 copyAndToast(
-                    text = parent.content,
+                    text = feedItem.content,
                     toast = contentCopiedToast,
                     context = context,
                     clip = clip
@@ -100,11 +103,11 @@ fun ParentRowDropdown(
                 onDismiss()
             }
         )
-        if (!parent.isBookmarked) {
+        if (!feedItem.isBookmarked) {
             SimpleDropdownItem(
                 text = stringResource(id = R.string.bookmark),
                 onClick = {
-                    onUpdate(BookmarkPost(postId = parent.getRelevantId()))
+                    onUpdate(BookmarkPost(postId = feedItem.id)) // TODO: Does bookmarking crossposts work?
                     onDismiss()
                 }
             )
@@ -113,21 +116,21 @@ fun ParentRowDropdown(
             text = stringResource(id = R.string.rebroadcast),
             onClick = {
                 // RelevantId bc repost json is not saved in db
-                onUpdate(RebroadcastPost(postId = parent.getRelevantId(), context = context))
+                onUpdate(RebroadcastPost(postId = feedItem.getRelevantId(), context = context))
                 onDismiss()
             }
         )
-        if (parent.trustType is Oneself) {
+        if (feedItem.trustType is Oneself) {
             SimpleDropdownItem(
                 text = stringResource(id = R.string.attempt_deletion),
                 onClick = {
-                    onUpdate(DeletePost(id = parent.id))
+                    onUpdate(DeletePost(id = feedItem.id)) // TODO: Does deleting cross post work?
                     onDismiss()
                 }
             )
         }
 
-        if (parent.trustType !is Oneself) {
+        if (feedItem.trustType !is Oneself) {
             val launcher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.StartActivityForResult()
             ) { _ -> }
@@ -137,7 +140,7 @@ fun ParentRowDropdown(
                     text = translator.loadLabel(packageManager).toString(),
                     onClick = {
                         launcher.launch(
-                            createProcessTextIntent(text = parent.content.text, info = translator)
+                            createProcessTextIntent(text = feedItem.content.text, info = translator)
                         )
                         onDismiss()
                     }
@@ -147,7 +150,7 @@ fun ParentRowDropdown(
         SimpleDropdownItem(
             text = stringResource(id = R.string.more),
             onClick = {
-                onUpdate(OpenPostInfo(postId = parent.getRelevantId()))
+                onUpdate(OpenPostInfo(postId = feedItem.getRelevantId()))
                 onDismiss()
             }
         )
@@ -156,17 +159,17 @@ fun ParentRowDropdown(
 
 @Composable
 private fun FollowItem(
-    parent: ParentUI,
+    feedItem: FeedItemUI,
     onDismiss: Fn,
     onUpdate: OnUpdate
 ) {
-    when (parent.trustType) {
+    when (feedItem.trustType) {
         Oneself, Muted, Locked, LockedOneself -> {}
         FriendTrust -> {
             SimpleDropdownItem(
                 text = stringResource(id = R.string.unfollow),
                 onClick = {
-                    onUpdate(UnfollowProfile(pubkey = parent.pubkey))
+                    onUpdate(UnfollowProfile(pubkey = feedItem.pubkey))
                     onDismiss()
                 }
             )
@@ -176,7 +179,7 @@ private fun FollowItem(
             SimpleDropdownItem(
                 text = stringResource(id = R.string.follow),
                 onClick = {
-                    onUpdate(FollowProfile(pubkey = parent.pubkey))
+                    onUpdate(FollowProfile(pubkey = feedItem.pubkey))
                     onDismiss()
                 }
             )
@@ -186,18 +189,18 @@ private fun FollowItem(
 
 @Composable
 private fun FollowCrossPostedItem(
-    parent: ParentUI,
+    feedItem: FeedItemUI,
     onDismiss: Fn,
     onUpdate: OnUpdate
 ) {
-    if (parent is RootPostUI && parent.crossPostedTrustType != null && parent.crossPostedPubkey != null) {
-        when (parent.crossPostedTrustType) {
+    if (feedItem is CrossPostUI) {
+        when (feedItem.crossPostedTrustType) {
             Oneself, Muted, Locked, LockedOneself -> {}
             FriendTrust -> {
                 SimpleDropdownItem(
                     text = stringResource(id = R.string.unfollow_cross_posted_author),
                     onClick = {
-                        onUpdate(UnfollowProfile(pubkey = parent.crossPostedPubkey))
+                        onUpdate(UnfollowProfile(pubkey = feedItem.crossPostedPubkey))
                         onDismiss()
                     }
                 )
@@ -207,7 +210,7 @@ private fun FollowCrossPostedItem(
                 SimpleDropdownItem(
                     text = stringResource(id = R.string.follow_cross_posted_author),
                     onClick = {
-                        onUpdate(FollowProfile(pubkey = parent.crossPostedPubkey))
+                        onUpdate(FollowProfile(pubkey = feedItem.crossPostedPubkey))
                         onDismiss()
                     }
                 )

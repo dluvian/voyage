@@ -3,7 +3,7 @@ package com.dluvian.voyage.data.room.dao
 import androidx.room.Dao
 import androidx.room.Query
 import com.dluvian.voyage.core.EventIdHex
-import com.dluvian.voyage.data.room.view.ReplyView
+import com.dluvian.voyage.data.room.view.LegacyReplyView
 import com.dluvian.voyage.data.room.view.RootPostView
 import kotlinx.coroutines.flow.Flow
 
@@ -38,10 +38,10 @@ interface BookmarkDao {
     suspend fun getUnknownBookmarks(): List<EventIdHex>
 
     @Query(REPLY_FEED_QUERY)
-    fun getReplyFlow(until: Long, size: Int): Flow<List<ReplyView>>
+    fun getReplyFlow(until: Long, size: Int): Flow<List<LegacyReplyView>>
 
     @Query(REPLY_FEED_QUERY)
-    suspend fun getReplies(until: Long, size: Int): List<ReplyView>
+    suspend fun getReplies(until: Long, size: Int): List<LegacyReplyView>
 
     @Query(ROOT_POST_FEED_QUERY)
     fun getRootPostsFlow(until: Long, size: Int): Flow<List<RootPostView>>

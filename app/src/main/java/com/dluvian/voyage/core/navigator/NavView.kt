@@ -6,7 +6,7 @@ import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.model.ParentUI
+import com.dluvian.voyage.core.model.FeedItemUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.data.nostr.RelayUrl
 import rust.nostr.protocol.Nip19Event
@@ -47,12 +47,12 @@ data object CreateGitIssueNavView : SimpleNonMainNavView()
 
 sealed class AdvancedNonMainNavView : NonMainNavView()
 data class ThreadNavView(val rootPost: RootPostUI) : AdvancedNonMainNavView()
-data class ThreadRawNavView(val nevent: Nip19Event, val parent: ParentUI?) :
+data class ThreadRawNavView(val nevent: Nip19Event, val parent: FeedItemUI?) :
     AdvancedNonMainNavView()
 
 data class ProfileNavView(val nprofile: Nip19Profile) : AdvancedNonMainNavView()
 data class TopicNavView(val topic: Topic) : AdvancedNonMainNavView()
-data class ReplyCreationNavView(val parent: ParentUI) : AdvancedNonMainNavView()
+data class ReplyCreationNavView(val parent: FeedItemUI) : AdvancedNonMainNavView()
 data class CrossPostCreationNavView(val id: EventIdHex) : AdvancedNonMainNavView()
 data class RelayProfileNavView(val relayUrl: RelayUrl) : AdvancedNonMainNavView()
 data class OpenListNavView(val identifier: String) : AdvancedNonMainNavView()

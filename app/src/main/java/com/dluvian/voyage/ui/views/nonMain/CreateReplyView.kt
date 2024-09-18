@@ -28,7 +28,7 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.SendReply
-import com.dluvian.voyage.core.model.ParentUI
+import com.dluvian.voyage.core.model.FeedItemUI
 import com.dluvian.voyage.core.viewModel.CreateReplyViewModel
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.ui.components.bottomSheet.FullPostBottomSheet
@@ -88,7 +88,7 @@ fun CreateReplyView(
 
 @Composable
 private fun CreateReplyViewContent(
-    parent: ParentUI?,
+    parent: FeedItemUI?,
     response: MutableState<TextFieldValue>,
     searchSuggestions: List<AdvancedProfileView>,
     isAnon: MutableState<Boolean>,
@@ -122,7 +122,7 @@ private fun CreateReplyViewContent(
 }
 
 @Composable
-private fun Parent(parent: ParentUI) {
+private fun Parent(parent: FeedItemUI) {
     val showFullParent = remember { mutableStateOf(false) }
     if (showFullParent.value) FullPostBottomSheet(
         content = parent.content,

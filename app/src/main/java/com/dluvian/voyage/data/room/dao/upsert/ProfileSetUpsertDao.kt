@@ -41,7 +41,6 @@ interface ProfileSetUpsertDao {
         if (toDelete.isNotEmpty()) internalDelete(entries = toDelete)
     }
 
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun internalUpsert(set: ProfileSetEntity)
 

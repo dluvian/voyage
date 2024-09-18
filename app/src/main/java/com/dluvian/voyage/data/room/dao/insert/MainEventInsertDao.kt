@@ -52,17 +52,11 @@ interface MainEventInsertDao {
         val hashtags = newPosts.flatMap { post ->
             when (post) {
                 is ValidatedRootPost -> post.topics.map { topic ->
-                    HashtagEntity(
-                        eventId = post.id,
-                        hashtag = topic
-                    )
+                    HashtagEntity(eventId = post.id, hashtag = topic)
                 }
 
                 is ValidatedCrossPost -> post.topics.map { topic ->
-                    HashtagEntity(
-                        eventId = post.id,
-                        hashtag = topic
-                    )
+                    HashtagEntity(eventId = post.id, hashtag = topic)
                 }
 
                 is ValidatedLegacyReply -> emptyList()

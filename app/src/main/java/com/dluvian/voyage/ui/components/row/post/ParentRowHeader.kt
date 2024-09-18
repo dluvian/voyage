@@ -18,7 +18,7 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenTopic
 import com.dluvian.voyage.core.ThreadViewToggleCollapse
-import com.dluvian.voyage.core.model.ParentUI
+import com.dluvian.voyage.core.model.FeedItemUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.ui.components.button.OptionsButton
@@ -32,7 +32,7 @@ import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
 fun ParentRowHeader(
-    parent: ParentUI,
+    parent: FeedItemUI,
     myTopic: String?,
     isOp: Boolean,
     showAuthorName: Boolean,
@@ -79,7 +79,7 @@ fun ParentRowHeader(
 
 @Composable
 private fun CrossPostedTrustIcons(
-    parent: ParentUI,
+    parent: FeedItemUI,
     isOp: Boolean,
     showAuthor: Boolean,
     onUpdate: OnUpdate

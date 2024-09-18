@@ -12,8 +12,8 @@ import com.dluvian.voyage.core.ThreadViewAction
 import com.dluvian.voyage.core.ThreadViewRefresh
 import com.dluvian.voyage.core.ThreadViewShowReplies
 import com.dluvian.voyage.core.ThreadViewToggleCollapse
+import com.dluvian.voyage.core.model.FeedItemUI
 import com.dluvian.voyage.core.model.LeveledReplyUI
-import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.interactor.ThreadCollapser
@@ -34,14 +34,14 @@ class ThreadViewModel(
 ) : ViewModel() {
     val isRefreshing = mutableStateOf(false)
     var parentIsAvailable: StateFlow<Boolean> = MutableStateFlow(false)
-    var localRoot: StateFlow<ParentUI?> = MutableStateFlow(null)
+    var localRoot: StateFlow<FeedItemUI?> = MutableStateFlow(null)
     val leveledReplies: MutableState<StateFlow<List<LeveledReplyUI>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
     val totalReplyCount: MutableState<StateFlow<Int>> = mutableStateOf(MutableStateFlow(0))
     private val parentIds = mutableStateOf(emptySet<EventIdHex>())
     private var nevent: Nip19Event? = null
 
-    fun openThread(nevent: Nip19Event, parentUi: ParentUI?) {
+    fun openThread(nevent: Nip19Event, parentUi: FeedItemUI?) {
         val id = nevent.eventId().toHex()
         if (id == localRoot.value?.id) return
 
@@ -119,7 +119,7 @@ class ThreadViewModel(
             .stateIn(viewModelScope, SharingStarted.Eagerly, init)
     }
 
-    private fun checkParentAvailability(replyId: EventIdHex, parentUi: ParentUI?) {
+    private fun checkParentAvailability(replyId: EventIdHex, parentUi: FeedItemUI?) {
         if (parentUi is RootPostUI) return
 
         parentIsAvailable = threadProvider

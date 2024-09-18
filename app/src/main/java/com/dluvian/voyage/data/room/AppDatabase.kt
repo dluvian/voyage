@@ -8,10 +8,7 @@ import androidx.room.migration.AutoMigrationSpec
 import com.dluvian.voyage.data.room.dao.AccountDao
 import com.dluvian.voyage.data.room.dao.BookmarkDao
 import com.dluvian.voyage.data.room.dao.ContentSetDao
-import com.dluvian.voyage.data.room.dao.util.CountDao
-import com.dluvian.voyage.data.room.dao.util.DeleteDao
 import com.dluvian.voyage.data.room.dao.EventRelayDao
-import com.dluvian.voyage.data.room.dao.util.ExistsDao
 import com.dluvian.voyage.data.room.dao.FriendDao
 import com.dluvian.voyage.data.room.dao.FullProfileDao
 import com.dluvian.voyage.data.room.dao.HashtagDao
@@ -28,18 +25,21 @@ import com.dluvian.voyage.data.room.dao.RootPostDao
 import com.dluvian.voyage.data.room.dao.TopicDao
 import com.dluvian.voyage.data.room.dao.VoteDao
 import com.dluvian.voyage.data.room.dao.WebOfTrustDao
+import com.dluvian.voyage.data.room.dao.insert.LockInsertDao
+import com.dluvian.voyage.data.room.dao.insert.MainEventInsertDao
 import com.dluvian.voyage.data.room.dao.upsert.BookmarkUpsertDao
 import com.dluvian.voyage.data.room.dao.upsert.FriendUpsertDao
 import com.dluvian.voyage.data.room.dao.upsert.FullProfileUpsertDao
-import com.dluvian.voyage.data.room.dao.insert.LockInsertDao
 import com.dluvian.voyage.data.room.dao.upsert.MuteUpsertDao
 import com.dluvian.voyage.data.room.dao.upsert.Nip65UpsertDao
-import com.dluvian.voyage.data.room.dao.insert.MainEventInsertDao
 import com.dluvian.voyage.data.room.dao.upsert.ProfileSetUpsertDao
 import com.dluvian.voyage.data.room.dao.upsert.ProfileUpsertDao
 import com.dluvian.voyage.data.room.dao.upsert.TopicSetUpsertDao
 import com.dluvian.voyage.data.room.dao.upsert.TopicUpsertDao
 import com.dluvian.voyage.data.room.dao.upsert.WebOfTrustUpsertDao
+import com.dluvian.voyage.data.room.dao.util.CountDao
+import com.dluvian.voyage.data.room.dao.util.DeleteDao
+import com.dluvian.voyage.data.room.dao.util.ExistsDao
 import com.dluvian.voyage.data.room.entity.AccountEntity
 import com.dluvian.voyage.data.room.entity.BookmarkEntity
 import com.dluvian.voyage.data.room.entity.FriendEntity
@@ -49,7 +49,6 @@ import com.dluvian.voyage.data.room.entity.LockEntity
 import com.dluvian.voyage.data.room.entity.MainEventEntity
 import com.dluvian.voyage.data.room.entity.MuteEntity
 import com.dluvian.voyage.data.room.entity.Nip65Entity
-import com.dluvian.voyage.data.room.entity.PostEntity
 import com.dluvian.voyage.data.room.entity.ProfileEntity
 import com.dluvian.voyage.data.room.entity.TopicEntity
 import com.dluvian.voyage.data.room.entity.VoteEntity
@@ -60,7 +59,7 @@ import com.dluvian.voyage.data.room.entity.sets.TopicSetEntity
 import com.dluvian.voyage.data.room.entity.sets.TopicSetItemEntity
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.data.room.view.EventRelayAuthorView
-import com.dluvian.voyage.data.room.view.ReplyView
+import com.dluvian.voyage.data.room.view.LegacyReplyView
 import com.dluvian.voyage.data.room.view.RootPostView
 import com.dluvian.voyage.data.room.view.SimplePostView
 
@@ -118,7 +117,7 @@ class V10DeleteVoteIsPositiveColumn : AutoMigrationSpec
         RootPostView::class,
         AdvancedProfileView::class,
         EventRelayAuthorView::class,
-        ReplyView::class,
+        LegacyReplyView::class,
         SimplePostView::class,
     ]
 )

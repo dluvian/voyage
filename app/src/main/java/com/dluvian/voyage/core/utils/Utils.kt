@@ -17,7 +17,7 @@ import com.dluvian.voyage.core.MAX_SUBJECT_LEN
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.VOYAGE
-import com.dluvian.voyage.core.model.ParentUI
+import com.dluvian.voyage.core.model.FeedItemUI
 import com.dluvian.voyage.data.model.RelevantMetadata
 import com.dluvian.voyage.data.nostr.LOCAL_WEBSOCKET
 import com.dluvian.voyage.data.nostr.RelayUrl
@@ -28,7 +28,7 @@ import com.dluvian.voyage.data.provider.ItemSetProvider
 import com.dluvian.voyage.data.provider.LockProvider
 import com.dluvian.voyage.data.provider.MuteProvider
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
-import com.dluvian.voyage.data.room.view.ReplyView
+import com.dluvian.voyage.data.room.view.LegacyReplyView
 import com.dluvian.voyage.data.room.view.RootPostView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -235,14 +235,14 @@ fun createProcessTextIntent(text: String, info: ResolveInfo): Intent {
 }
 
 fun mergeToParentUIList(
-    replies: Collection<ReplyView>,
+    replies: Collection<LegacyReplyView>,
     roots: Collection<RootPostView>,
     votes: Map<EventIdHex, Boolean>,
     follows: Map<PubkeyHex, Boolean>,
     bookmarks: Map<EventIdHex, Boolean>,
     size: Int,
     annotatedStringProvider: AnnotatedStringProvider,
-): List<ParentUI> {
+): List<FeedItemUI> {
     val applicableTimestamps = replies.asSequence()
         .map { it.createdAt }
         .plus(roots.map { it.createdAt })
@@ -250,7 +250,7 @@ fun mergeToParentUIList(
         .take(size)
         .toSet()
 
-    val result = mutableListOf<ParentUI>()
+    val result = mutableListOf<FeedItemUI>()
     for (reply in replies) {
         if (!applicableTimestamps.contains(reply.createdAt)) continue
         val mapped = reply.mapToReplyUI(

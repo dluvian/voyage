@@ -30,9 +30,9 @@ import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenThreadRaw
 import com.dluvian.voyage.core.ThreadViewRefresh
+import com.dluvian.voyage.core.model.FeedItemUI
+import com.dluvian.voyage.core.model.LegacyReplyUI
 import com.dluvian.voyage.core.model.LeveledReplyUI
-import com.dluvian.voyage.core.model.ParentUI
-import com.dluvian.voyage.core.model.ReplyUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.viewModel.ThreadViewModel
 import com.dluvian.voyage.data.nostr.createNevent
@@ -76,7 +76,7 @@ fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpd
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ThreadViewContent(
-    localRoot: ParentUI,
+    localRoot: FeedItemUI,
     leveledReplies: List<LeveledReplyUI>,
     totalReplyCount: Int,
     parentIsAvailable: Boolean,
@@ -86,7 +86,7 @@ private fun ThreadViewContent(
 ) {
     val replies = remember(localRoot, leveledReplies) {
         when (localRoot) {
-            is ReplyUI -> leveledReplies.map { it.copy(level = it.level + 2) }
+            is LegacyReplyUI -> leveledReplies.map { it.copy(level = it.level + 2) }
             is RootPostUI -> leveledReplies
         }
     }
@@ -96,7 +96,7 @@ private fun ThreadViewContent(
             contentPadding = PaddingValues(bottom = spacing.xxl),
             state = state
         ) {
-            if (parentIsAvailable && localRoot is ReplyUI) item {
+            if (parentIsAvailable && localRoot is LegacyReplyUI) item {
                 OpenRootButton(
                     modifier = Modifier.padding(start = spacing.medium),
                     parentId = localRoot.parentId,
@@ -110,7 +110,7 @@ private fun ThreadViewContent(
                         FullHorizontalDivider()
                     }
 
-                    is ReplyUI -> {
+                    is LegacyReplyUI -> {
                         ThreadReplyRow(
                             leveledReply = LeveledReplyUI(
                                 level = 1,

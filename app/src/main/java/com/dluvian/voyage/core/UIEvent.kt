@@ -4,9 +4,9 @@ import android.content.Context
 import androidx.activity.result.ActivityResult
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.text.AnnotatedString
+import com.dluvian.voyage.core.model.FeedItemUI
 import com.dluvian.voyage.core.model.ItemSetItem
 import com.dluvian.voyage.core.model.LabledGitIssue
-import com.dluvian.voyage.core.model.ParentUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.navigator.BookmarksNavView
 import com.dluvian.voyage.core.navigator.CreateGitIssueNavView
@@ -96,12 +96,12 @@ data object ClickCreateGitIssue : PushNavEvent()
 
 sealed class AdvancedPushNavEvent : PushNavEvent()
 data class OpenThread(val rootPost: RootPostUI) : AdvancedPushNavEvent()
-data class OpenThreadRaw(val nevent: Nip19Event, val parent: ParentUI? = null) :
+data class OpenThreadRaw(val nevent: Nip19Event, val parent: FeedItemUI? = null) :
     AdvancedPushNavEvent()
 
 data class OpenProfile(val nprofile: Nip19Profile) : AdvancedPushNavEvent()
 data class OpenTopic(val topic: Topic) : AdvancedPushNavEvent()
-data class OpenReplyCreation(val parent: ParentUI) : AdvancedPushNavEvent()
+data class OpenReplyCreation(val parent: FeedItemUI) : AdvancedPushNavEvent()
 data class OpenCrossPostCreation(val id: EventIdHex) : AdvancedPushNavEvent()
 data class OpenRelayProfile(val relayUrl: RelayUrl) : AdvancedPushNavEvent()
 data class OpenList(val identifier: String) : AdvancedPushNavEvent()
@@ -267,7 +267,7 @@ data object SubRepoOwnerRelays : CreateGitIssueViewAction()
 
 sealed class CreateReplyViewAction : UIEvent()
 data class SendReply(
-    val parent: ParentUI,
+    val parent: FeedItemUI,
     val body: String,
     val isAnon: Boolean,
     val context: Context,
