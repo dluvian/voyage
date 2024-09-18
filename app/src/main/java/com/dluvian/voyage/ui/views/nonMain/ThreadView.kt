@@ -40,8 +40,8 @@ import com.dluvian.voyage.ui.components.FullHorizontalDivider
 import com.dluvian.voyage.ui.components.bottomSheet.PostDetailsBottomSheet
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
-import com.dluvian.voyage.ui.components.row.post.ThreadReplyRow
-import com.dluvian.voyage.ui.components.row.post.ThreadRootRow
+import com.dluvian.voyage.ui.components.row.feedItem.ThreadReplyRow
+import com.dluvian.voyage.ui.components.row.feedItem.ThreadRootRow
 import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing

@@ -7,7 +7,6 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.FeedItemUI
-import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.data.nostr.RelayUrl
 import rust.nostr.protocol.Nip19Event
 import rust.nostr.protocol.Nip19Profile
@@ -46,7 +45,7 @@ data object CreateGitIssueNavView : SimpleNonMainNavView()
 
 
 sealed class AdvancedNonMainNavView : NonMainNavView()
-data class ThreadNavView(val rootPost: RootPostUI) : AdvancedNonMainNavView()
+data class ThreadNavView(val feedItem: FeedItemUI) : AdvancedNonMainNavView()
 data class ThreadRawNavView(val nevent: Nip19Event, val parent: FeedItemUI?) :
     AdvancedNonMainNavView()
 

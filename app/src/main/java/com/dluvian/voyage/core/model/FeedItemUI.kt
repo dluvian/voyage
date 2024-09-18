@@ -36,6 +36,12 @@ sealed class FeedItemUI(
         is LegacyReplyUI -> this.id
         is CrossPostUI -> this.crossPostedId
     }
+
+    fun getSubject() = when (this) {
+        is RootPostUI -> this.subject
+        is LegacyReplyUI -> null
+        is CrossPostUI -> this.crossPostedSubject
+    }
 }
 
 @Immutable
@@ -104,6 +110,7 @@ data class LegacyReplyUI(
     override val isUpvoted: Boolean,
     override val isBookmarked: Boolean,
     val parentId: EventIdHex,
+    val isOp: Boolean,
 ) : FeedItemUI(
     id = id,
     pubkey = pubkey,
@@ -140,6 +147,7 @@ data class LegacyReplyUI(
     }
 }
 
+// TODO: This kinda sucks
 @Immutable
 data class CrossPostUI(
     override val id: EventIdHex,
@@ -153,8 +161,8 @@ data class CrossPostUI(
     val crossPostedIsUpvoted: Boolean,
     val crossPostedIsBookmarked: Boolean,
     val crossPostedContent: AnnotatedString,
-    val myTopic: String?,
-    val subject: AnnotatedString,
+    val crossPostedMyTopic: String?,
+    val crossPostedSubject: AnnotatedString,
     val crossPostedId: EventIdHex,
     val crossPostedPubkey: PubkeyHex,
     val crossPostedTrustType: TrustType,

@@ -36,15 +36,12 @@ import com.dluvian.voyage.core.FEED_PAGE_SIZE
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.model.IPaginator
-import com.dluvian.voyage.core.model.LegacyReplyUI
-import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.utils.showScrollButton
 import com.dluvian.voyage.data.model.PostDetails
 import com.dluvian.voyage.ui.components.bottomSheet.PostDetailsBottomSheet
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
-import com.dluvian.voyage.ui.components.row.post.FeedReplyRow
-import com.dluvian.voyage.ui.components.row.post.FeedRootRow
+import com.dluvian.voyage.ui.components.row.feedItem.FeedItemRow
 import com.dluvian.voyage.ui.theme.ScrollUpIcon
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
@@ -66,7 +63,7 @@ fun Feed(
     val hasMoreRecentPosts by paginator.hasMoreRecentPosts
     val hasPosts by paginator.hasPosts.value.collectAsState()
     val posts by paginator.page.value.collectAsState()
-    val filteredPosts by paginator.filteredPage.value.collectAsState()
+    val filteredFeedItems by paginator.filteredPage.value.collectAsState()
     val scope = rememberCoroutineScope()
     val showProgressIndicator by remember {
         derivedStateOf { isAppending || (hasPosts && posts.isEmpty()) }
@@ -83,22 +80,14 @@ fun Feed(
             if (hasMoreRecentPosts) item { MostRecentPostsTextButton(onClick = onRefresh) }
 
             items(
-                items = filteredPosts,
-                key = { item -> item.id }) { post ->
-                when (post) {
-                    is RootPostUI -> FeedRootRow(
-                        post = post,
-                        showAuthorName = showAuthorName,
-                        onUpdate = onUpdate
-                    )
-
-                    is LegacyReplyUI -> FeedReplyRow(
-                        reply = post,
-                        showAuthorName = showAuthorName,
-                        onUpdate = onUpdate
-                    )
-                }
-
+                items = filteredFeedItems,
+                key = { item -> item.id }
+            ) { feedItem ->
+                FeedItemRow(
+                    feedItem = feedItem,
+                    showAuthorName = showAuthorName,
+                    onUpdate = onUpdate
+                )
                 FullHorizontalDivider()
             }
 

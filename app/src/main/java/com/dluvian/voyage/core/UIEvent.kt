@@ -7,7 +7,6 @@ import androidx.compose.ui.text.AnnotatedString
 import com.dluvian.voyage.core.model.FeedItemUI
 import com.dluvian.voyage.core.model.ItemSetItem
 import com.dluvian.voyage.core.model.LabledGitIssue
-import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.core.navigator.BookmarksNavView
 import com.dluvian.voyage.core.navigator.CreateGitIssueNavView
 import com.dluvian.voyage.core.navigator.CreatePostNavView
@@ -66,7 +65,7 @@ sealed class PushNavEvent : NavEvent() {
             ClickMuteList -> MuteListNavView
             ClickCreateList -> EditNewListNavView
             ClickCreateGitIssue -> CreateGitIssueNavView
-            is OpenThread -> ThreadNavView(rootPost = this.rootPost)
+            is OpenThread -> ThreadNavView(feedItem = this.feedItem)
             is OpenProfile -> ProfileNavView(nprofile = this.nprofile)
             is OpenTopic -> TopicNavView(topic = this.topic)
             is OpenReplyCreation -> ReplyCreationNavView(parent = this.parent)
@@ -95,9 +94,11 @@ data object ClickCreateGitIssue : PushNavEvent()
 
 
 sealed class AdvancedPushNavEvent : PushNavEvent()
-data class OpenThread(val rootPost: RootPostUI) : AdvancedPushNavEvent()
-data class OpenThreadRaw(val nevent: Nip19Event, val parent: FeedItemUI? = null) :
-    AdvancedPushNavEvent()
+data class OpenThread(val feedItem: FeedItemUI) : AdvancedPushNavEvent()
+data class OpenThreadRaw(
+    val nevent: Nip19Event,
+    val parent: FeedItemUI? = null
+) : AdvancedPushNavEvent()
 
 data class OpenProfile(val nprofile: Nip19Profile) : AdvancedPushNavEvent()
 data class OpenTopic(val topic: Topic) : AdvancedPushNavEvent()
@@ -263,6 +264,7 @@ data class SendGitIssue(
     val context: Context,
     val onGoBack: Fn
 ) : CreateGitIssueViewAction()
+
 data object SubRepoOwnerRelays : CreateGitIssueViewAction()
 
 sealed class CreateReplyViewAction : UIEvent()
@@ -306,6 +308,7 @@ data class ProcessExternalAccount(
     val activityResult: ActivityResult,
     val context: Context
 ) : SettingsViewAction()
+
 data class UpdateRootPostThreshold(val threshold: Float) : SettingsViewAction()
 data class UpdateAutopilotRelays(val numberOfRelays: Int) : SettingsViewAction()
 data object LoadSeed : SettingsViewAction()

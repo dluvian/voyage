@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.components.row.post
+package com.dluvian.voyage.ui.components.row.feedItem
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -85,7 +85,7 @@ fun BaseReplyRow(
             )
             Spacer(modifier = Modifier.height(spacing.large))
         }
-        if (!isCollapsed) PostRowActions(
+        if (!isCollapsed) FeedItemActions(
             postId = reply.id,
             authorPubkey = reply.pubkey,
             isUpvoted = reply.isUpvoted,

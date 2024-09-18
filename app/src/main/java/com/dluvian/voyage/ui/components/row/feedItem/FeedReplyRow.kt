@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.components.row.post
+package com.dluvian.voyage.ui.components.row.feedItem
 
 import androidx.compose.runtime.Composable
 import com.dluvian.voyage.core.OnUpdate

@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.components.row.post
+package com.dluvian.voyage.ui.components.row.feedItem
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -35,7 +35,6 @@ import com.dluvian.voyage.ui.theme.spacing
 @Composable
 fun FeedItemHeader(
     feedItem: FeedItemUI,
-    isOp: Boolean,
     showAuthorName: Boolean,
     collapsedText: AnnotatedString? = null,
     onUpdate: OnUpdate
@@ -51,14 +50,13 @@ fun FeedItemHeader(
         ) {
             FeedItemHeaderTrustIcons(
                 feedItem = feedItem,
-                isOp = isOp,
                 showAuthor = showAuthorName,
                 onUpdate = onUpdate
             )
             when (feedItem) {
                 is RootPostUI -> feedItem.myTopic
                 is LegacyReplyUI -> null
-                is CrossPostUI -> feedItem.myTopic
+                is CrossPostUI -> feedItem.crossPostedMyTopic
             }?.let { topic ->
                 TopicChip(
                     modifier = Modifier
@@ -85,14 +83,13 @@ fun FeedItemHeader(
 @Composable
 private fun FeedItemHeaderTrustIcons(
     feedItem: FeedItemUI,
-    isOp: Boolean,
     showAuthor: Boolean,
     onUpdate: OnUpdate
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         ClickableTrustIcon(
             trustType = feedItem.trustType,
-            isOp = isOp,
+            isOp = feedItem.isOp(),
             authorName = if (showAuthor) feedItem.authorName else null,
             onClick = { onUpdate(OpenProfile(nprofile = createNprofile(hex = feedItem.pubkey))) }
         )

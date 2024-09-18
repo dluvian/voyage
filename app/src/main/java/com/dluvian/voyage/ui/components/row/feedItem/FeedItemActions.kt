@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.components.row.post
+package com.dluvian.voyage.ui.components.row.feedItem
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -9,23 +9,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.dluvian.voyage.core.ComposableContent
-import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenCrossPostCreation
-import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.UnbookmarkPost
+import com.dluvian.voyage.core.model.FeedItemUI
 import com.dluvian.voyage.ui.components.chip.BookmarkChip
 import com.dluvian.voyage.ui.components.chip.CrossPostChip
 import com.dluvian.voyage.ui.components.chip.UpvoteChip
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
-fun PostRowActions(
-    postId: EventIdHex,
-    authorPubkey: PubkeyHex,
-    isUpvoted: Boolean,
-    upvoteCount: Int,
-    isBookmarked: Boolean,
+fun FeedItemActions(
+    feedItem: FeedItemUI,
     onUpdate: OnUpdate,
     additionalStartAction: ComposableContent = {},
     additionalEndAction: ComposableContent = {},

@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.components.row.post
+package com.dluvian.voyage.ui.components.row.feedItem
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -16,29 +16,18 @@ import com.dluvian.voyage.core.ClickText
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenReplyCreation
 import com.dluvian.voyage.core.OpenThread
-import com.dluvian.voyage.core.OpenThreadRaw
-import com.dluvian.voyage.core.model.RootPostUI
-import com.dluvian.voyage.data.nostr.createNevent
+import com.dluvian.voyage.core.model.FeedItemUI
 import com.dluvian.voyage.ui.components.chip.CommentChip
 import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
-fun BaseRootRow(
-    post: RootPostUI,
-    isOp: Boolean,
-    isThread: Boolean,
+fun FeedItemRow(
+    feedItem: FeedItemUI,
     showAuthorName: Boolean,
     onUpdate: OnUpdate
 ) {
-    val onOpenThread = {
-        val action = if (post.crossPostedId != null) {
-            OpenThreadRaw(nevent = createNevent(hex = post.crossPostedId))
-        } else {
-            OpenThread(rootPost = post)
-        }
-        onUpdate(action)
-    }
+    val onOpenThread = { onUpdate(OpenThread(feedItem = feedItem)) }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -57,39 +46,34 @@ fun BaseRootRow(
             )
         }
         FeedItemHeader(
-            feedItem = post,
-            myTopic = post.myTopic,
-            isOp = isOp,
+            feedItem = feedItem,
             showAuthorName = showAuthorName,
             onUpdate = onUpdate,
         )
         Spacer(modifier = Modifier.height(spacing.large))
-        if (post.subject.isNotEmpty()) {
-            AnnotatedText(
-                text = post.subject,
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
-                maxLines = if (isThread) Int.MAX_VALUE else 3,
-                onClick = { onClickText(it, post.subject) }
-            )
-            Spacer(modifier = Modifier.height(spacing.large))
+
+        feedItem.getSubject()?.let { subject ->
+            if (subject.isNotEmpty()) {
+                AnnotatedText(
+                    text = subject,
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
+                    onClick = { onClickText(it, subject) }
+                )
+                Spacer(modifier = Modifier.height(spacing.large))
+            }
         }
         AnnotatedText(
-            text = post.content,
-            maxLines = if (isThread) Int.MAX_VALUE else 12,
-            onClick = { onClickText(it, post.content) }
+            text = feedItem.content,
+            onClick = { onClickText(it, feedItem.content) }
         )
         Spacer(modifier = Modifier.height(spacing.large))
-        PostRowActions(
-            postId = post.getRelevantId(),
-            authorPubkey = post.getRelevantPubkey(),
-            isUpvoted = post.isUpvoted,
-            upvoteCount = post.upvoteCount,
-            isBookmarked = post.isBookmarked,
+        FeedItemActions(
+            feedItem = feedItem,
             onUpdate = onUpdate,
             additionalEndAction = {
                 CommentChip(
-                    commentCount = post.replyCount,
-                    onClick = { onUpdate(OpenReplyCreation(parent = post)) })
+                    commentCount = feedItem.replyCount,
+                    onClick = { onUpdate(OpenReplyCreation(parent = feedItem)) })
             })
     }
 }
