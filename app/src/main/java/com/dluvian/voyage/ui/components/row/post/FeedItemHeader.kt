@@ -18,7 +18,9 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenTopic
 import com.dluvian.voyage.core.ThreadViewToggleCollapse
+import com.dluvian.voyage.core.model.CrossPostUI
 import com.dluvian.voyage.core.model.FeedItemUI
+import com.dluvian.voyage.core.model.LegacyReplyUI
 import com.dluvian.voyage.core.model.RootPostUI
 import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.ui.components.button.OptionsButton
@@ -31,9 +33,8 @@ import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
-fun ParentRowHeader(
-    parent: FeedItemUI,
-    myTopic: String?,
+fun FeedItemHeader(
+    feedItem: FeedItemUI,
     isOp: Boolean,
     showAuthorName: Boolean,
     collapsedText: AnnotatedString? = null,
@@ -48,13 +49,17 @@ fun ParentRowHeader(
             modifier = Modifier.weight(1f, fill = false),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            CrossPostedTrustIcons(
-                parent = parent,
+            FeedItemHeaderTrustIcons(
+                feedItem = feedItem,
                 isOp = isOp,
                 showAuthor = showAuthorName,
                 onUpdate = onUpdate
             )
-            myTopic?.let { topic ->
+            when (feedItem) {
+                is RootPostUI -> feedItem.myTopic
+                is LegacyReplyUI -> null
+                is CrossPostUI -> feedItem.myTopic
+            }?.let { topic ->
                 TopicChip(
                     modifier = Modifier
                         .weight(weight = 1f, fill = false)
@@ -64,46 +69,43 @@ fun ParentRowHeader(
                 )
             }
             Spacer(modifier = Modifier.width(spacing.large))
-            if (collapsedText == null) RelativeTime(from = parent.createdAt)
+            if (collapsedText == null) RelativeTime(from = feedItem.createdAt)
             else AnnotatedText(
                 text = collapsedText,
                 maxLines = 1,
-                onClick = { onUpdate(ThreadViewToggleCollapse(id = parent.id)) }
+                onClick = { onUpdate(ThreadViewToggleCollapse(id = feedItem.id)) }
             )
         }
         Row(horizontalArrangement = Arrangement.End) {
-            OptionsButton(parent = parent, onUpdate = onUpdate)
+            OptionsButton(feedItem = feedItem, onUpdate = onUpdate)
         }
     }
 }
 
 @Composable
-private fun CrossPostedTrustIcons(
-    parent: FeedItemUI,
+private fun FeedItemHeaderTrustIcons(
+    feedItem: FeedItemUI,
     isOp: Boolean,
     showAuthor: Boolean,
     onUpdate: OnUpdate
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         ClickableTrustIcon(
-            trustType = parent.trustType,
+            trustType = feedItem.trustType,
             isOp = isOp,
-            authorName = if (showAuthor) parent.authorName else null,
-            onClick = { onUpdate(OpenProfile(nprofile = createNprofile(hex = parent.pubkey))) }
+            authorName = if (showAuthor) feedItem.authorName else null,
+            onClick = { onUpdate(OpenProfile(nprofile = createNprofile(hex = feedItem.pubkey))) }
         )
-        if (parent is RootPostUI &&
-            parent.crossPostedPubkey != null &&
-            parent.crossPostedTrustType != null
-        ) {
+        if (feedItem is CrossPostUI) {
             Icon(
                 modifier = Modifier.size(sizing.smallIndicator),
                 imageVector = CrossPostIcon,
                 contentDescription = stringResource(id = R.string.cross_posted)
             )
             ClickableTrustIcon(
-                trustType = parent.crossPostedTrustType,
+                trustType = feedItem.crossPostedTrustType,
                 onClick = {
-                    onUpdate(OpenProfile(nprofile = createNprofile(hex = parent.crossPostedPubkey)))
+                    onUpdate(OpenProfile(nprofile = createNprofile(hex = feedItem.crossPostedPubkey)))
                 }
             )
         }

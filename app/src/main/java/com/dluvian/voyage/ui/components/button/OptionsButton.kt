@@ -19,14 +19,14 @@ import com.dluvian.voyage.ui.theme.sizing
 
 @Composable
 fun OptionsButton(
-    parent: FeedItemUI,
+    feedItem: FeedItemUI,
     onUpdate: OnUpdate,
 ) {
     val showMenu = remember { mutableStateOf(false) }
     Box(contentAlignment = Alignment.CenterEnd) {
         FeedItemDropdown(
             isOpen = showMenu.value,
-            feedItem = parent,
+            feedItem = feedItem,
             onDismiss = { showMenu.value = false },
             onUpdate = onUpdate,
         )

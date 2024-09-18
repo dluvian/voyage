@@ -56,8 +56,8 @@ fun BaseRootRow(
                 )
             )
         }
-        ParentRowHeader(
-            parent = post,
+        FeedItemHeader(
+            feedItem = post,
             myTopic = post.myTopic,
             isOp = isOp,
             showAuthorName = showAuthorName,

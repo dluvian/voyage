@@ -55,8 +55,8 @@ fun BaseReplyRow(
             .clickable { onClick() }
             .padding(spacing.screenEdge)
     ) {
-        ParentRowHeader(
-            parent = reply,
+        FeedItemHeader(
+            feedItem = reply,
             myTopic = null,
             isOp = isOp,
             showAuthorName = showAuthorName,
