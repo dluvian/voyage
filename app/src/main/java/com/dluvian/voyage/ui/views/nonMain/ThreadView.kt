@@ -30,10 +30,10 @@ import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenThreadRaw
 import com.dluvian.voyage.core.ThreadViewRefresh
-import com.dluvian.voyage.core.model.FeedItemUI
-import com.dluvian.voyage.core.model.LegacyReplyUI
 import com.dluvian.voyage.core.model.LeveledReplyUI
-import com.dluvian.voyage.core.model.RootPostUI
+import com.dluvian.voyage.core.model.ThreadPseudoRootUI
+import com.dluvian.voyage.core.model.ThreadRootItemUI
+import com.dluvian.voyage.core.model.ThreadRootUI
 import com.dluvian.voyage.core.viewModel.ThreadViewModel
 import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.ui.components.FullHorizontalDivider
@@ -61,7 +61,7 @@ fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpd
             localRoot?.let {
                 ThreadViewContent(
                     localRoot = it,
-                    leveledReplies = vm.leveledReplies.value.collectAsState().value,
+                    replies = vm.leveledReplies.value.collectAsState().value,
                     totalReplyCount = vm.totalReplyCount.value.collectAsState().value,
                     parentIsAvailable = vm.parentIsAvailable.collectAsState().value,
                     isRefreshing = vm.isRefreshing.value,
@@ -76,18 +76,18 @@ fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpd
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ThreadViewContent(
-    localRoot: FeedItemUI,
-    leveledReplies: List<LeveledReplyUI>,
+    localRoot: ThreadRootItemUI,
+    replies: List<LeveledReplyUI>,
     totalReplyCount: Int,
     parentIsAvailable: Boolean,
     isRefreshing: Boolean,
     state: LazyListState,
     onUpdate: OnUpdate
 ) {
-    val replies = remember(localRoot, leveledReplies) {
+    val adjustedReplies = remember(localRoot, replies) {
         when (localRoot) {
-            is LegacyReplyUI -> leveledReplies.map { it.copy(level = it.level + 2) }
-            is RootPostUI -> leveledReplies
+            is ThreadRootUI -> replies
+            is ThreadPseudoRootUI -> replies.map { it.copy(level = it.level + 2) }
         }
     }
     PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(ThreadViewRefresh) }) {
@@ -96,25 +96,25 @@ private fun ThreadViewContent(
             contentPadding = PaddingValues(bottom = spacing.xxl),
             state = state
         ) {
-            if (parentIsAvailable && localRoot is LegacyReplyUI) item {
+            if (parentIsAvailable && localRoot is ThreadPseudoRootUI) item {
                 OpenRootButton(
                     modifier = Modifier.padding(start = spacing.medium),
-                    parentId = localRoot.parentId,
+                    parentId = localRoot.legacyReplyUI.parentId,
                     onUpdate = onUpdate
                 )
             }
             item {
                 when (localRoot) {
-                    is RootPostUI -> {
-                        ThreadRootRow(post = localRoot, isOp = true, onUpdate = onUpdate)
+                    is ThreadRootUI -> {
+                        ThreadRootRow(post = localRoot.rootPostUI, isOp = true, onUpdate = onUpdate)
                         FullHorizontalDivider()
                     }
 
-                    is LegacyReplyUI -> {
+                    is ThreadPseudoRootUI -> {
                         ThreadReplyRow(
                             leveledReply = LeveledReplyUI(
                                 level = 1,
-                                reply = localRoot,
+                                reply = localRoot.legacyReplyUI,
                                 isCollapsed = false,
                                 hasLoadedReplies = true,
                             ),
@@ -129,17 +129,17 @@ private fun ThreadViewContent(
             if (localRoot.replyCount > totalReplyCount) item {
                 FullLinearProgressIndicator()
             }
-            itemsIndexed(replies) { i, reply ->
-                if (reply.level == 0) FullHorizontalDivider()
+            itemsIndexed(adjustedReplies) { i, leveledReply ->
+                if (leveledReply.level == 0) FullHorizontalDivider()
                 ThreadReplyRow(
-                    leveledReply = reply,
-                    isLocalRoot = false,
-                    isOp = localRoot.pubkey == reply.reply.pubkey,
+                    leveledReply = leveledReply,
+                    isLocalRoot = false, // TODO: create ThreadReplyItemUI
+                    isOp = localRoot.pubkey == leveledReply.reply.pubkey,
                     onUpdate = onUpdate
                 )
-                if (i == replies.size - 1) FullHorizontalDivider()
+                if (i == adjustedReplies.size - 1) FullHorizontalDivider()
             }
-            if (localRoot.replyCount == 0 && replies.isEmpty()) item {
+            if (localRoot.replyCount == 0 && adjustedReplies.isEmpty()) item {
                 Column(modifier = Modifier.fillParentMaxHeight(0.5f)) {
                     BaseHint(text = stringResource(id = R.string.no_comments_found))
                 }
