@@ -5,18 +5,17 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 
 @DatabaseView(
-    "SELECT post.id, " +
-            "post.pubkey, " +
-            "post.subject, " +
-            "post.content, " +
-            "(SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.pubkey)) AS authorIsOneself, " +
-            "(SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.pubkey)) AS authorIsFriend, " +
-            "(SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = post.pubkey)) AS authorIsTrusted, " +
-            "(SELECT EXISTS(SELECT * FROM mute WHERE mute.mutedItem = post.pubkey AND mute.tag IS 'p')) AS authorIsMuted, " +
-            "(SELECT EXISTS(SELECT * FROM profileSetItem WHERE profileSetItem.pubkey = post.pubkey)) AS authorIsInList, " +
-            "(SELECT EXISTS(SELECT * FROM lock WHERE lock.pubkey = post.pubkey)) AS authorIsLocked " +
-            "FROM post " +
-            "WHERE crossPostedId IS NULL AND crossPostedPubkey IS NULL"
+    "SELECT rootPost.id, " +
+            "rootPost.pubkey, " +
+            "rootPost.subject, " +
+            "rootPost.content, " +
+            "(SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = rootPost.pubkey)) AS authorIsOneself, " +
+            "(SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = rootPost.pubkey)) AS authorIsFriend, " +
+            "(SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = rootPost.pubkey)) AS authorIsTrusted, " +
+            "(SELECT EXISTS(SELECT * FROM mute WHERE mute.mutedItem = rootPost.pubkey AND mute.tag IS 'p')) AS authorIsMuted, " +
+            "(SELECT EXISTS(SELECT * FROM profileSetItem WHERE profileSetItem.pubkey = rootPost.pubkey)) AS authorIsInList, " +
+            "(SELECT EXISTS(SELECT * FROM lock WHERE lock.pubkey = rootPost.pubkey)) AS authorIsLocked " +
+            "FROM rootPost "
 )
 data class SimplePostView(
     val id: EventIdHex,

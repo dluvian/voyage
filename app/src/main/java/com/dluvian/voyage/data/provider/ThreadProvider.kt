@@ -77,7 +77,7 @@ class ThreadProvider(
                 forcedFollows = follows,
                 forcedBookmarks = bookmarks,
                 annotatedStringProvider = annotatedStringProvider
-            ) ?: reply?.mapToReplyUI(
+            ) ?: reply?.mapToLegacyReplyUI(
                 forcedFollows = follows,
                 forcedVotes = votes,
                 forcedBookmarks = bookmarks,

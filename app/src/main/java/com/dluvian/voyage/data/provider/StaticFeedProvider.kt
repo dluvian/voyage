@@ -82,7 +82,7 @@ class StaticFeedProvider(
             size = size
         )
             .map {
-                it.mapToReplyUI(
+                it.mapToLegacyReplyUI(
                     forcedVotes = emptyMap(),
                     forcedFollows = emptyMap(),
                     forcedBookmarks = emptyMap(),

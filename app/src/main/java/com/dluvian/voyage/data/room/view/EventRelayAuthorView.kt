@@ -1,14 +1,14 @@
 package com.dluvian.voyage.data.room.view
 
 import androidx.room.DatabaseView
-import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.data.nostr.RelayUrl
 
 
 @DatabaseView(
-    "SELECT post.pubkey, post.relayUrl, COUNT(*) AS relayCount " +
-            "FROM post " +
-            "GROUP BY post.pubkey, post.relayUrl"
+    "SELECT rootPost.pubkey, rootPost.relayUrl, COUNT(*) AS relayCount " +
+            "FROM rootPost " +
+            "GROUP BY rootPost.pubkey, rootPost.relayUrl"
 )
 data class EventRelayAuthorView(
     val pubkey: PubkeyHex,

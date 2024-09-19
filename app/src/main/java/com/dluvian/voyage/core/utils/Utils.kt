@@ -253,7 +253,7 @@ fun mergeToParentUIList(
     val result = mutableListOf<FeedItemUI>()
     for (reply in replies) {
         if (!applicableTimestamps.contains(reply.createdAt)) continue
-        val mapped = reply.mapToReplyUI(
+        val mapped = reply.mapToLegacyReplyUI(
             forcedVotes = votes,
             forcedFollows = follows,
             forcedBookmarks = bookmarks,

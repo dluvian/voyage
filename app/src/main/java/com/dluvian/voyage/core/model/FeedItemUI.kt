@@ -6,6 +6,7 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
+import com.dluvian.voyage.data.room.view.CrossRootPostView
 import com.dluvian.voyage.data.room.view.LegacyReplyView
 import com.dluvian.voyage.data.room.view.RootPostView
 import rust.nostr.protocol.Kind
@@ -149,11 +150,13 @@ data class LegacyReplyUI(
 
 // TODO: This kinda sucks
 @Immutable
-data class CrossPostUI(
+data class CrossRootPostUI(
     override val id: EventIdHex,
     override val pubkey: PubkeyHex,
     override val authorName: String?,
     override val trustType: TrustType,
+    val isUpvoted: Boolean,
+    override val isBookmarked: Boolean,
     val crossPostedCreatedAt: Long,
     val crossPostedUpvoteCount: Int,
     val crossPostedReplyCount: Int,
@@ -181,40 +184,40 @@ data class CrossPostUI(
 ) {
     companion object {
         fun from(
-            rootPostView: RootPostView,
+            crossRootPostView: CrossRootPostView,
             annotatedStringProvider: AnnotatedStringProvider
-        ): RootPostUI {
-            return RootPostUI(
-                id = rootPostView.id,
-                pubkey = rootPostView.pubkey,
-                authorName = rootPostView.authorName,
+        ): CrossRootPostUI {
+            return CrossRootPostUI(
+                id = crossRootPostView.id,
+                pubkey = crossRootPostView.pubkey,
+                authorName = crossRootPostView.authorName,
                 trustType = TrustType.from(
-                    isOneself = rootPostView.authorIsOneself,
-                    isFriend = rootPostView.authorIsFriend,
-                    isWebOfTrust = rootPostView.authorIsTrusted,
-                    isMuted = rootPostView.authorIsMuted,
-                    isInList = rootPostView.authorIsInList,
-                    isLocked = rootPostView.authorIsLocked,
+                    isOneself = crossRootPostView.authorIsOneself,
+                    isFriend = crossRootPostView.authorIsFriend,
+                    isWebOfTrust = crossRootPostView.authorIsTrusted,
+                    isMuted = crossRootPostView.authorIsMuted,
+                    isInList = crossRootPostView.authorIsInList,
+                    isLocked = crossRootPostView.authorIsLocked,
                 ),
-                myTopic = rootPostView.myTopic,
-                createdAt = rootPostView.createdAt,
-                subject = annotatedStringProvider.annotate(rootPostView.subject.orEmpty()),
-                content = annotatedStringProvider.annotate(rootPostView.content),
-                isUpvoted = rootPostView.isUpvoted,
-                upvoteCount = rootPostView.upvoteCount,
-                replyCount = rootPostView.replyCount,
-                relayUrl = rootPostView.relayUrl,
-                crossPostedId = rootPostView.crossPostedId,
-                crossPostedPubkey = rootPostView.crossPostedPubkey,
+                myTopic = crossRootPostView.myTopic,
+                createdAt = crossRootPostView.createdAt,
+                subject = annotatedStringProvider.annotate(crossRootPostView.subject.orEmpty()),
+                content = annotatedStringProvider.annotate(crossRootPostView.content),
+                isUpvoted = crossRootPostView.isUpvoted,
+                upvoteCount = crossRootPostView.upvoteCount,
+                replyCount = crossRootPostView.replyCount,
+                relayUrl = crossRootPostView.relayUrl,
+                crossPostedId = crossRootPostView.crossPostedId,
+                crossPostedPubkey = crossRootPostView.crossPostedPubkey,
                 crossPostedTrustType = TrustType.from(
-                    isOneself = rootPostView.crossPostedAuthorIsOneself,
-                    isFriend = rootPostView.crossPostedAuthorIsFriend,
-                    isWebOfTrust = rootPostView.crossPostedAuthorIsTrusted,
-                    isMuted = rootPostView.crossPostedAuthorIsMuted,
-                    isInList = rootPostView.crossPostedAuthorIsInList,
-                    isLocked = rootPostView.crossPostedAuthorIsLocked,
+                    isOneself = crossRootPostView.crossPostedAuthorIsOneself,
+                    isFriend = crossRootPostView.crossPostedAuthorIsFriend,
+                    isWebOfTrust = crossRootPostView.crossPostedAuthorIsTrusted,
+                    isMuted = crossRootPostView.crossPostedAuthorIsMuted,
+                    isInList = crossRootPostView.crossPostedAuthorIsInList,
+                    isLocked = crossRootPostView.crossPostedAuthorIsLocked,
                 ),
-                isBookmarked = rootPostView.isBookmarked,
+                isBookmarked = crossRootPostView.isBookmarked,
             )
         }
     }

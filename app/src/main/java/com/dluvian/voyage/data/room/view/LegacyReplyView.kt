@@ -11,26 +11,25 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 
 
 @DatabaseView(
-    "SELECT post.id, " +
-            "post.parentId, " +
-            "post.pubkey, " +
-            "post.content, " +
-            "post.createdAt, " +
-            "post.relayUrl, " +
-            "post.isMentioningMe, " +
-            "(SELECT name FROM profile WHERE profile.pubkey = post.pubkey) AS authorName, " +
-            "(SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = post.pubkey)) AS authorIsOneself, " +
-            "(SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = post.pubkey)) AS authorIsFriend, " +
-            "(SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = post.pubkey)) AS authorIsTrusted, " +
-            "(SELECT EXISTS(SELECT * FROM mute WHERE mute.mutedItem = post.pubkey AND mute.tag IS 'p')) AS authorIsMuted, " +
-            "(SELECT EXISTS(SELECT * FROM profileSetItem WHERE profileSetItem.pubkey = post.pubkey)) AS authorIsInList, " +
-            "(SELECT EXISTS(SELECT * FROM lock WHERE lock.pubkey = post.pubkey)) AS authorIsLocked, " +
-            "(SELECT EXISTS(SELECT* FROM vote WHERE vote.eventId = post.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1))) AS isUpvoted, " +
-            "(SELECT COUNT(*) FROM vote WHERE vote.eventId = post.id) AS upvoteCount, " +
-            "(SELECT COUNT(*) FROM post AS post2 WHERE post2.parentId = post.id AND post2.pubkey NOT IN (SELECT mutedItem FROM mute WHERE tag IS 'p')) AS replyCount, " +
-            "(SELECT EXISTS(SELECT * FROM bookmark WHERE bookmark.eventId = IFNULL(post.crossPostedId, post.id))) AS isBookmarked " +
-            "FROM post " +
-            "WHERE post.parentId IS NOT NULL"
+    "SELECT legacyReply.id, " +
+            "legacyReply.parentId, " +
+            "legacyReply.pubkey, " +
+            "legacyReply.content, " +
+            "legacyReply.createdAt, " +
+            "legacyReply.relayUrl, " +
+            "legacyReply.isMentioningMe, " +
+            "(SELECT name FROM profile WHERE profile.pubkey = legacyReply.pubkey) AS authorName, " +
+            "(SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = legacyReply.pubkey)) AS authorIsOneself, " +
+            "(SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = legacyReply.pubkey)) AS authorIsFriend, " +
+            "(SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = legacyReply.pubkey)) AS authorIsTrusted, " +
+            "(SELECT EXISTS(SELECT * FROM mute WHERE mute.mutedItem = legacyReply.pubkey AND mute.tag IS 'p')) AS authorIsMuted, " +
+            "(SELECT EXISTS(SELECT * FROM profileSetItem WHERE profileSetItem.pubkey = legacyReply.pubkey)) AS authorIsInList, " +
+            "(SELECT EXISTS(SELECT * FROM lock WHERE lock.pubkey = legacyReply.pubkey)) AS authorIsLocked, " +
+            "(SELECT EXISTS(SELECT* FROM vote WHERE vote.eventId = legacyReply.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1))) AS isUpvoted, " +
+            "(SELECT COUNT(*) FROM vote WHERE vote.eventId = legacyReply.id) AS upvoteCount, " +
+            "(SELECT COUNT(*) FROM legacyReply AS legacyReply2 WHERE legacyReply2.parentId = legacyReply.id AND legacyReply2.pubkey NOT IN (SELECT mutedItem FROM mute WHERE tag IS 'p')) AS replyCount, " +
+            "(SELECT EXISTS(SELECT * FROM bookmark WHERE bookmark.eventId = legacyReply.id)) AS isBookmarked " +
+            "FROM legacyReply "
 )
 data class LegacyReplyView(
     val id: EventIdHex,
@@ -63,7 +62,7 @@ data class LegacyReplyView(
     ): LeveledReplyUI {
         return LeveledReplyUI(
             level = level,
-            reply = this.mapToReplyUI(
+            reply = this.mapToLegacyReplyUI(
                 forcedVotes = forcedVotes,
                 forcedFollows = forcedFollows,
                 forcedBookmarks = forcedBookmarks,
@@ -74,7 +73,7 @@ data class LegacyReplyView(
         )
     }
 
-    fun mapToReplyUI(
+    fun mapToLegacyReplyUI(
         forcedVotes: Map<EventIdHex, Boolean>,
         forcedFollows: Map<PubkeyHex, Boolean>,
         forcedBookmarks: Map<EventIdHex, Boolean>,

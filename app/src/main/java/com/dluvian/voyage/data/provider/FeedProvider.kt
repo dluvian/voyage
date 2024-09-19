@@ -167,7 +167,7 @@ class FeedProvider(
             forcedBookmarks,
         ) { posts, votes, follows, bookmarks ->
             posts.map {
-                it.mapToReplyUI(
+                it.mapToLegacyReplyUI(
                     forcedVotes = votes,
                     forcedFollows = follows,
                     forcedBookmarks = bookmarks,
