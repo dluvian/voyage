@@ -107,7 +107,7 @@ class ListEventProcessor(
             .firstOrNull { it.myPubkey == myPubkeyProvider.getPubkeyHex() } ?: return
 
         scope.launch {
-            Log.d(TAG, "Upsert bookmark list of ${myNewestList.postIds.size} postIds")
+            Log.d(TAG, "Upsert bookmark list of ${myNewestList.eventIds.size} postIds")
             room.bookmarkUpsertDao().upsertBookmarks(validatedBookmarkList = myNewestList)
         }
     }

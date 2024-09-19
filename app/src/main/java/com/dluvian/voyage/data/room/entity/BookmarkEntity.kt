@@ -9,7 +9,7 @@ import com.dluvian.voyage.data.event.ValidatedBookmarkList
 
 @Entity(
     tableName = "bookmark",
-    primaryKeys = ["postId"],
+    primaryKeys = ["eventId"],
     foreignKeys = [ForeignKey(
         entity = AccountEntity::class,
         parentColumns = ["pubkey"],
@@ -21,15 +21,15 @@ import com.dluvian.voyage.data.event.ValidatedBookmarkList
 )
 data class BookmarkEntity(
     val myPubkey: PubkeyHex,
-    val postId: EventIdHex,
+    val eventId: EventIdHex,
     val createdAt: Long,
 ) {
     companion object {
         fun from(validatedBookmarkList: ValidatedBookmarkList): List<BookmarkEntity> {
-            return validatedBookmarkList.postIds.map { postId ->
+            return validatedBookmarkList.eventIds.map { eventId ->
                 BookmarkEntity(
                     myPubkey = validatedBookmarkList.myPubkey,
-                    postId = postId,
+                    eventId = eventId,
                     createdAt = validatedBookmarkList.createdAt
                 )
             }

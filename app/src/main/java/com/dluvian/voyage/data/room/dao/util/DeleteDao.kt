@@ -47,12 +47,12 @@ interface DeleteDao {
             DELETE FROM post 
             WHERE createdAt < :oldestCreatedAt 
             AND pubkey NOT IN (SELECT pubkey FROM account) 
-            AND id NOT IN (SELECT postId FROM bookmark) 
+            AND id NOT IN (SELECT eventId FROM bookmark) 
             AND (
                 parentId IS NULL 
                 OR (
                     parentId NOT IN (SELECT id FROM post WHERE pubkey IN (SELECT pubkey FROM account)) 
-                    AND parentId NOT IN (SELECT postId FROM bookmark)
+                    AND parentId NOT IN (SELECT eventId FROM bookmark)
                 )
             ) 
             AND id NOT IN (
@@ -62,7 +62,7 @@ interface DeleteDao {
                 AND (
                     createdAt >= :oldestCreatedAt 
                     OR pubkey IN (SELECT pubkey FROM account) 
-                    OR id IN (SELECT postId FROM bookmark)
+                    OR id IN (SELECT eventId FROM bookmark)
                 )
             )
         """

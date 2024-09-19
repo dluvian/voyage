@@ -165,7 +165,7 @@ class EventValidator(
                 if (authorHex != myPubkeyProvider.getPubkeyHex()) return null
                 ValidatedBookmarkList(
                     myPubkey = authorHex,
-                    postIds = event.eventIds()
+                    eventIds = event.eventIds()
                         .map { it.toHex() }
                         .distinct()
                         .takeRandom(MAX_KEYS_SQL)

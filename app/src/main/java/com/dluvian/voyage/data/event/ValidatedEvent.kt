@@ -123,7 +123,7 @@ data class ValidatedNip65(
 
 data class ValidatedBookmarkList(
     val myPubkey: PubkeyHex,
-    val postIds: Set<EventIdHex>,
+    val eventIds: Set<EventIdHex>,
     override val createdAt: Long
 ) : ValidatedList(owner = myPubkey, createdAt = createdAt)
 

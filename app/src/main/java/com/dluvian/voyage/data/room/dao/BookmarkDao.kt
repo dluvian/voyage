@@ -31,10 +31,10 @@ interface BookmarkDao {
     @Query("SELECT MAX(createdAt) FROM bookmark")
     suspend fun getMaxCreatedAt(): Long?
 
-    @Query("SELECT postId FROM bookmark")
+    @Query("SELECT eventId FROM bookmark")
     suspend fun getMyBookmarks(): List<EventIdHex>
 
-    @Query("SELECT postId FROM bookmark WHERE postId NOT IN (SELECT id FROM post)")
+    @Query("SELECT eventId FROM bookmark WHERE eventId NOT IN (SELECT id FROM post)")
     suspend fun getUnknownBookmarks(): List<EventIdHex>
 
     @Query(REPLY_FEED_QUERY)
@@ -56,7 +56,7 @@ interface BookmarkDao {
         "SELECT createdAt " +
                 "FROM post " +
                 "WHERE createdAt <= :until " +
-                "AND id IN (SELECT postId FROM bookmark) " +
+                "AND id IN (SELECT eventId FROM bookmark) " +
                 "LIMIT :size"
     )
     suspend fun getBookmarkedPostsCreatedAt(until: Long, size: Int): List<Long>

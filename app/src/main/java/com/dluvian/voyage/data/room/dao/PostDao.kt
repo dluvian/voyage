@@ -54,7 +54,7 @@ interface PostDao {
         "SELECT id " +
                 "FROM post " +
                 "WHERE (pubkey IN (SELECT pubkey FROM account) " +
-                "OR id IN (SELECT postId FROM bookmark)) " +
+                "OR id IN (SELECT eventId FROM bookmark)) " +
                 "AND json IS NOT NULL " +
                 "ORDER BY createdAt ASC"
     )
