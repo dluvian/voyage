@@ -52,12 +52,31 @@ interface BookmarkDao {
     @Query(BOOKMARKED_EVENTS_EXIST_QUERY)
     fun hasBookmarkedPostsFlow(): Flow<Boolean>
 
+    suspend fun getBookmarkedPostsCreatedAt(until: Long, size: Int): List<Long> {
+        val result = mutableListOf<Long>()
+        result.addAll(internalGetBookmarkedRootPostsCreatedAt(until = until, size = size))
+        result.addAll(internalGetBookmarkedLegacyRepliesCreatedAt(until = until, size = size))
+
+        return result.sortedDescending().take(size)
+    }
+
     @Query(
         "SELECT createdAt " +
-                "FROM post " +
+                "FROM rootPost " +
                 "WHERE createdAt <= :until " +
                 "AND id IN (SELECT eventId FROM bookmark) " +
+                "ORDER BY createdAt DESC " +
                 "LIMIT :size"
     )
-    suspend fun getBookmarkedPostsCreatedAt(until: Long, size: Int): List<Long>
+    suspend fun internalGetBookmarkedRootPostsCreatedAt(until: Long, size: Int): List<Long>
+
+    @Query(
+        "SELECT createdAt " +
+                "FROM legacyReply " +
+                "WHERE createdAt <= :until " +
+                "AND id IN (SELECT eventId FROM bookmark) " +
+                "ORDER BY createdAt DESC " +
+                "LIMIT :size"
+    )
+    suspend fun internalGetBookmarkedLegacyRepliesCreatedAt(until: Long, size: Int): List<Long>
 }
