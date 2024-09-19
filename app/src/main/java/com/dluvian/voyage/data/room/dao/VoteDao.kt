@@ -9,7 +9,7 @@ import com.dluvian.voyage.data.room.entity.VoteEntity
 
 @Dao
 interface VoteDao {
-    @Query("SELECT * FROM vote WHERE postId = :postId AND pubkey = (SELECT pubkey FROM account LIMIT 1)")
+    @Query("SELECT * FROM vote WHERE eventId = :postId AND pubkey = (SELECT pubkey FROM account LIMIT 1)")
     suspend fun getMyVote(postId: EventIdHex): VoteEntity?
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -18,6 +18,6 @@ interface VoteDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrReplaceVote(voteEntity: VoteEntity)
 
-    @Query("SELECT MAX(createdAt) FROM vote WHERE postId = :postId")
+    @Query("SELECT MAX(createdAt) FROM vote WHERE eventId = :postId")
     suspend fun getNewestVoteCreatedAt(postId: EventIdHex): Long?
 }

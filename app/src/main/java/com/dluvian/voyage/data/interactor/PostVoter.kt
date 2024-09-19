@@ -124,7 +124,7 @@ class PostVoter(
             .onSuccess { event ->
                 val entity = VoteEntity(
                     id = event.id().toHex(),
-                    postId = postId,
+                    eventId = postId,
                     pubkey = event.author().toHex(),
                     createdAt = event.createdAt().secs(),
                 )

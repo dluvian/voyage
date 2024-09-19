@@ -42,14 +42,16 @@ import com.dluvian.voyage.data.room.dao.util.DeleteDao
 import com.dluvian.voyage.data.room.dao.util.ExistsDao
 import com.dluvian.voyage.data.room.entity.AccountEntity
 import com.dluvian.voyage.data.room.entity.BookmarkEntity
+import com.dluvian.voyage.data.room.entity.CrossPostEntity
 import com.dluvian.voyage.data.room.entity.FriendEntity
 import com.dluvian.voyage.data.room.entity.FullProfileEntity
 import com.dluvian.voyage.data.room.entity.HashtagEntity
+import com.dluvian.voyage.data.room.entity.LegacyReplyEntity
 import com.dluvian.voyage.data.room.entity.LockEntity
-import com.dluvian.voyage.data.room.entity.MainEventEntity
 import com.dluvian.voyage.data.room.entity.MuteEntity
 import com.dluvian.voyage.data.room.entity.Nip65Entity
 import com.dluvian.voyage.data.room.entity.ProfileEntity
+import com.dluvian.voyage.data.room.entity.RootPostEntity
 import com.dluvian.voyage.data.room.entity.TopicEntity
 import com.dluvian.voyage.data.room.entity.VoteEntity
 import com.dluvian.voyage.data.room.entity.WebOfTrustEntity
@@ -95,7 +97,9 @@ class V10DeleteVoteIsPositiveColumn : AutoMigrationSpec
         AutoMigration(from = 23, to = 24),
     ],
     entities = [
-        MainEventEntity::class,
+        RootPostEntity::class,
+        LegacyReplyEntity::class,
+        CrossPostEntity::class,
         VoteEntity::class,
         AccountEntity::class,
         FriendEntity::class,

@@ -97,7 +97,7 @@ class EventValidator(
                 val postId = event.eventIds().firstOrNull() ?: return null
                 ValidatedVote(
                     id = event.id().toHex(),
-                    postId = postId.toHex(),
+                    eventId = postId.toHex(),
                     pubkey = event.author().toHex(),
                     createdAt = event.createdAt().secs()
                 )

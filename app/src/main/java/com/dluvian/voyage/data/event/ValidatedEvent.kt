@@ -42,7 +42,7 @@ data class ValidatedRootPost(
     override val json: String,
     override val isMentioningMe: Boolean,
     val topics: List<String>,
-    val subject: String?,
+    val subject: String,
 ) : ValidatedTextNote(
     id = id,
     pubkey = pubkey,
@@ -90,7 +90,7 @@ data class ValidatedCrossPost(
 
 data class ValidatedVote(
     val id: EventIdHex,
-    val postId: EventIdHex,
+    val eventId: EventIdHex,
     val pubkey: PubkeyHex,
     val createdAt: Long
 ) : ValidatedEvent()

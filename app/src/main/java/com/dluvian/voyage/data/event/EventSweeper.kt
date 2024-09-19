@@ -21,6 +21,7 @@ class EventSweeper(
         Log.i(TAG, "Sweep events")
 
         scope.launchIO {
+            // TODO: Sweep orphaned votes and hashtags
             deleteDao.sweepPosts(
                 threshold = databasePreferences.getSweepThreshold(),
                 oldestCreatedAtInUse = oldestUsedEvent.getOldestCreatedAt()

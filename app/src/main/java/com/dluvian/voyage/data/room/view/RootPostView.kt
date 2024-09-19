@@ -29,7 +29,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             CASE WHEN mute.mutedItem IS NOT NULL THEN 1 ELSE 0 END AS authorIsMuted,
             CASE WHEN profileSetItem.pubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsInList,
             CASE WHEN lock.pubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsLocked,
-            CASE WHEN vote.postId IS NOT NULL THEN 1 ELSE 0 END isUpvoted,
+            CASE WHEN vote.eventId IS NOT NULL THEN 1 ELSE 0 END isUpvoted,
             upvotes.upvoteCount,
             replies.replyCount,
             CASE WHEN cross_posted_account.pubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsOneself,
@@ -54,12 +54,12 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
         LEFT JOIN mute ON mute.mutedItem = post.pubkey AND mute.tag IS 'p'
         LEFT JOIN profileSetItem ON profileSetItem.pubkey = post.pubkey
         LEFT JOIN lock ON lock.pubkey = post.pubkey
-        LEFT JOIN vote ON vote.postId = IFNULL(post.crossPostedId, post.id) AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)
+        LEFT JOIN vote ON vote.eventId = IFNULL(post.crossPostedId, post.id) AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)
         LEFT JOIN (
-            SELECT vote.postId, COUNT(*) AS upvoteCount 
+            SELECT vote.eventId, COUNT(*) AS upvoteCount 
             FROM vote 
-            GROUP BY vote.postId
-        ) AS upvotes ON upvotes.postId = IFNULL(post.crossPostedId, post.id)
+            GROUP BY vote.eventId
+        ) AS upvotes ON upvotes.eventId = IFNULL(post.crossPostedId, post.id)
         LEFT JOIN (
             SELECT post2.parentId, COUNT(*) AS replyCount 
             FROM post AS post2 

@@ -197,7 +197,7 @@ class EventProcessor(
         val cache = mutableMapOf<PubkeyHex, EventIdHex>()
         val newest = mutableListOf<ValidatedVote>()
         for (vote in votes.sortedByDescending { it.createdAt }) {
-            val isNew = cache.putIfAbsent(vote.pubkey, vote.postId) == null
+            val isNew = cache.putIfAbsent(vote.pubkey, vote.eventId) == null
             if (isNew) newest.add(vote)
         }
 
