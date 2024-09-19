@@ -9,6 +9,7 @@ import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 
+// TODO: Same for cross posted legacy replies
 @DatabaseView(
     """
         SELECT 

@@ -97,7 +97,7 @@ class ThreadProvider(
             }
         }
 
-        return room.existsDao().parentExistsFlow(replyId = replyId)
+        return room.existsDao().parentExistsFlow(id = replyId)
     }
 
     // Unfiltered count for ProgressBar purpose

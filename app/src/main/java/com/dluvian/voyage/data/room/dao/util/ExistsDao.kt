@@ -4,16 +4,41 @@ import androidx.room.Dao
 import androidx.room.Query
 import com.dluvian.voyage.core.EventIdHex
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 
 @Dao
 interface ExistsDao {
-    @Query("SELECT EXISTS (SELECT * FROM post WHERE id = :id)")
-    suspend fun postExists(id: EventIdHex): Boolean
+
+    suspend fun postExists(id: EventIdHex): Boolean {
+        return internalRootPostExists(id = id) || internalLegacyReplyExists(id = id)
+    }
+
+    fun parentExistsFlow(id: EventIdHex): Flow<Boolean> {
+        return combine(
+            internalParentRootPostExistsFlow(id = id),
+            internalParentLegacyReplyExistsFlow(id = id)
+        ) { rootParentExists, replyParentExists ->
+            rootParentExists || replyParentExists
+        }
+    }
+
+    @Query("SELECT EXISTS (SELECT * FROM rootPost WHERE id = :id)")
+    suspend fun internalRootPostExists(id: EventIdHex): Boolean
+
+    @Query("SELECT EXISTS (SELECT * FROM legacyReply WHERE id = :id)")
+    suspend fun internalLegacyReplyExists(id: EventIdHex): Boolean
 
     @Query(
         "SELECT EXISTS" +
-                "(SELECT id FROM post WHERE id = " +
-                "(SELECT parentId FROM post WHERE id = :replyId))"
+                "(SELECT id FROM rootPost WHERE id = " +
+                "(SELECT parentId FROM legacyReply WHERE id = :id))"
     )
-    fun parentExistsFlow(replyId: EventIdHex): Flow<Boolean>
+    fun internalParentRootPostExistsFlow(id: EventIdHex): Flow<Boolean>
+
+    @Query(
+        "SELECT EXISTS" +
+                "(SELECT id FROM legacyReply WHERE id = " +
+                "(SELECT parentId FROM legacyReply WHERE id = :id))"
+    )
+    fun internalParentLegacyReplyExistsFlow(id: EventIdHex): Flow<Boolean>
 }

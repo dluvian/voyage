@@ -36,7 +36,10 @@ class EventDeletor(
                 )
             }
             .onSuccess {
-                deleteDao.deletePost(postId = postId)
+                // TODO: Different method for each
+                deleteDao.deleteRootPost(id = postId)
+                deleteDao.deleteLegacyReply(id = postId)
+                deleteDao.deleteCrossPost(id = postId)
             }
     }
 

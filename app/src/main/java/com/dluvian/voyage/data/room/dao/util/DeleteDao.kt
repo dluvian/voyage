@@ -11,11 +11,21 @@ interface DeleteDao {
     @Query("DELETE FROM vote WHERE id = :voteId")
     suspend fun deleteVote(voteId: EventIdHex)
 
-    @Query("DELETE FROM post WHERE id = :postId")
-    suspend fun deletePost(postId: EventIdHex)
+    @Query("DELETE FROM rootPost WHERE id = :id")
+    suspend fun deleteRootPost(id: EventIdHex)
 
-    @Query("DELETE FROM post")
-    suspend fun deleteAllPost()
+    @Query("DELETE FROM legacyReply WHERE id = :id")
+    suspend fun deleteLegacyReply(id: EventIdHex)
+
+    @Query("DELETE FROM crossPost WHERE id = :id")
+    suspend fun deleteCrossPost(id: EventIdHex)
+
+    @Transaction
+    suspend fun deleteAllPost() {
+        internalDeleteAllRootPosts()
+        internalDeleteAllLegacyReplies()
+        internalDeleteAllCrossPosts()
+    }
 
     @Transaction
     suspend fun deleteList(identifier: String) {
@@ -25,49 +35,58 @@ interface DeleteDao {
         internalSoftDeleteTopicList(identifier = identifier)
     }
 
-    suspend fun sweepPosts(threshold: Int, oldestCreatedAtInUse: Long) {
+    // No tx bc we don't care if it's atomic
+    // TODO: Sweep orphaned votes and hashtags
+    suspend fun sweepDb(threshold: Int, oldestCreatedAtInUse: Long) {
         val createdAtWithOffset = internalOldestCreatedAt(threshold = threshold) ?: return
         val oldestCreatedAt = minOf(createdAtWithOffset, oldestCreatedAtInUse)
-        internalDeleteOldestPosts(oldestCreatedAt = oldestCreatedAt)
+
+        // Delete cross posts first, bc they reference roots and replies
+        internalDeleteOldestCrossPosts(oldestCreatedAt = oldestCreatedAt)
+        internalDeleteOldestRootPosts(oldestCreatedAt = oldestCreatedAt)
+        internalDeleteOldestLegacyReplies(oldestCreatedAt = oldestCreatedAt)
     }
 
     @Query(
         "SELECT createdAt " +
-                "FROM post " +
-                "WHERE parentId IS NULL " +
+                "FROM rootPost " +
                 "ORDER BY createdAt DESC " +
                 "LIMIT 1 " +
                 "OFFSET :threshold"
     )
     suspend fun internalOldestCreatedAt(threshold: Int): Long?
 
-    // I don't know why but it will not work without "crossPostedId IS NOT NULL"
     @Query(
         """
-            DELETE FROM post 
+            DELETE FROM crossPost 
             WHERE createdAt < :oldestCreatedAt 
             AND pubkey NOT IN (SELECT pubkey FROM account) 
-            AND id NOT IN (SELECT eventId FROM bookmark) 
-            AND (
-                parentId IS NULL 
-                OR (
-                    parentId NOT IN (SELECT id FROM post WHERE pubkey IN (SELECT pubkey FROM account)) 
-                    AND parentId NOT IN (SELECT eventId FROM bookmark)
-                )
-            ) 
-            AND id NOT IN (
-                SELECT crossPostedId 
-                FROM post 
-                WHERE crossPostedId IS NOT NULL 
-                AND (
-                    createdAt >= :oldestCreatedAt 
-                    OR pubkey IN (SELECT pubkey FROM account) 
-                    OR id IN (SELECT eventId FROM bookmark)
-                )
-            )
+            AND id NOT IN (SELECT eventId FROM bookmark)
         """
     )
-    suspend fun internalDeleteOldestPosts(oldestCreatedAt: Long)
+    suspend fun internalDeleteOldestCrossPosts(oldestCreatedAt: Long)
+
+    @Query(
+        """
+            DELETE FROM rootPost 
+            WHERE createdAt < :oldestCreatedAt 
+            AND pubkey NOT IN (SELECT pubkey FROM account) 
+            AND id NOT IN (SELECT eventId FROM bookmark)
+            AND id NOT IN (SELECT crossPostedId FROM crossPost)
+        """
+    )
+    suspend fun internalDeleteOldestRootPosts(oldestCreatedAt: Long)
+
+    @Query(
+        """
+            DELETE FROM legacyReply 
+            WHERE createdAt < :oldestCreatedAt 
+            AND pubkey NOT IN (SELECT pubkey FROM account) 
+            AND id NOT IN (SELECT eventId FROM bookmark)
+            AND id NOT IN (SELECT crossPostedId FROM crossPost)
+        """
+    )
+    suspend fun internalDeleteOldestLegacyReplies(oldestCreatedAt: Long)
 
     @Query("DELETE FROM profileSetItem WHERE identifier = :identifier")
     suspend fun internalEmptyProfileList(identifier: String)
@@ -80,4 +99,13 @@ interface DeleteDao {
 
     @Query("UPDATE topicSet SET deleted = 1 WHERE identifier = :identifier")
     suspend fun internalSoftDeleteTopicList(identifier: String)
+
+    @Query("DELETE FROM rootPost")
+    suspend fun internalDeleteAllRootPosts()
+
+    @Query("DELETE FROM legacyReply")
+    suspend fun internalDeleteAllLegacyReplies()
+
+    @Query("DELETE FROM crossPost")
+    suspend fun internalDeleteAllCrossPosts()
 }
