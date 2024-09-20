@@ -12,7 +12,6 @@ sealed class ValidatedEvent
 sealed class ValidatedMainEvent(
     open val id: EventIdHex,
     open val pubkey: PubkeyHex,
-    open val kind: Int,
     open val createdAt: Long,
     open val relayUrl: RelayUrl,
 ) : ValidatedEvent()
@@ -28,7 +27,6 @@ sealed class ValidatedTextNote(
 ) : ValidatedMainEvent(
     id = id,
     pubkey = pubkey,
-    kind = TEXT_NOTE_U16.toInt(),
     createdAt = createdAt,
     relayUrl = relayUrl,
 )
@@ -83,7 +81,6 @@ data class ValidatedCrossPost(
 ) : ValidatedMainEvent(
     id = id,
     pubkey = pubkey,
-    kind = REPOST_U16.toInt(),
     createdAt = createdAt,
     relayUrl = relayUrl,
 )

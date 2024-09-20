@@ -25,10 +25,8 @@ import com.dluvian.voyage.data.room.dao.RootPostDao
 import com.dluvian.voyage.data.room.dao.TopicDao
 import com.dluvian.voyage.data.room.dao.VoteDao
 import com.dluvian.voyage.data.room.dao.WebOfTrustDao
-import com.dluvian.voyage.data.room.dao.insert.CrossPostInsertDao
-import com.dluvian.voyage.data.room.dao.insert.LegacyReplyInsertDao
 import com.dluvian.voyage.data.room.dao.insert.LockInsertDao
-import com.dluvian.voyage.data.room.dao.insert.RootPostInsertDao
+import com.dluvian.voyage.data.room.dao.insert.MainEventInsertDao
 import com.dluvian.voyage.data.room.dao.upsert.BookmarkUpsertDao
 import com.dluvian.voyage.data.room.dao.upsert.FriendUpsertDao
 import com.dluvian.voyage.data.room.dao.upsert.FullProfileUpsertDao
@@ -166,9 +164,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun existsDao(): ExistsDao
 
     // Insert
-    abstract fun rootPostInsertDao(): RootPostInsertDao
-    abstract fun legacyReplyInsertDao(): LegacyReplyInsertDao
-    abstract fun CrossPostInsertDao(): CrossPostInsertDao
+    abstract fun mainEventInsertDao(): MainEventInsertDao
     abstract fun lockInsertDao(): LockInsertDao
 
     // Upsert

@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.data.event.ValidatedCrossPost
 
 @Entity(
     tableName = "crossPost",
@@ -22,4 +23,13 @@ import com.dluvian.voyage.core.EventIdHex
 data class CrossPostMetaEntity(
     val eventId: EventIdHex,
     val crossPostedId: EventIdHex,
-)
+) {
+    companion object {
+        fun from(crossPost: ValidatedCrossPost): CrossPostMetaEntity {
+            return CrossPostMetaEntity(
+                eventId = crossPost.id,
+                crossPostedId = crossPost.crossPostedId
+            )
+        }
+    }
+}

@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.data.event.ValidatedLegacyReply
 
 @Entity(
     tableName = "legacyReply",
@@ -22,4 +23,13 @@ import com.dluvian.voyage.core.EventIdHex
 data class LegacyReplyMetaEntity(
     val eventId: EventIdHex,
     val parentId: EventIdHex,
-)
+) {
+    companion object {
+        fun from(legacyReply: ValidatedLegacyReply): LegacyReplyMetaEntity {
+            return LegacyReplyMetaEntity(
+                eventId = legacyReply.id,
+                parentId = legacyReply.parentId
+            )
+        }
+    }
+}
