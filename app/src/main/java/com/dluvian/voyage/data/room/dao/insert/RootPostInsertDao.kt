@@ -5,8 +5,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Transaction
 import com.dluvian.voyage.data.event.ValidatedRootPost
-import com.dluvian.voyage.data.room.entity.HashtagEntity
-import com.dluvian.voyage.data.room.entity.RootPostEntity
+import com.dluvian.voyage.data.room.entity.main.HashtagEntity
+import com.dluvian.voyage.data.room.entity.main.RootPostMetaEntity
 
 @Dao
 interface RootPostInsertDao {
@@ -14,7 +14,7 @@ interface RootPostInsertDao {
     suspend fun insertRootPosts(rootPosts: Collection<ValidatedRootPost>) {
         if (rootPosts.isEmpty()) return
 
-        val entities = rootPosts.map { RootPostEntity.from(validatedRootPost = it) }
+        val entities = rootPosts.map { RootPostMetaEntity.from(validatedRootPost = it) }
         internalInsertRootPosts(rootPosts = entities)
 
         val hashtags = rootPosts.flatMap { post ->
@@ -27,5 +27,5 @@ interface RootPostInsertDao {
     suspend fun internalInsertHashtagsOrIgnore(hashtags: Collection<HashtagEntity>)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun internalInsertRootPosts(rootPosts: Collection<RootPostEntity>)
+    suspend fun internalInsertRootPosts(rootPosts: Collection<RootPostMetaEntity>)
 }

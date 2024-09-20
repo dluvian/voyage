@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Transaction
 import com.dluvian.voyage.data.event.ValidatedLegacyReply
-import com.dluvian.voyage.data.room.entity.LegacyReplyEntity
+import com.dluvian.voyage.data.room.entity.main.LegacyReplyMetaEntity
 
 @Dao
 interface LegacyReplyInsertDao {
@@ -13,10 +13,10 @@ interface LegacyReplyInsertDao {
     suspend fun insertLegacyReplies(replies: Collection<ValidatedLegacyReply>) {
         if (replies.isEmpty()) return
 
-        val entities = replies.map { LegacyReplyEntity.from(validatedLegacyReply = it) }
+        val entities = replies.map { LegacyReplyMetaEntity.from(validatedLegacyReply = it) }
         internalInsertReplies(replies = entities)
     }
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun internalInsertReplies(replies: Collection<LegacyReplyEntity>)
+    suspend fun internalInsertReplies(replies: Collection<LegacyReplyMetaEntity>)
 }

@@ -1,10 +1,10 @@
-package com.dluvian.voyage.data.room.entity
+package com.dluvian.voyage.data.room.entity.lists
 
 import androidx.room.Embedded
 import androidx.room.Entity
-import com.dluvian.voyage.data.nostr.Nip65Relay
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.event.ValidatedNip65
+import com.dluvian.voyage.data.nostr.Nip65Relay
 
 @Entity(tableName = "nip65", primaryKeys = ["pubkey", "url"])
 data class Nip65Entity(

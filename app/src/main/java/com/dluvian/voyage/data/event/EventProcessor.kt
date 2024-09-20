@@ -9,7 +9,7 @@ import com.dluvian.voyage.data.inMemory.MetadataInMemory
 import com.dluvian.voyage.data.room.AppDatabase
 import com.dluvian.voyage.data.room.entity.FullProfileEntity
 import com.dluvian.voyage.data.room.entity.ProfileEntity
-import com.dluvian.voyage.data.room.entity.VoteEntity
+import com.dluvian.voyage.data.room.entity.main.VoteEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

@@ -43,25 +43,27 @@ import com.dluvian.voyage.data.room.dao.util.CountDao
 import com.dluvian.voyage.data.room.dao.util.DeleteDao
 import com.dluvian.voyage.data.room.dao.util.ExistsDao
 import com.dluvian.voyage.data.room.entity.AccountEntity
-import com.dluvian.voyage.data.room.entity.BookmarkEntity
-import com.dluvian.voyage.data.room.entity.CrossPostEntity
-import com.dluvian.voyage.data.room.entity.FriendEntity
 import com.dluvian.voyage.data.room.entity.FullProfileEntity
-import com.dluvian.voyage.data.room.entity.HashtagEntity
-import com.dluvian.voyage.data.room.entity.LegacyReplyEntity
 import com.dluvian.voyage.data.room.entity.LockEntity
-import com.dluvian.voyage.data.room.entity.MuteEntity
-import com.dluvian.voyage.data.room.entity.Nip65Entity
 import com.dluvian.voyage.data.room.entity.ProfileEntity
-import com.dluvian.voyage.data.room.entity.RootPostEntity
-import com.dluvian.voyage.data.room.entity.TopicEntity
-import com.dluvian.voyage.data.room.entity.VoteEntity
-import com.dluvian.voyage.data.room.entity.WebOfTrustEntity
+import com.dluvian.voyage.data.room.entity.lists.BookmarkEntity
+import com.dluvian.voyage.data.room.entity.lists.FriendEntity
+import com.dluvian.voyage.data.room.entity.lists.MuteEntity
+import com.dluvian.voyage.data.room.entity.lists.Nip65Entity
+import com.dluvian.voyage.data.room.entity.lists.TopicEntity
+import com.dluvian.voyage.data.room.entity.lists.WebOfTrustEntity
+import com.dluvian.voyage.data.room.entity.main.CrossPostMetaEntity
+import com.dluvian.voyage.data.room.entity.main.HashtagEntity
+import com.dluvian.voyage.data.room.entity.main.LegacyReplyMetaEntity
+import com.dluvian.voyage.data.room.entity.main.MainEventEntity
+import com.dluvian.voyage.data.room.entity.main.RootPostMetaEntity
+import com.dluvian.voyage.data.room.entity.main.VoteEntity
 import com.dluvian.voyage.data.room.entity.sets.ProfileSetEntity
 import com.dluvian.voyage.data.room.entity.sets.ProfileSetItemEntity
 import com.dluvian.voyage.data.room.entity.sets.TopicSetEntity
 import com.dluvian.voyage.data.room.entity.sets.TopicSetItemEntity
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
+import com.dluvian.voyage.data.room.view.CrossPostView
 import com.dluvian.voyage.data.room.view.EventRelayAuthorView
 import com.dluvian.voyage.data.room.view.LegacyReplyView
 import com.dluvian.voyage.data.room.view.RootPostView
@@ -99,32 +101,41 @@ class V10DeleteVoteIsPositiveColumn : AutoMigrationSpec
         AutoMigration(from = 23, to = 24),
     ],
     entities = [
-        RootPostEntity::class,
-        LegacyReplyEntity::class,
-        CrossPostEntity::class,
+        // Main
+        MainEventEntity::class,
+        RootPostMetaEntity::class,
+        LegacyReplyMetaEntity::class,
+        CrossPostMetaEntity::class,
+        HashtagEntity::class,
         VoteEntity::class,
-        AccountEntity::class,
+
+        // Lists
         FriendEntity::class,
         WebOfTrustEntity::class,
         TopicEntity::class,
-        HashtagEntity::class,
         Nip65Entity::class,
-        ProfileEntity::class,
-        FullProfileEntity::class,
         BookmarkEntity::class,
+        MuteEntity::class,
+
+        // Sets
         ProfileSetEntity::class,
         ProfileSetItemEntity::class,
         TopicSetEntity::class,
         TopicSetItemEntity::class,
-        MuteEntity::class,
+
+        // Other
+        AccountEntity::class,
+        ProfileEntity::class,
+        FullProfileEntity::class,
         LockEntity::class,
     ],
     views = [
-        RootPostView::class,
-        AdvancedProfileView::class,
-        EventRelayAuthorView::class,
-        LegacyReplyView::class,
         SimplePostView::class,
+        EventRelayAuthorView::class,
+        RootPostView::class,
+        LegacyReplyView::class,
+        CrossPostView::class,
+        AdvancedProfileView::class,
     ]
 )
 abstract class AppDatabase : RoomDatabase() {

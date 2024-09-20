@@ -1,4 +1,4 @@
-package com.dluvian.voyage.data.room.entity
+package com.dluvian.voyage.data.room.entity.lists
 
 import androidx.room.Entity
 import androidx.room.ForeignKey

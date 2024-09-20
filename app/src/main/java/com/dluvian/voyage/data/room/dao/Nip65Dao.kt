@@ -5,7 +5,7 @@ import androidx.room.Query
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.nostr.Nip65Relay
 import com.dluvian.voyage.data.nostr.RelayUrl
-import com.dluvian.voyage.data.room.entity.Nip65Entity
+import com.dluvian.voyage.data.room.entity.lists.Nip65Entity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

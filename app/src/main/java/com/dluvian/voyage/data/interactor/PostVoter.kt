@@ -20,7 +20,7 @@ import com.dluvian.voyage.data.preferences.EventPreferences
 import com.dluvian.voyage.data.preferences.RelayPreferences
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.VoteDao
-import com.dluvian.voyage.data.room.entity.VoteEntity
+import com.dluvian.voyage.data.room.entity.main.VoteEntity
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

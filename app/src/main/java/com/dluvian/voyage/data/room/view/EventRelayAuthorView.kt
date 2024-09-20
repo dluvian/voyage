@@ -6,9 +6,9 @@ import com.dluvian.voyage.data.nostr.RelayUrl
 
 
 @DatabaseView(
-    "SELECT rootPost.pubkey, rootPost.relayUrl, COUNT(*) AS relayCount " +
-            "FROM rootPost " +
-            "GROUP BY rootPost.pubkey, rootPost.relayUrl"
+    "SELECT mainEvent.pubkey, mainEvent.relayUrl, COUNT(*) AS relayCount " +
+            "FROM mainEvent " +
+            "GROUP BY mainEvent.pubkey, mainEvent.relayUrl"
 )
 data class EventRelayAuthorView(
     val pubkey: PubkeyHex,

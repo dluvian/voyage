@@ -8,7 +8,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.event.ValidatedBookmarkList
-import com.dluvian.voyage.data.room.entity.BookmarkEntity
+import com.dluvian.voyage.data.room.entity.lists.BookmarkEntity
 
 
 private const val TAG = "BookmarkUpsertDao"

@@ -5,8 +5,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Transaction
 import com.dluvian.voyage.data.event.ValidatedCrossPost
-import com.dluvian.voyage.data.room.entity.CrossPostEntity
-import com.dluvian.voyage.data.room.entity.HashtagEntity
+import com.dluvian.voyage.data.room.entity.main.CrossPostEntity
+import com.dluvian.voyage.data.room.entity.main.HashtagEntity
 
 @Dao
 interface CrossPostInsertDao {

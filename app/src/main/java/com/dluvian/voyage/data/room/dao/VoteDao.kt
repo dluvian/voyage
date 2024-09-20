@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.dluvian.voyage.core.EventIdHex
-import com.dluvian.voyage.data.room.entity.VoteEntity
+import com.dluvian.voyage.data.room.entity.main.VoteEntity
 
 @Dao
 interface VoteDao {

@@ -1,10 +1,11 @@
-package com.dluvian.voyage.data.room.entity
+package com.dluvian.voyage.data.room.entity.lists
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.event.ValidatedMuteList
+import com.dluvian.voyage.data.room.entity.AccountEntity
 
 @Entity(
     tableName = "mute",

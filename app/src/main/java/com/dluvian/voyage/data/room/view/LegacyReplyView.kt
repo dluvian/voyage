@@ -9,27 +9,28 @@ import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 
-
+// TODO: Exclude muted replies from replyCount
 @DatabaseView(
-    "SELECT legacyReply.id, " +
+    "SELECT mainEvent.id, " +
             "legacyReply.parentId, " +
-            "legacyReply.pubkey, " +
-            "legacyReply.content, " +
-            "legacyReply.createdAt, " +
-            "legacyReply.relayUrl, " +
-            "legacyReply.isMentioningMe, " +
-            "(SELECT name FROM profile WHERE profile.pubkey = legacyReply.pubkey) AS authorName, " +
-            "(SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = legacyReply.pubkey)) AS authorIsOneself, " +
-            "(SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = legacyReply.pubkey)) AS authorIsFriend, " +
-            "(SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = legacyReply.pubkey)) AS authorIsTrusted, " +
-            "(SELECT EXISTS(SELECT * FROM mute WHERE mute.mutedItem = legacyReply.pubkey AND mute.tag IS 'p')) AS authorIsMuted, " +
-            "(SELECT EXISTS(SELECT * FROM profileSetItem WHERE profileSetItem.pubkey = legacyReply.pubkey)) AS authorIsInList, " +
-            "(SELECT EXISTS(SELECT * FROM lock WHERE lock.pubkey = legacyReply.pubkey)) AS authorIsLocked, " +
-            "(SELECT EXISTS(SELECT* FROM vote WHERE vote.eventId = legacyReply.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1))) AS isUpvoted, " +
-            "(SELECT COUNT(*) FROM vote WHERE vote.eventId = legacyReply.id) AS upvoteCount, " +
-            "(SELECT COUNT(*) FROM legacyReply AS legacyReply2 WHERE legacyReply2.parentId = legacyReply.id AND legacyReply2.pubkey NOT IN (SELECT mutedItem FROM mute WHERE tag IS 'p')) AS replyCount, " +
-            "(SELECT EXISTS(SELECT * FROM bookmark WHERE bookmark.eventId = legacyReply.id)) AS isBookmarked " +
-            "FROM legacyReply "
+            "mainEvent.pubkey, " +
+            "mainEvent.content, " +
+            "mainEvent.createdAt, " +
+            "mainEvent.relayUrl, " +
+            "mainEvent.isMentioningMe, " +
+            "(SELECT name FROM profile WHERE profile.pubkey = mainEvent.pubkey) AS authorName, " +
+            "(SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = mainEvent.pubkey)) AS authorIsOneself, " +
+            "(SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = mainEvent.pubkey)) AS authorIsFriend, " +
+            "(SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = mainEvent.pubkey)) AS authorIsTrusted, " +
+            "(SELECT EXISTS(SELECT * FROM mute WHERE mute.mutedItem = mainEvent.pubkey AND mute.tag IS 'p')) AS authorIsMuted, " +
+            "(SELECT EXISTS(SELECT * FROM profileSetItem WHERE profileSetItem.pubkey = mainEvent.pubkey)) AS authorIsInList, " +
+            "(SELECT EXISTS(SELECT * FROM lock WHERE lock.pubkey = mainEvent.pubkey)) AS authorIsLocked, " +
+            "(SELECT EXISTS(SELECT* FROM vote WHERE vote.eventId = mainEvent.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1))) AS isUpvoted, " +
+            "(SELECT COUNT(*) FROM vote WHERE vote.eventId = mainEvent.id) AS upvoteCount, " +
+            "(SELECT COUNT(*) FROM legacyReply AS legacyReply2 WHERE legacyReply2.parentId = mainEvent.id) AS replyCount, " +
+            "(SELECT EXISTS(SELECT * FROM bookmark WHERE bookmark.eventId = mainEvent.id)) AS isBookmarked " +
+            "FROM legacyReply " +
+            "JOIN mainEvent ON mainEvent.id = legacyReply.eventId"
 )
 data class LegacyReplyView(
     val id: EventIdHex,

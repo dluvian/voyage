@@ -9,7 +9,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.event.ValidatedContactList
-import com.dluvian.voyage.data.room.entity.WebOfTrustEntity
+import com.dluvian.voyage.data.room.entity.lists.WebOfTrustEntity
 
 private const val TAG = "WebOfTrustUpsertDao"
 

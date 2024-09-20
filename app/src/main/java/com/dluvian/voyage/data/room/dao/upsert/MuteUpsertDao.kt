@@ -7,7 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.dluvian.voyage.data.event.ValidatedMuteList
-import com.dluvian.voyage.data.room.entity.MuteEntity
+import com.dluvian.voyage.data.room.entity.lists.MuteEntity
 
 
 private const val TAG = "MuteUpsertDao"
