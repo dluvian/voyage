@@ -212,7 +212,7 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
     val accountSwitcher = AccountSwitcher(
         accountManager = accountManager,
         accountDao = roomDb.accountDao(),
-        postDao = roomDb.postDao(),
+        mainEventDao = roomDb.postDao(),
         idCacheClearer = idCacheClearer,
         lazyNostrSubscriber = lazyNostrSubscriber,
         nostrSubscriber = nostrSubscriber,
@@ -270,13 +270,13 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
     )
 
     val postDetailInspector = PostDetailInspector(
-        postDao = roomDb.postDao(),
+        mainEventDao = roomDb.postDao(),
         hashtagDao = roomDb.hashtagDao(),
     )
 
     val eventRebroadcaster = EventRebroadcaster(
         nostrService = nostrService,
-        postDao = roomDb.postDao(),
+        mainEventDao = roomDb.postDao(),
         relayProvider = relayProvider,
         snackbar = snackbar,
     )
@@ -389,7 +389,7 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
     val searchProvider = SearchProvider(
         topicProvider = topicProvider,
         profileProvider = profileProvider,
-        postDao = roomDb.postDao()
+        mainEventDao = roomDb.postDao()
     )
 
     val suggestionProvider = SuggestionProvider(
@@ -400,7 +400,7 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
         nostrService = nostrService,
         relayProvider = relayProvider,
         postInsertDao = roomDb.mainEventInsertDao(),
-        postDao = roomDb.postDao(),
+        mainEventDao = roomDb.postDao(),
         myPubkeyProvider = accountManager
     )
 

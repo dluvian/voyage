@@ -1,14 +1,14 @@
 package com.dluvian.voyage.data.provider
 
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.data.room.dao.PostDao
+import com.dluvian.voyage.data.room.dao.MainEventDao
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.data.room.view.SimplePostView
 
 class SearchProvider(
     private val topicProvider: TopicProvider,
     private val profileProvider: ProfileProvider,
-    private val postDao: PostDao,
+    private val mainEventDao: MainEventDao,
 ) {
     private val maxTopicSearchResult = 5
     private val maxProfileSearchResult = 10
@@ -33,7 +33,7 @@ class SearchProvider(
     suspend fun getPostSuggestions(text: String): List<SimplePostView> {
         val stripped = text.stripSearchText()
 
-        return postDao.getPostsByContent(content = stripped, limit = maxPostSearchResult)
+        return mainEventDao.getPostsByContent(content = stripped, limit = maxPostSearchResult)
     }
 
     fun getStrippedSearchText(text: String) = text.stripSearchText()

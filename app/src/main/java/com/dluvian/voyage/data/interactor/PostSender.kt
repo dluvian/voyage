@@ -22,7 +22,7 @@ import com.dluvian.voyage.data.nostr.extractQuotes
 import com.dluvian.voyage.data.nostr.getSubject
 import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.data.provider.RelayProvider
-import com.dluvian.voyage.data.room.dao.PostDao
+import com.dluvian.voyage.data.room.dao.MainEventDao
 import com.dluvian.voyage.data.room.dao.insert.MainEventInsertDao
 import rust.nostr.protocol.Coordinate
 import rust.nostr.protocol.Event
@@ -39,7 +39,7 @@ class PostSender(
     private val nostrService: NostrService,
     private val relayProvider: RelayProvider,
     private val postInsertDao: MainEventInsertDao,
-    private val postDao: PostDao,
+    private val mainEventDao: MainEventDao,
     private val myPubkeyProvider: IMyPubkeyProvider,
 ) {
     suspend fun sendPost(
@@ -92,7 +92,7 @@ class PostSender(
         val trimmedBody = body.trim()
         val mentions = mutableListOf(recipient).apply {
             addAll(extractMentionPubkeys(content = trimmedBody))
-            postDao.getParentAuthor(id = parentId)?.let { grandparentAuthor ->
+            mainEventDao.getParentAuthor(id = parentId)?.let { grandparentAuthor ->
                 add(grandparentAuthor)
             }
             if (!isAnon) removeIf { it == myPubkeyProvider.getPubkeyHex() }
@@ -129,7 +129,7 @@ class PostSender(
         topics: List<Topic>,
         isAnon: Boolean,
     ): Result<Event> {
-        val post = postDao.getPost(id = id)
+        val post = mainEventDao.getPost(id = id)
             ?: return Result.failure(IllegalStateException("Post not found"))
         val json = post.json
             ?: return Result.failure(IllegalStateException("Json not found"))

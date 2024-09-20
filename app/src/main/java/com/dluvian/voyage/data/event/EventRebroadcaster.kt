@@ -9,7 +9,7 @@ import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.utils.showToast
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.provider.RelayProvider
-import com.dluvian.voyage.data.room.dao.PostDao
+import com.dluvian.voyage.data.room.dao.MainEventDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 
@@ -17,12 +17,12 @@ private const val TAG = "EventRebroadcaster"
 
 class EventRebroadcaster(
     private val nostrService: NostrService,
-    private val postDao: PostDao,
+    private val mainEventDao: MainEventDao,
     private val relayProvider: RelayProvider,
     private val snackbar: SnackbarHostState,
 ) {
     suspend fun rebroadcast(postId: EventIdHex, context: Context, uiScope: CoroutineScope) {
-        val json = postDao.getJson(id = postId)
+        val json = mainEventDao.getJson(id = postId)
         if (json.isNullOrEmpty()) {
             Log.w(TAG, "Post $postId has no json in database")
             snackbar.showToast(
@@ -59,7 +59,7 @@ class EventRebroadcaster(
             return
         }
 
-        val json = postDao.getJson(id = postId)
+        val json = mainEventDao.getJson(id = postId)
         if (json.isNullOrEmpty()) return
 
         nostrService.publishJson(eventJson = json, relayUrls = listOf(localRelay))

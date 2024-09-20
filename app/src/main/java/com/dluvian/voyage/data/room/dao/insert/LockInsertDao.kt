@@ -24,11 +24,11 @@ interface LockInsertDao {
             .map { LockEntity.from(validatedLock = it) }
 
         internalDeleteContactList(lockedPubkeys = lockedPubkeys)
-        internalInsertLocks(*filtered.toTypedArray())
+        insertLocks(*filtered.toTypedArray())
     }
 
     @Insert
-    suspend fun internalInsertLocks(vararg lock: LockEntity)
+    suspend fun insertLocks(vararg lock: LockEntity)
 
     @Query("SELECT pubkey FROM lock WHERE pubkey IN (:pubkeys)")
     suspend fun internalFilterLockedPubkeys(pubkeys: Collection<PubkeyHex>): List<PubkeyHex>

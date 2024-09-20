@@ -66,7 +66,7 @@ interface ProfileDao {
 
     @Query(
         "SELECT DISTINCT pubkey AS pk " +
-                "FROM post " +
+                "FROM mainEvent " +
                 "WHERE pk NOT IN (SELECT friendPubkey FROM friend) " +
                 "AND pk NOT IN (SELECT pubkey FROM account) " +
                 "AND pk IN (SELECT webOfTrustPubkey FROM weboftrust) " +

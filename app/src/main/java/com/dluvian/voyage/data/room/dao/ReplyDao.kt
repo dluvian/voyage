@@ -7,7 +7,7 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.room.view.LegacyReplyView
 import kotlinx.coroutines.flow.Flow
 
-private const val PROFILE_REPLY_FEED_BASE_QUERY = "FROM ReplyView " +
+private const val PROFILE_REPLY_FEED_BASE_QUERY = "FROM LegacyReplyView " +
         "WHERE createdAt <= :until " +
         "AND pubkey = :pubkey " +
         "ORDER BY createdAt DESC " +
@@ -19,12 +19,16 @@ private const val PROFILE_REPLY_FEED_CREATED_AT_QUERY =
 
 
 private const val PROFILE_REPLY_FEED_EXISTS_QUERY = "SELECT EXISTS(SELECT * " +
-        "FROM ReplyView " +
+        "FROM LegacyReplyView " +
         "WHERE pubkey = :pubkey)"
 
 @Dao
 interface ReplyDao {
-    @Query("SELECT MAX(createdAt) FROM post WHERE parentId = :parentId")
+    @Query(
+        "SELECT MAX(createdAt) " +
+                "FROM mainEvent " +
+                "WHERE id IN (SELECT eventId FROM legacyReply WHERE parentId = :parentId)"
+    )
     suspend fun getNewestReplyCreatedAt(parentId: EventIdHex): Long?
 
     @Query(
@@ -53,7 +57,7 @@ interface ReplyDao {
     @Query("SELECT * FROM LegacyReplyView WHERE id = :id")
     fun getReplyFlow(id: EventIdHex): Flow<LegacyReplyView?>
 
-    @Query("SELECT parentId FROM post WHERE id = :id")
+    @Query("SELECT parentId FROM legacyReply WHERE eventId = :id")
     suspend fun getParentId(id: EventIdHex): EventIdHex?
 
     @Query(PROFILE_REPLY_FEED_QUERY)

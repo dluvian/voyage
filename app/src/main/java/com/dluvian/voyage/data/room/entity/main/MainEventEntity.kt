@@ -48,7 +48,7 @@ data class MainEventEntity(
                 json = when (mainEvent) {
                     is ValidatedRootPost -> mainEvent.json
                     is ValidatedLegacyReply -> mainEvent.json
-                    is ValidatedCrossPost -> ""
+                    is ValidatedCrossPost -> null
                 },
             )
         }

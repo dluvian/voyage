@@ -29,11 +29,11 @@ private const val WOT_MAIN_QUERY = INBOX_CONDITION + WOT_CONDITION + INBOX_ORDER
 private const val GLOBAL_MAIN_QUERY = INBOX_CONDITION + INBOX_ORDER
 
 private const val SELECT_ROOT = "SELECT * FROM RootPostView "
-private const val SELECT_REPLY = "SELECT * FROM ReplyView "
+private const val SELECT_REPLY = "SELECT * FROM LegacyReplyView "
 private const val SELECT_ROOT_ID = "SELECT id FROM RootPostView "
-private const val SELECT_REPLY_ID = "SELECT id FROM ReplyView "
+private const val SELECT_REPLY_ID = "SELECT id FROM LegacyReplyView "
 private const val SELECT_ROOT_CREATED_AT = "SELECT createdAt FROM RootPostView "
-private const val SELECT_REPLY_CREATED_AT = "SELECT createdAt FROM ReplyView "
+private const val SELECT_REPLY_CREATED_AT = "SELECT createdAt FROM LegacyReplyView "
 
 private const val FRIEND_ROOT_QUERY = SELECT_ROOT + FRIEND_MAIN_QUERY
 private const val FRIEND_REPLY_QUERY = SELECT_REPLY + FRIEND_MAIN_QUERY

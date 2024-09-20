@@ -6,26 +6,26 @@ import androidx.room.Transaction
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.model.PostDetailsBase
-import com.dluvian.voyage.data.room.entity.PostEntity
+import com.dluvian.voyage.data.room.entity.main.MainEventEntity
 import com.dluvian.voyage.data.room.view.SimplePostView
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.PublicKey
 
 @Dao
-interface PostDao {
-    @Query("SELECT * FROM post WHERE id = :id")
-    suspend fun getPost(id: EventIdHex): PostEntity?
+interface MainEventDao {
+    @Query("SELECT * FROM mainEvent WHERE id = :id")
+    suspend fun getPost(id: EventIdHex): MainEventEntity?
 
-    @Query("SELECT pubkey FROM post WHERE id = :id")
+    @Query("SELECT pubkey FROM mainEvent WHERE id = :id")
     suspend fun getAuthor(id: EventIdHex): PubkeyHex?
 
-    @Query("SELECT pubkey FROM post WHERE id = (SELECT parentId FROM post WHERE id = :id)")
+    @Query("SELECT pubkey FROM mainEvent WHERE id = (SELECT parentId FROM legacyReply WHERE id = :id)")
     suspend fun getParentAuthor(id: EventIdHex): PubkeyHex?
 
-    @Query("SELECT json FROM post WHERE id = :id")
+    @Query("SELECT json FROM mainEvent WHERE id = :id")
     suspend fun getJson(id: EventIdHex): String?
 
-    @Query("SELECT id, relayUrl AS firstSeenIn, json FROM post WHERE id = :id")
+    @Query("SELECT id, relayUrl AS firstSeenIn, json FROM mainEvent WHERE id = :id")
     suspend fun getPostDetails(id: EventIdHex): PostDetailsBase?
 
     suspend fun getPostsByContent(content: String, limit: Int): List<SimplePostView> {
@@ -52,7 +52,7 @@ interface PostDao {
 
     @Query(
         "SELECT id " +
-                "FROM post " +
+                "FROM mainEvent " +
                 "WHERE (pubkey IN (SELECT pubkey FROM account) " +
                 "OR id IN (SELECT eventId FROM bookmark)) " +
                 "AND json IS NOT NULL " +
@@ -75,13 +75,13 @@ interface PostDao {
 
     }
 
-    @Query("UPDATE post SET isMentioningMe = 0")
+    @Query("UPDATE mainEvent SET isMentioningMe = 0")
     suspend fun internalResetAllMentions()
 
-    @Query("UPDATE post SET isMentioningMe = 1 WHERE id = :id")
+    @Query("UPDATE mainEvent SET isMentioningMe = 1 WHERE id = :id")
     suspend fun internalSetMentioningMe(id: EventIdHex)
 
-    // Limit by 1000 or else it might take too long
-    @Query("SELECT id FROM post WHERE json IS NOT NULL ORDER BY createdAt DESC LIMIT 1000")
+    // Limit by 1500 or else it might take too long
+    @Query("SELECT id FROM mainEvent WHERE json IS NOT NULL ORDER BY createdAt DESC LIMIT 1500")
     suspend fun internalGetIndexableIds(): List<EventIdHex>
 }

@@ -9,6 +9,7 @@ import com.dluvian.voyage.data.event.EventRebroadcaster
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.LockDao
+import com.dluvian.voyage.data.room.dao.insert.LockInsertDao
 import com.dluvian.voyage.data.room.entity.LockEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,6 +22,7 @@ class AccountLocker(
     private val snackbar: SnackbarHostState,
     private val eventRebroadcaster: EventRebroadcaster,
     private val lockDao: LockDao,
+    private val lockInsertDao: LockInsertDao,
     private val nostrService: NostrService,
     private val relayProvider: RelayProvider,
 ) {
@@ -38,7 +40,12 @@ class AccountLocker(
 
         return nostrService.publishLock(relayUrls = relayProvider.getPublishRelays())
             .onSuccess {
-                lockDao.insertLock(LockEntity(pubkey = it.author().toHex(), json = it.asJson()))
+                lockInsertDao.insertLocks(
+                    LockEntity(
+                        pubkey = it.author().toHex(),
+                        json = it.asJson()
+                    )
+                )
                 snackbar.showToast(
                     scope = uiScope,
                     msg = context.getString(R.string.your_account_is_now_locked)

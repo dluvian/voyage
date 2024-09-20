@@ -16,7 +16,7 @@ import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.nostr.getCurrentSecs
 import com.dluvian.voyage.data.preferences.HomePreferences
 import com.dluvian.voyage.data.room.dao.AccountDao
-import com.dluvian.voyage.data.room.dao.PostDao
+import com.dluvian.voyage.data.room.dao.MainEventDao
 import com.dluvian.voyage.data.room.entity.AccountEntity
 import kotlinx.coroutines.delay
 import rust.nostr.protocol.PublicKey
@@ -26,7 +26,7 @@ private const val TAG = "AccountSwitcher"
 class AccountSwitcher(
     private val accountManager: AccountManager,
     private val accountDao: AccountDao,
-    private val postDao: PostDao,
+    private val mainEventDao: MainEventDao,
     private val idCacheClearer: IdCacheClearer,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val nostrSubscriber: NostrSubscriber,
@@ -75,7 +75,7 @@ class AccountSwitcher(
         lazyNostrSubscriber.subCreator.unsubAll()
         idCacheClearer.clear()
         accountDao.updateAccount(account = account)
-        postDao.reindexMentions(newPubkey = PublicKey.fromHex(account.pubkey))
+        mainEventDao.reindexMentions(newPubkey = PublicKey.fromHex(account.pubkey))
         lazyNostrSubscriber.lazySubMyAccount()
         delay(DELAY_1SEC)
         nostrSubscriber.subFeed(
