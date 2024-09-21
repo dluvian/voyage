@@ -9,22 +9,22 @@ import kotlinx.coroutines.flow.Flow
 
 
 private const val REPLY_FEED_QUERY = "SELECT * " +
-        "FROM ReplyView " +
+        "FROM LegacyReplyView " +
         "WHERE createdAt <= :until " +
-        "AND id IN (SELECT postId FROM bookmark) " +
+        "AND id IN (SELECT eventId FROM bookmark) " +
         "ORDER BY createdAt DESC " +
         "LIMIT :size"
 
 private const val ROOT_POST_FEED_QUERY = "SELECT * " +
         "FROM RootPostView " +
         "WHERE createdAt <= :until " +
-        "AND id IN (SELECT postId FROM bookmark) " +
+        "AND id IN (SELECT eventId FROM bookmark) " +
         "ORDER BY createdAt DESC " +
         "LIMIT :size"
 
 private const val BOOKMARKED_EVENTS_EXIST_QUERY = "SELECT EXISTS(SELECT * " +
-        "FROM post " +
-        "WHERE id IN (SELECT postId FROM bookmark))"
+        "FROM mainEvent " +
+        "WHERE id IN (SELECT eventId FROM bookmark))"
 
 @Dao
 interface BookmarkDao {

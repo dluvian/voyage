@@ -38,7 +38,7 @@ class EventProcessor(
         val allEvents = (events + crossPosted).distinct()
 
         val rootPosts = mutableListOf<ValidatedRootPost>()
-        val replies = mutableListOf<ValidatedLegacyReply>()
+        val legacyReplies = mutableListOf<ValidatedLegacyReply>()
         val crossPosts = mutableListOf<ValidatedCrossPost>()
         val votes = mutableListOf<ValidatedVote>()
         val profiles = mutableListOf<ValidatedProfile>()
@@ -50,7 +50,7 @@ class EventProcessor(
         allEvents.forEach { event ->
             when (event) {
                 is ValidatedRootPost -> rootPosts.add(event)
-                is ValidatedLegacyReply -> replies.add(event)
+                is ValidatedLegacyReply -> legacyReplies.add(event)
                 is ValidatedCrossPost -> crossPosts.add(event)
                 is ValidatedVote -> votes.add(event)
                 is ValidatedProfile -> profiles.add(event)
@@ -61,7 +61,7 @@ class EventProcessor(
             }
         }
         processRootPosts(rootPosts = rootPosts)
-        processReplies(replies = replies)
+        processLegacyReplies(legacyReplies = legacyReplies)
         processCrossPosts(crossPosts = crossPosts)
         processVotes(votes = votes)
         processProfiles(profiles = profiles)
@@ -81,11 +81,11 @@ class EventProcessor(
         }
     }
 
-    private fun processReplies(replies: Collection<ValidatedLegacyReply>) {
-        if (replies.isEmpty()) return
+    private fun processLegacyReplies(legacyReplies: Collection<ValidatedLegacyReply>) {
+        if (legacyReplies.isEmpty()) return
 
         scope.launch {
-            room.mainEventInsertDao().insertLegacyReplies(replies = replies)
+            room.mainEventInsertDao().insertLegacyReplies(replies = legacyReplies)
         }.invokeOnCompletion { exception ->
             if (exception != null) Log.w(TAG, "Failed to process replies", exception)
         }

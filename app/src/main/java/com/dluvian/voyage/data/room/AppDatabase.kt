@@ -3,6 +3,8 @@ package com.dluvian.voyage.data.room
 import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.DeleteColumn
+import androidx.room.DeleteTable
+import androidx.room.RenameColumn
 import androidx.room.RoomDatabase
 import androidx.room.migration.AutoMigrationSpec
 import com.dluvian.voyage.data.room.dao.AccountDao
@@ -68,7 +70,15 @@ import com.dluvian.voyage.data.room.view.RootPostView
 import com.dluvian.voyage.data.room.view.SimplePostView
 
 @DeleteColumn(tableName = "vote", columnName = "isPositive")
-class V10DeleteVoteIsPositiveColumn : AutoMigrationSpec
+class V10 : AutoMigrationSpec
+
+@RenameColumn.Entries(
+    RenameColumn(tableName = "vote", fromColumnName = "postId", toColumnName = "eventId"),
+    RenameColumn(tableName = "hashtag", fromColumnName = "postId", toColumnName = "eventId"),
+    RenameColumn(tableName = "bookmark", fromColumnName = "postId", toColumnName = "eventId"),
+)
+@DeleteTable(tableName = "post")
+class V24 : AutoMigrationSpec
 
 @Database(
     version = 24,
@@ -82,7 +92,7 @@ class V10DeleteVoteIsPositiveColumn : AutoMigrationSpec
         AutoMigration(from = 6, to = 7),
         AutoMigration(from = 7, to = 8),
         AutoMigration(from = 8, to = 9),
-        AutoMigration(from = 9, to = 10, spec = V10DeleteVoteIsPositiveColumn::class),
+        AutoMigration(from = 9, to = 10, spec = V10::class),
         AutoMigration(from = 10, to = 11),
         AutoMigration(from = 11, to = 12),
         AutoMigration(from = 12, to = 13),
@@ -96,7 +106,7 @@ class V10DeleteVoteIsPositiveColumn : AutoMigrationSpec
         AutoMigration(from = 20, to = 21),
         AutoMigration(from = 21, to = 22),
         AutoMigration(from = 22, to = 23),
-        AutoMigration(from = 23, to = 24),
+        AutoMigration(from = 23, to = 24, spec = V24::class),
     ],
     entities = [
         // Main

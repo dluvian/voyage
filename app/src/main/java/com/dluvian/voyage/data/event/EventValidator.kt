@@ -208,6 +208,8 @@ class EventValidator(
     }
 
     private fun createValidatedRepost(event: Event, relayUrl: RelayUrl): ValidatedCrossPost? {
+        val crossPostedId = event.eventIds().firstOrNull()?.toHex() ?: return null
+
         val parsedEvent = runCatching { Event.fromJson(event.content()) }.getOrNull()
         val validatedCrossPostedEvent = parsedEvent?.let {
             createValidatedTextNote(
@@ -217,11 +219,11 @@ class EventValidator(
             )
         }
 
-        if (parsedEvent?.verify() == false) return null
+        if (validatedCrossPostedEvent != null && validatedCrossPostedEvent.id != crossPostedId) {
+            return null
+        }
 
-        val crossPostedId = event.eventIds().firstOrNull()?.toHex()
-            ?: validatedCrossPostedEvent?.id
-            ?: return null
+        if (parsedEvent?.verify() == false) return null
 
         return ValidatedCrossPost(
             id = event.id().toHex(),
@@ -255,7 +257,7 @@ class EventValidator(
                     json = event.asJson(),
                     isMentioningMe = event.publicKeys().contains(myPubkey),
                     topics = event.getNormalizedTopics(limit = MAX_TOPICS),
-                    subject = subject,
+                    subject = subject.orEmpty(),
                 )
             } else {
                 if (content.isEmpty() || replyToId == event.id().toHex()) return null

@@ -287,6 +287,7 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
         snackbar = snackbar,
         eventRebroadcaster = eventRebroadcaster,
         lockDao = roomDb.lockDao(),
+        lockInsertDao = roomDb.lockInsertDao(),
         nostrService = nostrService,
         relayProvider = relayProvider,
     )

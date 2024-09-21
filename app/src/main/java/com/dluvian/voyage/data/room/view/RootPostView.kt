@@ -13,7 +13,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 @DatabaseView(
     """
         SELECT 
-            rootPost.eventId, 
+            mainEvent.id, 
             mainEvent.pubkey, 
             rootPost.subject, 
             mainEvent.content, 
@@ -31,9 +31,9 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             CASE WHEN vote.eventId IS NOT NULL THEN 1 ELSE 0 END isUpvoted,
             upvotes.upvoteCount,
             replies.replyCount,
-            (SELECT EXISTS(SELECT * FROM bookmark WHERE bookmark.eventId = rootPost.eventId)) AS isBookmarked 
+            (SELECT EXISTS(SELECT * FROM bookmark WHERE bookmark.eventId = mainEvent.id)) AS isBookmarked 
         FROM rootPost
-        JOIN mainEvent ON mainEvent.id = rootPost.eventId
+        JOIN mainEvent ON mainEvent.id = mainEvent.id
         LEFT JOIN profile ON profile.pubkey = mainEvent.pubkey
         LEFT JOIN (
             SELECT DISTINCT hashtag.eventId, MIN(hashtag.hashtag) AS min_hashtag
@@ -41,7 +41,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             JOIN topic ON hashtag.hashtag = topic.topic
             WHERE topic.myPubkey = (SELECT pubkey FROM account LIMIT 1)
             GROUP BY hashtag.eventId
-        ) AS ht ON ht.eventId = rootPost.eventId
+        ) AS ht ON ht.eventId = mainEvent.id
         LEFT JOIN account ON account.pubkey = mainEvent.pubkey
         LEFT JOIN friend ON friend.friendPubkey = mainEvent.pubkey
         LEFT JOIN weboftrust ON weboftrust.webOfTrustPubkey = mainEvent.pubkey
@@ -58,7 +58,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             SELECT legacyReply.parentId, COUNT(*) AS replyCount 
             FROM legacyReply
             GROUP BY legacyReply.parentId
-        ) AS replies ON replies.parentId = rootPost.eventId
+        ) AS replies ON replies.parentId = mainEvent.id
 """
 )
 data class RootPostView(

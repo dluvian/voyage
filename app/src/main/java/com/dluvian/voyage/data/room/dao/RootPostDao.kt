@@ -12,9 +12,8 @@ private const val TOPIC_FEED_BASE_QUERY = "FROM RootPostView " +
         "WHERE createdAt <= :until " +
         "AND authorIsMuted = 0 " +
         "AND authorIsLocked = 0 " +
-        "AND crossPostedAuthorIsMuted = 0 " +
-        "AND id IN (SELECT postId FROM hashtag WHERE hashtag = :topic) " +
-        "AND NOT EXISTS (SELECT * FROM hashtag WHERE postId = id AND hashtag IN (SELECT mutedItem FROM mute WHERE tag IS 't' AND mutedItem IS NOT :topic)) " +
+        "AND id IN (SELECT eventId FROM hashtag WHERE hashtag = :topic) " +
+        "AND NOT EXISTS (SELECT * FROM hashtag WHERE eventId = id AND hashtag IN (SELECT mutedItem FROM mute WHERE tag IS 't' AND mutedItem IS NOT :topic)) " +
         "ORDER BY createdAt DESC " +
         "LIMIT :size"
 
@@ -38,12 +37,11 @@ private const val LIST_FEED_BASE_QUERY = """
     WHERE createdAt <= :until
     AND (
         pubkey IN (SELECT pubkey FROM profileSetItem WHERE identifier = :identifier)
-        OR id IN (SELECT postId FROM hashtag WHERE hashtag IN (SELECT topic FROM topicSetItem WHERE identifier = :identifier))
+        OR id IN (SELECT eventId FROM hashtag WHERE hashtag IN (SELECT topic FROM topicSetItem WHERE identifier = :identifier))
     )
     AND authorIsMuted = 0 
     AND authorIsLocked = 0 
-    AND crossPostedAuthorIsMuted = 0 
-    AND NOT EXISTS (SELECT * FROM hashtag WHERE postId = id AND hashtag IN (SELECT mutedItem FROM mute WHERE tag IS 't'))
+    AND NOT EXISTS (SELECT * FROM hashtag WHERE eventId = id AND hashtag IN (SELECT mutedItem FROM mute WHERE tag IS 't'))
     ORDER BY createdAt DESC
     LIMIT :size
 """
