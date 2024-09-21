@@ -68,14 +68,14 @@ class AccountManager(
                     .onSuccess {
                         Log.i(
                             TAG,
-                            "Externally signed event of kind ${unsignedEvent.kind().asU64()}"
+                            "Externally signed event of kind ${unsignedEvent.kind().asU16()}"
                         )
                     }
                     .onFailure {
                         Log.w(
                             TAG,
                             "Failed to externally sign event of kind ${
-                                unsignedEvent.kind().asU64()
+                                unsignedEvent.kind().asU16()
                             }"
                         )
                     }

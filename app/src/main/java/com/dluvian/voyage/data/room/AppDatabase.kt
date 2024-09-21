@@ -17,12 +17,12 @@ import com.dluvian.voyage.data.room.dao.HashtagDao
 import com.dluvian.voyage.data.room.dao.HomeFeedDao
 import com.dluvian.voyage.data.room.dao.InboxDao
 import com.dluvian.voyage.data.room.dao.ItemSetDao
+import com.dluvian.voyage.data.room.dao.LegacyReplyDao
 import com.dluvian.voyage.data.room.dao.LockDao
 import com.dluvian.voyage.data.room.dao.MainEventDao
 import com.dluvian.voyage.data.room.dao.MuteDao
 import com.dluvian.voyage.data.room.dao.Nip65Dao
 import com.dluvian.voyage.data.room.dao.ProfileDao
-import com.dluvian.voyage.data.room.dao.ReplyDao
 import com.dluvian.voyage.data.room.dao.RootPostDao
 import com.dluvian.voyage.data.room.dao.TopicDao
 import com.dluvian.voyage.data.room.dao.VoteDao
@@ -157,7 +157,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun nip65Dao(): Nip65Dao
     abstract fun profileDao(): ProfileDao
     abstract fun eventRelayDao(): EventRelayDao
-    abstract fun replyDao(): ReplyDao
+    abstract fun replyDao(): LegacyReplyDao
     abstract fun fullProfileDao(): FullProfileDao
     abstract fun postDao(): MainEventDao
     abstract fun inboxDao(): InboxDao

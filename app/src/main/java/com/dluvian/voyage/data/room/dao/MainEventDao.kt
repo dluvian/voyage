@@ -35,22 +35,6 @@ interface MainEventDao {
     }
 
     @Query(
-        "SELECT * FROM SimplePostView " +
-                "WHERE subject IS NOT NULL " +
-                "AND subject LIKE :somewhere " +
-                "AND pubkey NOT IN (SELECT mutedItem FROM mute WHERE mutedItem = pubkey AND tag = 'p')" +
-                "UNION " +
-                "SELECT * FROM SimplePostView " +
-                "WHERE content LIKE :somewhere " +
-                "AND pubkey NOT IN (SELECT mutedItem FROM mute WHERE mutedItem = pubkey AND tag = 'p')" +
-                "LIMIT :limit"
-    )
-    suspend fun internalGetPostsWithContentLike(
-        somewhere: String,
-        limit: Int
-    ): List<SimplePostView>
-
-    @Query(
         "SELECT id " +
                 "FROM mainEvent " +
                 "WHERE (pubkey IN (SELECT pubkey FROM account) " +
@@ -84,4 +68,20 @@ interface MainEventDao {
     // Limit by 1500 or else it might take too long
     @Query("SELECT id FROM mainEvent WHERE json IS NOT NULL ORDER BY createdAt DESC LIMIT 1500")
     suspend fun internalGetIndexableIds(): List<EventIdHex>
+
+    @Query(
+        "SELECT * FROM SimplePostView " +
+                "WHERE subject IS NOT NULL " +
+                "AND subject LIKE :somewhere " +
+                "AND pubkey NOT IN (SELECT mutedItem FROM mute WHERE mutedItem = pubkey AND tag = 'p')" +
+                "UNION " +
+                "SELECT * FROM SimplePostView " +
+                "WHERE content LIKE :somewhere " +
+                "AND pubkey NOT IN (SELECT mutedItem FROM mute WHERE mutedItem = pubkey AND tag = 'p')" +
+                "LIMIT :limit"
+    )
+    suspend fun internalGetPostsWithContentLike(
+        somewhere: String,
+        limit: Int
+    ): List<SimplePostView>
 }

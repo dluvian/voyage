@@ -23,7 +23,7 @@ private const val PROFILE_REPLY_FEED_EXISTS_QUERY = "SELECT EXISTS(SELECT * " +
         "WHERE pubkey = :pubkey)"
 
 @Dao
-interface ReplyDao {
+interface LegacyReplyDao {
     @Query(
         "SELECT MAX(createdAt) " +
                 "FROM mainEvent " +

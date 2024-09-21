@@ -13,7 +13,7 @@ import com.dluvian.voyage.core.utils.getNormalizedTopics
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.event.EventValidator
 import com.dluvian.voyage.data.event.ValidatedCrossPost
-import com.dluvian.voyage.data.event.ValidatedReply
+import com.dluvian.voyage.data.event.ValidatedLegacyReply
 import com.dluvian.voyage.data.event.ValidatedRootPost
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.RelayUrl
@@ -69,7 +69,7 @@ class PostSender(
                 id = event.id().toHex(),
                 pubkey = event.author().toHex(),
                 topics = event.getNormalizedTopics(),
-                subject = event.getSubject(),
+                subject = event.getSubject().orEmpty(),
                 content = event.content(),
                 createdAt = event.createdAt().secs(),
                 relayUrl = "", // We don't know which relay accepted this note
@@ -108,7 +108,7 @@ class PostSender(
             relayUrls = relayProvider.getPublishRelays(publishTo = mentions),
             isAnon = isAnon,
         ).onSuccess { event ->
-            val validatedReply = ValidatedReply(
+            val validatedReply = ValidatedLegacyReply(
                 id = event.id().toHex(),
                 pubkey = event.author().toHex(),
                 parentId = parentId,
@@ -136,10 +136,8 @@ class PostSender(
         if (json.isEmpty()) return Result.failure(IllegalStateException("Json is empty"))
         val crossPostedEvent = kotlin.runCatching { Event.fromJson(json) }.getOrNull()
             ?: return Result.failure(IllegalStateException("Json is not deserializable"))
-        if (post.crossPostedId != null) {
-            return Result.failure(IllegalStateException("Can't cross-post a cross-post"))
-        }
-        val validatedMainPost = EventValidator.createValidatedMainPost(
+
+        val validatedTextNote = EventValidator.createValidatedTextNote(
             event = crossPostedEvent,
             relayUrl = post.relayUrl,
             myPubkey = myPubkeyProvider.getPublicKey()
@@ -159,7 +157,8 @@ class PostSender(
                 topics = event.getNormalizedTopics(),
                 createdAt = event.createdAt().secs(),
                 relayUrl = "", // We don't know which relay accepted this note
-                crossPosted = validatedMainPost,
+                crossPostedId = validatedTextNote.id,
+                crossPostedTextNote = validatedTextNote,
             )
             postInsertDao.insertCrossPosts(crossPosts = listOf(validatedCrossPost))
         }.onFailure {

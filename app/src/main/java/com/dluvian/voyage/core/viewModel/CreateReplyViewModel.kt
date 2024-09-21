@@ -9,6 +9,7 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.core.CreateReplyViewAction
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.SendReply
+import com.dluvian.voyage.core.model.CrossPostUI
 import com.dluvian.voyage.core.model.FeedItemUI
 import com.dluvian.voyage.core.model.LegacyReplyUI
 import com.dluvian.voyage.core.model.RootPostUI
@@ -51,7 +52,7 @@ class CreateReplyViewModel(
                 }
             }
 
-            is RootPostUI -> {}
+            is RootPostUI, is CrossPostUI -> {}
         }
 
 
@@ -73,7 +74,7 @@ class CreateReplyViewModel(
                 parentId = action.parent.getRelevantId(),
                 recipient = action.parent.getRelevantPubkey(),
                 body = action.body,
-                relayHint = eventRelayDao.getEventRelay(eventId = action.parent.id).orEmpty(),
+                relayHint = eventRelayDao.getEventRelay(id = action.parent.id).orEmpty(),
                 isAnon = action.isAnon
             )
             delay(DELAY_1SEC)

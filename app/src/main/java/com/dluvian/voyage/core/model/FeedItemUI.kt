@@ -38,6 +38,12 @@ sealed class FeedItemUI(
         is CrossPostUI -> this.crossPostedId
     }
 
+    fun getRelevantPubkey() = when (this) {
+        is RootPostUI -> this.pubkey
+        is LegacyReplyUI -> this.pubkey
+        is CrossPostUI -> this.crossPostedPubkey
+    }
+
     fun getSubject() = when (this) {
         is RootPostUI -> this.subject
         is LegacyReplyUI -> null

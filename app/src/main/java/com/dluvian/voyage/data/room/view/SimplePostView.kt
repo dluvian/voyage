@@ -17,7 +17,7 @@ import com.dluvian.voyage.core.PubkeyHex
             "(SELECT EXISTS(SELECT * FROM lock WHERE lock.pubkey = mainEvent.pubkey)) AS authorIsLocked " +
             "FROM rootPost " +
             "JOIN mainEvent ON mainEvent.id = rootPost.eventId "
-)
+) // TODO: Search for replies too
 data class SimplePostView(
     val id: EventIdHex,
     val pubkey: PubkeyHex,

@@ -90,7 +90,7 @@ class EventValidator(
                 myPubkey = myPubkeyProvider.getPublicKey()
             )
 
-            REPOST_U16 -> createValidatedRepost(event = event, relayUrl = relayUrl)
+            REPOST_U16 -> createValidatedCrosspost(event = event, relayUrl = relayUrl)
 
             REACTION_U16 -> {
                 if (event.content() == "-") return null
@@ -207,7 +207,7 @@ class EventValidator(
         return validatedEvent
     }
 
-    private fun createValidatedRepost(event: Event, relayUrl: RelayUrl): ValidatedCrossPost? {
+    private fun createValidatedCrosspost(event: Event, relayUrl: RelayUrl): ValidatedCrossPost? {
         val crossPostedId = event.eventIds().firstOrNull()?.toHex() ?: return null
 
         val parsedEvent = runCatching { Event.fromJson(event.content()) }.getOrNull()
