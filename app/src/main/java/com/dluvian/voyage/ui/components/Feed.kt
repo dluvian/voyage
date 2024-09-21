@@ -61,17 +61,17 @@ fun Feed(
     val isRefreshing by paginator.isRefreshing
     val isAppending by paginator.isAppending
     val hasMoreRecentPosts by paginator.hasMoreRecentPosts
-    val hasPosts by paginator.hasPosts.value.collectAsState()
-    val posts by paginator.page.value.collectAsState()
-    val filteredFeedItems by paginator.filteredPage.value.collectAsState()
+    val hasItems by paginator.hasPosts.value.collectAsState()
+    val items by paginator.page.value.collectAsState()
+    val filteredItems by paginator.filteredPage.value.collectAsState()
     val scope = rememberCoroutineScope()
     val showProgressIndicator by remember {
-        derivedStateOf { isAppending || (hasPosts && posts.isEmpty()) }
+        derivedStateOf { isAppending || (hasItems && items.isEmpty()) }
     }
 
     PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = onRefresh) {
         if (showProgressIndicator) FullLinearProgressIndicator()
-        if (!hasPosts && posts.isEmpty()) BaseHint(stringResource(id = R.string.no_posts_found))
+        if (!hasItems && items.isEmpty()) BaseHint(stringResource(id = R.string.no_posts_found))
         postDetails.value?.let { details ->
             PostDetailsBottomSheet(postDetails = details, onUpdate = onUpdate)
         }
@@ -80,7 +80,7 @@ fun Feed(
             if (hasMoreRecentPosts) item { MostRecentPostsTextButton(onClick = onRefresh) }
 
             items(
-                items = filteredFeedItems,
+                items = filteredItems,
                 key = { item -> item.id }
             ) { feedItem ->
                 FeedItemRow(
@@ -91,7 +91,7 @@ fun Feed(
                 FullHorizontalDivider()
             }
 
-            if (posts.size >= FEED_PAGE_SIZE) item {
+            if (items.size >= FEED_PAGE_SIZE) item {
                 NextPageButton(onAppend = onAppend)
             }
         }

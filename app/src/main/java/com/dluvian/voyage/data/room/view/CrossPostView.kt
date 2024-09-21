@@ -119,24 +119,13 @@ data class CrossPostView(
         val crossPostedFollow = forcedFollows.getOrDefault(this.crossPostedPubkey, null)
         val bookmark = forcedBookmarks.getOrDefault(this.id, null)
         return if (vote != null || follow != null || bookmark != null) crossRootPostUI.copy(
-            isUpvoted = vote ?: crossRootPostUI.isUpvoted,
-            trustType = TrustType.from(
-                isOneself = this.authorIsOneself,
-                isFriend = follow ?: this.authorIsFriend,
-                isWebOfTrust = this.authorIsTrusted,
-                isMuted = this.authorIsMuted,
-                isInList = this.authorIsInList,
-                isLocked = this.authorIsLocked,
+            trustType = TrustType.fromCrossPostAuthor(crossPostView = this, isFriend = follow),
+            crossPostedTrustType = TrustType.fromCrossPostedAuthor(
+                crossPostView = this,
+                isFriend = crossPostedFollow
             ),
-            crossPostedTrustType = TrustType.from(
-                isOneself = this.crossPostedAuthorIsOneself,
-                isFriend = crossPostedFollow ?: this.crossPostedAuthorIsFriend,
-                isWebOfTrust = this.crossPostedAuthorIsTrusted,
-                isMuted = this.crossPostedAuthorIsMuted,
-                isInList = this.crossPostedAuthorIsInList,
-                isLocked = this.crossPostedAuthorIsLocked,
-            ),
-            isBookmarked = bookmark ?: crossRootPostUI.isBookmarked
+            crossPostedIsUpvoted = vote ?: crossRootPostUI.crossPostedIsUpvoted,
+            crossPostedIsBookmarked = bookmark ?: crossRootPostUI.crossPostedIsBookmarked
         )
         else crossRootPostUI
     }

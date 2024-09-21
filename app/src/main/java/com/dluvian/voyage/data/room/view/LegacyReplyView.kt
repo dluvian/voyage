@@ -89,14 +89,7 @@ data class LegacyReplyView(
         val bookmark = forcedBookmarks.getOrDefault(this.id, null)
         return if (vote != null || follow != null || bookmark != null) reply.copy(
             isUpvoted = vote ?: reply.isUpvoted,
-            trustType = TrustType.from(
-                isOneself = this.authorIsOneself,
-                isFriend = follow ?: this.authorIsFriend,
-                isWebOfTrust = this.authorIsTrusted,
-                isMuted = this.authorIsMuted,
-                isInList = this.authorIsInList,
-                isLocked = this.authorIsLocked,
-            ),
+            trustType = TrustType.from(legacyReplyView = this, isFriend = follow),
             isBookmarked = bookmark ?: reply.isBookmarked
         ) else reply
     }
