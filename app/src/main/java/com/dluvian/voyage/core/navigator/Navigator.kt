@@ -44,8 +44,8 @@ class Navigator(private val vmContainer: VMContainer, private val closeApp: Fn) 
             is AdvancedNonMainNavView -> {
                 when (navView) {
                     is ThreadNavView -> vmContainer.threadVM.openThread(
-                        nevent = createNevent(hex = navView.feedItem.id),
-                        parentUi = navView.feedItem
+                        nevent = createNevent(hex = navView.mainEvent.id),
+                        parentUi = navView.mainEvent
                     )
 
                     is ThreadRawNavView -> vmContainer.threadVM.openThread(

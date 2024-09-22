@@ -12,21 +12,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.model.FeedItemUI
+import com.dluvian.voyage.core.model.MainEvent
 import com.dluvian.voyage.ui.components.dropdown.FeedItemDropdown
 import com.dluvian.voyage.ui.theme.HorizMoreIcon
 import com.dluvian.voyage.ui.theme.sizing
 
 @Composable
 fun OptionsButton(
-    feedItem: FeedItemUI,
+    mainEvent: MainEvent,
     onUpdate: OnUpdate,
 ) {
     val showMenu = remember { mutableStateOf(false) }
     Box(contentAlignment = Alignment.CenterEnd) {
         FeedItemDropdown(
             isOpen = showMenu.value,
-            feedItem = feedItem,
+            mainEvent = mainEvent,
             onDismiss = { showMenu.value = false },
             onUpdate = onUpdate,
         )

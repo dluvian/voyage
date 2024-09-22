@@ -9,10 +9,10 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.core.CreateReplyViewAction
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.SendReply
-import com.dluvian.voyage.core.model.CrossPostUI
-import com.dluvian.voyage.core.model.FeedItemUI
-import com.dluvian.voyage.core.model.LegacyReplyUI
-import com.dluvian.voyage.core.model.RootPostUI
+import com.dluvian.voyage.core.model.CrossPost
+import com.dluvian.voyage.core.model.LegacyReply
+import com.dluvian.voyage.core.model.MainEvent
+import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.core.utils.showToast
 import com.dluvian.voyage.data.interactor.PostSender
@@ -30,9 +30,9 @@ class CreateReplyViewModel(
     private val mainEventDao: MainEventDao,
 ) : ViewModel() {
     val isSendingReply = mutableStateOf(false)
-    val parent: MutableState<FeedItemUI?> = mutableStateOf(null)
+    val parent: MutableState<MainEvent?> = mutableStateOf(null)
 
-    fun openParent(newParent: FeedItemUI) {
+    fun openParent(newParent: MainEvent) {
         val relevantId = newParent.getRelevantId()
         if (relevantId == this.parent.value?.id) return
 
@@ -43,7 +43,7 @@ class CreateReplyViewModel(
             }
         }
         when (newParent) {
-            is LegacyReplyUI -> {
+            is LegacyReply -> {
                 viewModelScope.launchIO {
                     val grandparentAuthor = mainEventDao.getParentAuthor(id = relevantId)
                     if (grandparentAuthor != null && relevantPubkey != grandparentAuthor) {
@@ -52,7 +52,7 @@ class CreateReplyViewModel(
                 }
             }
 
-            is RootPostUI, is CrossPostUI -> {}
+            is RootPost, is CrossPost -> {}
         }
 
 

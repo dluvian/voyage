@@ -4,9 +4,9 @@ import androidx.compose.runtime.State
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
-import com.dluvian.voyage.core.model.FeedItemUI
-import com.dluvian.voyage.core.model.LegacyReplyUI
-import com.dluvian.voyage.core.model.RootPostUI
+import com.dluvian.voyage.core.model.LegacyReply
+import com.dluvian.voyage.core.model.MainEvent
+import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.utils.containsNoneIgnoreCase
 import com.dluvian.voyage.core.utils.firstThenDistinctDebounce
 import com.dluvian.voyage.core.utils.mergeToParentUIList
@@ -46,7 +46,7 @@ class FeedProvider(
         until: Long,
         size: Int,
         setting: FeedSetting,
-    ): List<FeedItemUI> {
+    ): List<MainEvent> {
         return staticFeedProvider.getStaticFeed(
             until = until,
             size = size,
@@ -61,7 +61,7 @@ class FeedProvider(
         setting: FeedSetting,
         forceSubscription: Boolean,
         subscribe: Boolean = true,
-    ): Flow<List<FeedItemUI>> {
+    ): Flow<List<MainEvent>> {
         if (subscribe) {
             nostrSubscriber.subFeed(
                 until = subUntil,
@@ -105,7 +105,7 @@ class FeedProvider(
         until: Long,
         size: Int,
         setting: RootFeedSetting,
-    ): Flow<List<RootPostUI>> {
+    ): Flow<List<RootPost>> {
         val flow = when (setting) {
             is HomeFeedSetting -> room.homeFeedDao().getHomeRootPostFlow(
                 setting = setting,
@@ -113,18 +113,21 @@ class FeedProvider(
                 size = size
             )
 
+            // TODO: crossPosts
             is TopicFeedSetting -> room.rootPostDao().getTopicRootPostFlow(
                 topic = setting.topic,
                 until = until,
                 size = size
             )
 
+            // TODO: crossPosts
             is ProfileRootFeedSetting -> room.rootPostDao().getProfileRootPostFlow(
                 pubkey = setting.nprofile.publicKey().toHex(),
                 until = until,
                 size = size
             )
 
+            // TODO: crossPosts
             is ListFeedSetting -> room.rootPostDao().getListRootPostFlow(
                 identifier = setting.identifier,
                 until = until,
@@ -153,7 +156,7 @@ class FeedProvider(
         setting: ReplyFeedSetting,
         until: Long,
         size: Int,
-    ): Flow<List<LegacyReplyUI>> {
+    ): Flow<List<LegacyReply>> {
         val flow = room.replyDao().getProfileReplyFlow(
             pubkey = setting.nprofile.publicKey().toHex(),
             until = until,
@@ -181,7 +184,7 @@ class FeedProvider(
         setting: InboxFeedSetting,
         until: Long,
         size: Int
-    ): Flow<List<FeedItemUI>> {
+    ): Flow<List<MainEvent>> {
         return combine(
             room.inboxDao()
                 .getInboxReplyFlow(setting = setting, until = until, size = size)
@@ -205,7 +208,7 @@ class FeedProvider(
         }
     }
 
-    private fun getBookmarksFeedFlow(until: Long, size: Int): Flow<List<FeedItemUI>> {
+    private fun getBookmarksFeedFlow(until: Long, size: Int): Flow<List<MainEvent>> {
         return combine(
             room.bookmarkDao()
                 .getReplyFlow(until = until, size = size)

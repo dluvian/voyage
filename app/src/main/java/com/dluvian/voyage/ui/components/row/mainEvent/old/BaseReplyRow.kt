@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.components.row.feedItem
+package com.dluvian.voyage.ui.components.row.mainEvent.old
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -24,15 +24,16 @@ import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenReplyCreation
 import com.dluvian.voyage.core.OpenThreadRaw
-import com.dluvian.voyage.core.model.LegacyReplyUI
+import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.data.nostr.createNevent
+import com.dluvian.voyage.ui.components.row.mainEvent.FeedItemHeader
 import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.theme.ReplyIcon
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
 fun BaseReplyRow(
-    reply: LegacyReplyUI,
+    reply: LegacyReply,
     isCollapsed: Boolean,
     showFullReplyButton: Boolean,
     isOp: Boolean,
@@ -56,7 +57,7 @@ fun BaseReplyRow(
             .padding(spacing.screenEdge)
     ) {
         FeedItemHeader(
-            feedItem = reply,
+            ctx = reply,
             myTopic = null,
             isOp = isOp,
             showAuthorName = showAuthorName,

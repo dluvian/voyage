@@ -3,7 +3,7 @@ package com.dluvian.voyage.data.room.view
 import androidx.room.DatabaseView
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.model.LegacyReplyUI
+import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.core.model.LeveledReplyUI
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.data.nostr.RelayUrl
@@ -79,8 +79,8 @@ data class LegacyReplyView(
         forcedFollows: Map<PubkeyHex, Boolean>,
         forcedBookmarks: Map<EventIdHex, Boolean>,
         annotatedStringProvider: AnnotatedStringProvider
-    ): LegacyReplyUI {
-        val reply = LegacyReplyUI.from(
+    ): LegacyReply {
+        val reply = LegacyReply.from(
             legacyReplyView = this,
             annotatedStringProvider = annotatedStringProvider
         )

@@ -41,7 +41,7 @@ import com.dluvian.voyage.data.model.PostDetails
 import com.dluvian.voyage.ui.components.bottomSheet.PostDetailsBottomSheet
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
-import com.dluvian.voyage.ui.components.row.feedItem.FeedItemRow
+import com.dluvian.voyage.ui.components.row.mainEvent.MainEventRow
 import com.dluvian.voyage.ui.theme.ScrollUpIcon
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
@@ -60,38 +60,38 @@ fun Feed(
 ) {
     val isRefreshing by paginator.isRefreshing
     val isAppending by paginator.isAppending
-    val hasMoreRecentPosts by paginator.hasMoreRecentPosts
-    val hasItems by paginator.hasPosts.value.collectAsState()
-    val items by paginator.page.value.collectAsState()
-    val filteredItems by paginator.filteredPage.value.collectAsState()
+    val hasMoreRecentItems by paginator.hasMoreRecentItems
+    val hasPage by paginator.hasPage.value.collectAsState()
+    val page by paginator.page.value.collectAsState()
+    val filteredPage by paginator.filteredPage.value.collectAsState()
     val scope = rememberCoroutineScope()
     val showProgressIndicator by remember {
-        derivedStateOf { isAppending || (hasItems && items.isEmpty()) }
+        derivedStateOf { isAppending || (hasPage && page.isEmpty()) }
     }
 
     PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = onRefresh) {
         if (showProgressIndicator) FullLinearProgressIndicator()
-        if (!hasItems && items.isEmpty()) BaseHint(stringResource(id = R.string.no_posts_found))
+        if (!hasPage && page.isEmpty()) BaseHint(stringResource(id = R.string.no_posts_found))
         postDetails.value?.let { details ->
             PostDetailsBottomSheet(postDetails = details, onUpdate = onUpdate)
         }
 
         LazyColumn(modifier = Modifier.fillMaxSize(), state = state) {
-            if (hasMoreRecentPosts) item { MostRecentPostsTextButton(onClick = onRefresh) }
+            if (hasMoreRecentItems) item { MostRecentPostsTextButton(onClick = onRefresh) }
 
             items(
-                items = filteredItems,
-                key = { item -> item.id }
-            ) { feedItem ->
-                FeedItemRow(
-                    feedItem = feedItem,
+                items = filteredPage,
+                key = { item -> item.mainEvent.id }
+            ) { mainEventCtx ->
+                MainEventRow(
+                    ctx = mainEventCtx,
                     showAuthorName = showAuthorName,
                     onUpdate = onUpdate
                 )
                 FullHorizontalDivider()
             }
 
-            if (items.size >= FEED_PAGE_SIZE) item {
+            if (page.size >= FEED_PAGE_SIZE) item {
                 NextPageButton(onAppend = onAppend)
             }
         }

@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.components.row.feedItem
+package com.dluvian.voyage.ui.components.row.mainEvent
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -18,10 +18,9 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenTopic
 import com.dluvian.voyage.core.ThreadViewToggleCollapse
-import com.dluvian.voyage.core.model.CrossPostUI
-import com.dluvian.voyage.core.model.FeedItemUI
-import com.dluvian.voyage.core.model.LegacyReplyUI
-import com.dluvian.voyage.core.model.RootPostUI
+import com.dluvian.voyage.core.model.CrossPost
+import com.dluvian.voyage.core.model.LegacyReply
+import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.ui.components.button.OptionsButton
 import com.dluvian.voyage.ui.components.chip.TopicChip
@@ -34,7 +33,7 @@ import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
 fun FeedItemHeader(
-    feedItem: FeedItemUI,
+    ctx: MainEventCtx,
     showAuthorName: Boolean,
     collapsedText: AnnotatedString? = null,
     onUpdate: OnUpdate
@@ -49,14 +48,14 @@ fun FeedItemHeader(
             verticalAlignment = Alignment.CenterVertically
         ) {
             FeedItemHeaderTrustIcons(
-                feedItem = feedItem,
+                ctx = ctx,
                 showAuthor = showAuthorName,
                 onUpdate = onUpdate
             )
-            when (feedItem) {
-                is RootPostUI -> feedItem.myTopic
-                is LegacyReplyUI -> null
-                is CrossPostUI -> feedItem.crossPostedMyTopic
+            when (val mainEvent = ctx.mainEvent) {
+                is RootPost -> mainEvent.myTopic
+                is LegacyReply -> null
+                is CrossPost -> mainEvent.myTopic
             }?.let { topic ->
                 TopicChip(
                     modifier = Modifier
@@ -67,44 +66,56 @@ fun FeedItemHeader(
                 )
             }
             Spacer(modifier = Modifier.width(spacing.large))
-            if (collapsedText == null) RelativeTime(from = feedItem.createdAt)
+            if (collapsedText == null) RelativeTime(from = ctx.mainEvent.createdAt)
             else AnnotatedText(
                 text = collapsedText,
                 maxLines = 1,
-                onClick = { onUpdate(ThreadViewToggleCollapse(id = feedItem.id)) }
+                onClick = { onUpdate(ThreadViewToggleCollapse(id = ctx.mainEvent.id)) }
             )
         }
         Row(horizontalArrangement = Arrangement.End) {
-            OptionsButton(feedItem = feedItem, onUpdate = onUpdate)
+            OptionsButton(mainEvent = ctx.mainEvent, onUpdate = onUpdate)
         }
     }
 }
 
 @Composable
 private fun FeedItemHeaderTrustIcons(
-    feedItem: FeedItemUI,
+    ctx: MainEventCtx,
     showAuthor: Boolean,
     onUpdate: OnUpdate
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         ClickableTrustIcon(
-            trustType = feedItem.trustType,
-            isOp = feedItem.isOp(),
-            authorName = if (showAuthor) feedItem.authorName else null,
-            onClick = { onUpdate(OpenProfile(nprofile = createNprofile(hex = feedItem.pubkey))) }
+            trustType = ctx.mainEvent.trustType,
+            isOp = when (ctx) {
+                is FeedCtx -> false
+                is ThreadRootCtx -> true
+                is ThreadReplyCtx -> ctx.mainEvent.pubkey == ctx.opPubkey
+            },
+            authorName = if (showAuthor) ctx.mainEvent.authorName else null,
+            onClick = {
+                onUpdate(OpenProfile(nprofile = createNprofile(hex = ctx.mainEvent.pubkey)))
+            }
         )
-        if (feedItem is CrossPostUI) {
-            Icon(
-                modifier = Modifier.size(sizing.smallIndicator),
-                imageVector = CrossPostIcon,
-                contentDescription = stringResource(id = R.string.cross_posted)
-            )
-            ClickableTrustIcon(
-                trustType = feedItem.crossPostedTrustType,
-                onClick = {
-                    onUpdate(OpenProfile(nprofile = createNprofile(hex = feedItem.crossPostedPubkey)))
-                }
-            )
+        when (val mainEvent = ctx.mainEvent) {
+            is CrossPost -> CrossPostIcon(crossPost = mainEvent, onUpdate = onUpdate)
+            is LegacyReply, is RootPost -> {}
         }
     }
+}
+
+@Composable
+private fun CrossPostIcon(crossPost: CrossPost, onUpdate: OnUpdate) {
+    Icon(
+        modifier = Modifier.size(sizing.smallIndicator),
+        imageVector = CrossPostIcon,
+        contentDescription = stringResource(id = R.string.cross_posted)
+    )
+    ClickableTrustIcon(
+        trustType = crossPost.crossPostedTrustType,
+        onClick = {
+            onUpdate(OpenProfile(nprofile = createNprofile(hex = crossPost.crossPostedPubkey)))
+        }
+    )
 }

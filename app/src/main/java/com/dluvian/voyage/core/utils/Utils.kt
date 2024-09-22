@@ -17,7 +17,7 @@ import com.dluvian.voyage.core.MAX_SUBJECT_LEN
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.VOYAGE
-import com.dluvian.voyage.core.model.FeedItemUI
+import com.dluvian.voyage.core.model.MainEvent
 import com.dluvian.voyage.data.model.RelevantMetadata
 import com.dluvian.voyage.data.nostr.LOCAL_WEBSOCKET
 import com.dluvian.voyage.data.nostr.RelayUrl
@@ -242,7 +242,7 @@ fun mergeToParentUIList(
     bookmarks: Map<EventIdHex, Boolean>,
     size: Int,
     annotatedStringProvider: AnnotatedStringProvider,
-): List<FeedItemUI> {
+): List<MainEvent> {
     val applicableTimestamps = replies.asSequence()
         .map { it.createdAt }
         .plus(roots.map { it.createdAt })
@@ -250,7 +250,7 @@ fun mergeToParentUIList(
         .take(size)
         .toSet()
 
-    val result = mutableListOf<FeedItemUI>()
+    val result = mutableListOf<MainEvent>()
     for (reply in replies) {
         if (!applicableTimestamps.contains(reply.createdAt)) continue
         val mapped = reply.mapToLegacyReplyUI(

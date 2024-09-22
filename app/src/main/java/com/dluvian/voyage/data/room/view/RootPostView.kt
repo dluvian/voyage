@@ -4,7 +4,7 @@ import androidx.room.DatabaseView
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.model.RootPostUI
+import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
@@ -87,8 +87,8 @@ data class RootPostView(
         forcedFollows: Map<PubkeyHex, Boolean>,
         forcedBookmarks: Map<EventIdHex, Boolean>,
         annotatedStringProvider: AnnotatedStringProvider,
-    ): RootPostUI {
-        val rootPostUI = RootPostUI.from(
+    ): RootPost {
+        val rootPostUI = RootPost.from(
             rootPostView = this,
             annotatedStringProvider = annotatedStringProvider
         )

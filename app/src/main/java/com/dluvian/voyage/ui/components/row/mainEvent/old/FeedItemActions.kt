@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.components.row.feedItem
+package com.dluvian.voyage.ui.components.row.mainEvent.old
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -12,7 +12,7 @@ import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenCrossPostCreation
 import com.dluvian.voyage.core.UnbookmarkPost
-import com.dluvian.voyage.core.model.FeedItemUI
+import com.dluvian.voyage.core.model.MainEvent
 import com.dluvian.voyage.ui.components.chip.BookmarkChip
 import com.dluvian.voyage.ui.components.chip.CrossPostChip
 import com.dluvian.voyage.ui.components.chip.UpvoteChip
@@ -20,7 +20,7 @@ import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
 fun FeedItemActions(
-    feedItem: FeedItemUI,
+    mainEvent: MainEvent,
     onUpdate: OnUpdate,
     additionalStartAction: ComposableContent = {},
     additionalEndAction: ComposableContent = {},

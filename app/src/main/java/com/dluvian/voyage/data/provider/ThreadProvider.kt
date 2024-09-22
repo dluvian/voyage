@@ -6,8 +6,7 @@ import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
-import com.dluvian.voyage.core.model.FeedItemUI
-import com.dluvian.voyage.core.model.LeveledReplyUI
+import com.dluvian.voyage.core.model.MainEvent
 import com.dluvian.voyage.core.utils.containsNoneIgnoreCase
 import com.dluvian.voyage.core.utils.firstThenDistinctDebounce
 import com.dluvian.voyage.core.utils.launchIO
@@ -44,7 +43,7 @@ class ThreadProvider(
         scope: CoroutineScope,
         nevent: Nip19Event,
         isInit: Boolean
-    ): Flow<FeedItemUI?> {
+    ): Flow<MainEvent?> {
         val id = nevent.eventId().toHex()
         scope.launchIO {
             if (!room.existsDao().postExists(id = id)) {

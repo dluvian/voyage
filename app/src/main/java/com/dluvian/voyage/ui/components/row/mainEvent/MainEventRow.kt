@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.components.row.feedItem
+package com.dluvian.voyage.ui.components.row.mainEvent
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -16,18 +16,18 @@ import com.dluvian.voyage.core.ClickText
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenReplyCreation
 import com.dluvian.voyage.core.OpenThread
-import com.dluvian.voyage.core.model.FeedItemUI
 import com.dluvian.voyage.ui.components.chip.CommentChip
+import com.dluvian.voyage.ui.components.row.mainEvent.old.FeedItemActions
 import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
-fun FeedItemRow(
-    feedItem: FeedItemUI,
+fun MainEventRow(
+    ctx: MainEventCtx,
     showAuthorName: Boolean,
     onUpdate: OnUpdate
 ) {
-    val onOpenThread = { onUpdate(OpenThread(feedItem = feedItem)) }
+    val onOpenThread = { onUpdate(OpenThread(mainEvent = ctx.mainEvent)) }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -46,13 +46,13 @@ fun FeedItemRow(
             )
         }
         FeedItemHeader(
-            feedItem = feedItem,
+            ctx = ctx,
             showAuthorName = showAuthorName,
             onUpdate = onUpdate,
         )
         Spacer(modifier = Modifier.height(spacing.large))
 
-        feedItem.getSubject()?.let { subject ->
+        ctx.mainEvent.getSubject()?.let { subject ->
             if (subject.isNotEmpty()) {
                 AnnotatedText(
                     text = subject,
@@ -63,17 +63,17 @@ fun FeedItemRow(
             }
         }
         AnnotatedText(
-            text = feedItem.content,
-            onClick = { onClickText(it, feedItem.content) }
+            text = ctx.mainEvent.content,
+            onClick = { onClickText(it, ctx.mainEvent.content) }
         )
         Spacer(modifier = Modifier.height(spacing.large))
         FeedItemActions(
-            feedItem = feedItem,
+            mainEvent = ctx.mainEvent,
             onUpdate = onUpdate,
             additionalEndAction = {
                 CommentChip(
-                    commentCount = feedItem.replyCount,
-                    onClick = { onUpdate(OpenReplyCreation(parent = feedItem)) })
+                    commentCount = ctx.mainEvent.replyCount,
+                    onClick = { onUpdate(OpenReplyCreation(parent = ctx.mainEvent)) })
             })
     }
 }

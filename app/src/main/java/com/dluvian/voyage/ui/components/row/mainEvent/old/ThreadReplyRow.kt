@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.components.row.feedItem
+package com.dluvian.voyage.ui.components.row.mainEvent.old
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -14,7 +14,6 @@ import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.ThreadViewShowReplies
 import com.dluvian.voyage.core.ThreadViewToggleCollapse
-import com.dluvian.voyage.core.model.LeveledReplyUI
 import com.dluvian.voyage.ui.theme.spacing
 import com.dluvian.voyage.ui.views.nonMain.MoreRepliesTextButton
 

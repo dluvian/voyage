@@ -21,6 +21,8 @@ import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.nostr.getCurrentSecs
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.MuteProvider
+import com.dluvian.voyage.ui.components.row.mainEvent.FeedCtx
+import com.dluvian.voyage.ui.components.row.mainEvent.MainEventCtx
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,12 +43,12 @@ class Paginator(
     override val isInitialized = mutableStateOf(false)
     override val isRefreshing = mutableStateOf(false)
     override val isAppending = mutableStateOf(false)
-    override val hasMoreRecentPosts = mutableStateOf(false)
-    override val hasPosts: MutableState<StateFlow<Boolean>> =
+    override val hasMoreRecentItems = mutableStateOf(false)
+    override val hasPage: MutableState<StateFlow<Boolean>> =
         mutableStateOf(MutableStateFlow(true))
-    override val page: MutableState<StateFlow<List<FeedItemUI>>> =
+    override val page: MutableState<StateFlow<List<MainEventCtx>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
-    override val filteredPage: MutableState<StateFlow<List<FeedItemUI>>> =
+    override val filteredPage: MutableState<StateFlow<List<MainEventCtx>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
 
 
@@ -66,8 +68,8 @@ class Paginator(
         }
         if (showRefreshIndicator) isRefreshing.value = true
 
-        hasPosts.value = getHasPosts(setting = setting)
-        hasMoreRecentPosts.value = false
+        hasPage.value = getHasPosts(setting = setting)
+        hasMoreRecentItems.value = false
         feedSetting = setting
 
         val now = getCurrentSecs()
@@ -87,11 +89,11 @@ class Paginator(
     fun refresh(onSub: Fn? = null) {
         if (isRefreshing.value) return
 
-        val isFirstPage = !hasMoreRecentPosts.value
+        val isFirstPage = !hasMoreRecentItems.value
 
         isRefreshing.value = true
-        hasMoreRecentPosts.value = false
-        hasPosts.value = getHasPosts(setting = feedSetting)
+        hasMoreRecentItems.value = false
+        hasPage.value = getHasPosts(setting = feedSetting)
 
         val now = getCurrentSecs()
 
@@ -118,11 +120,11 @@ class Paginator(
 
         subCreator.unsubAll()
         isAppending.value = true
-        hasMoreRecentPosts.value = true
+        hasMoreRecentItems.value = true
 
         scope.launchIO {
-            val newUntil = page.value.value.takeLast(FEED_OFFSET).first().createdAt
-            val subUntil = page.value.value.last().createdAt - 1
+            val newUntil = page.value.value.takeLast(FEED_OFFSET).first().mainEvent.createdAt
+            val subUntil = page.value.value.last().mainEvent.createdAt - 1
             setPage(until = newUntil, subUntil = subUntil)
             delay(DELAY_1SEC)
         }.invokeOnCompletion {
@@ -145,35 +147,35 @@ class Paginator(
             setting = feedSetting,
             forceSubscription = forceSubscription,
             subscribe = subscribe
-        )
+        ).map { list -> list.map { FeedCtx(mainEvent = it) } }
         val mutedWords = muteProvider.getMutedWords()
 
         page.value = flow.stateIn(scope, SharingStarted.WhileSubscribed(), staticFeed)
         filteredPage.value = flow
             // No duplicate cross-posts
-            .map { posts -> posts.distinctBy(FeedItemUI::getRelevantId) }
-            .map { posts ->
+            .map { postCtx -> postCtx.distinctBy { it.mainEvent.getRelevantId() } }
+            .map { postCtxs ->
                 when (feedSetting) {
                     // No muted words
                     is HomeFeedSetting, is TopicFeedSetting,
                     is InboxFeedSetting, is ListFeedSetting -> {
-                        posts.filter { post ->
-                            post.content.text.containsNoneIgnoreCase(strs = mutedWords)
+                        postCtxs.filter { postCtx ->
+                            postCtx.mainEvent.content.text.containsNoneIgnoreCase(strs = mutedWords)
                         }
                     }
                     // Muted words allowed
-                    BookmarksFeedSetting, is ReplyFeedSetting, is ProfileRootFeedSetting -> posts
+                    BookmarksFeedSetting, is ReplyFeedSetting, is ProfileRootFeedSetting -> postCtxs
                 }
             }
             .stateIn(scope, SharingStarted.WhileSubscribed(), staticFeed)
     }
 
-    private suspend fun getStaticFeed(until: Long): List<FeedItemUI> {
+    private suspend fun getStaticFeed(until: Long): List<MainEventCtx> {
         return feedProvider.getStaticFeed(
             until = until,
             size = FEED_PAGE_SIZE.div(2),
             setting = feedSetting
-        )
+        ).map { FeedCtx(mainEvent = it) }
     }
 
     private fun getHasPosts(setting: FeedSetting) = feedProvider

@@ -12,7 +12,7 @@ import com.dluvian.voyage.data.room.view.RootPostView
 import rust.nostr.protocol.Kind
 import rust.nostr.protocol.KindEnum
 
-sealed class FeedItemUI(
+sealed class MainEvent(
     open val id: EventIdHex,
     open val pubkey: PubkeyHex,
     open val content: AnnotatedString,
@@ -27,32 +27,58 @@ sealed class FeedItemUI(
 ) {
     fun getKind(): Kind {
         return when (this) {
-            is RootPostUI, is LegacyReplyUI -> Kind.fromEnum(KindEnum.TextNote)
-            is CrossPostUI -> Kind.fromEnum(KindEnum.Repost)
+            is RootPost, is LegacyReply -> Kind.fromEnum(KindEnum.TextNote)
+            is CrossPost -> Kind.fromEnum(KindEnum.Repost)
         }
     }
 
     fun getRelevantId() = when (this) {
-        is RootPostUI -> this.id
-        is LegacyReplyUI -> this.id
-        is CrossPostUI -> this.crossPostedId
+        is RootPost -> this.id
+        is LegacyReply -> this.id
+        is CrossPost -> this.crossPostedId
     }
 
     fun getRelevantPubkey() = when (this) {
-        is RootPostUI -> this.pubkey
-        is LegacyReplyUI -> this.pubkey
-        is CrossPostUI -> this.crossPostedPubkey
+        is RootPost -> this.pubkey
+        is LegacyReply -> this.pubkey
+        is CrossPost -> this.crossPostedPubkey
     }
 
     fun getSubject() = when (this) {
-        is RootPostUI -> this.subject
-        is LegacyReplyUI -> null
-        is CrossPostUI -> this.crossPostedSubject
+        is RootPost -> this.subject
+        is LegacyReply -> null
+        is CrossPost -> this.crossPostedSubject
     }
 }
 
+sealed class ThreadableMainEvent(
+    override val id: EventIdHex,
+    override val pubkey: PubkeyHex,
+    override val content: AnnotatedString,
+    override val authorName: String?,
+    override val trustType: TrustType,
+    override val relayUrl: RelayUrl,
+    override val replyCount: Int,
+    override val upvoteCount: Int,
+    override val createdAt: Long,
+    override val isUpvoted: Boolean,
+    override val isBookmarked: Boolean,
+) : MainEvent(
+    id = id,
+    pubkey = pubkey,
+    content = content,
+    authorName = authorName,
+    trustType = trustType,
+    relayUrl = relayUrl,
+    replyCount = replyCount,
+    upvoteCount = upvoteCount,
+    createdAt = createdAt,
+    isUpvoted = isUpvoted,
+    isBookmarked = isBookmarked,
+)
+
 @Immutable
-data class RootPostUI(
+data class RootPost(
     override val id: EventIdHex,
     override val pubkey: PubkeyHex,
     override val content: AnnotatedString,
@@ -66,7 +92,7 @@ data class RootPostUI(
     override val isBookmarked: Boolean,
     val myTopic: String?,
     val subject: AnnotatedString,
-) : FeedItemUI(
+) : ThreadableMainEvent(
     id = id,
     pubkey = pubkey,
     content = content,
@@ -83,8 +109,8 @@ data class RootPostUI(
         fun from(
             rootPostView: RootPostView,
             annotatedStringProvider: AnnotatedStringProvider
-        ): RootPostUI {
-            return RootPostUI(
+        ): RootPost {
+            return RootPost(
                 id = rootPostView.id,
                 pubkey = rootPostView.pubkey,
                 authorName = rootPostView.authorName,
@@ -104,7 +130,7 @@ data class RootPostUI(
 }
 
 @Immutable
-data class LegacyReplyUI(
+data class LegacyReply(
     override val id: EventIdHex,
     override val pubkey: PubkeyHex,
     override val authorName: String?,
@@ -117,8 +143,7 @@ data class LegacyReplyUI(
     override val isUpvoted: Boolean,
     override val isBookmarked: Boolean,
     val parentId: EventIdHex,
-//    TODO val isOp: Boolean,
-) : FeedItemUI(
+) : ThreadableMainEvent(
     id = id,
     pubkey = pubkey,
     content = content,
@@ -135,8 +160,8 @@ data class LegacyReplyUI(
         fun from(
             legacyReplyView: LegacyReplyView,
             annotatedStringProvider: AnnotatedStringProvider
-        ): LegacyReplyUI {
-            return LegacyReplyUI(
+        ): LegacyReply {
+            return LegacyReply(
                 id = legacyReplyView.id,
                 parentId = legacyReplyView.parentId,
                 pubkey = legacyReplyView.pubkey,
@@ -154,9 +179,8 @@ data class LegacyReplyUI(
     }
 }
 
-// TODO: This kinda sucks
 @Immutable
-data class CrossPostUI(
+data class CrossPost(
     override val id: EventIdHex,
     override val pubkey: PubkeyHex,
     override val authorName: String?,
@@ -173,7 +197,7 @@ data class CrossPostUI(
     val crossPostedContent: AnnotatedString,
     val crossPostedSubject: AnnotatedString,
     val crossPostedTrustType: TrustType,
-) : FeedItemUI(
+) : MainEvent(
     id = id,
     pubkey = pubkey,
     content = crossPostedContent,
@@ -190,8 +214,8 @@ data class CrossPostUI(
         fun from(
             crossPostView: CrossPostView,
             annotatedStringProvider: AnnotatedStringProvider
-        ): CrossPostUI {
-            return CrossPostUI(
+        ): CrossPost {
+            return CrossPost(
                 id = crossPostView.id,
                 pubkey = crossPostView.pubkey,
                 authorName = crossPostView.authorName,

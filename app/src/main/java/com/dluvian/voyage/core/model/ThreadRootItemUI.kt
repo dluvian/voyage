@@ -8,15 +8,15 @@ sealed class ThreadRootItemUI(
 )
 
 data class ThreadRootUI(
-    val rootPostUI: RootPostUI
+    val rootPostUI: RootPost
 ) : ThreadRootItemUI(
     pubkey = rootPostUI.pubkey,
     replyCount = rootPostUI.replyCount
 )
 
 data class ThreadPseudoRootUI(
-    val legacyReplyUI: LegacyReplyUI
+    val legacyReply: LegacyReply
 ) : ThreadRootItemUI(
-    pubkey = legacyReplyUI.pubkey,
-    replyCount = legacyReplyUI.replyCount
+    pubkey = legacyReply.pubkey,
+    replyCount = legacyReply.replyCount
 )

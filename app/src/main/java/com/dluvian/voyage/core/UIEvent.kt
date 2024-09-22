@@ -4,9 +4,9 @@ import android.content.Context
 import androidx.activity.result.ActivityResult
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.text.AnnotatedString
-import com.dluvian.voyage.core.model.FeedItemUI
 import com.dluvian.voyage.core.model.ItemSetItem
 import com.dluvian.voyage.core.model.LabledGitIssue
+import com.dluvian.voyage.core.model.MainEvent
 import com.dluvian.voyage.core.navigator.BookmarksNavView
 import com.dluvian.voyage.core.navigator.CreateGitIssueNavView
 import com.dluvian.voyage.core.navigator.CreatePostNavView
@@ -65,7 +65,7 @@ sealed class PushNavEvent : NavEvent() {
             ClickMuteList -> MuteListNavView
             ClickCreateList -> EditNewListNavView
             ClickCreateGitIssue -> CreateGitIssueNavView
-            is OpenThread -> ThreadNavView(feedItem = this.feedItem)
+            is OpenThread -> ThreadNavView(mainEvent = this.mainEvent)
             is OpenProfile -> ProfileNavView(nprofile = this.nprofile)
             is OpenTopic -> TopicNavView(topic = this.topic)
             is OpenReplyCreation -> ReplyCreationNavView(parent = this.parent)
@@ -94,15 +94,15 @@ data object ClickCreateGitIssue : PushNavEvent()
 
 
 sealed class AdvancedPushNavEvent : PushNavEvent()
-data class OpenThread(val feedItem: FeedItemUI) : AdvancedPushNavEvent()
+data class OpenThread(val mainEvent: MainEvent) : AdvancedPushNavEvent()
 data class OpenThreadRaw(
     val nevent: Nip19Event,
-    val parent: FeedItemUI? = null
+    val parent: MainEvent? = null
 ) : AdvancedPushNavEvent()
 
 data class OpenProfile(val nprofile: Nip19Profile) : AdvancedPushNavEvent()
 data class OpenTopic(val topic: Topic) : AdvancedPushNavEvent()
-data class OpenReplyCreation(val parent: FeedItemUI) : AdvancedPushNavEvent()
+data class OpenReplyCreation(val parent: MainEvent) : AdvancedPushNavEvent()
 data class OpenCrossPostCreation(val id: EventIdHex) : AdvancedPushNavEvent()
 data class OpenRelayProfile(val relayUrl: RelayUrl) : AdvancedPushNavEvent()
 data class OpenList(val identifier: String) : AdvancedPushNavEvent()
@@ -269,7 +269,7 @@ data object SubRepoOwnerRelays : CreateGitIssueViewAction()
 
 sealed class CreateReplyViewAction : UIEvent()
 data class SendReply(
-    val parent: FeedItemUI,
+    val parent: MainEvent,
     val body: String,
     val isAnon: Boolean,
     val context: Context,

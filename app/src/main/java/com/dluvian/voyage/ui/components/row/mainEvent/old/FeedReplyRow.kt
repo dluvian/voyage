@@ -1,12 +1,12 @@
-package com.dluvian.voyage.ui.components.row.feedItem
+package com.dluvian.voyage.ui.components.row.mainEvent.old
 
 import androidx.compose.runtime.Composable
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.model.LegacyReplyUI
+import com.dluvian.voyage.core.model.LegacyReply
 
 @Composable
 fun FeedReplyRow(
-    reply: LegacyReplyUI,
+    reply: LegacyReply,
     showAuthorName: Boolean,
     onUpdate: OnUpdate,
 ) {

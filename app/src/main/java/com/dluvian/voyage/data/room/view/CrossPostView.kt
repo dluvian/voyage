@@ -4,7 +4,7 @@ import androidx.room.DatabaseView
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.model.CrossPostUI
+import com.dluvian.voyage.core.model.CrossPost
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
@@ -109,8 +109,8 @@ data class CrossPostView(
         forcedFollows: Map<PubkeyHex, Boolean>,
         forcedBookmarks: Map<EventIdHex, Boolean>,
         annotatedStringProvider: AnnotatedStringProvider,
-    ): CrossPostUI {
-        val crossRootPostUI = CrossPostUI.from(
+    ): CrossPost {
+        val crossRootPostUI = CrossPost.from(
             crossPostView = this,
             annotatedStringProvider = annotatedStringProvider
         )

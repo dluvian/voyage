@@ -65,7 +65,7 @@ interface HomeFeedDao {
     fun getHomeRootPostFlow(
         setting: HomeFeedSetting,
         until: Long,
-        size: Int
+        size: Int,
     ): Flow<List<RootPostView>> {
         val withMyTopics = setting.topicSelection.isMyTopics()
 

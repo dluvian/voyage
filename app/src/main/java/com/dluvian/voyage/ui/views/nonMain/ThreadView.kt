@@ -30,7 +30,6 @@ import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenThreadRaw
 import com.dluvian.voyage.core.ThreadViewRefresh
-import com.dluvian.voyage.core.model.LeveledReplyUI
 import com.dluvian.voyage.core.model.ThreadPseudoRootUI
 import com.dluvian.voyage.core.model.ThreadRootItemUI
 import com.dluvian.voyage.core.model.ThreadRootUI
@@ -40,8 +39,8 @@ import com.dluvian.voyage.ui.components.FullHorizontalDivider
 import com.dluvian.voyage.ui.components.bottomSheet.PostDetailsBottomSheet
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
-import com.dluvian.voyage.ui.components.row.feedItem.ThreadReplyRow
-import com.dluvian.voyage.ui.components.row.feedItem.ThreadRootRow
+import com.dluvian.voyage.ui.components.row.mainEvent.old.ThreadReplyRow
+import com.dluvian.voyage.ui.components.row.mainEvent.old.ThreadRootRow
 import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
@@ -99,7 +98,7 @@ private fun ThreadViewContent(
             if (parentIsAvailable && localRoot is ThreadPseudoRootUI) item {
                 OpenRootButton(
                     modifier = Modifier.padding(start = spacing.medium),
-                    parentId = localRoot.legacyReplyUI.parentId,
+                    parentId = localRoot.legacyReply.parentId,
                     onUpdate = onUpdate
                 )
             }
@@ -114,7 +113,7 @@ private fun ThreadViewContent(
                         ThreadReplyRow(
                             leveledReply = LeveledReplyUI(
                                 level = 1,
-                                reply = localRoot.legacyReplyUI,
+                                reply = localRoot.legacyReply,
                                 isCollapsed = false,
                                 hasLoadedReplies = true,
                             ),

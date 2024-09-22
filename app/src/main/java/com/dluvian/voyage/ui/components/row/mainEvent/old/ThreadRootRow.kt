@@ -1,17 +1,18 @@
-package com.dluvian.voyage.ui.components.row.feedItem
+package com.dluvian.voyage.ui.components.row.mainEvent.old
 
 import androidx.compose.runtime.Composable
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.model.RootPostUI
+import com.dluvian.voyage.core.model.RootPost
+import com.dluvian.voyage.ui.components.row.mainEvent.MainEventRow
 
 @Composable
 fun ThreadRootRow(
-    post: RootPostUI,
+    post: RootPost,
     isOp: Boolean,
     onUpdate: OnUpdate
 ) {
-    FeedItemRow(
-        feedItem = post,
+    MainEventRow(
+        ctx = post,
         isOp = isOp,
         isThread = true,
         showAuthorName = true,
