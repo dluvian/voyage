@@ -33,7 +33,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             replies.replyCount,
             (SELECT EXISTS(SELECT * FROM bookmark WHERE bookmark.eventId = mainEvent.id)) AS isBookmarked 
         FROM rootPost
-        JOIN mainEvent ON mainEvent.id = mainEvent.id
+        JOIN mainEvent ON mainEvent.id = rootPost.eventId
         LEFT JOIN profile ON profile.pubkey = mainEvent.pubkey
         LEFT JOIN (
             SELECT DISTINCT hashtag.eventId, MIN(hashtag.hashtag) AS min_hashtag
