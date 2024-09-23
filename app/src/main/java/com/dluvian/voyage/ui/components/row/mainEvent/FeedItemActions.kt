@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.components.row.mainEvent.old
+package com.dluvian.voyage.ui.components.row.mainEvent
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -33,14 +33,14 @@ fun FeedItemActions(
         additionalStartAction()
         Spacer(modifier = Modifier.width(spacing.tiny))
         Row(verticalAlignment = Alignment.CenterVertically) {
-            if (isBookmarked) BookmarkChip(onClick = { onUpdate(UnbookmarkPost(postId = postId)) })
-            CrossPostChip(onClick = { onUpdate(OpenCrossPostCreation(id = postId)) })
+            if (mainEvent.isBookmarked) BookmarkChip(onClick = { onUpdate(UnbookmarkPost(postId = mainEvent.id)) })
+            CrossPostChip(onClick = { onUpdate(OpenCrossPostCreation(id = mainEvent.id)) })
             additionalEndAction()
             UpvoteChip(
-                upvoteCount = upvoteCount,
-                isUpvoted = isUpvoted,
-                postId = postId,
-                authorPubkey = authorPubkey,
+                upvoteCount = mainEvent.upvoteCount,
+                isUpvoted = mainEvent.isUpvoted,
+                postId = mainEvent.id,
+                authorPubkey = mainEvent.pubkey,
                 onUpdate = onUpdate
             )
         }

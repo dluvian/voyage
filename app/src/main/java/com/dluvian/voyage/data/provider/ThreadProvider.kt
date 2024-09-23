@@ -133,7 +133,7 @@ class ThreadProvider(
                 if (parent?.isCollapsed == true) continue
                 if (parent == null && reply.parentId != rootId) continue
 
-                val leveledReply = reply.mapToLeveledReplyUI(
+                val leveledReply = reply.mapTo(
                     level = parent?.level?.plus(1) ?: 0,
                     forcedVotes = votes,
                     forcedFollows = follows,

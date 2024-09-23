@@ -4,10 +4,10 @@ import androidx.room.DatabaseView
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.model.LegacyReply
-import com.dluvian.voyage.core.model.LeveledReplyUI
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
+import com.dluvian.voyage.ui.components.row.mainEvent.ThreadReplyCtx
 
 // TODO: Exclude muted replies from replyCount
 @DatabaseView(
@@ -52,23 +52,25 @@ data class LegacyReplyView(
     val isBookmarked: Boolean,
     val isMentioningMe: Boolean,
 ) {
-    fun mapToLeveledReplyUI(
+    fun mapToThreadReplyCtx(
         level: Int,
+        opPubkey: PubkeyHex,
         forcedVotes: Map<EventIdHex, Boolean>,
         forcedFollows: Map<PubkeyHex, Boolean>,
         forcedBookmarks: Map<EventIdHex, Boolean>,
         collapsedIds: Set<EventIdHex>,
         parentIds: Set<EventIdHex>,
         annotatedStringProvider: AnnotatedStringProvider,
-    ): LeveledReplyUI {
-        return LeveledReplyUI(
-            level = level,
+    ): ThreadReplyCtx {
+        return ThreadReplyCtx(
             reply = this.mapToLegacyReplyUI(
                 forcedVotes = forcedVotes,
                 forcedFollows = forcedFollows,
                 forcedBookmarks = forcedBookmarks,
                 annotatedStringProvider = annotatedStringProvider
             ),
+            opPubkey = opPubkey,
+            level = level,
             isCollapsed = collapsedIds.contains(this.id),
             hasLoadedReplies = parentIds.contains(this.id)
         )
