@@ -7,6 +7,7 @@ import androidx.compose.ui.text.AnnotatedString
 import com.dluvian.voyage.core.model.ItemSetItem
 import com.dluvian.voyage.core.model.LabledGitIssue
 import com.dluvian.voyage.core.model.MainEvent
+import com.dluvian.voyage.core.model.ThreadableMainEvent
 import com.dluvian.voyage.core.navigator.BookmarksNavView
 import com.dluvian.voyage.core.navigator.CreateGitIssueNavView
 import com.dluvian.voyage.core.navigator.CreatePostNavView
@@ -94,10 +95,10 @@ data object ClickCreateGitIssue : PushNavEvent()
 
 
 sealed class AdvancedPushNavEvent : PushNavEvent()
-data class OpenThread(val mainEvent: MainEvent) : AdvancedPushNavEvent()
+data class OpenThread(val mainEvent: ThreadableMainEvent) : AdvancedPushNavEvent()
 data class OpenThreadRaw(
     val nevent: Nip19Event,
-    val parent: MainEvent? = null
+    val parent: ThreadableMainEvent? = null
 ) : AdvancedPushNavEvent()
 
 data class OpenProfile(val nprofile: Nip19Profile) : AdvancedPushNavEvent()

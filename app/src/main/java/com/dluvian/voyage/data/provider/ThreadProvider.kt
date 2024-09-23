@@ -6,7 +6,6 @@ import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
-import com.dluvian.voyage.core.model.MainEvent
 import com.dluvian.voyage.core.utils.containsNoneIgnoreCase
 import com.dluvian.voyage.core.utils.firstThenDistinctDebounce
 import com.dluvian.voyage.core.utils.launchIO
@@ -16,6 +15,8 @@ import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.data.room.AppDatabase
+import com.dluvian.voyage.ui.components.row.mainEvent.ThreadReplyCtx
+import com.dluvian.voyage.ui.components.row.mainEvent.ThreadRootCtx
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -43,7 +44,7 @@ class ThreadProvider(
         scope: CoroutineScope,
         nevent: Nip19Event,
         isInit: Boolean
-    ): Flow<MainEvent?> {
+    ): Flow<ThreadRootCtx?> {
         val id = nevent.eventId().toHex()
         scope.launchIO {
             if (!room.existsDao().postExists(id = id)) {
@@ -71,7 +72,7 @@ class ThreadProvider(
             forcedFollows,
             forcedBookmarks,
         ) { post, reply, votes, follows, bookmarks ->
-            post?.mapToRootPostUI(
+            val threadableMainEvent = post?.mapToRootPostUI(
                 forcedVotes = votes,
                 forcedFollows = follows,
                 forcedBookmarks = bookmarks,
@@ -82,8 +83,9 @@ class ThreadProvider(
                 forcedBookmarks = bookmarks,
                 annotatedStringProvider = annotatedStringProvider
             )
+            threadableMainEvent?.let { ThreadRootCtx(threadableMainEvent = it) }
         }.onEach {
-            oldestUsedEvent.updateOldestCreatedAt(it?.createdAt)
+            oldestUsedEvent.updateOldestCreatedAt(it?.mainEvent?.createdAt)
         }
     }
 
@@ -106,10 +108,10 @@ class ThreadProvider(
     }
 
     // Don't update oldestCreatedAt in replies. They are always younger than root
-    fun getLeveledReplies(
+    fun getReplyCtxs(
         rootId: EventIdHex,
         parentIds: Set<EventIdHex>,
-    ): Flow<List<LeveledReplyUI>> {
+    ): Flow<List<ThreadReplyCtx>> {
         val replyFlow = room.replyDao().getRepliesFlow(parentIds = parentIds + rootId)
             .firstThenDistinctDebounce(DEBOUNCE)
         val mutedWords = muteProvider.getMutedWords()
@@ -124,8 +126,9 @@ class ThreadProvider(
             val filteredReplies = replies.filter { reply ->
                 reply.content.containsNoneIgnoreCase(strs = mutedWords)
             }
+            val opPubkey = replies.find { it.id == rootId }?.pubkey
 
-            val result = LinkedList<LeveledReplyUI>()
+            val result = LinkedList<ThreadReplyCtx>()
 
             for (reply in filteredReplies) {
                 val parent = result.find { it.reply.id == reply.parentId }
@@ -133,8 +136,9 @@ class ThreadProvider(
                 if (parent?.isCollapsed == true) continue
                 if (parent == null && reply.parentId != rootId) continue
 
-                val leveledReply = reply.mapTo(
+                val leveledReply = reply.mapToThreadReplyCtx(
                     level = parent?.level?.plus(1) ?: 0,
+                    opPubkey = opPubkey.orEmpty(),
                     forcedVotes = votes,
                     forcedFollows = follows,
                     collapsedIds = collapsed,

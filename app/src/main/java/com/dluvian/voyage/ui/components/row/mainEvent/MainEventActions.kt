@@ -19,7 +19,7 @@ import com.dluvian.voyage.ui.components.chip.UpvoteChip
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
-fun FeedItemActions(
+fun MainEventActions(
     mainEvent: MainEvent,
     onUpdate: OnUpdate,
     additionalStartAction: ComposableContent = {},

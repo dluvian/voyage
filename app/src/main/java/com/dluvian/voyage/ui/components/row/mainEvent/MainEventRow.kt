@@ -26,8 +26,12 @@ import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenReplyCreation
 import com.dluvian.voyage.core.OpenThread
+import com.dluvian.voyage.core.OpenThreadRaw
 import com.dluvian.voyage.core.ThreadViewShowReplies
 import com.dluvian.voyage.core.ThreadViewToggleCollapse
+import com.dluvian.voyage.core.model.CrossPost
+import com.dluvian.voyage.core.model.ThreadableMainEvent
+import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.ui.components.chip.CommentChip
 import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.theme.ReplyIcon
@@ -41,17 +45,27 @@ fun MainEventRow(
     onUpdate: OnUpdate
 ) {
     when (ctx) {
-        is FeedCtx, is ThreadRootCtx -> MainEventRowContent(
+        is FeedCtx -> MainEventMainRow(
             ctx = ctx,
             showAuthorName = showAuthorName,
             onUpdate = onUpdate
         )
 
+        is ThreadRootCtx -> {
+            RowWithDivider(level = 1) {
+                MainEventMainRow(
+                    ctx = ctx,
+                    showAuthorName = true,
+                    onUpdate = onUpdate
+                )
+            }
+        }
+
         is ThreadReplyCtx -> {
             RowWithDivider(level = ctx.level) {
-                MainEventRowContent(
+                MainEventMainRow(
                     ctx = ctx,
-                    showAuthorName = showAuthorName,
+                    showAuthorName = true,
                     onUpdate = onUpdate
                 )
             }
@@ -60,7 +74,7 @@ fun MainEventRow(
 }
 
 @Composable
-private fun MainEventRowContent(
+private fun MainEventMainRow(
     ctx: MainEventCtx,
     showAuthorName: Boolean,
     onUpdate: OnUpdate
@@ -68,7 +82,13 @@ private fun MainEventRowContent(
     val onClickRow = {
         when (ctx) {
             is ThreadReplyCtx -> onUpdate(ThreadViewToggleCollapse(id = ctx.reply.id))
-            is FeedCtx -> onUpdate(OpenThread(mainEvent = ctx.mainEvent))
+            is FeedCtx -> {
+                when (val event = ctx.mainEvent) {
+                    is ThreadableMainEvent -> onUpdate(OpenThread(mainEvent = event))
+                    is CrossPost -> onUpdate(OpenThreadRaw(nevent = createNevent(hex = event.crossPostedId)))
+                }
+            }
+
             is ThreadRootCtx -> {}
         }
     }
@@ -89,14 +109,14 @@ private fun MainEventRowContent(
                 )
             )
         }
-        FeedItemHeader(
+        MainEventHeader(
             ctx = ctx,
             showAuthorName = showAuthorName,
             onUpdate = onUpdate,
         )
         Spacer(modifier = Modifier.height(spacing.large))
 
-        ctx.mainEvent.getSubject()?.let { subject ->
+        ctx.mainEvent.getRelevantSubject()?.let { subject ->
             if (subject.isNotEmpty()) {
                 AnnotatedText(
                     text = subject,
@@ -111,7 +131,7 @@ private fun MainEventRowContent(
             onClick = { onClickText(it, ctx.mainEvent.content) }
         )
         Spacer(modifier = Modifier.height(spacing.large))
-        FeedItemActions(
+        MainEventActions(
             mainEvent = ctx.mainEvent,
             onUpdate = onUpdate,
             additionalStartAction = {

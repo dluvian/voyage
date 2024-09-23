@@ -44,7 +44,7 @@ sealed class MainEvent(
         is CrossPost -> this.crossPostedPubkey
     }
 
-    fun getSubject() = when (this) {
+    fun getRelevantSubject() = when (this) {
         is RootPost -> this.subject
         is LegacyReply -> null
         is CrossPost -> this.crossPostedSubject

@@ -14,10 +14,13 @@ import com.dluvian.voyage.core.ThreadViewShowReplies
 import com.dluvian.voyage.core.ThreadViewToggleCollapse
 import com.dluvian.voyage.core.model.MainEvent
 import com.dluvian.voyage.core.model.RootPost
+import com.dluvian.voyage.core.model.ThreadableMainEvent
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.interactor.ThreadCollapser
 import com.dluvian.voyage.data.model.PostDetails
 import com.dluvian.voyage.data.provider.ThreadProvider
+import com.dluvian.voyage.ui.components.row.mainEvent.ThreadReplyCtx
+import com.dluvian.voyage.ui.components.row.mainEvent.ThreadRootCtx
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -33,23 +36,27 @@ class ThreadViewModel(
 ) : ViewModel() {
     val isRefreshing = mutableStateOf(false)
     var parentIsAvailable: StateFlow<Boolean> = MutableStateFlow(false)
-    var localRoot: StateFlow<MainEvent?> = MutableStateFlow(null)
-    val leveledReplies: MutableState<StateFlow<List<LeveledReplyUI>>> =
+    var localRoot: StateFlow<ThreadRootCtx?> = MutableStateFlow(null)
+    val replies: MutableState<StateFlow<List<ThreadReplyCtx>>> =
         mutableStateOf(MutableStateFlow(emptyList()))
     val totalReplyCount: MutableState<StateFlow<Int>> = mutableStateOf(MutableStateFlow(0))
     private val parentIds = mutableStateOf(emptySet<EventIdHex>())
     private var nevent: Nip19Event? = null
 
-    fun openThread(nevent: Nip19Event, parentUi: MainEvent?) {
+    fun openThread(nevent: Nip19Event, parentUi: ThreadableMainEvent?) {
         val id = nevent.eventId().toHex()
-        if (id == localRoot.value?.id) return
+        if (id == localRoot.value?.mainEvent?.id) return
 
-        leveledReplies.value = MutableStateFlow(emptyList())
+        replies.value = MutableStateFlow(emptyList())
         this.nevent = nevent
 
         localRoot = threadProvider
             .getLocalRoot(scope = viewModelScope, nevent = nevent, isInit = true)
-            .stateIn(viewModelScope, SharingStarted.Eagerly, parentUi)
+            .stateIn(
+                viewModelScope,
+                SharingStarted.Eagerly,
+                parentUi?.let { ThreadRootCtx(threadableMainEvent = it) }
+            )
         checkParentAvailability(replyId = id, parentUi = parentUi)
         loadReplies(
             rootId = id,
@@ -63,7 +70,7 @@ class ThreadViewModel(
             is ThreadViewRefresh -> refresh()
             is ThreadViewToggleCollapse -> threadCollapser.toggleCollapse(id = action.id)
             is ThreadViewShowReplies -> loadReplies(
-                rootId = localRoot.value?.getRelevantId(),
+                rootId = localRoot.value?.threadableMainEvent?.getRelevantId(),
                 parentId = action.id,
                 isInit = false,
             )
@@ -88,14 +95,14 @@ class ThreadViewModel(
                     replyId = currentNevent.eventId().toHex()
                 )
                 .stateIn(viewModelScope, SharingStarted.Eagerly, parentIsAvailable.value)
-            leveledReplies.value = threadProvider.getLeveledReplies(
+            replies.value = threadProvider.getReplyCtxs(
                 rootId = currentNevent.eventId().toHex(),
                 parentIds = parentIds.value,
             )
                 .stateIn(
                     viewModelScope,
                     SharingStarted.Eagerly,
-                    leveledReplies.value.value
+                    replies.value.value
                 )
             delay(DELAY_1SEC)
         }.invokeOnCompletion { isRefreshing.value = false }
@@ -108,13 +115,13 @@ class ThreadViewModel(
     ) {
         if (rootId == null) return
 
-        val init = if (isInit) emptyList() else leveledReplies.value.value
+        val init = if (isInit) emptyList() else replies.value.value
         parentIds.value += rootId
         parentIds.value += parentId
         totalReplyCount.value = threadProvider.getTotalReplyCount(rootId = rootId)
             .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
-        leveledReplies.value = threadProvider
-            .getLeveledReplies(rootId = rootId, parentIds = parentIds.value)
+        replies.value = threadProvider
+            .getReplyCtxs(rootId = rootId, parentIds = parentIds.value)
             .stateIn(viewModelScope, SharingStarted.Eagerly, init)
     }
 

@@ -32,7 +32,7 @@ import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
-fun FeedItemHeader(
+fun MainEventHeader(
     ctx: MainEventCtx,
     showAuthorName: Boolean,
     collapsedText: AnnotatedString? = null,

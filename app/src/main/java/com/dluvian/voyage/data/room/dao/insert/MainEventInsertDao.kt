@@ -24,7 +24,7 @@ interface MainEventInsertDao {
         internalInsertHashtags(mainEvents = crossPosts)
 
         val entities = crossPosts.map { CrossPostMetaEntity.from(crossPost = it) }
-        internalInsertCrossPostMeta(crossPosts = entities)
+        internalInsertCrossPostMetaEntities(crossPosts = entities)
     }
 
     @Transaction
@@ -35,7 +35,7 @@ interface MainEventInsertDao {
         internalInsertHashtags(mainEvents = rootPosts)
 
         val entities = rootPosts.map { RootPostMetaEntity.from(rootPost = it) }
-        internalInsertRootPostMeta(rootPosts = entities)
+        internalInsertRootPostMetaEntities(rootPosts = entities)
     }
 
     @Transaction
@@ -45,12 +45,12 @@ interface MainEventInsertDao {
         internalInsertMainEvents(mainEvents = replies)
 
         val entities = replies.map { LegacyReplyMetaEntity.from(legacyReply = it) }
-        internalInsertLegacyReplies(legacyReplies = entities)
+        internalInsertLegacyReplyEntities(legacyReplies = entities)
     }
 
     suspend fun internalInsertMainEvents(mainEvents: Collection<ValidatedMainEvent>) {
         val mainEntities = mainEvents.map { MainEventEntity.from(mainEvent = it) }
-        internalInsertMainEvents(mainEvents = mainEntities)
+        internalInsertMainEventsEntities(mainEvents = mainEntities)
     }
 
     suspend fun internalInsertHashtags(mainEvents: Collection<ValidatedMainEvent>) {
@@ -74,21 +74,21 @@ interface MainEventInsertDao {
             }
         }
 
-        if (hashtags.isNotEmpty()) internalInsertHashtags(hashtags = hashtags)
+        if (hashtags.isNotEmpty()) internalInsertHashtagsEntities(hashtags = hashtags)
     }
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun internalInsertHashtags(hashtags: Collection<HashtagEntity>)
+    suspend fun internalInsertHashtagsEntities(hashtags: Collection<HashtagEntity>)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun internalInsertMainEvents(mainEvents: Collection<MainEventEntity>)
+    suspend fun internalInsertMainEventsEntities(mainEvents: Collection<MainEventEntity>)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun internalInsertCrossPostMeta(crossPosts: Collection<CrossPostMetaEntity>)
+    suspend fun internalInsertCrossPostMetaEntities(crossPosts: Collection<CrossPostMetaEntity>)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun internalInsertRootPostMeta(rootPosts: Collection<RootPostMetaEntity>)
+    suspend fun internalInsertRootPostMetaEntities(rootPosts: Collection<RootPostMetaEntity>)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun internalInsertLegacyReplies(legacyReplies: Collection<LegacyReplyMetaEntity>)
+    suspend fun internalInsertLegacyReplyEntities(legacyReplies: Collection<LegacyReplyMetaEntity>)
 }

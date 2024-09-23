@@ -30,17 +30,17 @@ import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenThreadRaw
 import com.dluvian.voyage.core.ThreadViewRefresh
-import com.dluvian.voyage.core.model.ThreadPseudoRootUI
-import com.dluvian.voyage.core.model.ThreadRootItemUI
-import com.dluvian.voyage.core.model.ThreadRootUI
+import com.dluvian.voyage.core.model.LegacyReply
+import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.viewModel.ThreadViewModel
 import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.ui.components.FullHorizontalDivider
 import com.dluvian.voyage.ui.components.bottomSheet.PostDetailsBottomSheet
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
-import com.dluvian.voyage.ui.components.row.mainEvent.old.ThreadReplyRow
-import com.dluvian.voyage.ui.components.row.mainEvent.old.ThreadRootRow
+import com.dluvian.voyage.ui.components.row.mainEvent.MainEventRow
+import com.dluvian.voyage.ui.components.row.mainEvent.ThreadReplyCtx
+import com.dluvian.voyage.ui.components.row.mainEvent.ThreadRootCtx
 import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
@@ -60,7 +60,7 @@ fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpd
             localRoot?.let {
                 ThreadViewContent(
                     localRoot = it,
-                    replies = vm.leveledReplies.value.collectAsState().value,
+                    replies = vm.replies.value.collectAsState().value,
                     totalReplyCount = vm.totalReplyCount.value.collectAsState().value,
                     parentIsAvailable = vm.parentIsAvailable.collectAsState().value,
                     isRefreshing = vm.isRefreshing.value,
@@ -75,8 +75,8 @@ fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpd
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ThreadViewContent(
-    localRoot: ThreadRootItemUI,
-    replies: List<LeveledReplyUI>,
+    localRoot: ThreadRootCtx,
+    replies: List<ThreadReplyCtx>,
     totalReplyCount: Int,
     parentIsAvailable: Boolean,
     isRefreshing: Boolean,
@@ -84,9 +84,9 @@ private fun ThreadViewContent(
     onUpdate: OnUpdate
 ) {
     val adjustedReplies = remember(localRoot, replies) {
-        when (localRoot) {
-            is ThreadRootUI -> replies
-            is ThreadPseudoRootUI -> replies.map { it.copy(level = it.level + 2) }
+        when (localRoot.threadableMainEvent) {
+            is RootPost -> replies
+            is LegacyReply -> replies.map { it.copy(level = it.level + 2) }
         }
     }
     PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(ThreadViewRefresh) }) {
@@ -95,50 +95,33 @@ private fun ThreadViewContent(
             contentPadding = PaddingValues(bottom = spacing.xxl),
             state = state
         ) {
-            if (parentIsAvailable && localRoot is ThreadPseudoRootUI) item {
+            if (parentIsAvailable && localRoot.threadableMainEvent is LegacyReply) item {
                 OpenRootButton(
                     modifier = Modifier.padding(start = spacing.medium),
-                    parentId = localRoot.legacyReply.parentId,
+                    parentId = localRoot.threadableMainEvent.parentId,
                     onUpdate = onUpdate
                 )
             }
             item {
-                when (localRoot) {
-                    is ThreadRootUI -> {
-                        ThreadRootRow(post = localRoot.rootPostUI, isOp = true, onUpdate = onUpdate)
-                        FullHorizontalDivider()
-                    }
-
-                    is ThreadPseudoRootUI -> {
-                        ThreadReplyRow(
-                            leveledReply = LeveledReplyUI(
-                                level = 1,
-                                reply = localRoot.legacyReply,
-                                isCollapsed = false,
-                                hasLoadedReplies = true,
-                            ),
-                            isLocalRoot = true,
-                            isCollapsed = false,
-                            isOp = true,
-                            onUpdate = onUpdate,
-                        )
-                    }
-                }
+                MainEventRow(
+                    ctx = localRoot,
+                    showAuthorName = true,
+                    onUpdate = onUpdate
+                )
+                FullHorizontalDivider()
             }
-            if (localRoot.replyCount > totalReplyCount) item {
+            if (localRoot.mainEvent.replyCount > totalReplyCount) item {
                 FullLinearProgressIndicator()
             }
-            itemsIndexed(adjustedReplies) { i, leveledReply ->
-                if (leveledReply.level == 0) FullHorizontalDivider()
-                ThreadReplyRow(
-                    leveledReply = leveledReply,
-                    isLocalRoot = false, // TODO: create ThreadReplyItemUI
-                    isOp = localRoot.pubkey == leveledReply.reply.pubkey,
+            itemsIndexed(adjustedReplies) { i, reply ->
+                MainEventRow(
+                    ctx = reply,
+                    showAuthorName = true,
                     onUpdate = onUpdate
                 )
                 if (i == adjustedReplies.size - 1) FullHorizontalDivider()
             }
-            if (localRoot.replyCount == 0 && adjustedReplies.isEmpty()) item {
+            if (localRoot.mainEvent.replyCount == 0 && adjustedReplies.isEmpty()) item {
                 Column(modifier = Modifier.fillParentMaxHeight(0.5f)) {
                     BaseHint(text = stringResource(id = R.string.no_comments_found))
                 }
