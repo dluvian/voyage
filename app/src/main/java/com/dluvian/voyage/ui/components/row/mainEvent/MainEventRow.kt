@@ -1,5 +1,8 @@
 package com.dluvian.voyage.ui.components.row.mainEvent
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -9,18 +12,14 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ClickText
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.OnUpdate
@@ -30,11 +29,13 @@ import com.dluvian.voyage.core.OpenThreadRaw
 import com.dluvian.voyage.core.ThreadViewShowReplies
 import com.dluvian.voyage.core.ThreadViewToggleCollapse
 import com.dluvian.voyage.core.model.CrossPost
+import com.dluvian.voyage.core.model.LegacyReply
+import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.model.ThreadableMainEvent
 import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.ui.components.chip.CommentChip
+import com.dluvian.voyage.ui.components.chip.ReplyChip
 import com.dluvian.voyage.ui.components.text.AnnotatedText
-import com.dluvian.voyage.ui.theme.ReplyIcon
 import com.dluvian.voyage.ui.theme.spacing
 import com.dluvian.voyage.ui.views.nonMain.MoreRepliesTextButton
 
@@ -52,13 +53,22 @@ fun MainEventRow(
         )
 
         is ThreadRootCtx -> {
-            RowWithDivider(level = 1) {
-                MainEventMainRow(
+            when (ctx.threadableMainEvent) {
+                is RootPost -> MainEventMainRow(
                     ctx = ctx,
                     showAuthorName = true,
                     onUpdate = onUpdate
                 )
+
+                is LegacyReply -> RowWithDivider(level = 1) {
+                    MainEventMainRow(
+                        ctx = ctx,
+                        showAuthorName = true,
+                        onUpdate = onUpdate
+                    )
+                }
             }
+
         }
 
         is ThreadReplyCtx -> {
@@ -126,12 +136,26 @@ private fun MainEventMainRow(
                 Spacer(modifier = Modifier.height(spacing.large))
             }
         }
-        AnnotatedText(
-            text = ctx.mainEvent.content,
-            onClick = { onClickText(it, ctx.mainEvent.content) }
-        )
-        Spacer(modifier = Modifier.height(spacing.large))
-        MainEventActions(
+
+        val isCollapsed = remember(ctx) {
+            when (ctx) {
+                is ThreadReplyCtx -> ctx.isCollapsed
+                is FeedCtx, is ThreadRootCtx -> false
+            }
+        }
+
+        AnimatedVisibility(
+            visible = !isCollapsed,
+            exit = slideOutVertically(animationSpec = tween(durationMillis = 0))
+        ) {
+            AnnotatedText(
+                text = ctx.mainEvent.content,
+                onClick = { onClickText(it, ctx.mainEvent.content) }
+            )
+            Spacer(modifier = Modifier.height(spacing.large))
+        }
+
+        if (!isCollapsed) MainEventActions(
             mainEvent = ctx.mainEvent,
             onUpdate = onUpdate,
             additionalStartAction = {
@@ -153,23 +177,34 @@ private fun MainEventMainRow(
             },
             additionalEndAction = {
                 when (ctx) {
-                    is ThreadReplyCtx -> TextButton(
-                        modifier = Modifier.height(ButtonDefaults.MinHeight),
-                        onClick = { onUpdate(OpenReplyCreation(parent = ctx.reply)) }
-                    ) {
-                        Icon(
-                            imageVector = ReplyIcon,
-                            contentDescription = stringResource(id = R.string.reply)
-                        )
-                    }
+                    is ThreadReplyCtx -> ReplyButton(ctx = ctx, onUpdate = onUpdate)
 
-                    is FeedCtx, is ThreadRootCtx -> CommentChip(
-                        commentCount = ctx.mainEvent.replyCount,
-                        onClick = { onUpdate(OpenReplyCreation(parent = ctx.mainEvent)) })
+                    is ThreadRootCtx -> RootCommentButton(ctx = ctx, onUpdate = onUpdate)
+
+                    is FeedCtx -> {
+                        when (ctx.mainEvent) {
+                            is RootPost -> RootCommentButton(ctx = ctx, onUpdate = onUpdate)
+                            is CrossPost -> RootCommentButton(ctx = ctx, onUpdate = onUpdate)
+                            is LegacyReply -> ReplyButton(ctx = ctx, onUpdate = onUpdate)
+                        }
+                    }
                 }
 
             })
     }
+}
+
+@Composable
+private fun RootCommentButton(ctx: MainEventCtx, onUpdate: OnUpdate) {
+    CommentChip(
+        commentCount = ctx.mainEvent.replyCount,
+        onClick = { onUpdate(OpenReplyCreation(parent = ctx.mainEvent)) }
+    )
+}
+
+@Composable
+private fun ReplyButton(ctx: MainEventCtx, onUpdate: OnUpdate) {
+    ReplyChip(onClick = { onUpdate(OpenReplyCreation(parent = ctx.mainEvent)) })
 }
 
 @Composable

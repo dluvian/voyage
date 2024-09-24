@@ -10,8 +10,8 @@ import com.dluvian.voyage.ui.theme.BookmarkIcon
 fun BookmarkChip(onClick: Fn) {
     ActionChip(
         icon = BookmarkIcon,
-        count = 0,
         description = stringResource(id = R.string.remove_bookmark),
+        count = 0,
         onClick = onClick
     )
 }

@@ -108,6 +108,8 @@ private fun ThreadViewContent(
                     showAuthorName = true,
                     onUpdate = onUpdate
                 )
+            }
+            if (localRoot.threadableMainEvent is RootPost) item {
                 FullHorizontalDivider()
             }
             if (localRoot.mainEvent.replyCount > totalReplyCount) item {

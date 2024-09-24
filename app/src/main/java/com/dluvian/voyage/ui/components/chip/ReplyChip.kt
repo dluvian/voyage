@@ -4,13 +4,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Fn
-import com.dluvian.voyage.ui.theme.CrossPostIcon
+import com.dluvian.voyage.ui.theme.ReplyIcon
 
 @Composable
-fun CrossPostChip(onClick: Fn) {
+fun ReplyChip(onClick: Fn) {
     ActionChip(
-        icon = CrossPostIcon,
-        description = stringResource(id = R.string.cross_post),
-        onClick = onClick
+        icon = ReplyIcon,
+        description = stringResource(id = R.string.reply),
+        onClick = onClick,
     )
 }

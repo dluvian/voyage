@@ -11,9 +11,9 @@ import com.dluvian.voyage.ui.theme.spacing
 fun CommentChip(commentCount: Int, onClick: Fn) {
     ActionChip(
         icon = CommentIcon,
-        count = commentCount,
         description = stringResource(id = R.string.comment),
-        topPadding = spacing.small,
-        onClick = onClick
+        count = commentCount,
+        onClick = onClick,
+        topPadding = spacing.small
     )
 }

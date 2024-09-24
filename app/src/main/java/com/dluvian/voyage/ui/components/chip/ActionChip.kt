@@ -23,8 +23,8 @@ import com.dluvian.voyage.ui.theme.spacing
 @Composable
 fun ActionChip(
     icon: ImageVector,
-    count: Int,
     description: String,
+    count: Int = 0,
     tint: Color = MaterialTheme.colorScheme.primary,
     onClick: Fn,
     topPadding: Dp = 0.dp
