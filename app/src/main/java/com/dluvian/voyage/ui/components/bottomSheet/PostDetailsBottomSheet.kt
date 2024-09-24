@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -56,7 +57,9 @@ fun PostDetailsBottomSheet(postDetails: PostDetails, onUpdate: OnUpdate) {
 
                 item {
                     SmallHeader(header = stringResource(id = R.string.event_json))
-                    CopyableText(text = postDetails.base.json)
+                    LazyRow {
+                        item { CopyableText(text = postDetails.base.json) }
+                    }
                 }
             }
         }
