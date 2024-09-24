@@ -182,6 +182,7 @@ class PostSender(
             content = "$trimmedHeader $trimmedBody",
             isAnon = isAnon
         )
+        val repoCoordinateStr = repoCoordinate.toString()
 
         return nostrService.publishGitIssue(
             repoCoordinate = repoCoordinate,
@@ -189,8 +190,8 @@ class PostSender(
             content = trimmedBody,
             label = issue.getLabel(),
             mentions = mentions,
-            // TODO: Once rust-nostr implements it: .filterNot { it == repoCoordinate.toString() },
-            quotes = extractQuotesFromString(content = trimmedBody),
+            quotes = extractQuotesFromString(content = trimmedBody)
+                .filterNot { it == repoCoordinateStr },
             relayUrls = relayProvider.getPublishRelays(publishTo = listOf(DLUVIAN_HEX)),
             isAnon = isAnon,
         )
