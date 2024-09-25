@@ -162,7 +162,6 @@ class AnnotatedStringProvider(
 
     @OptIn(ExperimentalTextApi::class)
     private fun AnnotatedString.Builder.pushStyledUrlAnnotation(url: String, style: SpanStyle) {
-        // TODO: Deprecated
         pushUrlAnnotation(UrlAnnotation(url = url))
         pushStyledString(style = style, text = shortenUrl(url))
         pop()

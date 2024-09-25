@@ -11,7 +11,6 @@ import com.dluvian.voyage.data.room.view.RootPostView
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
-// TODO: Add cross posts
 private const val BASE_QUERY = "FROM RootPostView " +
         "WHERE createdAt <= :until "
 

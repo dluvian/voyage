@@ -113,21 +113,18 @@ class FeedProvider(
                 size = size
             )
 
-            // TODO: crossPosts
             is TopicFeedSetting -> room.rootPostDao().getTopicRootPostFlow(
                 topic = setting.topic,
                 until = until,
                 size = size
             )
 
-            // TODO: crossPosts
             is ProfileRootFeedSetting -> room.rootPostDao().getProfileRootPostFlow(
                 pubkey = setting.nprofile.publicKey().toHex(),
                 until = until,
                 size = size
             )
 
-            // TODO: crossPosts
             is ListFeedSetting -> room.rootPostDao().getListRootPostFlow(
                 identifier = setting.identifier,
                 until = until,
