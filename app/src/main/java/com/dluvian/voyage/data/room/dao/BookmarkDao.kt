@@ -52,12 +52,12 @@ interface BookmarkDao {
     @Query(BOOKMARKED_EVENTS_EXIST_QUERY)
     fun hasBookmarkedPostsFlow(): Flow<Boolean>
 
-    // TODO: What if id is crossPostId ?
     @Query(
         "SELECT createdAt " +
                 "FROM mainEvent " +
                 "WHERE createdAt <= :until " +
                 "AND id IN (SELECT eventId FROM bookmark) " +
+                "AND id NOT IN (SELECT eventId FROM crossPost) " + // No crossposts in bookmark feed
                 "ORDER BY createdAt DESC " +
                 "LIMIT :size"
     )
