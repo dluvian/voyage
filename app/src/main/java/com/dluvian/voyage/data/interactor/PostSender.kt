@@ -219,14 +219,7 @@ class PostSender(
             .mapNotNull {
                 runCatching { Nip19Event.fromBech32(it).eventId().toHex() }.getOrNull()
                     ?: runCatching { EventId.fromBech32(it).toHex() }.getOrNull()
-                    ?: runCatching {
-                        Coordinate.fromBech32(it).let { coord ->
-                            val kind = coord.kind().asU16()
-                            val pubkey = coord.publicKey().toHex()
-                            val identifier = coord.identifier()
-                            "$kind:$pubkey:$identifier".removeSuffix(":")
-                        }
-                    }.getOrNull()
+                    ?: runCatching { Coordinate.fromBech32(it).toString() }.getOrNull()
             }.distinct()
     }
 }
