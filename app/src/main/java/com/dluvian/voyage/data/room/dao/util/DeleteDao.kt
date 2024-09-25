@@ -26,7 +26,6 @@ interface DeleteDao {
     }
 
     // No tx bc we don't care if it's atomic
-    // TODO: Sweep orphaned votes and hashtags
     suspend fun sweepDb(threshold: Int, oldestCreatedAtInUse: Long) {
         val createdAtWithOffset = internalOldestCreatedAt(threshold = threshold) ?: return
         val oldestCreatedAt = minOf(createdAtWithOffset, oldestCreatedAtInUse)

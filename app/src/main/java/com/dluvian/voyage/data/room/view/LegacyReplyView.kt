@@ -9,7 +9,6 @@ import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 import com.dluvian.voyage.ui.components.row.mainEvent.ThreadReplyCtx
 
-// TODO: Exclude muted replies from replyCount
 @DatabaseView(
     "SELECT mainEvent.id, " +
             "legacyReply.parentId, " +

@@ -67,6 +67,7 @@ fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpd
                     state = vm.threadState,
                     onUpdate = onUpdate
                 )
+                // TODO: Show hidden replies (muted/filter) when clicking button bc calculating correct count is harder
             }
         }
     }

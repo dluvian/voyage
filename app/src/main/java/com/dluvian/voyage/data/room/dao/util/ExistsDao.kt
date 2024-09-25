@@ -8,11 +8,9 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ExistsDao {
 
-    // TODO: What if id is crossPostId ?
     @Query("SELECT EXISTS (SELECT * FROM mainEvent WHERE id = :id)")
     suspend fun postExists(id: EventIdHex): Boolean
 
-    // TODO: What if id is crossPostId ?
     @Query(
         "SELECT EXISTS" +
                 "(SELECT id FROM mainEvent WHERE id = " +

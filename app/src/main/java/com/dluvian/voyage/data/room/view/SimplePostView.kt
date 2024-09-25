@@ -15,9 +15,9 @@ import com.dluvian.voyage.core.PubkeyHex
             "(SELECT EXISTS(SELECT * FROM mute WHERE mute.mutedItem = mainEvent.pubkey AND mute.tag IS 'p')) AS authorIsMuted, " +
             "(SELECT EXISTS(SELECT * FROM profileSetItem WHERE profileSetItem.pubkey = mainEvent.pubkey)) AS authorIsInList, " +
             "(SELECT EXISTS(SELECT * FROM lock WHERE lock.pubkey = mainEvent.pubkey)) AS authorIsLocked " +
-            "FROM rootPost " +
-            "JOIN mainEvent ON mainEvent.id = rootPost.eventId "
-) // TODO: Search for replies too
+            "FROM mainEvent " +
+            "LEFT JOIN rootPost ON rootPost.eventId = mainEvent.id"
+)
 data class SimplePostView(
     val id: EventIdHex,
     val pubkey: PubkeyHex,
