@@ -26,7 +26,7 @@ import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.model.FullProfileUI
 import com.dluvian.voyage.data.model.ItemSetMeta
 import com.dluvian.voyage.data.model.PostDetails
-import com.dluvian.voyage.data.model.ProfileRootFeedSetting
+import com.dluvian.voyage.data.model.ProfileFeedSetting
 import com.dluvian.voyage.data.model.ReplyFeedSetting
 import com.dluvian.voyage.data.nostr.Nip65Relay
 import com.dluvian.voyage.data.nostr.NostrSubscriber
@@ -114,7 +114,7 @@ class ProfileViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
                 MutableStateFlow(null)
             }
         }
-        rootPaginator.reinit(setting = ProfileRootFeedSetting(nprofile = profileNavView.nprofile))
+        rootPaginator.reinit(setting = ProfileFeedSetting(nprofile = profileNavView.nprofile))
         replyPaginator.reinit(setting = ReplyFeedSetting(nprofile = profileNavView.nprofile))
         nip65Relays.value = nip65Dao.getNip65Flow(pubkey = pubkeyHex)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())

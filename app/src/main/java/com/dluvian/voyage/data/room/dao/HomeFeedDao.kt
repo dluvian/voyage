@@ -7,19 +7,26 @@ import com.dluvian.voyage.data.model.Global
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.NoPubkeys
 import com.dluvian.voyage.data.model.WebOfTrustPubkeys
+import com.dluvian.voyage.data.room.view.CrossPostView
 import com.dluvian.voyage.data.room.view.RootPostView
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 
-private const val BASE_QUERY = "FROM RootPostView " +
-        "WHERE createdAt <= :until "
+private const val CREATED_AT = "WHERE createdAt <= :until "
+private const val ROOT = "FROM RootPostView $CREATED_AT"
+private const val CROSS = "FROM CrossPostView $CREATED_AT"
 
-private const val BASE_CONDITION = "AND authorIsOneself = 0 " +
+private const val ROOT_COND = "AND authorIsOneself = 0 " +
         "AND authorIsMuted = 0 " +
         "AND authorIsLocked = 0 " +
         "AND NOT EXISTS (SELECT * FROM hashtag WHERE eventId = id AND hashtag IN (SELECT mutedItem FROM mute WHERE tag IS 't')) " +
         "ORDER BY createdAt DESC " +
         "LIMIT :size"
+
+private const val CROSS_COND = "AND crossPostedAuthorIsOneself = 0 " +
+        "AND crossPostedAuthorIsMuted = 0 " +
+        ROOT_COND
 
 private const val TOPIC_ONLY_COND = "AND myTopic IS NOT NULL "
 private const val FRIEND_ONLY_COND = "AND authorIsFriend "
@@ -28,35 +35,67 @@ private const val FRIEND_OR_TOPIC_COND = "AND (authorIsFriend OR myTopic IS NOT 
 private const val WOT_OR_TOPIC_COND =
     "AND (authorIsTrusted OR authorIsFriend OR myTopic IS NOT NULL) "
 
-private const val TOPIC_ONLY_MAIN_QUERY = "$BASE_QUERY $TOPIC_ONLY_COND $BASE_CONDITION"
-private const val TOPIC_ONLY_QUERY = "SELECT * $TOPIC_ONLY_MAIN_QUERY"
-private const val TOPIC_ONLY_CREATED_AT_QUERY = "SELECT createdAt $TOPIC_ONLY_MAIN_QUERY"
-private const val TOPIC_ONLY_EXISTS_QUERY = "SELECT EXISTS($TOPIC_ONLY_QUERY)"
+private const val TOPIC_ONLY_MAIN_ROOT = "$ROOT $TOPIC_ONLY_COND $ROOT_COND"
+private const val TOPIC_ONLY_ROOT_QUERY = "SELECT * $TOPIC_ONLY_MAIN_ROOT"
+private const val TOPIC_ONLY_CREATED_AT_ROOT_QUERY = "SELECT createdAt $TOPIC_ONLY_MAIN_ROOT"
+private const val TOPIC_ONLY_EXISTS_ROOT_QUERY = "SELECT EXISTS($TOPIC_ONLY_ROOT_QUERY)"
 
-private const val FRIEND_ONLY_MAIN_QUERY = "$BASE_QUERY $FRIEND_ONLY_COND $BASE_CONDITION"
-private const val FRIEND_ONLY_QUERY = "SELECT * $FRIEND_ONLY_MAIN_QUERY"
-private const val FRIEND_ONLY_CREATED_AT_QUERY = "SELECT createdAt $FRIEND_ONLY_MAIN_QUERY"
-private const val FRIEND_ONLY_EXISTS_QUERY = "SELECT EXISTS($FRIEND_ONLY_QUERY)"
+private const val TOPIC_ONLY_MAIN_CROSS = "$CROSS $TOPIC_ONLY_COND $CROSS_COND"
+private const val TOPIC_ONLY_CROSS_QUERY = "SELECT * $TOPIC_ONLY_MAIN_CROSS"
+private const val TOPIC_ONLY_CREATED_AT_CROSS_QUERY = "SELECT createdAt $TOPIC_ONLY_MAIN_CROSS"
+private const val TOPIC_ONLY_EXISTS_CROSS_QUERY = "SELECT EXISTS($TOPIC_ONLY_CROSS_QUERY)"
 
-private const val WOT_ONLY_MAIN_QUERY = "$BASE_QUERY $WOT_ONLY_COND $BASE_CONDITION"
-private const val WOT_ONLY_QUERY = "SELECT * $WOT_ONLY_MAIN_QUERY"
-private const val WOT_ONLY_CREATED_AT_QUERY = "SELECT createdAt $WOT_ONLY_MAIN_QUERY"
-private const val WOT_ONLY_EXISTS_QUERY = "SELECT EXISTS($WOT_ONLY_QUERY)"
+private const val FRIEND_ONLY_MAIN_ROOT = "$ROOT $FRIEND_ONLY_COND $ROOT_COND"
+private const val FRIEND_ONLY_ROOT_QUERY = "SELECT * $FRIEND_ONLY_MAIN_ROOT"
+private const val FRIEND_ONLY_CREATED_AT_ROOT_QUERY = "SELECT createdAt $FRIEND_ONLY_MAIN_ROOT"
+private const val FRIEND_ONLY_EXISTS_ROOT_QUERY = "SELECT EXISTS($FRIEND_ONLY_ROOT_QUERY)"
 
-private const val FRIEND_OR_TOPIC_MAIN_QUERY = "$BASE_QUERY $FRIEND_OR_TOPIC_COND $BASE_CONDITION"
-private const val FRIEND_OR_TOPIC_QUERY = "SELECT * $FRIEND_OR_TOPIC_MAIN_QUERY"
-private const val FRIEND_OR_TOPIC_CREATED_AT_QUERY = "SELECT createdAt $FRIEND_OR_TOPIC_MAIN_QUERY"
-private const val FRIEND_OR_TOPIC_EXISTS_QUERY = "SELECT EXISTS($FRIEND_OR_TOPIC_QUERY)"
+private const val FRIEND_ONLY_MAIN_CROSS = "$CROSS $FRIEND_ONLY_COND $CROSS_COND"
+private const val FRIEND_ONLY_CROSS_QUERY = "SELECT * $FRIEND_ONLY_MAIN_CROSS"
+private const val FRIEND_ONLY_CREATED_AT_CROSS_QUERY = "SELECT createdAt $FRIEND_ONLY_MAIN_CROSS"
+private const val FRIEND_ONLY_EXISTS_CROSS_QUERY = "SELECT EXISTS($FRIEND_ONLY_CROSS_QUERY)"
 
-private const val WOT_OR_TOPIC_MAIN_QUERY = "$BASE_QUERY $WOT_OR_TOPIC_COND $BASE_CONDITION"
-private const val WOT_OR_TOPIC_QUERY = "SELECT * $WOT_OR_TOPIC_MAIN_QUERY"
-private const val WOT_OR_TOPIC_CREATED_AT_QUERY = "SELECT createdAt $WOT_OR_TOPIC_MAIN_QUERY"
-private const val WOT_OR_TOPIC_EXISTS_QUERY = "SELECT EXISTS($WOT_OR_TOPIC_QUERY)"
+private const val WOT_ONLY_MAIN_ROOT = "$ROOT $WOT_ONLY_COND $ROOT_COND"
+private const val WOT_ONLY_ROOT_QUERY = "SELECT * $WOT_ONLY_MAIN_ROOT"
+private const val WOT_ONLY_CREATED_AT_ROOT_QUERY = "SELECT createdAt $WOT_ONLY_MAIN_ROOT"
+private const val WOT_ONLY_EXISTS_ROOT_QUERY = "SELECT EXISTS($WOT_ONLY_ROOT_QUERY)"
 
-private const val GLOBAL_MAIN_QUERY = "$BASE_QUERY $BASE_CONDITION"
-private const val GLOBAL_QUERY = "SELECT * $GLOBAL_MAIN_QUERY"
-private const val GLOBAL_CREATED_AT_QUERY = "SELECT createdAt $GLOBAL_MAIN_QUERY"
-private const val GLOBAL_EXISTS_QUERY = "SELECT EXISTS($GLOBAL_QUERY)"
+private const val WOT_ONLY_MAIN_CROSS = "$CROSS $WOT_ONLY_COND $CROSS_COND"
+private const val WOT_ONLY_CROSS_QUERY = "SELECT * $WOT_ONLY_MAIN_CROSS"
+private const val WOT_ONLY_CREATED_AT_CROSS_QUERY = "SELECT createdAt $WOT_ONLY_MAIN_CROSS"
+private const val WOT_ONLY_EXISTS_CROSS_QUERY = "SELECT EXISTS($WOT_ONLY_CROSS_QUERY)"
+
+private const val FRIEND_OR_TOPIC_MAIN_ROOT = "$ROOT $FRIEND_OR_TOPIC_COND $ROOT_COND"
+private const val FRIEND_OR_TOPIC_ROOT_QUERY = "SELECT * $FRIEND_OR_TOPIC_MAIN_ROOT"
+private const val FRIEND_OR_TOPIC_CREATED_AT_ROOT_QUERY =
+    "SELECT createdAt $FRIEND_OR_TOPIC_MAIN_ROOT"
+private const val FRIEND_OR_TOPIC_EXISTS_ROOT_QUERY = "SELECT EXISTS($FRIEND_OR_TOPIC_ROOT_QUERY)"
+
+private const val FRIEND_OR_TOPIC_MAIN_CROSS = "$CROSS $FRIEND_OR_TOPIC_COND $CROSS_COND"
+private const val FRIEND_OR_TOPIC_CROSS_QUERY = "SELECT * $FRIEND_OR_TOPIC_MAIN_CROSS"
+private const val FRIEND_OR_TOPIC_CREATED_AT_CROSS_QUERY =
+    "SELECT createdAt $FRIEND_OR_TOPIC_MAIN_CROSS"
+private const val FRIEND_OR_TOPIC_EXISTS_CROSS_QUERY = "SELECT EXISTS($FRIEND_OR_TOPIC_CROSS_QUERY)"
+
+private const val WOT_OR_TOPIC_MAIN_ROOT = "$ROOT $WOT_OR_TOPIC_COND $ROOT_COND"
+private const val WOT_OR_TOPIC_ROOT_QUERY = "SELECT * $WOT_OR_TOPIC_MAIN_ROOT"
+private const val WOT_OR_TOPIC_CREATED_AT_ROOT_QUERY = "SELECT createdAt $WOT_OR_TOPIC_MAIN_ROOT"
+private const val WOT_OR_TOPIC_EXISTS_ROOT_QUERY = "SELECT EXISTS($WOT_OR_TOPIC_ROOT_QUERY)"
+
+private const val WOT_OR_TOPIC_MAIN_CROSS = "$CROSS $WOT_OR_TOPIC_COND $CROSS_COND"
+private const val WOT_OR_TOPIC_CROSS_QUERY = "SELECT * $WOT_OR_TOPIC_MAIN_CROSS"
+private const val WOT_OR_TOPIC_CREATED_AT_CROSS_QUERY = "SELECT createdAt $WOT_OR_TOPIC_MAIN_CROSS"
+private const val WOT_OR_TOPIC_EXISTS_CROSS_QUERY = "SELECT EXISTS($WOT_OR_TOPIC_CROSS_QUERY)"
+
+private const val GLOBAL_MAIN_ROOT = "$ROOT $ROOT_COND"
+private const val GLOBAL_ROOT_QUERY = "SELECT * $GLOBAL_MAIN_ROOT"
+private const val GLOBAL_CREATED_AT_ROOT_QUERY = "SELECT createdAt $GLOBAL_MAIN_ROOT"
+private const val GLOBAL_EXISTS_ROOT_QUERY = "SELECT EXISTS($GLOBAL_ROOT_QUERY)"
+
+private const val GLOBAL_MAIN_CROSS = "$CROSS $CROSS_COND"
+private const val GLOBAL_CROSS_QUERY = "SELECT * $GLOBAL_MAIN_CROSS"
+private const val GLOBAL_CREATED_AT_CROSS_QUERY = "SELECT createdAt $GLOBAL_MAIN_CROSS"
+private const val GLOBAL_EXISTS_CROSS_QUERY = "SELECT EXISTS($GLOBAL_CROSS_QUERY)"
 
 @Dao
 interface HomeFeedDao {
@@ -70,24 +109,54 @@ interface HomeFeedDao {
 
         return when (setting.pubkeySelection) {
             NoPubkeys -> if (withMyTopics) {
-                internalGetTopicFlow(until = until, size = size)
+                internalGetTopicRootFlow(until = until, size = size)
             } else {
                 flowOf(emptyList())
             }
 
             FriendPubkeysNoLock -> if (withMyTopics) {
-                internalGetFriendOrTopicFlow(until = until, size = size)
+                internalGetFriendOrTopicRootFlow(until = until, size = size)
             } else {
-                internalGetFriendFlow(until = until, size = size)
+                internalGetFriendRootFlow(until = until, size = size)
             }
 
             WebOfTrustPubkeys -> if (withMyTopics) {
-                internalGetWotOrTopicFlow(until = until, size = size)
+                internalGetWotOrTopicRootFlow(until = until, size = size)
             } else {
-                internalGetWotFlow(until = until, size = size)
+                internalGetWotRootFlow(until = until, size = size)
             }
 
-            Global -> internalGetGlobalFlow(until = until, size = size)
+            Global -> internalGetGlobalRootFlow(until = until, size = size)
+        }
+    }
+
+    fun getHomeCrossPostFlow(
+        setting: HomeFeedSetting,
+        until: Long,
+        size: Int,
+    ): Flow<List<CrossPostView>> {
+        val withMyTopics = setting.topicSelection.isMyTopics()
+
+        return when (setting.pubkeySelection) {
+            NoPubkeys -> if (withMyTopics) {
+                internalGetTopicCrossFlow(until = until, size = size)
+            } else {
+                flowOf(emptyList())
+            }
+
+            FriendPubkeysNoLock -> if (withMyTopics) {
+                internalGetFriendOrTopicCrossFlow(until = until, size = size)
+            } else {
+                internalGetFriendCrossFlow(until = until, size = size)
+            }
+
+            WebOfTrustPubkeys -> if (withMyTopics) {
+                internalGetWotOrTopicCrossFlow(until = until, size = size)
+            } else {
+                internalGetWotCrossFlow(until = until, size = size)
+            }
+
+            Global -> internalGetGlobalCrossFlow(until = until, size = size)
         }
     }
 
@@ -100,28 +169,58 @@ interface HomeFeedDao {
 
         return when (setting.pubkeySelection) {
             NoPubkeys -> if (withMyTopics) {
-                internalGetTopic(until = until, size = size)
+                internalGetTopicRoot(until = until, size = size)
             } else {
                 emptyList()
             }
 
             FriendPubkeysNoLock -> if (withMyTopics) {
-                internalGetFriendOrTopic(until = until, size = size)
+                internalGetFriendOrTopicRoot(until = until, size = size)
             } else {
-                internalGetFriend(until = until, size = size)
+                internalGetFriendRoot(until = until, size = size)
             }
 
             WebOfTrustPubkeys -> if (withMyTopics) {
-                internalGetWotOrTopic(until = until, size = size)
+                internalGetWotOrTopicRoot(until = until, size = size)
             } else {
-                internalGetWot(until = until, size = size)
+                internalGetWotRoot(until = until, size = size)
             }
 
-            Global -> internalGetGlobal(until = until, size = size)
+            Global -> internalGetGlobalRoot(until = until, size = size)
         }
     }
 
-    fun hasHomeRootPostsFlow(
+    suspend fun getHomeCrossPosts(
+        setting: HomeFeedSetting,
+        until: Long,
+        size: Int
+    ): List<CrossPostView> {
+        val withMyTopics = setting.topicSelection.isMyTopics()
+
+        return when (setting.pubkeySelection) {
+            NoPubkeys -> if (withMyTopics) {
+                internalGetTopicCross(until = until, size = size)
+            } else {
+                emptyList()
+            }
+
+            FriendPubkeysNoLock -> if (withMyTopics) {
+                internalGetFriendOrTopicCross(until = until, size = size)
+            } else {
+                internalGetFriendCross(until = until, size = size)
+            }
+
+            WebOfTrustPubkeys -> if (withMyTopics) {
+                internalGetWotOrTopicCross(until = until, size = size)
+            } else {
+                internalGetWotCross(until = until, size = size)
+            }
+
+            Global -> internalGetGlobalCross(until = until, size = size)
+        }
+    }
+
+    fun hasHomeFeedFlow(
         setting: HomeFeedSetting,
         until: Long = Long.MAX_VALUE,
         size: Int = 1
@@ -130,28 +229,48 @@ interface HomeFeedDao {
 
         return when (setting.pubkeySelection) {
             NoPubkeys -> if (withMyTopics) {
-                internalHasTopicFlow(until = until, size = size)
+                combine(
+                    internalHasTopicRootFlow(until = until, size = size),
+                    internalHasTopicCrossFlow(until = until, size = size),
+                ) { root, cross -> root || cross }
             } else {
                 flowOf(false)
             }
 
             FriendPubkeysNoLock -> if (withMyTopics) {
-                internalHasFriendOrTopicFlow(until = until, size = size)
+                combine(
+                    internalHasFriendOrTopicRootFlow(until = until, size = size),
+                    internalHasFriendOrTopicCrossFlow(until = until, size = size),
+                ) { root, cross -> root || cross }
             } else {
-                internalHasFriendFlow(until = until, size = size)
+                combine(
+                    internalHasFriendRootFlow(until = until, size = size),
+                    internalHasFriendCrossFlow(until = until, size = size),
+                ) { root, cross -> root || cross }
             }
 
             WebOfTrustPubkeys -> if (withMyTopics) {
-                internalHasWotOrTopicFlow(until = until, size = size)
+                combine(
+                    internalHasWotOrTopicRootFlow(until = until, size = size),
+                    internalHasWotOrTopicCrossFlow(until = until, size = size),
+                ) { root, cross -> root || cross }
             } else {
-                internalHasWotFlow(until = until, size = size)
+                combine(
+                    internalHasWotRootFlow(until = until, size = size),
+                    internalHasWotCrossFlow(until = until, size = size),
+                ) { root, cross -> root || cross }
             }
 
-            Global -> internalHasGlobalFlow(until = until, size = size)
+            Global -> {
+                combine(
+                    internalHasGlobalRootFlow(until = until, size = size),
+                    internalHasGlobalCrossFlow(until = until, size = size),
+                ) { root, cross -> root || cross }
+            }
         }
     }
 
-    suspend fun getHomeRootPostsCreatedAt(
+    suspend fun getHomeFeedCreatedAt(
         setting: HomeFeedSetting,
         until: Long,
         size: Int
@@ -160,96 +279,176 @@ interface HomeFeedDao {
 
         return when (setting.pubkeySelection) {
             NoPubkeys -> if (withMyTopics) {
-                internalGetTopicCreatedAt(until = until, size = size)
+                internalGetTopicCreatedAtRoot(until = until, size = size) +
+                        internalGetTopicCreatedAtCross(until = until, size = size)
             } else {
                 emptyList()
             }
 
             FriendPubkeysNoLock -> if (withMyTopics) {
-                internalGetFriendOrTopicCreatedAt(until = until, size = size)
+                internalGetFriendOrTopicCreatedAtRoot(until = until, size = size) +
+                        internalGetFriendOrTopicCreatedAtCross(until = until, size = size)
             } else {
-                internalGetFriendCreatedAt(until = until, size = size)
+                internalGetFriendCreatedAtRoot(until = until, size = size) +
+                        internalGetFriendCreatedAtCross(until = until, size = size)
             }
 
             WebOfTrustPubkeys -> if (withMyTopics) {
-                internalGetWotOrTopicCreatedAt(until = until, size = size)
+                internalGetWotOrTopicCreatedAtRoot(until = until, size = size) +
+                        internalGetWotOrTopicCreatedAtCross(until = until, size = size)
             } else {
-                internalGetWotCreatedAt(until = until, size = size)
+                internalGetWotCreatedAtRoot(until = until, size = size) +
+                        internalGetWotCreatedAtCross(until = until, size = size)
             }
 
-            Global -> internalGetGlobalCreatedAt(until = until, size = size)
+            Global -> internalGetGlobalCreatedAtRoot(until = until, size = size) +
+                    internalGetGlobalCreatedAtCross(until = until, size = size)
         }
+            .sortedDescending()
+            .take(size)
     }
 
-    @Query(TOPIC_ONLY_QUERY)
-    fun internalGetTopicFlow(until: Long, size: Int): Flow<List<RootPostView>>
+    @Query(TOPIC_ONLY_ROOT_QUERY)
+    fun internalGetTopicRootFlow(until: Long, size: Int): Flow<List<RootPostView>>
 
-    @Query(FRIEND_OR_TOPIC_QUERY)
-    fun internalGetFriendOrTopicFlow(until: Long, size: Int): Flow<List<RootPostView>>
+    @Query(TOPIC_ONLY_CROSS_QUERY)
+    fun internalGetTopicCrossFlow(until: Long, size: Int): Flow<List<CrossPostView>>
 
-    @Query(FRIEND_ONLY_QUERY)
-    fun internalGetFriendFlow(until: Long, size: Int): Flow<List<RootPostView>>
+    @Query(FRIEND_OR_TOPIC_ROOT_QUERY)
+    fun internalGetFriendOrTopicRootFlow(until: Long, size: Int): Flow<List<RootPostView>>
 
-    @Query(WOT_OR_TOPIC_QUERY)
-    fun internalGetWotOrTopicFlow(until: Long, size: Int): Flow<List<RootPostView>>
+    @Query(FRIEND_OR_TOPIC_CROSS_QUERY)
+    fun internalGetFriendOrTopicCrossFlow(until: Long, size: Int): Flow<List<CrossPostView>>
 
-    @Query(WOT_ONLY_QUERY)
-    fun internalGetWotFlow(until: Long, size: Int): Flow<List<RootPostView>>
+    @Query(FRIEND_ONLY_ROOT_QUERY)
+    fun internalGetFriendRootFlow(until: Long, size: Int): Flow<List<RootPostView>>
 
-    @Query(GLOBAL_QUERY)
-    fun internalGetGlobalFlow(until: Long, size: Int): Flow<List<RootPostView>>
+    @Query(FRIEND_ONLY_CROSS_QUERY)
+    fun internalGetFriendCrossFlow(until: Long, size: Int): Flow<List<CrossPostView>>
 
-    @Query(TOPIC_ONLY_QUERY)
-    suspend fun internalGetTopic(until: Long, size: Int): List<RootPostView>
+    @Query(WOT_OR_TOPIC_ROOT_QUERY)
+    fun internalGetWotOrTopicRootFlow(until: Long, size: Int): Flow<List<RootPostView>>
 
-    @Query(FRIEND_OR_TOPIC_QUERY)
-    suspend fun internalGetFriendOrTopic(until: Long, size: Int): List<RootPostView>
+    @Query(WOT_OR_TOPIC_CROSS_QUERY)
+    fun internalGetWotOrTopicCrossFlow(until: Long, size: Int): Flow<List<CrossPostView>>
 
-    @Query(FRIEND_ONLY_QUERY)
-    suspend fun internalGetFriend(until: Long, size: Int): List<RootPostView>
+    @Query(WOT_ONLY_ROOT_QUERY)
+    fun internalGetWotRootFlow(until: Long, size: Int): Flow<List<RootPostView>>
 
-    @Query(WOT_OR_TOPIC_QUERY)
-    suspend fun internalGetWotOrTopic(until: Long, size: Int): List<RootPostView>
+    @Query(WOT_ONLY_CROSS_QUERY)
+    fun internalGetWotCrossFlow(until: Long, size: Int): Flow<List<CrossPostView>>
 
-    @Query(WOT_ONLY_QUERY)
-    suspend fun internalGetWot(until: Long, size: Int): List<RootPostView>
+    @Query(GLOBAL_ROOT_QUERY)
+    fun internalGetGlobalRootFlow(until: Long, size: Int): Flow<List<RootPostView>>
 
-    @Query(GLOBAL_QUERY)
-    suspend fun internalGetGlobal(until: Long, size: Int): List<RootPostView>
+    @Query(GLOBAL_CROSS_QUERY)
+    fun internalGetGlobalCrossFlow(until: Long, size: Int): Flow<List<CrossPostView>>
 
-    @Query(TOPIC_ONLY_EXISTS_QUERY)
-    fun internalHasTopicFlow(until: Long, size: Int): Flow<Boolean>
+    @Query(TOPIC_ONLY_ROOT_QUERY)
+    suspend fun internalGetTopicRoot(until: Long, size: Int): List<RootPostView>
 
-    @Query(FRIEND_OR_TOPIC_EXISTS_QUERY)
-    fun internalHasFriendOrTopicFlow(until: Long, size: Int): Flow<Boolean>
+    @Query(TOPIC_ONLY_CROSS_QUERY)
+    suspend fun internalGetTopicCross(until: Long, size: Int): List<CrossPostView>
 
-    @Query(FRIEND_ONLY_EXISTS_QUERY)
-    fun internalHasFriendFlow(until: Long, size: Int): Flow<Boolean>
+    @Query(FRIEND_OR_TOPIC_ROOT_QUERY)
+    suspend fun internalGetFriendOrTopicRoot(until: Long, size: Int): List<RootPostView>
 
-    @Query(WOT_OR_TOPIC_EXISTS_QUERY)
-    fun internalHasWotOrTopicFlow(until: Long, size: Int): Flow<Boolean>
+    @Query(FRIEND_OR_TOPIC_CROSS_QUERY)
+    suspend fun internalGetFriendOrTopicCross(until: Long, size: Int): List<CrossPostView>
 
-    @Query(WOT_ONLY_EXISTS_QUERY)
-    fun internalHasWotFlow(until: Long, size: Int): Flow<Boolean>
+    @Query(FRIEND_ONLY_ROOT_QUERY)
+    suspend fun internalGetFriendRoot(until: Long, size: Int): List<RootPostView>
 
-    @Query(GLOBAL_EXISTS_QUERY)
-    fun internalHasGlobalFlow(until: Long, size: Int): Flow<Boolean>
+    @Query(FRIEND_ONLY_CROSS_QUERY)
+    suspend fun internalGetFriendCross(until: Long, size: Int): List<CrossPostView>
 
-    @Query(TOPIC_ONLY_CREATED_AT_QUERY)
-    suspend fun internalGetTopicCreatedAt(until: Long, size: Int): List<Long>
+    @Query(WOT_OR_TOPIC_ROOT_QUERY)
+    suspend fun internalGetWotOrTopicRoot(until: Long, size: Int): List<RootPostView>
 
-    @Query(FRIEND_OR_TOPIC_CREATED_AT_QUERY)
-    suspend fun internalGetFriendOrTopicCreatedAt(until: Long, size: Int): List<Long>
+    @Query(WOT_OR_TOPIC_CROSS_QUERY)
+    suspend fun internalGetWotOrTopicCross(until: Long, size: Int): List<CrossPostView>
 
-    @Query(FRIEND_ONLY_CREATED_AT_QUERY)
-    suspend fun internalGetFriendCreatedAt(until: Long, size: Int): List<Long>
+    @Query(WOT_ONLY_ROOT_QUERY)
+    suspend fun internalGetWotRoot(until: Long, size: Int): List<RootPostView>
 
-    @Query(WOT_OR_TOPIC_CREATED_AT_QUERY)
-    suspend fun internalGetWotOrTopicCreatedAt(until: Long, size: Int): List<Long>
+    @Query(WOT_ONLY_CROSS_QUERY)
+    suspend fun internalGetWotCross(until: Long, size: Int): List<CrossPostView>
 
-    @Query(WOT_ONLY_CREATED_AT_QUERY)
-    suspend fun internalGetWotCreatedAt(until: Long, size: Int): List<Long>
+    @Query(GLOBAL_ROOT_QUERY)
+    suspend fun internalGetGlobalRoot(until: Long, size: Int): List<RootPostView>
 
-    @Query(GLOBAL_CREATED_AT_QUERY)
-    suspend fun internalGetGlobalCreatedAt(until: Long, size: Int): List<Long>
+    @Query(GLOBAL_CROSS_QUERY)
+    suspend fun internalGetGlobalCross(until: Long, size: Int): List<CrossPostView>
+
+    @Query(TOPIC_ONLY_EXISTS_ROOT_QUERY)
+    fun internalHasTopicRootFlow(until: Long, size: Int): Flow<Boolean>
+
+    @Query(TOPIC_ONLY_EXISTS_CROSS_QUERY)
+    fun internalHasTopicCrossFlow(until: Long, size: Int): Flow<Boolean>
+
+    @Query(FRIEND_OR_TOPIC_EXISTS_ROOT_QUERY)
+    fun internalHasFriendOrTopicRootFlow(until: Long, size: Int): Flow<Boolean>
+
+    @Query(FRIEND_OR_TOPIC_EXISTS_CROSS_QUERY)
+    fun internalHasFriendOrTopicCrossFlow(until: Long, size: Int): Flow<Boolean>
+
+    @Query(FRIEND_ONLY_EXISTS_ROOT_QUERY)
+    fun internalHasFriendRootFlow(until: Long, size: Int): Flow<Boolean>
+
+    @Query(FRIEND_ONLY_EXISTS_CROSS_QUERY)
+    fun internalHasFriendCrossFlow(until: Long, size: Int): Flow<Boolean>
+
+    @Query(WOT_OR_TOPIC_EXISTS_ROOT_QUERY)
+    fun internalHasWotOrTopicRootFlow(until: Long, size: Int): Flow<Boolean>
+
+    @Query(WOT_OR_TOPIC_EXISTS_CROSS_QUERY)
+    fun internalHasWotOrTopicCrossFlow(until: Long, size: Int): Flow<Boolean>
+
+    @Query(WOT_ONLY_EXISTS_ROOT_QUERY)
+    fun internalHasWotRootFlow(until: Long, size: Int): Flow<Boolean>
+
+    @Query(WOT_ONLY_EXISTS_CROSS_QUERY)
+    fun internalHasWotCrossFlow(until: Long, size: Int): Flow<Boolean>
+
+    @Query(GLOBAL_EXISTS_ROOT_QUERY)
+    fun internalHasGlobalRootFlow(until: Long, size: Int): Flow<Boolean>
+
+    @Query(GLOBAL_EXISTS_CROSS_QUERY)
+    fun internalHasGlobalCrossFlow(until: Long, size: Int): Flow<Boolean>
+
+    @Query(TOPIC_ONLY_CREATED_AT_ROOT_QUERY)
+    suspend fun internalGetTopicCreatedAtRoot(until: Long, size: Int): List<Long>
+
+    @Query(TOPIC_ONLY_CREATED_AT_CROSS_QUERY)
+    suspend fun internalGetTopicCreatedAtCross(until: Long, size: Int): List<Long>
+
+    @Query(FRIEND_OR_TOPIC_CREATED_AT_ROOT_QUERY)
+    suspend fun internalGetFriendOrTopicCreatedAtRoot(until: Long, size: Int): List<Long>
+
+    @Query(FRIEND_OR_TOPIC_CREATED_AT_CROSS_QUERY)
+    suspend fun internalGetFriendOrTopicCreatedAtCross(until: Long, size: Int): List<Long>
+
+    @Query(FRIEND_ONLY_CREATED_AT_ROOT_QUERY)
+    suspend fun internalGetFriendCreatedAtRoot(until: Long, size: Int): List<Long>
+
+    @Query(FRIEND_ONLY_CREATED_AT_CROSS_QUERY)
+    suspend fun internalGetFriendCreatedAtCross(until: Long, size: Int): List<Long>
+
+    @Query(WOT_OR_TOPIC_CREATED_AT_ROOT_QUERY)
+    suspend fun internalGetWotOrTopicCreatedAtRoot(until: Long, size: Int): List<Long>
+
+    @Query(WOT_OR_TOPIC_CREATED_AT_CROSS_QUERY)
+    suspend fun internalGetWotOrTopicCreatedAtCross(until: Long, size: Int): List<Long>
+
+    @Query(WOT_ONLY_CREATED_AT_ROOT_QUERY)
+    suspend fun internalGetWotCreatedAtRoot(until: Long, size: Int): List<Long>
+
+    @Query(WOT_ONLY_CREATED_AT_CROSS_QUERY)
+    suspend fun internalGetWotCreatedAtCross(until: Long, size: Int): List<Long>
+
+    @Query(GLOBAL_CREATED_AT_ROOT_QUERY)
+    suspend fun internalGetGlobalCreatedAtRoot(until: Long, size: Int): List<Long>
+
+    @Query(GLOBAL_CREATED_AT_CROSS_QUERY)
+    suspend fun internalGetGlobalCreatedAtCross(until: Long, size: Int): List<Long>
 }

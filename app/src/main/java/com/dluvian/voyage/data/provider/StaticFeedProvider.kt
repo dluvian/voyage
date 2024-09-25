@@ -2,18 +2,19 @@ package com.dluvian.voyage.data.provider
 
 import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.core.model.MainEvent
-import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.utils.mergeToParentUIList
 import com.dluvian.voyage.data.model.BookmarksFeedSetting
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.InboxFeedSetting
 import com.dluvian.voyage.data.model.ListFeedSetting
-import com.dluvian.voyage.data.model.ProfileRootFeedSetting
+import com.dluvian.voyage.data.model.MainFeedSetting
+import com.dluvian.voyage.data.model.ProfileFeedSetting
 import com.dluvian.voyage.data.model.ReplyFeedSetting
-import com.dluvian.voyage.data.model.RootFeedSetting
 import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.room.AppDatabase
+import com.dluvian.voyage.data.room.view.CrossPostView
+import com.dluvian.voyage.data.room.view.RootPostView
 
 class StaticFeedProvider(
     private val room: AppDatabase,
@@ -25,18 +26,58 @@ class StaticFeedProvider(
         setting: FeedSetting,
     ): List<MainEvent> {
         return when (setting) {
-            is RootFeedSetting -> getStaticRootFeed(setting = setting, until = until, size = size)
+            is MainFeedSetting -> getStaticMainFeed(setting = setting, until = until, size = size)
             is ReplyFeedSetting -> getStaticReplyFeed(setting = setting, until = until, size = size)
             is InboxFeedSetting -> getStaticInboxFeed(setting = setting, until = until, size = size)
             BookmarksFeedSetting -> getStaticBooksmarksFeed(until = until, size = size)
         }
     }
 
-    private suspend fun getStaticRootFeed(
-        setting: RootFeedSetting,
+    private suspend fun getStaticMainFeed(
+        setting: MainFeedSetting,
         until: Long,
         size: Int,
-    ): List<RootPost> {
+    ): List<MainEvent> {
+        val rootPosts = getStaticRootPosts(setting = setting, until = until, size = size)
+        val crossPosts = getStaticCrossPosts(setting = setting, until = until, size = size)
+
+        val allCreatedAt = mutableListOf<Long>()
+        allCreatedAt.addAll(rootPosts.map { it.createdAt })
+        allCreatedAt.addAll(crossPosts.map { it.createdAt })
+        val validCreatedAt = allCreatedAt.sortedDescending().take(size).toSet()
+
+        val result = mutableListOf<MainEvent>()
+        rootPosts.filter { validCreatedAt.contains(it.createdAt) }
+            .forEach {
+                result.add(
+                    it.mapToRootPostUI(
+                        forcedVotes = emptyMap(),
+                        forcedFollows = emptyMap(),
+                        forcedBookmarks = emptyMap(),
+                        annotatedStringProvider = annotatedStringProvider
+                    )
+                )
+            }
+        crossPosts.filter { validCreatedAt.contains(it.createdAt) }
+            .forEach {
+                result.add(
+                    it.mapToCrossPostUI(
+                        forcedVotes = emptyMap(),
+                        forcedFollows = emptyMap(),
+                        forcedBookmarks = emptyMap(),
+                        annotatedStringProvider = annotatedStringProvider
+                    )
+                )
+            }
+
+        return result.sortedByDescending { it.createdAt }
+    }
+
+    private suspend fun getStaticRootPosts(
+        setting: MainFeedSetting,
+        until: Long,
+        size: Int,
+    ): List<RootPostView> {
         return when (setting) {
             is HomeFeedSetting -> room.homeFeedDao().getHomeRootPosts(
                 setting = setting,
@@ -50,7 +91,7 @@ class StaticFeedProvider(
                 size = size
             )
 
-            is ProfileRootFeedSetting -> room.rootPostDao().getProfileRootPosts(
+            is ProfileFeedSetting -> room.rootPostDao().getProfileRootPosts(
                 pubkey = setting.nprofile.publicKey().toHex(),
                 until = until,
                 size = size
@@ -61,12 +102,37 @@ class StaticFeedProvider(
                 until = until,
                 size = size
             )
-        }.map {
-            it.mapToRootPostUI(
-                forcedVotes = emptyMap(),
-                forcedFollows = emptyMap(),
-                forcedBookmarks = emptyMap(),
-                annotatedStringProvider = annotatedStringProvider
+        }
+    }
+
+    private suspend fun getStaticCrossPosts(
+        setting: MainFeedSetting,
+        until: Long,
+        size: Int,
+    ): List<CrossPostView> {
+        return when (setting) {
+            is HomeFeedSetting -> room.homeFeedDao().getHomeCrossPosts(
+                setting = setting,
+                until = until,
+                size = size,
+            )
+
+            is TopicFeedSetting -> room.rootPostDao().getTopicRootPosts(
+                topic = setting.topic,
+                until = until,
+                size = size,
+            )
+
+            is ProfileFeedSetting -> room.rootPostDao().getProfileRootPosts(
+                pubkey = setting.nprofile.publicKey().toHex(),
+                until = until,
+                size = size,
+            )
+
+            is ListFeedSetting -> room.rootPostDao().getListRootPosts(
+                identifier = setting.identifier,
+                until = until,
+                size = size,
             )
         }
     }

@@ -10,7 +10,7 @@ import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.InboxFeedSetting
 import com.dluvian.voyage.data.model.ListFeedSetting
-import com.dluvian.voyage.data.model.ProfileRootFeedSetting
+import com.dluvian.voyage.data.model.ProfileFeedSetting
 import com.dluvian.voyage.data.model.ReplyFeedSetting
 import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.provider.FriendProvider
@@ -90,7 +90,7 @@ class NostrSubscriber(
                 limit = (3 * limit).toULong()
             )
 
-            is ProfileRootFeedSetting -> feedSubscriber.getProfileFeedSubscription(
+            is ProfileFeedSetting -> feedSubscriber.getProfileFeedSubscription(
                 nprofile = setting.nprofile,
                 until = until.toULong(),
                 since = since,
@@ -194,7 +194,7 @@ class NostrSubscriber(
         if (pageSize <= 0) return 1uL
 
         val timestamps = when (setting) {
-            is HomeFeedSetting -> room.homeFeedDao().getHomeRootPostsCreatedAt(
+            is HomeFeedSetting -> room.homeFeedDao().getHomeFeedCreatedAt(
                 setting = setting,
                 until = until,
                 size = pageSize
@@ -212,7 +212,7 @@ class NostrSubscriber(
                 size = pageSize
             )
 
-            is ProfileRootFeedSetting -> room.rootPostDao().getProfileRootPostsCreatedAt(
+            is ProfileFeedSetting -> room.rootPostDao().getProfileRootPostsCreatedAt(
                 pubkey = setting.nprofile.publicKey().toHex(),
                 until = until,
                 size = pageSize,

@@ -14,7 +14,7 @@ import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.InboxFeedSetting
 import com.dluvian.voyage.data.model.ListFeedSetting
-import com.dluvian.voyage.data.model.ProfileRootFeedSetting
+import com.dluvian.voyage.data.model.ProfileFeedSetting
 import com.dluvian.voyage.data.model.ReplyFeedSetting
 import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
@@ -164,7 +164,7 @@ class Paginator(
                         }
                     }
                     // Muted words allowed
-                    BookmarksFeedSetting, is ReplyFeedSetting, is ProfileRootFeedSetting -> postCtxs
+                    BookmarksFeedSetting, is ReplyFeedSetting, is ProfileFeedSetting -> postCtxs
                 }
             }
             .stateIn(scope, SharingStarted.WhileSubscribed(), staticFeed)

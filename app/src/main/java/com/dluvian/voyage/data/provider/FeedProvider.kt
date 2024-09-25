@@ -16,9 +16,9 @@ import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.InboxFeedSetting
 import com.dluvian.voyage.data.model.ListFeedSetting
-import com.dluvian.voyage.data.model.ProfileRootFeedSetting
+import com.dluvian.voyage.data.model.MainFeedSetting
+import com.dluvian.voyage.data.model.ProfileFeedSetting
 import com.dluvian.voyage.data.model.ReplyFeedSetting
-import com.dluvian.voyage.data.model.RootFeedSetting
 import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.room.AppDatabase
@@ -73,7 +73,7 @@ class FeedProvider(
         val mutedWords = muteProvider.getMutedWords()
 
         return when (setting) {
-            is RootFeedSetting -> getRootFeedFlow(
+            is MainFeedSetting -> getRootFeedFlow(
                 until = until,
                 size = size,
                 setting = setting
@@ -104,7 +104,7 @@ class FeedProvider(
     private fun getRootFeedFlow(
         until: Long,
         size: Int,
-        setting: RootFeedSetting,
+        setting: MainFeedSetting,
     ): Flow<List<RootPost>> {
         val flow = when (setting) {
             is HomeFeedSetting -> room.homeFeedDao().getHomeRootPostFlow(
@@ -119,7 +119,7 @@ class FeedProvider(
                 size = size
             )
 
-            is ProfileRootFeedSetting -> room.rootPostDao().getProfileRootPostFlow(
+            is ProfileFeedSetting -> room.rootPostDao().getProfileRootPostFlow(
                 pubkey = setting.nprofile.publicKey().toHex(),
                 until = until,
                 size = size
@@ -231,9 +231,9 @@ class FeedProvider(
 
     fun settingHasPostsFlow(setting: FeedSetting): Flow<Boolean> {
         return when (setting) {
-            is HomeFeedSetting -> room.homeFeedDao().hasHomeRootPostsFlow(setting = setting)
+            is HomeFeedSetting -> room.homeFeedDao().hasHomeFeedFlow(setting = setting)
             is TopicFeedSetting -> room.rootPostDao().hasTopicRootPostsFlow(topic = setting.topic)
-            is ProfileRootFeedSetting -> room.rootPostDao()
+            is ProfileFeedSetting -> room.rootPostDao()
                 .hasProfileRootPostsFlow(pubkey = setting.nprofile.publicKey().toHex())
 
             is ReplyFeedSetting -> room.replyDao()

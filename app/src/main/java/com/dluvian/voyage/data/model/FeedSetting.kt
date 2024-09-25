@@ -10,13 +10,13 @@ data object BookmarksFeedSetting : FeedSetting()
 data class ReplyFeedSetting(val nprofile: Nip19Profile) : FeedSetting()
 
 
-sealed class RootFeedSetting : FeedSetting()
+sealed class MainFeedSetting : FeedSetting()
 
 data class HomeFeedSetting(
     val topicSelection: HomeFeedTopicSelection,
     val pubkeySelection: FeedPubkeySelection,
-) : RootFeedSetting()
+) : MainFeedSetting()
 
-data class TopicFeedSetting(val topic: Topic) : RootFeedSetting()
-data class ProfileRootFeedSetting(val nprofile: Nip19Profile) : RootFeedSetting()
-data class ListFeedSetting(val identifier: String) : RootFeedSetting()
+data class TopicFeedSetting(val topic: Topic) : MainFeedSetting()
+data class ProfileFeedSetting(val nprofile: Nip19Profile) : MainFeedSetting()
+data class ListFeedSetting(val identifier: String) : MainFeedSetting()
