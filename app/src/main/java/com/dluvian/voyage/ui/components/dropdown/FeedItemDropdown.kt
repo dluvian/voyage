@@ -107,7 +107,7 @@ fun FeedItemDropdown(
             SimpleDropdownItem(
                 text = stringResource(id = R.string.bookmark),
                 onClick = {
-                    onUpdate(BookmarkPost(postId = mainEvent.id)) // TODO: Does bookmarking crossposts work?
+                    onUpdate(BookmarkPost(postId = mainEvent.getRelevantId()))
                     onDismiss()
                 }
             )
@@ -124,7 +124,7 @@ fun FeedItemDropdown(
             SimpleDropdownItem(
                 text = stringResource(id = R.string.attempt_deletion),
                 onClick = {
-                    onUpdate(DeletePost(id = mainEvent.id)) // TODO: Does deleting cross post work?
+                    onUpdate(DeletePost(id = mainEvent.id))
                     onDismiss()
                 }
             )
