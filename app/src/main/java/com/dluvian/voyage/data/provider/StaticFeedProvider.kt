@@ -41,9 +41,7 @@ class StaticFeedProvider(
         val rootPosts = getStaticRootPosts(setting = setting, until = until, size = size)
         val crossPosts = getStaticCrossPosts(setting = setting, until = until, size = size)
 
-        val allCreatedAt = mutableListOf<Long>()
-        allCreatedAt.addAll(rootPosts.map { it.createdAt })
-        allCreatedAt.addAll(crossPosts.map { it.createdAt })
+        val allCreatedAt = rootPosts.map { it.createdAt } + crossPosts.map { it.createdAt }
         val validCreatedAt = allCreatedAt.sortedDescending().take(size).toSet()
 
         val result = mutableListOf<MainEvent>()
@@ -85,19 +83,19 @@ class StaticFeedProvider(
                 size = size
             )
 
-            is TopicFeedSetting -> room.rootPostDao().getTopicRootPosts(
+            is TopicFeedSetting -> room.feedDao().getTopicRootPosts(
                 topic = setting.topic,
                 until = until,
                 size = size
             )
 
-            is ProfileFeedSetting -> room.rootPostDao().getProfileRootPosts(
+            is ProfileFeedSetting -> room.feedDao().getProfileRootPosts(
                 pubkey = setting.nprofile.publicKey().toHex(),
                 until = until,
                 size = size
             )
 
-            is ListFeedSetting -> room.rootPostDao().getListRootPosts(
+            is ListFeedSetting -> room.feedDao().getListRootPosts(
                 identifier = setting.identifier,
                 until = until,
                 size = size
@@ -117,19 +115,19 @@ class StaticFeedProvider(
                 size = size,
             )
 
-            is TopicFeedSetting -> room.rootPostDao().getTopicRootPosts(
+            is TopicFeedSetting -> room.feedDao().getTopicCrossPosts(
                 topic = setting.topic,
                 until = until,
                 size = size,
             )
 
-            is ProfileFeedSetting -> room.rootPostDao().getProfileRootPosts(
+            is ProfileFeedSetting -> room.feedDao().getProfileCrossPosts(
                 pubkey = setting.nprofile.publicKey().toHex(),
                 until = until,
                 size = size,
             )
 
-            is ListFeedSetting -> room.rootPostDao().getListRootPosts(
+            is ListFeedSetting -> room.feedDao().getListCrossPosts(
                 identifier = setting.identifier,
                 until = until,
                 size = size,

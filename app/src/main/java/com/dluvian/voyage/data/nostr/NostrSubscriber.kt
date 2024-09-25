@@ -200,19 +200,19 @@ class NostrSubscriber(
                 size = pageSize
             )
 
-            is TopicFeedSetting -> room.rootPostDao().getTopicRootPostsCreatedAt(
+            is TopicFeedSetting -> room.feedDao().getTopicFeedCreatedAt(
                 topic = setting.topic,
                 until = until,
                 size = pageSize
             )
 
-            is ListFeedSetting -> room.rootPostDao().getListRootPostsCreatedAt(
+            is ListFeedSetting -> room.feedDao().getListFeedCreatedAt(
                 identifier = setting.identifier,
                 until = until,
                 size = pageSize
             )
 
-            is ProfileFeedSetting -> room.rootPostDao().getProfileRootPostsCreatedAt(
+            is ProfileFeedSetting -> room.feedDao().getProfileFeedCreatedAt(
                 pubkey = setting.nprofile.publicKey().toHex(),
                 until = until,
                 size = pageSize,

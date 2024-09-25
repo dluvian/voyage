@@ -11,6 +11,7 @@ import com.dluvian.voyage.data.room.dao.AccountDao
 import com.dluvian.voyage.data.room.dao.BookmarkDao
 import com.dluvian.voyage.data.room.dao.ContentSetDao
 import com.dluvian.voyage.data.room.dao.EventRelayDao
+import com.dluvian.voyage.data.room.dao.FeedDao
 import com.dluvian.voyage.data.room.dao.FriendDao
 import com.dluvian.voyage.data.room.dao.FullProfileDao
 import com.dluvian.voyage.data.room.dao.HashtagDao
@@ -81,7 +82,7 @@ class V10 : AutoMigrationSpec
 class V24 : AutoMigrationSpec
 
 @Database(
-    version = 25,
+    version = 26,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -108,6 +109,7 @@ class V24 : AutoMigrationSpec
         AutoMigration(from = 22, to = 23),
         AutoMigration(from = 23, to = 24, spec = V24::class),
         AutoMigration(from = 24, to = 25),
+        AutoMigration(from = 25, to = 26),
     ],
     entities = [
         // Main
@@ -150,7 +152,7 @@ class V24 : AutoMigrationSpec
 abstract class AppDatabase : RoomDatabase() {
     abstract fun accountDao(): AccountDao
     abstract fun voteDao(): VoteDao
-    abstract fun rootPostDao(): RootPostDao
+    abstract fun feedDao(): FeedDao
     abstract fun homeFeedDao(): HomeFeedDao
     abstract fun topicDao(): TopicDao
     abstract fun friendDao(): FriendDao
@@ -158,6 +160,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun nip65Dao(): Nip65Dao
     abstract fun profileDao(): ProfileDao
     abstract fun eventRelayDao(): EventRelayDao
+    abstract fun rootPostDao(): RootPostDao
     abstract fun replyDao(): LegacyReplyDao
     abstract fun fullProfileDao(): FullProfileDao
     abstract fun postDao(): MainEventDao

@@ -73,6 +73,7 @@ class FeedProvider(
         val mutedWords = muteProvider.getMutedWords()
 
         return when (setting) {
+            // TODO: Cross-posts
             is MainFeedSetting -> getRootFeedFlow(
                 until = until,
                 size = size,
@@ -113,19 +114,19 @@ class FeedProvider(
                 size = size
             )
 
-            is TopicFeedSetting -> room.rootPostDao().getTopicRootPostFlow(
+            is TopicFeedSetting -> room.feedDao().getTopicRootPostFlow(
                 topic = setting.topic,
                 until = until,
                 size = size
             )
 
-            is ProfileFeedSetting -> room.rootPostDao().getProfileRootPostFlow(
+            is ProfileFeedSetting -> room.feedDao().getProfileRootPostFlow(
                 pubkey = setting.nprofile.publicKey().toHex(),
                 until = until,
                 size = size
             )
 
-            is ListFeedSetting -> room.rootPostDao().getListRootPostFlow(
+            is ListFeedSetting -> room.feedDao().getListRootPostFlow(
                 identifier = setting.identifier,
                 until = until,
                 size = size
@@ -232,15 +233,15 @@ class FeedProvider(
     fun settingHasPostsFlow(setting: FeedSetting): Flow<Boolean> {
         return when (setting) {
             is HomeFeedSetting -> room.homeFeedDao().hasHomeFeedFlow(setting = setting)
-            is TopicFeedSetting -> room.rootPostDao().hasTopicRootPostsFlow(topic = setting.topic)
-            is ProfileFeedSetting -> room.rootPostDao()
-                .hasProfileRootPostsFlow(pubkey = setting.nprofile.publicKey().toHex())
+            is TopicFeedSetting -> room.feedDao().hasTopicFeedFlow(topic = setting.topic)
+            is ProfileFeedSetting -> room.feedDao()
+                .hasProfileFeedFlow(pubkey = setting.nprofile.publicKey().toHex())
 
             is ReplyFeedSetting -> room.replyDao()
                 .hasProfileRepliesFlow(pubkey = setting.nprofile.publicKey().toHex())
 
-            is ListFeedSetting -> room.rootPostDao()
-                .hasListRootPostsFlow(identifier = setting.identifier)
+            is ListFeedSetting -> room.feedDao()
+                .hasListFeedFlow(identifier = setting.identifier)
 
             is InboxFeedSetting -> room.inboxDao().hasInboxFlow(setting = setting)
 
