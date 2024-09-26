@@ -96,7 +96,7 @@ private fun ThreadViewContent(
             state = state
         ) {
             if (parentIsAvailable && localRoot.threadableMainEvent is LegacyReply) item {
-                OpenRootButton(
+                OpenParentButton(
                     modifier = Modifier.padding(start = spacing.medium),
                     parentId = localRoot.threadableMainEvent.parentId,
                     onUpdate = onUpdate
@@ -154,7 +154,7 @@ fun MoreRepliesTextButton(replyCount: Int, onShowReplies: Fn) {
 }
 
 @Composable
-private fun OpenRootButton(
+private fun OpenParentButton(
     modifier: Modifier = Modifier,
     parentId: EventIdHex,
     onUpdate: OnUpdate

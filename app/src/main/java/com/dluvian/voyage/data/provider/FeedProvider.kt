@@ -1,6 +1,5 @@
 package com.dluvian.voyage.data.provider
 
-import android.util.Log
 import androidx.compose.runtime.State
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
@@ -203,7 +202,7 @@ class FeedProvider(
                 pubkey = setting.nprofile.publicKey().toHex(),
                 until = until,
                 size = size
-            ).onEach { Log.i("LOLOL", "size: ${it.size}") }
+            )
 
             is ListFeedSetting -> room.feedDao().getListCrossPostFlow(
                 identifier = setting.identifier,
