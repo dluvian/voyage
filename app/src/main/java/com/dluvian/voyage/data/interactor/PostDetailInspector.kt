@@ -4,6 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.data.model.PostDetails
+import com.dluvian.voyage.data.nostr.getClientTag
 import com.dluvian.voyage.data.room.dao.HashtagDao
 import com.dluvian.voyage.data.room.dao.MainEventDao
 import rust.nostr.protocol.Event
@@ -18,10 +19,11 @@ class PostDetailInspector(
         if (currentDetails.value?.base?.id == postId) return
 
         currentDetails.value = mainEventDao.getPostDetails(id = postId)?.let { base ->
-            val prettyJson = kotlin.runCatching { Event.fromJson(json = base.json).asPrettyJson() }
+            val event = kotlin.runCatching { Event.fromJson(json = base.json) }.getOrNull()
             PostDetails(
                 indexedTopics = hashtagDao.getHashtags(postId = postId),
-                base = base.copy(json = prettyJson.getOrDefault(base.json)),
+                client = event?.getClientTag(),
+                base = base.copy(json = event?.asPrettyJson() ?: base.json),
             )
         }
     }

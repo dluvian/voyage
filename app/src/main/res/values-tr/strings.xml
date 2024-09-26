@@ -265,4 +265,6 @@
     <string name="let_other_clients_know_that_you_are_posting_with_voyage">Diğer müşterilerin Voyage ile gönderi paylaştığınızı bilmelerini sağlayın. Anonim olarak gönderi paylaştığınızda eklenmeyecektir.</string>
     <string name="show_usernames_in_feed">Kullanıcı adlarını beslemede göster</string>
     <string name="show_the_authors_username_in_feeds">Yazarın kullanıcı adını beslemelerde göster</string>
+    <string name="time">Zaman</string>
+    <string name="client">Müşteri</string>
 </resources>

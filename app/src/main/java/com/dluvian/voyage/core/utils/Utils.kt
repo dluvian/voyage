@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
+import android.text.format.DateUtils
 import android.widget.Toast
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.ui.platform.ClipboardManager
@@ -321,3 +322,15 @@ fun String.containsNoneIgnoreCase(strs: Collection<String>): Boolean {
 fun String.toTextFieldValue() = TextFieldValue(text = this, selection = TextRange(this.length))
 
 fun createVoyageClientTag() = Tag.parse(listOf("client", VOYAGE))
+
+fun getFullDateTime(ctx: Context, createdAt: Long): String {
+    return DateUtils.formatDateTime(
+        ctx,
+        createdAt * 1000,
+        DateUtils.FORMAT_SHOW_TIME or
+                DateUtils.FORMAT_SHOW_DATE or
+                DateUtils.FORMAT_SHOW_YEAR or
+                DateUtils.FORMAT_SHOW_WEEKDAY or
+                DateUtils.FORMAT_ABBREV_ALL
+    )
+}

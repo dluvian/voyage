@@ -29,7 +29,7 @@ interface MainEventDao {
     @Query("SELECT json FROM mainEvent WHERE id = :id")
     suspend fun getJson(id: EventIdHex): String?
 
-    @Query("SELECT id, relayUrl AS firstSeenIn, json FROM mainEvent WHERE id = :id")
+    @Query("SELECT id, relayUrl AS firstSeenIn, createdAt, json FROM mainEvent WHERE id = :id")
     suspend fun getPostDetails(id: EventIdHex): PostDetailsBase?
 
     suspend fun getPostsByContent(content: String, limit: Int): List<SimplePostView> {

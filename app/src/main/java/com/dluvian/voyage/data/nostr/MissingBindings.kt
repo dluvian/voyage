@@ -84,6 +84,13 @@ fun Event.isTextNote(): Boolean {
     return this.kind().asEnum() == KindEnum.TextNote
 }
 
+fun Event.getClientTag(): String? {
+    return this.tags()
+        .map { it.asVec() }
+        .find { it.size >= 2 && it.first() == "client" }
+        ?.getOrNull(1)
+}
+
 fun isValidEventId(hex: String): Boolean {
     return hex.length == 64 && hex.all { it.isDigit() || it in ('a'..'f') || it in ('A'..'F') }
 }
