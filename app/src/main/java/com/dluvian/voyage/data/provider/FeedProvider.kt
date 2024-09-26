@@ -1,12 +1,12 @@
 package com.dluvian.voyage.data.provider
 
+import android.util.Log
 import androidx.compose.runtime.State
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.core.model.MainEvent
-import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.utils.containsNoneIgnoreCase
 import com.dluvian.voyage.core.utils.firstThenDistinctDebounce
 import com.dluvian.voyage.core.utils.mergeToParentUIList
@@ -22,6 +22,8 @@ import com.dluvian.voyage.data.model.ReplyFeedSetting
 import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.room.AppDatabase
+import com.dluvian.voyage.data.room.view.CrossPostView
+import com.dluvian.voyage.data.room.view.RootPostView
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
@@ -73,8 +75,7 @@ class FeedProvider(
         val mutedWords = muteProvider.getMutedWords()
 
         return when (setting) {
-            // TODO: Cross-posts
-            is MainFeedSetting -> getRootFeedFlow(
+            is MainFeedSetting -> getMainFeedFlow(
                 until = until,
                 size = size,
                 setting = setting
@@ -102,12 +103,58 @@ class FeedProvider(
             }
     }
 
-    private fun getRootFeedFlow(
+    private fun getMainFeedFlow(
         until: Long,
         size: Int,
         setting: MainFeedSetting,
-    ): Flow<List<RootPost>> {
-        val flow = when (setting) {
+    ): Flow<List<MainEvent>> {
+        val rootPosts = getRootPostFlow(setting = setting, until = until, size = size)
+        val crossPosts = getCrossPostFlow(setting = setting, until = until, size = size)
+
+        return combine(
+            rootPosts.firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            crossPosts.firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            forcedVotes,
+            forcedFollows,
+            forcedBookmarks,
+        ) { root, cross, votes, follows, bookmarks ->
+            val allCreatedAt = root.map { it.createdAt } + cross.map { it.createdAt }
+            val validCreatedAt = allCreatedAt.sortedDescending().take(size).toSet()
+
+            val result = mutableListOf<MainEvent>()
+            root.filter { validCreatedAt.contains(it.createdAt) }
+                .forEach {
+                    result.add(
+                        it.mapToRootPostUI(
+                            forcedVotes = votes,
+                            forcedFollows = follows,
+                            forcedBookmarks = bookmarks,
+                            annotatedStringProvider = annotatedStringProvider
+                        )
+                    )
+                }
+            cross.filter { validCreatedAt.contains(it.createdAt) }
+                .forEach {
+                    result.add(
+                        it.mapToCrossPostUI(
+                            forcedVotes = votes,
+                            forcedFollows = follows,
+                            forcedBookmarks = bookmarks,
+                            annotatedStringProvider = annotatedStringProvider
+                        )
+                    )
+                }
+
+            result.sortedByDescending { it.createdAt }
+        }
+    }
+
+    private fun getRootPostFlow(
+        setting: MainFeedSetting,
+        until: Long,
+        size: Int,
+    ): Flow<List<RootPostView>> {
+        return when (setting) {
             is HomeFeedSetting -> room.homeFeedDao().getHomeRootPostFlow(
                 setting = setting,
                 until = until,
@@ -132,21 +179,37 @@ class FeedProvider(
                 size = size
             )
         }
+    }
 
-        return combine(
-            flow.firstThenDistinctDebounce(SHORT_DEBOUNCE),
-            forcedVotes,
-            forcedFollows,
-            forcedBookmarks,
-        ) { posts, votes, follows, bookmarks ->
-            posts.map {
-                it.mapToRootPostUI(
-                    forcedVotes = votes,
-                    forcedFollows = follows,
-                    forcedBookmarks = bookmarks,
-                    annotatedStringProvider = annotatedStringProvider
-                )
-            }
+    private fun getCrossPostFlow(
+        setting: MainFeedSetting,
+        until: Long,
+        size: Int,
+    ): Flow<List<CrossPostView>> {
+        return when (setting) {
+            is HomeFeedSetting -> room.homeFeedDao().getHomeCrossPostFlow(
+                setting = setting,
+                until = until,
+                size = size
+            )
+
+            is TopicFeedSetting -> room.feedDao().getTopicCrossPostFlow(
+                topic = setting.topic,
+                until = until,
+                size = size
+            )
+
+            is ProfileFeedSetting -> room.feedDao().getProfileCrossPostFlow(
+                pubkey = setting.nprofile.publicKey().toHex(),
+                until = until,
+                size = size
+            ).onEach { Log.i("LOLOL", "size: ${it.size}") }
+
+            is ListFeedSetting -> room.feedDao().getListCrossPostFlow(
+                identifier = setting.identifier,
+                until = until,
+                size = size
+            )
         }
     }
 

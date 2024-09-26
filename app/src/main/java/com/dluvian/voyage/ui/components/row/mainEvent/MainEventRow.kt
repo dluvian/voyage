@@ -68,7 +68,6 @@ fun MainEventRow(
                     )
                 }
             }
-
         }
 
         is ThreadReplyCtx -> {

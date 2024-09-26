@@ -40,7 +40,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             (SELECT EXISTS(SELECT * FROM bookmark WHERE bookmark.eventId = crossPost.crossPostedId)) AS crossPostedIsBookmarked 
         FROM crossPost
         JOIN mainEvent ON crossPost.eventId = mainEvent.id
-        JOIN mainEvent AS crossPostedEvent ON crossPost.crossPostedId = mainEvent.id
+        JOIN mainEvent AS crossPostedEvent ON crossPost.crossPostedId = crossPostedEvent.id
         LEFT JOIN profile ON profile.pubkey = mainEvent.pubkey
         LEFT JOIN rootPost ON rootPost.eventId = crossPost.crossPostedId
         LEFT JOIN (

@@ -171,7 +171,6 @@ interface FeedDao {
             .take(size)
     }
 
-
     @Query(TOPIC_EXISTS_ROOT_QUERY)
     fun internalTopicRootExistsFlow(topic: Topic, until: Long, size: Int): Flow<Boolean>
 
