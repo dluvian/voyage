@@ -51,7 +51,7 @@ class ThreadProvider(
                 nostrSubscriber.subPost(nevent = nevent)
                 delay(DELAY_1SEC)
             }
-            val author = nevent.author()?.toHex() ?: room.postDao().getAuthor(id = id)
+            val author = nevent.author()?.toHex() ?: room.mainEventDao().getAuthor(id = id)
             if (author != null) {
                 lazyNostrSubscriber.lazySubUnknownProfiles(
                     selection = SingularPubkey(pubkey = author)
@@ -114,6 +114,8 @@ class ThreadProvider(
     ): Flow<List<ThreadReplyCtx>> {
         val replyFlow = room.replyDao().getRepliesFlow(parentIds = parentIds + rootId)
             .firstThenDistinctDebounce(DEBOUNCE)
+        val opPubkeyFlow = room.mainEventDao().getAuthorFlow(id = rootId)
+            .firstThenDistinctDebounce(DEBOUNCE)
         val mutedWords = muteProvider.getMutedWords()
 
         return combine(
@@ -126,7 +128,6 @@ class ThreadProvider(
             val filteredReplies = replies.filter { reply ->
                 reply.content.containsNoneIgnoreCase(strs = mutedWords)
             }
-            val opPubkey = replies.find { it.id == rootId }?.pubkey
 
             val result = LinkedList<ThreadReplyCtx>()
 
@@ -138,7 +139,7 @@ class ThreadProvider(
 
                 val leveledReply = reply.mapToThreadReplyCtx(
                     level = parent?.level?.plus(1) ?: 0,
-                    opPubkey = opPubkey.orEmpty(),
+                    isOp = false, // Set it in later combine
                     forcedVotes = votes,
                     forcedFollows = follows,
                     collapsedIds = collapsed,
@@ -155,6 +156,8 @@ class ThreadProvider(
             }
 
             result
+        }.combine(opPubkeyFlow) { replies, opPubkey ->
+            replies.map { it.copy(isOp = opPubkey == it.reply.pubkey) }
         }
             .onEach {
                 nostrSubscriber.subVotesAndReplies(

@@ -8,6 +8,7 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.model.PostDetailsBase
 import com.dluvian.voyage.data.room.entity.main.MainEventEntity
 import com.dluvian.voyage.data.room.view.SimplePostView
+import kotlinx.coroutines.flow.Flow
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.PublicKey
 
@@ -18,6 +19,9 @@ interface MainEventDao {
 
     @Query("SELECT pubkey FROM mainEvent WHERE id = :id")
     suspend fun getAuthor(id: EventIdHex): PubkeyHex?
+
+    @Query("SELECT pubkey FROM mainEvent WHERE id = :id")
+    fun getAuthorFlow(id: EventIdHex): Flow<PubkeyHex?>
 
     @Query("SELECT pubkey FROM mainEvent WHERE id = (SELECT parentId FROM legacyReply WHERE id = :id)")
     suspend fun getParentAuthor(id: EventIdHex): PubkeyHex?

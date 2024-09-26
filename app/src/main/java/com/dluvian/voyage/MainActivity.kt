@@ -205,7 +205,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 postSender = appContainer.postSender,
                 snackbar = appContainer.snackbar,
                 eventRelayDao = appContainer.roomDb.eventRelayDao(),
-                mainEventDao = appContainer.roomDb.postDao(),
+                mainEventDao = appContainer.roomDb.mainEventDao(),
             )
         },
         editProfileVM = viewModel {

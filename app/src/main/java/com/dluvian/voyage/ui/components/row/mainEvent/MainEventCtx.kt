@@ -1,6 +1,5 @@
 package com.dluvian.voyage.ui.components.row.mainEvent
 
-import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.core.model.MainEvent
 import com.dluvian.voyage.core.model.ThreadableMainEvent
@@ -13,7 +12,7 @@ data class ThreadRootCtx(
 
 data class ThreadReplyCtx(
     val reply: LegacyReply,
-    val opPubkey: PubkeyHex,
+    val isOp: Boolean,
     val level: Int,
     val isCollapsed: Boolean,
     val hasLoadedReplies: Boolean,

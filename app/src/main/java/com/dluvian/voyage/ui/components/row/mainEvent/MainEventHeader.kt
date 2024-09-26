@@ -91,7 +91,7 @@ private fun FeedItemHeaderTrustIcons(
             isOp = when (ctx) {
                 is FeedCtx -> false
                 is ThreadRootCtx -> true
-                is ThreadReplyCtx -> ctx.mainEvent.pubkey == ctx.opPubkey
+                is ThreadReplyCtx -> ctx.isOp
             },
             authorName = if (showAuthor) ctx.mainEvent.authorName else null,
             onClick = {

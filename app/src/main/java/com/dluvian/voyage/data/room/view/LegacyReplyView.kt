@@ -53,7 +53,7 @@ data class LegacyReplyView(
 ) {
     fun mapToThreadReplyCtx(
         level: Int,
-        opPubkey: PubkeyHex,
+        isOp: Boolean,
         forcedVotes: Map<EventIdHex, Boolean>,
         forcedFollows: Map<PubkeyHex, Boolean>,
         forcedBookmarks: Map<EventIdHex, Boolean>,
@@ -68,7 +68,7 @@ data class LegacyReplyView(
                 forcedBookmarks = forcedBookmarks,
                 annotatedStringProvider = annotatedStringProvider
             ),
-            opPubkey = opPubkey,
+            isOp = isOp,
             level = level,
             isCollapsed = collapsedIds.contains(this.id),
             hasLoadedReplies = parentIds.contains(this.id)

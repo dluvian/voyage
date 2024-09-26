@@ -36,7 +36,7 @@ class DatabaseInteractor(
         onFinishExport: Fn,
     ) {
         storageHelper.openFolderPicker()
-        val ids = room.postDao().getBookmarkedAndMyPostIds()
+        val ids = room.mainEventDao().getBookmarkedAndMyPostIds()
         val name = "voyage_export.jsonl"
         var somethingWentWrong = false
 
@@ -51,7 +51,7 @@ class DatabaseInteractor(
                         runCatching {
                             writer.write("")
                             for (id in ids) {
-                                val json = room.postDao().getJson(id = id) ?: continue
+                                val json = room.mainEventDao().getJson(id = id) ?: continue
                                 writer.write(json + "\n")
                             }
                         }.onFailure { somethingWentWrong = true }

@@ -164,7 +164,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun rootPostDao(): RootPostDao
     abstract fun replyDao(): LegacyReplyDao
     abstract fun fullProfileDao(): FullProfileDao
-    abstract fun postDao(): MainEventDao
+    abstract fun mainEventDao(): MainEventDao
     abstract fun inboxDao(): InboxDao
     abstract fun bookmarkDao(): BookmarkDao
     abstract fun contentSetDao(): ContentSetDao
