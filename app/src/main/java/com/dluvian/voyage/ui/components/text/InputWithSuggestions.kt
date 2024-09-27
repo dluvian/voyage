@@ -58,7 +58,7 @@ fun InputWithSuggestions(
                 suggestions = searchSuggestions,
                 onReplaceSuggestion = { profile ->
                     body.value = body.value.replaceWithSuggestion(pubkey = profile.pubkey)
-                    onUpdate(ClickProfileSuggestion)
+                    onUpdate(ClickProfileSuggestion(pubkey = profile.pubkey))
                 }
             )
         } else {

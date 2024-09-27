@@ -288,7 +288,7 @@ data class SendCrossPost(
 
 sealed class SuggestionAction : UIEvent()
 data class SearchProfileSuggestion(val name: String) : SuggestionAction()
-data object ClickProfileSuggestion : SuggestionAction()
+data class ClickProfileSuggestion(val pubkey: PubkeyHex) : SuggestionAction()
 data class SearchTopicSuggestion(val topic: Topic) : SuggestionAction()
 
 

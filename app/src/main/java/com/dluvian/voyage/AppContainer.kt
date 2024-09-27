@@ -394,7 +394,8 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
     )
 
     val suggestionProvider = SuggestionProvider(
-        searchProvider = searchProvider
+        searchProvider = searchProvider,
+        lazyNostrSubscriber = lazyNostrSubscriber,
     )
 
     val postSender = PostSender(
