@@ -17,7 +17,6 @@ import com.dluvian.voyage.core.model.NostrMention
 import com.dluvian.voyage.core.model.NoteMention
 import com.dluvian.voyage.core.model.NprofileMention
 import com.dluvian.voyage.core.model.NpubMention
-import com.dluvian.voyage.core.model.RelayMention
 import com.dluvian.voyage.core.navigator.Navigator
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.core.utils.normalizeTopic
@@ -202,11 +201,6 @@ class Core(
 
             is CoordinateMention -> {
                 onHandleUri(nostrMention.bech32)
-            }
-
-            is RelayMention -> {
-                val relayUrl = nostrMention.relay
-                onUpdate(OpenRelayProfile(relayUrl = relayUrl))
             }
 
             null -> Log.w(TAG, "Unknown clickable string $str")

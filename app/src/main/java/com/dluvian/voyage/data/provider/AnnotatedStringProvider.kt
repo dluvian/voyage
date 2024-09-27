@@ -15,15 +15,15 @@ import com.dluvian.voyage.core.model.NostrMention
 import com.dluvian.voyage.core.model.NoteMention
 import com.dluvian.voyage.core.model.NprofileMention
 import com.dluvian.voyage.core.model.NpubMention
-import com.dluvian.voyage.core.model.RelayMention
 import com.dluvian.voyage.core.utils.extractHashtags
 import com.dluvian.voyage.core.utils.extractNostrMentions
 import com.dluvian.voyage.core.utils.extractUrls
 import com.dluvian.voyage.core.utils.shortenBech32
 import com.dluvian.voyage.core.utils.shortenUrl
 import com.dluvian.voyage.data.nostr.createNprofile
-import com.dluvian.voyage.ui.theme.HyperlinkStyle
-import com.dluvian.voyage.ui.theme.MentionAndHashtagStyle
+import com.dluvian.voyage.ui.theme.HashtagStyle
+import com.dluvian.voyage.ui.theme.MentionStyle
+import com.dluvian.voyage.ui.theme.UrlStyle
 import java.util.Collections
 
 private const val TAG = "AnnotatedStringProvider"
@@ -36,7 +36,6 @@ class AnnotatedStringProvider(private val nameProvider: NameProvider) {
         const val NPUB_TAG = "NPUB"
         const val HASHTAG = "HASHTAG"
         const val COORDINATE = "COORDINATE"
-        const val RELAY = "RELAY"
     }
 
     private var uriHandler: UriHandler? = null
@@ -84,7 +83,7 @@ class AnnotatedStringProvider(private val nameProvider: NameProvider) {
                     pushAnnotatedString(
                         tag = HASHTAG,
                         rawString = token.value,
-                        style = MentionAndHashtagStyle,
+                        style = HashtagStyle,
                         displayString = token.value
                     )
                 } else {
@@ -104,7 +103,7 @@ class AnnotatedStringProvider(private val nameProvider: NameProvider) {
                             pushAnnotatedString(
                                 tag = if (nostrMention is NpubMention) NPUB_TAG else NPROFILE_TAG,
                                 rawString = nostrMention.bech32,
-                                style = MentionAndHashtagStyle,
+                                style = MentionStyle,
                                 displayString = name
                             )
                         }
@@ -113,7 +112,7 @@ class AnnotatedStringProvider(private val nameProvider: NameProvider) {
                             pushAnnotatedString(
                                 tag = if (nostrMention is NoteMention) NOTE1_TAG else NEVENT_TAG,
                                 rawString = nostrMention.bech32,
-                                style = MentionAndHashtagStyle,
+                                style = MentionStyle,
                                 displayString = nostrMention.bech32.shortenBech32()
                             )
                         }
@@ -122,17 +121,8 @@ class AnnotatedStringProvider(private val nameProvider: NameProvider) {
                             pushAnnotatedString(
                                 tag = COORDINATE,
                                 rawString = nostrMention.bech32,
-                                style = MentionAndHashtagStyle,
+                                style = MentionStyle,
                                 displayString = nostrMention.identifier.ifEmpty { nostrMention.bech32.shortenBech32() }
-                            )
-                        }
-
-                        is RelayMention -> {
-                            pushAnnotatedString(
-                                tag = RELAY,
-                                rawString = nostrMention.bech32,
-                                style = MentionAndHashtagStyle,
-                                displayString = nostrMention.bech32.shortenBech32()
                             )
                         }
 
@@ -176,7 +166,7 @@ class AnnotatedStringProvider(private val nameProvider: NameProvider) {
     }
 
     private fun AnnotatedString.Builder.pushStyledUrlAnnotation(url: String) {
-        pushLink(LinkAnnotation.Url(url = url, styles = TextLinkStyles(style = HyperlinkStyle)))
+        pushLink(LinkAnnotation.Url(url = url, styles = TextLinkStyles(style = UrlStyle)))
         append(shortenUrl(url = url))
         pop()
     }

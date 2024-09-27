@@ -3,7 +3,6 @@ package com.dluvian.voyage.core.model
 import com.dluvian.voyage.core.Bech32
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.removeMentionChar
 import com.dluvian.voyage.data.nostr.removeNostrUri
 import rust.nostr.protocol.Coordinate
@@ -75,6 +74,3 @@ data class CoordinateMention(
     override val hex: EventIdHex,
     val identifier: String
 ) : NostrMention(bech32 = bech32, hex = hex)
-
-data class RelayMention(override val bech32: Bech32, val relay: RelayUrl) :
-    NostrMention(bech32 = bech32, hex = "")
