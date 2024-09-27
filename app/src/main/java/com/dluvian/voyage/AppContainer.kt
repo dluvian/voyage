@@ -127,7 +127,7 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
         metadataInMemory = metadataInMemory,
     )
 
-    private val annotatedStringProvider = AnnotatedStringProvider(nameProvider = nameProvider)
+    val annotatedStringProvider = AnnotatedStringProvider(nameProvider = nameProvider)
 
     private val webOfTrustProvider = WebOfTrustProvider(
         friendProvider = friendProvider,

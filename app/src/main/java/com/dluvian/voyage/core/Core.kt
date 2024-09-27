@@ -4,7 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import androidx.compose.ui.platform.UriHandler
-import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.AppContainer
@@ -118,17 +117,19 @@ class Core(
                 )
             }
 
-            is ClickText -> clickText(action = uiEvent)
+            is ClickClickableText -> clickText(action = uiEvent)
 
             is SuggestionAction -> appContainer.suggestionProvider.handle(action = uiEvent)
 
-            is RegisterAccountLauncher -> appContainer.externalSignerHandler.setAccountLauncher(
-                launcher = uiEvent.launcher
-            )
+            is RegisterAccountLauncher -> appContainer.externalSignerHandler
+                .setAccountLauncher(launcher = uiEvent.launcher)
 
-            is RegisterSignerLauncher -> appContainer.externalSignerHandler.setSignerLauncher(
-                launcher = uiEvent.launcher
-            )
+            is RegisterSignerLauncher -> appContainer.externalSignerHandler
+                .setSignerLauncher(launcher = uiEvent.launcher)
+
+            is RegisterUriHandler -> appContainer.annotatedStringProvider
+                .setUriHandler(uriHandler = uiEvent.uriHandler)
+
 
             is RebroadcastPost -> viewModelScope.launchIO {
                 appContainer.eventRebroadcaster.rebroadcast(
@@ -159,26 +160,13 @@ class Core(
         }
     }
 
-    @OptIn(ExperimentalTextApi::class)
-    private fun clickText(action: ClickText) {
-        val url = action.text.getUrlAnnotations(action.offset, action.offset).firstOrNull()
-        if (url != null) {
-            action.uriHandler.openUri(url.item.url)
+    private fun clickText(action: ClickClickableText) {
+        if (action.text.startsWith("#")) {
+            onUpdate(OpenTopic(topic = action.text.normalizeTopic()))
             return
         }
 
-        val other = action.text.getStringAnnotations(action.offset, action.offset).firstOrNull()
-        if (other == null) {
-            action.onNoneClick()
-            return
-        }
-
-        if (other.item.startsWith("#")) {
-            onUpdate(OpenTopic(topic = other.item.normalizeTopic()))
-            return
-        }
-
-        openNostrString(str = other.item, uriHandler = action.uriHandler)
+        openNostrString(str = action.text, uriHandler = action.uriHandler)
     }
 
     private fun openNostrString(str: String, uriHandler: UriHandler? = null) {

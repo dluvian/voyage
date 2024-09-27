@@ -64,6 +64,7 @@ class MainActivity : ComponentActivity() {
                     closeApp = closeApp
                 )
             }
+            appContainer.annotatedStringProvider.setOnUpdate(onUpdate = core.onUpdate)
             core.handleDeeplink(intent = intent)
 
             VoyageApp(core)
