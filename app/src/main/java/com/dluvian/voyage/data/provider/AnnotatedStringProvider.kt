@@ -2,9 +2,9 @@ package com.dluvian.voyage.data.provider
 
 import android.util.Log
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.UrlAnnotation
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
 import com.dluvian.voyage.core.model.CoordinateMention
 import com.dluvian.voyage.core.model.NeventMention
@@ -67,10 +67,7 @@ class AnnotatedStringProvider(
                     editedContent.delete(0, firstIndex)
                 }
                 if (urls.contains(token)) {
-                    pushStyledUrlAnnotation(
-                        url = token.value,
-                        style = HyperlinkStyle
-                    )
+                    pushStyledLinkAnnotation(url = token.value)
                 } else if (hashtags.contains(token)) {
                     pushAnnotatedString(
                         tag = HASHTAG,
@@ -160,10 +157,9 @@ class AnnotatedStringProvider(
         pop()
     }
 
-    @OptIn(ExperimentalTextApi::class)
-    private fun AnnotatedString.Builder.pushStyledUrlAnnotation(url: String, style: SpanStyle) {
-        pushUrlAnnotation(UrlAnnotation(url = url))
-        pushStyledString(style = style, text = shortenUrl(url))
+    private fun AnnotatedString.Builder.pushStyledLinkAnnotation(url: String) {
+        pushLink(LinkAnnotation.Url(url = url, styles = TextLinkStyles(style = HyperlinkStyle)))
+        append(shortenUrl(url = url))
         pop()
     }
 

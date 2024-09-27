@@ -27,7 +27,7 @@ fun FullPostBottomSheet(content: AnnotatedString, onDismiss: Fn) {
                     .verticalScroll(state = rememberScrollState())
                     .padding(bottom = spacing.xxl)
             ) {
-                AnnotatedText(text = content, onClick = { })
+                AnnotatedText(text = content)
             }
         }
     }

@@ -17,7 +17,6 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenTopic
-import com.dluvian.voyage.core.ThreadViewToggleCollapse
 import com.dluvian.voyage.core.model.CrossPost
 import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.core.model.RootPost
@@ -67,11 +66,7 @@ fun MainEventHeader(
             }
             Spacer(modifier = Modifier.width(spacing.large))
             if (collapsedText == null) RelativeTime(from = ctx.mainEvent.createdAt)
-            else AnnotatedText(
-                text = collapsedText,
-                maxLines = 1,
-                onClick = { onUpdate(ThreadViewToggleCollapse(id = ctx.mainEvent.id)) }
-            )
+            else AnnotatedText(text = collapsedText, maxLines = 1)
         }
         Row(horizontalArrangement = Arrangement.End) {
             OptionsButton(mainEvent = ctx.mainEvent, onUpdate = onUpdate)

@@ -110,7 +110,6 @@ private fun ScreenContent(vm: ListViewModel, onUpdate: OnUpdate) {
                 topicListNaddr = vm.itemSetProvider.topicListNaddr.value,
                 description = vm.itemSetProvider.description.value,
                 state = aboutState,
-                onUpdate = onUpdate
             )
         }
     }
@@ -122,7 +121,6 @@ private fun AboutSection(
     topicListNaddr: String,
     description: AnnotatedString,
     state: LazyListState,
-    onUpdate: OnUpdate
 ) {
     LazyColumn(
         modifier = Modifier
@@ -150,8 +148,7 @@ private fun AboutSection(
                     .fillMaxWidth()
                     .padding(vertical = spacing.medium),
                 header = stringResource(id = R.string.description),
-                text = description,
-                onUpdate = onUpdate
+                text = description
             )
         }
     }

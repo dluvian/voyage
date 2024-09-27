@@ -278,8 +278,7 @@ private fun AboutPage(
                         .fillMaxWidth()
                         .padding(vertical = spacing.medium),
                     header = stringResource(id = R.string.about),
-                    text = about,
-                    onUpdate = onUpdate
+                    text = about
                 )
             }
         }

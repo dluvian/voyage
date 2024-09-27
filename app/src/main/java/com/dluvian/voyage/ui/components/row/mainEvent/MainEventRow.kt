@@ -17,10 +17,7 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import com.dluvian.voyage.core.ClickText
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenReplyCreation
@@ -107,17 +104,6 @@ private fun MainEventMainRow(
             .clickable(onClick = onClickRow)
             .padding(spacing.screenEdge)
     ) {
-        val uriHandler = LocalUriHandler.current
-        val onClickText = { offset: Int, text: AnnotatedString ->
-            onUpdate(
-                ClickText(
-                    text = text,
-                    offset = offset,
-                    uriHandler = uriHandler,
-                    onNoneClick = onClickRow
-                )
-            )
-        }
         MainEventHeader(
             ctx = ctx,
             showAuthorName = showAuthorName,
@@ -129,8 +115,7 @@ private fun MainEventMainRow(
             if (subject.isNotEmpty()) {
                 AnnotatedText(
                     text = subject,
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
-                    onClick = { onClickText(it, subject) }
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold)
                 )
                 Spacer(modifier = Modifier.height(spacing.large))
             }
@@ -148,8 +133,7 @@ private fun MainEventMainRow(
             exit = slideOutVertically(animationSpec = tween(durationMillis = 0))
         ) {
             AnnotatedText(
-                text = ctx.mainEvent.content,
-                onClick = { onClickText(it, ctx.mainEvent.content) }
+                text = ctx.mainEvent.content
             )
             Spacer(modifier = Modifier.height(spacing.large))
         }
