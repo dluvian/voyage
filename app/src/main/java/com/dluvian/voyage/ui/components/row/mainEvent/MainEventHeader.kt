@@ -21,7 +21,6 @@ import com.dluvian.voyage.core.model.CrossPost
 import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.data.nostr.createNprofile
-import com.dluvian.voyage.ui.components.button.OptionsButton
 import com.dluvian.voyage.ui.components.chip.TopicChip
 import com.dluvian.voyage.ui.components.icon.ClickableTrustIcon
 import com.dluvian.voyage.ui.components.text.AnnotatedText
@@ -34,7 +33,7 @@ import com.dluvian.voyage.ui.theme.spacing
 fun MainEventHeader(
     ctx: MainEventCtx,
     showAuthorName: Boolean,
-    collapsedText: AnnotatedString? = null,
+    collapsedText: AnnotatedString?,
     onUpdate: OnUpdate
 ) {
     Row(
@@ -46,7 +45,7 @@ fun MainEventHeader(
             modifier = Modifier.weight(1f, fill = false),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            FeedItemHeaderTrustIcons(
+            MainEventHeaderIconsAndName(
                 ctx = ctx,
                 showAuthor = showAuthorName,
                 onUpdate = onUpdate
@@ -68,14 +67,15 @@ fun MainEventHeader(
             if (collapsedText == null) RelativeTime(from = ctx.mainEvent.createdAt)
             else AnnotatedText(text = collapsedText, maxLines = 1)
         }
-        Row(horizontalArrangement = Arrangement.End) {
-            OptionsButton(mainEvent = ctx.mainEvent, onUpdate = onUpdate)
-        }
+        // TODO: move to bottom
+//        Row(horizontalArrangement = Arrangement.End) {
+//            OptionsButton(mainEvent = ctx.mainEvent, onUpdate = onUpdate)
+//        }
     }
 }
 
 @Composable
-private fun FeedItemHeaderTrustIcons(
+private fun MainEventHeaderIconsAndName(
     ctx: MainEventCtx,
     showAuthor: Boolean,
     onUpdate: OnUpdate

@@ -98,6 +98,14 @@ private fun MainEventMainRow(
             is ThreadRootCtx -> {}
         }
     }
+
+    val isCollapsed = remember(ctx) {
+        when (ctx) {
+            is ThreadReplyCtx -> ctx.isCollapsed
+            is FeedCtx, is ThreadRootCtx -> false
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -107,6 +115,9 @@ private fun MainEventMainRow(
         MainEventHeader(
             ctx = ctx,
             showAuthorName = showAuthorName,
+            collapsedText = remember(isCollapsed) {
+                if (isCollapsed) ctx.mainEvent.content else null
+            },
             onUpdate = onUpdate,
         )
         Spacer(modifier = Modifier.height(spacing.large))
@@ -118,13 +129,6 @@ private fun MainEventMainRow(
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold)
                 )
                 Spacer(modifier = Modifier.height(spacing.large))
-            }
-        }
-
-        val isCollapsed = remember(ctx) {
-            when (ctx) {
-                is ThreadReplyCtx -> ctx.isCollapsed
-                is FeedCtx, is ThreadRootCtx -> false
             }
         }
 
