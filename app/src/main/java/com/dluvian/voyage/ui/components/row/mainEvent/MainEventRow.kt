@@ -115,6 +115,10 @@ private fun MainEventMainRow(
             if (subject.isNotEmpty()) {
                 AnnotatedText(
                     text = subject,
+                    maxLines = when (ctx) {
+                        is ThreadReplyCtx, is ThreadRootCtx -> Int.MAX_VALUE
+                        is FeedCtx -> 3
+                    },
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold)
                 )
                 Spacer(modifier = Modifier.height(spacing.large))
@@ -125,7 +129,13 @@ private fun MainEventMainRow(
             visible = !ctx.isCollapsedReply(),
             exit = slideOutVertically(animationSpec = tween(durationMillis = 0))
         ) {
-            AnnotatedText(text = ctx.mainEvent.content)
+            AnnotatedText(
+                text = ctx.mainEvent.content,
+                maxLines = when (ctx) {
+                    is ThreadReplyCtx, is ThreadRootCtx -> Int.MAX_VALUE
+                    is FeedCtx -> 12
+                }
+            )
             Spacer(modifier = Modifier.height(spacing.large))
         }
 
