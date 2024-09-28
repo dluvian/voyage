@@ -12,9 +12,9 @@ import com.dluvian.voyage.core.navigator.DiscoverNavView
 import com.dluvian.voyage.core.navigator.HomeNavView
 import com.dluvian.voyage.core.navigator.InboxNavView
 import com.dluvian.voyage.core.navigator.MainNavView
+import com.dluvian.voyage.core.navigator.SearchNavView
 import com.dluvian.voyage.ui.components.button.FilterIconButton
 import com.dluvian.voyage.ui.components.button.MenuIconButton
-import com.dluvian.voyage.ui.components.button.SearchIconButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,7 +35,6 @@ fun MainTopAppBar(
         },
         actions = {
             MainFilter(currentView = currentView, onUpdate = onUpdate)
-            SearchIconButton(onUpdate = onUpdate)
         }
     )
 }
@@ -47,6 +46,6 @@ private fun MainFilter(currentView: MainNavView, onUpdate: OnUpdate) {
 
         InboxNavView -> FilterIconButton(onClick = { onUpdate(InboxViewOpenFilter) })
 
-        DiscoverNavView -> {}
+        SearchNavView, DiscoverNavView -> {}
     }
 }

@@ -23,20 +23,21 @@ sealed class MainNavView : NavView() {
             is HomeNavView -> stringResource(id = R.string.home)
             is InboxNavView -> stringResource(id = R.string.inbox)
             is DiscoverNavView -> stringResource(id = R.string.discover)
+            is SearchNavView -> stringResource(id = R.string.search)
         }
     }
 }
 
 data object HomeNavView : MainNavView()
-data object DiscoverNavView : MainNavView()
 data object InboxNavView : MainNavView()
+data object SearchNavView : MainNavView()
+data object DiscoverNavView : MainNavView()
 
 
 sealed class NonMainNavView : NavView()
 sealed class SimpleNonMainNavView : NonMainNavView()
 data object CreatePostNavView : SimpleNonMainNavView()
 data object SettingsNavView : SimpleNonMainNavView()
-data object SearchNavView : SimpleNonMainNavView()
 data object EditProfileNavView : SimpleNonMainNavView()
 data object RelayEditorNavView : SimpleNonMainNavView()
 data object FollowListsNavView : SimpleNonMainNavView()

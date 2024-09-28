@@ -12,6 +12,7 @@ import com.dluvian.voyage.ui.components.scaffold.VoyageScaffold
 @Composable
 fun SearchScaffold(
     snackbar: SnackbarHostState,
+    bottomBar: ComposableContent = {},
     onUpdate: OnUpdate,
     content: ComposableContent
 ) {
@@ -22,7 +23,8 @@ fun SearchScaffold(
 
     VoyageScaffold(
         snackbar = snackbar,
-        topBar = { SearchTopAppBar(focusRequester = focusRequester, onUpdate = onUpdate) }
+        topBar = { SearchTopAppBar(focusRequester = focusRequester, onUpdate = onUpdate) },
+        bottomBar = bottomBar,
     ) {
         content()
     }

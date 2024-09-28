@@ -17,7 +17,6 @@ import com.dluvian.voyage.core.navigator.ProfileNavView
 import com.dluvian.voyage.core.navigator.RelayEditorNavView
 import com.dluvian.voyage.core.navigator.RelayProfileNavView
 import com.dluvian.voyage.core.navigator.ReplyCreationNavView
-import com.dluvian.voyage.core.navigator.SearchNavView
 import com.dluvian.voyage.core.navigator.SettingsNavView
 import com.dluvian.voyage.core.navigator.ThreadNavView
 import com.dluvian.voyage.core.navigator.ThreadRawNavView
@@ -25,7 +24,6 @@ import com.dluvian.voyage.core.navigator.TopicNavView
 import com.dluvian.voyage.ui.views.nonMain.editList.EditListView
 import com.dluvian.voyage.ui.views.nonMain.list.ListView
 import com.dluvian.voyage.ui.views.nonMain.profile.ProfileView
-import com.dluvian.voyage.ui.views.nonMain.search.SearchView
 import com.dluvian.voyage.ui.views.nonMain.topic.TopicView
 
 @Composable
@@ -44,12 +42,6 @@ fun NonMainView(
 
         SettingsNavView -> SettingsView(
             vm = core.vmContainer.settingsVM,
-            snackbar = core.appContainer.snackbar,
-            onUpdate = core.onUpdate
-        )
-
-        SearchNavView -> SearchView(
-            vm = core.vmContainer.searchVM,
             snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate
         )

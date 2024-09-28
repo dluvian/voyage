@@ -6,10 +6,12 @@ import com.dluvian.voyage.core.navigator.DiscoverNavView
 import com.dluvian.voyage.core.navigator.HomeNavView
 import com.dluvian.voyage.core.navigator.InboxNavView
 import com.dluvian.voyage.core.navigator.MainNavView
+import com.dluvian.voyage.core.navigator.SearchNavView
 import com.dluvian.voyage.ui.components.scaffold.MainScaffold
 import com.dluvian.voyage.ui.views.main.subViews.DiscoverView
 import com.dluvian.voyage.ui.views.main.subViews.HomeView
 import com.dluvian.voyage.ui.views.main.subViews.InboxView
+import com.dluvian.voyage.ui.views.nonMain.search.SearchView
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
@@ -29,6 +31,11 @@ fun MainView(
             when (currentView) {
                 HomeNavView -> HomeView(vm = core.vmContainer.homeVM, onUpdate = core.onUpdate)
                 InboxNavView -> InboxView(vm = core.vmContainer.inboxVM, onUpdate = core.onUpdate)
+                SearchNavView -> SearchView(
+                    vm = core.vmContainer.searchVM,
+                    onUpdate = core.onUpdate
+                )
+
                 DiscoverNavView -> DiscoverView(
                     vm = core.vmContainer.discoverVM,
                     onUpdate = core.onUpdate

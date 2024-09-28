@@ -33,6 +33,7 @@ import com.dluvian.voyage.core.ClickCreateList
 import com.dluvian.voyage.core.ClickFollowLists
 import com.dluvian.voyage.core.ClickMuteList
 import com.dluvian.voyage.core.ClickRelayEditor
+import com.dluvian.voyage.core.ClickSettings
 import com.dluvian.voyage.core.CloseDrawer
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.DeleteList
@@ -51,6 +52,7 @@ import com.dluvian.voyage.ui.theme.BookmarksIcon
 import com.dluvian.voyage.ui.theme.ListIcon
 import com.dluvian.voyage.ui.theme.MuteIcon
 import com.dluvian.voyage.ui.theme.RelayIcon
+import com.dluvian.voyage.ui.theme.SettingsIcon
 import com.dluvian.voyage.ui.theme.ViewListIcon
 import com.dluvian.voyage.ui.theme.getAccountColor
 import com.dluvian.voyage.ui.theme.getAccountIcon
@@ -117,6 +119,15 @@ fun MainDrawer(
                         icon = MuteIcon,
                         onClick = {
                             onUpdate(ClickMuteList)
+                            onUpdate(CloseDrawer(scope = scope))
+                        })
+                }
+                item {
+                    DrawerItem(
+                        label = stringResource(id = R.string.settings),
+                        icon = SettingsIcon,
+                        onClick = {
+                            onUpdate(ClickSettings)
                             onUpdate(CloseDrawer(scope = scope))
                         })
                 }
