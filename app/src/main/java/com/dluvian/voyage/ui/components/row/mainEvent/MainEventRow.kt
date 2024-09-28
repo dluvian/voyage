@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.OpenReplyCreation
 import com.dluvian.voyage.core.OpenThread
 import com.dluvian.voyage.core.OpenThreadRaw
 import com.dluvian.voyage.core.ThreadViewShowReplies
@@ -30,8 +29,9 @@ import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.model.ThreadableMainEvent
 import com.dluvian.voyage.data.nostr.createNevent
-import com.dluvian.voyage.ui.components.chip.CommentChip
-import com.dluvian.voyage.ui.components.chip.ReplyChip
+import com.dluvian.voyage.ui.components.button.CountedCommentButton
+import com.dluvian.voyage.ui.components.button.OptionsButton
+import com.dluvian.voyage.ui.components.button.ReplyIconButton
 import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.theme.spacing
 import com.dluvian.voyage.ui.views.nonMain.MoreRepliesTextButton
@@ -136,9 +136,7 @@ private fun MainEventMainRow(
             visible = !isCollapsed,
             exit = slideOutVertically(animationSpec = tween(durationMillis = 0))
         ) {
-            AnnotatedText(
-                text = ctx.mainEvent.content
-            )
+            AnnotatedText(text = ctx.mainEvent.content)
             Spacer(modifier = Modifier.height(spacing.large))
         }
 
@@ -146,6 +144,7 @@ private fun MainEventMainRow(
             mainEvent = ctx.mainEvent,
             onUpdate = onUpdate,
             additionalStartAction = {
+                OptionsButton(mainEvent = ctx.mainEvent, onUpdate = onUpdate)
                 when (ctx) {
                     is ThreadReplyCtx -> {
                         if (ctx.reply.replyCount > 0 && !ctx.hasLoadedReplies) {
@@ -164,34 +163,20 @@ private fun MainEventMainRow(
             },
             additionalEndAction = {
                 when (ctx) {
-                    is ThreadReplyCtx -> ReplyButton(ctx = ctx, onUpdate = onUpdate)
+                    is ThreadReplyCtx -> ReplyIconButton(ctx = ctx, onUpdate = onUpdate)
 
-                    is ThreadRootCtx -> RootCommentButton(ctx = ctx, onUpdate = onUpdate)
+                    is ThreadRootCtx -> CountedCommentButton(ctx = ctx, onUpdate = onUpdate)
 
                     is FeedCtx -> {
                         when (ctx.mainEvent) {
-                            is RootPost -> RootCommentButton(ctx = ctx, onUpdate = onUpdate)
-                            is CrossPost -> RootCommentButton(ctx = ctx, onUpdate = onUpdate)
-                            is LegacyReply -> ReplyButton(ctx = ctx, onUpdate = onUpdate)
+                            is RootPost -> CountedCommentButton(ctx = ctx, onUpdate = onUpdate)
+                            is CrossPost -> CountedCommentButton(ctx = ctx, onUpdate = onUpdate)
+                            is LegacyReply -> ReplyIconButton(ctx = ctx, onUpdate = onUpdate)
                         }
                     }
                 }
-
             })
     }
-}
-
-@Composable
-private fun RootCommentButton(ctx: MainEventCtx, onUpdate: OnUpdate) {
-    CommentChip(
-        commentCount = ctx.mainEvent.replyCount,
-        onClick = { onUpdate(OpenReplyCreation(parent = ctx.mainEvent)) }
-    )
-}
-
-@Composable
-private fun ReplyButton(ctx: MainEventCtx, onUpdate: OnUpdate) {
-    ReplyChip(onClick = { onUpdate(OpenReplyCreation(parent = ctx.mainEvent)) })
 }
 
 @Composable

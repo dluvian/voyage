@@ -79,10 +79,6 @@ fun MainEventHeader(
             }
             if (collapsedText == null) RelativeTime(from = ctx.mainEvent.createdAt)
         }
-        // TODO: move to bottom
-//        Row(horizontalArrangement = Arrangement.End) {
-//            OptionsButton(mainEvent = ctx.mainEvent, onUpdate = onUpdate)
-//        }
     }
 }
 
