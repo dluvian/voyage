@@ -4,7 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -18,7 +17,7 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.ui.theme.OPBlue
-import com.dluvian.voyage.ui.theme.sizing
+import com.dluvian.voyage.ui.theme.light
 import com.dluvian.voyage.ui.theme.spacing
 
 
@@ -31,14 +30,14 @@ fun ClickableTrustIcon(
 ) {
     Box(modifier = Modifier.clickable(onClick = onClick)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            TrustIcon(modifier = Modifier.size(sizing.smallIndicator), trustType = trustType)
+            TrustIcon(trustType = trustType, onClick = onClick)
             if (authorName != null) {
                 Spacer(modifier = Modifier.width(spacing.small))
                 Text(
                     text = authorName,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    fontWeight = FontWeight.Medium
+                    color = MaterialTheme.colorScheme.onBackground.light()
                 )
             }
             if (isOp) {

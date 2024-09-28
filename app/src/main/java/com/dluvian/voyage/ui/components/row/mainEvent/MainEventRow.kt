@@ -110,7 +110,7 @@ private fun MainEventMainRow(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClickRow)
-            .padding(spacing.screenEdge)
+            .padding(spacing.bigScreenEdge)
     ) {
         MainEventHeader(
             ctx = ctx,

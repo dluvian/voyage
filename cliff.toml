@@ -59,7 +59,7 @@ commit_parsers = [
     { message = "^feat", group = "<!-- 0 -->🌠 Features" },
     { message = "^imp|^adj|^add", group = "<!-- 1 -->🛠 Improvements" },
     { message = "^perf", group = "<!-- 2 -->⚡️ Performance" },
-    { message = "^style", group = "<!-- 3 -->🎨 Styling" },
+    { message = "^style|^ui", group = "<!-- 3 -->🎨 Styling" },
     { message = "^fix", group = "<!-- 4 -->🐛 Bug Fixes" },
     { message = "^rmv", group = "<!-- 5 --> 🗑️ Removed" },
     { message = "^doc", group = "<!-- 6 --> 📚 Documentation" },

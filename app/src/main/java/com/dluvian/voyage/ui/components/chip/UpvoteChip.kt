@@ -9,7 +9,6 @@ import com.dluvian.voyage.core.ClickUpvote
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.ui.theme.UpvoteColor
 import com.dluvian.voyage.ui.theme.UpvoteIcon
 import com.dluvian.voyage.ui.theme.UpvoteOffIcon
 
@@ -29,7 +28,7 @@ fun UpvoteChip(
             stringResource(id = R.string.upvote)
         },
         count = upvoteCount,
-        tint = if (isUpvoted) UpvoteColor else MaterialTheme.colorScheme.primary,
+        tint = if (isUpvoted) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
         onClick = {
             if (isUpvoted) {
                 onUpdate(ClickNeutralizeVote(postId = postId, mention = authorPubkey))
