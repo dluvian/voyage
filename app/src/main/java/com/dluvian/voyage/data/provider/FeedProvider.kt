@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
+import com.dluvian.voyage.core.model.CrossPost
 import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.core.model.MainEvent
 import com.dluvian.voyage.core.utils.containsNoneIgnoreCase
@@ -95,9 +96,16 @@ class FeedProvider(
                         .map { it.getRelevantId() }
                 )
                 if (showAuthorName.value) {
-                    nostrSubscriber.subProfiles(
-                        pubkeys = posts.filter { it.authorName.isNullOrEmpty() }.map { it.pubkey }
-                    )
+                    val pubkeys = posts.filter { it.authorName.isNullOrEmpty() }
+                        .map { it.pubkey }
+                        .toMutableSet()
+                    val crossPostedPubkeys = posts.mapNotNull {
+                        if (it is CrossPost && it.crossPostedAuthorName.isNullOrEmpty())
+                            it.crossPostedPubkey
+                        else null
+                    }
+                    pubkeys.addAll(crossPostedPubkeys)
+                    nostrSubscriber.subProfiles(pubkeys = pubkeys)
                 }
             }
     }

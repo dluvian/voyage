@@ -17,6 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -27,6 +28,7 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenTopic
+import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.CrossPost
 import com.dluvian.voyage.core.model.LegacyReply
@@ -94,20 +96,29 @@ private fun MainEventHeaderIconsAndName(
                 is ThreadRootCtx -> true
                 is ThreadReplyCtx -> ctx.isOp
             },
-            authorName = if (showAuthor) ctx.mainEvent.authorName else null,
+            authorName = getUiAuthorName(
+                showAuthor = showAuthor,
+                name = ctx.mainEvent.authorName,
+                pubkey = ctx.mainEvent.pubkey
+            ),
             onClick = {
                 onUpdate(OpenProfile(nprofile = createNprofile(hex = ctx.mainEvent.pubkey)))
             }
         )
         when (val mainEvent = ctx.mainEvent) {
-            is CrossPost -> CrossPostIcon(crossPost = mainEvent, onUpdate = onUpdate)
+            is CrossPost -> CrossPostIcon(
+                showAuthor = showAuthor,
+                crossPost = mainEvent,
+                onUpdate = onUpdate
+            )
+
             is LegacyReply, is RootPost -> {}
         }
     }
 }
 
 @Composable
-private fun CrossPostIcon(crossPost: CrossPost, onUpdate: OnUpdate) {
+private fun CrossPostIcon(showAuthor: Boolean, crossPost: CrossPost, onUpdate: OnUpdate) {
     Icon(
         modifier = Modifier
             .size(sizing.smallIndicator)
@@ -118,6 +129,11 @@ private fun CrossPostIcon(crossPost: CrossPost, onUpdate: OnUpdate) {
     )
     ClickableTrustIcon(
         trustType = crossPost.crossPostedTrustType,
+        authorName = getUiAuthorName(
+            showAuthor = showAuthor,
+            name = crossPost.crossPostedAuthorName,
+            pubkey = crossPost.crossPostedPubkey
+        ),
         onClick = {
             onUpdate(OpenProfile(nprofile = createNprofile(hex = crossPost.crossPostedPubkey)))
         }
@@ -145,4 +161,10 @@ private fun BorderedTopic(topic: Topic, onUpdate: OnUpdate) {
             overflow = TextOverflow.Ellipsis
         )
     }
+}
+
+@Stable
+@Composable
+private fun getUiAuthorName(showAuthor: Boolean, name: String?, pubkey: PubkeyHex): String {
+    return (if (showAuthor) name else null).orEmpty().ifEmpty { pubkey.take(8) }
 }

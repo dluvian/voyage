@@ -189,6 +189,7 @@ data class CrossPost(
     val myTopic: String?,
     val crossPostedId: EventIdHex,
     val crossPostedPubkey: PubkeyHex,
+    val crossPostedAuthorName: PubkeyHex?,
     val crossPostedUpvoteCount: Int,
     val crossPostedReplyCount: Int,
     val crossPostedRelayUrl: RelayUrl,
@@ -230,6 +231,7 @@ data class CrossPost(
                 crossPostedRelayUrl = crossPostView.crossPostedRelayUrl,
                 crossPostedId = crossPostView.crossPostedId,
                 crossPostedPubkey = crossPostView.crossPostedPubkey,
+                crossPostedAuthorName = crossPostView.crossPostedAuthorName,
                 crossPostedTrustType = TrustType.fromCrossPostedAuthor(crossPostView = crossPostView),
                 crossPostedIsBookmarked = crossPostView.crossPostedIsBookmarked,
             )

@@ -21,6 +21,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             crossPostedEvent.relayUrl AS crossPostedRelayUrl, 
             crossPostedEvent.pubkey AS crossPostedPubkey, 
             profile.name AS authorName,
+            cross_posted_profile.name AS crossPostedAuthorName,
             ht.min_hashtag AS myTopic,
             CASE WHEN account.pubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsOneself,
             CASE WHEN friend.friendPubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsFriend,
@@ -42,6 +43,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
         JOIN mainEvent ON crossPost.eventId = mainEvent.id
         JOIN mainEvent AS crossPostedEvent ON crossPost.crossPostedId = crossPostedEvent.id
         LEFT JOIN profile ON profile.pubkey = mainEvent.pubkey
+        LEFT JOIN profile AS cross_posted_profile ON cross_posted_profile.pubkey = crossPostedEvent.pubkey
         LEFT JOIN rootPost ON rootPost.eventId = crossPost.crossPostedId
         LEFT JOIN (
             SELECT DISTINCT hashtag.eventId, MIN(hashtag.hashtag) AS min_hashtag
@@ -95,6 +97,7 @@ data class CrossPostView(
     val crossPostedRelayUrl: RelayUrl,
     val crossPostedId: EventIdHex,
     val crossPostedPubkey: PubkeyHex,
+    val crossPostedAuthorName: String?,
     val crossPostedAuthorIsOneself: Boolean,
     val crossPostedAuthorIsFriend: Boolean,
     val crossPostedAuthorIsTrusted: Boolean,
