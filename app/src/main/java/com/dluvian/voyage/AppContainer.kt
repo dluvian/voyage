@@ -370,7 +370,8 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
         forcedVotes = postVoter.forcedVotes,
         forcedFollows = profileFollower.forcedFollowsFlow,
         forcedBookmarks = bookmarker.forcedBookmarksFlow,
-        muteProvider = muteProvider
+        muteProvider = muteProvider,
+        showAuthorName = appPreferences.showAuthorNameState
     )
 
     val profileProvider = ProfileProvider(
