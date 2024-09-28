@@ -23,6 +23,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.LoadFullProfile
+import com.dluvian.voyage.core.MAX_SUBJECT_LINES
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.SaveProfile
 import com.dluvian.voyage.core.utils.normalizeName
@@ -177,7 +178,7 @@ private fun About(about: MutableState<TextFieldValue>) {
         header = stringResource(id = R.string.about),
         input = about,
         placeholder = stringResource(id = R.string.describe_yourself),
-        isSingleLine = false
+        maxLines = MAX_SUBJECT_LINES
     )
 }
 
@@ -264,7 +265,6 @@ private fun Banner(isVisible: Boolean, banner: MutableState<TextFieldValue>) {
         header = stringResource(id = R.string.banner_url),
         input = banner,
         placeholder = stringResource(id = R.string.enter_your_banner_url),
-        isSingleLine = true,
         keyboardType = KeyboardType.Uri
     )
 }
@@ -275,7 +275,7 @@ private fun EditableField(
     header: String,
     input: MutableState<TextFieldValue>,
     placeholder: String,
-    isSingleLine: Boolean = true,
+    maxLines: Int = 1,
     keyboardType: KeyboardType = KeyboardType.Text,
 ) {
     AnimatedVisibility(visible = isVisible) {
@@ -291,7 +291,7 @@ private fun EditableField(
             value = input.value,
             onValueChange = { txt -> input.value = txt },
             placeholder = placeholder,
-            isSingleLine = isSingleLine,
+            maxLines = maxLines,
             keyboardType = keyboardType
         )
     }

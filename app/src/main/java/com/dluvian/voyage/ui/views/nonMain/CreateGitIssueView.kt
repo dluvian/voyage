@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.GoBack
+import com.dluvian.voyage.core.MAX_SUBJECT_LINES
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.SendGitIssue
 import com.dluvian.voyage.core.SubRepoOwnerRelays
@@ -115,6 +116,7 @@ private fun CreateGitIssueContent(
                 .fillMaxWidth()
                 .focusRequester(focusRequester),
             value = header.value,
+            maxLines = MAX_SUBJECT_LINES,
             onValueChange = { txt -> header.value = txt },
             placeholder = stringResource(id = R.string.subject),
             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),

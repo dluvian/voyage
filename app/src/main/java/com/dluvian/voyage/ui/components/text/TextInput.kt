@@ -22,7 +22,7 @@ fun TextInput(
     onValueChange: (TextFieldValue) -> Unit,
     placeholder: String,
     modifier: Modifier = Modifier,
-    isSingleLine: Boolean = false,
+    maxLines: Int = Int.MAX_VALUE,
     style: TextStyle = LocalTextStyle.current,
     imeAction: ImeAction = ImeAction.Default,
     keyboardType: KeyboardType = KeyboardType.Text
@@ -33,7 +33,7 @@ fun TextInput(
         onValueChange = onValueChange,
         colors = getTransparentTextFieldColors(),
         textStyle = style,
-        singleLine = isSingleLine,
+        maxLines = maxLines,
         keyboardOptions = KeyboardOptions(
             keyboardType = keyboardType,
             imeAction = imeAction

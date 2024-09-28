@@ -18,6 +18,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.dluvian.voyage.core.ComposableContent
+import com.dluvian.voyage.core.MAX_CONTENT_LINES
+import com.dluvian.voyage.core.MAX_SUBJECT_LINES
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenThread
 import com.dluvian.voyage.core.OpenThreadRaw
@@ -115,10 +117,7 @@ private fun MainEventMainRow(
             if (subject.isNotEmpty()) {
                 AnnotatedText(
                     text = subject,
-                    maxLines = when (ctx) {
-                        is ThreadReplyCtx, is ThreadRootCtx -> Int.MAX_VALUE
-                        is FeedCtx -> 3
-                    },
+                    maxLines = MAX_SUBJECT_LINES,
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold)
                 )
                 Spacer(modifier = Modifier.height(spacing.large))
@@ -133,7 +132,7 @@ private fun MainEventMainRow(
                 text = ctx.mainEvent.content,
                 maxLines = when (ctx) {
                     is ThreadReplyCtx, is ThreadRootCtx -> Int.MAX_VALUE
-                    is FeedCtx -> 12
+                    is FeedCtx -> MAX_CONTENT_LINES
                 }
             )
             Spacer(modifier = Modifier.height(spacing.large))

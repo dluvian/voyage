@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.GoBack
+import com.dluvian.voyage.core.MAX_SUBJECT_LINES
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.SendPost
 import com.dluvian.voyage.core.Topic
@@ -106,6 +107,7 @@ private fun CreatePostContent(
         TextInput(
             value = header.value,
             onValueChange = { txt -> header.value = txt },
+            maxLines = MAX_SUBJECT_LINES,
             placeholder = stringResource(id = R.string.subject_optional),
             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
         )
