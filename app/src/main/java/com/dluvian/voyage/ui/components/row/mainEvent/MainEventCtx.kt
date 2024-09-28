@@ -4,7 +4,14 @@ import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.core.model.MainEvent
 import com.dluvian.voyage.core.model.ThreadableMainEvent
 
-sealed class MainEventCtx(open val mainEvent: MainEvent)
+sealed class MainEventCtx(open val mainEvent: MainEvent) {
+    fun isCollapsedReply(): Boolean {
+        return when (this) {
+            is ThreadReplyCtx -> this.isCollapsed
+            is FeedCtx, is ThreadRootCtx -> false
+        }
+    }
+}
 
 data class ThreadRootCtx(
     val threadableMainEvent: ThreadableMainEvent

@@ -20,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,7 +45,6 @@ import com.dluvian.voyage.ui.theme.spacing
 fun MainEventHeader(
     ctx: MainEventCtx,
     showAuthorName: Boolean,
-    collapsedText: AnnotatedString?,
     onUpdate: OnUpdate
 ) {
     Row(
@@ -59,9 +57,9 @@ fun MainEventHeader(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             MainEventHeaderIconsAndName(ctx = ctx, showAuthor = showAuthorName, onUpdate = onUpdate)
-            if (collapsedText != null) AnnotatedText(
+            if (ctx.isCollapsedReply()) AnnotatedText(
                 modifier = Modifier.padding(start = spacing.large),
-                text = collapsedText,
+                text = ctx.mainEvent.content,
                 maxLines = 1
             )
         }
@@ -77,7 +75,7 @@ fun MainEventHeader(
                 BorderedTopic(topic = topic, onUpdate = onUpdate)
                 Spacer(modifier = Modifier.width(spacing.large))
             }
-            if (collapsedText == null) RelativeTime(from = ctx.mainEvent.createdAt)
+            if (!ctx.isCollapsedReply()) RelativeTime(from = ctx.mainEvent.createdAt)
         }
     }
 }

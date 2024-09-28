@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.dluvian.voyage.core.ComposableContent
@@ -99,13 +98,6 @@ private fun MainEventMainRow(
         }
     }
 
-    val isCollapsed = remember(ctx) {
-        when (ctx) {
-            is ThreadReplyCtx -> ctx.isCollapsed
-            is FeedCtx, is ThreadRootCtx -> false
-        }
-    }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -115,9 +107,6 @@ private fun MainEventMainRow(
         MainEventHeader(
             ctx = ctx,
             showAuthorName = showAuthorName,
-            collapsedText = remember(isCollapsed) {
-                if (isCollapsed) ctx.mainEvent.content else null
-            },
             onUpdate = onUpdate,
         )
         Spacer(modifier = Modifier.height(spacing.large))
@@ -133,14 +122,14 @@ private fun MainEventMainRow(
         }
 
         AnimatedVisibility(
-            visible = !isCollapsed,
+            visible = !ctx.isCollapsedReply(),
             exit = slideOutVertically(animationSpec = tween(durationMillis = 0))
         ) {
             AnnotatedText(text = ctx.mainEvent.content)
             Spacer(modifier = Modifier.height(spacing.large))
         }
 
-        if (!isCollapsed) MainEventActions(
+        if (!ctx.isCollapsedReply()) MainEventActions(
             mainEvent = ctx.mainEvent,
             onUpdate = onUpdate,
             additionalStartAction = {

@@ -29,7 +29,9 @@ fun MainEventActions(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        additionalStartAction()
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            additionalStartAction()
+        }
         Spacer(modifier = Modifier.width(spacing.tiny))
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (mainEvent.isBookmarked) BookmarkChip(onClick = { onUpdate(UnbookmarkPost(postId = mainEvent.id)) })
