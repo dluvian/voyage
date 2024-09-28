@@ -54,14 +54,14 @@ fun MainEventRow(
             when (ctx.threadableMainEvent) {
                 is RootPost -> MainEventMainRow(
                     ctx = ctx,
-                    showAuthorName = true,
+                    showAuthorName = showAuthorName,
                     onUpdate = onUpdate
                 )
 
                 is LegacyReply -> RowWithDivider(level = 1) {
                     MainEventMainRow(
                         ctx = ctx,
-                        showAuthorName = true,
+                        showAuthorName = showAuthorName,
                         onUpdate = onUpdate
                     )
                 }
@@ -72,7 +72,7 @@ fun MainEventRow(
             RowWithDivider(level = ctx.level) {
                 MainEventMainRow(
                     ctx = ctx,
-                    showAuthorName = true,
+                    showAuthorName = showAuthorName,
                     onUpdate = onUpdate
                 )
             }

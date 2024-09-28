@@ -29,11 +29,13 @@ import kotlinx.coroutines.flow.stateIn
 import rust.nostr.protocol.Nip19Event
 
 class ThreadViewModel(
-    private val threadProvider: ThreadProvider,
-    private val threadCollapser: ThreadCollapser,
     val postDetails: State<PostDetails?>,
     val threadState: LazyListState,
+    val showAuthorName: State<Boolean>,
+    private val threadProvider: ThreadProvider,
+    private val threadCollapser: ThreadCollapser,
 ) : ViewModel() {
+
     val isRefreshing = mutableStateOf(false)
     var parentIsAvailable: StateFlow<Boolean> = MutableStateFlow(false)
     var localRoot: StateFlow<ThreadRootCtx?> = MutableStateFlow(null)

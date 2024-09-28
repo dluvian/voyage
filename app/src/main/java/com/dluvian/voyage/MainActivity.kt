@@ -176,10 +176,11 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         },
         threadVM = viewModel {
             ThreadViewModel(
+                postDetails = appContainer.postDetailInspector.currentDetails,
+                threadState = threadState,
+                showAuthorName = appContainer.appPreferences.showAuthorNameState,
                 threadProvider = appContainer.threadProvider,
                 threadCollapser = appContainer.threadCollapser,
-                postDetails = appContainer.postDetailInspector.currentDetails,
-                threadState = threadState
             )
         },
         topicVM = viewModel {

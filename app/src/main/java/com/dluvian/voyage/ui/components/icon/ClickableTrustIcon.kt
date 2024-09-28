@@ -24,22 +24,20 @@ import com.dluvian.voyage.ui.theme.spacing
 @Composable
 fun ClickableTrustIcon(
     trustType: TrustType,
+    authorName: String,
     isOp: Boolean = false,
-    authorName: String? = null,
     onClick: Fn
 ) {
     Box(modifier = Modifier.clickable(onClick = onClick)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             TrustIcon(trustType = trustType, onClick = onClick)
-            if (authorName != null) {
-                Spacer(modifier = Modifier.width(spacing.small))
-                Text(
-                    text = authorName,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colorScheme.onBackground.light()
-                )
-            }
+            Spacer(modifier = Modifier.width(spacing.small))
+            Text(
+                text = authorName,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                color = MaterialTheme.colorScheme.onBackground.light()
+            )
             if (isOp) {
                 Spacer(modifier = Modifier.width(spacing.small))
                 Text(
