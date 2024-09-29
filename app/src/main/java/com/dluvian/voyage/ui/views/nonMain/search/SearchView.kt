@@ -101,9 +101,6 @@ private fun SearchViewContent(
                     onClick = {
                         onUpdate(OpenThreadRaw(nevent = createNevent(hex = post.id)))
                     },
-                    onTrustIconClick = {
-                        onUpdate(OpenProfile(nprofile = createNprofile(hex = post.pubkey)))
-                    }
                 )
             }
         }

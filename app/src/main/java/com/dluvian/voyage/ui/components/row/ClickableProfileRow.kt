@@ -25,6 +25,5 @@ fun ClickableProfileRow(
         header = profile.name,
         trailingContent = trailingContent,
         onClick = onClick,
-        onTrustIconClick = onClick
     )
 }

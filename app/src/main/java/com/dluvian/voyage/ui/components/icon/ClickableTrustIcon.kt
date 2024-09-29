@@ -30,7 +30,7 @@ fun ClickableTrustIcon(
 ) {
     Box(modifier = Modifier.clickable(onClick = onClick)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            TrustIcon(trustType = trustType, onClick = onClick)
+            TrustIcon(trustType = trustType)
             Spacer(modifier = Modifier.width(spacing.small))
             Text(
                 text = authorName,

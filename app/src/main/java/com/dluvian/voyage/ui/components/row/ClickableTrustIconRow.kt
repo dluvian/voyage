@@ -13,14 +13,11 @@ fun ClickableTrustIconRow(
     content: String? = null,
     trailingContent: ComposableContent = {},
     onClick: Fn,
-    onTrustIconClick: Fn,
 ) {
     ClickableRow(
         header = header ?: content.orEmpty(),
         text = if (header != null) content else null,
-        leadingContent = {
-            TrustIcon(trustType = trustType, onClick = onTrustIconClick)
-        },
+        leadingContent = { TrustIcon(trustType = trustType) },
         trailingContent = trailingContent,
         onClick = onClick
     )

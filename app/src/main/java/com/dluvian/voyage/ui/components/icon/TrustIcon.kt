@@ -1,7 +1,6 @@
 package com.dluvian.voyage.ui.components.icon
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +15,6 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.unit.Dp
-import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.model.FriendTrust
 import com.dluvian.voyage.core.model.IsInListTrust
 import com.dluvian.voyage.core.model.Locked
@@ -34,18 +32,18 @@ private const val X_RATIO = 0.4f
 
 @Stable
 @Composable
-fun TrustIcon(trustType: TrustType, size: Dp = sizing.trustIndicator, onClick: Fn? = null) {
+fun TrustIcon(trustType: TrustType, size: Dp = sizing.trustIndicator) {
     val color = getTrustColor(trustType = trustType)
     when (trustType) {
         FriendTrust,
         WebTrust,
         NoTrust,
         Muted,
-        -> TrustBox(size = size, color = color, onClick = onClick)
+        -> TrustBox(size = size, color = color)
 
-        IsInListTrust -> ListTrustBox(size = size, color = color, onClick = onClick)
+        IsInListTrust -> ListTrustBox(size = size, color = color)
 
-        Locked -> MuteTriangle(size = size, color = color, onClick = onClick)
+        Locked -> MuteTriangle(size = size, color = color)
 
         LockedOneself, Oneself -> {
             /* Nothing for oneself */
@@ -70,27 +68,25 @@ fun TrustIcon(profile: AdvancedProfileView) {
 
 @Stable
 @Composable
-private fun TrustBox(size: Dp, color: Color, onClick: Fn?) {
+private fun TrustBox(size: Dp, color: Color) {
     Box(
         modifier = Modifier
             .height(height = size)
             .width(width = size.times(X_RATIO))
-            .let { if (onClick != null) it.clickable(onClick = onClick) else it }
             .background(color = color)
     )
 }
 
 @Stable
 @Composable
-private fun ListTrustBox(size: Dp, color: Color, onClick: Fn?) {
+private fun ListTrustBox(size: Dp, color: Color) {
     Column(
         modifier = Modifier
             .heightIn(
                 min = size,
                 max = size
             )
-            .width(width = size.times(X_RATIO))
-            .let { if (onClick != null) it.clickable(onClick = onClick) else it },
+            .width(width = size.times(X_RATIO)),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         repeat(3) {
@@ -106,7 +102,7 @@ private fun ListTrustBox(size: Dp, color: Color, onClick: Fn?) {
 
 @Stable
 @Composable
-private fun MuteTriangle(size: Dp, color: Color, onClick: Fn?) {
+private fun MuteTriangle(size: Dp, color: Color) {
     val xRatio = 0.7f
     Box(
         modifier = Modifier
@@ -128,7 +124,6 @@ private fun MuteTriangle(size: Dp, color: Color, onClick: Fn?) {
                 }
             }
             .height(height = size)
-            .width(width = size.times(xRatio))
-            .let { if (onClick != null) it.clickable(onClick = onClick) else it }
+            .width(width = size.times(xRatio)),
     )
 }
