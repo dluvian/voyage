@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.unit.Dp
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.model.FriendTrust
@@ -28,9 +30,11 @@ import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.ui.theme.getTrustColor
 import com.dluvian.voyage.ui.theme.sizing
 
+private const val X_RATIO = 0.4f
+
 @Stable
 @Composable
-fun TrustIcon(trustType: TrustType, size: Dp = sizing.smallIndicator, onClick: Fn? = null) {
+fun TrustIcon(trustType: TrustType, size: Dp = sizing.trustIndicator, onClick: Fn? = null) {
     val color = getTrustColor(trustType = trustType)
     when (trustType) {
         FriendTrust,
@@ -41,10 +45,10 @@ fun TrustIcon(trustType: TrustType, size: Dp = sizing.smallIndicator, onClick: F
 
         IsInListTrust -> ListTrustBox(size = size, color = color, onClick = onClick)
 
-        // TODO: Triangle
-        Locked -> TrustBox(size = size, color = color, onClick = onClick)
+        Locked -> MuteTriangle(size = size, color = color, onClick = onClick)
 
-        LockedOneself, Oneself -> { /* Nothing for oneself */
+        LockedOneself, Oneself -> {
+            /* Nothing for oneself */
         }
     }
 }
@@ -70,7 +74,7 @@ private fun TrustBox(size: Dp, color: Color, onClick: Fn?) {
     Box(
         modifier = Modifier
             .height(height = size)
-            .width(width = size.times(0.4f))
+            .width(width = size.times(X_RATIO))
             .let { if (onClick != null) it.clickable(onClick = onClick) else it }
             .background(color = color)
     )
@@ -85,7 +89,7 @@ private fun ListTrustBox(size: Dp, color: Color, onClick: Fn?) {
                 min = size,
                 max = size
             )
-            .width(width = size.times(0.4f))
+            .width(width = size.times(X_RATIO))
             .let { if (onClick != null) it.clickable(onClick = onClick) else it },
         verticalArrangement = Arrangement.SpaceBetween
     ) {
@@ -98,4 +102,33 @@ private fun ListTrustBox(size: Dp, color: Color, onClick: Fn?) {
             )
         }
     }
+}
+
+@Stable
+@Composable
+private fun MuteTriangle(size: Dp, color: Color, onClick: Fn?) {
+    val xRatio = 0.7f
+    Box(
+        modifier = Modifier
+            .drawWithCache {
+                onDrawBehind {
+                    val maxX = size
+                        .toPx()
+                        .times(xRatio)
+                    val maxY = size.toPx()
+                    drawPath(
+                        path = Path().apply {
+                            moveTo(maxX.div(2), 0f)
+                            lineTo(maxX, maxY)
+                            lineTo(0f, maxY)
+                            close()
+                        },
+                        color = color,
+                    )
+                }
+            }
+            .height(height = size)
+            .width(width = size.times(xRatio))
+            .let { if (onClick != null) it.clickable(onClick = onClick) else it }
+    )
 }
