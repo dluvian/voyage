@@ -1,6 +1,7 @@
 package com.dluvian.voyage.ui.components.button
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -9,8 +10,10 @@ import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.model.MainEvent
+import com.dluvian.voyage.ui.components.button.footer.FooterIconButton
 import com.dluvian.voyage.ui.components.dropdown.FeedItemDropdown
 import com.dluvian.voyage.ui.theme.HorizMoreIcon
+import com.dluvian.voyage.ui.theme.light
 
 @Composable
 fun OptionsButton(
@@ -28,6 +31,7 @@ fun OptionsButton(
         FooterIconButton(
             icon = HorizMoreIcon,
             description = stringResource(id = R.string.show_options_menu),
+            color = MaterialTheme.colorScheme.onBackground.light(),
             onClick = { showMenu.value = !showMenu.value })
     }
 }

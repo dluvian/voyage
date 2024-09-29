@@ -238,7 +238,7 @@ private fun NormalRelayRow(
     val context = LocalContext.current
     RelayRow(relayUrl = relayUrl, connectionStatus = connectionStatus, onUpdate = onUpdate) {
         if (isAddable) IconButton(
-            modifier = Modifier.size(sizing.iconButton),
+            modifier = Modifier.size(sizing.relayActionButton),
             onClick = { onUpdate(AddRelay(relayUrl = relayUrl, scope = scope, context = context)) }
         ) {
             Icon(
@@ -282,7 +282,7 @@ private fun MyRelayRow(
         },
         trailingContent = {
             if (isDeletable) IconButton(
-                modifier = Modifier.size(sizing.iconButton),
+                modifier = Modifier.size(sizing.relayActionButton),
                 onClick = { onUpdate(RemoveRelay(relayUrl = relay.url)) }) {
                 Icon(
                     imageVector = DeleteIcon,

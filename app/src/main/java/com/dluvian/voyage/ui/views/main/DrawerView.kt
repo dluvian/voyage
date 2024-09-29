@@ -47,6 +47,7 @@ import com.dluvian.voyage.core.viewModel.DrawerViewModel
 import com.dluvian.voyage.data.model.ItemSetMeta
 import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.ui.components.row.ClickableRow
+import com.dluvian.voyage.ui.theme.AccountIcon
 import com.dluvian.voyage.ui.theme.AddIcon
 import com.dluvian.voyage.ui.theme.BookmarksIcon
 import com.dluvian.voyage.ui.theme.ListIcon
@@ -54,8 +55,6 @@ import com.dluvian.voyage.ui.theme.MuteIcon
 import com.dluvian.voyage.ui.theme.RelayIcon
 import com.dluvian.voyage.ui.theme.SettingsIcon
 import com.dluvian.voyage.ui.theme.ViewListIcon
-import com.dluvian.voyage.ui.theme.getAccountColor
-import com.dluvian.voyage.ui.theme.getAccountIcon
 import com.dluvian.voyage.ui.theme.spacing
 import kotlinx.coroutines.CoroutineScope
 
@@ -68,7 +67,6 @@ fun MainDrawer(
 ) {
     val personalProfile by vm.personalProfile.collectAsState()
     val itemSets by vm.itemSetMetas.collectAsState()
-    val isLocked by vm.isLocked.collectAsState()
     ModalNavigationDrawer(drawerState = vm.drawerState, drawerContent = {
         ModalDrawerSheet {
             LaunchedEffect(key1 = vm.drawerState.isOpen) {
@@ -79,8 +77,7 @@ fun MainDrawer(
                 item {
                     DrawerItem(
                         label = personalProfile.name,
-                        icon = getAccountIcon(isLocked = isLocked),
-                        iconTint = getAccountColor(isLocked = isLocked),
+                        icon = AccountIcon,
                         onClick = {
                             onUpdate(
                                 OpenProfile(nprofile = createNprofile(hex = personalProfile.pubkey))

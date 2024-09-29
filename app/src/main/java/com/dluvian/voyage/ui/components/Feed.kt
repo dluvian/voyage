@@ -144,7 +144,7 @@ private fun ScrollUpButton(onScrollToTop: Fn) {
                 .clip(CircleShape)
                 .background(Color.White)
                 .clickable(onClick = onScrollToTop)
-                .size(sizing.iconButton),
+                .size(sizing.scrollUpButton),
             contentAlignment = Alignment.Center
         ) {
             Icon(

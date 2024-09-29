@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.components.button
+package com.dluvian.voyage.ui.components.button.footer
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource

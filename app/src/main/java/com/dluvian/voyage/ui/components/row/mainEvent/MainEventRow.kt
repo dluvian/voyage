@@ -30,9 +30,9 @@ import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.model.ThreadableMainEvent
 import com.dluvian.voyage.data.nostr.createNevent
-import com.dluvian.voyage.ui.components.button.CountedCommentButton
 import com.dluvian.voyage.ui.components.button.OptionsButton
-import com.dluvian.voyage.ui.components.button.ReplyIconButton
+import com.dluvian.voyage.ui.components.button.footer.CountedCommentButton
+import com.dluvian.voyage.ui.components.button.footer.ReplyIconButton
 import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.theme.spacing
 import com.dluvian.voyage.ui.views.nonMain.MoreRepliesTextButton

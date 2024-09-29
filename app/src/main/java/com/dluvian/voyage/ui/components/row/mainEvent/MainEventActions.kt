@@ -10,11 +10,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.UnbookmarkPost
 import com.dluvian.voyage.core.model.MainEvent
-import com.dluvian.voyage.ui.components.button.CountedUpvoteButton
-import com.dluvian.voyage.ui.components.button.CrossPostIconButton
-import com.dluvian.voyage.ui.components.chip.BookmarkChip
+import com.dluvian.voyage.ui.components.button.footer.BookmarkIconButton
+import com.dluvian.voyage.ui.components.button.footer.CountedUpvoteButton
+import com.dluvian.voyage.ui.components.button.footer.CrossPostIconButton
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
@@ -34,9 +33,14 @@ fun MainEventActions(
         }
         Spacer(modifier = Modifier.width(spacing.tiny))
         Row(verticalAlignment = Alignment.CenterVertically) {
-            if (mainEvent.isBookmarked) BookmarkChip(onClick = { onUpdate(UnbookmarkPost(postId = mainEvent.id)) })
+            if (mainEvent.isBookmarked) {
+                BookmarkIconButton(relevantId = mainEvent.getRelevantId(), onUpdate = onUpdate)
+                Spacer(modifier = Modifier.width(spacing.large))
+            }
             CrossPostIconButton(relevantId = mainEvent.getRelevantId(), onUpdate = onUpdate)
+            Spacer(modifier = Modifier.width(spacing.large))
             additionalEndAction()
+            Spacer(modifier = Modifier.width(spacing.large))
             CountedUpvoteButton(mainEvent = mainEvent, onUpdate = onUpdate)
         }
     }
