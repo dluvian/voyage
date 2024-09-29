@@ -3,20 +3,20 @@ package com.dluvian.voyage.ui.theme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Chat
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.List
 import androidx.compose.material.icons.automirrored.rounded.ListAlt
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.automirrored.rounded.Reply
 import androidx.compose.material.icons.automirrored.rounded.Send
-import androidx.compose.material.icons.automirrored.rounded.ViewList
 import androidx.compose.material.icons.automirrored.rounded.VolumeOff
 import androidx.compose.material.icons.filled.ThumbUpAlt
+import androidx.compose.material.icons.outlined.Book
 import androidx.compose.material.icons.outlined.FilterAlt
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material.icons.rounded.Abc
 import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Bookmark
-import androidx.compose.material.icons.rounded.Bookmarks
 import androidx.compose.material.icons.rounded.CellTower
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
@@ -66,8 +66,8 @@ val CrossPostIcon = Icons.Rounded.Repeat
 val KeyIcon = Icons.Rounded.Key
 val LightningIcon = Icons.Rounded.OfflineBolt
 val ListIcon = Icons.AutoMirrored.Rounded.ListAlt
-val ViewListIcon = Icons.AutoMirrored.Rounded.ViewList
-val BookmarksIcon = Icons.Rounded.Bookmarks
+val ViewListIcon = Icons.AutoMirrored.Rounded.List
+val BookmarksIcon = Icons.Outlined.Book
 val BookmarkIcon = Icons.Rounded.Bookmark
 val RelayIcon = Icons.Rounded.CellTower
 val OpenIcon = Icons.AutoMirrored.Rounded.OpenInNew

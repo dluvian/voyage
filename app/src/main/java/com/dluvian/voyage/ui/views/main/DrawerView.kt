@@ -3,10 +3,12 @@ package com.dluvian.voyage.ui.views.main
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.DropdownMenu
@@ -23,8 +25,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
@@ -46,7 +48,6 @@ import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.viewModel.DrawerViewModel
 import com.dluvian.voyage.data.model.ItemSetMeta
 import com.dluvian.voyage.data.nostr.createNprofile
-import com.dluvian.voyage.ui.components.row.ClickableRow
 import com.dluvian.voyage.ui.theme.AccountIcon
 import com.dluvian.voyage.ui.theme.AddIcon
 import com.dluvian.voyage.ui.theme.BookmarksIcon
@@ -55,6 +56,7 @@ import com.dluvian.voyage.ui.theme.MuteIcon
 import com.dluvian.voyage.ui.theme.RelayIcon
 import com.dluvian.voyage.ui.theme.SettingsIcon
 import com.dluvian.voyage.ui.theme.ViewListIcon
+import com.dluvian.voyage.ui.theme.light
 import com.dluvian.voyage.ui.theme.spacing
 import kotlinx.coroutines.CoroutineScope
 
@@ -75,7 +77,7 @@ fun MainDrawer(
             LazyColumn {
                 item { Spacer(modifier = Modifier.height(spacing.screenEdge)) }
                 item {
-                    DrawerItem(
+                    DrawerRow(
                         label = personalProfile.name,
                         icon = AccountIcon,
                         onClick = {
@@ -86,7 +88,8 @@ fun MainDrawer(
                         })
                 }
                 item {
-                    DrawerItem(label = stringResource(id = R.string.follow_lists),
+                    DrawerRow(
+                        label = stringResource(id = R.string.follow_lists),
                         icon = ListIcon,
                         onClick = {
                             onUpdate(ClickFollowLists)
@@ -94,7 +97,8 @@ fun MainDrawer(
                         })
                 }
                 item {
-                    DrawerItem(label = stringResource(id = R.string.bookmarks),
+                    DrawerRow(
+                        label = stringResource(id = R.string.bookmarks),
                         icon = BookmarksIcon,
                         onClick = {
                             onUpdate(ClickBookmarks)
@@ -102,7 +106,7 @@ fun MainDrawer(
                         })
                 }
                 item {
-                    DrawerItem(
+                    DrawerRow(
                         label = stringResource(id = R.string.relays),
                         icon = RelayIcon,
                         onClick = {
@@ -111,7 +115,7 @@ fun MainDrawer(
                         })
                 }
                 item {
-                    DrawerItem(
+                    DrawerRow(
                         label = stringResource(id = R.string.mute_list),
                         icon = MuteIcon,
                         onClick = {
@@ -120,7 +124,7 @@ fun MainDrawer(
                         })
                 }
                 item {
-                    DrawerItem(
+                    DrawerRow(
                         label = stringResource(id = R.string.settings),
                         icon = SettingsIcon,
                         onClick = {
@@ -139,7 +143,7 @@ fun MainDrawer(
                     DrawerListItem(meta = it, scope = scope, onUpdate = onUpdate)
                 }
                 item {
-                    DrawerItem(
+                    DrawerRow(
                         modifier = Modifier.padding(bottom = spacing.bottomPadding),
                         label = stringResource(id = R.string.create_a_list),
                         icon = AddIcon,
@@ -155,29 +159,6 @@ fun MainDrawer(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun DrawerItem(
-    label: String,
-    icon: ImageVector,
-    modifier: Modifier = Modifier,
-    iconTint: Color = LocalContentColor.current,
-    onClick: Fn,
-    onLongClick: Fn = {},
-) {
-    ClickableRow(
-        modifier = modifier
-            .fillMaxWidth()
-            .combinedClickable(onLongClick = onLongClick, onClick = onClick),
-        header = label,
-        leadingContent = {
-            Icon(imageVector = icon, tint = iconTint, contentDescription = null)
-        },
-        onClick = onClick,
-        onLongClick = onLongClick
-    )
-}
-
 @Composable
 private fun DrawerListItem(meta: ItemSetMeta, scope: CoroutineScope, onUpdate: OnUpdate) {
     val showMenu = remember { mutableStateOf(false) }
@@ -189,18 +170,46 @@ private fun DrawerListItem(meta: ItemSetMeta, scope: CoroutineScope, onUpdate: O
             onDismiss = { showMenu.value = false },
             onUpdate = onUpdate
         )
-        ClickableRow(
-            header = meta.title,
+        DrawerRow(
+            label = meta.title,
             modifier = Modifier.fillMaxWidth(),
-            leadingContent = {
-                Icon(imageVector = ViewListIcon, contentDescription = null)
-            },
+            icon = ViewListIcon,
             onClick = {
                 onUpdate(OpenList(identifier = meta.identifier))
                 onUpdate(CloseDrawer(scope = scope))
             },
             onLongClick = { showMenu.value = true }
         )
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun DrawerRow(
+    icon: ImageVector,
+    label: String,
+    modifier: Modifier = Modifier,
+    onClick: Fn,
+    onLongClick: Fn = {}
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick,
+            )
+            .padding(horizontal = spacing.bigScreenEdge, vertical = spacing.xl)
+            .padding(start = spacing.small),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = icon,
+            tint = LocalContentColor.current.light(0.85f),
+            contentDescription = label
+        )
+        Spacer(modifier = Modifier.width(spacing.xl))
+        Text(text = label, color = LocalContentColor.current.light(0.85f))
     }
 }
 
