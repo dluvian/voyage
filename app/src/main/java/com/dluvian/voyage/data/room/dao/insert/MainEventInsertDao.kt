@@ -4,10 +4,12 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Transaction
+import com.dluvian.voyage.data.event.ValidatedComment
 import com.dluvian.voyage.data.event.ValidatedCrossPost
 import com.dluvian.voyage.data.event.ValidatedLegacyReply
 import com.dluvian.voyage.data.event.ValidatedMainEvent
 import com.dluvian.voyage.data.event.ValidatedRootPost
+import com.dluvian.voyage.data.room.entity.main.CommentMetaEntity
 import com.dluvian.voyage.data.room.entity.main.CrossPostMetaEntity
 import com.dluvian.voyage.data.room.entity.main.HashtagEntity
 import com.dluvian.voyage.data.room.entity.main.LegacyReplyMetaEntity
@@ -48,6 +50,16 @@ interface MainEventInsertDao {
         internalInsertLegacyReplyEntities(legacyReplies = entities)
     }
 
+    @Transaction
+    suspend fun insertComments(comments: Collection<ValidatedComment>) {
+        if (comments.isEmpty()) return
+
+        internalInsertMainEvents(mainEvents = comments)
+
+        val entities = comments.map { CommentMetaEntity.from(comment = it) }
+        internalInsertCommentEntities(comments = entities)
+    }
+
     suspend fun internalInsertMainEvents(mainEvents: Collection<ValidatedMainEvent>) {
         val mainEntities = mainEvents.map { MainEventEntity.from(mainEvent = it) }
         internalInsertMainEventsEntities(mainEvents = mainEntities)
@@ -70,7 +82,8 @@ interface MainEventInsertDao {
                     )
                 }
 
-                is ValidatedLegacyReply -> emptyList()
+                // We don't index hashtags of replies
+                is ValidatedLegacyReply, is ValidatedComment -> emptyList()
             }
         }
 
@@ -91,4 +104,7 @@ interface MainEventInsertDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun internalInsertLegacyReplyEntities(legacyReplies: Collection<LegacyReplyMetaEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun internalInsertCommentEntities(comments: Collection<CommentMetaEntity>)
 }

@@ -39,6 +39,7 @@ class EventProcessor(
 
         val rootPosts = mutableListOf<ValidatedRootPost>()
         val legacyReplies = mutableListOf<ValidatedLegacyReply>()
+        val comments = mutableListOf<ValidatedComment>()
         val crossPosts = mutableListOf<ValidatedCrossPost>()
         val votes = mutableListOf<ValidatedVote>()
         val profiles = mutableListOf<ValidatedProfile>()
@@ -58,10 +59,12 @@ class EventProcessor(
                 is ValidatedTopicSet -> topicSets.add(event)
                 is ValidatedList -> lists.add(event)
                 is ValidatedLock -> locks.add(event)
+                is ValidatedComment -> comments.add(event)
             }
         }
         processRootPosts(rootPosts = rootPosts)
         processLegacyReplies(legacyReplies = legacyReplies)
+        processComments(comments = comments)
         processCrossPosts(crossPosts = crossPosts)
         processVotes(votes = votes)
         processProfiles(profiles = profiles)
@@ -88,6 +91,16 @@ class EventProcessor(
             room.mainEventInsertDao().insertLegacyReplies(replies = legacyReplies)
         }.invokeOnCompletion { exception ->
             if (exception != null) Log.w(TAG, "Failed to process replies", exception)
+        }
+    }
+
+    private fun processComments(comments: Collection<ValidatedComment>) {
+        if (comments.isEmpty()) return
+
+        scope.launch {
+            room.mainEventInsertDao().insertComments(comments = comments)
+        }.invokeOnCompletion { exception ->
+            if (exception != null) Log.w(TAG, "Failed to process comments", exception)
         }
     }
 

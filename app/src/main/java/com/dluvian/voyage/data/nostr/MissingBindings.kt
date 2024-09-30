@@ -91,6 +91,21 @@ fun Event.getClientTag(): String? {
         ?.getOrNull(1)
 }
 
+fun Event.getKindTag(): Int? {
+    return this.tags()
+        .map { it.asVec() }
+        .find { it.size >= 2 && it.first() == "k" }
+        ?.getOrNull(1)
+        ?.toIntOrNull()
+}
+
+fun Event.getParentRef(): String? {
+    return this.tags()
+        .map { it.asVec() }
+        .find { it.size >= 2 && (it.first() == "e" || it.first() == "a" || it.first() == "i") }
+        ?.getOrNull(1)
+}
+
 fun isValidEventId(hex: String): Boolean {
     return hex.length == 64 && hex.all { it.isDigit() || it in ('a'..'f') || it in ('A'..'F') }
 }

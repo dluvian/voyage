@@ -53,6 +53,7 @@ import com.dluvian.voyage.data.room.entity.lists.MuteEntity
 import com.dluvian.voyage.data.room.entity.lists.Nip65Entity
 import com.dluvian.voyage.data.room.entity.lists.TopicEntity
 import com.dluvian.voyage.data.room.entity.lists.WebOfTrustEntity
+import com.dluvian.voyage.data.room.entity.main.CommentMetaEntity
 import com.dluvian.voyage.data.room.entity.main.CrossPostMetaEntity
 import com.dluvian.voyage.data.room.entity.main.HashtagEntity
 import com.dluvian.voyage.data.room.entity.main.LegacyReplyMetaEntity
@@ -82,7 +83,7 @@ class V10 : AutoMigrationSpec
 class V24 : AutoMigrationSpec
 
 @Database(
-    version = 28,
+    version = 29,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -112,12 +113,14 @@ class V24 : AutoMigrationSpec
         AutoMigration(from = 25, to = 26),
         AutoMigration(from = 26, to = 27),
         AutoMigration(from = 27, to = 28),
+        AutoMigration(from = 28, to = 29),
     ],
     entities = [
         // Main
         MainEventEntity::class,
         RootPostMetaEntity::class,
         LegacyReplyMetaEntity::class,
+        CommentMetaEntity::class,
         CrossPostMetaEntity::class,
         HashtagEntity::class,
         VoteEntity::class,

@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.Index
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.data.event.ValidatedComment
 import com.dluvian.voyage.data.event.ValidatedCrossPost
 import com.dluvian.voyage.data.event.ValidatedLegacyReply
 import com.dluvian.voyage.data.event.ValidatedMainEvent
@@ -37,17 +38,20 @@ data class MainEventEntity(
                 content = when (mainEvent) {
                     is ValidatedRootPost -> mainEvent.content
                     is ValidatedLegacyReply -> mainEvent.content
+                    is ValidatedComment -> mainEvent.content
                     is ValidatedCrossPost -> ""
                 },
                 relayUrl = mainEvent.relayUrl,
                 isMentioningMe = when (mainEvent) {
                     is ValidatedRootPost -> mainEvent.isMentioningMe
                     is ValidatedLegacyReply -> mainEvent.isMentioningMe
+                    is ValidatedComment -> mainEvent.isMentioningMe
                     is ValidatedCrossPost -> false
                 },
                 json = when (mainEvent) {
                     is ValidatedRootPost -> mainEvent.json
                     is ValidatedLegacyReply -> mainEvent.json
+                    is ValidatedComment -> mainEvent.json
                     is ValidatedCrossPost -> null
                 },
             )

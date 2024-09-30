@@ -70,6 +70,23 @@ data class ValidatedLegacyReply(
     isMentioningMe = isMentioningMe
 )
 
+data class ValidatedComment(
+    override val id: EventIdHex,
+    override val pubkey: PubkeyHex,
+    override val createdAt: Long,
+    override val relayUrl: RelayUrl,
+    val content: String,
+    val json: String,
+    val isMentioningMe: Boolean,
+    val parentRef: String, // id, coord, or anything
+    val parentKind: Int,
+) : ValidatedMainEvent(
+    id = id,
+    pubkey = pubkey,
+    createdAt = createdAt,
+    relayUrl = relayUrl,
+)
+
 data class ValidatedCrossPost(
     override val id: EventIdHex,
     override val pubkey: PubkeyHex,

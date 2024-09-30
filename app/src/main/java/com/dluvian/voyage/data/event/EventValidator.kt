@@ -13,9 +13,11 @@ import com.dluvian.voyage.core.utils.takeRandom
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.SubId
+import com.dluvian.voyage.data.nostr.getKindTag
 import com.dluvian.voyage.data.nostr.getLegacyReplyToId
 import com.dluvian.voyage.data.nostr.getMetadata
 import com.dluvian.voyage.data.nostr.getNip65s
+import com.dluvian.voyage.data.nostr.getParentRef
 import com.dluvian.voyage.data.nostr.isTextNote
 import com.dluvian.voyage.data.nostr.secs
 import rust.nostr.protocol.Event
@@ -40,6 +42,7 @@ private val INTERESTS_U16 = Kind.fromEnum(KindEnum.Interests).asU16()
 private val BOOKMARKS_U16 = Kind.fromEnum(KindEnum.Bookmarks).asU16()
 private val MUTE_LIST_U16 = Kind.fromEnum(KindEnum.MuteList).asU16()
 val LOCK_U16: UShort = 398u
+val COMMENT_U16: UShort = 1111u
 
 class EventValidator(
     private val syncedFilterCache: Map<SubId, List<Filter>>,
@@ -94,12 +97,25 @@ class EventValidator(
 
             REACTION_U16 -> {
                 if (event.content() == "-") return null
-                val postId = event.eventIds().firstOrNull() ?: return null
                 ValidatedVote(
                     id = event.id().toHex(),
-                    eventId = postId.toHex(),
+                    eventId = event.eventIds().firstOrNull()?.toHex() ?: return null,
                     pubkey = event.author().toHex(),
                     createdAt = event.createdAt().secs()
+                )
+            }
+
+            COMMENT_U16 -> {
+                ValidatedComment(
+                    id = event.id().toHex(),
+                    pubkey = event.author().toHex(),
+                    content = event.content(),
+                    createdAt = event.createdAt().secs(),
+                    relayUrl = relayUrl,
+                    json = event.asJson(),
+                    isMentioningMe = event.publicKeys().contains(myPubkeyProvider.getPublicKey()),
+                    parentRef = event.getParentRef() ?: return null,
+                    parentKind = event.getKindTag() ?: return null
                 )
             }
 
