@@ -17,7 +17,7 @@ fun FooterIconButton(
     icon: ImageVector,
     description: String,
     modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.primary,
+    color: Color = MaterialTheme.colorScheme.secondary,
     onClick: Fn
 ) {
     IconButton(

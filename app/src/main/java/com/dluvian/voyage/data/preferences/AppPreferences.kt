@@ -11,7 +11,7 @@ class AppPreferences(context: Context) {
     val showAuthorNameState = mutableStateOf(getShowAuthorName())
 
     private fun getShowAuthorName(): Boolean {
-        return preferences.getBoolean(SHOW_AUTHOR_NAME, false)
+        return preferences.getBoolean(SHOW_AUTHOR_NAME, true)
     }
 
     fun setShowAuthorName(showAuthorName: Boolean) {

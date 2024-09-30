@@ -125,7 +125,7 @@ private fun CrossPostIcon(showAuthor: Boolean, crossPost: CrossPost, onUpdate: O
             .padding(horizontal = spacing.small),
         imageVector = CrossPostIcon,
         contentDescription = stringResource(id = R.string.cross_posted),
-        tint = MaterialTheme.colorScheme.onBackground.light()
+        tint = MaterialTheme.colorScheme.onBackground.light(0.6f)
     )
     ClickableTrustIcon(
         trustType = crossPost.crossPostedTrustType,
