@@ -10,7 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.dluvian.voyage.core.ComposableContent
-import com.dluvian.voyage.ui.theme.light
+import com.dluvian.voyage.ui.theme.OnBgLight
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
@@ -24,7 +24,7 @@ fun BottomSheetColumn(header: String, content: ComposableContent) {
         Text(
             text = header,
             style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onBackground.light()
+            color = OnBgLight
         )
         HorizontalDivider(
             modifier = Modifier

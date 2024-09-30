@@ -14,6 +14,7 @@ import com.dluvian.voyage.core.model.MainEvent
 import com.dluvian.voyage.ui.components.button.footer.BookmarkIconButton
 import com.dluvian.voyage.ui.components.button.footer.CountedUpvoteButton
 import com.dluvian.voyage.ui.components.button.footer.CrossPostIconButton
+import com.dluvian.voyage.ui.theme.OPBlue
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
@@ -41,6 +42,7 @@ fun MainEventActions(
             Spacer(modifier = Modifier.width(spacing.large))
             additionalEndAction()
             Spacer(modifier = Modifier.width(spacing.large))
+            OPBlue
             CountedUpvoteButton(mainEvent = mainEvent, onUpdate = onUpdate)
         }
     }

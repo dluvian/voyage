@@ -1,14 +1,13 @@
 package com.dluvian.voyage.ui.components.text
 
 import android.text.format.DateUtils
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
-import com.dluvian.voyage.ui.theme.light
+import com.dluvian.voyage.ui.theme.OnBgLight
 
 @Composable
 fun RelativeTime(from: Long, modifier: Modifier = Modifier) {
@@ -21,6 +20,6 @@ fun RelativeTime(from: Long, modifier: Modifier = Modifier) {
         text = time,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
-        color = MaterialTheme.colorScheme.onBackground.light()
+        color = OnBgLight
     )
 }

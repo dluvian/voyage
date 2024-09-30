@@ -39,6 +39,7 @@ import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.components.text.RelativeTime
 import com.dluvian.voyage.ui.theme.CrossPostIcon
 import com.dluvian.voyage.ui.theme.DenimBlue
+import com.dluvian.voyage.ui.theme.OnBgLight
 import com.dluvian.voyage.ui.theme.light
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
@@ -157,7 +158,7 @@ private fun BorderedTopic(topic: Topic, onUpdate: OnUpdate) {
             fontSize = 12.sp,
             lineHeight = 18.sp,
             maxLines = 1,
-            color = MaterialTheme.colorScheme.onBackground.light(),
+            color = OnBgLight,
             overflow = TextOverflow.Ellipsis
         )
     }

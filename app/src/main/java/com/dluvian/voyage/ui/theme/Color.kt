@@ -1,7 +1,6 @@
 package com.dluvian.voyage.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -23,8 +22,6 @@ val WotColor = Color(0xFFF8D97B)
 val FriendColor = Color(0xFFC1FA7F)
 val MutedColor = Color(0xFFFA6D6D)
 val LockedColor = Color.Red
-
-val UpvoteColor = Color.Green
 
 val HyperlinkBlue = Color(0xFF007AFF)
 
@@ -94,6 +91,10 @@ val OPBlue: Color
     @Composable
     get() = if (isSystemInDarkTheme()) Color(0xFF388de2) else Color(0xFF244b99)
 
+val OnBgLight: Color
+    @Composable
+    get() = MaterialTheme.colorScheme.onBackground.light()
+
 @Stable
 @Composable
 fun getTrustColor(trustType: TrustType): Color {
@@ -103,13 +104,6 @@ fun getTrustColor(trustType: TrustType): Color {
         WebTrust -> WotColor
         Muted -> MutedColor
         Locked, LockedOneself -> LockedColor
-        NoTrust -> MaterialTheme.colorScheme.onBackground.light(0.1f)
+        NoTrust -> MaterialTheme.colorScheme.onBackground.light(0.2f)
     }
 }
-
-@Stable
-@Composable
-fun getAccountColor(isLocked: Boolean): Color {
-    return if (isLocked) getTrustColor(trustType = Locked) else LocalContentColor.current
-}
-

@@ -1,7 +1,6 @@
 package com.dluvian.voyage.ui.components.button.footer
 
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,6 +18,6 @@ fun CountedIconButton(
 ) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         FooterIconButton(icon = icon, description = description, onClick = onClick)
-        if (count > 0) Text(text = count.toString(), color = MaterialTheme.colorScheme.onBackground)
+        if (count > 0) Text(text = count.toString())
     }
 }

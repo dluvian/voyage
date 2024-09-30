@@ -3,7 +3,6 @@ package com.dluvian.voyage.ui.components.text
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -14,7 +13,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import com.dluvian.voyage.core.utils.getTransparentTextFieldColors
-import com.dluvian.voyage.ui.theme.light
+import com.dluvian.voyage.ui.theme.OnBgLight
 
 @Composable
 fun TextInput(
@@ -43,7 +42,7 @@ fun TextInput(
                 text = placeholder,
                 style = style,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground.light()
+                color = OnBgLight
             )
         })
 }

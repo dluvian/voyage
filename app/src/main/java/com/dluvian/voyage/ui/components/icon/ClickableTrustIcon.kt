@@ -17,7 +17,7 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.ui.theme.OPBlue
-import com.dluvian.voyage.ui.theme.light
+import com.dluvian.voyage.ui.theme.OnBgLight
 import com.dluvian.voyage.ui.theme.spacing
 
 
@@ -36,7 +36,7 @@ fun ClickableTrustIcon(
                 text = authorName,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                color = MaterialTheme.colorScheme.onBackground.light()
+                color = OnBgLight
             )
             if (isOp) {
                 Spacer(modifier = Modifier.width(spacing.small))
