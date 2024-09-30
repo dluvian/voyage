@@ -33,10 +33,10 @@ fun FollowChip(item: FollowableItem) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Spacer(modifier = Modifier.width(spacing.large))
+        Spacer(modifier = Modifier.width(spacing.xl))
         item.icon()
         Text(
-            modifier = Modifier.padding(horizontal = spacing.large),
+            modifier = Modifier.padding(horizontal = spacing.medium),
             text = item.label,
             style = MaterialTheme.typography.labelLarge
         )
