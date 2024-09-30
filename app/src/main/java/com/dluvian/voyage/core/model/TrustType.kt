@@ -2,6 +2,7 @@ package com.dluvian.voyage.core.model
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
+import com.dluvian.voyage.data.room.view.CommentView
 import com.dluvian.voyage.data.room.view.CrossPostView
 import com.dluvian.voyage.data.room.view.LegacyReplyView
 import com.dluvian.voyage.data.room.view.RootPostView
@@ -55,6 +56,21 @@ sealed class TrustType {
                 isMuted = legacyReplyView.authorIsMuted,
                 isInList = legacyReplyView.authorIsInList,
                 isLocked = legacyReplyView.authorIsLocked,
+            )
+        }
+
+        @Stable
+        fun from(
+            commentView: CommentView,
+            isFriend: Boolean? = commentView.authorIsFriend
+        ): TrustType {
+            return from(
+                isOneself = commentView.authorIsOneself,
+                isFriend = isFriend ?: commentView.authorIsFriend,
+                isWebOfTrust = commentView.authorIsTrusted,
+                isMuted = commentView.authorIsMuted,
+                isInList = commentView.authorIsInList,
+                isLocked = commentView.authorIsLocked,
             )
         }
 

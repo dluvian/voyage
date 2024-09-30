@@ -4,8 +4,10 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.text.AnnotatedString
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.data.event.COMMENT_U16
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
+import com.dluvian.voyage.data.room.view.CommentView
 import com.dluvian.voyage.data.room.view.CrossPostView
 import com.dluvian.voyage.data.room.view.LegacyReplyView
 import com.dluvian.voyage.data.room.view.RootPostView
@@ -29,24 +31,23 @@ sealed class MainEvent(
         return when (this) {
             is RootPost, is LegacyReply -> Kind.fromEnum(KindEnum.TextNote)
             is CrossPost -> Kind.fromEnum(KindEnum.Repost)
+            is Comment -> Kind(COMMENT_U16)
         }
     }
 
     fun getRelevantId() = when (this) {
-        is RootPost -> this.id
-        is LegacyReply -> this.id
+        is RootPost, is LegacyReply, is Comment -> this.id
         is CrossPost -> this.crossPostedId
     }
 
     fun getRelevantPubkey() = when (this) {
-        is RootPost -> this.pubkey
-        is LegacyReply -> this.pubkey
+        is RootPost, is LegacyReply, is Comment -> this.pubkey
         is CrossPost -> this.crossPostedPubkey
     }
 
     fun getRelevantSubject() = when (this) {
         is RootPost -> this.subject
-        is LegacyReply -> null
+        is LegacyReply, is Comment -> null
         is CrossPost -> this.crossPostedSubject
     }
 }
@@ -129,6 +130,33 @@ data class RootPost(
     }
 }
 
+sealed class SomeReply(
+    override val id: EventIdHex,
+    override val pubkey: PubkeyHex,
+    override val authorName: String?,
+    override val trustType: TrustType,
+    override val createdAt: Long,
+    override val content: AnnotatedString,
+    override val upvoteCount: Int,
+    override val replyCount: Int,
+    override val relayUrl: RelayUrl,
+    override val isUpvoted: Boolean,
+    override val isBookmarked: Boolean,
+    open val parentRef: String,
+) : ThreadableMainEvent(
+    id = id,
+    pubkey = pubkey,
+    content = content,
+    authorName = authorName,
+    trustType = trustType,
+    relayUrl = relayUrl,
+    replyCount = replyCount,
+    upvoteCount = upvoteCount,
+    createdAt = createdAt,
+    isUpvoted = isUpvoted,
+    isBookmarked = isBookmarked,
+)
+
 @Immutable
 data class LegacyReply(
     override val id: EventIdHex,
@@ -143,7 +171,7 @@ data class LegacyReply(
     override val isUpvoted: Boolean,
     override val isBookmarked: Boolean,
     val parentId: EventIdHex,
-) : ThreadableMainEvent(
+) : SomeReply(
     id = id,
     pubkey = pubkey,
     content = content,
@@ -155,6 +183,7 @@ data class LegacyReply(
     createdAt = createdAt,
     isUpvoted = isUpvoted,
     isBookmarked = isBookmarked,
+    parentRef = parentId
 ) {
     companion object {
         fun from(
@@ -174,6 +203,59 @@ data class LegacyReply(
                 replyCount = legacyReplyView.replyCount,
                 relayUrl = legacyReplyView.relayUrl,
                 isBookmarked = legacyReplyView.isBookmarked
+            )
+        }
+    }
+}
+
+@Immutable
+data class Comment(
+    override val id: EventIdHex,
+    override val pubkey: PubkeyHex,
+    override val authorName: String?,
+    override val trustType: TrustType,
+    override val createdAt: Long,
+    override val content: AnnotatedString,
+    override val upvoteCount: Int,
+    override val replyCount: Int,
+    override val relayUrl: RelayUrl,
+    override val isUpvoted: Boolean,
+    override val isBookmarked: Boolean,
+    override val parentRef: String,
+    val parentKind: Int
+) : SomeReply(
+    id = id,
+    pubkey = pubkey,
+    content = content,
+    authorName = authorName,
+    trustType = trustType,
+    relayUrl = relayUrl,
+    replyCount = replyCount,
+    upvoteCount = upvoteCount,
+    createdAt = createdAt,
+    isUpvoted = isUpvoted,
+    isBookmarked = isBookmarked,
+    parentRef = parentRef
+) {
+    companion object {
+        fun from(
+            commentView: CommentView,
+            annotatedStringProvider: AnnotatedStringProvider
+        ): Comment {
+            return Comment(
+                id = commentView.id,
+                parentRef = commentView.parentRef,
+                parentKind = commentView.parentKind,
+                pubkey = commentView.pubkey,
+                authorName = commentView.authorName,
+                trustType = TrustType.from(commentView = commentView),
+                createdAt = commentView.createdAt,
+                content = annotatedStringProvider.annotate(commentView.content),
+                isUpvoted = commentView.isUpvoted,
+                upvoteCount = commentView.upvoteCount,
+                replyCount = commentView.replyCount,
+                relayUrl = commentView.relayUrl,
+                isBookmarked = commentView.isBookmarked,
             )
         }
     }

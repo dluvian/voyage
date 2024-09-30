@@ -14,7 +14,8 @@ interface ExistsDao {
     @Query(
         "SELECT EXISTS" +
                 "(SELECT id FROM mainEvent WHERE id = " +
-                "(SELECT parentId FROM legacyReply WHERE eventId = :id))"
+                "(SELECT parentId FROM legacyReply WHERE eventId = :id)" +
+                "OR (SELECT parentRef FROM comment WHERE eventId = :id))"
     )
     fun parentExistsFlow(id: EventIdHex): Flow<Boolean>
 }

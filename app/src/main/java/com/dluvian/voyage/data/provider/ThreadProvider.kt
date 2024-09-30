@@ -11,6 +11,7 @@ import com.dluvian.voyage.core.utils.containsNoneIgnoreCase
 import com.dluvian.voyage.core.utils.firstThenDistinctDebounce
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.event.OldestUsedEvent
+import com.dluvian.voyage.data.model.ForcedData
 import com.dluvian.voyage.data.model.SingularPubkey
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.nostr.NostrSubscriber
@@ -68,23 +69,33 @@ class ThreadProvider(
 
         val rootFlow = room.rootPostDao().getRootPostFlow(id = id)
         val replyFlow = room.replyDao().getReplyFlow(id = id)
+        val commentFlow = room.commentDao().getCommentFlow(id = id)
+        val forcedFlow = ForcedData.combineFlows(
+            votes = forcedVotes,
+            follows = forcedFollows,
+            bookmarks = forcedBookmarks
+        )
 
         return combine(
             rootFlow.firstThenDistinctDebounce(SHORT_DEBOUNCE),
             replyFlow.firstThenDistinctDebounce(SHORT_DEBOUNCE),
-            forcedVotes,
-            forcedFollows,
-            forcedBookmarks,
-        ) { post, reply, votes, follows, bookmarks ->
+            commentFlow.firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            forcedFlow,
+        ) { post, reply, comment, forced ->
             val threadableMainEvent = post?.mapToRootPostUI(
-                forcedVotes = votes,
-                forcedFollows = follows,
-                forcedBookmarks = bookmarks,
+                forcedFollows = forced.follows,
+                forcedVotes = forced.votes,
+                forcedBookmarks = forced.bookmarks,
                 annotatedStringProvider = annotatedStringProvider
             ) ?: reply?.mapToLegacyReplyUI(
-                forcedFollows = follows,
-                forcedVotes = votes,
-                forcedBookmarks = bookmarks,
+                forcedFollows = forced.follows,
+                forcedVotes = forced.votes,
+                forcedBookmarks = forced.bookmarks,
+                annotatedStringProvider = annotatedStringProvider
+            ) ?: comment?.mapToCommentUI(
+                forcedFollows = forced.follows,
+                forcedVotes = forced.votes,
+                forcedBookmarks = forced.bookmarks,
                 annotatedStringProvider = annotatedStringProvider
             )
             threadableMainEvent?.let { ThreadRootCtx(threadableMainEvent = it) }

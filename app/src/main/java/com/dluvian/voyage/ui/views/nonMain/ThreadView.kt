@@ -32,6 +32,7 @@ import com.dluvian.voyage.core.OpenThreadRaw
 import com.dluvian.voyage.core.ThreadViewRefresh
 import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.core.model.RootPost
+import com.dluvian.voyage.core.model.SomeReply
 import com.dluvian.voyage.core.viewModel.ThreadViewModel
 import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.ui.components.FullHorizontalDivider
@@ -88,7 +89,7 @@ private fun ThreadViewContent(
     val adjustedReplies = remember(localRoot, replies) {
         when (localRoot.threadableMainEvent) {
             is RootPost -> replies
-            is LegacyReply -> replies.map { it.copy(level = it.level + 2) }
+            is SomeReply -> replies.map { it.copy(level = it.level + 2) }
         }
     }
     PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(ThreadViewRefresh) }) {

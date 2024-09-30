@@ -1,7 +1,7 @@
 package com.dluvian.voyage.ui.components.row.mainEvent
 
-import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.core.model.MainEvent
+import com.dluvian.voyage.core.model.SomeReply
 import com.dluvian.voyage.core.model.ThreadableMainEvent
 
 sealed class MainEventCtx(open val mainEvent: MainEvent) {
@@ -18,7 +18,7 @@ data class ThreadRootCtx(
 ) : MainEventCtx(mainEvent = threadableMainEvent)
 
 data class ThreadReplyCtx(
-    val reply: LegacyReply,
+    val reply: SomeReply,
     val isOp: Boolean,
     val level: Int,
     val isCollapsed: Boolean,

@@ -9,6 +9,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.AutoMigrationSpec
 import com.dluvian.voyage.data.room.dao.AccountDao
 import com.dluvian.voyage.data.room.dao.BookmarkDao
+import com.dluvian.voyage.data.room.dao.CommentDao
 import com.dluvian.voyage.data.room.dao.ContentSetDao
 import com.dluvian.voyage.data.room.dao.EventRelayDao
 import com.dluvian.voyage.data.room.dao.FeedDao
@@ -65,6 +66,7 @@ import com.dluvian.voyage.data.room.entity.sets.ProfileSetItemEntity
 import com.dluvian.voyage.data.room.entity.sets.TopicSetEntity
 import com.dluvian.voyage.data.room.entity.sets.TopicSetItemEntity
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
+import com.dluvian.voyage.data.room.view.CommentView
 import com.dluvian.voyage.data.room.view.CrossPostView
 import com.dluvian.voyage.data.room.view.EventRelayAuthorView
 import com.dluvian.voyage.data.room.view.LegacyReplyView
@@ -83,7 +85,7 @@ class V10 : AutoMigrationSpec
 class V24 : AutoMigrationSpec
 
 @Database(
-    version = 29,
+    version = 30,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -114,6 +116,7 @@ class V24 : AutoMigrationSpec
         AutoMigration(from = 26, to = 27),
         AutoMigration(from = 27, to = 28),
         AutoMigration(from = 28, to = 29),
+        AutoMigration(from = 29, to = 30),
     ],
     entities = [
         // Main
@@ -150,6 +153,7 @@ class V24 : AutoMigrationSpec
         EventRelayAuthorView::class,
         RootPostView::class,
         LegacyReplyView::class,
+        CommentView::class,
         CrossPostView::class,
         AdvancedProfileView::class,
     ]
@@ -167,6 +171,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun eventRelayDao(): EventRelayDao
     abstract fun rootPostDao(): RootPostDao
     abstract fun replyDao(): LegacyReplyDao
+    abstract fun commentDao(): CommentDao
     abstract fun fullProfileDao(): FullProfileDao
     abstract fun mainEventDao(): MainEventDao
     abstract fun inboxDao(): InboxDao
