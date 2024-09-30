@@ -62,10 +62,10 @@ I don't plan to publish this app in the Google Play Store.
 ## Screenshots
 
 <p>
-<img src="https://github.com/dluvian/voyage/blob/master/screenshots/home_feed.png" width="24%" height="24%" />
-<img src="https://github.com/dluvian/voyage/blob/master/screenshots/thread.png" width="24%" height="24%" />
-<img src="https://github.com/dluvian/voyage/blob/master/screenshots/discover.png" width="24%" height="24%" />
-<img src="https://github.com/dluvian/voyage/blob/master/screenshots/create_post.png" width="24%" height="24%" />
+<img src="https://raw.githubusercontent.com/dluvian/voyage/refs/heads/master/screenshots/home_feed.png" width="24%" height="24%" />
+<img src="https://raw.githubusercontent.com/dluvian/voyage/refs/heads/master/screenshots/thread.png" width="24%" height="24%" />
+<img src="https://raw.githubusercontent.com/dluvian/voyage/refs/heads/master/screenshots/discover.png" width="24%" height="24%" />
+<img src="https://raw.githubusercontent.com/dluvian/voyage/refs/heads/master/screenshots/create_post.png" width="24%" height="24%" />
 </p>
 
 ## License
