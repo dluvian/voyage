@@ -56,6 +56,7 @@ I don't plan to publish this app in the Google Play Store.
 - [NIP-51: Lists](https://github.com/nostr-protocol/nips/blob/master/51.md)
 - [NIP-55: Android Signer Application](https://github.com/nostr-protocol/nips/blob/master/55.md)
 - [NIP-65: Relay List Metadata](https://github.com/nostr-protocol/nips/blob/master/65.md)
+- [Pull request: NIP-22: Comment](https://github.com/nostr-protocol/nips/pull/1233)
 - [Pull request: Lock users](https://github.com/nostr-protocol/nips/pull/1411)
 
 ## Screenshots
