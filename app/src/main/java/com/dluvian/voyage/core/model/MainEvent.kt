@@ -36,18 +36,18 @@ sealed class MainEvent(
     }
 
     fun getRelevantId() = when (this) {
-        is RootPost, is LegacyReply, is Comment -> this.id
+        is RootPost, is SomeReply -> this.id
         is CrossPost -> this.crossPostedId
     }
 
     fun getRelevantPubkey() = when (this) {
-        is RootPost, is LegacyReply, is Comment -> this.pubkey
+        is RootPost, is SomeReply -> this.pubkey
         is CrossPost -> this.crossPostedPubkey
     }
 
     fun getRelevantSubject() = when (this) {
         is RootPost -> this.subject
-        is LegacyReply, is Comment -> null
+        is SomeReply -> null
         is CrossPost -> this.crossPostedSubject
     }
 }
