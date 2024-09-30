@@ -12,6 +12,7 @@ import androidx.compose.material.icons.automirrored.rounded.VolumeOff
 import androidx.compose.material.icons.filled.ThumbUpAlt
 import androidx.compose.material.icons.outlined.Book
 import androidx.compose.material.icons.outlined.FilterAlt
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material.icons.rounded.Abc
 import androidx.compose.material.icons.rounded.AccountCircle
@@ -34,7 +35,6 @@ import androidx.compose.material.icons.rounded.RemoveCircle
 import androidx.compose.material.icons.rounded.Repeat
 import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Tag
 import androidx.compose.material.icons.rounded.TravelExplore
 import androidx.compose.material.icons.rounded.WarningAmber
@@ -45,7 +45,7 @@ val DiscoverIcon = Icons.Rounded.TravelExplore
 val AddIcon = Icons.Rounded.Add
 val RemoveCircleIcon = Icons.Rounded.RemoveCircle
 val InboxIcon = Icons.Rounded.Notifications
-val SettingsIcon = Icons.Rounded.Settings
+val SettingsIcon = Icons.Outlined.Settings
 val BackIcon = Icons.AutoMirrored.Rounded.ArrowBack
 val CommentIcon = Icons.AutoMirrored.Outlined.Chat
 val AccountIcon = Icons.Rounded.AccountCircle
