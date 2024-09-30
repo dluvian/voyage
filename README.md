@@ -62,10 +62,10 @@ I don't plan to publish this app in the Google Play Store.
 ## Screenshots
 
 <p>
-<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/home_feed.png" width="24%" height="24%" />
-<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/thread.png" width="24%" height="24%" />
-<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/discover.png" width="24%" height="24%" />
-<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/create_post.png" width="24%" height="24%" />
+<img src="https://github.com/dluvian/voyage/screenshots/home_feed.png" width="24%" height="24%" />
+<img src="https://github.com/dluvian/voyage/screenshots/thread.png" width="24%" height="24%" />
+<img src="https://github.com/dluvian/voyage/screenshots/discover.png" width="24%" height="24%" />
+<img src="https://github.com/dluvian/voyage/screenshots/create_post.png" width="24%" height="24%" />
 </p>
 
 ## License
