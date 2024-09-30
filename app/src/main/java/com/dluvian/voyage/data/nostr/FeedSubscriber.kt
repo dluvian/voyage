@@ -1,6 +1,5 @@
 package com.dluvian.voyage.data.nostr
 
-import android.util.Log
 import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
 import com.dluvian.voyage.core.MAX_KEYS
 import com.dluvian.voyage.core.Topic
@@ -32,8 +31,6 @@ import rust.nostr.protocol.KindEnum
 import rust.nostr.protocol.Nip19Profile
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Timestamp
-
-private const val TAG = "FeedSubscriber"
 
 class FeedSubscriber(
     private val scope: CoroutineScope,
@@ -221,7 +218,6 @@ class FeedSubscriber(
         limit: ULong
     ): Map<RelayUrl, List<Filter>> {
         if (limit <= 0u) return emptyMap()
-        Log.d(TAG, "getBookmarksFeedSubscription")
 
         val ids = bookmarkDao.getUnknownBookmarks()
             .takeRandom(MAX_KEYS)
@@ -231,7 +227,7 @@ class FeedSubscriber(
 
         val bookedMarkedNotesFilter = Filter()
             .kind(kind = Kind.fromEnum(KindEnum.TextNote)) // We don't support bookmarking the repost itself
-            .events(ids = ids)
+            .ids(ids = ids)
             .since(timestamp = Timestamp.fromSecs(since))
             .until(timestamp = Timestamp.fromSecs(until))
             .limitRestricted(limit = limit)
