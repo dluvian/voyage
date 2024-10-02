@@ -2,7 +2,8 @@ package com.dluvian.voyage.data.nostr
 
 import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
 import com.dluvian.voyage.core.utils.limitRestricted
-import com.dluvian.voyage.core.utils.textNoteAndRepostKinds
+import com.dluvian.voyage.core.utils.mainEventKinds
+import com.dluvian.voyage.core.utils.replyKinds
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.event.LOCK_U16
 import com.dluvian.voyage.data.provider.LockProvider
@@ -132,11 +133,11 @@ class FilterCreator(
     }
 
     suspend fun getLazyReplyFilter(parentId: EventId): Filter {
-        val newestReplyTime = room.legacyReplyDao()
-            .getNewestReplyCreatedAt(parentId = parentId.toHex()) ?: 1L
+        val newestReplyTime = room.someReplyDao()
+            .getNewestReplyCreatedAt(parentRef = parentId.toHex()) ?: 1L
 
         return Filter()
-            .kind(kind = Kind.fromEnum(KindEnum.TextNote))
+            .kinds(kinds = replyKinds)
             .events(ids = listOf(parentId))
             .since(timestamp = Timestamp.fromSecs((newestReplyTime + 1).toULong()))
             .until(timestamp = Timestamp.now())
@@ -170,7 +171,7 @@ class FilterCreator(
 
     fun getPostFilter(eventId: EventId): Filter {
         return Filter()
-            .kinds(kinds = textNoteAndRepostKinds)
+            .kinds(kinds = mainEventKinds)
             .id(id = eventId)
             .until(timestamp = Timestamp.now())
             .limit(limit = 1u)

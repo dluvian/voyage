@@ -19,9 +19,9 @@ import com.dluvian.voyage.core.model.NprofileMention
 import com.dluvian.voyage.core.model.NpubMention
 import com.dluvian.voyage.core.navigator.Navigator
 import com.dluvian.voyage.core.utils.launchIO
+import com.dluvian.voyage.core.utils.mainEventKinds
 import com.dluvian.voyage.core.utils.normalizeTopic
 import com.dluvian.voyage.core.utils.showToast
-import com.dluvian.voyage.core.utils.textNoteAndRepostKinds
 import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.data.nostr.createNprofile
 import kotlinx.coroutines.launch
@@ -187,7 +187,7 @@ class Core(
             is NeventMention -> {
                 val nevent = Nip19Event.fromBech32(nostrMention.bech32)
                 val kind = nevent.kind()
-                if (kind == null || textNoteAndRepostKinds.contains(kind)) {
+                if (kind == null || mainEventKinds.contains(kind)) {
                     onUpdate(OpenThreadRaw(nevent = nevent))
                 } else {
                     onHandleUri(nostrMention.bech32)

@@ -1,4 +1,4 @@
-package com.dluvian.voyage.data.room.dao
+package com.dluvian.voyage.data.room.dao.reply
 
 import androidx.room.Dao
 import androidx.room.Query
@@ -6,6 +6,7 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.room.view.LegacyReplyView
 import kotlinx.coroutines.flow.Flow
+
 
 private const val PROFILE_REPLY_FEED_BASE_QUERY = "FROM LegacyReplyView " +
         "WHERE createdAt <= :until " +
@@ -24,12 +25,6 @@ private const val PROFILE_REPLY_FEED_EXISTS_QUERY = "SELECT EXISTS(SELECT * " +
 
 @Dao
 interface LegacyReplyDao {
-    @Query(
-        "SELECT MAX(createdAt) " +
-                "FROM mainEvent " +
-                "WHERE id IN (SELECT eventId FROM legacyReply WHERE parentId = :parentId)"
-    )
-    suspend fun getNewestReplyCreatedAt(parentId: EventIdHex): Long?
 
     @Query(
         // getReplyCountFlow depends on this

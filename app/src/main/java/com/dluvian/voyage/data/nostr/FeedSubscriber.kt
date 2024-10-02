@@ -4,9 +4,9 @@ import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
 import com.dluvian.voyage.core.MAX_KEYS
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.utils.limitRestricted
+import com.dluvian.voyage.core.utils.normalFeedKinds
 import com.dluvian.voyage.core.utils.syncedPutOrAdd
 import com.dluvian.voyage.core.utils.takeRandom
-import com.dluvian.voyage.core.utils.textNoteAndRepostKinds
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.model.FriendPubkeysNoLock
 import com.dluvian.voyage.data.model.Global
@@ -92,7 +92,7 @@ class FeedSubscriber(
                     .forEach { (relayUrl, pubkeys) ->
                         val publicKeys = pubkeys.takeRandom(MAX_KEYS).map { PublicKey.fromHex(it) }
                         val pubkeysNoteFilter = Filter()
-                            .kinds(kinds = textNoteAndRepostKinds)
+                            .kinds(kinds = normalFeedKinds)
                             .let {
                                 if (publicKeys.isNotEmpty()) it.authors(authors = publicKeys)
                                 else it
@@ -112,7 +112,7 @@ class FeedSubscriber(
         )
         if (topics.isNotEmpty()) {
             val topicedNoteFilter = Filter()
-                .kinds(kinds = textNoteAndRepostKinds)
+                .kinds(kinds = normalFeedKinds)
                 .hashtags(hashtags = topics)
                 .since(timestamp = sinceTimestamp)
                 .until(timestamp = untilTimestamp)
@@ -140,7 +140,7 @@ class FeedSubscriber(
         val result = mutableMapOf<RelayUrl, MutableList<Filter>>()
 
         val topicedNoteFilter = Filter()
-            .kinds(kinds = textNoteAndRepostKinds)
+            .kinds(kinds = normalFeedKinds)
             .hashtag(hashtag = topic)
             .since(timestamp = Timestamp.fromSecs(since))
             .until(timestamp = Timestamp.fromSecs(until))
@@ -165,7 +165,7 @@ class FeedSubscriber(
         val result = mutableMapOf<RelayUrl, MutableList<Filter>>()
 
         val pubkeyNoteFilter = Filter()
-            .kinds(kinds = textNoteAndRepostKinds)
+            .kinds(kinds = normalFeedKinds)
             .author(author = nprofile.publicKey())
             .since(timestamp = Timestamp.fromSecs(since))
             .until(timestamp = Timestamp.fromSecs(until))

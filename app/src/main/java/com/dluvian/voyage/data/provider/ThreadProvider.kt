@@ -117,7 +117,7 @@ class ThreadProvider(
 
     // Unfiltered count for ProgressBar purpose
     fun getTotalReplyCount(rootId: EventIdHex): Flow<Int> {
-        return room.someReplyDao().getReplyCountFlow(parentId = rootId)
+        return room.someReplyDao().getReplyCountFlow(parentRef = rootId)
             .firstThenDistinctDebounce(SHORT_DEBOUNCE)
     }
 

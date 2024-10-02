@@ -1,4 +1,4 @@
-package com.dluvian.voyage.data.room.dao
+package com.dluvian.voyage.data.room.dao.reply
 
 import androidx.room.Dao
 import androidx.room.Query
@@ -7,8 +7,7 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.room.view.CommentView
 import kotlinx.coroutines.flow.Flow
 
-// TODO: Combine with LegacyReplyDao in SomeReplyDao
-
+// TODO: Move to SomeReplyDao
 private const val PROFILE_COMMENT_FEED_BASE_QUERY = "FROM CommentView " +
         "WHERE createdAt <= :until " +
         "AND pubkey = :pubkey " +
@@ -24,14 +23,9 @@ private const val PROFILE_COMMENT_FEED_EXISTS_QUERY = "SELECT EXISTS(SELECT * " 
         "FROM CommentView " +
         "WHERE pubkey = :pubkey)"
 
+
 @Dao
 interface CommentDao {
-    @Query(
-        "SELECT MAX(createdAt) " +
-                "FROM mainEvent " +
-                "WHERE id IN (SELECT eventId FROM comment WHERE parentRef = :parentRef)"
-    )
-    suspend fun getNewestCommentCreatedAt(parentRef: EventIdHex): Long?
 
     @Query(
         // getCommentCountFlow depends on this

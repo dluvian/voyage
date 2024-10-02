@@ -19,6 +19,7 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.VOYAGE
 import com.dluvian.voyage.core.model.MainEvent
+import com.dluvian.voyage.data.event.COMMENT_U16
 import com.dluvian.voyage.data.model.RelevantMetadata
 import com.dluvian.voyage.data.nostr.LOCAL_WEBSOCKET
 import com.dluvian.voyage.data.nostr.RelayUrl
@@ -201,9 +202,20 @@ fun mergeRelayFilters(vararg maps: Map<RelayUrl, List<Filter>>): Map<RelayUrl, L
     return result
 }
 
-val textNoteAndRepostKinds = listOf(
+val normalFeedKinds = listOf(
     Kind.fromEnum(KindEnum.TextNote),
-    Kind.fromEnum(KindEnum.Repost)
+    Kind.fromEnum(KindEnum.Repost),
+)
+
+val replyKinds = listOf(
+    Kind.fromEnum(KindEnum.TextNote),
+    Kind(kind = COMMENT_U16),
+)
+
+val mainEventKinds = listOf(
+    Kind.fromEnum(KindEnum.TextNote),
+    Kind.fromEnum(KindEnum.Repost),
+    Kind(kind = COMMENT_U16),
 )
 
 fun Event.getTrimmedSubject(maxLen: Int = MAX_SUBJECT_LEN): String? {
