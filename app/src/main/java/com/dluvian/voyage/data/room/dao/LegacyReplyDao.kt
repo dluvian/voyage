@@ -43,22 +43,8 @@ interface LegacyReplyDao {
     )
     fun getRepliesFlow(parentIds: Collection<EventIdHex>): Flow<List<LegacyReplyView>>
 
-    @Query(
-        // Should be like getRepliesFlow
-        """
-        SELECT COUNT(*) 
-        FROM LegacyReplyView 
-        WHERE parentId = :parentId
-        AND authorIsMuted = 0
-    """
-    )
-    fun getReplyCountFlow(parentId: EventIdHex): Flow<Int>
-
     @Query("SELECT * FROM LegacyReplyView WHERE id = :id")
     fun getReplyFlow(id: EventIdHex): Flow<LegacyReplyView?>
-
-    @Query("SELECT parentId FROM legacyReply WHERE eventId = :id")
-    suspend fun getParentId(id: EventIdHex): EventIdHex?
 
     @Query(PROFILE_REPLY_FEED_QUERY)
     fun getProfileReplyFlow(pubkey: PubkeyHex, until: Long, size: Int): Flow<List<LegacyReplyView>>

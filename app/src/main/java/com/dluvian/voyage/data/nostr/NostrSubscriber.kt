@@ -218,7 +218,7 @@ class NostrSubscriber(
                 size = pageSize,
             )
 
-            is ReplyFeedSetting -> room.replyDao().getProfileRepliesCreatedAt(
+            is ReplyFeedSetting -> room.legacyReplyDao().getProfileRepliesCreatedAt(
                 pubkey = setting.nprofile.publicKey().toHex(),
                 until = until,
                 size = pageSize,

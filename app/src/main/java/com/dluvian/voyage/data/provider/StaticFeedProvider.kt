@@ -140,7 +140,7 @@ class StaticFeedProvider(
         until: Long,
         size: Int,
     ): List<LegacyReply> {
-        return room.replyDao().getProfileReplies(
+        return room.legacyReplyDao().getProfileReplies(
             pubkey = setting.nprofile.publicKey().toHex(),
             until = until,
             size = size

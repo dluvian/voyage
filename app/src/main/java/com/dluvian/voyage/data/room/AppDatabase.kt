@@ -26,6 +26,7 @@ import com.dluvian.voyage.data.room.dao.MuteDao
 import com.dluvian.voyage.data.room.dao.Nip65Dao
 import com.dluvian.voyage.data.room.dao.ProfileDao
 import com.dluvian.voyage.data.room.dao.RootPostDao
+import com.dluvian.voyage.data.room.dao.SomeReplyDao
 import com.dluvian.voyage.data.room.dao.TopicDao
 import com.dluvian.voyage.data.room.dao.VoteDao
 import com.dluvian.voyage.data.room.dao.WebOfTrustDao
@@ -170,7 +171,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun profileDao(): ProfileDao
     abstract fun eventRelayDao(): EventRelayDao
     abstract fun rootPostDao(): RootPostDao
-    abstract fun replyDao(): LegacyReplyDao
+    abstract fun legacyReplyDao(): LegacyReplyDao
     abstract fun commentDao(): CommentDao
     abstract fun fullProfileDao(): FullProfileDao
     abstract fun mainEventDao(): MainEventDao
@@ -181,6 +182,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun muteDao(): MuteDao
     abstract fun lockDao(): LockDao
     abstract fun hashtagDao(): HashtagDao
+    abstract fun someReplyDao(): SomeReplyDao
 
     // Util
     abstract fun deleteDao(): DeleteDao

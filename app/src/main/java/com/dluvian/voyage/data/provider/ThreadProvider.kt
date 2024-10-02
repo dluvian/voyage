@@ -68,19 +68,14 @@ class ThreadProvider(
         }
 
         val rootFlow = room.rootPostDao().getRootPostFlow(id = id)
-        val replyFlow = room.replyDao().getReplyFlow(id = id)
+        val replyFlow = room.legacyReplyDao().getReplyFlow(id = id)
         val commentFlow = room.commentDao().getCommentFlow(id = id)
-        val forcedFlow = ForcedData.combineFlows(
-            votes = forcedVotes,
-            follows = forcedFollows,
-            bookmarks = forcedBookmarks
-        )
 
         return combine(
             rootFlow.firstThenDistinctDebounce(SHORT_DEBOUNCE),
             replyFlow.firstThenDistinctDebounce(SHORT_DEBOUNCE),
             commentFlow.firstThenDistinctDebounce(SHORT_DEBOUNCE),
-            forcedFlow,
+            getForcedFlow(),
         ) { post, reply, comment, forced ->
             val threadableMainEvent = post?.mapToRootPostUI(
                 forcedFollows = forced.follows,
@@ -106,10 +101,14 @@ class ThreadProvider(
 
     fun getParentIsAvailableFlow(scope: CoroutineScope, replyId: EventIdHex): Flow<Boolean> {
         scope.launchIO {
-            val parentId = room.replyDao().getParentId(id = replyId) ?: return@launchIO
-            if (!room.existsDao().postExists(id = parentId)) {
-                Log.i(TAG, "Parent $parentId is not available yet. Subscribing to it")
-                nostrSubscriber.subPost(nevent = createNevent(hex = parentId))
+            val parentRef = room.someReplyDao().getParentRef(id = replyId) ?: return@launchIO
+            val nevent = runCatching {
+                createNevent(hex = parentRef)
+            }.getOrNull() ?: return@launchIO
+
+            if (!room.existsDao().postExists(id = parentRef)) {
+                Log.i(TAG, "Parent $parentRef is not available yet. Subscribing to it")
+                nostrSubscriber.subPost(nevent = nevent)
             }
         }
 
@@ -118,7 +117,7 @@ class ThreadProvider(
 
     // Unfiltered count for ProgressBar purpose
     fun getTotalReplyCount(rootId: EventIdHex): Flow<Int> {
-        return room.replyDao().getReplyCountFlow(parentId = rootId)
+        return room.someReplyDao().getReplyCountFlow(parentId = rootId)
             .firstThenDistinctDebounce(SHORT_DEBOUNCE)
     }
 
@@ -127,26 +126,52 @@ class ThreadProvider(
         rootId: EventIdHex,
         parentIds: Set<EventIdHex>,
     ): Flow<List<ThreadReplyCtx>> {
-        val replyFlow = room.replyDao().getRepliesFlow(parentIds = parentIds + rootId)
+        val allIds = parentIds + rootId
+        val legacyFlow = room.legacyReplyDao().getRepliesFlow(parentIds = allIds)
+            .firstThenDistinctDebounce(DEBOUNCE)
+        val commentFlow = room.commentDao().getCommentsFlow(parentRefs = allIds)
             .firstThenDistinctDebounce(DEBOUNCE)
         val opPubkeyFlow = room.mainEventDao().getAuthorFlow(id = rootId)
             .firstThenDistinctDebounce(DEBOUNCE)
         val mutedWords = muteProvider.getMutedWords()
 
         return combine(
-            replyFlow,
-            forcedVotes,
-            forcedFollows,
-            forcedBookmarks,
+            legacyFlow,
+            commentFlow,
+            getForcedFlow(),
+            opPubkeyFlow,
             collapsedIds,
-        ) { replies, votes, follows, bookmarks, collapsed ->
-            val filteredReplies = replies.filter { reply ->
-                reply.content.containsNoneIgnoreCase(strs = mutedWords)
-            }
-
+        ) { replies, comments, forced, opPubkey, collapsed ->
             val result = LinkedList<ThreadReplyCtx>()
 
-            for (reply in filteredReplies) {
+            // Comments are first bc they are more based
+            for (comment in comments) {
+                if (comment.content.containsNoneIgnoreCase(strs = mutedWords)) continue
+                val parent = result.find { it.reply.id == comment.parentRef }
+
+                if (parent?.isCollapsed == true) continue
+                if (parent == null && comment.parentRef != rootId) continue
+
+                val leveledComment = comment.mapToThreadReplyCtx(
+                    level = parent?.level?.plus(1) ?: 0,
+                    isOp = opPubkey == comment.pubkey,
+                    forcedVotes = forced.votes,
+                    forcedFollows = forced.follows,
+                    collapsedIds = collapsed,
+                    parentIds = parentIds,
+                    forcedBookmarks = forced.bookmarks,
+                    annotatedStringProvider = annotatedStringProvider
+                )
+
+                if (comment.parentRef == rootId) {
+                    result.add(leveledComment)
+                    continue
+                }
+                result.add(result.indexOf(parent) + 1, leveledComment)
+            }
+
+            for (reply in replies) {
+                if (reply.content.containsNoneIgnoreCase(strs = mutedWords)) continue
                 val parent = result.find { it.reply.id == reply.parentId }
 
                 if (parent?.isCollapsed == true) continue
@@ -154,12 +179,12 @@ class ThreadProvider(
 
                 val leveledReply = reply.mapToThreadReplyCtx(
                     level = parent?.level?.plus(1) ?: 0,
-                    isOp = false, // Set it in later combine
-                    forcedVotes = votes,
-                    forcedFollows = follows,
+                    isOp = opPubkey == reply.pubkey,
+                    forcedVotes = forced.votes,
+                    forcedFollows = forced.follows,
                     collapsedIds = collapsed,
                     parentIds = parentIds,
-                    forcedBookmarks = bookmarks,
+                    forcedBookmarks = forced.bookmarks,
                     annotatedStringProvider = annotatedStringProvider
                 )
 
@@ -171,19 +196,24 @@ class ThreadProvider(
             }
 
             result
-        }.combine(opPubkeyFlow) { replies, opPubkey ->
-            replies.map { it.copy(isOp = opPubkey == it.reply.pubkey) }
-        }
-            .onEach {
-                nostrSubscriber.subVotesAndReplies(
-                    parentIds = it.map { reply -> reply.reply.getRelevantId() }
+        }.onEach {
+            nostrSubscriber.subVotesAndReplies(
+                parentIds = it.map { reply -> reply.reply.getRelevantId() }
+            )
+            if (showAuthorName.value) {
+                nostrSubscriber.subProfiles(
+                    pubkeys = it.filter { reply -> reply.reply.authorName.isNullOrEmpty() }
+                        .map { reply -> reply.reply.pubkey }
                 )
-                if (showAuthorName.value) {
-                    nostrSubscriber.subProfiles(
-                        pubkeys = it.filter { reply -> reply.reply.authorName.isNullOrEmpty() }
-                            .map { reply -> reply.reply.pubkey }
-                    )
-                }
             }
+        }
+    }
+
+    private fun getForcedFlow(): Flow<ForcedData> {
+        return ForcedData.combineFlows(
+            votes = forcedVotes,
+            follows = forcedFollows,
+            bookmarks = forcedBookmarks
+        )
     }
 }

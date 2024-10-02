@@ -225,7 +225,7 @@ class FeedProvider(
         until: Long,
         size: Int,
     ): Flow<List<LegacyReply>> {
-        val flow = room.replyDao().getProfileReplyFlow(
+        val flow = room.legacyReplyDao().getProfileReplyFlow(
             pubkey = setting.nprofile.publicKey().toHex(),
             until = until,
             size = size
@@ -307,7 +307,7 @@ class FeedProvider(
             is ProfileFeedSetting -> room.feedDao()
                 .hasProfileFeedFlow(pubkey = setting.nprofile.publicKey().toHex())
 
-            is ReplyFeedSetting -> room.replyDao()
+            is ReplyFeedSetting -> room.legacyReplyDao()
                 .hasProfileRepliesFlow(pubkey = setting.nprofile.publicKey().toHex())
 
             is ListFeedSetting -> room.feedDao()

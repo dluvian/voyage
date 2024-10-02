@@ -45,22 +45,8 @@ interface CommentDao {
     )
     fun getCommentsFlow(parentRefs: Collection<EventIdHex>): Flow<List<CommentView>>
 
-    @Query(
-        // Should be like getCommentsFlow
-        """
-        SELECT COUNT(*) 
-        FROM CommentView 
-        WHERE parentRef = :parentRef
-        AND authorIsMuted = 0
-    """
-    )
-    fun getCommentCountFlow(parentRef: EventIdHex): Flow<Int>
-
     @Query("SELECT * FROM CommentView WHERE id = :id")
     fun getCommentFlow(id: EventIdHex): Flow<CommentView?>
-
-    @Query("SELECT parentRef FROM comment WHERE eventId = :id")
-    suspend fun getParentId(id: EventIdHex): EventIdHex?
 
     @Query(PROFILE_COMMENT_FEED_QUERY)
     fun getProfileCommentFlow(pubkey: PubkeyHex, until: Long, size: Int): Flow<List<CommentView>>
