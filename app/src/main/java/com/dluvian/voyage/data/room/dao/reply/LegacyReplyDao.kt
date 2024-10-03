@@ -8,21 +8,6 @@ import com.dluvian.voyage.data.room.view.LegacyReplyView
 import kotlinx.coroutines.flow.Flow
 
 
-private const val PROFILE_REPLY_FEED_BASE_QUERY = "FROM LegacyReplyView " +
-        "WHERE createdAt <= :until " +
-        "AND pubkey = :pubkey " +
-        "ORDER BY createdAt DESC " +
-        "LIMIT :size"
-
-private const val PROFILE_REPLY_FEED_QUERY = "SELECT * $PROFILE_REPLY_FEED_BASE_QUERY"
-private const val PROFILE_REPLY_FEED_CREATED_AT_QUERY =
-    "SELECT createdAt $PROFILE_REPLY_FEED_BASE_QUERY"
-
-
-private const val PROFILE_REPLY_FEED_EXISTS_QUERY = "SELECT EXISTS(SELECT * " +
-        "FROM LegacyReplyView " +
-        "WHERE pubkey = :pubkey)"
-
 @Dao
 interface LegacyReplyDao {
 

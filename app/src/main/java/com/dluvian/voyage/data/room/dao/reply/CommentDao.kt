@@ -7,21 +7,6 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.room.view.CommentView
 import kotlinx.coroutines.flow.Flow
 
-// TODO: Move to SomeReplyDao
-private const val PROFILE_COMMENT_FEED_BASE_QUERY = "FROM CommentView " +
-        "WHERE createdAt <= :until " +
-        "AND pubkey = :pubkey " +
-        "ORDER BY createdAt DESC " +
-        "LIMIT :size"
-
-private const val PROFILE_COMMENT_FEED_QUERY = "SELECT * $PROFILE_COMMENT_FEED_BASE_QUERY"
-private const val PROFILE_COMMENT_FEED_CREATED_AT_QUERY =
-    "SELECT createdAt $PROFILE_COMMENT_FEED_BASE_QUERY"
-
-
-private const val PROFILE_COMMENT_FEED_EXISTS_QUERY = "SELECT EXISTS(SELECT * " +
-        "FROM CommentView " +
-        "WHERE pubkey = :pubkey)"
 
 
 @Dao

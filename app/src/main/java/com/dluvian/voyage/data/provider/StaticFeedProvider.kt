@@ -140,6 +140,7 @@ class StaticFeedProvider(
         until: Long,
         size: Int,
     ): List<LegacyReply> {
+        // TODO: Comments
         return room.legacyReplyDao().getProfileReplies(
             pubkey = setting.nprofile.publicKey().toHex(),
             until = until,
@@ -160,6 +161,7 @@ class StaticFeedProvider(
         until: Long,
         size: Int
     ): List<MainEvent> {
+        // TODO: Comments
         return mergeToParentUIList(
             replies = room.inboxDao().getInboxReplies(
                 setting = setting,
@@ -180,6 +182,7 @@ class StaticFeedProvider(
     }
 
     private suspend fun getStaticBooksmarksFeed(until: Long, size: Int): List<MainEvent> {
+        // TODO: Comments
         return mergeToParentUIList(
             replies = room.bookmarkDao().getReplies(until = until, size = size),
             roots = room.bookmarkDao().getRootPosts(until = until, size = size),

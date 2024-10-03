@@ -6,6 +6,26 @@ import com.dluvian.voyage.core.EventIdHex
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 
+private const val PROFILE_COND = "WHERE createdAt <= :until " +
+        "AND pubkey = :pubkey " +
+        "ORDER BY createdAt DESC " +
+        "LIMIT :size"
+
+private const val LEGACY = "FROM LegacyReplyView $PROFILE_COND"
+private const val COMMENT = "FROM CommentView $PROFILE_COND"
+
+const val PROFILE_REPLY_FEED_QUERY = "SELECT * $LEGACY"
+const val PROFILE_REPLY_FEED_CREATED_AT_QUERY = "SELECT createdAt $LEGACY"
+const val PROFILE_REPLY_FEED_EXISTS_QUERY = "SELECT EXISTS(SELECT * " +
+        "FROM LegacyReplyView " +
+        "WHERE pubkey = :pubkey)"
+
+const val PROFILE_COMMENT_FEED_QUERY = "SELECT * $COMMENT"
+const val PROFILE_COMMENT_FEED_CREATED_AT_QUERY = "SELECT createdAt $COMMENT"
+const val PROFILE_COMMENT_FEED_EXISTS_QUERY = "SELECT EXISTS(SELECT * " +
+        "FROM CommentView " +
+        "WHERE pubkey = :pubkey)"
+
 @Dao
 interface SomeReplyDao {
 
