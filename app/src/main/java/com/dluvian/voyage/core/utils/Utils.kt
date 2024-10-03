@@ -19,7 +19,9 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.VOYAGE
 import com.dluvian.voyage.core.model.MainEvent
+import com.dluvian.voyage.core.model.SomeReply
 import com.dluvian.voyage.data.event.COMMENT_U16
+import com.dluvian.voyage.data.model.ForcedData
 import com.dluvian.voyage.data.model.RelevantMetadata
 import com.dluvian.voyage.data.nostr.LOCAL_WEBSOCKET
 import com.dluvian.voyage.data.nostr.RelayUrl
@@ -30,6 +32,8 @@ import com.dluvian.voyage.data.provider.ItemSetProvider
 import com.dluvian.voyage.data.provider.LockProvider
 import com.dluvian.voyage.data.provider.MuteProvider
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
+import com.dluvian.voyage.data.room.view.CommentView
+import com.dluvian.voyage.data.room.view.CrossPostView
 import com.dluvian.voyage.data.room.view.LegacyReplyView
 import com.dluvian.voyage.data.room.view.RootPostView
 import kotlinx.coroutines.CoroutineScope
@@ -247,33 +251,49 @@ fun createProcessTextIntent(text: String, info: ResolveInfo): Intent {
         )
 }
 
-fun mergeToParentUIList(
-    replies: Collection<LegacyReplyView>,
+fun mergeToMainEventUIList(
     roots: Collection<RootPostView>,
+    crossPosts: Collection<CrossPostView>,
+    legacyReplies: Collection<LegacyReplyView>,
+    comments: Collection<CommentView>,
+    forcedData: ForcedData,
+    size: Int,
+    annotatedStringProvider: AnnotatedStringProvider,
+): List<MainEvent> {
+    return mergeToMainEventUIList(
+        roots = roots,
+        crossPosts = crossPosts,
+        legacyReplies = legacyReplies,
+        comments = comments,
+        votes = forcedData.votes,
+        follows = forcedData.follows,
+        bookmarks = forcedData.bookmarks,
+        size = size,
+        annotatedStringProvider = annotatedStringProvider
+    )
+}
+
+fun mergeToMainEventUIList(
+    roots: Collection<RootPostView>,
+    crossPosts: Collection<CrossPostView>,
+    legacyReplies: Collection<LegacyReplyView>,
+    comments: Collection<CommentView>,
     votes: Map<EventIdHex, Boolean>,
     follows: Map<PubkeyHex, Boolean>,
     bookmarks: Map<EventIdHex, Boolean>,
     size: Int,
     annotatedStringProvider: AnnotatedStringProvider,
 ): List<MainEvent> {
-    val applicableTimestamps = replies.asSequence()
+    val applicableTimestamps = roots.asSequence()
         .map { it.createdAt }
-        .plus(roots.map { it.createdAt })
+        .plus(crossPosts.map { it.createdAt })
+        .plus(legacyReplies.map { it.createdAt })
+        .plus(comments.map { it.createdAt })
         .sortedDescending()
         .take(size)
         .toSet()
 
     val result = mutableListOf<MainEvent>()
-    for (reply in replies) {
-        if (!applicableTimestamps.contains(reply.createdAt)) continue
-        val mapped = reply.mapToLegacyReplyUI(
-            forcedVotes = votes,
-            forcedFollows = follows,
-            forcedBookmarks = bookmarks,
-            annotatedStringProvider = annotatedStringProvider
-        )
-        result.add(mapped)
-    }
     for (post in roots) {
         if (!applicableTimestamps.contains(post.createdAt)) continue
         val mapped = post.mapToRootPostUI(
@@ -284,7 +304,64 @@ fun mergeToParentUIList(
         )
         result.add(mapped)
     }
+    for (cross in crossPosts) {
+        if (!applicableTimestamps.contains(cross.createdAt)) continue
+        val mapped = cross.mapToCrossPostUI(
+            forcedVotes = votes,
+            forcedFollows = follows,
+            forcedBookmarks = bookmarks,
+            annotatedStringProvider = annotatedStringProvider
+        )
+        result.add(mapped)
+    }
+    for (reply in legacyReplies) {
+        if (!applicableTimestamps.contains(reply.createdAt)) continue
+        val mapped = reply.mapToLegacyReplyUI(
+            forcedVotes = votes,
+            forcedFollows = follows,
+            forcedBookmarks = bookmarks,
+            annotatedStringProvider = annotatedStringProvider
+        )
+        result.add(mapped)
+    }
+    for (comment in comments) {
+        if (!applicableTimestamps.contains(comment.createdAt)) continue
+        val mapped = comment.mapToCommentUI(
+            forcedVotes = votes,
+            forcedFollows = follows,
+            forcedBookmarks = bookmarks,
+            annotatedStringProvider = annotatedStringProvider
+        )
+        result.add(mapped)
+    }
+
     return result.sortedByDescending { it.createdAt }.take(size)
+}
+
+fun mergeToSomeReplyUIList(
+    legacyReplies: Collection<LegacyReplyView>,
+    comments: Collection<CommentView>,
+    votes: Map<EventIdHex, Boolean>,
+    follows: Map<PubkeyHex, Boolean>,
+    bookmarks: Map<EventIdHex, Boolean>,
+    size: Int,
+    annotatedStringProvider: AnnotatedStringProvider,
+): List<SomeReply> {
+    val result = mutableListOf<SomeReply>()
+
+    mergeToMainEventUIList(
+        roots = emptyList(),
+        crossPosts = emptyList(),
+        legacyReplies = legacyReplies,
+        comments = comments,
+        votes = votes,
+        follows = follows,
+        bookmarks = bookmarks,
+        size = size,
+        annotatedStringProvider = annotatedStringProvider
+    ).forEach { if (it is SomeReply) result.add(it) }
+
+    return result
 }
 
 fun createAdvancedProfile(

@@ -5,14 +5,16 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.model.CrossPost
-import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.core.model.MainEvent
+import com.dluvian.voyage.core.model.SomeReply
 import com.dluvian.voyage.core.utils.containsNoneIgnoreCase
 import com.dluvian.voyage.core.utils.firstThenDistinctDebounce
-import com.dluvian.voyage.core.utils.mergeToParentUIList
+import com.dluvian.voyage.core.utils.mergeToMainEventUIList
+import com.dluvian.voyage.core.utils.mergeToSomeReplyUIList
 import com.dluvian.voyage.data.event.OldestUsedEvent
 import com.dluvian.voyage.data.model.BookmarksFeedSetting
 import com.dluvian.voyage.data.model.FeedSetting
+import com.dluvian.voyage.data.model.ForcedData
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.InboxFeedSetting
 import com.dluvian.voyage.data.model.ListFeedSetting
@@ -125,34 +127,17 @@ class FeedProvider(
             forcedFollows,
             forcedBookmarks,
         ) { root, cross, votes, follows, bookmarks ->
-            val allCreatedAt = root.map { it.createdAt } + cross.map { it.createdAt }
-            val validCreatedAt = allCreatedAt.sortedDescending().take(size).toSet()
-
-            val result = mutableListOf<MainEvent>()
-            root.filter { validCreatedAt.contains(it.createdAt) }
-                .forEach {
-                    result.add(
-                        it.mapToRootPostUI(
-                            forcedVotes = votes,
-                            forcedFollows = follows,
-                            forcedBookmarks = bookmarks,
-                            annotatedStringProvider = annotatedStringProvider
-                        )
-                    )
-                }
-            cross.filter { validCreatedAt.contains(it.createdAt) }
-                .forEach {
-                    result.add(
-                        it.mapToCrossPostUI(
-                            forcedVotes = votes,
-                            forcedFollows = follows,
-                            forcedBookmarks = bookmarks,
-                            annotatedStringProvider = annotatedStringProvider
-                        )
-                    )
-                }
-
-            result.sortedByDescending { it.createdAt }
+            mergeToMainEventUIList(
+                roots = root,
+                crossPosts = cross,
+                legacyReplies = emptyList(),
+                comments = emptyList(),
+                votes = votes,
+                follows = follows,
+                bookmarks = bookmarks,
+                size = size,
+                annotatedStringProvider = annotatedStringProvider
+            )
         }
     }
 
@@ -224,51 +209,25 @@ class FeedProvider(
         setting: ReplyFeedSetting,
         until: Long,
         size: Int,
-    ): Flow<List<LegacyReply>> {
-        // TODO: Comments
-        val flow = room.legacyReplyDao().getProfileReplyFlow(
-            pubkey = setting.nprofile.publicKey().toHex(),
-            until = until,
-            size = size
-        )
-
+    ): Flow<List<SomeReply>> {
         return combine(
-            flow.firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            room.legacyReplyDao().getProfileReplyFlow(
+                pubkey = setting.nprofile.publicKey().toHex(),
+                until = until,
+                size = size
+            ).firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            room.commentDao().getProfileCommentFlow(
+                pubkey = setting.nprofile.publicKey().toHex(),
+                until = until,
+                size = size
+            ).firstThenDistinctDebounce(SHORT_DEBOUNCE),
             forcedVotes,
             forcedFollows,
             forcedBookmarks,
-        ) { posts, votes, follows, bookmarks ->
-            posts.map {
-                it.mapToLegacyReplyUI(
-                    forcedVotes = votes,
-                    forcedFollows = follows,
-                    forcedBookmarks = bookmarks,
-                    annotatedStringProvider = annotatedStringProvider
-                )
-            }
-        }
-    }
-
-    private fun getInboxFeedFlow(
-        setting: InboxFeedSetting,
-        until: Long,
-        size: Int
-    ): Flow<List<MainEvent>> {
-        // TODO: Comments
-        return combine(
-            room.inboxDao()
-                .getInboxReplyFlow(setting = setting, until = until, size = size)
-                .firstThenDistinctDebounce(SHORT_DEBOUNCE),
-            room.inboxDao()
-                .getMentionRootFlow(setting = setting, until = until, size = size)
-                .firstThenDistinctDebounce(SHORT_DEBOUNCE),
-            forcedVotes,
-            forcedFollows,
-            forcedBookmarks,
-        ) { replies, roots, votes, follows, bookmarks ->
-            mergeToParentUIList(
-                replies = replies,
-                roots = roots,
+        ) { legacyReplies, comments, votes, follows, bookmarks ->
+            mergeToSomeReplyUIList(
+                legacyReplies = legacyReplies,
+                comments = comments,
                 votes = votes,
                 follows = follows,
                 bookmarks = bookmarks,
@@ -278,25 +237,54 @@ class FeedProvider(
         }
     }
 
-    private fun getBookmarksFeedFlow(until: Long, size: Int): Flow<List<MainEvent>> {
-        // TODO: Comments
+    private fun getInboxFeedFlow(
+        setting: InboxFeedSetting,
+        until: Long,
+        size: Int
+    ): Flow<List<MainEvent>> {
         return combine(
+            room.inboxDao()
+                .getMentionRootFlow(setting = setting, until = until, size = size)
+                .firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            room.inboxDao()
+                .getInboxReplyFlow(setting = setting, until = until, size = size)
+                .firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            room.inboxDao()
+                .getInboxCommentFlow(setting = setting, until = until, size = size)
+                .firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            getForcedFlow()
+        ) { roots, legacyReplies, comments, forced ->
+            mergeToMainEventUIList(
+                roots = roots,
+                crossPosts = emptyList(),
+                legacyReplies = legacyReplies,
+                comments = comments,
+                forcedData = forced,
+                size = size,
+                annotatedStringProvider = annotatedStringProvider
+            )
+        }
+    }
+
+    private fun getBookmarksFeedFlow(until: Long, size: Int): Flow<List<MainEvent>> {
+        return combine(
+            room.bookmarkDao()
+                .getRootPostsFlow(until = until, size = size)
+                .firstThenDistinctDebounce(SHORT_DEBOUNCE),
             room.bookmarkDao()
                 .getReplyFlow(until = until, size = size)
                 .firstThenDistinctDebounce(SHORT_DEBOUNCE),
             room.bookmarkDao()
-                .getRootPostsFlow(until = until, size = size)
+                .getCommentFlow(until = until, size = size)
                 .firstThenDistinctDebounce(SHORT_DEBOUNCE),
-            forcedVotes,
-            forcedFollows,
-            forcedBookmarks,
-        ) { replies, rootPosts, votes, follows, bookmarks ->
-            mergeToParentUIList(
-                replies = replies,
-                roots = rootPosts,
-                votes = votes,
-                follows = follows,
-                bookmarks = bookmarks,
+            getForcedFlow()
+        ) { roots, legacyReplies, comments, forced ->
+            mergeToMainEventUIList(
+                roots = roots,
+                crossPosts = emptyList(),
+                legacyReplies = legacyReplies,
+                comments = comments,
+                forcedData = forced,
                 size = size,
                 annotatedStringProvider = annotatedStringProvider
             )
@@ -321,5 +309,13 @@ class FeedProvider(
             BookmarksFeedSetting -> room.bookmarkDao().hasBookmarkedPostsFlow()
 
         }
+    }
+
+    private fun getForcedFlow(): Flow<ForcedData> {
+        return ForcedData.combineFlows(
+            votes = forcedVotes,
+            follows = forcedFollows,
+            bookmarks = forcedBookmarks
+        )
     }
 }

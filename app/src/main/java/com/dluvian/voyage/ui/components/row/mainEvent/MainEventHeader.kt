@@ -30,6 +30,7 @@ import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenTopic
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.core.model.Comment
 import com.dluvian.voyage.core.model.CrossPost
 import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.core.model.RootPost
@@ -74,6 +75,7 @@ fun MainEventHeader(
                 is RootPost -> mainEvent.myTopic
                 is LegacyReply -> null
                 is CrossPost -> mainEvent.myTopic
+                is Comment -> TODO()
             }?.let { topic ->
                 BorderedTopic(topic = topic, onUpdate = onUpdate)
                 Spacer(modifier = Modifier.width(spacing.large))
@@ -114,6 +116,7 @@ private fun MainEventHeaderIconsAndName(
             )
 
             is LegacyReply, is RootPost -> {}
+            is Comment -> TODO()
         }
     }
 }

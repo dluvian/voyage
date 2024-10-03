@@ -1,8 +1,9 @@
 package com.dluvian.voyage.data.provider
 
-import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.core.model.MainEvent
-import com.dluvian.voyage.core.utils.mergeToParentUIList
+import com.dluvian.voyage.core.model.SomeReply
+import com.dluvian.voyage.core.utils.mergeToMainEventUIList
+import com.dluvian.voyage.core.utils.mergeToSomeReplyUIList
 import com.dluvian.voyage.data.model.BookmarksFeedSetting
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
@@ -38,37 +39,17 @@ class StaticFeedProvider(
         until: Long,
         size: Int,
     ): List<MainEvent> {
-        val rootPosts = getStaticRootPosts(setting = setting, until = until, size = size)
-        val crossPosts = getStaticCrossPosts(setting = setting, until = until, size = size)
-
-        val allCreatedAt = rootPosts.map { it.createdAt } + crossPosts.map { it.createdAt }
-        val validCreatedAt = allCreatedAt.sortedDescending().take(size).toSet()
-
-        val result = mutableListOf<MainEvent>()
-        rootPosts.filter { validCreatedAt.contains(it.createdAt) }
-            .forEach {
-                result.add(
-                    it.mapToRootPostUI(
-                        forcedVotes = emptyMap(),
-                        forcedFollows = emptyMap(),
-                        forcedBookmarks = emptyMap(),
-                        annotatedStringProvider = annotatedStringProvider
-                    )
-                )
-            }
-        crossPosts.filter { validCreatedAt.contains(it.createdAt) }
-            .forEach {
-                result.add(
-                    it.mapToCrossPostUI(
-                        forcedVotes = emptyMap(),
-                        forcedFollows = emptyMap(),
-                        forcedBookmarks = emptyMap(),
-                        annotatedStringProvider = annotatedStringProvider
-                    )
-                )
-            }
-
-        return result.sortedByDescending { it.createdAt }
+        return mergeToMainEventUIList(
+            roots = getStaticRootPosts(setting = setting, until = until, size = size),
+            crossPosts = getStaticCrossPosts(setting = setting, until = until, size = size),
+            legacyReplies = emptyList(),
+            comments = emptyList(),
+            votes = emptyMap(),
+            follows = emptyMap(),
+            bookmarks = emptyMap(),
+            size = size,
+            annotatedStringProvider = annotatedStringProvider
+        )
     }
 
     private suspend fun getStaticRootPosts(
@@ -139,21 +120,24 @@ class StaticFeedProvider(
         setting: ReplyFeedSetting,
         until: Long,
         size: Int,
-    ): List<LegacyReply> {
-        // TODO: Comments
-        return room.legacyReplyDao().getProfileReplies(
-            pubkey = setting.nprofile.publicKey().toHex(),
-            until = until,
-            size = size
+    ): List<SomeReply> {
+        return mergeToSomeReplyUIList(
+            legacyReplies = room.legacyReplyDao().getProfileReplies(
+                pubkey = setting.nprofile.publicKey().toHex(),
+                until = until,
+                size = size
+            ),
+            comments = room.commentDao().getProfileComments(
+                pubkey = setting.nprofile.publicKey().toHex(),
+                until = until,
+                size = size
+            ),
+            votes = emptyMap(),
+            follows = emptyMap(),
+            bookmarks = emptyMap(),
+            size = size,
+            annotatedStringProvider = annotatedStringProvider
         )
-            .map {
-                it.mapToLegacyReplyUI(
-                    forcedVotes = emptyMap(),
-                    forcedFollows = emptyMap(),
-                    forcedBookmarks = emptyMap(),
-                    annotatedStringProvider = annotatedStringProvider
-                )
-            }
     }
 
     private suspend fun getStaticInboxFeed(
@@ -161,14 +145,19 @@ class StaticFeedProvider(
         until: Long,
         size: Int
     ): List<MainEvent> {
-        // TODO: Comments
-        return mergeToParentUIList(
-            replies = room.inboxDao().getInboxReplies(
+        return mergeToMainEventUIList(
+            roots = room.inboxDao().getMentionRoots(
                 setting = setting,
                 until = until,
                 size = size
             ),
-            roots = room.inboxDao().getMentionRoots(
+            crossPosts = emptyList(),
+            legacyReplies = room.inboxDao().getInboxReplies(
+                setting = setting,
+                until = until,
+                size = size
+            ),
+            comments = room.inboxDao().getInboxComments(
                 setting = setting,
                 until = until,
                 size = size
@@ -182,10 +171,11 @@ class StaticFeedProvider(
     }
 
     private suspend fun getStaticBooksmarksFeed(until: Long, size: Int): List<MainEvent> {
-        // TODO: Comments
-        return mergeToParentUIList(
-            replies = room.bookmarkDao().getReplies(until = until, size = size),
+        return mergeToMainEventUIList(
             roots = room.bookmarkDao().getRootPosts(until = until, size = size),
+            crossPosts = emptyList(),
+            legacyReplies = room.bookmarkDao().getReplies(until = until, size = size),
+            comments = room.bookmarkDao().getComments(until = until, size = size),
             votes = emptyMap(),
             follows = emptyMap(),
             bookmarks = emptyMap(),

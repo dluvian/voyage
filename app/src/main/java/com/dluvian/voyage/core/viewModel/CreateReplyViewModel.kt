@@ -9,6 +9,7 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.core.CreateReplyViewAction
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.SendReply
+import com.dluvian.voyage.core.model.Comment
 import com.dluvian.voyage.core.model.CrossPost
 import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.core.model.MainEvent
@@ -53,6 +54,7 @@ class CreateReplyViewModel(
             }
 
             is RootPost, is CrossPost -> {}
+            is Comment -> TODO()
         }
 
 

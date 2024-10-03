@@ -7,6 +7,7 @@ import com.dluvian.voyage.data.model.Global
 import com.dluvian.voyage.data.model.InboxFeedSetting
 import com.dluvian.voyage.data.model.NoPubkeys
 import com.dluvian.voyage.data.model.WebOfTrustPubkeys
+import com.dluvian.voyage.data.room.view.CommentView
 import com.dluvian.voyage.data.room.view.LegacyReplyView
 import com.dluvian.voyage.data.room.view.RootPostView
 import kotlinx.coroutines.flow.Flow
@@ -30,75 +31,72 @@ private const val GLOBAL_MAIN_QUERY = INBOX_CONDITION + INBOX_ORDER
 
 private const val SELECT_ROOT = "SELECT * FROM RootPostView "
 private const val SELECT_REPLY = "SELECT * FROM LegacyReplyView "
+private const val SELECT_COMMENT = "SELECT * FROM CommentView "
+
 private const val SELECT_ROOT_ID = "SELECT id FROM RootPostView "
 private const val SELECT_REPLY_ID = "SELECT id FROM LegacyReplyView "
+private const val SELECT_COMMENT_ID = "SELECT id FROM CommentView "
+
 private const val SELECT_ROOT_CREATED_AT = "SELECT createdAt FROM RootPostView "
 private const val SELECT_REPLY_CREATED_AT = "SELECT createdAt FROM LegacyReplyView "
+private const val SELECT_COMMENT_CREATED_AT = "SELECT createdAt FROM CommentView "
 
 private const val FRIEND_ROOT_QUERY = SELECT_ROOT + FRIEND_MAIN_QUERY
 private const val FRIEND_REPLY_QUERY = SELECT_REPLY + FRIEND_MAIN_QUERY
+private const val FRIEND_COMMENT_QUERY = SELECT_COMMENT + FRIEND_MAIN_QUERY
 
 private const val WOT_ROOT_QUERY = SELECT_ROOT + WOT_MAIN_QUERY
 private const val WOT_REPLY_QUERY = SELECT_REPLY + WOT_MAIN_QUERY
+private const val WOT_COMMENT_QUERY = SELECT_COMMENT + WOT_MAIN_QUERY
 
 private const val GLOBAL_ROOT_QUERY = SELECT_ROOT + GLOBAL_MAIN_QUERY
 private const val GLOBAL_REPLY_QUERY = SELECT_REPLY + GLOBAL_MAIN_QUERY
+private const val GLOBAL_COMMENT_QUERY = SELECT_COMMENT + GLOBAL_MAIN_QUERY
 
-private const val FRIEND_REPLY_ID_QUERY = SELECT_REPLY_ID + INBOX_CONDITION + FRIEND_CONDITION
 private const val FRIEND_ROOT_ID_QUERY = SELECT_ROOT_ID + INBOX_CONDITION + FRIEND_CONDITION
+private const val FRIEND_REPLY_ID_QUERY = SELECT_REPLY_ID + INBOX_CONDITION + FRIEND_CONDITION
+private const val FRIEND_COMMENT_ID_QUERY = SELECT_COMMENT_ID + INBOX_CONDITION + FRIEND_CONDITION
 
-private const val WOT_REPLY_ID_QUERY = SELECT_REPLY_ID + INBOX_CONDITION + WOT_CONDITION
 private const val WOT_ROOT_ID_QUERY = SELECT_ROOT_ID + INBOX_CONDITION + WOT_CONDITION
+private const val WOT_REPLY_ID_QUERY = SELECT_REPLY_ID + INBOX_CONDITION + WOT_CONDITION
+private const val WOT_COMMENT_ID_QUERY = SELECT_COMMENT_ID + INBOX_CONDITION + WOT_CONDITION
 
-private const val GLOBAL_REPLY_ID_QUERY = SELECT_REPLY_ID + INBOX_CONDITION
 private const val GLOBAL_ROOT_ID_QUERY = SELECT_ROOT_ID + INBOX_CONDITION
+private const val GLOBAL_REPLY_ID_QUERY = SELECT_REPLY_ID + INBOX_CONDITION
+private const val GLOBAL_COMMENT_ID_QUERY = SELECT_COMMENT_ID + INBOX_CONDITION
 
-private const val FRIEND_INBOX_EXISTS_QUERY =
-    "SELECT EXISTS($FRIEND_REPLY_ID_QUERY UNION $FRIEND_ROOT_ID_QUERY)"
-private const val WOT_INBOX_EXISTS_QUERY =
-    "SELECT EXISTS($WOT_REPLY_ID_QUERY UNION $WOT_ROOT_ID_QUERY)"
-private const val GLOBAL_INBOX_EXISTS_QUERY =
-    "SELECT EXISTS($GLOBAL_REPLY_ID_QUERY UNION $GLOBAL_ROOT_ID_QUERY)"
+private const val FRIEND_INBOX_EXISTS_QUERY = "SELECT EXISTS(" +
+        "$FRIEND_ROOT_ID_QUERY " +
+        "UNION $FRIEND_REPLY_ID_QUERY " +
+        "UNION $FRIEND_COMMENT_ID_QUERY)"
+private const val WOT_INBOX_EXISTS_QUERY = "SELECT EXISTS(" +
+        "$WOT_ROOT_ID_QUERY " +
+        "UNION $WOT_REPLY_ID_QUERY " +
+        "UNION $WOT_COMMENT_ID_QUERY)"
+private const val GLOBAL_INBOX_EXISTS_QUERY = "SELECT EXISTS(" +
+        "$GLOBAL_ROOT_ID_QUERY " +
+        "UNION $GLOBAL_REPLY_ID_QUERY " +
+        "UNION $GLOBAL_COMMENT_ID_QUERY)"
 
 private const val FRIEND_ROOT_INBOX_CREATED_AT_QUERY = "$SELECT_ROOT_CREATED_AT $FRIEND_MAIN_QUERY"
 private const val FRIEND_REPLY_INBOX_CREATED_AT_QUERY =
     "$SELECT_REPLY_CREATED_AT $FRIEND_MAIN_QUERY"
+private const val FRIEND_COMMENT_INBOX_CREATED_AT_QUERY =
+    "$SELECT_COMMENT_CREATED_AT $FRIEND_MAIN_QUERY"
 
 private const val WOT_ROOT_INBOX_CREATED_AT_QUERY = "$SELECT_ROOT_CREATED_AT $WOT_MAIN_QUERY"
 private const val WOT_REPLY_INBOX_CREATED_AT_QUERY = "$SELECT_REPLY_CREATED_AT $WOT_MAIN_QUERY"
+private const val WOT_COMMENT_INBOX_CREATED_AT_QUERY = "$SELECT_COMMENT_CREATED_AT $WOT_MAIN_QUERY"
 
 private const val GLOBAL_ROOT_INBOX_CREATED_AT_QUERY = "$SELECT_ROOT_CREATED_AT $GLOBAL_MAIN_QUERY"
 private const val GLOBAL_REPLY_INBOX_CREATED_AT_QUERY =
     "$SELECT_REPLY_CREATED_AT $GLOBAL_MAIN_QUERY"
+private const val GLOBAL_COMMENT_INBOX_CREATED_AT_QUERY =
+    "$SELECT_COMMENT_CREATED_AT $GLOBAL_MAIN_QUERY"
 
 
 @Dao
 interface InboxDao {
-    fun getInboxReplyFlow(
-        setting: InboxFeedSetting,
-        until: Long,
-        size: Int
-    ): Flow<List<LegacyReplyView>> {
-        return when (setting.pubkeySelection) {
-            FriendPubkeysNoLock -> internalGetFriendReplyFlow(until = until, size = size)
-            WebOfTrustPubkeys -> internalGetWotReplyFlow(until = until, size = size)
-            Global -> internalGetGlobalReplyFlow(until = until, size = size)
-            NoPubkeys -> flowOf(emptyList())
-        }
-    }
-
-    suspend fun getInboxReplies(
-        setting: InboxFeedSetting,
-        until: Long,
-        size: Int
-    ): List<LegacyReplyView> {
-        return when (setting.pubkeySelection) {
-            FriendPubkeysNoLock -> internalGetFriendReply(until = until, size = size)
-            WebOfTrustPubkeys -> internalGetWotReply(until = until, size = size)
-            Global -> internalGetGlobalReply(until = until, size = size)
-            NoPubkeys -> emptyList()
-        }
-    }
 
     fun getMentionRootFlow(
         setting: InboxFeedSetting,
@@ -126,6 +124,58 @@ interface InboxDao {
         }
     }
 
+    fun getInboxReplyFlow(
+        setting: InboxFeedSetting,
+        until: Long,
+        size: Int
+    ): Flow<List<LegacyReplyView>> {
+        return when (setting.pubkeySelection) {
+            FriendPubkeysNoLock -> internalGetFriendReplyFlow(until = until, size = size)
+            WebOfTrustPubkeys -> internalGetWotReplyFlow(until = until, size = size)
+            Global -> internalGetGlobalReplyFlow(until = until, size = size)
+            NoPubkeys -> flowOf(emptyList())
+        }
+    }
+
+    fun getInboxCommentFlow(
+        setting: InboxFeedSetting,
+        until: Long,
+        size: Int
+    ): Flow<List<CommentView>> {
+        return when (setting.pubkeySelection) {
+            FriendPubkeysNoLock -> internalGetFriendCommentFlow(until = until, size = size)
+            WebOfTrustPubkeys -> internalGetWotCommentFlow(until = until, size = size)
+            Global -> internalGetGlobalCommentFlow(until = until, size = size)
+            NoPubkeys -> flowOf(emptyList())
+        }
+    }
+
+    suspend fun getInboxReplies(
+        setting: InboxFeedSetting,
+        until: Long,
+        size: Int
+    ): List<LegacyReplyView> {
+        return when (setting.pubkeySelection) {
+            FriendPubkeysNoLock -> internalGetFriendReply(until = until, size = size)
+            WebOfTrustPubkeys -> internalGetWotReply(until = until, size = size)
+            Global -> internalGetGlobalReply(until = until, size = size)
+            NoPubkeys -> emptyList()
+        }
+    }
+
+    suspend fun getInboxComments(
+        setting: InboxFeedSetting,
+        until: Long,
+        size: Int
+    ): List<CommentView> {
+        return when (setting.pubkeySelection) {
+            FriendPubkeysNoLock -> internalGetFriendComment(until = until, size = size)
+            WebOfTrustPubkeys -> internalGetWotComment(until = until, size = size)
+            Global -> internalGetGlobalComment(until = until, size = size)
+            NoPubkeys -> emptyList()
+        }
+    }
+
     fun hasInboxFlow(setting: InboxFeedSetting, until: Long = Long.MAX_VALUE): Flow<Boolean> {
         return when (setting.pubkeySelection) {
             FriendPubkeysNoLock -> internalHasFriendInboxFlow(until = until)
@@ -143,52 +193,73 @@ interface InboxDao {
         return when (setting.pubkeySelection) {
             FriendPubkeysNoLock -> internalGetFriendRootCreatedAt(until = until, size = size)
                 .plus(internalGetFriendReplyCreatedAt(until = until, size = size))
+                .plus(internalGetFriendCommentCreatedAt(until = until, size = size))
 
             WebOfTrustPubkeys -> internalGetWotRootCreatedAt(until = until, size = size)
                 .plus(internalGetWotReplyCreatedAt(until = until, size = size))
+                .plus(internalGetWotCommentCreatedAt(until = until, size = size))
 
             Global, NoPubkeys -> internalGetGlobalRootCreatedAt(until = until, size = size)
                 .plus(internalGetGlobalReplyCreatedAt(until = until, size = size))
+                .plus(internalGetGlobalCommentCreatedAt(until = until, size = size))
         }
             .sortedDescending()
             .take(size)
     }
 
-    @Query(FRIEND_REPLY_QUERY)
-    fun internalGetFriendReplyFlow(until: Long, size: Int): Flow<List<LegacyReplyView>>
-
     @Query(FRIEND_ROOT_QUERY)
     fun internalGetFriendRootFlow(until: Long, size: Int): Flow<List<RootPostView>>
 
-    @Query(WOT_REPLY_QUERY)
-    fun internalGetWotReplyFlow(until: Long, size: Int): Flow<List<LegacyReplyView>>
+    @Query(FRIEND_REPLY_QUERY)
+    fun internalGetFriendReplyFlow(until: Long, size: Int): Flow<List<LegacyReplyView>>
+
+    @Query(FRIEND_COMMENT_QUERY)
+    fun internalGetFriendCommentFlow(until: Long, size: Int): Flow<List<CommentView>>
 
     @Query(WOT_ROOT_QUERY)
     fun internalGetWotRootFlow(until: Long, size: Int): Flow<List<RootPostView>>
 
-    @Query(GLOBAL_REPLY_QUERY)
-    fun internalGetGlobalReplyFlow(until: Long, size: Int): Flow<List<LegacyReplyView>>
+    @Query(WOT_REPLY_QUERY)
+    fun internalGetWotReplyFlow(until: Long, size: Int): Flow<List<LegacyReplyView>>
+
+    @Query(WOT_COMMENT_QUERY)
+    fun internalGetWotCommentFlow(until: Long, size: Int): Flow<List<CommentView>>
 
     @Query(GLOBAL_ROOT_QUERY)
     fun internalGetGlobalRootFlow(until: Long, size: Int): Flow<List<RootPostView>>
 
-    @Query(FRIEND_REPLY_QUERY)
-    suspend fun internalGetFriendReply(until: Long, size: Int): List<LegacyReplyView>
+    @Query(GLOBAL_REPLY_QUERY)
+    fun internalGetGlobalReplyFlow(until: Long, size: Int): Flow<List<LegacyReplyView>>
+
+    @Query(GLOBAL_COMMENT_QUERY)
+    fun internalGetGlobalCommentFlow(until: Long, size: Int): Flow<List<CommentView>>
 
     @Query(FRIEND_ROOT_QUERY)
     suspend fun internalGetFriendRoot(until: Long, size: Int): List<RootPostView>
 
-    @Query(WOT_REPLY_QUERY)
-    suspend fun internalGetWotReply(until: Long, size: Int): List<LegacyReplyView>
+    @Query(FRIEND_REPLY_QUERY)
+    suspend fun internalGetFriendReply(until: Long, size: Int): List<LegacyReplyView>
+
+    @Query(FRIEND_COMMENT_QUERY)
+    suspend fun internalGetFriendComment(until: Long, size: Int): List<CommentView>
 
     @Query(WOT_ROOT_QUERY)
     suspend fun internalGetWotRoot(until: Long, size: Int): List<RootPostView>
 
-    @Query(GLOBAL_REPLY_QUERY)
-    suspend fun internalGetGlobalReply(until: Long, size: Int): List<LegacyReplyView>
+    @Query(WOT_REPLY_QUERY)
+    suspend fun internalGetWotReply(until: Long, size: Int): List<LegacyReplyView>
+
+    @Query(WOT_COMMENT_QUERY)
+    suspend fun internalGetWotComment(until: Long, size: Int): List<CommentView>
 
     @Query(GLOBAL_ROOT_QUERY)
     suspend fun internalGetGlobalRoot(until: Long, size: Int): List<RootPostView>
+
+    @Query(GLOBAL_REPLY_QUERY)
+    suspend fun internalGetGlobalReply(until: Long, size: Int): List<LegacyReplyView>
+
+    @Query(GLOBAL_COMMENT_QUERY)
+    suspend fun internalGetGlobalComment(until: Long, size: Int): List<CommentView>
 
     @Query(FRIEND_INBOX_EXISTS_QUERY)
     fun internalHasFriendInboxFlow(until: Long): Flow<Boolean>
@@ -216,4 +287,13 @@ interface InboxDao {
 
     @Query(GLOBAL_REPLY_INBOX_CREATED_AT_QUERY)
     suspend fun internalGetGlobalReplyCreatedAt(until: Long, size: Int): List<Long>
+
+    @Query(FRIEND_COMMENT_INBOX_CREATED_AT_QUERY)
+    suspend fun internalGetFriendCommentCreatedAt(until: Long, size: Int): List<Long>
+
+    @Query(WOT_COMMENT_INBOX_CREATED_AT_QUERY)
+    suspend fun internalGetWotCommentCreatedAt(until: Long, size: Int): List<Long>
+
+    @Query(GLOBAL_COMMENT_INBOX_CREATED_AT_QUERY)
+    suspend fun internalGetGlobalCommentCreatedAt(until: Long, size: Int): List<Long>
 }

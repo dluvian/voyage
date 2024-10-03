@@ -18,6 +18,7 @@ import com.dluvian.voyage.core.OpenPostInfo
 import com.dluvian.voyage.core.OpenThreadRaw
 import com.dluvian.voyage.core.RebroadcastPost
 import com.dluvian.voyage.core.UnfollowProfile
+import com.dluvian.voyage.core.model.Comment
 import com.dluvian.voyage.core.model.CrossPost
 import com.dluvian.voyage.core.model.FriendTrust
 import com.dluvian.voyage.core.model.IsInListTrust
@@ -68,6 +69,7 @@ fun FeedItemDropdown(
                 })
 
             is CrossPost -> {}
+            is Comment -> TODO()
         }
 
         val clip = LocalClipboardManager.current
