@@ -78,7 +78,7 @@ data class ValidatedComment(
     val content: String,
     val json: String,
     val isMentioningMe: Boolean,
-    val parentRef: String, // id, coord, or anything
+    val parentId: EventIdHex?,
     val parentKind: Int,
 ) : ValidatedMainEvent(
     id = id,

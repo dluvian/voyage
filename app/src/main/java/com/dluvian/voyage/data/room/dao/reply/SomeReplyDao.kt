@@ -29,22 +29,22 @@ const val PROFILE_COMMENT_FEED_EXISTS_QUERY = "SELECT EXISTS(SELECT * " +
 @Dao
 interface SomeReplyDao {
 
-    suspend fun getParentRef(id: EventIdHex): EventIdHex? {
+    suspend fun getParentId(id: EventIdHex): EventIdHex? {
         return internalGetLegacyReplyParentId(id = id) ?: internalGetCommentParentId(id = id)
     }
 
-    fun getReplyCountFlow(parentRef: String): Flow<Int> {
+    fun getReplyCountFlow(parentId: EventIdHex): Flow<Int> {
         return combine(
-            internalGetLegacyReplyCountFlow(parentId = parentRef),
-            internalGetCommentCountFlow(parentRef = parentRef),
+            internalGetLegacyReplyCountFlow(parentId = parentId),
+            internalGetCommentCountFlow(parentId = parentId),
         ) { legacyCount, commentCount ->
             legacyCount + commentCount
         }
     }
 
-    suspend fun getNewestReplyCreatedAt(parentRef: String): Long? {
-        val legacy = internalGetNewestLegacyReplyCreatedAt(parentId = parentRef)
-        val comment = internalGetNewestCommentCreatedAt(parentRef = parentRef)
+    suspend fun getNewestReplyCreatedAt(parentId: String): Long? {
+        val legacy = internalGetNewestLegacyReplyCreatedAt(parentId = parentId)
+        val comment = internalGetNewestCommentCreatedAt(parentId = parentId)
 
         return if (legacy == null && comment == null) null
         else maxOf(legacy ?: 0, comment ?: 0)
@@ -53,7 +53,7 @@ interface SomeReplyDao {
     @Query("SELECT parentId FROM legacyReply WHERE eventId = :id")
     suspend fun internalGetLegacyReplyParentId(id: EventIdHex): EventIdHex?
 
-    @Query("SELECT parentRef FROM comment WHERE eventId = :id")
+    @Query("SELECT parentId FROM comment WHERE eventId = :id")
     suspend fun internalGetCommentParentId(id: EventIdHex): EventIdHex?
 
     // Should be like LegacyReplyDao.getRepliesFlow
@@ -61,8 +61,8 @@ interface SomeReplyDao {
     fun internalGetLegacyReplyCountFlow(parentId: EventIdHex): Flow<Int>
 
     // Should be like CommentDao.getCommentsFlow
-    @Query("SELECT COUNT(*) FROM CommentView WHERE parentRef = :parentRef AND authorIsMuted = 0")
-    fun internalGetCommentCountFlow(parentRef: String): Flow<Int>
+    @Query("SELECT COUNT(*) FROM CommentView WHERE parentId = :parentId AND authorIsMuted = 0")
+    fun internalGetCommentCountFlow(parentId: EventIdHex): Flow<Int>
 
     @Query(
         "SELECT MAX(createdAt) " +
@@ -74,7 +74,7 @@ interface SomeReplyDao {
     @Query(
         "SELECT MAX(createdAt) " +
                 "FROM mainEvent " +
-                "WHERE id IN (SELECT eventId FROM comment WHERE parentRef = :parentRef)"
+                "WHERE id IN (SELECT eventId FROM comment WHERE parentId = :parentId)"
     )
-    suspend fun internalGetNewestCommentCreatedAt(parentRef: String): Long?
+    suspend fun internalGetNewestCommentCreatedAt(parentId: String): Long?
 }

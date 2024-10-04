@@ -142,7 +142,6 @@ sealed class SomeReply(
     override val relayUrl: RelayUrl,
     override val isUpvoted: Boolean,
     override val isBookmarked: Boolean,
-    open val parentRef: String,
 ) : ThreadableMainEvent(
     id = id,
     pubkey = pubkey,
@@ -183,7 +182,6 @@ data class LegacyReply(
     createdAt = createdAt,
     isUpvoted = isUpvoted,
     isBookmarked = isBookmarked,
-    parentRef = parentId
 ) {
     companion object {
         fun from(
@@ -221,7 +219,7 @@ data class Comment(
     override val relayUrl: RelayUrl,
     override val isUpvoted: Boolean,
     override val isBookmarked: Boolean,
-    override val parentRef: String,
+    val parentId: EventIdHex?,
     val parentKind: Int
 ) : SomeReply(
     id = id,
@@ -235,7 +233,6 @@ data class Comment(
     createdAt = createdAt,
     isUpvoted = isUpvoted,
     isBookmarked = isBookmarked,
-    parentRef = parentRef
 ) {
     companion object {
         fun from(
@@ -244,7 +241,7 @@ data class Comment(
         ): Comment {
             return Comment(
                 id = commentView.id,
-                parentRef = commentView.parentRef,
+                parentId = commentView.parentId,
                 parentKind = commentView.parentKind,
                 pubkey = commentView.pubkey,
                 authorName = commentView.authorName,

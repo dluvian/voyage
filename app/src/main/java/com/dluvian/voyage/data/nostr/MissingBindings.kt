@@ -99,11 +99,13 @@ fun Event.getKindTag(): Int? {
         ?.toIntOrNull()
 }
 
-fun Event.getParentRef(): String? {
-    return this.tags()
+fun Event.getParentId(): String? {
+    val parentId = this.tags()
         .map { it.asVec() }
-        .find { it.size >= 2 && (it.first() == "e" || it.first() == "a" || it.first() == "i") }
-        ?.getOrNull(1)
+        .find { it.size >= 2 && it.first() == "e" }
+        ?.getOrNull(1) ?: return null
+
+    return if (isValidEventId(hex = parentId)) parentId else null
 }
 
 fun Event.getMuteWords(): List<String> {

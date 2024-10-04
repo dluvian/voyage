@@ -17,12 +17,12 @@ interface CommentDao {
         """
         SELECT * 
         FROM CommentView 
-        WHERE parentRef IN (:parentRefs) 
+        WHERE parentId IN (:parentIds) 
         AND authorIsMuted = 0
         ORDER BY createdAt ASC
     """
     )
-    fun getCommentsFlow(parentRefs: Collection<EventIdHex>): Flow<List<CommentView>>
+    fun getCommentsFlow(parentIds: Collection<EventIdHex>): Flow<List<CommentView>>
 
     @Query("SELECT * FROM CommentView WHERE id = :id")
     fun getCommentFlow(id: EventIdHex): Flow<CommentView?>

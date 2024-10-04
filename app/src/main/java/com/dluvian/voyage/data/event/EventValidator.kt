@@ -17,7 +17,7 @@ import com.dluvian.voyage.data.nostr.getKindTag
 import com.dluvian.voyage.data.nostr.getLegacyReplyToId
 import com.dluvian.voyage.data.nostr.getMetadata
 import com.dluvian.voyage.data.nostr.getNip65s
-import com.dluvian.voyage.data.nostr.getParentRef
+import com.dluvian.voyage.data.nostr.getParentId
 import com.dluvian.voyage.data.nostr.isTextNote
 import com.dluvian.voyage.data.nostr.secs
 import rust.nostr.protocol.Event
@@ -114,8 +114,10 @@ class EventValidator(
                     relayUrl = relayUrl,
                     json = event.asJson(),
                     isMentioningMe = event.publicKeys().contains(myPubkeyProvider.getPublicKey()),
-                    parentRef = event.getParentRef() ?: return null,
-                    parentKind = event.getKindTag() ?: return null
+                    // Null means we don't support the parent (i and a tags)
+                    parentId = event.getParentId(),
+                    // Don't discard invalid comment. Just assume parent is comment
+                    parentKind = event.getKindTag() ?: COMMENT_U16.toInt()
                 )
             }
 

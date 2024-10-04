@@ -101,14 +101,10 @@ class ThreadProvider(
 
     fun getParentIsAvailableFlow(scope: CoroutineScope, replyId: EventIdHex): Flow<Boolean> {
         scope.launchIO {
-            val parentRef = room.someReplyDao().getParentRef(id = replyId) ?: return@launchIO
-            val nevent = runCatching {
-                createNevent(hex = parentRef)
-            }.getOrNull() ?: return@launchIO
-
-            if (!room.existsDao().postExists(id = parentRef)) {
-                Log.i(TAG, "Parent $parentRef is not available yet. Subscribing to it")
-                nostrSubscriber.subPost(nevent = nevent)
+            val parentId = room.someReplyDao().getParentId(id = replyId) ?: return@launchIO
+            if (!room.existsDao().postExists(id = parentId)) {
+                Log.i(TAG, "Parent $parentId is not available yet. Subscribing to it")
+                nostrSubscriber.subPost(nevent = createNevent(hex = parentId))
             }
         }
 
@@ -117,7 +113,7 @@ class ThreadProvider(
 
     // Unfiltered count for ProgressBar purpose
     fun getTotalReplyCount(rootId: EventIdHex): Flow<Int> {
-        return room.someReplyDao().getReplyCountFlow(parentRef = rootId)
+        return room.someReplyDao().getReplyCountFlow(parentId = rootId)
             .firstThenDistinctDebounce(SHORT_DEBOUNCE)
     }
 
@@ -129,7 +125,7 @@ class ThreadProvider(
         val allIds = parentIds + rootId
         val legacyFlow = room.legacyReplyDao().getRepliesFlow(parentIds = allIds)
             .firstThenDistinctDebounce(DEBOUNCE)
-        val commentFlow = room.commentDao().getCommentsFlow(parentRefs = allIds)
+        val commentFlow = room.commentDao().getCommentsFlow(parentIds = allIds)
             .firstThenDistinctDebounce(DEBOUNCE)
         val opPubkeyFlow = room.mainEventDao().getAuthorFlow(id = rootId)
             .firstThenDistinctDebounce(DEBOUNCE)
@@ -147,10 +143,10 @@ class ThreadProvider(
             // Comments are first bc they are more based
             for (comment in comments) {
                 if (comment.content.containsNoneIgnoreCase(strs = mutedWords)) continue
-                val parent = result.find { it.reply.id == comment.parentRef }
+                val parent = result.find { it.reply.id == comment.parentId }
 
                 if (parent?.isCollapsed == true) continue
-                if (parent == null && comment.parentRef != rootId) continue
+                if (parent == null && comment.parentId != rootId) continue
 
                 val leveledComment = comment.mapToThreadReplyCtx(
                     level = parent?.level?.plus(1) ?: 0,
@@ -163,7 +159,7 @@ class ThreadProvider(
                     annotatedStringProvider = annotatedStringProvider
                 )
 
-                if (comment.parentRef == rootId) {
+                if (comment.parentId == rootId) {
                     result.add(leveledComment)
                     continue
                 }

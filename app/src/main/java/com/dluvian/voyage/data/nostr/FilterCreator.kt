@@ -134,7 +134,7 @@ class FilterCreator(
 
     suspend fun getLazyReplyFilter(parentId: EventId): Filter {
         val newestReplyTime = room.someReplyDao()
-            .getNewestReplyCreatedAt(parentRef = parentId.toHex()) ?: 1L
+            .getNewestReplyCreatedAt(parentId = parentId.toHex()) ?: 1L
 
         return Filter()
             .kinds(kinds = replyKinds)

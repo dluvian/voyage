@@ -11,7 +11,7 @@ import com.dluvian.voyage.ui.components.row.mainEvent.ThreadReplyCtx
 
 @DatabaseView(
     "SELECT mainEvent.id, " +
-            "comment.parentRef, " +
+            "comment.parentId, " +
             "comment.parentKind, " +
             "mainEvent.pubkey, " +
             "mainEvent.content, " +
@@ -34,7 +34,7 @@ import com.dluvian.voyage.ui.components.row.mainEvent.ThreadReplyCtx
 )
 data class CommentView(
     val id: EventIdHex,
-    val parentRef: String,
+    val parentId: EventIdHex?,
     val parentKind: Int,
     val pubkey: PubkeyHex,
     val authorName: String?,
