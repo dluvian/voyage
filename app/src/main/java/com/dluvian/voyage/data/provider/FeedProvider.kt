@@ -298,7 +298,7 @@ class FeedProvider(
             is ProfileFeedSetting -> room.feedDao()
                 .hasProfileFeedFlow(pubkey = setting.nprofile.publicKey().toHex())
 
-            is ReplyFeedSetting -> room.legacyReplyDao()
+            is ReplyFeedSetting -> room.someReplyDao()
                 .hasProfileRepliesFlow(pubkey = setting.nprofile.publicKey().toHex())
 
             is ListFeedSetting -> room.feedDao()

@@ -32,10 +32,4 @@ interface CommentDao {
 
     @Query(PROFILE_COMMENT_FEED_QUERY)
     suspend fun getProfileComments(pubkey: PubkeyHex, until: Long, size: Int): List<CommentView>
-
-    @Query(PROFILE_COMMENT_FEED_EXISTS_QUERY)
-    fun hasProfileCommentsFlow(pubkey: PubkeyHex): Flow<Boolean>
-
-    @Query(PROFILE_COMMENT_FEED_CREATED_AT_QUERY)
-    suspend fun getProfileCommentsCreatedAt(pubkey: PubkeyHex, until: Long, size: Int): List<Long>
 }

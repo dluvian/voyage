@@ -73,9 +73,9 @@ fun MainEventHeader(
         ) {
             when (val mainEvent = ctx.mainEvent) {
                 is RootPost -> mainEvent.myTopic
-                is LegacyReply -> null
                 is CrossPost -> mainEvent.myTopic
-                is Comment -> TODO()
+                is LegacyReply -> null
+                is Comment -> null
             }?.let { topic ->
                 BorderedTopic(topic = topic, onUpdate = onUpdate)
                 Spacer(modifier = Modifier.width(spacing.large))
@@ -115,8 +115,7 @@ private fun MainEventHeaderIconsAndName(
                 onUpdate = onUpdate
             )
 
-            is LegacyReply, is RootPost -> {}
-            is Comment -> TODO()
+            is LegacyReply, is RootPost, is Comment -> {}
         }
     }
 }

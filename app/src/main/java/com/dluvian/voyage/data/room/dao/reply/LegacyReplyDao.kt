@@ -31,10 +31,4 @@ interface LegacyReplyDao {
 
     @Query(PROFILE_REPLY_FEED_QUERY)
     suspend fun getProfileReplies(pubkey: PubkeyHex, until: Long, size: Int): List<LegacyReplyView>
-
-    @Query(PROFILE_REPLY_FEED_EXISTS_QUERY)
-    fun hasProfileRepliesFlow(pubkey: PubkeyHex): Flow<Boolean>
-
-    @Query(PROFILE_REPLY_FEED_CREATED_AT_QUERY)
-    suspend fun getProfileRepliesCreatedAt(pubkey: PubkeyHex, until: Long, size: Int): List<Long>
 }

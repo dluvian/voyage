@@ -61,7 +61,7 @@ fun FeedItemDropdown(
 
         when (mainEvent) {
             is RootPost -> {}
-            is LegacyReply -> SimpleDropdownItem(
+            is LegacyReply, is Comment -> SimpleDropdownItem(
                 text = stringResource(id = R.string.open_as_root),
                 onClick = {
                     onUpdate(OpenThreadRaw(nevent = createNevent(hex = mainEvent.id)))
@@ -69,7 +69,6 @@ fun FeedItemDropdown(
                 })
 
             is CrossPost -> {}
-            is Comment -> TODO()
         }
 
         val clip = LocalClipboardManager.current

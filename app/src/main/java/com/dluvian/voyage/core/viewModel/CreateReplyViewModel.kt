@@ -44,7 +44,7 @@ class CreateReplyViewModel(
             }
         }
         when (newParent) {
-            is LegacyReply -> {
+            is LegacyReply, is Comment -> {
                 viewModelScope.launchIO {
                     val grandparentAuthor = mainEventDao.getParentAuthor(id = relevantId)
                     if (grandparentAuthor != null && relevantPubkey != grandparentAuthor) {
@@ -54,9 +54,7 @@ class CreateReplyViewModel(
             }
 
             is RootPost, is CrossPost -> {}
-            is Comment -> TODO()
         }
-
 
         this.parent.value = newParent
     }

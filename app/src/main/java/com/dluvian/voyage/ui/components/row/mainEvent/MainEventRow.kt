@@ -29,8 +29,8 @@ import com.dluvian.voyage.core.ThreadViewShowReplies
 import com.dluvian.voyage.core.ThreadViewToggleCollapse
 import com.dluvian.voyage.core.model.Comment
 import com.dluvian.voyage.core.model.CrossPost
+import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.core.model.RootPost
-import com.dluvian.voyage.core.model.SomeReply
 import com.dluvian.voyage.core.model.ThreadableMainEvent
 import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.ui.components.button.OptionsButton
@@ -62,7 +62,7 @@ fun MainEventRow(
                     onUpdate = onUpdate
                 )
 
-                is SomeReply -> RowWithDivider(level = 1) {
+                is LegacyReply, is Comment -> RowWithDivider(level = 1) {
                     MainEventMainRow(
                         ctx = ctx,
                         showAuthorName = showAuthorName,
@@ -176,7 +176,10 @@ private fun MainEventMainRow(
                             is RootPost,
                             is CrossPost -> CountedCommentButton(ctx = ctx, onUpdate = onUpdate)
 
-                            is SomeReply -> ReplyIconButton(ctx = ctx, onUpdate = onUpdate)
+                            is LegacyReply, is Comment -> ReplyIconButton(
+                                ctx = ctx,
+                                onUpdate = onUpdate
+                            )
                         }
                     }
                 }

@@ -3,6 +3,7 @@ package com.dluvian.voyage.data.room.dao.reply
 import androidx.room.Dao
 import androidx.room.Query
 import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.core.PubkeyHex
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 
@@ -64,6 +65,30 @@ interface SomeReplyDao {
     @Query("SELECT COUNT(*) FROM CommentView WHERE parentId = :parentId AND authorIsMuted = 0")
     fun internalGetCommentCountFlow(parentId: EventIdHex): Flow<Int>
 
+    suspend fun getProfileRepliesCreatedAt(pubkey: PubkeyHex, until: Long, size: Int): List<Long> {
+        val legacy = internalGetProfileLegacyRepliesCreatedAt(
+            pubkey = pubkey,
+            until = until,
+            size = size
+        )
+        val comment = internalGetProfileCommentsCreatedAt(
+            pubkey = pubkey,
+            until = until,
+            size = size
+        )
+
+        return (legacy + comment).sortedDescending().take(size)
+    }
+
+    fun hasProfileRepliesFlow(pubkey: PubkeyHex): Flow<Boolean> {
+        return combine(
+            internalhasProfileLegacyRepliesFlow(pubkey = pubkey),
+            internalHasProfileCommentsFlow(pubkey = pubkey),
+        ) { legacy, comment ->
+            legacy || comment
+        }
+    }
+
     @Query(
         "SELECT MAX(createdAt) " +
                 "FROM mainEvent " +
@@ -77,4 +102,24 @@ interface SomeReplyDao {
                 "WHERE id IN (SELECT eventId FROM comment WHERE parentId = :parentId)"
     )
     suspend fun internalGetNewestCommentCreatedAt(parentId: String): Long?
+
+    @Query(PROFILE_REPLY_FEED_CREATED_AT_QUERY)
+    suspend fun internalGetProfileLegacyRepliesCreatedAt(
+        pubkey: PubkeyHex,
+        until: Long,
+        size: Int
+    ): List<Long>
+
+    @Query(PROFILE_COMMENT_FEED_CREATED_AT_QUERY)
+    suspend fun internalGetProfileCommentsCreatedAt(
+        pubkey: PubkeyHex,
+        until: Long,
+        size: Int
+    ): List<Long>
+
+    @Query(PROFILE_REPLY_FEED_EXISTS_QUERY)
+    fun internalhasProfileLegacyRepliesFlow(pubkey: PubkeyHex): Flow<Boolean>
+
+    @Query(PROFILE_COMMENT_FEED_EXISTS_QUERY)
+    fun internalHasProfileCommentsFlow(pubkey: PubkeyHex): Flow<Boolean>
 }
