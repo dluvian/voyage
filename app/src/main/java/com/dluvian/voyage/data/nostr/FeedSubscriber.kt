@@ -4,9 +4,11 @@ import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
 import com.dluvian.voyage.core.MAX_KEYS
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.utils.limitRestricted
-import com.dluvian.voyage.core.utils.normalFeedKinds
+import com.dluvian.voyage.core.utils.postAndCrossPostKinds
+import com.dluvian.voyage.core.utils.replyKinds
 import com.dluvian.voyage.core.utils.syncedPutOrAdd
 import com.dluvian.voyage.core.utils.takeRandom
+import com.dluvian.voyage.core.utils.threadableKinds
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.model.FriendPubkeysNoLock
 import com.dluvian.voyage.data.model.Global
@@ -27,7 +29,6 @@ import kotlinx.coroutines.launch
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
 import rust.nostr.protocol.Kind
-import rust.nostr.protocol.KindEnum
 import rust.nostr.protocol.Nip19Profile
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Timestamp
@@ -92,7 +93,7 @@ class FeedSubscriber(
                     .forEach { (relayUrl, pubkeys) ->
                         val publicKeys = pubkeys.takeRandom(MAX_KEYS).map { PublicKey.fromHex(it) }
                         val pubkeysNoteFilter = Filter()
-                            .kinds(kinds = normalFeedKinds)
+                            .kinds(kinds = postAndCrossPostKinds)
                             .let {
                                 if (publicKeys.isNotEmpty()) it.authors(authors = publicKeys)
                                 else it
@@ -112,7 +113,7 @@ class FeedSubscriber(
         )
         if (topics.isNotEmpty()) {
             val topicedNoteFilter = Filter()
-                .kinds(kinds = normalFeedKinds)
+                .kinds(kinds = postAndCrossPostKinds)
                 .hashtags(hashtags = topics)
                 .since(timestamp = sinceTimestamp)
                 .until(timestamp = untilTimestamp)
@@ -140,7 +141,7 @@ class FeedSubscriber(
         val result = mutableMapOf<RelayUrl, MutableList<Filter>>()
 
         val topicedNoteFilter = Filter()
-            .kinds(kinds = normalFeedKinds)
+            .kinds(kinds = postAndCrossPostKinds)
             .hashtag(hashtag = topic)
             .since(timestamp = Timestamp.fromSecs(since))
             .until(timestamp = Timestamp.fromSecs(until))
@@ -160,12 +161,43 @@ class FeedSubscriber(
         since: ULong,
         limit: ULong
     ): Map<RelayUrl, List<Filter>> {
+        return getPubkeyFeedSubscription(
+            nprofile = nprofile,
+            kinds = postAndCrossPostKinds,
+            until = until,
+            since = since,
+            limit = limit
+        )
+    }
+
+    suspend fun getReplyFeedSubscription(
+        nprofile: Nip19Profile,
+        until: ULong,
+        since: ULong,
+        limit: ULong
+    ): Map<RelayUrl, List<Filter>> {
+        return getPubkeyFeedSubscription(
+            nprofile = nprofile,
+            kinds = replyKinds,
+            until = until,
+            since = since,
+            limit = limit
+        )
+    }
+
+    private suspend fun getPubkeyFeedSubscription(
+        nprofile: Nip19Profile,
+        kinds: List<Kind>,
+        until: ULong,
+        since: ULong,
+        limit: ULong
+    ): Map<RelayUrl, List<Filter>> {
         if (limit <= 0u || since >= until) return emptyMap()
 
         val result = mutableMapOf<RelayUrl, MutableList<Filter>>()
 
         val pubkeyNoteFilter = Filter()
-            .kinds(kinds = normalFeedKinds)
+            .kinds(kinds = kinds)
             .author(author = nprofile.publicKey())
             .since(timestamp = Timestamp.fromSecs(since))
             .until(timestamp = Timestamp.fromSecs(until))
@@ -196,7 +228,7 @@ class FeedSubscriber(
         }?.map { PublicKey.fromHex(it) }
 
         val mentionFilter = Filter()
-            .kind(kind = Kind.fromEnum(KindEnum.TextNote))
+            .kinds(kinds = threadableKinds)
             .pubkey(pubkey = myPubkeyProvider.getPublicKey())
             .since(timestamp = Timestamp.fromSecs(since))
             .until(timestamp = Timestamp.fromSecs(until))
@@ -226,7 +258,7 @@ class FeedSubscriber(
         if (ids.isEmpty()) return emptyMap()
 
         val bookedMarkedNotesFilter = Filter()
-            .kind(kind = Kind.fromEnum(KindEnum.TextNote)) // We don't support bookmarking the repost itself
+            .kinds(kinds = threadableKinds) // We don't support bookmarking the repost itself
             .ids(ids = ids)
             .since(timestamp = Timestamp.fromSecs(since))
             .until(timestamp = Timestamp.fromSecs(until))

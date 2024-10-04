@@ -206,7 +206,7 @@ fun mergeRelayFilters(vararg maps: Map<RelayUrl, List<Filter>>): Map<RelayUrl, L
     return result
 }
 
-val normalFeedKinds = listOf(
+val postAndCrossPostKinds = listOf(
     Kind.fromEnum(KindEnum.TextNote),
     Kind.fromEnum(KindEnum.Repost),
 )
@@ -215,6 +215,8 @@ val replyKinds = listOf(
     Kind.fromEnum(KindEnum.TextNote),
     Kind(kind = COMMENT_U16),
 )
+
+val threadableKinds = replyKinds
 
 val mainEventKinds = listOf(
     Kind.fromEnum(KindEnum.TextNote),

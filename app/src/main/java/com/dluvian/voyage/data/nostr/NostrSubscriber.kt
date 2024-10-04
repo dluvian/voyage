@@ -83,7 +83,7 @@ class NostrSubscriber(
                 limit = (3 * limit).toULong()
             )
 
-            is ReplyFeedSetting -> feedSubscriber.getProfileFeedSubscription(
+            is ReplyFeedSetting -> feedSubscriber.getReplyFeedSubscription(
                 nprofile = setting.nprofile,
                 until = until.toULong(),
                 since = since,

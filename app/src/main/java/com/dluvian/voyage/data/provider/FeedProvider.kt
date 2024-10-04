@@ -64,16 +64,14 @@ class FeedProvider(
         size: Int,
         setting: FeedSetting,
         forceSubscription: Boolean,
-        subscribe: Boolean = true,
     ): Flow<List<MainEvent>> {
-        if (subscribe) {
             nostrSubscriber.subFeed(
                 until = subUntil,
                 limit = size,
                 setting = setting,
                 forceSubscription = forceSubscription
             )
-        }
+
         val mutedWords = muteProvider.getMutedWords()
 
         return when (setting) {

@@ -78,7 +78,6 @@ class Paginator(
             setPage(
                 until = now,
                 subUntil = now,
-                subscribe = feedSetting !is ReplyFeedSetting,
             )
             delay(DELAY_1SEC)
         }.invokeOnCompletion {
@@ -105,7 +104,6 @@ class Paginator(
             setPage(
                 until = now,
                 subUntil = now,
-                subscribe = feedSetting !is ReplyFeedSetting,
                 forceSubscription = isFirstPage
             )
             delay(DELAY_1SEC)
@@ -136,7 +134,6 @@ class Paginator(
         until: Long,
         subUntil: Long,
         feedSetting: FeedSetting = this.feedSetting,
-        subscribe: Boolean = true,
         forceSubscription: Boolean = false
     ) {
         val staticFeed = getStaticFeed(until = until)
@@ -146,7 +143,6 @@ class Paginator(
             size = FEED_PAGE_SIZE,
             setting = feedSetting,
             forceSubscription = forceSubscription,
-            subscribe = subscribe
         ).map { list -> list.map { FeedCtx(mainEvent = it) } }
         val mutedWords = muteProvider.getMutedWords()
 
