@@ -192,7 +192,7 @@ class ThreadProvider(
                 result.add(result.indexOf(parent) + 1, leveledReply)
             }
 
-            result.sortedByDescending { it.isOp }
+            result
         }.onEach {
             nostrSubscriber.subVotesAndReplies(
                 parentIds = it.map { reply -> reply.reply.getRelevantId() }
