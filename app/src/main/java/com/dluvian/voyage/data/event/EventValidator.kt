@@ -320,8 +320,7 @@ class EventValidator(
                 isMentioningMe = event.publicKeys().contains(myPubkey),
                 // Null means we don't support the parent (i and a tags)
                 parentId = event.getParentId(),
-                // Don't discard invalid comment. Just assume parent is comment
-                parentKind = event.getKindTag() ?: COMMENT_U16
+                parentKind = event.getKindTag(),
             )
         }
 

@@ -97,7 +97,7 @@ data class ValidatedComment(
     override val json: String,
     override val isMentioningMe: Boolean,
     val parentId: EventIdHex?,
-    val parentKind: UShort,
+    val parentKind: UShort?,
 ) : ValidatedThreadableEvent(
     id = id,
     pubkey = pubkey,
