@@ -31,7 +31,8 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             CASE WHEN lock.pubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsLocked,
             CASE WHEN vote.eventId IS NOT NULL THEN 1 ELSE 0 END crossPostedIsUpvoted,
             upvotes.upvoteCount AS crossPostedUpvoteCount,
-            replies.replyCount AS crossPostedReplyCount,
+            legacyReplies.legacyReplyCount AS crossPostedLegacyReplyCount,
+            comments.commentCount AS crossPostedCommentCount,
             CASE WHEN cross_posted_account.pubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsOneself,
             CASE WHEN cross_posted_friend.friendPubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsFriend,
             CASE WHEN cross_posted_wot.webOfTrustPubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsTrusted,
@@ -53,10 +54,15 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             GROUP BY hashtag.eventId
         ) AS ht ON ht.eventId = mainEvent.id
         LEFT JOIN (
-            SELECT legacyReply.parentId, COUNT(*) AS replyCount 
-            FROM legacyReply AS legacyReply
+            SELECT legacyReply.parentId, COUNT(*) AS legacyReplyCount 
+            FROM legacyReply
             GROUP BY legacyReply.parentId
-        ) AS replies ON replies.parentId = crossPost.crossPostedId
+        ) AS legacyReplies ON legacyReplies.parentId = crossPost.crossPostedId
+        LEFT JOIN (
+            SELECT comment.parentId, COUNT(*) AS commentCount 
+            FROM comment
+            GROUP BY comment.parentId
+        ) AS comments ON comments.parentId = crossPost.crossPostedId
         LEFT JOIN account ON account.pubkey = mainEvent.pubkey
         LEFT JOIN friend ON friend.friendPubkey = mainEvent.pubkey
         LEFT JOIN weboftrust ON weboftrust.webOfTrustPubkey = mainEvent.pubkey
@@ -93,7 +99,8 @@ data class CrossPostView(
     val crossPostedContent: String,
     val crossPostedIsUpvoted: Boolean,
     val crossPostedUpvoteCount: Int,
-    val crossPostedReplyCount: Int,
+    val crossPostedLegacyReplyCount: Int,
+    val crossPostedCommentCount: Int,
     val crossPostedRelayUrl: RelayUrl,
     val crossPostedId: EventIdHex,
     val crossPostedPubkey: PubkeyHex,

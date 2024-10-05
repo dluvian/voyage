@@ -29,7 +29,8 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             CASE WHEN lock.pubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsLocked,
             CASE WHEN vote.eventId IS NOT NULL THEN 1 ELSE 0 END isUpvoted,
             upvotes.upvoteCount,
-            replies.replyCount,
+            legacyReplies.legacyReplyCount,
+            comments.commentCount,
             (SELECT EXISTS(SELECT * FROM bookmark WHERE bookmark.eventId = mainEvent.id)) AS isBookmarked 
         FROM rootPost
         JOIN mainEvent ON mainEvent.id = rootPost.eventId
@@ -54,10 +55,15 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             GROUP BY vote.eventId
         ) AS upvotes ON upvotes.eventId = mainEvent.id
         LEFT JOIN (
-            SELECT legacyReply.parentId, COUNT(*) AS replyCount 
+            SELECT legacyReply.parentId, COUNT(*) AS legacyReplyCount 
             FROM legacyReply
             GROUP BY legacyReply.parentId
-        ) AS replies ON replies.parentId = mainEvent.id
+        ) AS legacyReplies ON legacyReplies.parentId = mainEvent.id
+        LEFT JOIN (
+            SELECT comment.parentId, COUNT(*) AS commentCount 
+            FROM comment
+            GROUP BY comment.parentId
+        ) AS comments ON comments.parentId = mainEvent.id
 """
 )
 data class RootPostView(
@@ -76,7 +82,8 @@ data class RootPostView(
     val createdAt: Long,
     val isUpvoted: Boolean,
     val upvoteCount: Int,
-    val replyCount: Int,
+    val legacyReplyCount: Int,
+    val commentCount: Int,
     val relayUrl: RelayUrl,
     val isBookmarked: Boolean,
     val isMentioningMe: Boolean,

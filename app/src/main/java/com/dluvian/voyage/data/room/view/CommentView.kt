@@ -27,7 +27,7 @@ import com.dluvian.voyage.ui.components.row.mainEvent.ThreadReplyCtx
             "(SELECT EXISTS(SELECT * FROM lock WHERE lock.pubkey = mainEvent.pubkey)) AS authorIsLocked, " +
             "(SELECT EXISTS(SELECT* FROM vote WHERE vote.eventId = mainEvent.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1))) AS isUpvoted, " +
             "(SELECT COUNT(*) FROM vote WHERE vote.eventId = mainEvent.id) AS upvoteCount, " +
-            "(SELECT COUNT(*) FROM legacyReply AS legacyReply2 WHERE legacyReply2.parentId = mainEvent.id) AS replyCount, " +
+            "(SELECT COUNT(*) FROM comment AS comment2 WHERE comment2.parentId = mainEvent.id) AS replyCount, " +
             "(SELECT EXISTS(SELECT * FROM bookmark WHERE bookmark.eventId = mainEvent.id)) AS isBookmarked " +
             "FROM comment " +
             "JOIN mainEvent ON mainEvent.id = comment.eventId"
