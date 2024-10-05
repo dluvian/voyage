@@ -139,10 +139,11 @@ class ThreadProvider(
             collapsedIds,
         ) { replies, comments, forced, opPubkey, collapsed ->
             val result = LinkedList<ThreadReplyCtx>()
+            val hasMutedWords = { str: String -> !str.containsNoneIgnoreCase(strs = mutedWords) }
 
             // Comments are first bc they are more based
             for (comment in comments) {
-                if (comment.content.containsNoneIgnoreCase(strs = mutedWords)) continue
+                if (hasMutedWords(comment.content)) continue
                 val parent = result.find { it.reply.id == comment.parentId }
 
                 if (parent?.isCollapsed == true) continue
@@ -167,7 +168,7 @@ class ThreadProvider(
             }
 
             for (reply in replies) {
-                if (reply.content.containsNoneIgnoreCase(strs = mutedWords)) continue
+                if (hasMutedWords(reply.content)) continue
                 val parent = result.find { it.reply.id == reply.parentId }
 
                 if (parent?.isCollapsed == true) continue
@@ -191,7 +192,7 @@ class ThreadProvider(
                 result.add(result.indexOf(parent) + 1, leveledReply)
             }
 
-            result
+            result.sortedByDescending { it.isOp }
         }.onEach {
             nostrSubscriber.subVotesAndReplies(
                 parentIds = it.map { reply -> reply.reply.getRelevantId() }
