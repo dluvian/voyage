@@ -221,9 +221,11 @@ class EventValidator(
 
     private fun createValidatedCrosspost(event: Event, relayUrl: RelayUrl): ValidatedCrossPost? {
         val crossPostedId = event.eventIds().firstOrNull()?.toHex() ?: return null
-        val crossPostedKind = if (event.kind().asU16() == REPOST_U16) {
-            TEXT_NOTE_U16
-        } else event.getKindTag() ?: return null
+        val crossPostedKind = when (event.kind().asU16()) {
+            REPOST_U16 -> TEXT_NOTE_U16
+            GENERIC_REPOST_U16 -> event.getKindTag()
+            else -> null
+        } ?: return null
 
         val parsedEvent = runCatching { Event.fromJson(event.content()) }.getOrNull()
         val parsedEventKind = parsedEvent?.kind()?.asU16()
