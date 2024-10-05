@@ -39,7 +39,6 @@ class NostrSubscriber(
     private val scope = CoroutineScope(Dispatchers.IO)
 
     private val feedSubscriber = FeedSubscriber(
-        scope = scope,
         relayProvider = relayProvider,
         topicProvider = topicProvider,
         myPubkeyProvider = myPubkeyProvider,

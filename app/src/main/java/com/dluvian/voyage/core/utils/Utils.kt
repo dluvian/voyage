@@ -48,6 +48,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
+import rust.nostr.protocol.Alphabet
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
@@ -55,6 +56,7 @@ import rust.nostr.protocol.Kind
 import rust.nostr.protocol.KindEnum
 import rust.nostr.protocol.Metadata
 import rust.nostr.protocol.PublicKey
+import rust.nostr.protocol.SingleLetterTag
 import rust.nostr.protocol.Tag
 import rust.nostr.protocol.Timestamp
 
@@ -206,6 +208,7 @@ fun mergeRelayFilters(vararg maps: Map<RelayUrl, List<Filter>>): Map<RelayUrl, L
     return result
 }
 
+// Generic repost not included because we need to combine the filter with a k tag
 val postAndCrossPostKinds = listOf(
     Kind.fromEnum(KindEnum.TextNote),
     Kind.fromEnum(KindEnum.Repost),
@@ -230,6 +233,15 @@ fun Event.getTrimmedSubject(maxLen: Int = MAX_SUBJECT_LEN): String? {
 
 fun Filter.limitRestricted(limit: ULong, upperLimit: ULong = MAX_EVENTS_TO_SUB): Filter {
     return this.limit(minOf(limit, upperLimit))
+}
+
+fun Filter.genericRepost(): Filter {
+    return this
+        .kind(Kind.fromEnum(KindEnum.GenericRepost))
+        .customTag(
+            tag = SingleLetterTag.lowercase(Alphabet.K),
+            content = threadableKinds.map { it.asU16().toString() }
+        )
 }
 
 fun getTranslators(packageManager: PackageManager): List<ResolveInfo> {

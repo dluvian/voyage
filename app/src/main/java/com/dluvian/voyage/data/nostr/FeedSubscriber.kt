@@ -3,6 +3,7 @@ package com.dluvian.voyage.data.nostr
 import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
 import com.dluvian.voyage.core.MAX_KEYS
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.core.utils.genericRepost
 import com.dluvian.voyage.core.utils.limitRestricted
 import com.dluvian.voyage.core.utils.postAndCrossPostKinds
 import com.dluvian.voyage.core.utils.replyKinds
@@ -24,17 +25,13 @@ import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.room.dao.BookmarkDao
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
-import rust.nostr.protocol.Kind
 import rust.nostr.protocol.Nip19Profile
 import rust.nostr.protocol.PublicKey
 import rust.nostr.protocol.Timestamp
 
 class FeedSubscriber(
-    private val scope: CoroutineScope,
     private val relayProvider: RelayProvider,
     private val topicProvider: TopicProvider,
     private val myPubkeyProvider: IMyPubkeyProvider,
@@ -85,47 +82,45 @@ class FeedSubscriber(
         val sinceTimestamp = Timestamp.fromSecs(since)
         val untilTimestamp = Timestamp.fromSecs(until)
 
-        val peopleJob = if (pubkeySelection !is NoPubkeys) {
-            scope.launch {
+        val createBaseFilter = { pubkeys: List<PublicKey> ->
+            Filter()
+                .let { if (pubkeys.isNotEmpty()) it.authors(authors = pubkeys) else it }
+                .since(timestamp = sinceTimestamp)
+                .until(timestamp = untilTimestamp)
+                .limitRestricted(limit = limit)
+        }
+
+        if (pubkeySelection !is NoPubkeys) {
                 relayProvider
                     .getObserveRelays(selection = pubkeySelection)
                     .filter { (_, pubkeys) -> pubkeys.isNotEmpty() || pubkeySelection is Global }
                     .forEach { (relayUrl, pubkeys) ->
                         val publicKeys = pubkeys.takeRandom(MAX_KEYS).map { PublicKey.fromHex(it) }
-                        val pubkeysNoteFilter = Filter()
+                        val pubkeysNoteFilter = createBaseFilter(publicKeys)
                             .kinds(kinds = postAndCrossPostKinds)
-                            .let {
-                                if (publicKeys.isNotEmpty()) it.authors(authors = publicKeys)
-                                else it
-                            }
-                            .since(timestamp = sinceTimestamp)
-                            .until(timestamp = untilTimestamp)
-                            .limitRestricted(limit = limit)
-                        val pubkeysNoteFilters = mutableListOf(pubkeysNoteFilter)
-                        result.syncedPutOrAdd(relayUrl, pubkeysNoteFilters)
+                        val genericRepostFilter = createBaseFilter(publicKeys).genericRepost()
+                        val filters = mutableListOf(pubkeysNoteFilter, genericRepostFilter)
+                        result.syncedPutOrAdd(relayUrl, filters)
                     }
-            }
-        } else null
+        }
 
         val topics = topicProvider.getTopicSelection(
             topicSelection = topicSelection,
             limit = MAX_KEYS
         )
         if (topics.isNotEmpty()) {
-            val topicedNoteFilter = Filter()
+            val topicedNoteFilter = createBaseFilter(emptyList())
                 .kinds(kinds = postAndCrossPostKinds)
                 .hashtags(hashtags = topics)
-                .since(timestamp = sinceTimestamp)
-                .until(timestamp = untilTimestamp)
-                .limitRestricted(limit = limit)
-            val topicedNoteFilters = mutableListOf(topicedNoteFilter)
+            val genericRepostFilter = createBaseFilter(emptyList())
+                .genericRepost()
+                .hashtags(hashtags = topics)
+            val filters = mutableListOf(topicedNoteFilter, genericRepostFilter)
 
             relayProvider.getReadRelays().forEach { relay ->
-                result.syncedPutOrAdd(relay, topicedNoteFilters)
+                result.syncedPutOrAdd(relay, filters)
             }
         }
-
-        peopleJob?.join()
 
         return result
     }
@@ -146,7 +141,13 @@ class FeedSubscriber(
             .since(timestamp = Timestamp.fromSecs(since))
             .until(timestamp = Timestamp.fromSecs(until))
             .limitRestricted(limit = limit)
-        val topicedNoteFilters = mutableListOf(topicedNoteFilter)
+        val genericRepostFilter = Filter()
+            .genericRepost()
+            .hashtag(hashtag = topic)
+            .since(timestamp = Timestamp.fromSecs(since))
+            .until(timestamp = Timestamp.fromSecs(until))
+            .limitRestricted(limit = limit)
+        val topicedNoteFilters = mutableListOf(topicedNoteFilter, genericRepostFilter)
 
         relayProvider.getReadRelays().forEach { relay ->
             result.syncedPutOrAdd(relay, topicedNoteFilters)
@@ -163,7 +164,7 @@ class FeedSubscriber(
     ): Map<RelayUrl, List<Filter>> {
         return getPubkeyFeedSubscription(
             nprofile = nprofile,
-            kinds = postAndCrossPostKinds,
+            feedKind = MainFeed,
             until = until,
             since = since,
             limit = limit
@@ -178,16 +179,20 @@ class FeedSubscriber(
     ): Map<RelayUrl, List<Filter>> {
         return getPubkeyFeedSubscription(
             nprofile = nprofile,
-            kinds = replyKinds,
+            feedKind = ReplyFeed,
             until = until,
             since = since,
             limit = limit
         )
     }
 
+    private sealed class FeedKind
+    private data object MainFeed : FeedKind()
+    private data object ReplyFeed : FeedKind()
+
     private suspend fun getPubkeyFeedSubscription(
         nprofile: Nip19Profile,
-        kinds: List<Kind>,
+        feedKind: FeedKind,
         until: ULong,
         since: ULong,
         limit: ULong
@@ -196,17 +201,32 @@ class FeedSubscriber(
 
         val result = mutableMapOf<RelayUrl, MutableList<Filter>>()
 
-        val pubkeyNoteFilter = Filter()
-            .kinds(kinds = kinds)
-            .author(author = nprofile.publicKey())
-            .since(timestamp = Timestamp.fromSecs(since))
-            .until(timestamp = Timestamp.fromSecs(until))
-            .limitRestricted(limit = limit)
-        val pubkeyNoteFilters = mutableListOf(pubkeyNoteFilter)
+        val createBaseFilter = {
+            Filter()
+                .author(author = nprofile.publicKey())
+                .since(timestamp = Timestamp.fromSecs(since))
+                .until(timestamp = Timestamp.fromSecs(until))
+                .limitRestricted(limit = limit)
+        }
+
+        val pubkeyNoteFilter = createBaseFilter()
+            .let {
+                when (feedKind) {
+                    MainFeed -> it.kinds(kinds = postAndCrossPostKinds)
+                    ReplyFeed -> it.kinds(kinds = replyKinds)
+                }
+            }
+
+        val filters = mutableListOf(pubkeyNoteFilter)
+
+        when (feedKind) {
+            MainFeed -> filters.add(createBaseFilter().genericRepost())
+            ReplyFeed -> {}
+        }
 
         relayProvider.getObserveRelays(nprofile = nprofile).forEach { relay ->
-            val present = result.putIfAbsent(relay, pubkeyNoteFilters)
-            present?.addAll(pubkeyNoteFilters)
+            val present = result.putIfAbsent(relay, filters)
+            present?.addAll(filters)
         }
 
         return result
