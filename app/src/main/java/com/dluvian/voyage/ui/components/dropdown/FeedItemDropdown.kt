@@ -79,10 +79,10 @@ fun FeedItemDropdown(
             onClick = {
                 copyAndToast(
                     text = createNeventUri(
-                        hex = mainEvent.id,
-                        author = mainEvent.pubkey,
+                        hex = mainEvent.getRelevantId(),
+                        author = mainEvent.getRelevantPubkey(),
                         relays = listOf(mainEvent.relayUrl).filter { it.isNotEmpty() },
-                        kind = mainEvent.getKind()
+                        kind = mainEvent.getRelevantKind()
                     ),
                     toast = idCopiedToast,
                     context = context,

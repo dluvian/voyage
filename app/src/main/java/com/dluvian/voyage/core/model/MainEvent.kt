@@ -27,10 +27,10 @@ sealed class MainEvent(
     open val isUpvoted: Boolean,
     open val isBookmarked: Boolean,
 ) {
-    fun getKind(): Kind {
+    fun getRelevantKind(): Kind? {
         return when (this) {
             is RootPost, is LegacyReply -> Kind.fromEnum(KindEnum.TextNote)
-            is CrossPost -> Kind.fromEnum(KindEnum.Repost)
+            is CrossPost -> null
             is Comment -> Kind(COMMENT_U16)
         }
     }
