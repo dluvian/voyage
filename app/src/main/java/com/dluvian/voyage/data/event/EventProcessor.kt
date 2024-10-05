@@ -33,7 +33,7 @@ class EventProcessor(
         if (events.isEmpty()) return
 
         val crossPosted = events.mapNotNull {
-            if (it is ValidatedCrossPost) it.crossPostedTextNote else null
+            if (it is ValidatedCrossPost) it.crossPostedThreadableEvent else null
         }
         val allEvents = (events + crossPosted).distinct()
 

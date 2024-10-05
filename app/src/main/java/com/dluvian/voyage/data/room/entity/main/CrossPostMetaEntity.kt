@@ -28,7 +28,7 @@ data class CrossPostMetaEntity(
         fun from(crossPost: ValidatedCrossPost): CrossPostMetaEntity {
             return CrossPostMetaEntity(
                 eventId = crossPost.id,
-                crossPostedId = crossPost.crossPostedId
+                crossPostedId = crossPost.crossPostedId,
             )
         }
     }

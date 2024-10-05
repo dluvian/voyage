@@ -11,7 +11,9 @@ import com.dluvian.voyage.core.model.LabledGitIssue
 import com.dluvian.voyage.core.utils.extractCleanHashtags
 import com.dluvian.voyage.core.utils.getNormalizedTopics
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
+import com.dluvian.voyage.data.event.COMMENT_U16
 import com.dluvian.voyage.data.event.EventValidator
+import com.dluvian.voyage.data.event.TEXT_NOTE_U16
 import com.dluvian.voyage.data.event.ValidatedCrossPost
 import com.dluvian.voyage.data.event.ValidatedLegacyReply
 import com.dluvian.voyage.data.event.ValidatedRootPost
@@ -137,12 +139,25 @@ class PostSender(
         val crossPostedEvent = kotlin.runCatching { Event.fromJson(json) }.getOrNull()
             ?: return Result.failure(IllegalStateException("Json is not deserializable"))
 
-        val validatedTextNote = EventValidator.createValidatedTextNote(
-            event = crossPostedEvent,
-            relayUrl = post.relayUrl,
-            myPubkey = myPubkeyProvider.getPublicKey()
-        )
-            ?: return Result.failure(IllegalStateException("Cross-posted event is invalid"))
+        val validatedEvent = when (crossPostedEvent.kind().asU16()) {
+            TEXT_NOTE_U16 -> EventValidator.createValidatedTextNote(
+                event = crossPostedEvent,
+                relayUrl = post.relayUrl,
+                myPubkey = myPubkeyProvider.getPublicKey()
+            )
+
+            COMMENT_U16 -> EventValidator.createValidatedComment(
+                event = crossPostedEvent,
+                relayUrl = post.relayUrl,
+                myPubkey = myPubkeyProvider.getPublicKey()
+            )
+
+            else -> {
+                val kind = crossPostedEvent.kind().asU16()
+                Log.w(TAG, "Cross-posting kind $kind is not supported yet")
+                null
+            }
+        } ?: return Result.failure(IllegalStateException("Cross-posted event is invalid"))
 
         return nostrService.publishCrossPost(
             crossPostedEvent = crossPostedEvent,
@@ -157,8 +172,8 @@ class PostSender(
                 topics = event.getNormalizedTopics(),
                 createdAt = event.createdAt().secs(),
                 relayUrl = "", // We don't know which relay accepted this note
-                crossPostedId = validatedTextNote.id,
-                crossPostedTextNote = validatedTextNote,
+                crossPostedId = validatedEvent.id,
+                crossPostedThreadableEvent = validatedEvent,
             )
             postInsertDao.insertCrossPosts(crossPosts = listOf(validatedCrossPost))
         }.onFailure {

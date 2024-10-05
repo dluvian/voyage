@@ -16,7 +16,7 @@ sealed class ValidatedMainEvent(
     open val relayUrl: RelayUrl,
 ) : ValidatedEvent()
 
-sealed class ValidatedTextNote(
+sealed class ValidatedThreadableEvent(
     override val id: EventIdHex,
     override val pubkey: PubkeyHex,
     override val createdAt: Long,
@@ -29,6 +29,24 @@ sealed class ValidatedTextNote(
     pubkey = pubkey,
     createdAt = createdAt,
     relayUrl = relayUrl,
+)
+
+sealed class ValidatedTextNote(
+    override val id: EventIdHex,
+    override val pubkey: PubkeyHex,
+    override val createdAt: Long,
+    override val relayUrl: RelayUrl,
+    override val content: String,
+    override val json: String,
+    override val isMentioningMe: Boolean,
+) : ValidatedThreadableEvent(
+    id = id,
+    pubkey = pubkey,
+    createdAt = createdAt,
+    relayUrl = relayUrl,
+    content = content,
+    json = json,
+    isMentioningMe = isMentioningMe
 )
 
 data class ValidatedRootPost(
@@ -75,16 +93,19 @@ data class ValidatedComment(
     override val pubkey: PubkeyHex,
     override val createdAt: Long,
     override val relayUrl: RelayUrl,
-    val content: String,
-    val json: String,
-    val isMentioningMe: Boolean,
+    override val content: String,
+    override val json: String,
+    override val isMentioningMe: Boolean,
     val parentId: EventIdHex?,
-    val parentKind: Int,
-) : ValidatedMainEvent(
+    val parentKind: UShort,
+) : ValidatedThreadableEvent(
     id = id,
     pubkey = pubkey,
     createdAt = createdAt,
     relayUrl = relayUrl,
+    content = content,
+    json = json,
+    isMentioningMe = isMentioningMe
 )
 
 data class ValidatedCrossPost(
@@ -94,7 +115,7 @@ data class ValidatedCrossPost(
     override val relayUrl: RelayUrl,
     val topics: List<String>,
     val crossPostedId: EventIdHex,
-    val crossPostedTextNote: ValidatedTextNote?
+    val crossPostedThreadableEvent: ValidatedThreadableEvent?
 ) : ValidatedMainEvent(
     id = id,
     pubkey = pubkey,

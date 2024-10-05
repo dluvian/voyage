@@ -91,12 +91,12 @@ fun Event.getClientTag(): String? {
         ?.getOrNull(1)
 }
 
-fun Event.getKindTag(): Int? {
+fun Event.getKindTag(): UShort? {
     return this.tags()
         .map { it.asVec() }
         .find { it.size >= 2 && it.first() == "k" }
         ?.getOrNull(1)
-        ?.toIntOrNull()
+        ?.toUShortOrNull()
 }
 
 fun Event.getParentId(): String? {

@@ -32,6 +32,7 @@ private const val TAG = "EventValidator"
 
 val TEXT_NOTE_U16 = Kind.fromEnum(KindEnum.TextNote).asU16()
 val REPOST_U16 = Kind.fromEnum(KindEnum.Repost).asU16()
+val GENERIC_REPOST_U16 = Kind.fromEnum(KindEnum.GenericRepost).asU16()
 private val REACTION_U16 = Kind.fromEnum(KindEnum.Reaction).asU16()
 private val CONTACT_U16 = Kind.fromEnum(KindEnum.ContactList).asU16()
 private val RELAYS_U16 = Kind.fromEnum(KindEnum.RelayList).asU16()
@@ -93,7 +94,10 @@ class EventValidator(
                 myPubkey = myPubkeyProvider.getPublicKey()
             )
 
-            REPOST_U16 -> createValidatedCrosspost(event = event, relayUrl = relayUrl)
+            REPOST_U16, GENERIC_REPOST_U16 -> createValidatedCrosspost(
+                event = event,
+                relayUrl = relayUrl
+            )
 
             REACTION_U16 -> {
                 if (event.content() == "-") return null
@@ -105,21 +109,11 @@ class EventValidator(
                 )
             }
 
-            COMMENT_U16 -> {
-                ValidatedComment(
-                    id = event.id().toHex(),
-                    pubkey = event.author().toHex(),
-                    content = event.content(),
-                    createdAt = event.createdAt().secs(),
-                    relayUrl = relayUrl,
-                    json = event.asJson(),
-                    isMentioningMe = event.publicKeys().contains(myPubkeyProvider.getPublicKey()),
-                    // Null means we don't support the parent (i and a tags)
-                    parentId = event.getParentId(),
-                    // Don't discard invalid comment. Just assume parent is comment
-                    parentKind = event.getKindTag() ?: COMMENT_U16.toInt()
-                )
-            }
+            COMMENT_U16 -> createValidatedComment(
+                event = event,
+                relayUrl = relayUrl,
+                myPubkey = myPubkeyProvider.getPublicKey()
+            )
 
             CONTACT_U16 -> {
                 val author = event.author()
@@ -227,14 +221,31 @@ class EventValidator(
 
     private fun createValidatedCrosspost(event: Event, relayUrl: RelayUrl): ValidatedCrossPost? {
         val crossPostedId = event.eventIds().firstOrNull()?.toHex() ?: return null
+        val crossPostedKind = if (event.kind().asU16() == REPOST_U16) {
+            TEXT_NOTE_U16
+        } else event.getKindTag() ?: return null
 
         val parsedEvent = runCatching { Event.fromJson(event.content()) }.getOrNull()
+        val parsedEventKind = parsedEvent?.kind()?.asU16()
+        if (parsedEventKind != null && parsedEventKind != crossPostedKind) return null
+
         val validatedCrossPostedEvent = parsedEvent?.let {
-            createValidatedTextNote(
-                event = it,
-                relayUrl = relayUrl,
-                myPubkey = myPubkeyProvider.getPublicKey()
-            )
+            when (parsedEventKind) {
+                TEXT_NOTE_U16 -> createValidatedTextNote(
+                    event = it,
+                    relayUrl = relayUrl,
+                    myPubkey = myPubkeyProvider.getPublicKey()
+                )
+
+                COMMENT_U16 -> createValidatedComment(
+                    event = it,
+                    relayUrl = relayUrl,
+                    myPubkey = myPubkeyProvider.getPublicKey()
+                )
+
+                else -> null
+            }
+
         }
 
         if (validatedCrossPostedEvent != null && validatedCrossPostedEvent.id != crossPostedId) {
@@ -250,7 +261,7 @@ class EventValidator(
             relayUrl = relayUrl,
             topics = event.getNormalizedTopics(limit = MAX_TOPICS),
             crossPostedId = crossPostedId,
-            crossPostedTextNote = validatedCrossPostedEvent,
+            crossPostedThreadableEvent = validatedCrossPostedEvent,
         )
     }
 
@@ -290,6 +301,28 @@ class EventValidator(
                     parentId = replyToId,
                 )
             }
+        }
+
+        fun createValidatedComment(
+            event: Event,
+            relayUrl: RelayUrl,
+            myPubkey: PublicKey,
+        ): ValidatedComment? {
+            if (event.kind().asU16() != COMMENT_U16) return null
+
+            return ValidatedComment(
+                id = event.id().toHex(),
+                pubkey = event.author().toHex(),
+                content = event.content(),
+                createdAt = event.createdAt().secs(),
+                relayUrl = relayUrl,
+                json = event.asJson(),
+                isMentioningMe = event.publicKeys().contains(myPubkey),
+                // Null means we don't support the parent (i and a tags)
+                parentId = event.getParentId(),
+                // Don't discard invalid comment. Just assume parent is comment
+                parentKind = event.getKindTag() ?: COMMENT_U16
+            )
         }
 
         fun createValidatedProfileSet(event: Event): ValidatedProfileSet? {
