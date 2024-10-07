@@ -267,4 +267,5 @@
     <string name="show_the_authors_username_in_feeds">Yazarın kullanıcı adını beslemelerde göster</string>
     <string name="time">Zaman</string>
     <string name="client">Müşteri</string>
+    <string name="parent_event_is_not_supported">Üst etkinlik desteklenmiyor.</string>
 </resources>

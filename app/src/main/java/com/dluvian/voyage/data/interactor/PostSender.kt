@@ -40,7 +40,7 @@ private const val TAG = "PostSender"
 class PostSender(
     private val nostrService: NostrService,
     private val relayProvider: RelayProvider,
-    private val postInsertDao: MainEventInsertDao,
+    private val mainEventInsertDao: MainEventInsertDao,
     private val mainEventDao: MainEventDao,
     private val myPubkeyProvider: IMyPubkeyProvider,
 ) {
@@ -78,7 +78,7 @@ class PostSender(
                 json = event.asJson(),
                 isMentioningMe = mentions.contains(myPubkeyProvider.getPubkeyHex())
             )
-            postInsertDao.insertRootPosts(rootPosts = listOf(validatedPost))
+            mainEventInsertDao.insertRootPosts(rootPosts = listOf(validatedPost))
         }.onFailure {
             Log.w(TAG, "Failed to create post event", it)
         }
@@ -120,7 +120,8 @@ class PostSender(
                 json = event.asJson(),
                 isMentioningMe = mentions.contains(myPubkeyProvider.getPubkeyHex())
             )
-            postInsertDao.insertLegacyReplies(replies = listOf(validatedReply))
+            mainEventInsertDao.insertLegacyReplies(replies = listOf(validatedReply))
+
         }.onFailure {
             Log.w(TAG, "Failed to create reply event", it)
         }
@@ -175,7 +176,7 @@ class PostSender(
                 crossPostedId = validatedEvent.id,
                 crossPostedThreadableEvent = validatedEvent,
             )
-            postInsertDao.insertCrossPosts(crossPosts = listOf(validatedCrossPost))
+            mainEventInsertDao.insertCrossPosts(crossPosts = listOf(validatedCrossPost))
         }.onFailure {
             Log.w(TAG, "Failed to create cross-post event", it)
         }

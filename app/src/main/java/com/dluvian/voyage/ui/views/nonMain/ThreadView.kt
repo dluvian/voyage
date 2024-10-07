@@ -33,6 +33,7 @@ import com.dluvian.voyage.core.ThreadViewRefresh
 import com.dluvian.voyage.core.model.Comment
 import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.core.model.RootPost
+import com.dluvian.voyage.core.model.SomeReply
 import com.dluvian.voyage.core.viewModel.ThreadViewModel
 import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.ui.components.FullHorizontalDivider
@@ -98,12 +99,24 @@ private fun ThreadViewContent(
             contentPadding = PaddingValues(bottom = spacing.xxl),
             state = state
         ) {
-            if (parentIsAvailable && localRoot.threadableMainEvent is LegacyReply) item {
-                OpenParentButton(
-                    modifier = Modifier.padding(start = spacing.medium),
-                    parentId = localRoot.threadableMainEvent.parentId,
-                    onUpdate = onUpdate
-                )
+            if (parentIsAvailable && localRoot.threadableMainEvent is SomeReply) {
+                val parentId = when (localRoot.threadableMainEvent) {
+                    is LegacyReply -> localRoot.threadableMainEvent.parentId
+                    is Comment -> localRoot.threadableMainEvent.parentId
+                }
+                if (parentId != null) item {
+                    OpenParentButton(
+                        modifier = Modifier.padding(start = spacing.medium),
+                        parentId = parentId,
+                        onUpdate = onUpdate
+                    )
+                }
+            } else if (
+                !parentIsAvailable &&
+                localRoot.threadableMainEvent is Comment &&
+                !localRoot.threadableMainEvent.parentIsSupported()
+            ) item {
+                ParentIsNotSupportedHint()
             }
             item {
                 MainEventRow(
@@ -167,5 +180,16 @@ private fun OpenParentButton(
         onClick = { onUpdate(OpenThreadRaw(nevent = createNevent(hex = parentId))) }
     ) {
         Text(text = stringResource(id = R.string.open_parent))
+    }
+}
+
+@Composable
+private fun ParentIsNotSupportedHint(modifier: Modifier = Modifier) {
+    TextButton(
+        modifier = modifier,
+        enabled = false,
+        onClick = { }
+    ) {
+        Text(text = stringResource(id = R.string.parent_event_is_not_supported))
     }
 }

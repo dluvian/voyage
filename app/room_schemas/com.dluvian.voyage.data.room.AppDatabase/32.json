@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 32,
-    "identityHash": "de5ad8a4c71d446708a37295cefc54e5",
+    "identityHash": "0a2de1311e427bbd04d4f0e5c80f98dd",
     "entities": [
       {
         "tableName": "mainEvent",
@@ -176,7 +176,7 @@
       },
       {
         "tableName": "comment",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`eventId` TEXT NOT NULL, `parentId` TEXT, `parentKind` INTEGER NOT NULL, PRIMARY KEY(`eventId`), FOREIGN KEY(`eventId`) REFERENCES `mainEvent`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`eventId` TEXT NOT NULL, `parentId` TEXT, `parentKind` INTEGER, PRIMARY KEY(`eventId`), FOREIGN KEY(`eventId`) REFERENCES `mainEvent`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "eventId",
@@ -194,7 +194,7 @@
             "fieldPath": "parentKind",
             "columnName": "parentKind",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -1133,7 +1133,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'de5ad8a4c71d446708a37295cefc54e5')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0a2de1311e427bbd04d4f0e5c80f98dd')"
     ]
   }
 }

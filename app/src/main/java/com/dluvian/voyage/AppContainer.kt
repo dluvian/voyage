@@ -402,7 +402,7 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
     val postSender = PostSender(
         nostrService = nostrService,
         relayProvider = relayProvider,
-        postInsertDao = roomDb.mainEventInsertDao(),
+        mainEventInsertDao = roomDb.mainEventInsertDao(),
         mainEventDao = roomDb.mainEventDao(),
         myPubkeyProvider = accountManager
     )

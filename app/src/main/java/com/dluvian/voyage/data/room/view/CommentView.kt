@@ -35,7 +35,7 @@ import com.dluvian.voyage.ui.components.row.mainEvent.ThreadReplyCtx
 data class CommentView(
     val id: EventIdHex,
     val parentId: EventIdHex?,
-    val parentKind: Int,
+    val parentKind: Int?,
     val pubkey: PubkeyHex,
     val authorName: String?,
     val content: String,

@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.text.AnnotatedString
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.core.utils.threadableKinds
 import com.dluvian.voyage.data.event.COMMENT_U16
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
@@ -224,7 +225,7 @@ data class Comment(
     override val isUpvoted: Boolean,
     override val isBookmarked: Boolean,
     val parentId: EventIdHex?,
-    val parentKind: Int
+    val parentKind: Int?
 ) : SomeReply(
     id = id,
     pubkey = pubkey,
@@ -238,6 +239,10 @@ data class Comment(
     isUpvoted = isUpvoted,
     isBookmarked = isBookmarked,
 ) {
+    fun parentIsSupported(): Boolean {
+        return parentId != null && threadableKinds.any { it.asU16().toInt() == parentKind }
+    }
+
     companion object {
         fun from(
             commentView: CommentView,
