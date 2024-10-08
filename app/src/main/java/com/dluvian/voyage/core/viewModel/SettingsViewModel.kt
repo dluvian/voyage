@@ -192,11 +192,12 @@ class SettingsViewModel(
     }
 
     private fun processExternalAccountData(result: ActivityResult, context: Context) {
-        val npub = result.data?.getStringExtra("signature")
+        val npubOrPubkey = result.data?.getStringExtra("signature")
         val packageName = result.data?.getStringExtra("package")
-        val publicKey = runCatching { PublicKey.fromBech32(npub.orEmpty()) }.getOrNull()
+        val publicKey = runCatching { PublicKey.fromHex(npubOrPubkey.orEmpty()) }.getOrNull()
+            ?: runCatching { PublicKey.fromBech32(npubOrPubkey.orEmpty()) }.getOrNull()
 
-        if (npub == null || publicKey == null || packageName == null) {
+        if (npubOrPubkey == null || publicKey == null || packageName == null) {
             snackbar.showToast(
                 scope = viewModelScope,
                 msg = context.getString(R.string.received_invalid_data),

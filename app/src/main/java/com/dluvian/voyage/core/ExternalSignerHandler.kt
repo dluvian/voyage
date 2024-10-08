@@ -18,6 +18,8 @@ private const val PERMISSIONS = """
         {"type":"sign_event","kind":6},
         {"type":"sign_event","kind":7},
         {"type":"sign_event","kind":16},
+        {"type":"sign_event","kind":1111},
+        {"type":"sign_event","kind":1621},
         {"type":"sign_event","kind":10000},
         {"type":"sign_event","kind":10002},
         {"type":"sign_event","kind":10003},
@@ -68,9 +70,10 @@ class ExternalSignerHandler {
         }.exceptionOrNull()
         if (err != null) return Result.failure(err)
 
-        val signature = signatureChannel.receive()
-        return if (signature == null) Result.failure(IllegalStateException("Failed to retrieve signature"))
-        else Result.success(unsignedEvent.addSignature(sig = signature))
+        return when (val signature = signatureChannel.receive()) {
+            null -> Result.failure(IllegalStateException("Failed to retrieve signature"))
+            else -> Result.success(unsignedEvent.addSignature(sig = signature))
+        }
     }
 
     suspend fun processExternalSignature(result: ActivityResult) {
