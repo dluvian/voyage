@@ -1,6 +1,5 @@
 package com.dluvian.voyage.core.viewModel
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.MutableState
@@ -49,7 +48,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 
-class ProfileViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
+class ProfileViewModel(
     feedProvider: FeedProvider,
     muteProvider: MuteProvider,
     val postDetails: State<PostDetails?>,
@@ -91,7 +90,6 @@ class ProfileViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
         subCreator = nostrSubscriber.subCreator
     )
 
-    @OptIn(ExperimentalFoundationApi::class)
     fun openProfile(profileNavView: ProfileNavView) {
         val pubkeyHex = profileNavView.nprofile.publicKey().toHex()
         if (profile.value.value.inner.pubkey == pubkeyHex) return

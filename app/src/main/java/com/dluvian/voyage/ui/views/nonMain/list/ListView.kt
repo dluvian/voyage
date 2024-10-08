@@ -1,6 +1,5 @@
 package com.dluvian.voyage.ui.views.nonMain.list
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -52,7 +51,6 @@ fun ListView(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ScreenContent(vm: ListViewModel, onUpdate: OnUpdate) {
     val scope = rememberCoroutineScope()

@@ -1,6 +1,5 @@
 package com.dluvian.voyage.core.viewModel
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.MutableState
@@ -24,7 +23,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class FollowListsViewModel @OptIn(ExperimentalFoundationApi::class) constructor(
+class FollowListsViewModel(
     val contactListState: LazyListState,
     val topicListState: LazyListState,
     val pagerState: PagerState,

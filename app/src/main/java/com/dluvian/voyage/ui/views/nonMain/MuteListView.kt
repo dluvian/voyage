@@ -1,6 +1,5 @@
 package com.dluvian.voyage.ui.views.nonMain
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -18,7 +17,6 @@ import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.ui.model.MutableProfileItem
 import com.dluvian.voyage.ui.model.MutableTopicItem
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MuteListView(vm: MuteListViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
     val isRefreshing by vm.isRefreshing

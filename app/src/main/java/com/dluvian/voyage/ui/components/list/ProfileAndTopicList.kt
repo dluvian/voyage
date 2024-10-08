@@ -1,6 +1,5 @@
 package com.dluvian.voyage.ui.components.list
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,7 +28,6 @@ import com.dluvian.voyage.ui.theme.WordIcon
 import com.dluvian.voyage.ui.theme.getTrustColor
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ProfileAndTopicList(
     isRefreshing: Boolean,

@@ -1,6 +1,5 @@
 package com.dluvian.voyage.ui.components.bar
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -10,7 +9,6 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.ui.components.button.SendIconButton
 import com.dluvian.voyage.ui.components.indicator.SmallCircleProgressIndicator
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ContentCreationTopAppBar(
     showSendButton: Boolean,

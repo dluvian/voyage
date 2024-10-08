@@ -1,6 +1,5 @@
 package com.dluvian.voyage.ui.views.nonMain.editList
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -57,7 +56,6 @@ fun EditListView(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ScreenContent(
     profileSuggestions: List<AdvancedProfileView>,

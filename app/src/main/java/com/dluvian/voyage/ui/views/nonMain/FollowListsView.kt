@@ -1,6 +1,5 @@
 package com.dluvian.voyage.ui.views.nonMain
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -18,7 +17,6 @@ import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.ui.model.FollowableProfileItem
 import com.dluvian.voyage.ui.model.FollowableTopicItem
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FollowListsView(vm: FollowListsViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
     val isRefreshing by vm.isRefreshing

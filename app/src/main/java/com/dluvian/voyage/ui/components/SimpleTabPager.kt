@@ -1,6 +1,5 @@
 package com.dluvian.voyage.ui.components
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.pager.HorizontalPager
@@ -23,7 +22,6 @@ import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SimpleTabPager(
     headers: List<String>,
