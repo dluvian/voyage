@@ -70,13 +70,23 @@ class CreateReplyViewModel(
 
         isSendingReply.value = true
         viewModelScope.launchIO {
-            val result = postSender.sendReply(
-                parentId = action.parent.getRelevantId(),
-                recipient = action.parent.getRelevantPubkey(),
-                body = action.body,
-                relayHint = eventRelayDao.getEventRelay(id = action.parent.id).orEmpty(),
-                isAnon = action.isAnon
-            )
+            val parentKind = action.parent.getRelevantKind()
+                ?: mainEventDao.getKind(id = action.parent.getRelevantId())
+
+            val result = if (parentKind != null) {
+                postSender.sendReply(
+                    parentId = action.parent.getRelevantId(),
+                    parentKind = parentKind,
+                    parentPubkey = action.parent.getRelevantPubkey(),
+                    body = action.body,
+                    relayHint = eventRelayDao.getEventRelay(id = action.parent.id).orEmpty(),
+                    isAnon = action.isAnon
+                )
+            } else {
+                val err = "Can't determine event kind of ${action.parent.getRelevantId()}"
+                Result.failure(IllegalStateException(err))
+            }
+
             delay(DELAY_1SEC)
             action.onGoBack()
             result.onSuccess {

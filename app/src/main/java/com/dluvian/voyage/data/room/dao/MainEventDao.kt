@@ -5,11 +5,14 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.data.event.COMMENT_U16
+import com.dluvian.voyage.data.event.TEXT_NOTE_U16
 import com.dluvian.voyage.data.model.PostDetailsBase
 import com.dluvian.voyage.data.room.entity.main.MainEventEntity
 import com.dluvian.voyage.data.room.view.SimplePostView
 import kotlinx.coroutines.flow.Flow
 import rust.nostr.protocol.Event
+import rust.nostr.protocol.Kind
 import rust.nostr.protocol.PublicKey
 
 @Dao
@@ -23,7 +26,24 @@ interface MainEventDao {
     @Query("SELECT pubkey FROM mainEvent WHERE id = :id")
     fun getAuthorFlow(id: EventIdHex): Flow<PubkeyHex?>
 
-    @Query("SELECT pubkey FROM mainEvent WHERE id = (SELECT parentId FROM legacyReply WHERE id = :id)")
+    suspend fun getKind(id: EventIdHex): Kind? {
+        val u16 = if (internalRootExists(id = id) || internalLegacyReplyExists(id = id)) {
+            TEXT_NOTE_U16
+        } else if (internalCommentExists(id = id)) {
+            COMMENT_U16
+        } else {
+            null
+        } ?: return null
+
+        return Kind(kind = u16)
+    }
+
+    @Query(
+        "SELECT pubkey " +
+                "FROM mainEvent " +
+                "WHERE id = (SELECT parentId FROM legacyReply WHERE id = :id) " +
+                "OR id = (SELECT parentId FROM comment WHERE id = :id)"
+    )
     suspend fun getParentAuthor(id: EventIdHex): PubkeyHex?
 
     @Query("SELECT json FROM mainEvent WHERE id = :id")
@@ -62,6 +82,15 @@ interface MainEventDao {
         }
 
     }
+
+    @Query("SELECT EXISTS (SELECT * FROM RootPostView WHERE id = :id)")
+    suspend fun internalRootExists(id: EventIdHex): Boolean
+
+    @Query("SELECT EXISTS (SELECT * FROM LegacyReplyView WHERE id = :id)")
+    suspend fun internalLegacyReplyExists(id: EventIdHex): Boolean
+
+    @Query("SELECT EXISTS (SELECT * FROM CommentView WHERE id = :id)")
+    suspend fun internalCommentExists(id: EventIdHex): Boolean
 
     @Query("UPDATE mainEvent SET isMentioningMe = 0")
     suspend fun internalResetAllMentions()

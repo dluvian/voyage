@@ -24,6 +24,7 @@ import rust.nostr.protocol.Coordinate
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
+import rust.nostr.protocol.Kind
 import rust.nostr.protocol.Metadata
 import rust.nostr.protocol.PublicKey
 
@@ -144,7 +145,7 @@ class NostrService(
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
-    suspend fun publishReply(
+    suspend fun publishLegacyReply(
         content: String,
         parentId: EventIdHex,
         mentions: List<PubkeyHex>,
@@ -156,6 +157,30 @@ class NostrService(
     ): Result<Event> {
         return eventMaker.buildReply(
             parentId = EventId.fromHex(parentId),
+            mentions = mentions,
+            quotes = quotes,
+            relayHint = relayHint,
+            pubkeyHint = pubkeyHint,
+            content = content,
+            isAnon = isAnon,
+        )
+            .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
+    }
+
+    suspend fun publishComment(
+        content: String,
+        parentId: EventIdHex,
+        parentKind: Kind,
+        mentions: List<PubkeyHex>,
+        quotes: List<String>,
+        relayHint: RelayUrl,
+        pubkeyHint: PubkeyHex,
+        relayUrls: Collection<RelayUrl>,
+        isAnon: Boolean,
+    ): Result<Event> {
+        return eventMaker.buildComment(
+            parentId = EventId.fromHex(parentId),
+            parentKind = parentKind,
             mentions = mentions,
             quotes = quotes,
             relayHint = relayHint,

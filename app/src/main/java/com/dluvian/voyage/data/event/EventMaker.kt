@@ -8,10 +8,12 @@ import com.dluvian.voyage.core.utils.createVoyageClientTag
 import com.dluvian.voyage.data.account.AccountManager
 import com.dluvian.voyage.data.nostr.Nip65Relay
 import com.dluvian.voyage.data.nostr.RelayUrl
+import com.dluvian.voyage.data.nostr.createCommentETag
 import com.dluvian.voyage.data.nostr.createDescriptionTag
+import com.dluvian.voyage.data.nostr.createKindTag
+import com.dluvian.voyage.data.nostr.createLegacyReplyTag
 import com.dluvian.voyage.data.nostr.createMentionTags
 import com.dluvian.voyage.data.nostr.createQuoteTags
-import com.dluvian.voyage.data.nostr.createReplyTag
 import com.dluvian.voyage.data.nostr.createSubjectTag
 import com.dluvian.voyage.data.nostr.createTitleTag
 import com.dluvian.voyage.data.preferences.EventPreferences
@@ -68,7 +70,7 @@ class EventMaker(
         isAnon: Boolean,
     ): Result<Event> {
         val tags = mutableListOf(
-            createReplyTag(
+            createLegacyReplyTag(
                 parentEventId = parentId,
                 relayHint = relayHint,
                 pubkeyHint = pubkeyHint
@@ -80,6 +82,38 @@ class EventMaker(
 
         return signEvent(
             eventBuilder = EventBuilder.textNote(content = content, tags = tags),
+            isAnon = isAnon
+        )
+    }
+
+    suspend fun buildComment(
+        parentId: EventId,
+        parentKind: Kind,
+        mentions: List<PubkeyHex>,
+        quotes: List<String>,
+        relayHint: RelayUrl,
+        pubkeyHint: PubkeyHex,
+        content: String,
+        isAnon: Boolean,
+    ): Result<Event> {
+        val tags = mutableListOf(
+            createCommentETag(
+                parentEventId = parentId,
+                relayHint = relayHint,
+                pubkeyHint = pubkeyHint
+            ),
+            createKindTag(kind = parentKind)
+        )
+        if (mentions.isNotEmpty()) tags.addAll(createMentionTags(pubkeys = mentions))
+        if (quotes.isNotEmpty()) tags.addAll(createQuoteTags(eventIdHexOrCoordinates = quotes))
+        addClientTag(tags = tags, isAnon = isAnon)
+
+        return signEvent(
+            eventBuilder = EventBuilder(
+                kind = Kind(kind = COMMENT_U16),
+                content = content,
+                tags = tags
+            ),
             isAnon = isAnon
         )
     }

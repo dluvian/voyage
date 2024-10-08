@@ -16,13 +16,16 @@ import rust.nostr.protocol.TagStandard
 import rust.nostr.protocol.Timestamp
 import java.security.SecureRandom
 
-
 fun createSubjectTag(subject: String): Tag {
     return Tag.fromStandardized(TagStandard.Subject(subject = subject))
 }
 
 fun createTitleTag(title: String): Tag {
     return Tag.fromStandardized(TagStandard.Title(title = title))
+}
+
+fun createKindTag(kind: Kind): Tag {
+    return Tag.parse(listOf("k", kind.asU16().toString()))
 }
 
 fun createDescriptionTag(description: String): Tag {
@@ -58,12 +61,20 @@ fun extractQuotes(content: String) = nostrQuotePattern.findAll(content)
     }
     .toList()
 
-fun createReplyTag(
+fun createLegacyReplyTag(
     parentEventId: EventId,
     relayHint: RelayUrl,
     pubkeyHint: String,
 ): Tag {
     return Tag.parse(listOf("e", parentEventId.toHex(), relayHint, "reply", pubkeyHint))
+}
+
+fun createCommentETag(
+    parentEventId: EventId,
+    relayHint: RelayUrl,
+    pubkeyHint: String,
+): Tag {
+    return Tag.parse(listOf("e", parentEventId.toHex(), relayHint, pubkeyHint))
 }
 
 fun generateMnemonic(): String {

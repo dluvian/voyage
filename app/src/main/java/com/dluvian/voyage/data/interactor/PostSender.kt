@@ -14,6 +14,7 @@ import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.event.COMMENT_U16
 import com.dluvian.voyage.data.event.EventValidator
 import com.dluvian.voyage.data.event.TEXT_NOTE_U16
+import com.dluvian.voyage.data.event.ValidatedComment
 import com.dluvian.voyage.data.event.ValidatedCrossPost
 import com.dluvian.voyage.data.event.ValidatedLegacyReply
 import com.dluvian.voyage.data.event.ValidatedRootPost
@@ -86,13 +87,14 @@ class PostSender(
 
     suspend fun sendReply(
         parentId: EventIdHex,
-        recipient: PubkeyHex,
+        parentKind: Kind,
+        parentPubkey: PubkeyHex,
         body: String,
         relayHint: RelayUrl,
         isAnon: Boolean,
     ): Result<Event> {
         val trimmedBody = body.trim()
-        val mentions = mutableListOf(recipient).apply {
+        val mentions = mutableListOf(parentPubkey).apply {
             addAll(extractMentionPubkeys(content = trimmedBody))
             mainEventDao.getParentAuthor(id = parentId)?.let { grandparentAuthor ->
                 add(grandparentAuthor)
@@ -100,13 +102,43 @@ class PostSender(
             if (!isAnon) removeIf { it == myPubkeyProvider.getPubkeyHex() }
         }.distinct()
 
-        return nostrService.publishReply(
-            content = trimmedBody,
+        return when (parentKind.asU16()) {
+            TEXT_NOTE_U16 -> sendLegacyReply(
+                content = trimmedBody,
+                parentId = parentId,
+                mentions = mentions,
+                relayHint = relayHint,
+                pubkeyHint = parentPubkey,
+                isAnon = isAnon
+            )
+
+            else -> sendComment(
+                content = trimmedBody,
+                parentId = parentId,
+                parentKind = parentKind,
+                mentions = mentions,
+                relayHint = relayHint,
+                pubkeyHint = parentPubkey,
+                isAnon = isAnon
+            )
+        }
+    }
+
+    private suspend fun sendLegacyReply(
+        content: String,
+        parentId: EventIdHex,
+        mentions: List<PubkeyHex>,
+        relayHint: RelayUrl,
+        pubkeyHint: PubkeyHex,
+        isAnon: Boolean
+    ): Result<Event> {
+        return nostrService.publishLegacyReply(
+            content = content,
             parentId = parentId,
             mentions = mentions,
-            quotes = extractQuotesFromString(content = trimmedBody),
+            quotes = extractQuotesFromString(content = content),
             relayHint = relayHint,
-            pubkeyHint = recipient,
+            pubkeyHint = pubkeyHint,
             relayUrls = relayProvider.getPublishRelays(publishTo = mentions),
             isAnon = isAnon,
         ).onSuccess { event ->
@@ -123,7 +155,45 @@ class PostSender(
             mainEventInsertDao.insertLegacyReplies(replies = listOf(validatedReply))
 
         }.onFailure {
-            Log.w(TAG, "Failed to create reply event", it)
+            Log.w(TAG, "Failed to create legacy reply event", it)
+        }
+    }
+
+    private suspend fun sendComment(
+        content: String,
+        parentId: EventIdHex,
+        parentKind: Kind,
+        mentions: List<PubkeyHex>,
+        relayHint: RelayUrl,
+        pubkeyHint: PubkeyHex,
+        isAnon: Boolean
+    ): Result<Event> {
+        return nostrService.publishComment(
+            content = content,
+            parentId = parentId,
+            parentKind = parentKind,
+            mentions = mentions,
+            quotes = extractQuotesFromString(content = content),
+            relayHint = relayHint,
+            pubkeyHint = pubkeyHint,
+            relayUrls = relayProvider.getPublishRelays(publishTo = mentions),
+            isAnon = isAnon,
+        ).onSuccess { event ->
+            val validatedComment = ValidatedComment(
+                id = event.id().toHex(),
+                pubkey = event.author().toHex(),
+                createdAt = event.createdAt().secs(),
+                relayUrl = "", // We don't know which relay accepted this note
+                content = event.content(),
+                json = event.asJson(),
+                isMentioningMe = mentions.contains(myPubkeyProvider.getPubkeyHex()),
+                parentId = parentId,
+                parentKind = parentKind.asU16(),
+            )
+            mainEventInsertDao.insertComments(comments = listOf(validatedComment))
+
+        }.onFailure {
+            Log.w(TAG, "Failed to create comment event", it)
         }
     }
 
