@@ -143,7 +143,7 @@ class ThreadProvider(
 
             // Comments are first bc they are more based
             for (comment in comments) {
-                if (hasMutedWords(comment.content)) continue
+                if (!comment.authorIsOneself && hasMutedWords(comment.content)) continue
                 val parent = result.find { it.reply.id == comment.parentId }
 
                 if (parent?.isCollapsed == true) continue
@@ -168,7 +168,7 @@ class ThreadProvider(
             }
 
             for (reply in replies) {
-                if (hasMutedWords(reply.content)) continue
+                if (!reply.authorIsOneself && hasMutedWords(reply.content)) continue
                 val parent = result.find { it.reply.id == reply.parentId }
 
                 if (parent?.isCollapsed == true) continue

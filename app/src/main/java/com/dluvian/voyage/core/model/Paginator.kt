@@ -156,6 +156,7 @@ class Paginator(
                     is HomeFeedSetting, is TopicFeedSetting,
                     is InboxFeedSetting, is ListFeedSetting -> {
                         postCtxs.filter { postCtx ->
+                            postCtx.mainEvent.trustType == Oneself ||
                             postCtx.mainEvent.content.text.containsNoneIgnoreCase(strs = mutedWords)
                         }
                     }
