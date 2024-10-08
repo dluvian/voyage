@@ -94,6 +94,10 @@ private fun ThreadViewContent(
         }
     }
     PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(ThreadViewRefresh) }) {
+        val replyCountDif = remember(localRoot.mainEvent.replyCount, adjustedReplies.size) {
+            localRoot.mainEvent.replyCount - adjustedReplies.size
+        }
+
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(bottom = spacing.xxl),
@@ -116,7 +120,7 @@ private fun ThreadViewContent(
                 localRoot.threadableMainEvent is Comment &&
                 !localRoot.threadableMainEvent.parentIsSupported()
             ) item {
-                ParentIsNotSupportedHint()
+                HintText(text = stringResource(id = R.string.parent_event_is_not_supported))
             }
             item {
                 MainEventRow(
@@ -139,11 +143,22 @@ private fun ThreadViewContent(
                 )
                 if (i == adjustedReplies.size - 1) FullHorizontalDivider()
             }
+
+            if (replyCountDif > 0) item {
+                HintText(
+                    text = stringResource(
+                        id = R.string.n_replies_have_been_hidden,
+                        replyCountDif
+                    )
+                )
+            }
+
             if (localRoot.mainEvent.replyCount == 0 && adjustedReplies.isEmpty()) item {
                 Column(modifier = Modifier.fillParentMaxHeight(0.5f)) {
                     BaseHint(text = stringResource(id = R.string.no_comments_found))
                 }
             }
+
         }
     }
 }
@@ -184,12 +199,8 @@ private fun OpenParentButton(
 }
 
 @Composable
-private fun ParentIsNotSupportedHint(modifier: Modifier = Modifier) {
-    TextButton(
-        modifier = modifier,
-        enabled = false,
-        onClick = { }
-    ) {
-        Text(text = stringResource(id = R.string.parent_event_is_not_supported))
+private fun HintText(text: String) {
+    TextButton(enabled = false, onClick = { }) {
+        Text(text = text)
     }
 }
