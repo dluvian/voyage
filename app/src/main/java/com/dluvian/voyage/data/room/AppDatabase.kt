@@ -85,11 +85,8 @@ class V10 : AutoMigrationSpec
 @DeleteTable(tableName = "post")
 class V24 : AutoMigrationSpec
 
-@DeleteColumn(tableName = "comment", columnName = "parentRef")
-class V31 : AutoMigrationSpec
-
 @Database(
-    version = 32,
+    version = 24,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -115,14 +112,6 @@ class V31 : AutoMigrationSpec
         AutoMigration(from = 21, to = 22),
         AutoMigration(from = 22, to = 23),
         AutoMigration(from = 23, to = 24, spec = V24::class),
-        AutoMigration(from = 24, to = 25),
-        AutoMigration(from = 25, to = 26),
-        AutoMigration(from = 26, to = 27),
-        AutoMigration(from = 27, to = 28),
-        AutoMigration(from = 28, to = 29),
-        AutoMigration(from = 29, to = 30),
-        AutoMigration(from = 30, to = 31, spec = V31::class),
-        AutoMigration(from = 31, to = 32),
     ],
     entities = [
         // Main
