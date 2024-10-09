@@ -25,6 +25,7 @@ fun createTitleTag(title: String): Tag {
 }
 
 fun createKindTag(kind: Kind): Tag {
+    // fromStandardized sucks hard
     return Tag.parse(listOf("k", kind.asU16().toString()))
 }
 

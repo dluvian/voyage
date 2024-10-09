@@ -3,7 +3,6 @@ package com.dluvian.voyage.ui.components.row.mainEvent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -17,7 +16,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.MAX_CONTENT_LINES
@@ -37,7 +35,6 @@ import com.dluvian.voyage.ui.components.button.OptionsButton
 import com.dluvian.voyage.ui.components.button.footer.CountedCommentButton
 import com.dluvian.voyage.ui.components.button.footer.ReplyIconButton
 import com.dluvian.voyage.ui.components.text.AnnotatedText
-import com.dluvian.voyage.ui.theme.light
 import com.dluvian.voyage.ui.theme.spacing
 import com.dluvian.voyage.ui.views.nonMain.MoreRepliesTextButton
 
@@ -109,8 +106,6 @@ private fun MainEventMainRow(
             .fillMaxWidth()
             .clickable(onClick = onClickRow)
             .padding(spacing.bigScreenEdge)
-            // TODO: Only for debugging
-            .let { if (ctx.mainEvent is Comment) it.background(color = Color.Yellow.light()) else it }
     ) {
         MainEventHeader(
             ctx = ctx,
