@@ -25,11 +25,11 @@ import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.ExpandLess
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Inbox
 import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material.icons.rounded.KeyboardDoubleArrowUp
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.MoreHoriz
-import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.OfflineBolt
 import androidx.compose.material.icons.rounded.RemoveCircle
 import androidx.compose.material.icons.rounded.Repeat
@@ -44,7 +44,7 @@ val HomeIcon = Icons.Rounded.Home
 val DiscoverIcon = Icons.Rounded.TravelExplore
 val AddIcon = Icons.Rounded.Add
 val RemoveCircleIcon = Icons.Rounded.RemoveCircle
-val InboxIcon = Icons.Rounded.Notifications
+val InboxIcon = Icons.Rounded.Inbox
 val SettingsIcon = Icons.Outlined.Settings
 val BackIcon = Icons.AutoMirrored.Rounded.ArrowBack
 val CommentIcon = Icons.AutoMirrored.Outlined.Chat
