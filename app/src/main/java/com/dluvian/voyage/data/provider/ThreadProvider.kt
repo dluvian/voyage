@@ -7,6 +7,7 @@ import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
+import com.dluvian.voyage.core.model.Comment
 import com.dluvian.voyage.core.utils.containsNoneIgnoreCase
 import com.dluvian.voyage.core.utils.firstThenDistinctDebounce
 import com.dluvian.voyage.core.utils.launchIO
@@ -193,7 +194,15 @@ class ThreadProvider(
                 result.add(result.indexOf(parent) + 1, leveledComment)
             }
 
-            result
+            val firstTopLevelCommentIndex =
+                result.indexOfFirst { it.level == 0 && it.reply is Comment }
+
+            // Show comments first because they're based
+            if (firstTopLevelCommentIndex >= 1) {
+                result.drop(firstTopLevelCommentIndex) + result.take(firstTopLevelCommentIndex)
+            } else {
+                result
+            }
         }.onEach {
             nostrSubscriber.subVotesAndReplies(
                 parentIds = it.map { reply -> reply.reply.getRelevantId() }
