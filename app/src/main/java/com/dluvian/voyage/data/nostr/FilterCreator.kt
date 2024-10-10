@@ -74,6 +74,7 @@ class FilterCreator(
         return Filter()
             .kind(kind = Kind(LOCK_U16))
             .authors(authors = pubkeys)
+            .until(timestamp = Timestamp.now())
             .limitRestricted(limit = pubkeys.size.toULong())
     }
 
