@@ -141,32 +141,6 @@ class ThreadProvider(
             val result = LinkedList<ThreadReplyCtx>()
             val hasMutedWords = { str: String -> !str.containsNoneIgnoreCase(strs = mutedWords) }
 
-            // Comments are first bc they are more based
-            for (comment in comments) {
-                if (!comment.authorIsOneself && hasMutedWords(comment.content)) continue
-                val parent = result.find { it.reply.id == comment.parentId }
-
-                if (parent?.isCollapsed == true) continue
-                if (parent == null && comment.parentId != rootId) continue
-
-                val leveledComment = comment.mapToThreadReplyCtx(
-                    level = parent?.level?.plus(1) ?: 0,
-                    isOp = opPubkey == comment.pubkey,
-                    forcedVotes = forced.votes,
-                    forcedFollows = forced.follows,
-                    collapsedIds = collapsed,
-                    parentIds = parentIds,
-                    forcedBookmarks = forced.bookmarks,
-                    annotatedStringProvider = annotatedStringProvider
-                )
-
-                if (comment.parentId == rootId) {
-                    result.add(leveledComment)
-                    continue
-                }
-                result.add(result.indexOf(parent) + 1, leveledComment)
-            }
-
             for (reply in replies) {
                 if (!reply.authorIsOneself && hasMutedWords(reply.content)) continue
                 val parent = result.find { it.reply.id == reply.parentId }
@@ -190,6 +164,32 @@ class ThreadProvider(
                     continue
                 }
                 result.add(result.indexOf(parent) + 1, leveledReply)
+            }
+
+            // Comments after replies because they can reference replies, not the other way around
+            for (comment in comments) {
+                if (!comment.authorIsOneself && hasMutedWords(comment.content)) continue
+                val parent = result.find { it.reply.id == comment.parentId }
+
+                if (parent?.isCollapsed == true) continue
+                if (parent == null && comment.parentId != rootId) continue
+
+                val leveledComment = comment.mapToThreadReplyCtx(
+                    level = parent?.level?.plus(1) ?: 0,
+                    isOp = opPubkey == comment.pubkey,
+                    forcedVotes = forced.votes,
+                    forcedFollows = forced.follows,
+                    collapsedIds = collapsed,
+                    parentIds = parentIds,
+                    forcedBookmarks = forced.bookmarks,
+                    annotatedStringProvider = annotatedStringProvider
+                )
+
+                if (comment.parentId == rootId) {
+                    result.add(leveledComment)
+                    continue
+                }
+                result.add(result.indexOf(parent) + 1, leveledComment)
             }
 
             result
