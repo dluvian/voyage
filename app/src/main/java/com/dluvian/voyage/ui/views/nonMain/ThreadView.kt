@@ -94,8 +94,9 @@ private fun ThreadViewContent(
         }
     }
     PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(ThreadViewRefresh) }) {
-        val replyCountDif = remember(localRoot.mainEvent.replyCount, adjustedReplies.size) {
-            localRoot.mainEvent.replyCount - adjustedReplies.size
+        val replyCountDif = remember(localRoot.mainEvent.replyCount, adjustedReplies) {
+            val minLvl = adjustedReplies.minByOrNull { it.level }?.level
+            localRoot.mainEvent.replyCount - adjustedReplies.filter { it.level == minLvl }.size
         }
 
         LazyColumn(
