@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -30,7 +31,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
@@ -52,7 +52,6 @@ import com.dluvian.voyage.core.ProfileViewRefresh
 import com.dluvian.voyage.core.ProfileViewReplyAppend
 import com.dluvian.voyage.core.ProfileViewRootAppend
 import com.dluvian.voyage.core.model.FriendTrust
-import com.dluvian.voyage.core.model.Locked
 import com.dluvian.voyage.core.utils.copyAndToast
 import com.dluvian.voyage.core.utils.getSimpleLauncher
 import com.dluvian.voyage.core.utils.shortenBech32
@@ -74,8 +73,6 @@ import com.dluvian.voyage.ui.components.text.SmallHeader
 import com.dluvian.voyage.ui.theme.KeyIcon
 import com.dluvian.voyage.ui.theme.LightningIcon
 import com.dluvian.voyage.ui.theme.OpenIcon
-import com.dluvian.voyage.ui.theme.getTrustColor
-import com.dluvian.voyage.ui.theme.light
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
 import kotlinx.coroutines.CoroutineScope
@@ -289,14 +286,12 @@ fun LockHint(scope: CoroutineScope, onUpdate: OnUpdate) {
         modifier = Modifier
             .padding(top = spacing.large)
             .background(
-                color = Color.Red
-                    .light()
-                    .light(),
+                color = MaterialTheme.colorScheme.errorContainer,
                 shape = CardDefaults.outlinedShape
             )
             .border(
                 width = spacing.small,
-                color = getTrustColor(trustType = Locked),
+                color = MaterialTheme.colorScheme.error,
                 shape = CardDefaults.outlinedShape
             )
             .padding(horizontal = spacing.screenEdge)
@@ -311,7 +306,10 @@ fun LockHint(scope: CoroutineScope, onUpdate: OnUpdate) {
             text = stringResource(id = R.string.this_user_is_locked_and_should_not_be_trusted)
         )
         TextButton(onClick = { onUpdate(ProfileViewRebroadcastLock(uiScope = scope)) }) {
-            Text(text = stringResource(id = R.string.rebroadcast_lock_event))
+            Text(
+                text = stringResource(id = R.string.rebroadcast_lock_event),
+                color = MaterialTheme.colorScheme.onErrorContainer
+            )
         }
     }
 }
