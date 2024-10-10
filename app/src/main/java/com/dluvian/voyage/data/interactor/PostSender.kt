@@ -24,6 +24,7 @@ import com.dluvian.voyage.data.nostr.extractMentions
 import com.dluvian.voyage.data.nostr.extractQuotes
 import com.dluvian.voyage.data.nostr.getSubject
 import com.dluvian.voyage.data.nostr.secs
+import com.dluvian.voyage.data.preferences.EventPreferences
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.MainEventDao
 import com.dluvian.voyage.data.room.dao.insert.MainEventInsertDao
@@ -44,6 +45,7 @@ class PostSender(
     private val mainEventInsertDao: MainEventInsertDao,
     private val mainEventDao: MainEventDao,
     private val myPubkeyProvider: IMyPubkeyProvider,
+    private val eventPreferences: EventPreferences
 ) {
     suspend fun sendPost(
         header: String,
@@ -102,20 +104,21 @@ class PostSender(
             if (!isAnon) removeIf { it == myPubkeyProvider.getPubkeyHex() }
         }.distinct()
 
-        return when (parentKind.asU16()) {
-            TEXT_NOTE_U16 -> sendLegacyReply(
+
+        return if (parentKind.asU16() != TEXT_NOTE_U16 || eventPreferences.isUsingV2Replies()) {
+            sendComment(
                 content = trimmedBody,
                 parentId = parentId,
+                parentKind = parentKind,
                 mentions = mentions,
                 relayHint = relayHint,
                 pubkeyHint = parentPubkey,
                 isAnon = isAnon
             )
-
-            else -> sendComment(
+        } else {
+            sendLegacyReply(
                 content = trimmedBody,
                 parentId = parentId,
-                parentKind = parentKind,
                 mentions = mentions,
                 relayHint = relayHint,
                 pubkeyHint = parentPubkey,

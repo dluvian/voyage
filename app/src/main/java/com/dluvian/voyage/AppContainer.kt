@@ -404,7 +404,8 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
         relayProvider = relayProvider,
         mainEventInsertDao = roomDb.mainEventInsertDao(),
         mainEventDao = roomDb.mainEventDao(),
-        myPubkeyProvider = accountManager
+        myPubkeyProvider = accountManager,
+        eventPreferences = eventPreferences,
     )
 
     val eventSweeper = EventSweeper(

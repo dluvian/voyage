@@ -208,17 +208,13 @@ class FeedProvider(
         until: Long,
         size: Int,
     ): Flow<List<SomeReply>> {
+        val pubkey = setting.nprofile.publicKey().toHex()
+
         return combine(
-            room.legacyReplyDao().getProfileReplyFlow(
-                pubkey = setting.nprofile.publicKey().toHex(),
-                until = until,
-                size = size
-            ).firstThenDistinctDebounce(SHORT_DEBOUNCE),
-            room.commentDao().getProfileCommentFlow(
-                pubkey = setting.nprofile.publicKey().toHex(),
-                until = until,
-                size = size
-            ).firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            room.legacyReplyDao().getProfileReplyFlow(pubkey = pubkey, until = until, size = size)
+                .firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            room.commentDao().getProfileCommentFlow(pubkey = pubkey, until = until, size = size)
+                .firstThenDistinctDebounce(SHORT_DEBOUNCE),
             forcedVotes,
             forcedFollows,
             forcedBookmarks,

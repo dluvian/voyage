@@ -55,6 +55,7 @@ import com.dluvian.voyage.core.UpdateAutopilotRelays
 import com.dluvian.voyage.core.UpdateLocalRelayPort
 import com.dluvian.voyage.core.UpdateRootPostThreshold
 import com.dluvian.voyage.core.UseDefaultAccount
+import com.dluvian.voyage.core.UseV2Replies
 import com.dluvian.voyage.core.model.AccountType
 import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
@@ -246,45 +247,23 @@ private fun RelaySection(vm: SettingsViewModel, onUpdate: OnUpdate) {
             text = stringResource(id = R.string.port_number_of_your_local_relay),
             onClick = { showPortDialog.value = true })
 
-        ClickableRow(header = stringResource(id = R.string.authenticate_via_auth),
+        ClickableRowCheckbox(
+            header = stringResource(id = R.string.authenticate_via_auth),
             text = stringResource(id = R.string.enable_to_authenticate_yourself_to_relays),
-            trailingContent = {
-                Checkbox(
-                    checked = vm.sendAuth.value,
-                    onCheckedChange = { onUpdate(SendAuth(sendAuth = it)) },
-                )
-            },
-            onClick = { onUpdate(SendAuth(sendAuth = !vm.sendAuth.value)) })
+            checked = vm.sendAuth.value,
+            onClickChange = { onUpdate(SendAuth(sendAuth = it)) })
 
-        ClickableRow(
+        ClickableRowCheckbox(
             header = stringResource(id = R.string.send_bookmarked_post_to_local_relay),
             text = stringResource(id = R.string.send_post_to_local_relay_after_bookmarking_it),
-            trailingContent = {
-                Checkbox(
-                    checked = vm.sendBookmarkedToLocalRelay.value,
-                    onCheckedChange = {
-                        onUpdate(SendBookmarkedToLocalRelay(sendToLocalRelay = it))
-                    },
-                )
-            },
-            onClick = {
-                onUpdate(SendBookmarkedToLocalRelay(!vm.sendBookmarkedToLocalRelay.value))
-            })
+            checked = vm.sendBookmarkedToLocalRelay.value,
+            onClickChange = { onUpdate(SendBookmarkedToLocalRelay(sendToLocalRelay = it)) })
 
-        ClickableRow(
+        ClickableRowCheckbox(
             header = stringResource(id = R.string.send_upvoted_post_to_local_relay),
             text = stringResource(id = R.string.send_post_to_local_relay_after_upvoting_it),
-            trailingContent = {
-                Checkbox(
-                    checked = vm.sendUpvotedToLocalRelay.value,
-                    onCheckedChange = {
-                        onUpdate(SendUpvotedToLocalRelay(sendToLocalRelay = it))
-                    },
-                )
-            },
-            onClick = {
-                onUpdate(SendUpvotedToLocalRelay(!vm.sendUpvotedToLocalRelay.value))
-            })
+            checked = vm.sendUpvotedToLocalRelay.value,
+            onClickChange = { onUpdate(SendUpvotedToLocalRelay(it)) })
     }
 }
 
@@ -356,20 +335,12 @@ private fun AppSection(vm: SettingsViewModel, onUpdate: OnUpdate) {
     val focusRequester = remember { FocusRequester() }
 
     SettingsSection(header = stringResource(id = R.string.app)) {
-        ClickableRow(
+
+        ClickableRowCheckbox(
             header = stringResource(id = R.string.show_usernames_in_feed),
             text = stringResource(id = R.string.show_the_authors_username_in_feeds),
-            trailingContent = {
-                Checkbox(
-                    checked = vm.showUsernames.value,
-                    onCheckedChange = {
-                        onUpdate(ShowUsernames(showUsernames = it))
-                    },
-                )
-            },
-            onClick = {
-                onUpdate(ShowUsernames(!vm.showUsernames.value))
-            })
+            checked = vm.showUsernames.value,
+            onClickChange = { onUpdate(ShowUsernames(showUsernames = it)) })
 
         val showUpvoteDialog = remember { mutableStateOf(false) }
         if (showUpvoteDialog.value) {
@@ -391,20 +362,17 @@ private fun AppSection(vm: SettingsViewModel, onUpdate: OnUpdate) {
                 onDismiss = { showUpvoteDialog.value = false })
         }
 
-        ClickableRow(
+        ClickableRowCheckbox(
             header = stringResource(id = R.string.add_client_tag),
             text = stringResource(id = R.string.let_other_clients_know_that_you_are_posting_with_voyage),
-            trailingContent = {
-                Checkbox(
-                    checked = vm.isAddingClientTag.value,
-                    onCheckedChange = {
-                        onUpdate(AddClientTag(addClientTag = it))
-                    },
-                )
-            },
-            onClick = {
-                onUpdate(AddClientTag(!vm.isAddingClientTag.value))
-            })
+            checked = vm.isAddingClientTag.value,
+            onClickChange = { onUpdate(AddClientTag(addClientTag = it)) })
+
+        ClickableRowCheckbox(
+            header = stringResource(id = R.string.always_use_v2_replies),
+            text = stringResource(id = R.string.this_format_is_not_widely_adopted_yet),
+            checked = vm.useV2Replies.value,
+            onClickChange = { onUpdate(UseV2Replies(useV2Replies = it)) })
 
         ClickableRow(
             header = stringResource(id = R.string.upvote_event_content) + ": ${vm.currentUpvote.value}",
@@ -458,4 +426,20 @@ private fun SettingsSection(header: String, content: ComposableContent) {
         content()
         Spacer(modifier = Modifier.height(spacing.screenEdge))
     }
+}
+
+@Composable
+private fun ClickableRowCheckbox(
+    header: String,
+    text: String,
+    checked: Boolean,
+    onClickChange: (Boolean) -> Unit
+) {
+    ClickableRow(
+        header = header,
+        text = text,
+        trailingContent = {
+            Checkbox(checked = checked, onCheckedChange = onClickChange)
+        },
+        onClick = { onClickChange(!checked) })
 }
