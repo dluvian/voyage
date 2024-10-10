@@ -13,8 +13,8 @@ android {
         applicationId = "com.dluvian.voyage"
         minSdk = 26 // Android Oreo (Aug 2017 - Jan 2021)
         targetSdk = 34
-        versionCode = 19
-        versionName = "v0.14.0"
+        versionCode = 20
+        versionName = "v0.15.0"
 
         // Change versionCode, versionName and strings.xml when releasing new
         // Reproducible build hints: https://gitlab.com/IzzyOnDroid/repo/-/wikis/Reproducible-Builds
