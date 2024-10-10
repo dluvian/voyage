@@ -146,6 +146,7 @@ class ThreadProvider(
                 val parent = result.find { it.reply.id == reply.parentId }
 
                 if (parent?.isCollapsed == true) continue
+                if (reply.createdAt <= (parent?.mainEvent?.createdAt ?: 0L)) continue
                 if (parent == null && reply.parentId != rootId) continue
 
                 val leveledReply = reply.mapToThreadReplyCtx(
