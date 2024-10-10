@@ -435,5 +435,5 @@ fun getFullDateTime(ctx: Context, createdAt: Long): String {
                 DateUtils.FORMAT_SHOW_YEAR or
                 DateUtils.FORMAT_SHOW_WEEKDAY or
                 DateUtils.FORMAT_ABBREV_ALL
-    )
+    ) + "  ($createdAt)"
 }
