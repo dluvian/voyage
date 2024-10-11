@@ -4,7 +4,7 @@ import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.DeleteColumn
 import androidx.room.DeleteTable
-import androidx.room.RenameColumn
+import androidx.room.RenameTable
 import androidx.room.RoomDatabase
 import androidx.room.migration.AutoMigrationSpec
 import com.dluvian.voyage.data.room.dao.AccountDao
@@ -77,16 +77,25 @@ import com.dluvian.voyage.data.room.view.SimplePostView
 @DeleteColumn(tableName = "vote", columnName = "isPositive")
 class V10 : AutoMigrationSpec
 
-@RenameColumn.Entries(
-    RenameColumn(tableName = "vote", fromColumnName = "postId", toColumnName = "eventId"),
-    RenameColumn(tableName = "hashtag", fromColumnName = "postId", toColumnName = "eventId"),
-    RenameColumn(tableName = "bookmark", fromColumnName = "postId", toColumnName = "eventId"),
+
+@DeleteTable.Entries(
+    DeleteTable(tableName = "post"),
+    DeleteTable(tableName = "vote"),
+    DeleteTable(tableName = "hashtag"),
+    DeleteTable(tableName = "bookmark"),
 )
-@DeleteTable(tableName = "post")
 class V24 : AutoMigrationSpec
 
+@RenameTable.Entries(
+    RenameTable(fromTableName = "post2", toTableName = "post"),
+    RenameTable(fromTableName = "vote2", toTableName = "vote"),
+    RenameTable(fromTableName = "hashtag2", toTableName = "hashtag"),
+    RenameTable(fromTableName = "bookmark2", toTableName = "bookmark"),
+)
+class V25 : AutoMigrationSpec
+
 @Database(
-    version = 24,
+    version = 25,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -112,6 +121,7 @@ class V24 : AutoMigrationSpec
         AutoMigration(from = 21, to = 22),
         AutoMigration(from = 22, to = 23),
         AutoMigration(from = 23, to = 24, spec = V24::class),
+        AutoMigration(from = 24, to = 25, spec = V25::class),
     ],
     entities = [
         // Main
