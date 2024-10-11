@@ -20,14 +20,14 @@ import com.dluvian.voyage.data.event.ValidatedComment
         Index(value = ["parentId"], unique = false),
     ],
 )
-data class CommentMetaEntity(
+data class CommentEntity(
     val eventId: EventIdHex,
     val parentId: EventIdHex?, // We don't support a and i parent tags
     val parentKind: Int?, // We save this to easily determine if parent is renderable
 ) {
     companion object {
-        fun from(comment: ValidatedComment): CommentMetaEntity {
-            return CommentMetaEntity(
+        fun from(comment: ValidatedComment): CommentEntity {
+            return CommentEntity(
                 eventId = comment.id,
                 parentId = comment.parentId,
                 parentKind = comment.parentKind?.toInt()

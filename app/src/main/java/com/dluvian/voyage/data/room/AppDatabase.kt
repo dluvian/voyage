@@ -55,13 +55,16 @@ import com.dluvian.voyage.data.room.entity.lists.MuteEntity
 import com.dluvian.voyage.data.room.entity.lists.Nip65Entity
 import com.dluvian.voyage.data.room.entity.lists.TopicEntity
 import com.dluvian.voyage.data.room.entity.lists.WebOfTrustEntity
-import com.dluvian.voyage.data.room.entity.main.CommentMetaEntity
-import com.dluvian.voyage.data.room.entity.main.CrossPostMetaEntity
+import com.dluvian.voyage.data.room.entity.main.CommentEntity
+import com.dluvian.voyage.data.room.entity.main.CrossPostEntity
 import com.dluvian.voyage.data.room.entity.main.HashtagEntity
-import com.dluvian.voyage.data.room.entity.main.LegacyReplyMetaEntity
+import com.dluvian.voyage.data.room.entity.main.LegacyReplyEntity
 import com.dluvian.voyage.data.room.entity.main.MainEventEntity
-import com.dluvian.voyage.data.room.entity.main.RootPostMetaEntity
+import com.dluvian.voyage.data.room.entity.main.RootPostEntity
 import com.dluvian.voyage.data.room.entity.main.VoteEntity
+import com.dluvian.voyage.data.room.entity.main.poll.PollEntity
+import com.dluvian.voyage.data.room.entity.main.poll.PollOptionEntity
+import com.dluvian.voyage.data.room.entity.main.poll.PollResponseEntity
 import com.dluvian.voyage.data.room.entity.sets.ProfileSetEntity
 import com.dluvian.voyage.data.room.entity.sets.ProfileSetItemEntity
 import com.dluvian.voyage.data.room.entity.sets.TopicSetEntity
@@ -71,6 +74,7 @@ import com.dluvian.voyage.data.room.view.CommentView
 import com.dluvian.voyage.data.room.view.CrossPostView
 import com.dluvian.voyage.data.room.view.EventRelayAuthorView
 import com.dluvian.voyage.data.room.view.LegacyReplyView
+import com.dluvian.voyage.data.room.view.PollView
 import com.dluvian.voyage.data.room.view.RootPostView
 import com.dluvian.voyage.data.room.view.SimplePostView
 
@@ -95,7 +99,7 @@ class V24 : AutoMigrationSpec
 class V25 : AutoMigrationSpec
 
 @Database(
-    version = 25,
+    version = 26,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -122,16 +126,20 @@ class V25 : AutoMigrationSpec
         AutoMigration(from = 22, to = 23),
         AutoMigration(from = 23, to = 24, spec = V24::class),
         AutoMigration(from = 24, to = 25, spec = V25::class),
+        AutoMigration(from = 25, to = 26),
     ],
     entities = [
         // Main
         MainEventEntity::class,
-        RootPostMetaEntity::class,
-        LegacyReplyMetaEntity::class,
-        CommentMetaEntity::class,
-        CrossPostMetaEntity::class,
+        RootPostEntity::class,
+        LegacyReplyEntity::class,
+        CommentEntity::class,
+        CrossPostEntity::class,
         HashtagEntity::class,
         VoteEntity::class,
+        PollEntity::class,
+        PollOptionEntity::class,
+        PollResponseEntity::class,
 
         // Lists
         FriendEntity::class,
@@ -161,6 +169,7 @@ class V25 : AutoMigrationSpec
         CommentView::class,
         CrossPostView::class,
         AdvancedProfileView::class,
+        PollView::class,
     ]
 )
 abstract class AppDatabase : RoomDatabase() {

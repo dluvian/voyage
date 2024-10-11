@@ -4,17 +4,14 @@ import androidx.room.DatabaseView
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.model.RootPost
-import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.data.nostr.RelayUrl
-import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 
 @DatabaseView(
     """
         SELECT 
             mainEvent.id, 
             mainEvent.pubkey, 
-            rootPost.subject, 
+            poll.subject, 
             mainEvent.content, 
             mainEvent.createdAt, 
             mainEvent.relayUrl, 
@@ -29,11 +26,10 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             CASE WHEN lock.pubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsLocked,
             CASE WHEN vote.eventId IS NOT NULL THEN 1 ELSE 0 END isUpvoted,
             upvotes.upvoteCount,
-            legacyReplies.legacyReplyCount,
             comments.commentCount,
             (SELECT EXISTS(SELECT * FROM bookmark WHERE bookmark.eventId = mainEvent.id)) AS isBookmarked 
-        FROM rootPost
-        JOIN mainEvent ON mainEvent.id = rootPost.eventId
+        FROM poll
+        JOIN mainEvent ON mainEvent.id = poll.eventId
         LEFT JOIN profile ON profile.pubkey = mainEvent.pubkey
         LEFT JOIN (
             SELECT DISTINCT hashtag.eventId, MIN(hashtag.hashtag) AS min_hashtag
@@ -55,18 +51,13 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             GROUP BY vote.eventId
         ) AS upvotes ON upvotes.eventId = mainEvent.id
         LEFT JOIN (
-            SELECT legacyReply.parentId, COUNT(*) AS legacyReplyCount 
-            FROM legacyReply
-            GROUP BY legacyReply.parentId
-        ) AS legacyReplies ON legacyReplies.parentId = mainEvent.id
-        LEFT JOIN (
             SELECT comment.parentId, COUNT(*) AS commentCount 
             FROM comment
             GROUP BY comment.parentId
         ) AS comments ON comments.parentId = mainEvent.id
 """
 )
-data class RootPostView(
+data class PollView(
     val id: EventIdHex,
     val pubkey: PubkeyHex,
     val authorName: String?,
@@ -82,30 +73,29 @@ data class RootPostView(
     val createdAt: Long,
     val isUpvoted: Boolean,
     val upvoteCount: Int,
-    val legacyReplyCount: Int,
-    val commentCount: Int,
+    val commentCount: Int, // no legacy
     val relayUrl: RelayUrl,
     val isBookmarked: Boolean,
     val isMentioningMe: Boolean,
 ) {
-    fun mapToRootPostUI(
-        forcedVotes: Map<EventIdHex, Boolean>,
-        forcedFollows: Map<PubkeyHex, Boolean>,
-        forcedBookmarks: Map<EventIdHex, Boolean>,
-        annotatedStringProvider: AnnotatedStringProvider,
-    ): RootPost {
-        val rootPostUI = RootPost.from(
-            rootPostView = this,
-            annotatedStringProvider = annotatedStringProvider
-        )
-        val vote = forcedVotes.getOrDefault(this.id, null)
-        val follow = forcedFollows.getOrDefault(this.pubkey, null)
-        val bookmark = forcedBookmarks.getOrDefault(this.id, null)
-        return if (vote != null || follow != null || bookmark != null) rootPostUI.copy(
-            isUpvoted = vote ?: rootPostUI.isUpvoted,
-            trustType = TrustType.from(rootPostView = this, isFriend = follow),
-            isBookmarked = bookmark ?: rootPostUI.isBookmarked
-        )
-        else rootPostUI
-    }
+//    fun mapToPollUI(
+//        forcedVotes: Map<EventIdHex, Boolean>,
+//        forcedFollows: Map<PubkeyHex, Boolean>,
+//        forcedBookmarks: Map<EventIdHex, Boolean>,
+//        annotatedStringProvider: AnnotatedStringProvider,
+//    ): RootPost {
+//        val pollUI = RootPost.from(
+//            pollView = this,
+//            annotatedStringProvider = annotatedStringProvider
+//        )
+//        val vote = forcedVotes.getOrDefault(this.id, null)
+//        val follow = forcedFollows.getOrDefault(this.pubkey, null)
+//        val bookmark = forcedBookmarks.getOrDefault(this.id, null)
+//        return if (vote != null || follow != null || bookmark != null) pollUI.copy(
+//            isUpvoted = vote ?: pollUI.isUpvoted,
+//            trustType = TrustType.from(pollView = this, isFriend = follow),
+//            isBookmarked = bookmark ?: pollUI.isBookmarked
+//        )
+//        else pollUI
+//    }
 }

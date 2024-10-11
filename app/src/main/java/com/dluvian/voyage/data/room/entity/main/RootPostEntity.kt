@@ -16,13 +16,13 @@ import com.dluvian.voyage.data.event.ValidatedRootPost
         onUpdate = ForeignKey.NO_ACTION
     )],
 )
-data class RootPostMetaEntity(
+data class RootPostEntity(
     val eventId: EventIdHex,
     val subject: String,
 ) {
     companion object {
-        fun from(rootPost: ValidatedRootPost): RootPostMetaEntity {
-            return RootPostMetaEntity(
+        fun from(rootPost: ValidatedRootPost): RootPostEntity {
+            return RootPostEntity(
                 eventId = rootPost.id,
                 subject = rootPost.subject
             )

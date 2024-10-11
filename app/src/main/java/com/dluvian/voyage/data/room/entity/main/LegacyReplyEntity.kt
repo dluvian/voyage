@@ -4,10 +4,10 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import com.dluvian.voyage.core.EventIdHex
-import com.dluvian.voyage.data.event.ValidatedCrossPost
+import com.dluvian.voyage.data.event.ValidatedLegacyReply
 
 @Entity(
-    tableName = "crossPost",
+    tableName = "legacyReply",
     primaryKeys = ["eventId"],
     foreignKeys = [ForeignKey(
         entity = MainEventEntity::class,
@@ -17,18 +17,18 @@ import com.dluvian.voyage.data.event.ValidatedCrossPost
         onUpdate = ForeignKey.NO_ACTION
     )],
     indices = [
-        Index(value = ["crossPostedId"], unique = false),
+        Index(value = ["parentId"], unique = false),
     ],
 )
-data class CrossPostMetaEntity(
+data class LegacyReplyEntity(
     val eventId: EventIdHex,
-    val crossPostedId: EventIdHex,
+    val parentId: EventIdHex,
 ) {
     companion object {
-        fun from(crossPost: ValidatedCrossPost): CrossPostMetaEntity {
-            return CrossPostMetaEntity(
-                eventId = crossPost.id,
-                crossPostedId = crossPost.crossPostedId,
+        fun from(legacyReply: ValidatedLegacyReply): LegacyReplyEntity {
+            return LegacyReplyEntity(
+                eventId = legacyReply.id,
+                parentId = legacyReply.parentId
             )
         }
     }
