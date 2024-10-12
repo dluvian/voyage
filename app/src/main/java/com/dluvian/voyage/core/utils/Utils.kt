@@ -21,6 +21,7 @@ import com.dluvian.voyage.core.VOYAGE
 import com.dluvian.voyage.core.model.MainEvent
 import com.dluvian.voyage.core.model.SomeReply
 import com.dluvian.voyage.data.event.COMMENT_U16
+import com.dluvian.voyage.data.event.POLL_U16
 import com.dluvian.voyage.data.model.ForcedData
 import com.dluvian.voyage.data.model.RelevantMetadata
 import com.dluvian.voyage.data.nostr.LOCAL_WEBSOCKET
@@ -209,9 +210,10 @@ fun mergeRelayFilters(vararg maps: Map<RelayUrl, List<Filter>>): Map<RelayUrl, L
 }
 
 // Generic repost not included because we need to combine the filter with a k tag
-val postAndCrossPostKinds = listOf(
+val rootLikeKindsWithoutKTag = listOf(
     Kind.fromEnum(KindEnum.TextNote),
     Kind.fromEnum(KindEnum.Repost),
+    Kind(kind = POLL_U16)
 )
 
 val replyKinds = listOf(
@@ -219,12 +221,13 @@ val replyKinds = listOf(
     Kind(kind = COMMENT_U16),
 )
 
-val threadableKinds = replyKinds
+val threadableKinds = replyKinds + Kind(kind = POLL_U16)
 
 val mainEventKinds = listOf(
     Kind.fromEnum(KindEnum.TextNote),
     Kind.fromEnum(KindEnum.Repost),
     Kind(kind = COMMENT_U16),
+    Kind(kind = POLL_U16),
 )
 
 fun Event.getTrimmedSubject(maxLen: Int = MAX_SUBJECT_LEN): String? {

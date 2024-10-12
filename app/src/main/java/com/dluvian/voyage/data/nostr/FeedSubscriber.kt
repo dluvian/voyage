@@ -5,8 +5,8 @@ import com.dluvian.voyage.core.MAX_KEYS
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.utils.genericRepost
 import com.dluvian.voyage.core.utils.limitRestricted
-import com.dluvian.voyage.core.utils.postAndCrossPostKinds
 import com.dluvian.voyage.core.utils.replyKinds
+import com.dluvian.voyage.core.utils.rootLikeKindsWithoutKTag
 import com.dluvian.voyage.core.utils.syncedPutOrAdd
 import com.dluvian.voyage.core.utils.takeRandom
 import com.dluvian.voyage.core.utils.threadableKinds
@@ -97,7 +97,7 @@ class FeedSubscriber(
                     .forEach { (relayUrl, pubkeys) ->
                         val publicKeys = pubkeys.takeRandom(MAX_KEYS).map { PublicKey.fromHex(it) }
                         val pubkeysNoteFilter = createBaseFilter(publicKeys)
-                            .kinds(kinds = postAndCrossPostKinds)
+                            .kinds(kinds = rootLikeKindsWithoutKTag)
                         val genericRepostFilter = createBaseFilter(publicKeys).genericRepost()
                         val filters = mutableListOf(pubkeysNoteFilter, genericRepostFilter)
                         result.syncedPutOrAdd(relayUrl, filters)
@@ -110,7 +110,7 @@ class FeedSubscriber(
         )
         if (topics.isNotEmpty()) {
             val topicedNoteFilter = createBaseFilter(emptyList())
-                .kinds(kinds = postAndCrossPostKinds)
+                .kinds(kinds = rootLikeKindsWithoutKTag)
                 .hashtags(hashtags = topics)
             val genericRepostFilter = createBaseFilter(emptyList())
                 .genericRepost()
@@ -136,7 +136,7 @@ class FeedSubscriber(
         val result = mutableMapOf<RelayUrl, MutableList<Filter>>()
 
         val topicedNoteFilter = Filter()
-            .kinds(kinds = postAndCrossPostKinds)
+            .kinds(kinds = rootLikeKindsWithoutKTag)
             .hashtag(hashtag = topic)
             .since(timestamp = Timestamp.fromSecs(since))
             .until(timestamp = Timestamp.fromSecs(until))
@@ -212,7 +212,7 @@ class FeedSubscriber(
         val pubkeyNoteFilter = createBaseFilter()
             .let {
                 when (feedKind) {
-                    MainFeed -> it.kinds(kinds = postAndCrossPostKinds)
+                    MainFeed -> it.kinds(kinds = rootLikeKindsWithoutKTag)
                     ReplyFeed -> it.kinds(kinds = replyKinds)
                 }
             }
