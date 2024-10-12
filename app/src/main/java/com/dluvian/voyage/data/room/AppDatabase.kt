@@ -22,6 +22,7 @@ import com.dluvian.voyage.data.room.dao.LockDao
 import com.dluvian.voyage.data.room.dao.MainEventDao
 import com.dluvian.voyage.data.room.dao.MuteDao
 import com.dluvian.voyage.data.room.dao.Nip65Dao
+import com.dluvian.voyage.data.room.dao.PollResponseDao
 import com.dluvian.voyage.data.room.dao.ProfileDao
 import com.dluvian.voyage.data.room.dao.RootPostDao
 import com.dluvian.voyage.data.room.dao.TopicDao
@@ -196,6 +197,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun lockDao(): LockDao
     abstract fun hashtagDao(): HashtagDao
     abstract fun someReplyDao(): SomeReplyDao
+    abstract fun pollResponseDao(): PollResponseDao
 
     // Util
     abstract fun deleteDao(): DeleteDao

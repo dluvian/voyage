@@ -10,6 +10,7 @@ import com.dluvian.voyage.data.room.AppDatabase
 import com.dluvian.voyage.data.room.entity.FullProfileEntity
 import com.dluvian.voyage.data.room.entity.ProfileEntity
 import com.dluvian.voyage.data.room.entity.main.VoteEntity
+import com.dluvian.voyage.data.room.entity.main.poll.PollResponseEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -39,9 +40,11 @@ class EventProcessor(
 
         val rootPosts = mutableListOf<ValidatedRootPost>()
         val legacyReplies = mutableListOf<ValidatedLegacyReply>()
+        val votes = mutableListOf<ValidatedVote>()
         val comments = mutableListOf<ValidatedComment>()
         val crossPosts = mutableListOf<ValidatedCrossPost>()
-        val votes = mutableListOf<ValidatedVote>()
+        val polls = mutableListOf<ValidatedPoll>()
+        val pollResponses = mutableListOf<ValidatedPollResponse>()
         val profiles = mutableListOf<ValidatedProfile>()
         val profileSets = mutableListOf<ValidatedProfileSet>()
         val topicSets = mutableListOf<ValidatedTopicSet>()
@@ -54,18 +57,22 @@ class EventProcessor(
                 is ValidatedLegacyReply -> legacyReplies.add(event)
                 is ValidatedCrossPost -> crossPosts.add(event)
                 is ValidatedVote -> votes.add(event)
+                is ValidatedComment -> comments.add(event)
+                is ValidatedPoll -> polls.add(event)
+                is ValidatedPollResponse -> pollResponses.add(event)
                 is ValidatedProfile -> profiles.add(event)
                 is ValidatedProfileSet -> profileSets.add(event)
                 is ValidatedTopicSet -> topicSets.add(event)
                 is ValidatedList -> lists.add(event)
                 is ValidatedLock -> locks.add(event)
-                is ValidatedComment -> comments.add(event)
             }
         }
-        processRootPosts(rootPosts = rootPosts)
-        processLegacyReplies(legacyReplies = legacyReplies)
+        processRootPosts(roots = rootPosts)
         processComments(comments = comments)
         processCrossPosts(crossPosts = crossPosts)
+        processPolls(polls = polls)
+        processLegacyReplies(legacyReplies = legacyReplies)
+        processPollResponses(responses = pollResponses)
         processVotes(votes = votes)
         processProfiles(profiles = profiles)
         processProfileSets(sets = profileSets)
@@ -74,11 +81,11 @@ class EventProcessor(
         listEventProcessor.processLists(lists = lists)
     }
 
-    private fun processRootPosts(rootPosts: Collection<ValidatedRootPost>) {
-        if (rootPosts.isEmpty()) return
+    private fun processRootPosts(roots: Collection<ValidatedRootPost>) {
+        if (roots.isEmpty()) return
 
         scope.launch {
-            room.mainEventInsertDao().insertRootPosts(rootPosts = rootPosts)
+            room.mainEventInsertDao().insertRootPosts(roots = roots)
         }.invokeOnCompletion { exception ->
             if (exception != null) Log.w(TAG, "Failed to process root posts", exception)
         }
@@ -110,7 +117,7 @@ class EventProcessor(
         scope.launch {
             room.mainEventInsertDao().insertCrossPosts(crossPosts = crossPosts)
         }.invokeOnCompletion { exception ->
-            if (exception != null) Log.w(TAG, "Failed to process cross posts ", exception)
+            if (exception != null) Log.w(TAG, "Failed to process cross posts", exception)
         }
     }
 
@@ -125,7 +132,35 @@ class EventProcessor(
             // RunCatching bc EventSweeper might delete parent post
             runCatching { room.voteDao().insertOrIgnoreVotes(voteEntities = entities) }
         }.invokeOnCompletion { ex ->
-            if (ex != null) Log.w(TAG, "Failed to process ${entities.size}", ex)
+            if (ex != null) {
+                Log.w(TAG, "Failed to process ${entities.size} votes", ex)
+            }
+        }
+    }
+
+    private fun processPolls(polls: Collection<ValidatedPoll>) {
+        if (polls.isEmpty()) return
+
+        scope.launch {
+            room.mainEventInsertDao().insertPolls(polls = polls)
+        }.invokeOnCompletion { exception ->
+            if (exception != null) Log.w(TAG, "Failed to process polls", exception)
+        }
+    }
+
+    private fun processPollResponses(responses: Collection<ValidatedPollResponse>) {
+        if (responses.isEmpty()) return
+
+        val entities = responses.map { PollResponseEntity.from(response = it) }
+
+        scope.launch {
+            // We don't update new incoming responses. If a response is in db, it will stay
+            // RunCatching bc EventSweeper might delete parent poll
+            runCatching { room.pollResponseDao().insertOrIgnoreResponses(responses = entities) }
+        }.invokeOnCompletion { ex ->
+            if (ex != null) {
+                Log.w(TAG, "Failed to process ${entities.size} responses", ex)
+            }
         }
     }
 

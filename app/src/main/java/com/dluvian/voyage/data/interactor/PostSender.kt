@@ -81,7 +81,7 @@ class PostSender(
                 json = event.asJson(),
                 isMentioningMe = mentions.contains(myPubkeyProvider.getPubkeyHex())
             )
-            mainEventInsertDao.insertRootPosts(rootPosts = listOf(validatedPost))
+            mainEventInsertDao.insertRootPosts(roots = listOf(validatedPost))
         }.onFailure {
             Log.w(TAG, "Failed to create post event", it)
         }
