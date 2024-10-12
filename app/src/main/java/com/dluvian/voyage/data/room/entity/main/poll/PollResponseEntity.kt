@@ -22,5 +22,4 @@ data class PollResponseEntity(
     val pollId: EventIdHex,
     val optionId: String,
     val pubkey: PubkeyHex,
-    val createdAt: Long,
 )

@@ -1,6 +1,9 @@
 package com.dluvian.voyage.data.nostr
 
+import androidx.core.text.isDigitsOnly
 import cash.z.ecc.android.bip39.Mnemonics
+import com.dluvian.voyage.core.Label
+import com.dluvian.voyage.core.OptionId
 import rust.nostr.protocol.Coordinate
 import rust.nostr.protocol.Event
 import rust.nostr.protocol.EventId
@@ -167,7 +170,7 @@ fun Event.getNip65s(): List<Nip65Relay> {
     return this.tags().asSequence()
         .map { it.asVec() }
         .filter { it.firstOrNull() == "r" && it.size >= 2 }
-        .filter { it[1].startsWith(WEBSOCKET_URI) && it[1].trim().length >= 10 }
+        .filter { it[1].startsWith(WEBSOCKET_URI) && it[1].trim().length >= 9 }
         .map {
             val restriction = it.getOrNull(2)
             Nip65Relay(
@@ -179,6 +182,16 @@ fun Event.getNip65s(): List<Nip65Relay> {
         .distinctBy { it.url }.toList()
 }
 
+fun Event.getPollRelays(): List<RelayUrl> {
+    return this.tags().asSequence()
+        .map { it.asVec() }
+        .filter { it.firstOrNull() == "relay" && it.size >= 2 }
+        .map { it[1].trim() }
+        .filter { it.startsWith(WEBSOCKET_URI) && it.length >= 9 }
+        .distinct()
+        .toList()
+}
+
 fun Event.getSubject() = this.getValue(kind = TagKind.Subject)
 fun Event.getTitle() = this.getValue(kind = TagKind.Title)
 fun Event.getDescription() = this.getValue(kind = TagKind.Description)
@@ -188,6 +201,33 @@ private fun Event.getValue(kind: TagKind): String? {
         .firstOrNull { it.kind() == kind }
         ?.asVec()
         ?.getOrNull(1)
+}
+
+fun Event.getPollOptions(): List<Pair<OptionId, Label>> {
+    return this.tags()
+        .map { it.asVec() }
+        .filter { it.firstOrNull() == "option" && !it.getOrNull(1).isNullOrBlank() }
+        .distinctBy { it[1].trim() }
+        .map { Pair(it[1].trim(), it.getOrNull(2).orEmpty().trim()) }
+}
+
+fun Event.getPollResponse(): OptionId? {
+    return this.tags()
+        .map { it.asVec() }
+        .find { it.firstOrNull() == "response" && !it.getOrNull(1).isNullOrBlank() }
+        ?.getOrNull(1)
+        ?.trim()
+}
+
+fun Event.getEndsAt(): Long? {
+    return this.tags()
+        .map { it.asVec() }
+        .find {
+            it.firstOrNull() == "endsAt"
+                    && !it.getOrNull(1).isNullOrBlank()
+                    && it[1].isDigitsOnly()
+        }
+        ?.let { it[1].toLongOrNull() }
 }
 
 fun Event.getMetadata(): Metadata? {

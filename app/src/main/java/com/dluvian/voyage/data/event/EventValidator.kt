@@ -3,6 +3,7 @@ package com.dluvian.voyage.data.event
 import android.util.Log
 import com.dluvian.voyage.core.MAX_CONTENT_LEN
 import com.dluvian.voyage.core.MAX_KEYS_SQL
+import com.dluvian.voyage.core.MAX_POLL_OPTIONS
 import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.utils.getNormalizedDescription
 import com.dluvian.voyage.core.utils.getNormalizedMuteWords
@@ -13,11 +14,15 @@ import com.dluvian.voyage.core.utils.takeRandom
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.SubId
+import com.dluvian.voyage.data.nostr.getEndsAt
 import com.dluvian.voyage.data.nostr.getKindTag
 import com.dluvian.voyage.data.nostr.getLegacyReplyToId
 import com.dluvian.voyage.data.nostr.getMetadata
 import com.dluvian.voyage.data.nostr.getNip65s
 import com.dluvian.voyage.data.nostr.getParentId
+import com.dluvian.voyage.data.nostr.getPollOptions
+import com.dluvian.voyage.data.nostr.getPollRelays
+import com.dluvian.voyage.data.nostr.getPollResponse
 import com.dluvian.voyage.data.nostr.isTextNote
 import com.dluvian.voyage.data.nostr.secs
 import rust.nostr.protocol.Event
@@ -44,6 +49,8 @@ private val BOOKMARKS_U16 = Kind.fromEnum(KindEnum.Bookmarks).asU16()
 private val MUTE_LIST_U16 = Kind.fromEnum(KindEnum.MuteList).asU16()
 val LOCK_U16: UShort = 398u
 val COMMENT_U16: UShort = 1111u
+val POLL_U16: UShort = 1068u
+val POLL_RESPONSE_U16: UShort = 1018u
 
 class EventValidator(
     private val syncedFilterCache: Map<SubId, List<Filter>>,
@@ -114,6 +121,30 @@ class EventValidator(
                 relayUrl = relayUrl,
                 myPubkey = myPubkeyProvider.getPublicKey()
             )
+
+            POLL_U16 -> {
+                ValidatedPoll(
+                    id = event.id().toHex(),
+                    pubkey = event.author().toHex(),
+                    content = event.content(),
+                    createdAt = event.createdAt().secs(),
+                    relayUrl = relayUrl,
+                    json = event.asJson(),
+                    isMentioningMe = event.isMentioningMe(myPubkey = myPubkeyProvider.getPublicKey()),
+                    options = event.getPollOptions().take(MAX_POLL_OPTIONS),
+                    topics = event.getNormalizedTopics(limit = MAX_TOPICS),
+                    endsAt = event.getEndsAt(),
+                    relays = event.getPollRelays(),
+                )
+            }
+
+            POLL_RESPONSE_U16 -> {
+                ValidatedPollResponse(
+                    pollId = event.eventIds().firstOrNull()?.toHex() ?: return null,
+                    optionId = event.getPollResponse() ?: return null,
+                    pubkey = event.author().toHex()
+                )
+            }
 
             CONTACT_U16 -> {
                 val author = event.author()
@@ -286,7 +317,7 @@ class EventValidator(
                     createdAt = event.createdAt().secs(),
                     relayUrl = relayUrl,
                     json = event.asJson(),
-                    isMentioningMe = event.publicKeys().contains(myPubkey),
+                    isMentioningMe = event.isMentioningMe(myPubkey = myPubkey),
                     topics = event.getNormalizedTopics(limit = MAX_TOPICS),
                     subject = subject.orEmpty(),
                 )
@@ -299,7 +330,7 @@ class EventValidator(
                     createdAt = event.createdAt().secs(),
                     relayUrl = relayUrl,
                     json = event.asJson(),
-                    isMentioningMe = event.publicKeys().contains(myPubkey),
+                    isMentioningMe = event.isMentioningMe(myPubkey = myPubkey),
                     parentId = replyToId,
                 )
             }
@@ -319,7 +350,7 @@ class EventValidator(
                 createdAt = event.createdAt().secs(),
                 relayUrl = relayUrl,
                 json = event.asJson(),
-                isMentioningMe = event.publicKeys().contains(myPubkey),
+                isMentioningMe = event.isMentioningMe(myPubkey = myPubkey),
                 // Null means we don't support the parent (i and a tags)
                 parentId = event.getParentId(),
                 parentKind = event.getKindTag(),
@@ -356,4 +387,9 @@ class EventValidator(
             )
         }
     }
+
+}
+
+private fun Event.isMentioningMe(myPubkey: PublicKey): Boolean {
+    return this.publicKeys().any { it == myPubkey }
 }

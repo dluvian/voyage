@@ -1,6 +1,8 @@
 package com.dluvian.voyage.data.event
 
 import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.core.Label
+import com.dluvian.voyage.core.OptionId
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.nostr.Nip65Relay
@@ -108,6 +110,28 @@ data class ValidatedComment(
     isMentioningMe = isMentioningMe
 )
 
+class ValidatedPoll(
+    override val id: EventIdHex,
+    override val pubkey: PubkeyHex,
+    override val createdAt: Long,
+    override val relayUrl: RelayUrl,
+    override val content: String,
+    override val json: String,
+    override val isMentioningMe: Boolean,
+    val options: List<Pair<OptionId, Label>>,
+    val topics: List<Topic>,
+    val endsAt: Long?,
+    val relays: List<RelayUrl>,
+) : ValidatedThreadableEvent(
+    id = id,
+    pubkey = pubkey,
+    createdAt = createdAt,
+    relayUrl = relayUrl,
+    content = content,
+    json = json,
+    isMentioningMe = isMentioningMe
+)
+
 data class ValidatedCrossPost(
     override val id: EventIdHex,
     override val pubkey: PubkeyHex,
@@ -122,6 +146,12 @@ data class ValidatedCrossPost(
     createdAt = createdAt,
     relayUrl = relayUrl,
 )
+
+data class ValidatedPollResponse(
+    val pollId: EventIdHex,
+    val optionId: OptionId,
+    val pubkey: PubkeyHex,
+) : ValidatedEvent()
 
 data class ValidatedVote(
     val id: EventIdHex,

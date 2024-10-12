@@ -11,8 +11,8 @@ import com.dluvian.voyage.data.nostr.RelayUrl
         SELECT 
             mainEvent.id, 
             mainEvent.pubkey, 
-            poll.subject, 
             mainEvent.content, 
+            poll.endsAt,
             mainEvent.createdAt, 
             mainEvent.relayUrl, 
             mainEvent.isMentioningMe, 
@@ -68,9 +68,9 @@ data class PollView(
     val authorIsInList: Boolean,
     val authorIsLocked: Boolean,
     val myTopic: Topic?,
-    val subject: String,
     val content: String,
     val createdAt: Long,
+    val endsAt: Long?,
     val isUpvoted: Boolean,
     val upvoteCount: Int,
     val commentCount: Int, // no legacy

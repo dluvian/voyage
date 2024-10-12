@@ -19,8 +19,7 @@ import com.dluvian.voyage.data.room.entity.main.MainEventEntity
 )
 data class PollEntity(
     val eventId: EventIdHex,
-    val subject: String?,
     val relay1: RelayUrl?,
     val relay2: RelayUrl?,
-    val endsAt: Long,
+    val endsAt: Long?,
 )
