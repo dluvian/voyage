@@ -123,17 +123,24 @@ class EventValidator(
             )
 
             POLL_U16 -> {
+                val endsAt = event.getEndsAt()
+                val createdAt = event.createdAt().secs()
+                if (endsAt != null && endsAt <= createdAt) return null
+
+                val options = event.getPollOptions().take(MAX_POLL_OPTIONS)
+                if (options.size < 2) return null
+
                 ValidatedPoll(
                     id = event.id().toHex(),
                     pubkey = event.author().toHex(),
                     content = event.content(),
-                    createdAt = event.createdAt().secs(),
+                    createdAt = createdAt,
                     relayUrl = relayUrl,
                     json = event.asJson(),
                     isMentioningMe = event.isMentioningMe(myPubkey = myPubkeyProvider.getPublicKey()),
-                    options = event.getPollOptions().take(MAX_POLL_OPTIONS),
+                    options = options,
                     topics = event.getNormalizedTopics(limit = MAX_TOPICS),
-                    endsAt = event.getEndsAt(),
+                    endsAt = endsAt,
                     relays = event.getPollRelays(),
                 )
             }
