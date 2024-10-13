@@ -8,7 +8,7 @@ import com.dluvian.voyage.data.event.ValidatedPollResponse
 
 @Entity(
     tableName = "pollResponse",
-    primaryKeys = ["pollId", "optionId", "pubkey"],
+    primaryKeys = ["pollId", "pubkey"],
     foreignKeys = [
         ForeignKey(
             entity = PollOptionEntity::class,

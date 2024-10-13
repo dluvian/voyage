@@ -5,6 +5,7 @@ import androidx.compose.runtime.Stable
 import com.dluvian.voyage.data.room.view.CommentView
 import com.dluvian.voyage.data.room.view.CrossPostView
 import com.dluvian.voyage.data.room.view.LegacyReplyView
+import com.dluvian.voyage.data.room.view.PollView
 import com.dluvian.voyage.data.room.view.RootPostView
 
 @Immutable
@@ -41,6 +42,22 @@ sealed class TrustType {
                 isMuted = rootPostView.authorIsMuted,
                 isInList = rootPostView.authorIsInList,
                 isLocked = rootPostView.authorIsLocked,
+            )
+        }
+
+
+        @Stable
+        fun from(
+            pollView: PollView,
+            isFriend: Boolean? = pollView.authorIsFriend
+        ): TrustType {
+            return from(
+                isOneself = pollView.authorIsOneself,
+                isFriend = isFriend ?: pollView.authorIsFriend,
+                isWebOfTrust = pollView.authorIsTrusted,
+                isMuted = pollView.authorIsMuted,
+                isInList = pollView.authorIsInList,
+                isLocked = pollView.authorIsLocked,
             )
         }
 

@@ -25,6 +25,7 @@ import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.room.AppDatabase
 import com.dluvian.voyage.data.room.view.CrossPostView
+import com.dluvian.voyage.data.room.view.PollView
 import com.dluvian.voyage.data.room.view.RootPostView
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -65,12 +66,12 @@ class FeedProvider(
         setting: FeedSetting,
         forceSubscription: Boolean,
     ): Flow<List<MainEvent>> {
-            nostrSubscriber.subFeed(
-                until = subUntil,
-                limit = size,
-                setting = setting,
-                forceSubscription = forceSubscription
-            )
+        nostrSubscriber.subFeed(
+            until = subUntil,
+            limit = size,
+            setting = setting,
+            forceSubscription = forceSubscription
+        )
 
         val mutedWords = muteProvider.getMutedWords()
 
@@ -117,22 +118,25 @@ class FeedProvider(
     ): Flow<List<MainEvent>> {
         val rootPosts = getRootPostFlow(setting = setting, until = until, size = size)
         val crossPosts = getCrossPostFlow(setting = setting, until = until, size = size)
+        val polls = getPollFlow(setting = setting, until = until, size = size)
 
         return combine(
             rootPosts.firstThenDistinctDebounce(SHORT_DEBOUNCE),
             crossPosts.firstThenDistinctDebounce(SHORT_DEBOUNCE),
-            forcedVotes,
-            forcedFollows,
-            forcedBookmarks,
-        ) { root, cross, votes, follows, bookmarks ->
+            polls.firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            ForcedData.combineFlows(
+                votes = forcedVotes,
+                follows = forcedFollows,
+                bookmarks = forcedBookmarks
+            )
+        ) { root, cross, poll, forced ->
             mergeToMainEventUIList(
                 roots = root,
                 crossPosts = cross,
+                polls = poll,
                 legacyReplies = emptyList(),
                 comments = emptyList(),
-                votes = votes,
-                follows = follows,
-                bookmarks = bookmarks,
+                forcedData = forced,
                 size = size,
                 annotatedStringProvider = annotatedStringProvider
             )
@@ -203,6 +207,38 @@ class FeedProvider(
         }
     }
 
+    private fun getPollFlow(
+        setting: MainFeedSetting,
+        until: Long,
+        size: Int,
+    ): Flow<List<PollView>> {
+        return when (setting) {
+            is HomeFeedSetting -> room.homeFeedDao().getHomePollFlow(
+                setting = setting,
+                until = until,
+                size = size
+            )
+
+            is TopicFeedSetting -> room.feedDao().getTopicPollFlow(
+                topic = setting.topic,
+                until = until,
+                size = size
+            )
+
+            is ProfileFeedSetting -> room.feedDao().getProfilePollFlow(
+                pubkey = setting.nprofile.publicKey().toHex(),
+                until = until,
+                size = size
+            )
+
+            is ListFeedSetting -> room.feedDao().getListPollFlow(
+                identifier = setting.identifier,
+                until = until,
+                size = size
+            )
+        }
+    }
+
     private fun getReplyFeedFlow(
         setting: ReplyFeedSetting,
         until: Long,
@@ -238,7 +274,7 @@ class FeedProvider(
     ): Flow<List<MainEvent>> {
         return combine(
             room.inboxDao()
-                .getMentionRootFlow(setting = setting, until = until, size = size)
+                .getInboxRootFlow(setting = setting, until = until, size = size)
                 .firstThenDistinctDebounce(SHORT_DEBOUNCE),
             room.inboxDao()
                 .getInboxReplyFlow(setting = setting, until = until, size = size)
@@ -246,11 +282,15 @@ class FeedProvider(
             room.inboxDao()
                 .getInboxCommentFlow(setting = setting, until = until, size = size)
                 .firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            room.inboxDao()
+                .getInboxPollFlow(setting = setting, until = until, size = size)
+                .firstThenDistinctDebounce(SHORT_DEBOUNCE),
             getForcedFlow()
-        ) { roots, legacyReplies, comments, forced ->
+        ) { roots, legacyReplies, comments, polls, forced ->
             mergeToMainEventUIList(
                 roots = roots,
                 crossPosts = emptyList(),
+                polls = polls,
                 legacyReplies = legacyReplies,
                 comments = comments,
                 forcedData = forced,
@@ -271,11 +311,15 @@ class FeedProvider(
             room.bookmarkDao()
                 .getCommentFlow(until = until, size = size)
                 .firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            room.bookmarkDao()
+                .getPollFlow(until = until, size = size)
+                .firstThenDistinctDebounce(SHORT_DEBOUNCE),
             getForcedFlow()
-        ) { roots, legacyReplies, comments, forced ->
+        ) { roots, legacyReplies, comments, polls, forced ->
             mergeToMainEventUIList(
                 roots = roots,
                 crossPosts = emptyList(),
+                polls = polls,
                 legacyReplies = legacyReplies,
                 comments = comments,
                 forcedData = forced,

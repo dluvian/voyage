@@ -4,7 +4,10 @@ import androidx.room.DatabaseView
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.core.model.Poll
+import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.data.nostr.RelayUrl
+import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 
 @DatabaseView(
     """
@@ -78,24 +81,24 @@ data class PollView(
     val isBookmarked: Boolean,
     val isMentioningMe: Boolean,
 ) {
-//    fun mapToPollUI(
-//        forcedVotes: Map<EventIdHex, Boolean>,
-//        forcedFollows: Map<PubkeyHex, Boolean>,
-//        forcedBookmarks: Map<EventIdHex, Boolean>,
-//        annotatedStringProvider: AnnotatedStringProvider,
-//    ): RootPost {
-//        val pollUI = RootPost.from(
-//            pollView = this,
-//            annotatedStringProvider = annotatedStringProvider
-//        )
-//        val vote = forcedVotes.getOrDefault(this.id, null)
-//        val follow = forcedFollows.getOrDefault(this.pubkey, null)
-//        val bookmark = forcedBookmarks.getOrDefault(this.id, null)
-//        return if (vote != null || follow != null || bookmark != null) pollUI.copy(
-//            isUpvoted = vote ?: pollUI.isUpvoted,
-//            trustType = TrustType.from(pollView = this, isFriend = follow),
-//            isBookmarked = bookmark ?: pollUI.isBookmarked
-//        )
-//        else pollUI
-//    }
+    fun mapToPollUI(
+        forcedVotes: Map<EventIdHex, Boolean>,
+        forcedFollows: Map<PubkeyHex, Boolean>,
+        forcedBookmarks: Map<EventIdHex, Boolean>,
+        annotatedStringProvider: AnnotatedStringProvider,
+    ): Poll {
+        val pollUI = Poll.from(
+            pollView = this,
+            annotatedStringProvider = annotatedStringProvider
+        )
+        val vote = forcedVotes.getOrDefault(this.id, null)
+        val follow = forcedFollows.getOrDefault(this.pubkey, null)
+        val bookmark = forcedBookmarks.getOrDefault(this.id, null)
+        return if (vote != null || follow != null || bookmark != null) pollUI.copy(
+            isUpvoted = vote ?: pollUI.isUpvoted,
+            trustType = TrustType.from(pollView = this, isFriend = follow),
+            isBookmarked = bookmark ?: pollUI.isBookmarked
+        )
+        else pollUI
+    }
 }

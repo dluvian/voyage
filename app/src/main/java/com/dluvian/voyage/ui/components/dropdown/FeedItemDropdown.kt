@@ -29,6 +29,7 @@ import com.dluvian.voyage.core.model.MainEvent
 import com.dluvian.voyage.core.model.Muted
 import com.dluvian.voyage.core.model.NoTrust
 import com.dluvian.voyage.core.model.Oneself
+import com.dluvian.voyage.core.model.Poll
 import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.model.WebTrust
 import com.dluvian.voyage.core.utils.copyAndToast
@@ -60,15 +61,13 @@ fun FeedItemDropdown(
         )
 
         when (mainEvent) {
-            is RootPost -> {}
+            is RootPost, is CrossPost, is Poll -> {}
             is LegacyReply, is Comment -> SimpleDropdownItem(
                 text = stringResource(id = R.string.open_as_root),
                 onClick = {
                     onUpdate(OpenThreadRaw(nevent = createNevent(hex = mainEvent.id)))
                     onDismiss()
                 })
-
-            is CrossPost -> {}
         }
 
         val clip = LocalClipboardManager.current

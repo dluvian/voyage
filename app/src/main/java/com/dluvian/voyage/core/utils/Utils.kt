@@ -36,6 +36,7 @@ import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.data.room.view.CommentView
 import com.dluvian.voyage.data.room.view.CrossPostView
 import com.dluvian.voyage.data.room.view.LegacyReplyView
+import com.dluvian.voyage.data.room.view.PollView
 import com.dluvian.voyage.data.room.view.RootPostView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -271,6 +272,7 @@ fun createProcessTextIntent(text: String, info: ResolveInfo): Intent {
 fun mergeToMainEventUIList(
     roots: Collection<RootPostView>,
     crossPosts: Collection<CrossPostView>,
+    polls: Collection<PollView>,
     legacyReplies: Collection<LegacyReplyView>,
     comments: Collection<CommentView>,
     forcedData: ForcedData,
@@ -280,6 +282,7 @@ fun mergeToMainEventUIList(
     return mergeToMainEventUIList(
         roots = roots,
         crossPosts = crossPosts,
+        polls = polls,
         legacyReplies = legacyReplies,
         comments = comments,
         votes = forcedData.votes,
@@ -293,6 +296,7 @@ fun mergeToMainEventUIList(
 fun mergeToMainEventUIList(
     roots: Collection<RootPostView>,
     crossPosts: Collection<CrossPostView>,
+    polls: Collection<PollView>,
     legacyReplies: Collection<LegacyReplyView>,
     comments: Collection<CommentView>,
     votes: Map<EventIdHex, Boolean>,
@@ -324,6 +328,16 @@ fun mergeToMainEventUIList(
     for (cross in crossPosts) {
         if (!applicableTimestamps.contains(cross.createdAt)) continue
         val mapped = cross.mapToCrossPostUI(
+            forcedVotes = votes,
+            forcedFollows = follows,
+            forcedBookmarks = bookmarks,
+            annotatedStringProvider = annotatedStringProvider
+        )
+        result.add(mapped)
+    }
+    for (poll in polls) {
+        if (!applicableTimestamps.contains(poll.createdAt)) continue
+        val mapped = poll.mapToPollUI(
             forcedVotes = votes,
             forcedFollows = follows,
             forcedBookmarks = bookmarks,
@@ -369,6 +383,7 @@ fun mergeToSomeReplyUIList(
     mergeToMainEventUIList(
         roots = emptyList(),
         crossPosts = emptyList(),
+        polls = emptyList(),
         legacyReplies = legacyReplies,
         comments = comments,
         votes = votes,

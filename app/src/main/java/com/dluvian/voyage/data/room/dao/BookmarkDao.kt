@@ -5,6 +5,7 @@ import androidx.room.Query
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.data.room.view.CommentView
 import com.dluvian.voyage.data.room.view.LegacyReplyView
+import com.dluvian.voyage.data.room.view.PollView
 import com.dluvian.voyage.data.room.view.RootPostView
 import kotlinx.coroutines.flow.Flow
 
@@ -16,9 +17,10 @@ private const val COND = "WHERE createdAt <= :until " +
 // No crossposts in bookmark feed
 private const val AND_NO_CROSS = "AND id NOT IN (SELECT eventId FROM crossPost) "
 
-private const val ROOT_FEED_QUERY = "SELECT * FROM RootPostView $COND"
-private const val REPLY_FEED_QUERY = "SELECT * FROM LegacyReplyView $COND"
-private const val COMMENT_FEED_QUERY = "SELECT * FROM CommentView $COND"
+private const val ROOT_QUERY = "SELECT * FROM RootPostView $COND"
+private const val REPLY_QUERY = "SELECT * FROM LegacyReplyView $COND"
+private const val COMMENT_QUERY = "SELECT * FROM CommentView $COND"
+private const val POLL_QUERY = "SELECT * FROM PollView $COND"
 
 private const val BOOKMARKED_EVENTS_EXIST_QUERY = "SELECT EXISTS(" +
         "SELECT * " +
@@ -38,23 +40,29 @@ interface BookmarkDao {
     @Query("SELECT eventId FROM bookmark WHERE eventId NOT IN (SELECT id FROM mainEvent)")
     suspend fun getUnknownBookmarks(): List<EventIdHex>
 
-    @Query(ROOT_FEED_QUERY)
+    @Query(ROOT_QUERY)
     fun getRootPostsFlow(until: Long, size: Int): Flow<List<RootPostView>>
 
-    @Query(ROOT_FEED_QUERY)
+    @Query(ROOT_QUERY)
     suspend fun getRootPosts(until: Long, size: Int): List<RootPostView>
 
-    @Query(REPLY_FEED_QUERY)
+    @Query(REPLY_QUERY)
     fun getReplyFlow(until: Long, size: Int): Flow<List<LegacyReplyView>>
 
-    @Query(REPLY_FEED_QUERY)
+    @Query(REPLY_QUERY)
     suspend fun getReplies(until: Long, size: Int): List<LegacyReplyView>
 
-    @Query(COMMENT_FEED_QUERY)
+    @Query(COMMENT_QUERY)
     fun getCommentFlow(until: Long, size: Int): Flow<List<CommentView>>
 
-    @Query(COMMENT_FEED_QUERY)
+    @Query(COMMENT_QUERY)
     suspend fun getComments(until: Long, size: Int): List<CommentView>
+
+    @Query(POLL_QUERY)
+    fun getPollFlow(until: Long, size: Int): Flow<List<PollView>>
+
+    @Query(POLL_QUERY)
+    suspend fun getPolls(until: Long, size: Int): List<PollView>
 
     @Query(BOOKMARKED_EVENTS_EXIST_QUERY)
     fun hasBookmarkedPostsFlow(): Flow<Boolean>

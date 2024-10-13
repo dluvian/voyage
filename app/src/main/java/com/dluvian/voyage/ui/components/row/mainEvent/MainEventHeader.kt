@@ -33,6 +33,7 @@ import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.Comment
 import com.dluvian.voyage.core.model.CrossPost
 import com.dluvian.voyage.core.model.LegacyReply
+import com.dluvian.voyage.core.model.Poll
 import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.ui.components.icon.ClickableTrustIcon
@@ -74,6 +75,7 @@ fun MainEventHeader(
             when (val mainEvent = ctx.mainEvent) {
                 is RootPost -> mainEvent.myTopic
                 is CrossPost -> mainEvent.myTopic
+                is Poll -> mainEvent.myTopic
                 is LegacyReply -> null
                 is Comment -> null
             }?.let { topic ->
@@ -115,7 +117,7 @@ private fun MainEventHeaderIconsAndName(
                 onUpdate = onUpdate
             )
 
-            is LegacyReply, is RootPost, is Comment -> {}
+            is LegacyReply, is RootPost, is Comment, is Poll -> {}
         }
     }
 }

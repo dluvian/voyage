@@ -28,6 +28,7 @@ import com.dluvian.voyage.core.ThreadViewToggleCollapse
 import com.dluvian.voyage.core.model.Comment
 import com.dluvian.voyage.core.model.CrossPost
 import com.dluvian.voyage.core.model.LegacyReply
+import com.dluvian.voyage.core.model.Poll
 import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.model.ThreadableMainEvent
 import com.dluvian.voyage.data.nostr.createNevent
@@ -53,7 +54,7 @@ fun MainEventRow(
 
         is ThreadRootCtx -> {
             when (ctx.threadableMainEvent) {
-                is RootPost -> MainEventMainRow(
+                is RootPost, is Poll -> MainEventMainRow(
                     ctx = ctx,
                     showAuthorName = showAuthorName,
                     onUpdate = onUpdate
@@ -169,6 +170,7 @@ private fun MainEventMainRow(
                     is FeedCtx -> {
                         when (ctx.mainEvent) {
                             is RootPost,
+                            is Poll,
                             is CrossPost -> CountedCommentButton(ctx = ctx, onUpdate = onUpdate)
 
                             is LegacyReply, is Comment -> ReplyIconButton(

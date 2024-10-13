@@ -6,11 +6,13 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.utils.threadableKinds
 import com.dluvian.voyage.data.event.COMMENT_U16
+import com.dluvian.voyage.data.event.POLL_U16
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 import com.dluvian.voyage.data.room.view.CommentView
 import com.dluvian.voyage.data.room.view.CrossPostView
 import com.dluvian.voyage.data.room.view.LegacyReplyView
+import com.dluvian.voyage.data.room.view.PollView
 import com.dluvian.voyage.data.room.view.RootPostView
 import rust.nostr.protocol.Kind
 import rust.nostr.protocol.KindEnum
@@ -33,22 +35,23 @@ sealed class MainEvent(
             is RootPost, is LegacyReply -> Kind.fromEnum(KindEnum.TextNote)
             is CrossPost -> null
             is Comment -> Kind(COMMENT_U16)
+            is Poll -> Kind(POLL_U16)
         }
     }
 
     fun getRelevantId() = when (this) {
-        is RootPost, is LegacyReply, is Comment -> this.id
+        is RootPost, is LegacyReply, is Comment, is Poll -> this.id
         is CrossPost -> this.crossPostedId
     }
 
     fun getRelevantPubkey() = when (this) {
-        is RootPost, is LegacyReply, is Comment -> this.pubkey
+        is RootPost, is LegacyReply, is Comment, is Poll -> this.pubkey
         is CrossPost -> this.crossPostedPubkey
     }
 
     fun getRelevantSubject() = when (this) {
         is RootPost -> this.subject
-        is LegacyReply, is Comment -> null
+        is LegacyReply, is Comment, is Poll -> null
         is CrossPost -> this.crossPostedSubject
     }
 }
@@ -120,7 +123,7 @@ data class RootPost(
                 trustType = TrustType.from(rootPostView = rootPostView),
                 myTopic = rootPostView.myTopic,
                 createdAt = rootPostView.createdAt,
-                subject = annotatedStringProvider.annotate(rootPostView.subject.orEmpty()),
+                subject = annotatedStringProvider.annotate(rootPostView.subject),
                 content = annotatedStringProvider.annotate(rootPostView.content),
                 upvoteCount = rootPostView.upvoteCount,
                 relayUrl = rootPostView.relayUrl,
@@ -128,6 +131,56 @@ data class RootPost(
                 isBookmarked = rootPostView.isBookmarked,
                 legacyReplyCount = rootPostView.legacyReplyCount,
                 commentCount = rootPostView.commentCount,
+            )
+        }
+    }
+}
+
+@Immutable
+data class Poll(
+    override val id: EventIdHex,
+    override val pubkey: PubkeyHex,
+    override val content: AnnotatedString,
+    override val authorName: String?,
+    override val trustType: TrustType,
+    override val createdAt: Long,
+    override val upvoteCount: Int,
+    override val relayUrl: RelayUrl,
+    override val isUpvoted: Boolean,
+    override val isBookmarked: Boolean,
+    val myTopic: String?,
+    val commentCount: Int,
+) : ThreadableMainEvent(
+    id = id,
+    pubkey = pubkey,
+    content = content,
+    authorName = authorName,
+    trustType = trustType,
+    relayUrl = relayUrl,
+    replyCount = commentCount,
+    upvoteCount = upvoteCount,
+    createdAt = createdAt,
+    isUpvoted = isUpvoted,
+    isBookmarked = isBookmarked,
+) {
+    companion object {
+        fun from(
+            pollView: PollView,
+            annotatedStringProvider: AnnotatedStringProvider
+        ): Poll {
+            return Poll(
+                id = pollView.id,
+                pubkey = pollView.pubkey,
+                authorName = pollView.authorName,
+                trustType = TrustType.from(pollView = pollView),
+                myTopic = pollView.myTopic,
+                createdAt = pollView.createdAt,
+                content = annotatedStringProvider.annotate(pollView.content),
+                upvoteCount = pollView.upvoteCount,
+                relayUrl = pollView.relayUrl,
+                isUpvoted = pollView.isUpvoted,
+                isBookmarked = pollView.isBookmarked,
+                commentCount = pollView.commentCount,
             )
         }
     }
