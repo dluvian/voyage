@@ -8,6 +8,7 @@ import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.NoPubkeys
 import com.dluvian.voyage.data.model.WebOfTrustPubkeys
 import com.dluvian.voyage.data.room.view.CrossPostView
+import com.dluvian.voyage.data.room.view.PollOptionView
 import com.dluvian.voyage.data.room.view.PollView
 import com.dluvian.voyage.data.room.view.RootPostView
 import kotlinx.coroutines.flow.Flow
@@ -18,6 +19,7 @@ private const val CREATED_AT = "WHERE createdAt <= :until "
 private const val ROOT = "FROM RootPostView $CREATED_AT"
 private const val CROSS = "FROM CrossPostView $CREATED_AT"
 private const val POLL = "FROM PollView $CREATED_AT"
+private const val POLL_OPTION = "FROM PollOptionView "
 
 private const val ROOT_COND = "AND authorIsOneself = 0 " +
         "AND authorIsMuted = 0 " +
@@ -54,6 +56,10 @@ private const val TOPIC_ONLY_POLL_QUERY = "SELECT * $TOPIC_ONLY_MAIN_POLL"
 private const val TOPIC_ONLY_CREATED_AT_POLL_QUERY = "SELECT createdAt $TOPIC_ONLY_MAIN_POLL"
 private const val TOPIC_ONLY_EXISTS_POLL_QUERY = "SELECT EXISTS($TOPIC_ONLY_POLL_QUERY)"
 
+private const val TOPIC_ONLY_MAIN_POLL_OPTION =
+    "$POLL_OPTION WHERE pollId IN (SELECT id $TOPIC_ONLY_MAIN_POLL)"
+private const val TOPIC_ONLY_POLL_OPTION_QUERY = "SELECT * $TOPIC_ONLY_MAIN_POLL_OPTION"
+
 private const val FRIEND_ONLY_MAIN_ROOT = "$ROOT $FRIEND_ONLY_COND $ROOT_COND"
 private const val FRIEND_ONLY_ROOT_QUERY = "SELECT * $FRIEND_ONLY_MAIN_ROOT"
 private const val FRIEND_ONLY_CREATED_AT_ROOT_QUERY = "SELECT createdAt $FRIEND_ONLY_MAIN_ROOT"
@@ -69,6 +75,10 @@ private const val FRIEND_ONLY_POLL_QUERY = "SELECT * $FRIEND_ONLY_MAIN_POLL"
 private const val FRIEND_ONLY_CREATED_AT_POLL_QUERY = "SELECT createdAt $FRIEND_ONLY_MAIN_POLL"
 private const val FRIEND_ONLY_EXISTS_POLL_QUERY = "SELECT EXISTS($FRIEND_ONLY_POLL_QUERY)"
 
+private const val FRIEND_ONLY_MAIN_POLL_OPTION =
+    "$POLL_OPTION WHERE pollId IN (SELECT id $FRIEND_ONLY_MAIN_POLL)"
+private const val FRIEND_ONLY_POLL_OPTION_QUERY = "SELECT * $FRIEND_ONLY_MAIN_POLL_OPTION"
+
 private const val WOT_ONLY_MAIN_ROOT = "$ROOT $WOT_ONLY_COND $ROOT_COND"
 private const val WOT_ONLY_ROOT_QUERY = "SELECT * $WOT_ONLY_MAIN_ROOT"
 private const val WOT_ONLY_CREATED_AT_ROOT_QUERY = "SELECT createdAt $WOT_ONLY_MAIN_ROOT"
@@ -83,6 +93,10 @@ private const val WOT_ONLY_MAIN_POLL = "$POLL $WOT_ONLY_COND $POLL_COND"
 private const val WOT_ONLY_POLL_QUERY = "SELECT * $WOT_ONLY_MAIN_POLL"
 private const val WOT_ONLY_CREATED_AT_POLL_QUERY = "SELECT createdAt $WOT_ONLY_MAIN_POLL"
 private const val WOT_ONLY_EXISTS_POLL_QUERY = "SELECT EXISTS($WOT_ONLY_POLL_QUERY)"
+
+private const val WOT_ONLY_MAIN_POLL_OPTION =
+    "$POLL_OPTION WHERE pollId IN (SELECT id $WOT_ONLY_MAIN_POLL)"
+private const val WOT_ONLY_POLL_OPTION_QUERY = "SELECT * $WOT_ONLY_MAIN_POLL_OPTION"
 
 private const val FRIEND_OR_TOPIC_MAIN_ROOT = "$ROOT $FRIEND_OR_TOPIC_COND $ROOT_COND"
 private const val FRIEND_OR_TOPIC_ROOT_QUERY = "SELECT * $FRIEND_OR_TOPIC_MAIN_ROOT"
@@ -102,6 +116,10 @@ private const val FRIEND_OR_TOPIC_CREATED_AT_POLL_QUERY =
     "SELECT createdAt $FRIEND_OR_TOPIC_MAIN_POLL"
 private const val FRIEND_OR_TOPIC_EXISTS_POLL_QUERY = "SELECT EXISTS($FRIEND_OR_TOPIC_POLL_QUERY)"
 
+private const val FRIEND_OR_TOPIC_MAIN_POLL_OPTION =
+    "$POLL_OPTION WHERE pollId IN (SELECT id $FRIEND_OR_TOPIC_MAIN_POLL)"
+private const val FRIEND_OR_TOPIC_POLL_OPTION_QUERY = "SELECT * $FRIEND_OR_TOPIC_MAIN_POLL_OPTION"
+
 private const val WOT_OR_TOPIC_MAIN_ROOT = "$ROOT $WOT_OR_TOPIC_COND $ROOT_COND"
 private const val WOT_OR_TOPIC_ROOT_QUERY = "SELECT * $WOT_OR_TOPIC_MAIN_ROOT"
 private const val WOT_OR_TOPIC_CREATED_AT_ROOT_QUERY = "SELECT createdAt $WOT_OR_TOPIC_MAIN_ROOT"
@@ -117,6 +135,10 @@ private const val WOT_OR_TOPIC_POLL_QUERY = "SELECT * $WOT_OR_TOPIC_MAIN_POLL"
 private const val WOT_OR_TOPIC_CREATED_AT_POLL_QUERY = "SELECT createdAt $WOT_OR_TOPIC_MAIN_POLL"
 private const val WOT_OR_TOPIC_EXISTS_POLL_QUERY = "SELECT EXISTS($WOT_OR_TOPIC_POLL_QUERY)"
 
+private const val WOT_OR_TOPIC_MAIN_POLL_OPTION =
+    "$POLL_OPTION WHERE pollId IN (SELECT id $FRIEND_OR_TOPIC_MAIN_POLL)"
+private const val WOT_OR_TOPIC_POLL_OPTION_QUERY = "SELECT * $WOT_OR_TOPIC_MAIN_POLL_OPTION"
+
 private const val GLOBAL_MAIN_ROOT = "$ROOT $ROOT_COND"
 private const val GLOBAL_ROOT_QUERY = "SELECT * $GLOBAL_MAIN_ROOT"
 private const val GLOBAL_CREATED_AT_ROOT_QUERY = "SELECT createdAt $GLOBAL_MAIN_ROOT"
@@ -131,6 +153,10 @@ private const val GLOBAL_MAIN_POLL = "$POLL $POLL_COND"
 private const val GLOBAL_POLL_QUERY = "SELECT * $GLOBAL_MAIN_POLL"
 private const val GLOBAL_CREATED_AT_POLL_QUERY = "SELECT createdAt $GLOBAL_MAIN_POLL"
 private const val GLOBAL_EXISTS_POLL_QUERY = "SELECT EXISTS($GLOBAL_POLL_QUERY)"
+
+private const val GLOBAL_MAIN_POLL_OPTION =
+    "$POLL_OPTION WHERE pollId IN (SELECT id $GLOBAL_MAIN_POLL)"
+private const val GLOBAL_POLL_OPTION_QUERY = "SELECT * $GLOBAL_MAIN_POLL_OPTION"
 
 @Dao
 interface HomeFeedDao {
@@ -222,6 +248,36 @@ interface HomeFeedDao {
             }
 
             Global -> internalGetGlobalPollFlow(until = until, size = size)
+        }
+    }
+
+    fun getHomePollOptionFlow(
+        setting: HomeFeedSetting,
+        until: Long,
+        size: Int,
+    ): Flow<List<PollOptionView>> {
+        val withMyTopics = setting.topicSelection.isMyTopics()
+
+        return when (setting.pubkeySelection) {
+            NoPubkeys -> if (withMyTopics) {
+                internalGetTopicPollOptionFlow(until = until, size = size)
+            } else {
+                flowOf(emptyList())
+            }
+
+            FriendPubkeysNoLock -> if (withMyTopics) {
+                internalGetFriendOrTopicPollOptionFlow(until = until, size = size)
+            } else {
+                internalGetFriendPollOptionFlow(until = until, size = size)
+            }
+
+            WebOfTrustPubkeys -> if (withMyTopics) {
+                internalGetWotOrTopicPollOptionFlow(until = until, size = size)
+            } else {
+                internalGetWotPollOptionFlow(until = until, size = size)
+            }
+
+            Global -> internalGetGlobalPollOptionFlow(until = until, size = size)
         }
     }
 
@@ -424,6 +480,9 @@ interface HomeFeedDao {
     @Query(TOPIC_ONLY_POLL_QUERY)
     fun internalGetTopicPollFlow(until: Long, size: Int): Flow<List<PollView>>
 
+    @Query(TOPIC_ONLY_POLL_OPTION_QUERY)
+    fun internalGetTopicPollOptionFlow(until: Long, size: Int): Flow<List<PollOptionView>>
+
     @Query(FRIEND_OR_TOPIC_ROOT_QUERY)
     fun internalGetFriendOrTopicRootFlow(until: Long, size: Int): Flow<List<RootPostView>>
 
@@ -432,6 +491,9 @@ interface HomeFeedDao {
 
     @Query(FRIEND_OR_TOPIC_POLL_QUERY)
     fun internalGetFriendOrTopicPollFlow(until: Long, size: Int): Flow<List<PollView>>
+
+    @Query(FRIEND_OR_TOPIC_POLL_OPTION_QUERY)
+    fun internalGetFriendOrTopicPollOptionFlow(until: Long, size: Int): Flow<List<PollOptionView>>
 
     @Query(FRIEND_ONLY_ROOT_QUERY)
     fun internalGetFriendRootFlow(until: Long, size: Int): Flow<List<RootPostView>>
@@ -442,6 +504,9 @@ interface HomeFeedDao {
     @Query(FRIEND_ONLY_POLL_QUERY)
     fun internalGetFriendPollFlow(until: Long, size: Int): Flow<List<PollView>>
 
+    @Query(FRIEND_ONLY_POLL_OPTION_QUERY)
+    fun internalGetFriendPollOptionFlow(until: Long, size: Int): Flow<List<PollOptionView>>
+
     @Query(WOT_OR_TOPIC_ROOT_QUERY)
     fun internalGetWotOrTopicRootFlow(until: Long, size: Int): Flow<List<RootPostView>>
 
@@ -450,6 +515,9 @@ interface HomeFeedDao {
 
     @Query(WOT_OR_TOPIC_POLL_QUERY)
     fun internalGetWotOrTopicPollFlow(until: Long, size: Int): Flow<List<PollView>>
+
+    @Query(WOT_OR_TOPIC_POLL_OPTION_QUERY)
+    fun internalGetWotOrTopicPollOptionFlow(until: Long, size: Int): Flow<List<PollOptionView>>
 
     @Query(WOT_ONLY_ROOT_QUERY)
     fun internalGetWotRootFlow(until: Long, size: Int): Flow<List<RootPostView>>
@@ -460,6 +528,9 @@ interface HomeFeedDao {
     @Query(WOT_ONLY_POLL_QUERY)
     fun internalGetWotPollFlow(until: Long, size: Int): Flow<List<PollView>>
 
+    @Query(WOT_ONLY_POLL_OPTION_QUERY)
+    fun internalGetWotPollOptionFlow(until: Long, size: Int): Flow<List<PollOptionView>>
+
     @Query(GLOBAL_ROOT_QUERY)
     fun internalGetGlobalRootFlow(until: Long, size: Int): Flow<List<RootPostView>>
 
@@ -468,6 +539,9 @@ interface HomeFeedDao {
 
     @Query(GLOBAL_POLL_QUERY)
     fun internalGetGlobalPollFlow(until: Long, size: Int): Flow<List<PollView>>
+
+    @Query(GLOBAL_POLL_OPTION_QUERY)
+    fun internalGetGlobalPollOptionFlow(until: Long, size: Int): Flow<List<PollOptionView>>
 
     @Query(TOPIC_ONLY_ROOT_QUERY)
     suspend fun internalGetTopicRoot(until: Long, size: Int): List<RootPostView>

@@ -12,6 +12,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 import com.dluvian.voyage.data.room.view.CommentView
 import com.dluvian.voyage.data.room.view.CrossPostView
 import com.dluvian.voyage.data.room.view.LegacyReplyView
+import com.dluvian.voyage.data.room.view.PollOptionView
 import com.dluvian.voyage.data.room.view.PollView
 import com.dluvian.voyage.data.room.view.RootPostView
 import rust.nostr.protocol.Kind
@@ -150,6 +151,7 @@ data class Poll(
     override val isBookmarked: Boolean,
     val myTopic: String?,
     val commentCount: Int,
+    val options: List<PollOptionView>,
 ) : ThreadableMainEvent(
     id = id,
     pubkey = pubkey,
@@ -166,6 +168,7 @@ data class Poll(
     companion object {
         fun from(
             pollView: PollView,
+            pollOptions: List<PollOptionView>,
             annotatedStringProvider: AnnotatedStringProvider
         ): Poll {
             return Poll(
@@ -181,6 +184,7 @@ data class Poll(
                 isUpvoted = pollView.isUpvoted,
                 isBookmarked = pollView.isBookmarked,
                 commentCount = pollView.commentCount,
+                options = pollOptions,
             )
         }
     }

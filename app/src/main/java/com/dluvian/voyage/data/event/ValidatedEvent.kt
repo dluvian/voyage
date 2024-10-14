@@ -151,6 +151,7 @@ data class ValidatedPollResponse(
     val pollId: EventIdHex,
     val optionId: OptionId,
     val pubkey: PubkeyHex,
+    val createdAt: Long,
 ) : ValidatedEvent()
 
 data class ValidatedVote(

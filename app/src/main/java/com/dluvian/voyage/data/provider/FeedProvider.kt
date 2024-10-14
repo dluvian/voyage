@@ -25,6 +25,7 @@ import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.room.AppDatabase
 import com.dluvian.voyage.data.room.view.CrossPostView
+import com.dluvian.voyage.data.room.view.PollOptionView
 import com.dluvian.voyage.data.room.view.PollView
 import com.dluvian.voyage.data.room.view.RootPostView
 import kotlinx.coroutines.flow.Flow
@@ -119,21 +120,24 @@ class FeedProvider(
         val rootPosts = getRootPostFlow(setting = setting, until = until, size = size)
         val crossPosts = getCrossPostFlow(setting = setting, until = until, size = size)
         val polls = getPollFlow(setting = setting, until = until, size = size)
+        val pollOptions = getPollOptionFlow(setting = setting, until = until, size = size)
 
         return combine(
             rootPosts.firstThenDistinctDebounce(SHORT_DEBOUNCE),
             crossPosts.firstThenDistinctDebounce(SHORT_DEBOUNCE),
             polls.firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            pollOptions.firstThenDistinctDebounce(SHORT_DEBOUNCE),
             ForcedData.combineFlows(
                 votes = forcedVotes,
                 follows = forcedFollows,
                 bookmarks = forcedBookmarks
             )
-        ) { root, cross, poll, forced ->
+        ) { root, cross, poll, option, forced ->
             mergeToMainEventUIList(
                 roots = root,
                 crossPosts = cross,
                 polls = poll,
+                pollOptions = option,
                 legacyReplies = emptyList(),
                 comments = emptyList(),
                 forcedData = forced,
@@ -239,6 +243,38 @@ class FeedProvider(
         }
     }
 
+    private fun getPollOptionFlow(
+        setting: MainFeedSetting,
+        until: Long,
+        size: Int,
+    ): Flow<List<PollOptionView>> {
+        return when (setting) {
+            is HomeFeedSetting -> room.homeFeedDao().getHomePollOptionFlow(
+                setting = setting,
+                until = until,
+                size = size
+            )
+
+            is TopicFeedSetting -> room.feedDao().getTopicPollOptionFlow(
+                topic = setting.topic,
+                until = until,
+                size = size
+            )
+
+            is ProfileFeedSetting -> room.feedDao().getProfilePollOptionFlow(
+                pubkey = setting.nprofile.publicKey().toHex(),
+                until = until,
+                size = size
+            )
+
+            is ListFeedSetting -> room.feedDao().getListPollOptionFlow(
+                identifier = setting.identifier,
+                until = until,
+                size = size
+            )
+        }
+    }
+
     private fun getReplyFeedFlow(
         setting: ReplyFeedSetting,
         until: Long,
@@ -285,12 +321,16 @@ class FeedProvider(
             room.inboxDao()
                 .getInboxPollFlow(setting = setting, until = until, size = size)
                 .firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            room.inboxDao()
+                .getInboxPollOptionFlow(setting = setting, until = until, size = size)
+                .firstThenDistinctDebounce(SHORT_DEBOUNCE),
             getForcedFlow()
-        ) { roots, legacyReplies, comments, polls, forced ->
+        ) { roots, legacyReplies, comments, polls, options, forced ->
             mergeToMainEventUIList(
                 roots = roots,
                 crossPosts = emptyList(),
                 polls = polls,
+                pollOptions = options,
                 legacyReplies = legacyReplies,
                 comments = comments,
                 forcedData = forced,
@@ -314,12 +354,16 @@ class FeedProvider(
             room.bookmarkDao()
                 .getPollFlow(until = until, size = size)
                 .firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            room.bookmarkDao()
+                .getPollOptionFlow(until = until, size = size)
+                .firstThenDistinctDebounce(SHORT_DEBOUNCE),
             getForcedFlow()
-        ) { roots, legacyReplies, comments, polls, forced ->
+        ) { roots, legacyReplies, comments, polls, options, forced ->
             mergeToMainEventUIList(
                 roots = roots,
                 crossPosts = emptyList(),
                 polls = polls,
+                pollOptions = options,
                 legacyReplies = legacyReplies,
                 comments = comments,
                 forcedData = forced,

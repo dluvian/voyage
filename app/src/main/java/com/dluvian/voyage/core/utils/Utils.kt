@@ -36,6 +36,7 @@ import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.data.room.view.CommentView
 import com.dluvian.voyage.data.room.view.CrossPostView
 import com.dluvian.voyage.data.room.view.LegacyReplyView
+import com.dluvian.voyage.data.room.view.PollOptionView
 import com.dluvian.voyage.data.room.view.PollView
 import com.dluvian.voyage.data.room.view.RootPostView
 import kotlinx.coroutines.CoroutineScope
@@ -273,6 +274,7 @@ fun mergeToMainEventUIList(
     roots: Collection<RootPostView>,
     crossPosts: Collection<CrossPostView>,
     polls: Collection<PollView>,
+    pollOptions: Collection<PollOptionView>,
     legacyReplies: Collection<LegacyReplyView>,
     comments: Collection<CommentView>,
     forcedData: ForcedData,
@@ -283,6 +285,7 @@ fun mergeToMainEventUIList(
         roots = roots,
         crossPosts = crossPosts,
         polls = polls,
+        pollOptions = pollOptions,
         legacyReplies = legacyReplies,
         comments = comments,
         votes = forcedData.votes,
@@ -297,6 +300,7 @@ fun mergeToMainEventUIList(
     roots: Collection<RootPostView>,
     crossPosts: Collection<CrossPostView>,
     polls: Collection<PollView>,
+    pollOptions: Collection<PollOptionView>,
     legacyReplies: Collection<LegacyReplyView>,
     comments: Collection<CommentView>,
     votes: Map<EventIdHex, Boolean>,
@@ -338,6 +342,7 @@ fun mergeToMainEventUIList(
     for (poll in polls) {
         if (!applicableTimestamps.contains(poll.createdAt)) continue
         val mapped = poll.mapToPollUI(
+            pollOptions = pollOptions.filter { it.pollId == poll.id },
             forcedVotes = votes,
             forcedFollows = follows,
             forcedBookmarks = bookmarks,
@@ -384,6 +389,7 @@ fun mergeToSomeReplyUIList(
         roots = emptyList(),
         crossPosts = emptyList(),
         polls = emptyList(),
+        pollOptions = emptyList(),
         legacyReplies = legacyReplies,
         comments = comments,
         votes = votes,

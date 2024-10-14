@@ -149,7 +149,8 @@ class EventValidator(
                 ValidatedPollResponse(
                     pollId = event.eventIds().firstOrNull()?.toHex() ?: return null,
                     optionId = event.getPollResponse() ?: return null,
-                    pubkey = event.author().toHex()
+                    pubkey = event.author().toHex(),
+                    createdAt = event.createdAt().secs(),
                 )
             }
 

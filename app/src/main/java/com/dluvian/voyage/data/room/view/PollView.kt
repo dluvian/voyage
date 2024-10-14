@@ -80,8 +80,10 @@ data class PollView(
     val relayUrl: RelayUrl,
     val isBookmarked: Boolean,
     val isMentioningMe: Boolean,
+    val latestVote: Long?, // TODO: Need this to not resub votes
 ) {
     fun mapToPollUI(
+        pollOptions: List<PollOptionView>,
         forcedVotes: Map<EventIdHex, Boolean>,
         forcedFollows: Map<PubkeyHex, Boolean>,
         forcedBookmarks: Map<EventIdHex, Boolean>,
@@ -89,6 +91,7 @@ data class PollView(
     ): Poll {
         val pollUI = Poll.from(
             pollView = this,
+            pollOptions = pollOptions,
             annotatedStringProvider = annotatedStringProvider
         )
         val vote = forcedVotes.getOrDefault(this.id, null)

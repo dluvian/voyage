@@ -23,6 +23,7 @@ data class PollResponseEntity(
     val pollId: EventIdHex,
     val optionId: String,
     val pubkey: PubkeyHex,
+    val createdAt: Long,
 ) {
     companion object {
         fun from(response: ValidatedPollResponse): PollResponseEntity {
@@ -30,6 +31,7 @@ data class PollResponseEntity(
                 pollId = response.pollId,
                 optionId = response.optionId,
                 pubkey = response.pubkey,
+                createdAt = response.createdAt,
             )
         }
     }
