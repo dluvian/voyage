@@ -5,6 +5,7 @@ import androidx.room.Query
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.room.view.CrossPostView
+import com.dluvian.voyage.data.room.view.PollOptionView
 import com.dluvian.voyage.data.room.view.PollView
 import com.dluvian.voyage.data.room.view.RootPostView
 import kotlinx.coroutines.flow.Flow
@@ -14,6 +15,8 @@ private const val CREATED_AT = "WHERE createdAt <= :until "
 private const val ROOT = "FROM RootPostView $CREATED_AT "
 private const val CROSS = "FROM CrossPostView $CREATED_AT "
 private const val POLL = "FROM PollView $CREATED_AT "
+private const val POLL_OPTION = "FROM PollOptionView "
+
 private const val ORDER_AND_LIMIT = "ORDER BY createdAt DESC LIMIT :size"
 
 private const val TOPIC_ROOT_COND = "AND authorIsMuted = 0 " +
@@ -40,6 +43,9 @@ private const val TOPIC_POLL_QUERY = "SELECT * $POLL $TOPIC_POLL_COND"
 private const val TOPIC_CREATED_AT_POLL_QUERY = "SELECT createdAt $POLL $TOPIC_POLL_COND"
 private const val TOPIC_EXISTS_POLL_QUERY = "SELECT EXISTS($TOPIC_POLL_QUERY)"
 
+private const val TOPIC_POLL_OPTION_QUERY =
+    "SELECT * $POLL_OPTION WHERE pollId IN (SELECT id $POLL $TOPIC_POLL_COND)"
+
 private const val PROFILE_COND = "AND pubkey = :pubkey $ORDER_AND_LIMIT"
 
 private const val PROFILE_ROOT_QUERY = "SELECT * $ROOT $PROFILE_COND"
@@ -53,6 +59,9 @@ private const val PROFILE_EXISTS_CROSS_QUERY = "SELECT EXISTS($PROFILE_CROSS_QUE
 private const val PROFILE_POLL_QUERY = "SELECT * $POLL $PROFILE_COND"
 private const val PROFILE_CREATED_AT_POLL_QUERY = "SELECT createdAt $POLL $PROFILE_COND"
 private const val PROFILE_EXISTS_POLL_QUERY = "SELECT EXISTS($PROFILE_POLL_QUERY)"
+
+private const val PROFILE_POLL_OPTION_QUERY =
+    "SELECT * $POLL_OPTION WHERE pollId IN (SELECT id $POLL $PROFILE_COND)"
 
 
 private const val LIST_ROOT = """
@@ -83,6 +92,9 @@ private const val LIST_POLL_QUERY = "SELECT * $POLL $LIST_POLL"
 private const val LIST_CREATED_AT_POLL_QUERY = "SELECT createdAt $POLL $LIST_POLL"
 private const val LIST_EXISTS_POLL_QUERY = "SELECT EXISTS($LIST_POLL_QUERY)"
 
+private const val LIST_POLL_OPTION_QUERY =
+    "SELECT * $POLL_OPTION WHERE pollId IN (SELECT id $POLL $LIST_POLL)"
+
 @Dao
 interface FeedDao {
 
@@ -94,6 +106,9 @@ interface FeedDao {
 
     @Query(TOPIC_POLL_QUERY)
     fun getTopicPollFlow(topic: Topic, until: Long, size: Int): Flow<List<PollView>>
+
+    @Query(TOPIC_POLL_OPTION_QUERY)
+    fun getTopicPollOptionFlow(topic: Topic, until: Long, size: Int): Flow<List<PollOptionView>>
 
     fun hasTopicFeedFlow(
         topic: Topic,
@@ -141,6 +156,13 @@ interface FeedDao {
         size: Int
     ): Flow<List<PollView>>
 
+    @Query(PROFILE_POLL_OPTION_QUERY)
+    fun getProfilePollOptionFlow(
+        pubkey: PubkeyHex,
+        until: Long,
+        size: Int
+    ): Flow<List<PollOptionView>>
+
     fun hasProfileFeedFlow(
         pubkey: PubkeyHex,
         until: Long = Long.MAX_VALUE,
@@ -178,6 +200,13 @@ interface FeedDao {
 
     @Query(LIST_POLL_QUERY)
     fun getListPollFlow(identifier: String, until: Long, size: Int): Flow<List<PollView>>
+
+    @Query(LIST_POLL_OPTION_QUERY)
+    fun getListPollOptionFlow(
+        identifier: String,
+        until: Long,
+        size: Int
+    ): Flow<List<PollOptionView>>
 
     fun hasListFeedFlow(
         identifier: String,

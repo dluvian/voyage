@@ -5,6 +5,7 @@ import androidx.room.Query
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.data.room.view.CommentView
 import com.dluvian.voyage.data.room.view.LegacyReplyView
+import com.dluvian.voyage.data.room.view.PollOptionView
 import com.dluvian.voyage.data.room.view.PollView
 import com.dluvian.voyage.data.room.view.RootPostView
 import kotlinx.coroutines.flow.Flow
@@ -21,6 +22,8 @@ private const val ROOT_QUERY = "SELECT * FROM RootPostView $COND"
 private const val REPLY_QUERY = "SELECT * FROM LegacyReplyView $COND"
 private const val COMMENT_QUERY = "SELECT * FROM CommentView $COND"
 private const val POLL_QUERY = "SELECT * FROM PollView $COND"
+private const val POLL_OPTION_QUERY =
+    "SELECT * FROM PollOptionView WHERE pollId IN (SELECT id FROM PollView $COND)"
 
 private const val BOOKMARKED_EVENTS_EXIST_QUERY = "SELECT EXISTS(" +
         "SELECT * " +
@@ -60,6 +63,9 @@ interface BookmarkDao {
 
     @Query(POLL_QUERY)
     fun getPollFlow(until: Long, size: Int): Flow<List<PollView>>
+
+    @Query(POLL_OPTION_QUERY)
+    fun getPollOptionFlow(until: Long, size: Int): Flow<List<PollOptionView>>
 
     @Query(POLL_QUERY)
     suspend fun getPolls(until: Long, size: Int): List<PollView>

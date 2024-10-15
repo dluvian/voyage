@@ -75,6 +75,7 @@ import com.dluvian.voyage.data.room.view.CommentView
 import com.dluvian.voyage.data.room.view.CrossPostView
 import com.dluvian.voyage.data.room.view.EventRelayAuthorView
 import com.dluvian.voyage.data.room.view.LegacyReplyView
+import com.dluvian.voyage.data.room.view.PollOptionView
 import com.dluvian.voyage.data.room.view.PollView
 import com.dluvian.voyage.data.room.view.RootPostView
 import com.dluvian.voyage.data.room.view.SimplePostView
@@ -99,14 +100,8 @@ class V24 : AutoMigrationSpec
 )
 class V25 : AutoMigrationSpec
 
-@DeleteColumn.Entries(
-    DeleteColumn(tableName = "poll", columnName = "subject"),
-    DeleteColumn(tableName = "pollResponse", columnName = "createdAt"),
-)
-class V27 : AutoMigrationSpec
-
 @Database(
-    version = 28,
+    version = 26,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -134,8 +129,6 @@ class V27 : AutoMigrationSpec
         AutoMigration(from = 23, to = 24, spec = V24::class),
         AutoMigration(from = 24, to = 25, spec = V25::class),
         AutoMigration(from = 25, to = 26),
-        AutoMigration(from = 26, to = 27, spec = V27::class),
-        AutoMigration(from = 27, to = 28),
     ],
     entities = [
         // Main
@@ -179,6 +172,7 @@ class V27 : AutoMigrationSpec
         CrossPostView::class,
         AdvancedProfileView::class,
         PollView::class,
+        PollOptionView::class,
     ]
 )
 abstract class AppDatabase : RoomDatabase() {

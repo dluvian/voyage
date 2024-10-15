@@ -9,6 +9,7 @@ import com.dluvian.voyage.data.model.NoPubkeys
 import com.dluvian.voyage.data.model.WebOfTrustPubkeys
 import com.dluvian.voyage.data.room.view.CommentView
 import com.dluvian.voyage.data.room.view.LegacyReplyView
+import com.dluvian.voyage.data.room.view.PollOptionView
 import com.dluvian.voyage.data.room.view.PollView
 import com.dluvian.voyage.data.room.view.RootPostView
 import kotlinx.coroutines.flow.Flow
@@ -34,6 +35,7 @@ private const val SELECT_ROOT = "SELECT * FROM RootPostView "
 private const val SELECT_REPLY = "SELECT * FROM LegacyReplyView "
 private const val SELECT_COMMENT = "SELECT * FROM CommentView "
 private const val SELECT_POLL = "SELECT * FROM PollView "
+private const val SELECT_POLL_OPTION = "SELECT * FROM PollOptionView "
 
 private const val SELECT_ROOT_ID = "SELECT id FROM RootPostView "
 private const val SELECT_REPLY_ID = "SELECT id FROM LegacyReplyView "
@@ -49,16 +51,22 @@ private const val FRIEND_ROOT_QUERY = SELECT_ROOT + FRIEND_MAIN_QUERY
 private const val FRIEND_REPLY_QUERY = SELECT_REPLY + FRIEND_MAIN_QUERY
 private const val FRIEND_COMMENT_QUERY = SELECT_COMMENT + FRIEND_MAIN_QUERY
 private const val FRIEND_POLL_QUERY = SELECT_POLL + FRIEND_MAIN_QUERY
+private const val FRIEND_POLL_OPTION_QUERY =
+    "$SELECT_POLL_OPTION WHERE pollId IN (SELECT id FROM PollView $FRIEND_MAIN_QUERY)"
 
 private const val WOT_ROOT_QUERY = SELECT_ROOT + WOT_MAIN_QUERY
 private const val WOT_REPLY_QUERY = SELECT_REPLY + WOT_MAIN_QUERY
 private const val WOT_COMMENT_QUERY = SELECT_COMMENT + WOT_MAIN_QUERY
 private const val WOT_POLL_QUERY = SELECT_POLL + WOT_MAIN_QUERY
+private const val WOT_POLL_OPTION_QUERY =
+    "$SELECT_POLL_OPTION WHERE pollId IN (SELECT id FROM PollView $WOT_MAIN_QUERY)"
 
 private const val GLOBAL_ROOT_QUERY = SELECT_ROOT + GLOBAL_MAIN_QUERY
 private const val GLOBAL_REPLY_QUERY = SELECT_REPLY + GLOBAL_MAIN_QUERY
 private const val GLOBAL_COMMENT_QUERY = SELECT_COMMENT + GLOBAL_MAIN_QUERY
 private const val GLOBAL_POLL_QUERY = SELECT_POLL + GLOBAL_MAIN_QUERY
+private const val GLOBAL_POLL_OPTION_QUERY =
+    "$SELECT_POLL_OPTION WHERE pollId IN (SELECT id FROM PollView $GLOBAL_MAIN_QUERY)"
 
 private const val FRIEND_ROOT_ID_QUERY = SELECT_ROOT_ID + INBOX_CONDITION + FRIEND_CONDITION
 private const val FRIEND_REPLY_ID_QUERY = SELECT_REPLY_ID + INBOX_CONDITION + FRIEND_CONDITION
@@ -181,6 +189,19 @@ interface InboxDao {
         }
     }
 
+    fun getInboxPollOptionFlow(
+        setting: InboxFeedSetting,
+        until: Long,
+        size: Int
+    ): Flow<List<PollOptionView>> {
+        return when (setting.pubkeySelection) {
+            FriendPubkeysNoLock -> internalGetFriendPollOptionFlow(until = until, size = size)
+            WebOfTrustPubkeys -> internalGetWotPollOptionFlow(until = until, size = size)
+            Global -> internalGetGlobalPollOptionFlow(until = until, size = size)
+            NoPubkeys -> flowOf(emptyList())
+        }
+    }
+
     suspend fun getInboxReplies(
         setting: InboxFeedSetting,
         until: Long,
@@ -266,6 +287,9 @@ interface InboxDao {
     @Query(FRIEND_POLL_QUERY)
     fun internalGetFriendPollFlow(until: Long, size: Int): Flow<List<PollView>>
 
+    @Query(FRIEND_POLL_OPTION_QUERY)
+    fun internalGetFriendPollOptionFlow(until: Long, size: Int): Flow<List<PollOptionView>>
+
     @Query(WOT_ROOT_QUERY)
     fun internalGetWotRootFlow(until: Long, size: Int): Flow<List<RootPostView>>
 
@@ -278,6 +302,9 @@ interface InboxDao {
     @Query(WOT_POLL_QUERY)
     fun internalGetWotPollFlow(until: Long, size: Int): Flow<List<PollView>>
 
+    @Query(WOT_POLL_OPTION_QUERY)
+    fun internalGetWotPollOptionFlow(until: Long, size: Int): Flow<List<PollOptionView>>
+
     @Query(GLOBAL_ROOT_QUERY)
     fun internalGetGlobalRootFlow(until: Long, size: Int): Flow<List<RootPostView>>
 
@@ -289,6 +316,9 @@ interface InboxDao {
 
     @Query(GLOBAL_POLL_QUERY)
     fun internalGetGlobalPollFlow(until: Long, size: Int): Flow<List<PollView>>
+
+    @Query(GLOBAL_POLL_OPTION_QUERY)
+    fun internalGetGlobalPollOptionFlow(until: Long, size: Int): Flow<List<PollOptionView>>
 
     @Query(FRIEND_ROOT_QUERY)
     suspend fun internalGetFriendRoot(until: Long, size: Int): List<RootPostView>

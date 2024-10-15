@@ -308,6 +308,13 @@ class FeedProvider(
         until: Long,
         size: Int
     ): Flow<List<MainEvent>> {
+        val pollFlow = combine(
+            room.inboxDao().getInboxPollFlow(setting = setting, until = until, size = size)
+                .firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            room.inboxDao().getInboxPollOptionFlow(setting = setting, until = until, size = size)
+                .firstThenDistinctDebounce(SHORT_DEBOUNCE),
+        ) { poll, option -> Pair(poll, option) }
+
         return combine(
             room.inboxDao()
                 .getInboxRootFlow(setting = setting, until = until, size = size)
@@ -318,14 +325,9 @@ class FeedProvider(
             room.inboxDao()
                 .getInboxCommentFlow(setting = setting, until = until, size = size)
                 .firstThenDistinctDebounce(SHORT_DEBOUNCE),
-            room.inboxDao()
-                .getInboxPollFlow(setting = setting, until = until, size = size)
-                .firstThenDistinctDebounce(SHORT_DEBOUNCE),
-            room.inboxDao()
-                .getInboxPollOptionFlow(setting = setting, until = until, size = size)
-                .firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            pollFlow,
             getForcedFlow()
-        ) { roots, legacyReplies, comments, polls, options, forced ->
+        ) { roots, legacyReplies, comments, (polls, options), forced ->
             mergeToMainEventUIList(
                 roots = roots,
                 crossPosts = emptyList(),
@@ -341,6 +343,13 @@ class FeedProvider(
     }
 
     private fun getBookmarksFeedFlow(until: Long, size: Int): Flow<List<MainEvent>> {
+        val pollFlow = combine(
+            room.bookmarkDao().getPollFlow(until = until, size = size)
+                .firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            room.bookmarkDao().getPollOptionFlow(until = until, size = size)
+                .firstThenDistinctDebounce(SHORT_DEBOUNCE),
+        ) { poll, option -> Pair(poll, option) }
+
         return combine(
             room.bookmarkDao()
                 .getRootPostsFlow(until = until, size = size)
@@ -351,14 +360,9 @@ class FeedProvider(
             room.bookmarkDao()
                 .getCommentFlow(until = until, size = size)
                 .firstThenDistinctDebounce(SHORT_DEBOUNCE),
-            room.bookmarkDao()
-                .getPollFlow(until = until, size = size)
-                .firstThenDistinctDebounce(SHORT_DEBOUNCE),
-            room.bookmarkDao()
-                .getPollOptionFlow(until = until, size = size)
-                .firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            pollFlow,
             getForcedFlow()
-        ) { roots, legacyReplies, comments, polls, options, forced ->
+        ) { roots, legacyReplies, comments, (polls, options), forced ->
             mergeToMainEventUIList(
                 roots = roots,
                 crossPosts = emptyList(),

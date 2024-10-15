@@ -31,7 +31,7 @@ class StaticFeedProvider(
             is MainFeedSetting -> getStaticMainFeed(setting = setting, until = until, size = size)
             is ReplyFeedSetting -> getStaticReplyFeed(setting = setting, until = until, size = size)
             is InboxFeedSetting -> getStaticInboxFeed(setting = setting, until = until, size = size)
-            BookmarksFeedSetting -> getStaticBooksmarksFeed(until = until, size = size)
+            BookmarksFeedSetting -> getStaticBookmarkFeed(until = until, size = size)
         }
     }
 
@@ -44,6 +44,7 @@ class StaticFeedProvider(
             roots = getStaticRootPosts(setting = setting, until = until, size = size),
             crossPosts = getStaticCrossPosts(setting = setting, until = until, size = size),
             polls = getStaticPolls(setting = setting, until = until, size = size),
+            pollOptions = emptyList(),
             legacyReplies = emptyList(),
             comments = emptyList(),
             votes = emptyMap(),
@@ -191,6 +192,7 @@ class StaticFeedProvider(
                 until = until,
                 size = size
             ),
+            pollOptions = emptyList(),
             legacyReplies = room.inboxDao().getInboxReplies(
                 setting = setting,
                 until = until,
@@ -209,11 +211,12 @@ class StaticFeedProvider(
         )
     }
 
-    private suspend fun getStaticBooksmarksFeed(until: Long, size: Int): List<MainEvent> {
+    private suspend fun getStaticBookmarkFeed(until: Long, size: Int): List<MainEvent> {
         return mergeToMainEventUIList(
             roots = room.bookmarkDao().getRootPosts(until = until, size = size),
             crossPosts = emptyList(),
             polls = room.bookmarkDao().getPolls(until = until, size = size),
+            pollOptions = emptyList(),
             legacyReplies = room.bookmarkDao().getReplies(until = until, size = size),
             comments = room.bookmarkDao().getComments(until = until, size = size),
             votes = emptyMap(),

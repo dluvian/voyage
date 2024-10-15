@@ -30,7 +30,8 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             CASE WHEN vote.eventId IS NOT NULL THEN 1 ELSE 0 END isUpvoted,
             upvotes.upvoteCount,
             comments.commentCount,
-            (SELECT EXISTS(SELECT * FROM bookmark WHERE bookmark.eventId = mainEvent.id)) AS isBookmarked 
+            (SELECT EXISTS(SELECT * FROM bookmark WHERE bookmark.eventId = mainEvent.id)) AS isBookmarked,
+             (SELECT createdAt FROM pollResponse WHERE pollId = mainEvent.id) AS latestVote
         FROM poll
         JOIN mainEvent ON mainEvent.id = poll.eventId
         LEFT JOIN profile ON profile.pubkey = mainEvent.pubkey
@@ -80,7 +81,7 @@ data class PollView(
     val relayUrl: RelayUrl,
     val isBookmarked: Boolean,
     val isMentioningMe: Boolean,
-    val latestVote: Long?, // TODO: Need this to not resub votes
+    val latestVote: Long?,
 ) {
     fun mapToPollUI(
         pollOptions: List<PollOptionView>,
