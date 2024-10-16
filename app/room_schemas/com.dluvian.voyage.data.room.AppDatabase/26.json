@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 26,
-    "identityHash": "127c3c04f890a743da5c86dc0a9e121a",
+    "identityHash": "a7b32a5b2cf6cdb15b39a3cbac54b24c",
     "entities": [
       {
         "tableName": "mainEvent",
@@ -446,17 +446,7 @@
             "optionId"
           ]
         },
-        "indices": [
-          {
-            "name": "index_pollOption_pollId",
-            "unique": true,
-            "columnNames": [
-              "pollId"
-            ],
-            "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_pollOption_pollId` ON `${TABLE_NAME}` (`pollId`)"
-          }
-        ],
+        "indices": [],
         "foreignKeys": [
           {
             "table": "poll",
@@ -473,7 +463,7 @@
       },
       {
         "tableName": "pollResponse",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`pollId` TEXT NOT NULL, `optionId` TEXT NOT NULL, `pubkey` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`pollId`, `pubkey`), FOREIGN KEY(`pollId`) REFERENCES `pollOption`(`pollId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`pollId` TEXT NOT NULL, `optionId` TEXT NOT NULL, `pubkey` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`pollId`, `pubkey`), FOREIGN KEY(`pollId`) REFERENCES `poll`(`eventId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "pollId",
@@ -510,14 +500,14 @@
         "indices": [],
         "foreignKeys": [
           {
-            "table": "pollOption",
+            "table": "poll",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
             "columns": [
               "pollId"
             ],
             "referencedColumns": [
-              "pollId"
+              "eventId"
             ]
           }
         ]
@@ -1297,7 +1287,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '127c3c04f890a743da5c86dc0a9e121a')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a7b32a5b2cf6cdb15b39a3cbac54b24c')"
     ]
   }
 }

@@ -11,8 +11,8 @@ import com.dluvian.voyage.data.event.ValidatedPollResponse
     primaryKeys = ["pollId", "pubkey"],
     foreignKeys = [
         ForeignKey(
-            entity = PollOptionEntity::class,
-            parentColumns = ["pollId"],
+            entity = PollEntity::class,
+            parentColumns = ["eventId"],
             childColumns = ["pollId"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.NO_ACTION

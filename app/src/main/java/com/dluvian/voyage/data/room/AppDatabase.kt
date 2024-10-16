@@ -83,7 +83,6 @@ import com.dluvian.voyage.data.room.view.SimplePostView
 @DeleteColumn(tableName = "vote", columnName = "isPositive")
 class V10 : AutoMigrationSpec
 
-
 @DeleteTable.Entries(
     DeleteTable(tableName = "post"),
     DeleteTable(tableName = "vote"),

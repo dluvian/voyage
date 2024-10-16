@@ -13,8 +13,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.dluvian.voyage.core.ComposableContent
@@ -140,6 +142,15 @@ private fun MainEventMainRow(
             Spacer(modifier = Modifier.height(spacing.large))
         }
 
+        when (val event = ctx.mainEvent) {
+            is Poll -> PollColumn(poll = event)
+            is CrossPost,
+            is RootPost,
+            is Comment,
+            is LegacyReply -> {
+            }
+        }
+
         if (!ctx.isCollapsedReply()) MainEventActions(
             mainEvent = ctx.mainEvent,
             onUpdate = onUpdate,
@@ -195,5 +206,17 @@ private fun RowWithDivider(level: Int, content: ComposableContent) {
             )
         }
         content()
+    }
+}
+
+@Composable
+private fun PollColumn(poll: Poll) {
+    val alreadyVoted = remember(poll) {
+        poll.options.any { it.isMyVote }
+    }
+    Column {
+        for (option in poll.options) {
+            Text("${option.optionId}: ${option.label}")
+        }
     }
 }

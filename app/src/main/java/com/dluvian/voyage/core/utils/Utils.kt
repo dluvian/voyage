@@ -314,6 +314,7 @@ fun mergeToMainEventUIList(
         .plus(crossPosts.map { it.createdAt })
         .plus(legacyReplies.map { it.createdAt })
         .plus(comments.map { it.createdAt })
+        .plus(polls.map { it.createdAt })
         .sortedDescending()
         .take(size)
         .toSet()
