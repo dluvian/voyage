@@ -71,13 +71,15 @@ class ThreadProvider(
         val rootFlow = room.rootPostDao().getRootPostFlow(id = id)
         val replyFlow = room.legacyReplyDao().getReplyFlow(id = id)
         val commentFlow = room.commentDao().getCommentFlow(id = id)
+        val pollFlow = room.pollDao().getFullPollFlow(pollId = id)
 
         return combine(
             rootFlow.firstThenDistinctDebounce(SHORT_DEBOUNCE),
             replyFlow.firstThenDistinctDebounce(SHORT_DEBOUNCE),
             commentFlow.firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            pollFlow.firstThenDistinctDebounce(SHORT_DEBOUNCE),
             getForcedFlow(),
-        ) { post, reply, comment, forced ->
+        ) { post, reply, comment, pollPair, forced ->
             val threadableMainEvent = post?.mapToRootPostUI(
                 forcedFollows = forced.follows,
                 forcedVotes = forced.votes,
@@ -93,7 +95,15 @@ class ThreadProvider(
                 forcedVotes = forced.votes,
                 forcedBookmarks = forced.bookmarks,
                 annotatedStringProvider = annotatedStringProvider
-            )
+            ) ?: pollPair?.let { (poll, options) ->
+                poll.mapToPollUI(
+                    pollOptions = options,
+                    forcedFollows = forced.follows,
+                    forcedVotes = forced.votes,
+                    forcedBookmarks = forced.bookmarks,
+                    annotatedStringProvider = annotatedStringProvider
+                )
+            }
             threadableMainEvent?.let { ThreadRootCtx(threadableMainEvent = it) }
         }.onEach {
             oldestUsedEvent.updateOldestCreatedAt(it?.mainEvent?.createdAt)
