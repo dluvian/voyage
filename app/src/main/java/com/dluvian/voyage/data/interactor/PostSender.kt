@@ -105,7 +105,11 @@ class PostSender(
         }.distinct()
 
 
-        return if (parentKind.asU16() != TEXT_NOTE_U16 || eventPreferences.isUsingV2Replies()) {
+        return if (
+            trimmedBody.length <= 1 ||
+            parentKind.asU16() != TEXT_NOTE_U16 ||
+            eventPreferences.isUsingV2Replies()
+        ) {
             sendComment(
                 content = trimmedBody,
                 parentId = parentId,
