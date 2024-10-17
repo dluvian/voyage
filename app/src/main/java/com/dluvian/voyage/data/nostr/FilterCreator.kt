@@ -2,8 +2,8 @@ package com.dluvian.voyage.data.nostr
 
 import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
 import com.dluvian.voyage.core.utils.limitRestricted
-import com.dluvian.voyage.core.utils.mainEventKinds
 import com.dluvian.voyage.core.utils.replyKinds
+import com.dluvian.voyage.core.utils.threadableKinds
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.event.LOCK_U16
 import com.dluvian.voyage.data.provider.LockProvider
@@ -172,7 +172,7 @@ class FilterCreator(
 
     fun getPostFilter(eventId: EventId): Filter {
         return Filter()
-            .kinds(kinds = mainEventKinds)
+            .kinds(kinds = threadableKinds)
             .id(id = eventId)
             .until(timestamp = Timestamp.now())
             .limit(limit = 1u)

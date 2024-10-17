@@ -4,7 +4,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.text.AnnotatedString
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.utils.threadableKinds
+import com.dluvian.voyage.core.utils.commentableKinds
 import com.dluvian.voyage.data.event.COMMENT_U16
 import com.dluvian.voyage.data.event.POLL_U16
 import com.dluvian.voyage.data.nostr.RelayUrl
@@ -297,7 +297,7 @@ data class Comment(
     isBookmarked = isBookmarked,
 ) {
     fun parentIsSupported(): Boolean {
-        return parentId != null && threadableKinds.any { it.asU16().toInt() == parentKind }
+        return parentId != null && commentableKinds.any { it.asU16().toInt() == parentKind }
     }
 
     companion object {

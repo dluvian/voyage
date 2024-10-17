@@ -211,8 +211,18 @@ fun mergeRelayFilters(vararg maps: Map<RelayUrl, List<Filter>>): Map<RelayUrl, L
     return result
 }
 
-// Generic repost not included because we need to combine the filter with a k tag
-val rootLikeKindsWithoutKTag = listOf(
+val commentableKinds = listOf(
+    Kind.fromEnum(KindEnum.TextNote),
+    Kind(kind = COMMENT_U16),
+    Kind(kind = POLL_U16)
+)
+
+val crossPostableKinds = listOf(
+    Kind.fromEnum(KindEnum.TextNote),
+    Kind(kind = COMMENT_U16),
+)
+
+val rootFeedableKindsNoKTag = listOf(
     Kind.fromEnum(KindEnum.TextNote),
     Kind.fromEnum(KindEnum.Repost),
     Kind(kind = POLL_U16)
@@ -223,14 +233,12 @@ val replyKinds = listOf(
     Kind(kind = COMMENT_U16),
 )
 
-val threadableKinds = replyKinds + Kind(kind = POLL_U16)
-
-val mainEventKinds = listOf(
+val threadableKinds = listOf(
     Kind.fromEnum(KindEnum.TextNote),
-    Kind.fromEnum(KindEnum.Repost),
     Kind(kind = COMMENT_U16),
-    Kind(kind = POLL_U16),
+    Kind(kind = POLL_U16)
 )
+
 
 fun Event.getTrimmedSubject(maxLen: Int = MAX_SUBJECT_LEN): String? {
     return this.getSubject()?.trim()?.take(maxLen)
@@ -245,7 +253,7 @@ fun Filter.genericRepost(): Filter {
         .kind(Kind.fromEnum(KindEnum.GenericRepost))
         .customTag(
             tag = SingleLetterTag.lowercase(Alphabet.K),
-            content = threadableKinds.map { it.asU16().toString() }
+            content = crossPostableKinds.map { it.asU16().toString() }
         )
 }
 
