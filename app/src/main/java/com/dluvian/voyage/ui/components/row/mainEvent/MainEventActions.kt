@@ -11,7 +11,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.core.model.Comment
+import com.dluvian.voyage.core.model.CrossPost
+import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.core.model.MainEvent
+import com.dluvian.voyage.core.model.Poll
+import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.ui.components.button.footer.BookmarkIconButton
 import com.dluvian.voyage.ui.components.button.footer.CountedUpvoteButton
 import com.dluvian.voyage.ui.components.button.footer.CrossPostIconButton
@@ -41,8 +46,16 @@ fun MainEventActions(
                 BookmarkIconButton(relevantId = mainEvent.getRelevantId(), onUpdate = onUpdate)
                 Spacer(modifier = Modifier.width(spacing.large))
             }
-            CrossPostIconButton(relevantId = mainEvent.getRelevantId(), onUpdate = onUpdate)
-            Spacer(modifier = Modifier.width(spacing.large))
+            when (mainEvent) {
+                is Poll -> {}
+                is CrossPost,
+                is RootPost,
+                is Comment,
+                is LegacyReply -> {
+                    CrossPostIconButton(relevantId = mainEvent.getRelevantId(), onUpdate = onUpdate)
+                    Spacer(modifier = Modifier.width(spacing.large))
+                }
+            }
             additionalEndAction()
             Spacer(modifier = Modifier.width(spacing.large))
             OPBlue
