@@ -1,11 +1,13 @@
 package com.dluvian.voyage.data.nostr
 
+import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
 import com.dluvian.voyage.core.utils.limitRestricted
 import com.dluvian.voyage.core.utils.replyKinds
 import com.dluvian.voyage.core.utils.threadableKinds
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.event.LOCK_U16
+import com.dluvian.voyage.data.event.POLL_RESPONSE_U16
 import com.dluvian.voyage.data.provider.LockProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.AppDatabase
@@ -176,5 +178,14 @@ class FilterCreator(
             .id(id = eventId)
             .until(timestamp = Timestamp.now())
             .limit(limit = 1u)
+    }
+
+    fun getPollResponseFilter(pollIds: List<EventIdHex>, since: Timestamp): Filter {
+        return Filter()
+            .kind(kind = Kind(kind = POLL_RESPONSE_U16))
+            .events(ids = pollIds.map { EventId.fromHex(it) })
+            .since(timestamp = since)
+            .until(timestamp = Timestamp.now())
+            .limitRestricted(limit = MAX_EVENTS_TO_SUB)
     }
 }

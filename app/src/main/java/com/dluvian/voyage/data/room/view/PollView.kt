@@ -31,7 +31,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             upvotes.upvoteCount,
             comments.commentCount,
             (SELECT EXISTS(SELECT * FROM bookmark WHERE bookmark.eventId = mainEvent.id)) AS isBookmarked,
-             (SELECT createdAt FROM pollResponse WHERE pollId = mainEvent.id) AS latestVote
+             (SELECT createdAt FROM pollResponse WHERE pollId = mainEvent.id) AS latestResponse
         FROM poll
         JOIN mainEvent ON mainEvent.id = poll.eventId
         LEFT JOIN profile ON profile.pubkey = mainEvent.pubkey
@@ -81,7 +81,7 @@ data class PollView(
     val relayUrl: RelayUrl,
     val isBookmarked: Boolean,
     val isMentioningMe: Boolean,
-    val latestVote: Long?,
+    val latestResponse: Long?,
 ) {
     fun mapToPollUI(
         pollOptions: List<PollOptionView>,

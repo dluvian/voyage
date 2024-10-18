@@ -6,6 +6,7 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.model.CrossPost
 import com.dluvian.voyage.core.model.MainEvent
+import com.dluvian.voyage.core.model.Poll
 import com.dluvian.voyage.core.model.SomeReply
 import com.dluvian.voyage.core.utils.containsNoneIgnoreCase
 import com.dluvian.voyage.core.utils.firstThenDistinctDebounce
@@ -97,6 +98,14 @@ class FeedProvider(
                         .filter { it.content.text.containsNoneIgnoreCase(strs = mutedWords) }
                         .map { it.getRelevantId() }
                 )
+                val polls = posts.filterIsInstance<Poll>()
+                if (polls.isNotEmpty()) {
+                    nostrSubscriber.subPollResponses(
+                        pollIds = polls.map { it.id },
+                        since = polls.mapNotNull { it.latestResponse }.minOrNull()
+                            ?: polls.minOf { it.createdAt }
+                    )
+                }
                 if (showAuthorName.value) {
                     val pubkeys = posts.filter { it.authorName.isNullOrEmpty() }
                         .map { it.pubkey }

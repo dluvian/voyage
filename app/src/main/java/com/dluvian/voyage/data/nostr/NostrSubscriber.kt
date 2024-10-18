@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
 import rust.nostr.protocol.Nip19Event
 import rust.nostr.protocol.Nip19Profile
 import rust.nostr.protocol.PublicKey
+import rust.nostr.protocol.Timestamp
 import java.util.concurrent.atomic.AtomicBoolean
 
 class NostrSubscriber(
@@ -156,6 +157,41 @@ class NostrSubscriber(
             }
         }.invokeOnCompletion {
             isSubbingVotesAndReplies.set(false)
+        }
+    }
+
+
+    private val pollCache = mutableSetOf<EventIdHex>()
+    private var lastPollUpdate = System.currentTimeMillis()
+    private val isSubbingPolls = AtomicBoolean(false)
+
+    fun subPollResponses(pollIds: Collection<EventIdHex>, since: Long) {
+        if (pollIds.isEmpty()) return
+        if (!isSubbingPolls.compareAndSet(false, true)) return
+
+        scope.launch(Dispatchers.Default) {
+            val currentMillis = System.currentTimeMillis()
+            if (currentMillis - lastUpdate > RESUB_TIMEOUT) {
+                pollCache.clear()
+                lastPollUpdate = currentMillis
+            }
+
+            val newIds = pollIds - pollCache
+            if (newIds.isEmpty()) return@launch
+
+            pollCache.addAll(newIds)
+
+            val responseFilter = filterCreator.getPollResponseFilter(
+                pollIds = newIds,
+                since = Timestamp.fromSecs(since.toULong())
+            )
+            val filters = listOf(responseFilter)
+
+            relayProvider.getReadRelays().forEach { relay ->
+                subCreator.subscribe(relayUrl = relay, filters = filters)
+            }
+        }.invokeOnCompletion {
+            isSubbingPolls.set(false)
         }
     }
 
