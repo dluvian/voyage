@@ -228,11 +228,9 @@ private fun PollColumn(poll: Poll) {
     }
     val topVotes = remember(poll) {
         poll.options.maxOf { it.voteCount }
-        42
     }
     val totalVotes = remember(poll) {
         poll.options.sumOf { it.voteCount }
-        50
     }
     Column {
         for (option in poll.options) {
@@ -240,27 +238,14 @@ private fun PollColumn(poll: Poll) {
                 label = option.label,
                 isSelected = if (clickedId.value != null) clickedId.value == option.optionId else option.isMyVote,
                 isRevealed = alreadyVoted.value,
-                percentage = if (option.optionId == clickedId.value) 100 else remember(
-                    option.voteCount,
-                    totalVotes
-                ) {
+                percentage = remember(option.voteCount, totalVotes) {
                     if (totalVotes == 0) 0
                     else option.voteCount.div(totalVotes).times(100)
                 },
-                progress = if (option.optionId == clickedId.value) 1f else remember(
-                    option.voteCount,
-                    topVotes
-                ) {
+                progress = remember(option.voteCount, topVotes) {
                     if (topVotes == 0) 0f else option.voteCount.toFloat().div(topVotes)
                 },
-                onClick = {
-                    if (clickedId.value == option.optionId && alreadyVoted.value) {
-                        alreadyVoted.value = false
-                    } else if (clickedId.value == option.optionId) {
-                        alreadyVoted.value = true
-                    }
-                    clickedId.value = option.optionId
-                }
+                onClick = { clickedId.value = option.optionId }
             )
         }
         Text(
