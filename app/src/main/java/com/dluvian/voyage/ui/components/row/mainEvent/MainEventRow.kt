@@ -242,7 +242,7 @@ private fun PollColumn(poll: Poll, onUpdate: OnUpdate) {
         alreadyVoted || isExpired
     }
     val topVotes = remember(poll) {
-        poll.options.maxOf { it.voteCount }
+        poll.options.maxOfOrNull { it.voteCount } ?: 0
     }
     val totalVotes = remember(poll) {
         poll.options.sumOf { it.voteCount }
