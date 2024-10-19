@@ -11,7 +11,10 @@ import com.dluvian.voyage.core.model.Comment
 import com.dluvian.voyage.core.utils.containsNoneIgnoreCase
 import com.dluvian.voyage.core.utils.firstThenDistinctDebounce
 import com.dluvian.voyage.core.utils.launchIO
+import com.dluvian.voyage.data.event.COMMENT_U16
 import com.dluvian.voyage.data.event.OldestUsedEvent
+import com.dluvian.voyage.data.event.POLL_U16
+import com.dluvian.voyage.data.event.TEXT_NOTE_U16
 import com.dluvian.voyage.data.model.ForcedData
 import com.dluvian.voyage.data.model.SingularPubkey
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
@@ -24,6 +27,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onEach
 import rust.nostr.protocol.Nip19Event
 import java.util.LinkedList
@@ -68,10 +72,19 @@ class ThreadProvider(
             else nostrSubscriber.subVotesAndReplies(parentIds = listOf(id))
         }
 
-        val rootFlow = room.rootPostDao().getRootPostFlow(id = id)
-        val replyFlow = room.legacyReplyDao().getReplyFlow(id = id)
-        val commentFlow = room.commentDao().getCommentFlow(id = id)
-        val pollFlow = room.pollDao().getFullPollFlow(pollId = id)
+        val kind = nevent.kind()?.asU16()
+        val rootFlow =
+            if (kind == TEXT_NOTE_U16 || kind == null) room.rootPostDao().getRootPostFlow(id = id)
+            else flowOf(null)
+        val replyFlow =
+            if (kind == TEXT_NOTE_U16 || kind == null) room.legacyReplyDao().getReplyFlow(id = id)
+            else flowOf(null)
+        val commentFlow =
+            if (kind == COMMENT_U16 || kind == null) room.commentDao().getCommentFlow(id = id)
+            else flowOf(null)
+        val pollFlow =
+            if (kind == POLL_U16 || kind == null) room.pollDao().getFullPollFlow(pollId = id)
+            else flowOf(null)
 
         return combine(
             rootFlow.firstThenDistinctDebounce(SHORT_DEBOUNCE),
