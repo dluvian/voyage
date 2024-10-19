@@ -238,6 +238,9 @@ private fun PollColumn(poll: Poll, onUpdate: OnUpdate) {
     val alreadyVoted = remember(poll) {
         poll.options.any { it.isMyVote }
     }
+    val isRevealed = remember(isExpired, alreadyVoted) {
+        alreadyVoted || isExpired
+    }
     val topVotes = remember(poll) {
         poll.options.maxOf { it.voteCount }
     }
@@ -249,7 +252,7 @@ private fun PollColumn(poll: Poll, onUpdate: OnUpdate) {
             PollOptionRow(
                 label = option.label,
                 isSelected = if (clickedId.value != null) clickedId.value == option.optionId else option.isMyVote,
-                isRevealed = alreadyVoted || isExpired,
+                isRevealed = isRevealed,
                 percentage = remember(option.voteCount, totalVotes) {
                     if (totalVotes == 0) 0
                     else option.voteCount.toFloat().div(totalVotes).times(100).toInt()
@@ -257,7 +260,7 @@ private fun PollColumn(poll: Poll, onUpdate: OnUpdate) {
                 progress = remember(option.voteCount, topVotes) {
                     if (topVotes == 0) 0f else option.voteCount.toFloat().div(topVotes)
                 },
-                onClick = { clickedId.value = option.optionId }
+                onClick = { if (!isRevealed) clickedId.value = option.optionId }
             )
         }
         Row(
