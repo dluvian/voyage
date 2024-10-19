@@ -103,8 +103,7 @@ class FeedProvider(
                 if (polls.isNotEmpty()) {
                     nostrSubscriber.subPollResponses(
                         pollIds = polls.map { it.id },
-                        since = polls.mapNotNull { it.latestResponse }.minOrNull()
-                            ?: polls.minOf { it.createdAt }
+                        since = polls.minOf { it.latestResponse ?: it.createdAt }
                     )
                 }
                 if (showAuthorName.value) {
