@@ -99,6 +99,7 @@ class FeedProvider(
                         .map { it.getRelevantId() }
                 )
                 val polls = posts.filterIsInstance<Poll>()
+                    .filter { it.endsAt == null || it.endsAt > until }
                 if (polls.isNotEmpty()) {
                     nostrSubscriber.subPollResponses(
                         pollIds = polls.map { it.id },
