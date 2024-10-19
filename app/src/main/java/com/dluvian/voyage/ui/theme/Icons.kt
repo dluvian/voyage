@@ -19,6 +19,7 @@ import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Bookmark
 import androidx.compose.material.icons.rounded.CellTower
+import androidx.compose.material.icons.rounded.CheckCircleOutline
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
@@ -76,3 +77,4 @@ val MuteIcon = Icons.AutoMirrored.Rounded.VolumeOff
 val WordIcon = Icons.Rounded.Abc
 val FilterIcon = Icons.Outlined.FilterAlt
 val WarningIcon = Icons.Rounded.WarningAmber
+val VotedIcon = Icons.Rounded.CheckCircleOutline

@@ -13,8 +13,10 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -50,6 +52,8 @@ import com.dluvian.voyage.ui.components.button.OptionsButton
 import com.dluvian.voyage.ui.components.button.footer.CountedCommentButton
 import com.dluvian.voyage.ui.components.button.footer.ReplyIconButton
 import com.dluvian.voyage.ui.components.text.AnnotatedText
+import com.dluvian.voyage.ui.theme.VotedIcon
+import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
 import com.dluvian.voyage.ui.views.nonMain.MoreRepliesTextButton
 
@@ -291,6 +295,9 @@ private fun PollOptionRow(
     progress: Float,
     onClick: Fn
 ) {
+    val isRevealedSelection = remember(isSelected, isRevealed) {
+        isSelected && isRevealed
+    }
     Column {
         Row(
             modifier = Modifier
@@ -305,12 +312,22 @@ private fun PollOptionRow(
             ) {
                 if (isRevealed) Text(
                     modifier = Modifier.padding(vertical = spacing.xl),
-                    text = "$percentage%"
+                    text = "$percentage%",
+                    fontWeight = if (isRevealedSelection) FontWeight.SemiBold else null
                 )
                 else RadioButton(selected = isSelected, onClick = onClick)
             }
-            Spacer(modifier = Modifier.padding(start = spacing.medium))
-            Text(text = label)
+            Spacer(modifier = Modifier.padding(start = spacing.small))
+            if (isRevealedSelection) {
+                Icon(
+                    modifier = Modifier.size(sizing.smallIndicator),
+                    imageVector = VotedIcon,
+                    contentDescription = null
+                )
+                Spacer(modifier = Modifier.padding(start = spacing.small))
+
+            }
+            Text(text = label, fontWeight = if (isRevealedSelection) FontWeight.SemiBold else null)
         }
         Row {
             Spacer(modifier = Modifier.width(spacing.medium))
