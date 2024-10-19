@@ -165,7 +165,7 @@ class NostrSubscriber(
     private var lastPollUpdate = System.currentTimeMillis()
     private val isSubbingPolls = AtomicBoolean(false)
 
-    fun subPollResponses(pollIds: Collection<EventIdHex>, since: Long) {
+    fun subPollResponses(pollIds: Collection<EventIdHex>, since: Long = 1L) {
         if (pollIds.isEmpty()) return
         if (!isSubbingPolls.compareAndSet(false, true)) return
 

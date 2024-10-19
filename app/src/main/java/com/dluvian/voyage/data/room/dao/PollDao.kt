@@ -23,6 +23,9 @@ interface PollDao {
     @Query("SELECT relay1, relay2 FROM poll WHERE eventId = :pollId")
     fun getPollRelays(pollId: EventIdHex): PollRelays?
 
+    @Query("SELECT endsAt FROM poll WHERE eventId = :pollId")
+    suspend fun getPollExpiry(pollId: EventIdHex): Long?
+
     @Query("SELECT * FROM PollView WHERE id = :pollId")
     fun internalGetPollFlow(pollId: EventIdHex): Flow<PollView?>
 

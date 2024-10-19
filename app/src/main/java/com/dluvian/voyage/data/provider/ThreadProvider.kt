@@ -68,8 +68,12 @@ class ThreadProvider(
                 }
             }
 
-            if (isInit) lazyNostrSubscriber.lazySubRepliesAndVotes(parentId = id)
-            else nostrSubscriber.subVotesAndReplies(parentIds = listOf(id))
+            if (isInit) {
+                lazyNostrSubscriber.lazySubRepliesAndVotes(parentId = id)
+                lazyNostrSubscriber.lazySubPollResponses(pollId = id)
+            } else {
+                nostrSubscriber.subVotesAndReplies(parentIds = listOf(id))
+            }
         }
 
         val kind = nevent.kind()?.asU16()

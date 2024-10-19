@@ -169,6 +169,15 @@ class LazyNostrSubscriber(
         }
     }
 
+    suspend fun lazySubPollResponses(pollId: EventIdHex) {
+        if (!room.existsDao().pollExists(pollId = pollId)) return
+        val filters = listOf(filterCreator.getLazyPollResponseFilter(pollId = pollId))
+
+        relayProvider.getReadRelays().forEach { relay ->
+            subCreator.subscribe(relayUrl = relay, filters = filters)
+        }
+    }
+
     suspend fun lazySubUnknownProfiles() {
         val pubkeys = mutableListOf<PubkeyHex>()
         pubkeys.addAll(friendProvider.getFriendsWithMissingProfile())

@@ -147,6 +147,18 @@ class FilterCreator(
             .limitRestricted(limit = MAX_EVENTS_TO_SUB)
     }
 
+    suspend fun getLazyPollResponseFilter(pollId: EventIdHex): Filter {
+        val endsAt = room.pollDao().getPollExpiry(pollId = pollId) ?: getCurrentSecs()
+        val newestResponseTime = room.pollResponseDao().getLatestResponseTime(pollId = pollId) ?: 1L
+
+        return Filter()
+            .kind(kind = Kind(POLL_RESPONSE_U16))
+            .event(eventId = EventId.fromHex(pollId))
+            .since(timestamp = Timestamp.fromSecs((newestResponseTime + 1).toULong()))
+            .until(timestamp = Timestamp.fromSecs(endsAt.toULong()))
+            .limitRestricted(limit = MAX_EVENTS_TO_SUB)
+    }
+
     suspend fun getLazyVoteFilter(parentId: EventId): Filter {
         val newestVoteTime = room.voteDao().getNewestVoteCreatedAt(postId = parentId.toHex()) ?: 1L
 

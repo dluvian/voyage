@@ -11,6 +11,9 @@ interface ExistsDao {
     @Query("SELECT EXISTS (SELECT * FROM mainEvent WHERE id = :id)")
     suspend fun postExists(id: EventIdHex): Boolean
 
+    @Query("SELECT EXISTS (SELECT * FROM poll WHERE eventId = :pollId)")
+    suspend fun pollExists(pollId: EventIdHex): Boolean
+
     @Query(
         "SELECT EXISTS" +
                 "(SELECT id FROM mainEvent " +
