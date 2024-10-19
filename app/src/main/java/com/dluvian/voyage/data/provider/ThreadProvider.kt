@@ -73,6 +73,7 @@ class ThreadProvider(
                 lazyNostrSubscriber.lazySubPollResponses(pollId = id)
             } else {
                 nostrSubscriber.subVotesAndReplies(parentIds = listOf(id))
+                nostrSubscriber.subPollResponses(pollIds = listOf(id))
             }
         }
 
