@@ -272,4 +272,5 @@
     <string name="n_replies_have_been_hidden">%d 条回复已被隐藏。</string>
     <string name="always_use_v2_replies">始终使用 v2 回复</string>
     <string name="this_format_is_not_widely_adopted_yet">这种格式尚未被广泛采用，因此您的回复可能不会显示在其他客户端上。</string>
+    <string name="failed_to_sign_poll_response">未能签署民意调查回复</string>
 </resources>

@@ -133,6 +133,7 @@ class ThreadProvider(
         rootId: EventIdHex,
         parentIds: Set<EventIdHex>,
     ): Flow<List<ThreadReplyCtx>> {
+        // TODO: Only comments when opening poll
         val allIds = parentIds + rootId
         val legacyFlow = room.legacyReplyDao().getRepliesFlow(parentIds = allIds)
             .firstThenDistinctDebounce(DEBOUNCE)

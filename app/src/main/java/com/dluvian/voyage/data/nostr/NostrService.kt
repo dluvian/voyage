@@ -5,6 +5,7 @@ import androidx.compose.runtime.MutableState
 import com.dluvian.voyage.core.AUTH_TIMEOUT
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_KEYS_SQL
+import com.dluvian.voyage.core.OptionId
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.BadConnection
@@ -218,6 +219,15 @@ class NostrService(
             content = content,
             mention = mention,
         )
+            .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
+    }
+
+    suspend fun publishPollResponse(
+        pollId: EventId,
+        optionId: OptionId,
+        relayUrls: Collection<RelayUrl>,
+    ): Result<Event> {
+        return eventMaker.buildPollResponse(pollId = pollId, optionId = optionId)
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 

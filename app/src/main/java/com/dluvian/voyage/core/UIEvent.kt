@@ -121,6 +121,7 @@ data class ClickNeutralizeVote(
     override val mention: PubkeyHex,
 ) : VoteEvent(postId = postId, mention = mention)
 
+data class VotePollOption(val pollId: EventIdHex, val optionId: OptionId) : UIEvent()
 
 sealed class MuteEvent : UIEvent()
 data class MuteProfile(val pubkey: PubkeyHex, val debounce: Boolean = true) : MuteEvent()

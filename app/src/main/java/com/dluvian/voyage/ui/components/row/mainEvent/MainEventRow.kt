@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -35,6 +36,7 @@ import com.dluvian.voyage.core.OpenThread
 import com.dluvian.voyage.core.OpenThreadRaw
 import com.dluvian.voyage.core.ThreadViewShowReplies
 import com.dluvian.voyage.core.ThreadViewToggleCollapse
+import com.dluvian.voyage.core.VotePollOption
 import com.dluvian.voyage.core.model.Comment
 import com.dluvian.voyage.core.model.CrossPost
 import com.dluvian.voyage.core.model.LegacyReply
@@ -152,7 +154,7 @@ private fun MainEventMainRow(
         }
 
         when (val event = ctx.mainEvent) {
-            is Poll -> PollColumn(poll = event)
+            is Poll -> PollColumn(poll = event, onUpdate = onUpdate)
             is CrossPost,
             is RootPost,
             is Comment,
@@ -219,7 +221,7 @@ private fun RowWithDivider(level: Int, content: ComposableContent) {
 }
 
 @Composable
-private fun PollColumn(poll: Poll) {
+private fun PollColumn(poll: Poll, onUpdate: OnUpdate) {
     val clickedId = remember {
         mutableStateOf<String?>(null)
     }
@@ -240,7 +242,7 @@ private fun PollColumn(poll: Poll) {
                 isRevealed = alreadyVoted.value,
                 percentage = remember(option.voteCount, totalVotes) {
                     if (totalVotes == 0) 0
-                    else option.voteCount.div(totalVotes).times(100)
+                    else option.voteCount.toFloat().div(totalVotes).times(100).toInt()
                 },
                 progress = remember(option.voteCount, topVotes) {
                     if (topVotes == 0) 0f else option.voteCount.toFloat().div(topVotes)
@@ -249,9 +251,16 @@ private fun PollColumn(poll: Poll) {
             )
         }
         Text(
-            modifier = Modifier.padding(start = spacing.large),
+            modifier = Modifier.padding(start = spacing.large, top = spacing.large),
             text = if (totalVotes == 0) "No votes" else "$totalVotes votes"
         )
+        //TODO: String resourcify
+
+        if (!alreadyVoted.value) clickedId.value?.let { optionId ->
+            Button(onClick = { onUpdate(VotePollOption(pollId = poll.id, optionId = optionId)) }) {
+                Text("Vote")
+            }
+        }
     }
 }
 

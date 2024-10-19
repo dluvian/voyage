@@ -2,6 +2,7 @@ package com.dluvian.voyage.data.event
 
 import android.util.Log
 import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.core.OptionId
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.utils.createVoyageClientTag
@@ -140,6 +141,19 @@ class EventMaker(
             eventId = eventId,
             publicKey = mention,
             reaction = content,
+        ).toUnsignedEvent(publicKey = accountManager.getPublicKey())
+
+        return accountManager.sign(unsignedEvent = unsignedEvent)
+    }
+
+    suspend fun buildPollResponse(pollId: EventId, optionId: OptionId): Result<Event> {
+        val unsignedEvent = EventBuilder(
+            kind = Kind(kind = POLL_RESPONSE_U16),
+            content = "",
+            tags = listOf(
+                Tag.event(pollId),
+                Tag.parse(listOf("response", optionId))
+            ),
         ).toUnsignedEvent(publicKey = accountManager.getPublicKey())
 
         return accountManager.sign(unsignedEvent = unsignedEvent)
