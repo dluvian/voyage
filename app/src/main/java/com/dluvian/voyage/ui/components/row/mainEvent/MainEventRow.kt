@@ -44,6 +44,7 @@ import com.dluvian.voyage.core.model.Poll
 import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.model.ThreadableMainEvent
 import com.dluvian.voyage.data.nostr.createNevent
+import com.dluvian.voyage.data.nostr.getCurrentSecs
 import com.dluvian.voyage.ui.components.FullHorizontalDivider
 import com.dluvian.voyage.ui.components.button.OptionsButton
 import com.dluvian.voyage.ui.components.button.footer.CountedCommentButton
@@ -222,11 +223,17 @@ private fun RowWithDivider(level: Int, content: ComposableContent) {
 
 @Composable
 private fun PollColumn(poll: Poll, onUpdate: OnUpdate) {
+    val isExpired = remember(poll.endsAt) {
+        poll.endsAt != null && poll.endsAt <= getCurrentSecs()
+    }
     val clickedId = remember {
         mutableStateOf<String?>(null)
     }
     val alreadyVoted = remember(poll) {
-        mutableStateOf(poll.options.any { it.isMyVote })
+        poll.options.any { it.isMyVote }
+    }
+    val isRevealed = remember(alreadyVoted, isExpired) {
+        alreadyVoted || isExpired
     }
     val topVotes = remember(poll) {
         poll.options.maxOf { it.voteCount }
@@ -239,7 +246,7 @@ private fun PollColumn(poll: Poll, onUpdate: OnUpdate) {
             PollOptionRow(
                 label = option.label,
                 isSelected = if (clickedId.value != null) clickedId.value == option.optionId else option.isMyVote,
-                isRevealed = alreadyVoted.value,
+                isRevealed = isRevealed,
                 percentage = remember(option.voteCount, totalVotes) {
                     if (totalVotes == 0) 0
                     else option.voteCount.toFloat().div(totalVotes).times(100).toInt()
@@ -250,14 +257,25 @@ private fun PollColumn(poll: Poll, onUpdate: OnUpdate) {
                 onClick = { clickedId.value = option.optionId }
             )
         }
-        Text(
-            modifier = Modifier.padding(start = spacing.large, top = spacing.large),
-            text = if (totalVotes == 0) "No votes" else "$totalVotes votes"
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = spacing.large),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                modifier = Modifier.padding(start = spacing.large),
+                text = if (totalVotes == 0) "No votes" else "$totalVotes votes"
+            )
+            Spacer(modifier = Modifier.width(spacing.medium))
+            if (isExpired) Text("Poll has ended")
+        }
         //TODO: String resourcify
 
-        if (!alreadyVoted.value) clickedId.value?.let { optionId ->
-            Button(onClick = { onUpdate(VotePollOption(pollId = poll.id, optionId = optionId)) }) {
+        if (!alreadyVoted) clickedId.value?.let { optionId ->
+            Button(onClick = {
+                onUpdate(VotePollOption(pollId = poll.id, optionId = optionId))
+            }) {
                 Text("Vote")
             }
         }

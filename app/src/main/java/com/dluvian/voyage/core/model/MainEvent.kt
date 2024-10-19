@@ -153,6 +153,7 @@ data class Poll(
     val commentCount: Int,
     val options: List<PollOptionView>,
     val latestResponse: Long?,
+    val endsAt: Long?,
 ) : ThreadableMainEvent(
     id = id,
     pubkey = pubkey,
@@ -186,7 +187,8 @@ data class Poll(
                 isBookmarked = pollView.isBookmarked,
                 commentCount = pollView.commentCount,
                 options = pollOptions,
-                latestResponse = pollView.latestResponse
+                latestResponse = pollView.latestResponse,
+                endsAt = pollView.endsAt,
             )
         }
     }
