@@ -128,20 +128,24 @@ class FeedProvider(
     ): Flow<List<MainEvent>> {
         val rootPosts = getRootPostFlow(setting = setting, until = until, size = size)
         val crossPosts = getCrossPostFlow(setting = setting, until = until, size = size)
-        val polls = getPollFlow(setting = setting, until = until, size = size)
-        val pollOptions = getPollOptionFlow(setting = setting, until = until, size = size)
+        // We combine it to wait until both flows emit something
+        val polls = combine(
+            getPollFlow(setting = setting, until = until, size = size),
+            getPollOptionFlow(setting = setting, until = until, size = size)
+        ) { poll, option ->
+            Pair(poll, option)
+        }
 
         return combine(
             rootPosts.firstThenDistinctDebounce(SHORT_DEBOUNCE),
             crossPosts.firstThenDistinctDebounce(SHORT_DEBOUNCE),
             polls.firstThenDistinctDebounce(SHORT_DEBOUNCE),
-            pollOptions.firstThenDistinctDebounce(SHORT_DEBOUNCE),
             ForcedData.combineFlows(
                 votes = forcedVotes,
                 follows = forcedFollows,
                 bookmarks = forcedBookmarks
             )
-        ) { root, cross, poll, option, forced ->
+        ) { root, cross, (poll, option), forced ->
             mergeToMainEventUIList(
                 roots = root,
                 crossPosts = cross,
@@ -353,10 +357,8 @@ class FeedProvider(
 
     private fun getBookmarksFeedFlow(until: Long, size: Int): Flow<List<MainEvent>> {
         val pollFlow = combine(
-            room.bookmarkDao().getPollFlow(until = until, size = size)
-                .firstThenDistinctDebounce(SHORT_DEBOUNCE),
-            room.bookmarkDao().getPollOptionFlow(until = until, size = size)
-                .firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            room.bookmarkDao().getPollFlow(until = until, size = size),
+            room.bookmarkDao().getPollOptionFlow(until = until, size = size),
         ) { poll, option -> Pair(poll, option) }
 
         return combine(
@@ -369,7 +371,7 @@ class FeedProvider(
             room.bookmarkDao()
                 .getCommentFlow(until = until, size = size)
                 .firstThenDistinctDebounce(SHORT_DEBOUNCE),
-            pollFlow,
+            pollFlow.firstThenDistinctDebounce(SHORT_DEBOUNCE),
             getForcedFlow()
         ) { roots, legacyReplies, comments, (polls, options), forced ->
             mergeToMainEventUIList(
