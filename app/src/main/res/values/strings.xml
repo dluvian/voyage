@@ -277,4 +277,8 @@
     <string name="always_use_v2_replies">Always use v2 replies</string>
     <string name="this_format_is_not_widely_adopted_yet">This format is not widely adopted yet, so your replies might not show up on other clients.</string>
     <string name="failed_to_sign_poll_response">Failed to sign poll response</string>
+    <string name="no_votes">No votes</string>
+    <string name="n_votes">%d votes</string>
+    <string name="poll_has_ended">Poll has ended</string>
+    <string name="vote">Vote</string>
 </resources>

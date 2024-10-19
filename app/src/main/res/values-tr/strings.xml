@@ -272,4 +272,8 @@
     <string name="always_use_v2_replies">Her zaman v2 yanıtlarını kullanın</string>
     <string name="this_format_is_not_widely_adopted_yet">Bu format henüz yaygın olarak benimsenmediğinden, yanıtlarınız diğer istemcilerde görünmeyebilir.</string>
     <string name="failed_to_sign_poll_response">Anket yanıtını imzalama başarısız oldu</string>
+    <string name="no_votes">Oy yok</string>
+    <string name="n_votes">%d oy</string>
+    <string name="poll_has_ended">Anket sona erdi</string>
+    <string name="vote">Oy</string>
 </resources>

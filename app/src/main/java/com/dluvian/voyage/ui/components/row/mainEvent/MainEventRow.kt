@@ -27,8 +27,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.MAX_CONTENT_LINES
@@ -236,9 +238,6 @@ private fun PollColumn(poll: Poll, onUpdate: OnUpdate) {
     val alreadyVoted = remember(poll) {
         poll.options.any { it.isMyVote }
     }
-    val isRevealed = remember(alreadyVoted, isExpired) {
-        alreadyVoted || isExpired
-    }
     val topVotes = remember(poll) {
         poll.options.maxOf { it.voteCount }
     }
@@ -250,7 +249,7 @@ private fun PollColumn(poll: Poll, onUpdate: OnUpdate) {
             PollOptionRow(
                 label = option.label,
                 isSelected = if (clickedId.value != null) clickedId.value == option.optionId else option.isMyVote,
-                isRevealed = isRevealed,
+                isRevealed = alreadyVoted || isExpired,
                 percentage = remember(option.voteCount, totalVotes) {
                     if (totalVotes == 0) 0
                     else option.voteCount.toFloat().div(totalVotes).times(100).toInt()
@@ -269,18 +268,18 @@ private fun PollColumn(poll: Poll, onUpdate: OnUpdate) {
         ) {
             Text(
                 modifier = Modifier.padding(start = spacing.large),
-                text = if (totalVotes == 0) "No votes" else "$totalVotes votes"
+                text = if (totalVotes == 0) stringResource(id = R.string.no_votes)
+                else stringResource(id = R.string.n_votes, totalVotes)
             )
             Spacer(modifier = Modifier.width(spacing.medium))
-            if (isExpired) Text("Poll has ended")
+            if (isExpired) Text(stringResource(id = R.string.poll_has_ended))
         }
-        //TODO: String resourcify
 
         if (!alreadyVoted) clickedId.value?.let { optionId ->
             Button(onClick = {
                 onUpdate(VotePollOption(pollId = poll.id, optionId = optionId))
             }) {
-                Text("Vote")
+                Text(stringResource(id = R.string.vote))
             }
         }
     }
