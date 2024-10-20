@@ -103,7 +103,7 @@ private fun ClickableBaseRow(
                 Spacer(modifier = Modifier.width(spacing.xl))
             }
             Column {
-                Text(
+                if (header.isNotEmpty()) Text(
                     text = header,
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 2,

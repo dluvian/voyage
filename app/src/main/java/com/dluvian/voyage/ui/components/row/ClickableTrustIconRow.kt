@@ -15,8 +15,8 @@ fun ClickableTrustIconRow(
     onClick: Fn,
 ) {
     ClickableRow(
-        header = header ?: content.orEmpty(),
-        text = if (header != null) content else null,
+        header = header.orEmpty(),
+        text = content,
         leadingContent = { TrustIcon(trustType = trustType) },
         trailingContent = trailingContent,
         onClick = onClick
