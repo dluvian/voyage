@@ -32,6 +32,6 @@ interface EventRelayDao {
     @Query("SELECT relayUrl FROM mainEvent WHERE id = :id")
     suspend fun getEventRelay(id: EventIdHex): RelayUrl?
 
-    @Query("SELECT relayUrl FROM mainEvent WHERE pubkey = :pubkey")
+    @Query("SELECT DISTINCT(relayUrl) FROM mainEvent WHERE pubkey = :pubkey")
     fun getEventRelays(pubkey: PubkeyHex): Flow<List<RelayUrl>>
 }
