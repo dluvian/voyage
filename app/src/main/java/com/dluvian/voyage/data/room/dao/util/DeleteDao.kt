@@ -37,6 +37,7 @@ interface DeleteDao {
     @Query(
         "SELECT createdAt " +
                 "FROM mainEvent " +
+                "WHERE id IN (SELECT eventId FROM rootPost) " +
                 "ORDER BY createdAt DESC " +
                 "LIMIT 1 " +
                 "OFFSET :threshold"
