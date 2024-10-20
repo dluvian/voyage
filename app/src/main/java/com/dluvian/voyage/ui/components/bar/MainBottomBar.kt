@@ -42,7 +42,7 @@ fun MainBottomBar(
     inboxFeedState: LazyListState,
     onUpdate: (UIEvent) -> Unit
 ) {
-    NavigationBar(modifier = Modifier.height(42.dp)) {
+    NavigationBar(modifier = Modifier.height(52.dp)) {
         val scope = rememberCoroutineScope()
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             MainBottomBarItem(
