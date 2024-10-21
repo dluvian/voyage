@@ -75,10 +75,7 @@ class Paginator(
         val now = getCurrentSecs()
 
         scope.launch {
-            setPage(
-                until = now,
-                subUntil = now,
-            )
+            setPage(until = now, subUntil = now)
             delay(DELAY_1SEC)
         }.invokeOnCompletion {
             isRefreshing.value = false
