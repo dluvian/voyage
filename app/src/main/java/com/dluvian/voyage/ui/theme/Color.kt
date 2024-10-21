@@ -16,6 +16,7 @@ import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.core.model.WebTrust
 
 val TallPoppyRed = Color(0xFFB92B27)
+val Purple = Color(0xFFb5179e)
 val DenimBlue = Color(0xFF1565c0)
 
 val WotColor = Color(0xFFF8D97B)
