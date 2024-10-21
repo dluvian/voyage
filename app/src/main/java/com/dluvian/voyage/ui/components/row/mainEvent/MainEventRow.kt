@@ -167,7 +167,7 @@ private fun MainEventMainRow(
             }
 
             when (val event = ctx.mainEvent) {
-                is Poll -> PollColumn(poll = event, onUpdate = onUpdate)
+                is Poll -> PollColumn(poll = event, onUpdate = onUpdate, onClickRow = onClickRow)
                 is CrossPost,
                 is RootPost,
                 is Comment,
@@ -234,7 +234,7 @@ private fun RowWithDivider(level: Int, content: ComposableContent) {
 }
 
 @Composable
-private fun PollColumn(poll: Poll, onUpdate: OnUpdate) {
+private fun PollColumn(poll: Poll, onUpdate: OnUpdate, onClickRow: Fn) {
     val isExpired = remember(poll.endsAt) {
         poll.endsAt != null && poll.endsAt <= getCurrentSecs()
     }
@@ -266,7 +266,9 @@ private fun PollColumn(poll: Poll, onUpdate: OnUpdate) {
                 progress = remember(option.voteCount, topVotes) {
                     if (topVotes == 0) 0f else option.voteCount.toFloat().div(topVotes)
                 },
-                onClick = { if (!isRevealed) clickedId.value = option.optionId }
+                onClick = {
+                    if (isRevealed) onClickRow.invoke() else clickedId.value = option.optionId
+                },
             )
         }
         Row(
@@ -301,7 +303,7 @@ private fun PollOptionRow(
     isRevealed: Boolean,
     percentage: Int,
     progress: Float,
-    onClick: Fn
+    onClick: Fn,
 ) {
     val isRevealedSelection = remember(isSelected, isRevealed) {
         isSelected && isRevealed
