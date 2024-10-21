@@ -31,6 +31,7 @@ import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material.icons.rounded.KeyboardDoubleArrowUp
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.MoreHoriz
+import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.OfflineBolt
 import androidx.compose.material.icons.rounded.RemoveCircle
 import androidx.compose.material.icons.rounded.Repeat
@@ -60,6 +61,7 @@ val ScrollUpIcon = Icons.Rounded.KeyboardDoubleArrowUp
 val SaveIcon = Icons.Rounded.Save
 val ExpandIcon = Icons.Rounded.ExpandMore
 val CollapseIcon = Icons.Rounded.ExpandLess
+val VertMoreIcon = Icons.Rounded.MoreVert
 val HorizMoreIcon = Icons.Rounded.MoreHoriz
 val DeleteIcon = Icons.Rounded.Delete
 val RemoveIcon = Icons.Rounded.Close

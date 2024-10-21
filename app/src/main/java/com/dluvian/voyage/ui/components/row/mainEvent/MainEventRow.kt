@@ -50,7 +50,6 @@ import com.dluvian.voyage.core.model.ThreadableMainEvent
 import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.data.nostr.getCurrentSecs
 import com.dluvian.voyage.ui.components.FullHorizontalDivider
-import com.dluvian.voyage.ui.components.button.OptionsButton
 import com.dluvian.voyage.ui.components.button.footer.CountedCommentButton
 import com.dluvian.voyage.ui.components.button.footer.ReplyIconButton
 import com.dluvian.voyage.ui.components.text.AnnotatedText
@@ -126,7 +125,8 @@ private fun MainEventMainRow(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClickRow)
-            .padding(spacing.bigScreenEdge)
+            .padding(vertical = spacing.bigScreenEdge)
+            .padding(start = spacing.bigScreenEdge)
     ) {
         MainEventHeader(
             ctx = ctx,
@@ -135,81 +135,87 @@ private fun MainEventMainRow(
         )
         Spacer(modifier = Modifier.height(spacing.large))
 
-        ctx.mainEvent.getRelevantSubject()?.let { subject ->
-            if (subject.isNotEmpty()) {
+        // Another col for end padding excluding header
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = spacing.bigScreenEdge)
+        ) {
+            ctx.mainEvent.getRelevantSubject()?.let { subject ->
+                if (subject.isNotEmpty()) {
+                    AnnotatedText(
+                        text = subject,
+                        maxLines = MAX_SUBJECT_LINES,
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold)
+                    )
+                    Spacer(modifier = Modifier.height(spacing.large))
+                }
+            }
+
+            AnimatedVisibility(
+                visible = !ctx.isCollapsedReply(),
+                exit = slideOutVertically(animationSpec = tween(durationMillis = 0))
+            ) {
                 AnnotatedText(
-                    text = subject,
-                    maxLines = MAX_SUBJECT_LINES,
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold)
+                    text = ctx.mainEvent.content,
+                    maxLines = when (ctx) {
+                        is ThreadReplyCtx, is ThreadRootCtx -> Int.MAX_VALUE
+                        is FeedCtx -> MAX_CONTENT_LINES
+                    }
                 )
                 Spacer(modifier = Modifier.height(spacing.large))
             }
-        }
 
-        AnimatedVisibility(
-            visible = !ctx.isCollapsedReply(),
-            exit = slideOutVertically(animationSpec = tween(durationMillis = 0))
-        ) {
-            AnnotatedText(
-                text = ctx.mainEvent.content,
-                maxLines = when (ctx) {
-                    is ThreadReplyCtx, is ThreadRootCtx -> Int.MAX_VALUE
-                    is FeedCtx -> MAX_CONTENT_LINES
+            when (val event = ctx.mainEvent) {
+                is Poll -> PollColumn(poll = event, onUpdate = onUpdate)
+                is CrossPost,
+                is RootPost,
+                is Comment,
+                is LegacyReply -> {
                 }
-            )
-            Spacer(modifier = Modifier.height(spacing.large))
-        }
-
-        when (val event = ctx.mainEvent) {
-            is Poll -> PollColumn(poll = event, onUpdate = onUpdate)
-            is CrossPost,
-            is RootPost,
-            is Comment,
-            is LegacyReply -> {
             }
+
+            if (!ctx.isCollapsedReply()) MainEventActions(
+                mainEvent = ctx.mainEvent,
+                onUpdate = onUpdate,
+                additionalStartAction = {
+                    when (ctx) {
+                        is ThreadReplyCtx -> {
+                            if (ctx.reply.replyCount > 0 && !ctx.hasLoadedReplies) {
+                                MoreRepliesTextButton(
+                                    replyCount = ctx.reply.replyCount,
+                                    onShowReplies = {
+                                        onUpdate(ThreadViewShowReplies(id = ctx.reply.id))
+                                    }
+                                )
+                            }
+                        }
+
+                        is FeedCtx, is ThreadRootCtx -> {}
+                    }
+
+                },
+                additionalEndAction = {
+                    when (ctx) {
+                        is ThreadReplyCtx -> ReplyIconButton(ctx = ctx, onUpdate = onUpdate)
+
+                        is ThreadRootCtx -> CountedCommentButton(ctx = ctx, onUpdate = onUpdate)
+
+                        is FeedCtx -> {
+                            when (ctx.mainEvent) {
+                                is RootPost,
+                                is Poll,
+                                is CrossPost -> CountedCommentButton(ctx = ctx, onUpdate = onUpdate)
+
+                                is LegacyReply, is Comment -> ReplyIconButton(
+                                    ctx = ctx,
+                                    onUpdate = onUpdate
+                                )
+                            }
+                        }
+                    }
+                })
         }
-
-        if (!ctx.isCollapsedReply()) MainEventActions(
-            mainEvent = ctx.mainEvent,
-            onUpdate = onUpdate,
-            additionalStartAction = {
-                OptionsButton(mainEvent = ctx.mainEvent, onUpdate = onUpdate)
-                when (ctx) {
-                    is ThreadReplyCtx -> {
-                        if (ctx.reply.replyCount > 0 && !ctx.hasLoadedReplies) {
-                            MoreRepliesTextButton(
-                                replyCount = ctx.reply.replyCount,
-                                onShowReplies = {
-                                    onUpdate(ThreadViewShowReplies(id = ctx.reply.id))
-                                }
-                            )
-                        }
-                    }
-
-                    is FeedCtx, is ThreadRootCtx -> {}
-                }
-
-            },
-            additionalEndAction = {
-                when (ctx) {
-                    is ThreadReplyCtx -> ReplyIconButton(ctx = ctx, onUpdate = onUpdate)
-
-                    is ThreadRootCtx -> CountedCommentButton(ctx = ctx, onUpdate = onUpdate)
-
-                    is FeedCtx -> {
-                        when (ctx.mainEvent) {
-                            is RootPost,
-                            is Poll,
-                            is CrossPost -> CountedCommentButton(ctx = ctx, onUpdate = onUpdate)
-
-                            is LegacyReply, is Comment -> ReplyIconButton(
-                                ctx = ctx,
-                                onUpdate = onUpdate
-                            )
-                        }
-                    }
-                }
-            })
     }
 }
 

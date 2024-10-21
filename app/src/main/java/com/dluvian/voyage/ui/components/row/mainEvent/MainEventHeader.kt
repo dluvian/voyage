@@ -36,6 +36,7 @@ import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.core.model.Poll
 import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.data.nostr.createNprofile
+import com.dluvian.voyage.ui.components.button.OptionsButton
 import com.dluvian.voyage.ui.components.icon.ClickableTrustIcon
 import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.components.text.RelativeTime
@@ -53,7 +54,9 @@ fun MainEventHeader(
     onUpdate: OnUpdate
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(end = spacing.small),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -83,6 +86,7 @@ fun MainEventHeader(
                 Spacer(modifier = Modifier.width(spacing.large))
             }
             if (!ctx.isCollapsedReply()) RelativeTime(from = ctx.mainEvent.createdAt)
+            OptionsButton(mainEvent = ctx.mainEvent, onUpdate = onUpdate)
         }
     }
 }

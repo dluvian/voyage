@@ -11,8 +11,8 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.model.MainEvent
 import com.dluvian.voyage.ui.components.button.footer.FooterIconButton
 import com.dluvian.voyage.ui.components.dropdown.FeedItemDropdown
-import com.dluvian.voyage.ui.theme.HorizMoreIcon
 import com.dluvian.voyage.ui.theme.OnBgLight
+import com.dluvian.voyage.ui.theme.VertMoreIcon
 
 @Composable
 fun OptionsButton(
@@ -28,7 +28,7 @@ fun OptionsButton(
             onUpdate = onUpdate,
         )
         FooterIconButton(
-            icon = HorizMoreIcon,
+            icon = VertMoreIcon,
             description = stringResource(id = R.string.show_options_menu),
             color = OnBgLight,
             onClick = { showMenu.value = !showMenu.value })
