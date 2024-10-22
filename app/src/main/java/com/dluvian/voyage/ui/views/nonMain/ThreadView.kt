@@ -131,8 +131,9 @@ private fun ThreadViewContent(
                     onUpdate = onUpdate
                 )
             }
-            if (localRoot.threadableMainEvent is RootPost) item {
-                FullHorizontalDivider()
+            when (localRoot.threadableMainEvent) {
+                is RootPost, is Poll -> item { FullHorizontalDivider() }
+                is Comment, is LegacyReply -> {}
             }
             if (localRoot.mainEvent.replyCount > totalReplyCount) item {
                 FullLinearProgressIndicator()
