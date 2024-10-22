@@ -28,7 +28,7 @@ import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.ui.theme.getTrustColor
 import com.dluvian.voyage.ui.theme.sizing
 
-private const val X_RATIO = 0.4f
+private const val X_RATIO = 0.45f
 
 @Stable
 @Composable

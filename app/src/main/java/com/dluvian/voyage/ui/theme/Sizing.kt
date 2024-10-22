@@ -8,7 +8,7 @@ import androidx.compose.ui.unit.dp
 
 data class Sizing(
     val dot: Dp = 8.dp,
-    val trustIndicator: Dp = 13.dp,
+    val trustIndicator: Dp = 15.dp,
     val smallIndicator: Dp = 18.dp,
     val footerIconButton: Dp = 18.dp,
     val relayActionButton: Dp = 32.dp,
