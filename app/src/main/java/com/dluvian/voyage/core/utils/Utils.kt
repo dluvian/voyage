@@ -155,7 +155,45 @@ private val nostrMentionRegex =
 
 fun extractNostrMentions(extractFrom: String) = nostrMentionRegex.findAll(extractFrom).toList()
 
-fun shortenUrl(url: String) = url.removePrefix("https://").removePrefix("http://")
+private val MEDIA_SUFFIXES = listOf(
+    ".jpeg",
+    ".jpg",
+    ".gif",
+    ".png",
+    ".webp",
+    ".mp4",
+    ".mov",
+    ".mp3",
+    ".webm",
+    ".wav",
+    ".bmp",
+    ".svg",
+    ".avi",
+    ".mpg",
+    ".mpeg",
+    ".wmv"
+)
+
+fun shortenUrl(url: String): String {
+    val noPrefix = url.removePrefix("https://").removePrefix("http://")
+    if (!noPrefix.contains('/') || MEDIA_SUFFIXES.none { noPrefix.endsWith(it) }) {
+        return noPrefix
+    }
+
+    val firstSlash = noPrefix.indexOfFirst { it == '/' }
+    val lastDot = noPrefix.indexOfLast { it == '.' }
+
+    if (lastDot - firstSlash <= 12) return noPrefix
+
+    val firstN = firstSlash + 1
+    val lastN = noPrefix.length - lastDot
+
+    return noPrefix.take(firstN) +
+            noPrefix.drop(firstN).take(3) +
+            "…" +
+            noPrefix.dropLast(lastN).take(3) +
+            noPrefix.takeLast(lastN)
+}
 
 fun createReplyAndVoteFilters(
     ids: List<EventId>,
