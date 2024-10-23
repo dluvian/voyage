@@ -256,6 +256,14 @@ data class SendPost(
     val context: Context,
     val onGoBack: Fn
 ) : CreatePostViewAction()
+data class SendPoll(
+    val question: String,
+    val options: List<String>,
+    val topics: List<Topic>,
+    val isAnon: Boolean,
+    val context: Context,
+    val onGoBack: Fn
+) : CreatePostViewAction()
 
 
 sealed class CreateGitIssueViewAction : UIEvent()

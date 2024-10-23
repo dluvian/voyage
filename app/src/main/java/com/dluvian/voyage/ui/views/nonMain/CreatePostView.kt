@@ -3,6 +3,8 @@ package com.dluvian.voyage.ui.views.nonMain
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -22,6 +24,7 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.MAX_SUBJECT_LINES
 import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.core.SendPoll
 import com.dluvian.voyage.core.SendPost
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.viewModel.CreatePostViewModel
@@ -30,6 +33,8 @@ import com.dluvian.voyage.ui.components.row.TopicSelectionRow
 import com.dluvian.voyage.ui.components.scaffold.ContentCreationScaffold
 import com.dluvian.voyage.ui.components.text.InputWithSuggestions
 import com.dluvian.voyage.ui.components.text.TextInput
+import com.dluvian.voyage.ui.theme.PollIcon
+import com.dluvian.voyage.ui.theme.TextIcon
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
@@ -40,6 +45,8 @@ fun CreatePostView(
     snackbar: SnackbarHostState,
     onUpdate: OnUpdate
 ) {
+    val isPoll = remember { mutableStateOf(false) }
+    val options = remember { mutableStateOf(emptyList<TextFieldValue>()) }
     val header = remember { mutableStateOf(TextFieldValue()) }
     val body = remember { mutableStateOf(TextFieldValue()) }
     val isAnon = remember { mutableStateOf(false) }
@@ -53,17 +60,35 @@ fun CreatePostView(
 
     ContentCreationScaffold(
         showSendButton = body.value.text.isNotBlank(),
-        isSendingContent = vm.isSendingPost.value,
+        isSendingContent = vm.isSending.value,
         snackbar = snackbar,
+        typeIcon = {
+            if (!vm.isSending.value) IconButton(onClick = { isPoll.value = !isPoll.value }) {
+                Icon(
+                    imageVector = if (isPoll.value) PollIcon else TextIcon,
+                    contentDescription = if (isPoll.value) stringResource(id = R.string.create_a_text_note)
+                    else stringResource(id = R.string.create_a_poll)
+                )
+            }
+        },
         onSend = {
-            onUpdate(
+            if (isPoll.value) onUpdate(
+                SendPoll(
+                    question = body.value.text,
+                    options = options.value.map { it.text },
+                    topics = topics.value,
+                    isAnon = isAnon.value,
+                    context = context,
+                    onGoBack = { onUpdate(GoBack) })
+            )
+            else onUpdate(
                 SendPost(
                     header = header.value.text,
                     body = body.value.text,
                     topics = topics.value,
                     isAnon = isAnon.value,
                     context = context,
-                ) { onUpdate(GoBack) }
+                    onGoBack = { onUpdate(GoBack) })
             )
         },
         onUpdate = onUpdate,

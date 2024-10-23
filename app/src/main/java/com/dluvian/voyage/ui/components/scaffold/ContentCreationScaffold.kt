@@ -14,6 +14,7 @@ fun ContentCreationScaffold(
     isSendingContent: Boolean,
     snackbar: SnackbarHostState,
     title: String? = null,
+    typeIcon: ComposableContent = {},
     onSend: Fn,
     onUpdate: OnUpdate,
     content: ComposableContent,
@@ -25,6 +26,7 @@ fun ContentCreationScaffold(
                 showSendButton = showSendButton,
                 isSendingContent = isSendingContent,
                 title = title,
+                typeIcon = typeIcon,
                 onSend = onSend,
                 onUpdate = onUpdate
             )

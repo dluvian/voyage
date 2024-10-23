@@ -146,6 +146,30 @@ class NostrService(
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
+    suspend fun publishPoll(
+        question: String,
+        options: List<String>,
+        endsAt: Long,
+        pollRelays: List<RelayUrl>,
+        topics: List<Topic>,
+        mentions: List<PubkeyHex>,
+        quotes: List<String>,
+        relayUrls: Collection<RelayUrl>,
+        isAnon: Boolean,
+    ): Result<Event> {
+        return eventMaker.buildPoll(
+            question = question,
+            options = TODO("Pair to char to label"),
+            endsAt = endsAt,
+            pollRelays = pollRelays,
+            topics = topics,
+            mentions = mentions,
+            quotes = quotes,
+            isAnon = isAnon,
+        )
+            .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
+    }
+
     suspend fun publishLegacyReply(
         content: String,
         parentId: EventIdHex,

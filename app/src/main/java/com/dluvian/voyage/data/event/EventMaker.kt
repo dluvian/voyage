@@ -2,6 +2,7 @@ package com.dluvian.voyage.data.event
 
 import android.util.Log
 import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.core.Label
 import com.dluvian.voyage.core.OptionId
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
@@ -59,6 +60,19 @@ class EventMaker(
             eventBuilder = EventBuilder.textNote(content = content, tags = tags),
             isAnon = isAnon
         )
+    }
+
+    suspend fun buildPoll(
+        question: String,
+        options: List<Pair<OptionId, Label>>,
+        endsAt: Long,
+        pollRelays: List<RelayUrl>,
+        topics: List<Topic>,
+        mentions: List<PubkeyHex>,
+        quotes: List<String>,
+        isAnon: Boolean,
+    ): Result<Event> {
+        TODO()
     }
 
     suspend fun buildReply(

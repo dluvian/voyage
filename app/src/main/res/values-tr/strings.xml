@@ -276,4 +276,8 @@
     <string name="n_votes">%d oy</string>
     <string name="poll_has_ended">Anket sona erdi</string>
     <string name="vote">Oy</string>
+    <string name="create_a_text_note">Bir metin notu oluşturun</string>
+    <string name="create_a_poll">Bir anket oluştur</string>
+    <string name="poll_created">Anket oluşturuldu</string>
+    <string name="failed_to_create_poll">Anket oluşturulamadı</string>
 </resources>

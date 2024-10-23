@@ -12,6 +12,7 @@ import androidx.compose.material.icons.automirrored.rounded.VolumeOff
 import androidx.compose.material.icons.filled.ThumbUpAlt
 import androidx.compose.material.icons.outlined.Book
 import androidx.compose.material.icons.outlined.FilterAlt
+import androidx.compose.material.icons.outlined.Poll
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material.icons.rounded.Abc
@@ -21,6 +22,7 @@ import androidx.compose.material.icons.rounded.Bookmark
 import androidx.compose.material.icons.rounded.CellTower
 import androidx.compose.material.icons.rounded.CheckCircleOutline
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Create
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.ExpandLess
@@ -80,3 +82,5 @@ val WordIcon = Icons.Rounded.Abc
 val FilterIcon = Icons.Outlined.FilterAlt
 val WarningIcon = Icons.Rounded.WarningAmber
 val VotedIcon = Icons.Rounded.CheckCircleOutline
+val PollIcon = Icons.Outlined.Poll
+val TextIcon = Icons.Rounded.Create
