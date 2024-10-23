@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.Fn
@@ -274,16 +275,22 @@ private fun PollColumn(poll: Poll, onUpdate: OnUpdate, onClickRow: Fn) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = spacing.large),
+                .padding(top = spacing.medium),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
                 modifier = Modifier.padding(start = spacing.large),
                 text = if (totalVotes == 0) stringResource(id = R.string.no_votes)
-                else stringResource(id = R.string.n_votes, totalVotes)
+                else stringResource(id = R.string.n_votes, totalVotes),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
             )
             Spacer(modifier = Modifier.width(spacing.medium))
-            if (isExpired) Text(stringResource(id = R.string.poll_has_ended))
+            if (isExpired) Text(
+                text = stringResource(id = R.string.poll_has_ended),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+            )
         }
 
         if (!alreadyVoted) clickedId.value?.let { optionId ->
