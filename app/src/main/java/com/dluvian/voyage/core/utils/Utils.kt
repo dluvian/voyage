@@ -206,7 +206,7 @@ fun createReplyAndVoteFilters(
         .limitRestricted(limit = MAX_EVENTS_TO_SUB)
 
     val replyFilter = Filter()
-        .kind(kind = Kind.fromEnum(KindEnum.TextNote))
+        .kinds(kinds = replyKinds)
         .events(ids = ids)
         .until(timestamp = until)
         .limitRestricted(limit = MAX_EVENTS_TO_SUB)
