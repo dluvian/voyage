@@ -68,12 +68,14 @@ class ThreadProvider(
                 }
             }
 
+            val poll = room.pollDao().getPoll(pollId = id)
+
             if (isInit) {
                 lazyNostrSubscriber.lazySubRepliesAndVotes(parentId = id)
-                lazyNostrSubscriber.lazySubPollResponses(pollId = id)
+                if (poll != null) lazyNostrSubscriber.lazySubPollResponses(poll = poll)
             } else {
                 nostrSubscriber.subVotesAndReplies(parentIds = listOf(id))
-                nostrSubscriber.subPollResponses(pollIds = listOf(id))
+                if (poll != null) nostrSubscriber.subPollResponsesByEntity(poll = poll)
             }
         }
 

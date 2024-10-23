@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.data.room.entity.helper.PollRelays
+import com.dluvian.voyage.data.room.entity.main.poll.PollEntity
 import com.dluvian.voyage.data.room.view.PollOptionView
 import com.dluvian.voyage.data.room.view.PollView
 import kotlinx.coroutines.flow.Flow
@@ -23,8 +24,8 @@ interface PollDao {
     @Query("SELECT relay1, relay2 FROM poll WHERE eventId = :pollId")
     fun getPollRelays(pollId: EventIdHex): PollRelays?
 
-    @Query("SELECT endsAt FROM poll WHERE eventId = :pollId")
-    suspend fun getPollExpiry(pollId: EventIdHex): Long?
+    @Query("SELECT * FROM poll WHERE eventId = :pollId")
+    suspend fun getPoll(pollId: EventIdHex): PollEntity?
 
     @Query("SELECT * FROM PollView WHERE id = :pollId")
     fun internalGetPollFlow(pollId: EventIdHex): Flow<PollView?>

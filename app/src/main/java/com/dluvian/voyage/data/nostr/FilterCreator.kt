@@ -11,6 +11,7 @@ import com.dluvian.voyage.data.event.POLL_RESPONSE_U16
 import com.dluvian.voyage.data.provider.LockProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.AppDatabase
+import com.dluvian.voyage.data.room.entity.main.poll.PollEntity
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
 import rust.nostr.protocol.Kind
@@ -147,13 +148,14 @@ class FilterCreator(
             .limitRestricted(limit = MAX_EVENTS_TO_SUB)
     }
 
-    suspend fun getLazyPollResponseFilter(pollId: EventIdHex): Filter {
-        val endsAt = room.pollDao().getPollExpiry(pollId = pollId) ?: getCurrentSecs()
-        val newestResponseTime = room.pollResponseDao().getLatestResponseTime(pollId = pollId) ?: 1L
+    suspend fun getLazyPollResponseFilter(poll: PollEntity): Filter {
+        val endsAt = poll.endsAt ?: getCurrentSecs()
+        val newestResponseTime = room.pollResponseDao()
+            .getLatestResponseTime(pollId = poll.eventId) ?: 1L
 
         return Filter()
             .kind(kind = Kind(POLL_RESPONSE_U16))
-            .event(eventId = EventId.fromHex(pollId))
+            .event(eventId = EventId.fromHex(poll.eventId))
             .since(timestamp = Timestamp.fromSecs((newestResponseTime + 1).toULong()))
             .until(timestamp = Timestamp.fromSecs(endsAt.toULong()))
             .limitRestricted(limit = MAX_EVENTS_TO_SUB)
@@ -192,12 +194,16 @@ class FilterCreator(
             .limit(limit = 1u)
     }
 
-    fun getPollResponseFilter(pollIds: List<EventIdHex>, since: Timestamp): Filter {
+    fun getPollResponseFilter(
+        pollIds: List<EventIdHex>,
+        since: Timestamp,
+        until: Timestamp
+    ): Filter {
         return Filter()
             .kind(kind = Kind(kind = POLL_RESPONSE_U16))
             .events(ids = pollIds.map { EventId.fromHex(it) })
             .since(timestamp = since)
-            .until(timestamp = Timestamp.now())
+            .until(timestamp = until)
             .limitRestricted(limit = MAX_EVENTS_TO_SUB)
     }
 }

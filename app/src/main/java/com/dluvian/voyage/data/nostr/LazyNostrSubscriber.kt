@@ -26,6 +26,7 @@ import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import com.dluvian.voyage.data.room.AppDatabase
+import com.dluvian.voyage.data.room.entity.main.poll.PollEntity
 import kotlinx.coroutines.delay
 import rust.nostr.protocol.EventId
 import rust.nostr.protocol.Filter
@@ -169,9 +170,8 @@ class LazyNostrSubscriber(
         }
     }
 
-    suspend fun lazySubPollResponses(pollId: EventIdHex) {
-        if (!room.existsDao().pollExists(pollId = pollId)) return
-        val filters = listOf(filterCreator.getLazyPollResponseFilter(pollId = pollId))
+    suspend fun lazySubPollResponses(poll: PollEntity) {
+        val filters = listOf(filterCreator.getLazyPollResponseFilter(poll = poll))
 
         relayProvider.getReadRelays().forEach { relay ->
             subCreator.subscribe(relayUrl = relay, filters = filters)

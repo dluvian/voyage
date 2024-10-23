@@ -98,14 +98,7 @@ class FeedProvider(
                         .filter { it.content.text.containsNoneIgnoreCase(strs = mutedWords) }
                         .map { it.getRelevantId() }
                 )
-                val polls = posts.filterIsInstance<Poll>()
-                    .filter { it.endsAt == null || it.endsAt > until }
-                if (polls.isNotEmpty()) {
-                    nostrSubscriber.subPollResponses(
-                        pollIds = polls.map { it.id },
-                        since = polls.minOf { it.latestResponse ?: it.createdAt }
-                    )
-                }
+                nostrSubscriber.subPollResponses(polls = posts.filterIsInstance<Poll>())
                 if (showAuthorName.value) {
                     val pubkeys = posts.filter { it.authorName.isNullOrEmpty() }
                         .map { it.pubkey }
