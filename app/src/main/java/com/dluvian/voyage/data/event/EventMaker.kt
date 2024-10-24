@@ -72,7 +72,23 @@ class EventMaker(
         quotes: List<String>,
         isAnon: Boolean,
     ): Result<Event> {
-        TODO()
+        val tags = mutableListOf<Tag>()
+        options.forEach { (id, label) -> tags.add(Tag.parse(listOf("option", id, label))) }
+        tags.add(Tag.parse(listOf("endsAt", "$endsAt")))
+        pollRelays.forEach { tags.add(Tag.parse(listOf("relay", it))) }
+        topics.forEach { tags.add(Tag.hashtag(hashtag = it)) }
+        tags.addAll(createMentionTags(pubkeys = mentions))
+        tags.addAll(createQuoteTags(eventIdHexOrCoordinates = quotes))
+        addClientTag(tags = tags, isAnon = isAnon)
+
+        return signEvent(
+            eventBuilder = EventBuilder(
+                kind = Kind(kind = POLL_U16),
+                content = question,
+                tags = tags
+            ),
+            isAnon = isAnon
+        )
     }
 
     suspend fun buildReply(

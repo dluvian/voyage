@@ -3,10 +3,10 @@ package com.dluvian.voyage.data.event
 import android.util.Log
 import com.dluvian.voyage.core.MAX_CONTENT_LEN
 import com.dluvian.voyage.core.MAX_KEYS_SQL
-import com.dluvian.voyage.core.MAX_POLL_OPTIONS
 import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.utils.getNormalizedDescription
 import com.dluvian.voyage.core.utils.getNormalizedMuteWords
+import com.dluvian.voyage.core.utils.getNormalizedPollOptions
 import com.dluvian.voyage.core.utils.getNormalizedTitle
 import com.dluvian.voyage.core.utils.getNormalizedTopics
 import com.dluvian.voyage.core.utils.getTrimmedSubject
@@ -20,7 +20,6 @@ import com.dluvian.voyage.data.nostr.getLegacyReplyToId
 import com.dluvian.voyage.data.nostr.getMetadata
 import com.dluvian.voyage.data.nostr.getNip65s
 import com.dluvian.voyage.data.nostr.getParentId
-import com.dluvian.voyage.data.nostr.getPollOptions
 import com.dluvian.voyage.data.nostr.getPollRelays
 import com.dluvian.voyage.data.nostr.getPollResponse
 import com.dluvian.voyage.data.nostr.isTextNote
@@ -127,7 +126,7 @@ class EventValidator(
                 val createdAt = event.createdAt().secs()
                 if (endsAt != null && endsAt <= createdAt) return null
 
-                val options = event.getPollOptions().take(MAX_POLL_OPTIONS)
+                val options = event.getNormalizedPollOptions()
                 if (options.size < 2) return null
 
                 ValidatedPoll(

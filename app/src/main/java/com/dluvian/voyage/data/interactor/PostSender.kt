@@ -7,8 +7,10 @@ import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.VOYAGE
+import com.dluvian.voyage.core.WEEK_IN_SECS
 import com.dluvian.voyage.core.model.LabledGitIssue
 import com.dluvian.voyage.core.utils.extractCleanHashtags
+import com.dluvian.voyage.core.utils.getNormalizedPollOptions
 import com.dluvian.voyage.core.utils.getNormalizedTopics
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.event.COMMENT_U16
@@ -23,6 +25,9 @@ import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.extractMentions
 import com.dluvian.voyage.data.nostr.extractQuotes
+import com.dluvian.voyage.data.nostr.getCurrentSecs
+import com.dluvian.voyage.data.nostr.getEndsAt
+import com.dluvian.voyage.data.nostr.getPollRelays
 import com.dluvian.voyage.data.nostr.getSubject
 import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.data.preferences.EventPreferences
@@ -94,6 +99,11 @@ class PostSender(
         topics: List<Topic>,
         isAnon: Boolean,
     ): Result<Event> {
+        if (options.size < 2) {
+            val err = "${options.size} poll options is not enough, at least 2 needed."
+            return Result.failure(IllegalArgumentException(err))
+        }
+
         val trimmedQuestion = question.trim()
         val trimmedOptions = options.map { it.trim() }
         val concat = "$trimmedOptions ${trimmedOptions.joinToString(separator = " ")}"
@@ -105,7 +115,7 @@ class PostSender(
         return nostrService.publishPoll(
             question = trimmedQuestion,
             options = trimmedOptions,
-            endsAt = TODO("One week"),
+            endsAt = getCurrentSecs() + WEEK_IN_SECS,
             pollRelays = relayProvider.getReadRelays(limit = 2),
             topics = allTopics.distinct().take(MAX_TOPICS),
             mentions = mentions,
@@ -122,13 +132,13 @@ class PostSender(
                 relayUrl = "", // We don't know which relay accepted this note
                 json = event.asJson(),
                 isMentioningMe = mentions.contains(myPubkeyProvider.getPubkeyHex()),
-                options = TODO(),
-                endsAt = TODO(),
-                relays = TODO()
+                options = event.getNormalizedPollOptions(),
+                endsAt = event.getEndsAt(),
+                relays = event.getPollRelays()
             )
-            TODO("Insert")
+            mainEventInsertDao.insertPolls(polls = listOf(validatedPoll))
         }.onFailure {
-            Log.w(TAG, "Failed to create poll event", TODO("it"))
+            Log.w(TAG, "Failed to create poll event", it)
         }
     }
 

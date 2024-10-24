@@ -159,7 +159,7 @@ class NostrService(
     ): Result<Event> {
         return eventMaker.buildPoll(
             question = question,
-            options = TODO("Pair to char to label"),
+            options = options.withIndex().map { (i, label) -> Pair(i.toString(), label) },
             endsAt = endsAt,
             pollRelays = pollRelays,
             topics = topics,
