@@ -11,6 +11,7 @@ data class Sizing(
     val trustIndicator: Dp = 15.dp,
     val smallIndicator: Dp = 18.dp,
     val footerIconButton: Dp = 18.dp,
+    val contentTypeButton: Dp = 32.dp,
     val relayActionButton: Dp = 32.dp,
     val scrollUpButton: Dp = 32.dp,
     val smallIndicatorStrokeWidth: Dp = 3.dp,

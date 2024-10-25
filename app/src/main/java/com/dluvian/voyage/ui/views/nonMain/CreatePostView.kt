@@ -1,10 +1,15 @@
 package com.dluvian.voyage.ui.views.nonMain
 
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -20,6 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.dp
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.MAX_SUBJECT_LINES
@@ -34,7 +40,9 @@ import com.dluvian.voyage.ui.components.scaffold.ContentCreationScaffold
 import com.dluvian.voyage.ui.components.text.InputWithSuggestions
 import com.dluvian.voyage.ui.components.text.TextInput
 import com.dluvian.voyage.ui.theme.PollIcon
+import com.dluvian.voyage.ui.theme.RoundedChip
 import com.dluvian.voyage.ui.theme.TextIcon
+import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
@@ -62,15 +70,7 @@ fun CreatePostView(
         showSendButton = body.value.text.isNotBlank(),
         isSendingContent = vm.isSending.value,
         snackbar = snackbar,
-        typeIcon = {
-            if (!vm.isSending.value) IconButton(onClick = { isPoll.value = !isPoll.value }) {
-                Icon(
-                    imageVector = if (isPoll.value) PollIcon else TextIcon,
-                    contentDescription = if (isPoll.value) stringResource(id = R.string.create_a_text_note)
-                    else stringResource(id = R.string.create_a_poll)
-                )
-            }
-        },
+        typeIcon = { TypeButtons(isPoll = isPoll) },
         onSend = {
             if (isPoll.value) onUpdate(
                 SendPoll(
@@ -144,5 +144,46 @@ private fun CreatePostContent(
             onValueChange = { str -> body.value = str },
             placeholder = stringResource(id = R.string.body_text),
         )
+    }
+}
+
+@Composable
+private fun TypeButtons(isPoll: MutableState<Boolean>) {
+    val disabledColors = IconButtonDefaults.iconButtonColors()
+        .copy(
+            containerColor = IconButtonDefaults.iconButtonColors().disabledContainerColor,
+            contentColor = IconButtonDefaults.iconButtonColors().disabledContentColor
+        )
+
+    Row(
+        modifier = Modifier
+            .border(
+                width = 2.dp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                shape = RoundedChip
+            )
+    ) {
+        Spacer(modifier = Modifier.width(spacing.medium))
+        IconButton(
+            modifier = Modifier.size(sizing.contentTypeButton),
+            onClick = { isPoll.value = false },
+            colors = if (isPoll.value) disabledColors else IconButtonDefaults.iconButtonColors(),
+        ) {
+            Icon(
+                imageVector = TextIcon,
+                contentDescription = stringResource(id = R.string.create_a_text_note)
+            )
+        }
+        IconButton(
+            modifier = Modifier.size(sizing.contentTypeButton),
+            onClick = { isPoll.value = true },
+            colors = if (isPoll.value) IconButtonDefaults.iconButtonColors() else disabledColors,
+        ) {
+            Icon(
+                imageVector = PollIcon,
+                contentDescription = stringResource(id = R.string.create_a_poll)
+            )
+        }
+        Spacer(modifier = Modifier.width(spacing.medium))
     }
 }
