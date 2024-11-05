@@ -41,8 +41,8 @@ interface MainEventDao {
     @Query(
         "SELECT pubkey " +
                 "FROM mainEvent " +
-                "WHERE id = (SELECT parentId FROM legacyReply WHERE id = :id) " +
-                "OR id = (SELECT parentId FROM comment WHERE id = :id)"
+                "WHERE id = (SELECT parentId FROM legacyReply WHERE eventId = :id) " +
+                "OR id = (SELECT parentId FROM comment WHERE eventId = :id)"
     )
     suspend fun getParentAuthor(id: EventIdHex): PubkeyHex?
 
