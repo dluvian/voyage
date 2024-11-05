@@ -183,14 +183,14 @@ class LazyNostrSubscriber(
         pubkeys.addAll(friendProvider.getFriendsWithMissingProfile())
         pubkeys.addAll(webOfTrustProvider.getWotWithMissingProfile().minus(pubkeys.toSet()))
 
-        lazySubUnknownProfiles(selection = CustomPubkeys(pubkeys = pubkeys))
+        lazySubUnknownProfiles(selection = CustomPubkeys(pubkeys = pubkeys), checkDb = false)
     }
 
-    suspend fun lazySubUnknownProfiles(selection: PubkeySelection) {
+    suspend fun lazySubUnknownProfiles(selection: PubkeySelection, checkDb: Boolean = true) {
         val pubkeys = pubkeyProvider.getPubkeys(selection = selection).take(MAX_KEYS_SQL)
-        val unknownPubkeys = pubkeys - room.profileDao()
+        val unknownPubkeys = if (checkDb) pubkeys - room.profileDao()
             .filterKnownProfiles(pubkeys = pubkeys)
-            .toSet()
+            .toSet() else pubkeys
         if (unknownPubkeys.isEmpty()) return
 
         val now = Timestamp.now()
