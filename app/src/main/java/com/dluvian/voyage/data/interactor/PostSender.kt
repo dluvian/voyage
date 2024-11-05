@@ -170,6 +170,7 @@ class PostSender(
                 parentId = parentId,
                 parentKind = parentKind,
                 mentions = mentions,
+                topics = extractCleanHashtags(content = trimmedBody).take(MAX_TOPICS),
                 relayHint = relayHint,
                 pubkeyHint = parentPubkey,
                 isAnon = isAnon
@@ -226,6 +227,7 @@ class PostSender(
         parentId: EventIdHex,
         parentKind: Kind,
         mentions: List<PubkeyHex>,
+        topics: List<Topic>,
         relayHint: RelayUrl,
         pubkeyHint: PubkeyHex,
         isAnon: Boolean
@@ -236,6 +238,7 @@ class PostSender(
             parentKind = parentKind,
             mentions = mentions,
             quotes = extractQuotesFromString(content = content),
+            topics = topics,
             relayHint = relayHint,
             pubkeyHint = pubkeyHint,
             relayUrls = relayProvider.getPublishRelays(publishTo = mentions),

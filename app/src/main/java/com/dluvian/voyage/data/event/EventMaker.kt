@@ -122,6 +122,7 @@ class EventMaker(
         parentKind: Kind,
         mentions: List<PubkeyHex>,
         quotes: List<String>,
+        topics: List<Topic>,
         relayHint: RelayUrl,
         pubkeyHint: PubkeyHex,
         content: String,
@@ -137,6 +138,7 @@ class EventMaker(
         )
         if (mentions.isNotEmpty()) tags.addAll(createMentionTags(pubkeys = mentions))
         if (quotes.isNotEmpty()) tags.addAll(createQuoteTags(eventIdHexOrCoordinates = quotes))
+        if (topics.isNotEmpty()) tags.addAll(topics.map { Tag.hashtag(hashtag = it) })
         addClientTag(tags = tags, isAnon = isAnon)
 
         return signEvent(
