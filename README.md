@@ -46,6 +46,7 @@ I don't plan to publish this app in the Google Play Store.
 - [NIP-14: Subject tag in text events](https://github.com/nostr-protocol/nips/blob/master/14.md)
 - [NIP-18: Reposts](https://github.com/nostr-protocol/nips/blob/master/18.md)
 - [NIP-19: bech32-encoded entities](https://github.com/nostr-protocol/nips/blob/master/19.md)
+- [NIP-22: Comment](https://github.com/nostr-protocol/nips/blob/master/22.md)
 - [NIP-24: Extra metadata fields and tags](https://github.com/nostr-protocol/nips/blob/master/24.md)
 - [NIP-25: Reactions](https://github.com/nostr-protocol/nips/blob/master/25.md)
 - [NIP-27: Text Note References](https://github.com/nostr-protocol/nips/blob/master/27.md)
@@ -54,7 +55,6 @@ I don't plan to publish this app in the Google Play Store.
 - [NIP-51: Lists](https://github.com/nostr-protocol/nips/blob/master/51.md)
 - [NIP-55: Android Signer Application](https://github.com/nostr-protocol/nips/blob/master/55.md)
 - [NIP-65: Relay List Metadata](https://github.com/nostr-protocol/nips/blob/master/65.md)
-- [Pull request: NIP-22: Comment](https://github.com/nostr-protocol/nips/pull/1233)
 - [Pull request: NIP-88: Polls](https://github.com/nostr-protocol/nips/pull/1507)
 - [Pull request: Lock users](https://github.com/nostr-protocol/nips/pull/1411)
 
