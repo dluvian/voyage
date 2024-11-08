@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -42,7 +43,9 @@ fun MainBottomBar(
     inboxFeedState: LazyListState,
     onUpdate: (UIEvent) -> Unit
 ) {
-    NavigationBar(modifier = Modifier.height(52.dp)) {
+    NavigationBar(modifier = Modifier
+        .navigationBarsPadding()
+        .height(52.dp)) {
         val scope = rememberCoroutineScope()
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             MainBottomBarItem(
