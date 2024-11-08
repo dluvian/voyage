@@ -21,9 +21,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import rust.nostr.protocol.Coordinate
-import rust.nostr.protocol.Kind
-import rust.nostr.protocol.KindEnum
+import rust.nostr.sdk.Coordinate
+import rust.nostr.sdk.Kind
+import rust.nostr.sdk.KindEnum
 
 class ItemSetProvider(
     private val room: AppDatabase,

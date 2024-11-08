@@ -4,7 +4,7 @@ import androidx.room.DatabaseView
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.utils.toShortenedBech32
 import com.dluvian.voyage.data.nostr.createNprofile
-import rust.nostr.protocol.Nip19Profile
+import rust.nostr.sdk.Nip19Profile
 
 
 @DatabaseView(

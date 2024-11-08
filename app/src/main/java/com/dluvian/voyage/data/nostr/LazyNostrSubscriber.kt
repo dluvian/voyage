@@ -28,13 +28,13 @@ import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import com.dluvian.voyage.data.room.AppDatabase
 import com.dluvian.voyage.data.room.entity.main.poll.PollEntity
 import kotlinx.coroutines.delay
-import rust.nostr.protocol.EventId
-import rust.nostr.protocol.Filter
-import rust.nostr.protocol.Kind
-import rust.nostr.protocol.KindEnum
-import rust.nostr.protocol.Nip19Profile
-import rust.nostr.protocol.PublicKey
-import rust.nostr.protocol.Timestamp
+import rust.nostr.sdk.EventId
+import rust.nostr.sdk.Filter
+import rust.nostr.sdk.Kind
+import rust.nostr.sdk.KindEnum
+import rust.nostr.sdk.Nip19Profile
+import rust.nostr.sdk.PublicKey
+import rust.nostr.sdk.Timestamp
 import kotlin.random.Random
 
 private const val TAG = "LazyNostrSubscriber"

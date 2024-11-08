@@ -29,7 +29,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onEach
-import rust.nostr.protocol.Nip19Event
+import rust.nostr.sdk.Nip19Event
 import java.util.LinkedList
 
 private const val TAG = "ThreadProvider"

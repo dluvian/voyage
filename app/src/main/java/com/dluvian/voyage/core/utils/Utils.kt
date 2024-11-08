@@ -51,17 +51,17 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
-import rust.nostr.protocol.Alphabet
-import rust.nostr.protocol.Event
-import rust.nostr.protocol.EventId
-import rust.nostr.protocol.Filter
-import rust.nostr.protocol.Kind
-import rust.nostr.protocol.KindEnum
-import rust.nostr.protocol.Metadata
-import rust.nostr.protocol.PublicKey
-import rust.nostr.protocol.SingleLetterTag
-import rust.nostr.protocol.Tag
-import rust.nostr.protocol.Timestamp
+import rust.nostr.sdk.Alphabet
+import rust.nostr.sdk.Event
+import rust.nostr.sdk.EventId
+import rust.nostr.sdk.Filter
+import rust.nostr.sdk.Kind
+import rust.nostr.sdk.KindEnum
+import rust.nostr.sdk.Metadata
+import rust.nostr.sdk.PublicKey
+import rust.nostr.sdk.SingleLetterTag
+import rust.nostr.sdk.Tag
+import rust.nostr.sdk.Timestamp
 
 fun PublicKey.toShortenedNpub(): String {
     return this.toBech32().shortenBech32()

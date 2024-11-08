@@ -17,7 +17,7 @@ import com.dluvian.voyage.data.room.dao.PollResponseDao
 import com.dluvian.voyage.data.room.entity.main.poll.PollResponseEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import rust.nostr.protocol.EventId
+import rust.nostr.sdk.EventId
 
 private const val TAG = "PollVoter"
 

@@ -11,8 +11,8 @@ import com.dluvian.voyage.data.nostr.getDescription
 import com.dluvian.voyage.data.nostr.getMuteWords
 import com.dluvian.voyage.data.nostr.getPollOptions
 import com.dluvian.voyage.data.nostr.getTitle
-import rust.nostr.protocol.Event
-import rust.nostr.protocol.Metadata
+import rust.nostr.sdk.Event
+import rust.nostr.sdk.Metadata
 
 fun String.normalizeTitle() = this.trim().take(MAX_SUBJECT_LEN).trim()
 
@@ -36,7 +36,8 @@ private fun List<Topic>.normalizeTopics(): List<Topic> {
 }
 
 fun Event.getNormalizedTopics(limit: Int = Int.MAX_VALUE): List<Topic> {
-    return this.hashtags()
+    return this.tags()
+        .hashtags()
         .normalizeTopics()
         .take(limit)
 }

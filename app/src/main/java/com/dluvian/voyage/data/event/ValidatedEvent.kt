@@ -7,7 +7,7 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.nostr.Nip65Relay
 import com.dluvian.voyage.data.nostr.RelayUrl
-import rust.nostr.protocol.Metadata
+import rust.nostr.sdk.Metadata
 
 sealed class ValidatedEvent
 

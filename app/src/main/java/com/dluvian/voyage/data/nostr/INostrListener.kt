@@ -1,7 +1,7 @@
 package com.dluvian.voyage.data.nostr
 
-import rust.nostr.protocol.Event
-import rust.nostr.protocol.EventId
+import rust.nostr.sdk.Event
+import rust.nostr.sdk.EventId
 
 interface INostrListener {
     fun onOpen(relayUrl: RelayUrl, msg: String)

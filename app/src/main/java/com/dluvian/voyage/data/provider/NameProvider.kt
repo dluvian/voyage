@@ -9,8 +9,8 @@ import com.dluvian.voyage.data.room.dao.ProfileDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import rust.nostr.protocol.Nip19Profile
-import rust.nostr.protocol.PublicKey
+import rust.nostr.sdk.Nip19Profile
+import rust.nostr.sdk.PublicKey
 import java.util.Collections
 
 private const val TAG = "NameProvider"

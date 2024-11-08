@@ -6,11 +6,11 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
-import rust.nostr.protocol.ClientMessage
-import rust.nostr.protocol.Event
-import rust.nostr.protocol.Filter
-import rust.nostr.protocol.RelayMessage
-import rust.nostr.protocol.RelayMessageEnum
+import rust.nostr.sdk.ClientMessage
+import rust.nostr.sdk.Event
+import rust.nostr.sdk.Filter
+import rust.nostr.sdk.RelayMessage
+import rust.nostr.sdk.RelayMessageEnum
 import java.util.Collections
 import java.util.UUID
 

@@ -25,7 +25,7 @@ import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.ui.components.text.CopyableText
 import com.dluvian.voyage.ui.theme.spacing
-import rust.nostr.protocol.RelayInformationDocument
+import rust.nostr.sdk.RelayInformationDocument
 
 @Composable
 fun RelayProfileView(vm: RelayProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {

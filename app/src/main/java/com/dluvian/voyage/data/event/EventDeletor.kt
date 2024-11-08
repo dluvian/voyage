@@ -12,8 +12,8 @@ import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.util.DeleteDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import rust.nostr.protocol.Event
-import rust.nostr.protocol.EventId
+import rust.nostr.sdk.Event
+import rust.nostr.sdk.EventId
 
 private const val TAG = "EventDeletor"
 

@@ -21,7 +21,6 @@ import com.dluvian.voyage.data.preferences.RelayPreferences
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.VoteDao
 import com.dluvian.voyage.data.room.entity.main.VoteEntity
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -31,8 +30,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import rust.nostr.protocol.EventId
-import rust.nostr.protocol.PublicKey
+import rust.nostr.sdk.EventId
+import rust.nostr.sdk.PublicKey
 
 private const val TAG = "PostVoter"
 
@@ -83,7 +82,7 @@ class PostVoter(
         mention: PubkeyHex,
         isUpvote: Boolean,
     ) {
-        jobs[postId]?.cancel(CancellationException("User clicks fast"))
+        jobs[postId]?.cancel(null) // CancellationException doesn't compile
         jobs[postId] = scope.launch {
             delay(DEBOUNCE)
             val currentVote = voteDao.getMyVote(postId = postId)

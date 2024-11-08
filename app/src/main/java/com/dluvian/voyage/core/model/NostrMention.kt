@@ -5,11 +5,11 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.data.nostr.removeMentionChar
 import com.dluvian.voyage.data.nostr.removeNostrUri
-import rust.nostr.protocol.Coordinate
-import rust.nostr.protocol.EventId
-import rust.nostr.protocol.Nip19Event
-import rust.nostr.protocol.Nip19Profile
-import rust.nostr.protocol.PublicKey
+import rust.nostr.sdk.Coordinate
+import rust.nostr.sdk.EventId
+import rust.nostr.sdk.Nip19Event
+import rust.nostr.sdk.Nip19Profile
+import rust.nostr.sdk.PublicKey
 
 sealed class NostrMention(open val bech32: Bech32, open val hex: String) {
     companion object {

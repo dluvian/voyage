@@ -12,9 +12,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import rust.nostr.protocol.Event
-import rust.nostr.protocol.PublicKey
-import rust.nostr.protocol.UnsignedEvent
+import rust.nostr.sdk.Event
+import rust.nostr.sdk.PublicKey
+import rust.nostr.sdk.UnsignedEvent
 
 
 private const val TAG = "AccountManager"

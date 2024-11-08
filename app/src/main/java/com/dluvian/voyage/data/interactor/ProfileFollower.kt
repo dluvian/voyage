@@ -114,7 +114,7 @@ class ProfileFollower(
             ).onSuccess { event ->
                 val friendList = ValidatedContactList(
                     pubkey = event.author().toHex(),
-                    friendPubkeys = event.publicKeys().map { it.toHex() }.toSet(),
+                    friendPubkeys = event.tags().publicKeys().map { it.toHex() }.toSet(),
                     createdAt = event.createdAt().secs()
                 )
                 friendUpsertDao.upsertFriends(validatedContactList = friendList)

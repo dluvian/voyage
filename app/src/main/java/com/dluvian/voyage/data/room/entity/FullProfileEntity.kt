@@ -8,8 +8,8 @@ import com.dluvian.voyage.data.event.ValidatedProfile
 import com.dluvian.voyage.data.model.RelevantMetadata
 import com.dluvian.voyage.data.nostr.getMetadata
 import com.dluvian.voyage.data.nostr.secs
-import rust.nostr.protocol.Event
-import rust.nostr.protocol.PublicKey
+import rust.nostr.sdk.Event
+import rust.nostr.sdk.PublicKey
 
 @Entity(
     tableName = "fullProfile",

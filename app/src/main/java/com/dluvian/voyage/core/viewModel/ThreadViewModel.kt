@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import rust.nostr.protocol.Nip19Event
+import rust.nostr.sdk.Nip19Event
 
 class ThreadViewModel(
     val postDetails: State<PostDetails?>,

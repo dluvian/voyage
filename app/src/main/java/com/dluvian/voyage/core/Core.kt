@@ -25,8 +25,8 @@ import com.dluvian.voyage.core.utils.threadableKinds
 import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.data.nostr.createNprofile
 import kotlinx.coroutines.launch
-import rust.nostr.protocol.Nip19Event
-import rust.nostr.protocol.Nip19Profile
+import rust.nostr.sdk.Nip19Event
+import rust.nostr.sdk.Nip19Profile
 
 private const val TAG = "Core"
 

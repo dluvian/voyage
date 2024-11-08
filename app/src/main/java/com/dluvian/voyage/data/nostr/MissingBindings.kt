@@ -4,19 +4,21 @@ import androidx.core.text.isDigitsOnly
 import cash.z.ecc.android.bip39.Mnemonics
 import com.dluvian.voyage.core.Label
 import com.dluvian.voyage.core.OptionId
-import rust.nostr.protocol.Coordinate
-import rust.nostr.protocol.Event
-import rust.nostr.protocol.EventId
-import rust.nostr.protocol.Kind
-import rust.nostr.protocol.KindEnum
-import rust.nostr.protocol.Metadata
-import rust.nostr.protocol.Nip19Event
-import rust.nostr.protocol.Nip19Profile
-import rust.nostr.protocol.PublicKey
-import rust.nostr.protocol.Tag
-import rust.nostr.protocol.TagKind
-import rust.nostr.protocol.TagStandard
-import rust.nostr.protocol.Timestamp
+import rust.nostr.sdk.Alphabet
+import rust.nostr.sdk.Coordinate
+import rust.nostr.sdk.Event
+import rust.nostr.sdk.EventId
+import rust.nostr.sdk.Kind
+import rust.nostr.sdk.KindEnum
+import rust.nostr.sdk.Metadata
+import rust.nostr.sdk.Nip19Event
+import rust.nostr.sdk.Nip19Profile
+import rust.nostr.sdk.PublicKey
+import rust.nostr.sdk.SingleLetterTag
+import rust.nostr.sdk.Tag
+import rust.nostr.sdk.TagKind
+import rust.nostr.sdk.TagStandard
+import rust.nostr.sdk.Timestamp
 import java.security.SecureRandom
 
 fun createSubjectTag(subject: String): Tag {
@@ -100,39 +102,33 @@ fun Event.isTextNote(): Boolean {
 }
 
 fun Event.getClientTag(): String? {
-    return this.tags()
-        .map { it.asVec() }
-        .find { it.size >= 2 && it.first() == "client" }
-        ?.getOrNull(1)
+    return this.getValue(kind = TagKind.Client)
 }
 
 fun Event.getKindTag(): UShort? {
-    return this.tags()
-        .map { it.asVec() }
-        .find { it.size >= 2 && it.first() == "k" }
-        ?.getOrNull(1)
+    return this.getValue(kind = TagKind.SingleLetter(SingleLetterTag.lowercase(Alphabet.K)))
         ?.toUShortOrNull()
 }
 
 fun Event.getParentId(): String? {
-    val parentId = this.tags()
-        .map { it.asVec() }
-        .find { it.size >= 2 && it.first() == "e" }
-        ?.getOrNull(1) ?: return null
-
-    return if (isValidEventId(hex = parentId)) parentId else null
+    return this.tags()
+        .eventIds()
+        .firstOrNull()
+        ?.toHex()
 }
 
 fun Event.getMuteWords(): List<String> {
     return this.tags()
-        .filter { it.kind() == TagKind.Word }
-        .mapNotNull { it.asVec().getOrNull(1) }
+        .filter(TagKind.Word)
+        .mapNotNull { it.content() }
+        .filterNot { it.isEmpty() }
 }
 
 fun Event.getLegacyReplyToId(): String? {
     if (!this.isTextNote()) return null
 
     val nip10Tags = this.tags()
+        .toVec()
         .map { it.asVec() }
         .filter {
             it.size >= 2 &&
@@ -167,7 +163,9 @@ fun String.removeMentionChar(): String {
 }
 
 fun Event.getNip65s(): List<Nip65Relay> {
-    return this.tags().asSequence()
+    return this.tags()
+        .toVec()
+        .asSequence()
         .map { it.asVec() }
         .filter { it.firstOrNull() == "r" && it.size >= 2 }
         .filter { it[1].startsWith(WEBSOCKET_URI) && it[1].trim().length >= 9 }
@@ -183,7 +181,9 @@ fun Event.getNip65s(): List<Nip65Relay> {
 }
 
 fun Event.getPollRelays(): List<RelayUrl> {
-    return this.tags().asSequence()
+    return this.tags()
+        .toVec()
+        .asSequence()
         .map { it.asVec() }
         .filter { it.firstOrNull() == "relay" && it.size >= 2 }
         .map { it[1].trim() }
@@ -197,14 +197,12 @@ fun Event.getTitle() = this.getValue(kind = TagKind.Title)
 fun Event.getDescription() = this.getValue(kind = TagKind.Description)
 
 private fun Event.getValue(kind: TagKind): String? {
-    return this.tags()
-        .firstOrNull { it.kind() == kind }
-        ?.asVec()
-        ?.getOrNull(1)
+    return this.tags().find(kind)?.content()
 }
 
 fun Event.getPollOptions(): List<Pair<OptionId, Label>> {
     return this.tags()
+        .toVec()
         .map { it.asVec() }
         .filter { it.firstOrNull() == "option" && !it.getOrNull(1).isNullOrBlank() }
         .distinctBy { it[1].trim() }
@@ -213,6 +211,7 @@ fun Event.getPollOptions(): List<Pair<OptionId, Label>> {
 
 fun Event.getPollResponse(): OptionId? {
     return this.tags()
+        .toVec()
         .map { it.asVec() }
         .find { it.firstOrNull() == "response" && !it.getOrNull(1).isNullOrBlank() }
         ?.getOrNull(1)
@@ -221,6 +220,7 @@ fun Event.getPollResponse(): OptionId? {
 
 fun Event.getEndsAt(): Long? {
     return this.tags()
+        .toVec()
         .map { it.asVec() }
         .find {
             it.firstOrNull() == "endsAt"

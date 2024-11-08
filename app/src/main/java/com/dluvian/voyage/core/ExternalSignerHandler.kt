@@ -5,8 +5,8 @@ import android.net.Uri
 import androidx.activity.result.ActivityResult
 import androidx.core.app.ActivityOptionsCompat
 import kotlinx.coroutines.channels.Channel
-import rust.nostr.protocol.Event
-import rust.nostr.protocol.UnsignedEvent
+import rust.nostr.sdk.Event
+import rust.nostr.sdk.UnsignedEvent
 
 private const val PERMISSIONS = """
     [

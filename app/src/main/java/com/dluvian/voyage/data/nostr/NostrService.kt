@@ -21,13 +21,13 @@ import com.dluvian.voyage.data.event.EventQueue
 import com.dluvian.voyage.data.preferences.RelayPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import rust.nostr.protocol.Coordinate
-import rust.nostr.protocol.Event
-import rust.nostr.protocol.EventId
-import rust.nostr.protocol.Filter
-import rust.nostr.protocol.Kind
-import rust.nostr.protocol.Metadata
-import rust.nostr.protocol.PublicKey
+import rust.nostr.sdk.Coordinate
+import rust.nostr.sdk.Event
+import rust.nostr.sdk.EventId
+import rust.nostr.sdk.Filter
+import rust.nostr.sdk.Kind
+import rust.nostr.sdk.Metadata
+import rust.nostr.sdk.PublicKey
 
 private const val TAG = "NostrService"
 

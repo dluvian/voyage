@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "com.dluvian.voyage"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.dluvian.voyage"
         minSdk = 26 // Android Oreo (Aug 2017 - Jan 2021)
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 21
         versionName = "v0.16.0"
 
@@ -75,18 +75,18 @@ android {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.13.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
+    implementation("androidx.core:core-ktx:1.15.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
     implementation("androidx.activity:activity-compose:1.9.3")
 
-    implementation(platform("androidx.compose:compose-bom:2024.10.00"))
+    implementation(platform("androidx.compose:compose-bom:2024.10.01"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
 
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
     implementation("androidx.security:security-crypto-ktx:1.1.0-alpha06")
 
     val roomVersion = "2.6.1"
@@ -95,11 +95,11 @@ dependencies {
     implementation("androidx.room:room-ktx:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
 
-    implementation("org.rust-nostr:nostr:0.35.0")
+    implementation("org.rust-nostr:nostr-sdk:0.36.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("cash.z.ecc.android:kotlin-bip39:1.0.7")
+    implementation("cash.z.ecc.android:kotlin-bip39:1.0.8")
     implementation("com.anggrayudi:storage:2.0.0")
 
     // R8 error: Missing class com.google.errorprone.annotations...
-    implementation("com.google.errorprone:error_prone_annotations:2.28.0")
+    implementation("com.google.errorprone:error_prone_annotations:2.35.1")
 }

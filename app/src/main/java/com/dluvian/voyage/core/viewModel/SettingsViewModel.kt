@@ -50,7 +50,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
-import rust.nostr.protocol.PublicKey
+import rust.nostr.sdk.PublicKey
 import java.util.concurrent.atomic.AtomicBoolean
 
 private const val TAG = "SettingsViewModel"

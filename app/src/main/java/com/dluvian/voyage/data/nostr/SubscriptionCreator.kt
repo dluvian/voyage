@@ -2,7 +2,7 @@ package com.dluvian.voyage.data.nostr
 
 import android.util.Log
 import com.dluvian.voyage.data.event.EventCounter
-import rust.nostr.protocol.Filter
+import rust.nostr.sdk.Filter
 
 private const val TAG = "SubscriptionCreator"
 

@@ -9,9 +9,9 @@ import com.dluvian.voyage.core.utils.syncedPutOrAdd
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import rust.nostr.protocol.EventId
-import rust.nostr.protocol.Filter
-import rust.nostr.protocol.Timestamp
+import rust.nostr.sdk.EventId
+import rust.nostr.sdk.Filter
+import rust.nostr.sdk.Timestamp
 import java.util.concurrent.atomic.AtomicBoolean
 
 private const val TAG = "SubBatcher"

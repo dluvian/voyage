@@ -23,11 +23,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import rust.nostr.protocol.Filter
-import rust.nostr.protocol.Nip19Event
-import rust.nostr.protocol.Nip19Profile
-import rust.nostr.protocol.PublicKey
-import rust.nostr.protocol.Timestamp
+import rust.nostr.sdk.Filter
+import rust.nostr.sdk.Nip19Event
+import rust.nostr.sdk.Nip19Profile
+import rust.nostr.sdk.PublicKey
+import rust.nostr.sdk.Timestamp
 import java.util.concurrent.atomic.AtomicBoolean
 
 class NostrSubscriber(

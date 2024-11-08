@@ -1,7 +1,7 @@
 package com.dluvian.voyage.core.model
 
 import androidx.compose.runtime.Immutable
-import rust.nostr.protocol.PublicKey
+import rust.nostr.sdk.PublicKey
 
 sealed class AccountType(open val publicKey: PublicKey)
 

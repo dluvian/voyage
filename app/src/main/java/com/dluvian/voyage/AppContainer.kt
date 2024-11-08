@@ -68,8 +68,8 @@ import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import com.dluvian.voyage.data.room.AppDatabase
 import kotlinx.coroutines.flow.MutableStateFlow
-import rust.nostr.protocol.EventId
-import rust.nostr.protocol.Filter
+import rust.nostr.sdk.EventId
+import rust.nostr.sdk.Filter
 import java.util.Collections
 
 class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {

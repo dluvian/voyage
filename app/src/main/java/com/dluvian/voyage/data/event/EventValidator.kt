@@ -24,12 +24,12 @@ import com.dluvian.voyage.data.nostr.getPollRelays
 import com.dluvian.voyage.data.nostr.getPollResponse
 import com.dluvian.voyage.data.nostr.isTextNote
 import com.dluvian.voyage.data.nostr.secs
-import rust.nostr.protocol.Event
-import rust.nostr.protocol.EventId
-import rust.nostr.protocol.Filter
-import rust.nostr.protocol.Kind
-import rust.nostr.protocol.KindEnum
-import rust.nostr.protocol.PublicKey
+import rust.nostr.sdk.Event
+import rust.nostr.sdk.EventId
+import rust.nostr.sdk.Filter
+import rust.nostr.sdk.Kind
+import rust.nostr.sdk.KindEnum
+import rust.nostr.sdk.PublicKey
 
 
 private const val TAG = "EventValidator"
@@ -109,7 +109,7 @@ class EventValidator(
                 if (event.content() == "-") return null
                 ValidatedVote(
                     id = event.id().toHex(),
-                    eventId = event.eventIds().firstOrNull()?.toHex() ?: return null,
+                    eventId = event.tags().eventIds().firstOrNull()?.toHex() ?: return null,
                     pubkey = event.author().toHex(),
                     createdAt = event.createdAt().secs()
                 )
@@ -146,7 +146,7 @@ class EventValidator(
 
             POLL_RESPONSE_U16 -> {
                 ValidatedPollResponse(
-                    pollId = event.eventIds().firstOrNull()?.toHex() ?: return null,
+                    pollId = event.tags().eventIds().firstOrNull()?.toHex() ?: return null,
                     optionId = event.getPollResponse() ?: return null,
                     pubkey = event.author().toHex(),
                     createdAt = event.createdAt().secs(),
@@ -157,7 +157,7 @@ class EventValidator(
                 val author = event.author()
                 ValidatedContactList(
                     pubkey = author.toHex(),
-                    friendPubkeys = event.publicKeys()
+                    friendPubkeys = event.tags().publicKeys()
                         .filter { it != author }
                         .map { it.toHex() }
                         .distinct()
@@ -215,7 +215,7 @@ class EventValidator(
                 if (authorHex != myPubkeyProvider.getPubkeyHex()) return null
                 ValidatedBookmarkList(
                     myPubkey = authorHex,
-                    eventIds = event.eventIds()
+                    eventIds = event.tags().eventIds()
                         .map { it.toHex() }
                         .distinct()
                         .takeRandom(MAX_KEYS_SQL)
@@ -229,7 +229,7 @@ class EventValidator(
                 if (authorHex != myPubkeyProvider.getPubkeyHex()) return null
                 ValidatedMuteList(
                     myPubkey = authorHex,
-                    pubkeys = event.publicKeys().map { it.toHex() }
+                    pubkeys = event.tags().publicKeys().map { it.toHex() }
                         .distinct()
                         .takeRandom(MAX_KEYS_SQL)
                         .toSet(),
@@ -240,7 +240,7 @@ class EventValidator(
             }
 
             LOCK_U16 -> {
-                if (event.tags().isNotEmpty() || event.content().isNotEmpty()) return null
+                if (!event.tags().isEmpty() || event.content().isNotEmpty()) return null
 
                 ValidatedLock(pubkey = event.author().toHex(), json = event.asJson())
             }
@@ -258,7 +258,7 @@ class EventValidator(
     }
 
     private fun createValidatedCrosspost(event: Event, relayUrl: RelayUrl): ValidatedCrossPost? {
-        val crossPostedId = event.eventIds().firstOrNull()?.toHex() ?: return null
+        val crossPostedId = event.tags().eventIds().firstOrNull()?.toHex() ?: return null
         val crossPostedKind = when (event.kind().asU16()) {
             REPOST_U16 -> TEXT_NOTE_U16
             GENERIC_REPOST_U16 -> event.getKindTag()
@@ -365,14 +365,14 @@ class EventValidator(
         }
 
         fun createValidatedProfileSet(event: Event): ValidatedProfileSet? {
-            val identifier = event.identifier() ?: return null
+            val identifier = event.tags().identifier() ?: return null
 
             return ValidatedProfileSet(
                 identifier = identifier,
                 myPubkey = event.author().toHex(),
                 title = event.getNormalizedTitle(),
                 description = event.getNormalizedDescription(),
-                pubkeys = event.publicKeys()
+                pubkeys = event.tags().publicKeys()
                     .distinct()
                     .takeRandom(MAX_KEYS_SQL)
                     .map { it.toHex() }
@@ -382,7 +382,7 @@ class EventValidator(
         }
 
         fun createValidatedTopicSet(event: Event): ValidatedTopicSet? {
-            val identifier = event.identifier() ?: return null
+            val identifier = event.tags().identifier() ?: return null
 
             return ValidatedTopicSet(
                 identifier = identifier,
@@ -398,5 +398,5 @@ class EventValidator(
 }
 
 private fun Event.isMentioningMe(myPubkey: PublicKey): Boolean {
-    return this.publicKeys().any { it == myPubkey }
+    return this.tags().publicKeys().any { it == myPubkey }
 }

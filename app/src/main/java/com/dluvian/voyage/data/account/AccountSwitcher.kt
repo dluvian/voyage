@@ -19,7 +19,7 @@ import com.dluvian.voyage.data.room.dao.AccountDao
 import com.dluvian.voyage.data.room.dao.MainEventDao
 import com.dluvian.voyage.data.room.entity.AccountEntity
 import kotlinx.coroutines.delay
-import rust.nostr.protocol.PublicKey
+import rust.nostr.sdk.PublicKey
 
 private const val TAG = "AccountSwitcher"
 

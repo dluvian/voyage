@@ -2,8 +2,8 @@ package com.dluvian.voyage.data.account
 
 import android.util.Log
 import com.dluvian.voyage.core.ExternalSignerHandler
-import rust.nostr.protocol.Event
-import rust.nostr.protocol.UnsignedEvent
+import rust.nostr.sdk.Event
+import rust.nostr.sdk.UnsignedEvent
 
 private const val TAG = "ExternalSigner"
 

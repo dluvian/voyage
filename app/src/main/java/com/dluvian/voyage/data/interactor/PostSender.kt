@@ -34,14 +34,14 @@ import com.dluvian.voyage.data.preferences.EventPreferences
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.MainEventDao
 import com.dluvian.voyage.data.room.dao.insert.MainEventInsertDao
-import rust.nostr.protocol.Coordinate
-import rust.nostr.protocol.Event
-import rust.nostr.protocol.EventId
-import rust.nostr.protocol.Kind
-import rust.nostr.protocol.KindEnum
-import rust.nostr.protocol.Nip19Event
-import rust.nostr.protocol.Nip19Profile
-import rust.nostr.protocol.PublicKey
+import rust.nostr.sdk.Coordinate
+import rust.nostr.sdk.Event
+import rust.nostr.sdk.EventId
+import rust.nostr.sdk.Kind
+import rust.nostr.sdk.KindEnum
+import rust.nostr.sdk.Nip19Event
+import rust.nostr.sdk.Nip19Profile
+import rust.nostr.sdk.PublicKey
 
 private const val TAG = "PostSender"
 

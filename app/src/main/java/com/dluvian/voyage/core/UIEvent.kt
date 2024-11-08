@@ -35,9 +35,9 @@ import com.dluvian.voyage.data.model.InboxFeedSetting
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import kotlinx.coroutines.CoroutineScope
-import rust.nostr.protocol.Metadata
-import rust.nostr.protocol.Nip19Event
-import rust.nostr.protocol.Nip19Profile
+import rust.nostr.sdk.Metadata
+import rust.nostr.sdk.Nip19Event
+import rust.nostr.sdk.Nip19Profile
 
 sealed class UIEvent
 

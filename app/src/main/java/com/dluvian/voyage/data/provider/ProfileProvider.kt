@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import rust.nostr.protocol.Nip19Profile
+import rust.nostr.sdk.Nip19Profile
 
 class ProfileProvider(
     private val forcedFollowFlow: Flow<Map<PubkeyHex, Boolean>>,

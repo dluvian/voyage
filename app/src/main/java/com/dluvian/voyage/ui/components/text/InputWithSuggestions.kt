@@ -24,7 +24,7 @@ import com.dluvian.voyage.data.nostr.NOSTR_URI
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.ui.components.row.ClickableProfileRow
 import com.dluvian.voyage.ui.components.selection.NamedCheckbox
-import rust.nostr.protocol.PublicKey
+import rust.nostr.sdk.PublicKey
 
 @Composable
 fun InputWithSuggestions(

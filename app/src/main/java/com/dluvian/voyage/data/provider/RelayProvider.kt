@@ -35,8 +35,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
-import rust.nostr.protocol.Nip19Event
-import rust.nostr.protocol.Nip19Profile
+import rust.nostr.sdk.Nip19Event
+import rust.nostr.sdk.Nip19Profile
 
 
 private const val TAG = "RelayProvider"

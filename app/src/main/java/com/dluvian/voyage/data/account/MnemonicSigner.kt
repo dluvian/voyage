@@ -4,10 +4,10 @@ import android.content.Context
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.dluvian.voyage.data.nostr.generateMnemonic
-import rust.nostr.protocol.Event
-import rust.nostr.protocol.Keys
-import rust.nostr.protocol.PublicKey
-import rust.nostr.protocol.UnsignedEvent
+import rust.nostr.sdk.Event
+import rust.nostr.sdk.Keys
+import rust.nostr.sdk.PublicKey
+import rust.nostr.sdk.UnsignedEvent
 
 
 typealias Mnemonic = String
@@ -51,7 +51,7 @@ class MnemonicSigner(context: Context) : IMyPubkeyProvider {
             return Result.failure(IllegalArgumentException(err))
         }
 
-        return runCatching { unsignedEvent.sign(keys) }
+        return runCatching { unsignedEvent.signWithKeys(keys) }
     }
 
     fun getSeed() = getMnemonic()?.split(" ").orEmpty()

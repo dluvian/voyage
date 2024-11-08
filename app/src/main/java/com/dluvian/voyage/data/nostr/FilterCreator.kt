@@ -12,12 +12,12 @@ import com.dluvian.voyage.data.provider.LockProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.AppDatabase
 import com.dluvian.voyage.data.room.entity.main.poll.PollEntity
-import rust.nostr.protocol.EventId
-import rust.nostr.protocol.Filter
-import rust.nostr.protocol.Kind
-import rust.nostr.protocol.KindEnum
-import rust.nostr.protocol.PublicKey
-import rust.nostr.protocol.Timestamp
+import rust.nostr.sdk.EventId
+import rust.nostr.sdk.Filter
+import rust.nostr.sdk.Kind
+import rust.nostr.sdk.KindEnum
+import rust.nostr.sdk.PublicKey
+import rust.nostr.sdk.Timestamp
 
 class FilterCreator(
     private val room: AppDatabase,

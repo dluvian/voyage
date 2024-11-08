@@ -25,11 +25,11 @@ import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.room.dao.BookmarkDao
-import rust.nostr.protocol.EventId
-import rust.nostr.protocol.Filter
-import rust.nostr.protocol.Nip19Profile
-import rust.nostr.protocol.PublicKey
-import rust.nostr.protocol.Timestamp
+import rust.nostr.sdk.EventId
+import rust.nostr.sdk.Filter
+import rust.nostr.sdk.Nip19Profile
+import rust.nostr.sdk.PublicKey
+import rust.nostr.sdk.Timestamp
 
 class FeedSubscriber(
     private val relayProvider: RelayProvider,

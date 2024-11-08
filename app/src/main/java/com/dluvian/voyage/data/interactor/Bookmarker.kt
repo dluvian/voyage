@@ -112,7 +112,7 @@ class Bookmarker(
             ).onSuccess { event ->
                 val bookmarks = ValidatedBookmarkList(
                     myPubkey = event.author().toHex(),
-                    eventIds = event.eventIds().map { it.toHex() }.toSet(),
+                    eventIds = event.tags().eventIds().map { it.toHex() }.toSet(),
                     createdAt = event.createdAt().secs()
                 )
                 bookmarkUpsertDao.upsertBookmarks(validatedBookmarkList = bookmarks)

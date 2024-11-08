@@ -1,6 +1,6 @@
 package com.dluvian.voyage.data.event
 
-import rust.nostr.protocol.EventId
+import rust.nostr.sdk.EventId
 
 class IdCacheClearer(
     private val syncedIdCache: MutableSet<EventId>,

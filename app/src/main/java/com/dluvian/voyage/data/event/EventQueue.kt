@@ -8,7 +8,7 @@ import com.dluvian.voyage.data.nostr.SubId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import rust.nostr.protocol.Event
+import rust.nostr.sdk.Event
 import java.util.Collections
 import java.util.concurrent.atomic.AtomicBoolean
 

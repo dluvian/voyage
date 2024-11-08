@@ -7,7 +7,7 @@ import com.dluvian.voyage.data.model.PostDetails
 import com.dluvian.voyage.data.nostr.getClientTag
 import com.dluvian.voyage.data.room.dao.HashtagDao
 import com.dluvian.voyage.data.room.dao.MainEventDao
-import rust.nostr.protocol.Event
+import rust.nostr.sdk.Event
 
 class PostDetailInspector(
     private val mainEventDao: MainEventDao,

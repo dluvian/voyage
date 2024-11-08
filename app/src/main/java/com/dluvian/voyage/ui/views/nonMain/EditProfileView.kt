@@ -32,8 +32,8 @@ import com.dluvian.voyage.ui.components.button.ExpandToggleTextButton
 import com.dluvian.voyage.ui.components.scaffold.SaveableScaffold
 import com.dluvian.voyage.ui.components.text.TextInput
 import com.dluvian.voyage.ui.theme.spacing
-import rust.nostr.protocol.Metadata
-import rust.nostr.protocol.MetadataRecord
+import rust.nostr.sdk.Metadata
+import rust.nostr.sdk.MetadataRecord
 
 @Composable
 fun EditProfileView(

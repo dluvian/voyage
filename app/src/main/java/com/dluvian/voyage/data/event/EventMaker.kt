@@ -19,21 +19,21 @@ import com.dluvian.voyage.data.nostr.createQuoteTags
 import com.dluvian.voyage.data.nostr.createSubjectTag
 import com.dluvian.voyage.data.nostr.createTitleTag
 import com.dluvian.voyage.data.preferences.EventPreferences
-import rust.nostr.protocol.Bookmarks
-import rust.nostr.protocol.Contact
-import rust.nostr.protocol.Coordinate
-import rust.nostr.protocol.Event
-import rust.nostr.protocol.EventBuilder
-import rust.nostr.protocol.EventId
-import rust.nostr.protocol.Interests
-import rust.nostr.protocol.Keys
-import rust.nostr.protocol.Kind
-import rust.nostr.protocol.KindEnum
-import rust.nostr.protocol.Metadata
-import rust.nostr.protocol.MuteList
-import rust.nostr.protocol.PublicKey
-import rust.nostr.protocol.RelayMetadata
-import rust.nostr.protocol.Tag
+import rust.nostr.sdk.Bookmarks
+import rust.nostr.sdk.Contact
+import rust.nostr.sdk.Coordinate
+import rust.nostr.sdk.Event
+import rust.nostr.sdk.EventBuilder
+import rust.nostr.sdk.EventId
+import rust.nostr.sdk.Interests
+import rust.nostr.sdk.Keys
+import rust.nostr.sdk.Kind
+import rust.nostr.sdk.KindEnum
+import rust.nostr.sdk.Metadata
+import rust.nostr.sdk.MuteList
+import rust.nostr.sdk.PublicKey
+import rust.nostr.sdk.RelayMetadata
+import rust.nostr.sdk.Tag
 
 private const val TAG = "EventMaker"
 
@@ -173,7 +173,7 @@ class EventMaker(
             eventId = eventId,
             publicKey = mention,
             reaction = content,
-        ).toUnsignedEvent(publicKey = accountManager.getPublicKey())
+        ).build(publicKey = accountManager.getPublicKey())
 
         return accountManager.sign(unsignedEvent = unsignedEvent)
     }
@@ -186,14 +186,14 @@ class EventMaker(
                 Tag.event(pollId),
                 Tag.parse(listOf("response", optionId))
             ),
-        ).toUnsignedEvent(publicKey = accountManager.getPublicKey())
+        ).build(publicKey = accountManager.getPublicKey())
 
         return accountManager.sign(unsignedEvent = unsignedEvent)
     }
 
     suspend fun buildDelete(eventId: EventId): Result<Event> {
         val unsignedEvent = EventBuilder.delete(ids = listOf(eventId))
-            .toUnsignedEvent(accountManager.getPublicKey())
+            .build(accountManager.getPublicKey())
 
         return accountManager.sign(unsignedEvent = unsignedEvent)
     }
@@ -204,7 +204,7 @@ class EventMaker(
             Coordinate(Kind.fromEnum(KindEnum.FollowSet), pubkey, identifier),
             Coordinate(Kind.fromEnum(KindEnum.InterestSet), pubkey, identifier)
         )
-        val unsignedEvent = EventBuilder.delete(coordinates = coordinates).toUnsignedEvent(pubkey)
+        val unsignedEvent = EventBuilder.delete(coordinates = coordinates).build(pubkey)
 
         return accountManager.sign(unsignedEvent = unsignedEvent)
     }
@@ -212,7 +212,7 @@ class EventMaker(
     suspend fun buildTopicList(topics: List<Topic>): Result<Event> {
         val interests = Interests(hashtags = topics)
         val unsignedEvent = EventBuilder.interests(list = interests)
-            .toUnsignedEvent(accountManager.getPublicKey())
+            .build(accountManager.getPublicKey())
 
         return accountManager.sign(unsignedEvent = unsignedEvent)
     }
@@ -220,7 +220,7 @@ class EventMaker(
     suspend fun buildBookmarkList(postIds: List<EventIdHex>): Result<Event> {
         val bookmarks = Bookmarks(eventIds = postIds.map { EventId.fromHex(it) })
         val unsignedEvent = EventBuilder.bookmarks(list = bookmarks)
-            .toUnsignedEvent(accountManager.getPublicKey())
+            .build(accountManager.getPublicKey())
 
         return accountManager.sign(unsignedEvent = unsignedEvent)
     }
@@ -236,7 +236,7 @@ class EventMaker(
             words = words,
         )
         val unsignedEvent = EventBuilder.muteList(list = mutes)
-            .toUnsignedEvent(accountManager.getPublicKey())
+            .build(accountManager.getPublicKey())
 
         return accountManager.sign(unsignedEvent = unsignedEvent)
     }
@@ -244,7 +244,7 @@ class EventMaker(
     suspend fun buildContactList(pubkeys: List<PubkeyHex>): Result<Event> {
         val contacts = pubkeys.map { Contact(pk = PublicKey.fromHex(it)) }
         val unsignedEvent = EventBuilder.contactList(list = contacts)
-            .toUnsignedEvent(accountManager.getPublicKey())
+            .build(accountManager.getPublicKey())
 
         return accountManager.sign(unsignedEvent = unsignedEvent)
     }
@@ -259,14 +259,14 @@ class EventMaker(
         }
 
         val unsignedEvent = EventBuilder.relayList(map = metadata)
-            .toUnsignedEvent(accountManager.getPublicKey())
+            .build(accountManager.getPublicKey())
 
         return accountManager.sign(unsignedEvent = unsignedEvent)
     }
 
     suspend fun buildProfile(metadata: Metadata): Result<Event> {
         val unsignedEvent = EventBuilder.metadata(metadata)
-            .toUnsignedEvent(publicKey = accountManager.getPublicKey())
+            .build(publicKey = accountManager.getPublicKey())
 
         return accountManager.sign(unsignedEvent = unsignedEvent)
     }
@@ -275,7 +275,7 @@ class EventMaker(
         Log.d(TAG, "Build AUTH for $relayUrl")
         val unsignedEvent = runCatching {
             EventBuilder.auth(challenge = challenge, relayUrl = relayUrl)
-                .toUnsignedEvent(publicKey = accountManager.getPublicKey())
+                .build(publicKey = accountManager.getPublicKey())
         }
 
         return if (unsignedEvent.isSuccess) {
@@ -363,16 +363,16 @@ class EventMaker(
         )
         val unsignedEvent = eventBuilder
             .addTags(tags = additionalTags)
-            .toUnsignedEvent(publicKey = accountManager.getPublicKey())
+            .build(publicKey = accountManager.getPublicKey())
 
         return accountManager.sign(unsignedEvent = unsignedEvent)
     }
 
     private suspend fun signEvent(eventBuilder: EventBuilder, isAnon: Boolean): Result<Event> {
         return if (isAnon) {
-            Result.success(eventBuilder.toEvent(keys = Keys.generate()))
+            Result.success(eventBuilder.signWithKeys(Keys.generate()))
         } else {
-            val unsignedEvent = eventBuilder.toUnsignedEvent(accountManager.getPublicKey())
+            val unsignedEvent = eventBuilder.build(accountManager.getPublicKey())
             accountManager.sign(unsignedEvent = unsignedEvent)
         }
     }

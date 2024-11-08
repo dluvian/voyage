@@ -15,8 +15,8 @@ import com.dluvian.voyage.data.provider.ItemSetProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.upsert.ProfileSetUpsertDao
 import com.dluvian.voyage.data.room.dao.upsert.TopicSetUpsertDao
-import rust.nostr.protocol.Event
-import rust.nostr.protocol.PublicKey
+import rust.nostr.sdk.Event
+import rust.nostr.sdk.PublicKey
 
 private const val TAG = "ItemSetEditor"
 

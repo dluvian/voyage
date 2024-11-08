@@ -24,7 +24,7 @@ import com.dluvian.voyage.data.room.dao.upsert.ProfileUpsertDao
 import com.dluvian.voyage.data.room.entity.FullProfileEntity
 import com.dluvian.voyage.data.room.entity.ProfileEntity
 import kotlinx.coroutines.delay
-import rust.nostr.protocol.Event
+import rust.nostr.sdk.Event
 
 private const val TAG = "EditProfileViewModel"
 

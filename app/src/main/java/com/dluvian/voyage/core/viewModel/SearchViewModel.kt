@@ -30,10 +30,10 @@ import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.data.room.view.SimplePostView
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import rust.nostr.protocol.EventId
-import rust.nostr.protocol.Nip19Event
-import rust.nostr.protocol.Nip19Profile
-import rust.nostr.protocol.PublicKey
+import rust.nostr.sdk.EventId
+import rust.nostr.sdk.Nip19Event
+import rust.nostr.sdk.Nip19Profile
+import rust.nostr.sdk.PublicKey
 
 class SearchViewModel(
     private val searchProvider: SearchProvider,

@@ -9,8 +9,8 @@ import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.MainEvent
 import com.dluvian.voyage.core.model.ThreadableMainEvent
 import com.dluvian.voyage.data.nostr.RelayUrl
-import rust.nostr.protocol.Nip19Event
-import rust.nostr.protocol.Nip19Profile
+import rust.nostr.sdk.Nip19Event
+import rust.nostr.sdk.Nip19Profile
 
 sealed class NavView
 

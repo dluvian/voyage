@@ -1,7 +1,7 @@
 package com.dluvian.voyage.data.model
 
 import com.dluvian.voyage.core.Topic
-import rust.nostr.protocol.Nip19Profile
+import rust.nostr.sdk.Nip19Profile
 
 sealed class FeedSetting
 

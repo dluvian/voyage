@@ -196,8 +196,8 @@ class Muter(
             ).onSuccess { event ->
                 val mutes = ValidatedMuteList(
                     myPubkey = event.author().toHex(),
-                    pubkeys = event.publicKeys().map { it.toHex() }.toSet(),
-                    topics = event.hashtags().toSet(),
+                    pubkeys = event.tags().publicKeys().map { it.toHex() }.toSet(),
+                    topics = event.tags().hashtags().toSet(),
                     words = event.getMuteWords().toSet(),
                     createdAt = event.createdAt().secs()
                 )

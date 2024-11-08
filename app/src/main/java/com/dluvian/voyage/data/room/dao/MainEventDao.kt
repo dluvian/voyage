@@ -11,9 +11,9 @@ import com.dluvian.voyage.data.model.PostDetailsBase
 import com.dluvian.voyage.data.room.entity.main.MainEventEntity
 import com.dluvian.voyage.data.room.view.SimplePostView
 import kotlinx.coroutines.flow.Flow
-import rust.nostr.protocol.Event
-import rust.nostr.protocol.Kind
-import rust.nostr.protocol.PublicKey
+import rust.nostr.sdk.Event
+import rust.nostr.sdk.Kind
+import rust.nostr.sdk.PublicKey
 
 @Dao
 interface MainEventDao {
@@ -77,7 +77,8 @@ interface MainEventDao {
             val json = getJson(id = id)
             if (json.isNullOrEmpty()) continue
 
-            val isMentioningMe = Event.fromJson(json = json).publicKeys().any { newPubkey == it }
+            val isMentioningMe =
+                Event.fromJson(json = json).tags().publicKeys().any { newPubkey == it }
             if (isMentioningMe) internalSetMentioningMe(id = id)
         }
 

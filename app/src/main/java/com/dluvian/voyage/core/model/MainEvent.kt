@@ -15,8 +15,8 @@ import com.dluvian.voyage.data.room.view.LegacyReplyView
 import com.dluvian.voyage.data.room.view.PollOptionView
 import com.dluvian.voyage.data.room.view.PollView
 import com.dluvian.voyage.data.room.view.RootPostView
-import rust.nostr.protocol.Kind
-import rust.nostr.protocol.KindEnum
+import rust.nostr.sdk.Kind
+import rust.nostr.sdk.KindEnum
 
 sealed class MainEvent(
     open val id: EventIdHex,
