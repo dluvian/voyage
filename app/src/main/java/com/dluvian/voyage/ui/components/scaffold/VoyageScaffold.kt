@@ -1,6 +1,8 @@
 package com.dluvian.voyage.ui.components.scaffold
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -21,7 +23,10 @@ fun VoyageScaffold(
         snackbarHost = { SnackbarHost(hostState = snackbar) },
         bottomBar = bottomBar
     ) {
-        Box(modifier = Modifier.padding(it)) {
+        Box(modifier = Modifier
+            .padding(it)
+            .consumeWindowInsets(it)
+            .imePadding()) {
             content()
         }
     }
