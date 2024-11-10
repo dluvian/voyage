@@ -280,4 +280,7 @@
     <string name="create_a_poll">Bir anket oluştur</string>
     <string name="poll_created">Anket oluşturuldu</string>
     <string name="failed_to_create_poll">Anket oluşturulamadı</string>
+    <string name="poll_question">Anket sorusu</string>
+    <string name="poll">Anket</string>
+    <string name="post">Postalamak</string>
 </resources>

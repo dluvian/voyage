@@ -281,4 +281,7 @@
     <string name="create_a_poll">创建投票</string>
     <string name="poll_created">已创建投票</string>
     <string name="failed_to_create_poll">无法创建投票</string>
+    <string name="poll_question">民意调查问题</string>
+    <string name="poll">轮询</string>
+    <string name="post">邮政</string>
 </resources>

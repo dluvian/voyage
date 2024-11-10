@@ -66,11 +66,15 @@ fun CreatePostView(
         focusRequester.requestFocus()
     }
 
+    val title = if (isPoll.value) stringResource(R.string.poll)
+    else stringResource(R.string.post)
+
     ContentCreationScaffold(
         showSendButton = body.value.text.isNotBlank(),
         isSendingContent = vm.isSending.value,
         snackbar = snackbar,
         typeIcon = { TypeButtons(isPoll = isPoll) },
+        title = title,
         onSend = {
             if (isPoll.value) onUpdate(
                 SendPoll(
@@ -94,6 +98,7 @@ fun CreatePostView(
         onUpdate = onUpdate,
     ) {
         CreatePostContent(
+            isPoll = isPoll.value,
             header = header,
             body = body,
             topicSuggestions = topicSuggestions.value,
@@ -108,6 +113,7 @@ fun CreatePostView(
 
 @Composable
 private fun CreatePostContent(
+    isPoll: Boolean,
     header: MutableState<TextFieldValue>,
     body: MutableState<TextFieldValue>,
     topicSuggestions: List<Topic>,
@@ -129,7 +135,7 @@ private fun CreatePostContent(
             onUpdate = onUpdate
         )
         Spacer(modifier = Modifier.height(spacing.medium))
-        TextInput(
+        if (!isPoll) TextInput(
             value = header.value,
             onValueChange = { txt -> header.value = txt },
             maxLines = MAX_SUBJECT_LINES,
@@ -142,7 +148,9 @@ private fun CreatePostContent(
                 .focusRequester(focusRequester),
             value = body.value,
             onValueChange = { str -> body.value = str },
-            placeholder = stringResource(id = R.string.body_text),
+            placeholder = if (isPoll) stringResource(id = R.string.poll_question) else stringResource(
+                id = R.string.body_text
+            ),
         )
     }
 }
@@ -158,7 +166,7 @@ private fun TypeButtons(isPoll: MutableState<Boolean>) {
     Row(
         modifier = Modifier
             .border(
-                width = 2.dp,
+                width = 1.dp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 shape = RoundedChip
             )

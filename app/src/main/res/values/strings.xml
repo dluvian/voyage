@@ -285,4 +285,7 @@
     <string name="create_a_poll">Create a poll</string>
     <string name="poll_created">Poll created</string>
     <string name="failed_to_create_poll">Failed to create poll</string>
+    <string name="poll_question">Poll question</string>
+    <string name="poll">Poll</string>
+    <string name="post">Post</string>
 </resources>
