@@ -1,12 +1,17 @@
 package com.dluvian.voyage.ui.views.nonMain
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -39,6 +44,7 @@ import com.dluvian.voyage.ui.components.row.TopicSelectionRow
 import com.dluvian.voyage.ui.components.scaffold.ContentCreationScaffold
 import com.dluvian.voyage.ui.components.text.InputWithSuggestions
 import com.dluvian.voyage.ui.components.text.TextInput
+import com.dluvian.voyage.ui.theme.AddIcon
 import com.dluvian.voyage.ui.theme.PollIcon
 import com.dluvian.voyage.ui.theme.RoundedChip
 import com.dluvian.voyage.ui.theme.TextIcon
@@ -54,7 +60,7 @@ fun CreatePostView(
     onUpdate: OnUpdate
 ) {
     val isPoll = remember { mutableStateOf(false) }
-    val options = remember { mutableStateOf(emptyList<TextFieldValue>()) }
+    val options = remember { mutableStateOf(listOf(mutableStateOf(TextFieldValue()))) }
     val header = remember { mutableStateOf(TextFieldValue()) }
     val body = remember { mutableStateOf(TextFieldValue()) }
     val isAnon = remember { mutableStateOf(false) }
@@ -66,11 +72,22 @@ fun CreatePostView(
         focusRequester.requestFocus()
     }
 
+    val cleanOptions = remember(options.value) {
+        options.value.map { it.value.text.trim() }
+            .filter { it.isNotEmpty() }
+            .distinct()
+    }
+
+    val showSendButton = remember(body.value, cleanOptions, isPoll.value) {
+        if (isPoll.value) body.value.text.isNotBlank()
+        else cleanOptions.size >= 2
+    }
+
     val title = if (isPoll.value) stringResource(R.string.poll)
     else stringResource(R.string.post)
 
     ContentCreationScaffold(
-        showSendButton = body.value.text.isNotBlank(),
+        showSendButton = showSendButton,
         isSendingContent = vm.isSending.value,
         snackbar = snackbar,
         typeIcon = { TypeButtons(isPoll = isPoll) },
@@ -79,7 +96,7 @@ fun CreatePostView(
             if (isPoll.value) onUpdate(
                 SendPoll(
                     question = body.value.text,
-                    options = options.value.map { it.text },
+                    options = cleanOptions,
                     topics = topics.value,
                     isAnon = isAnon.value,
                     context = context,
@@ -101,6 +118,7 @@ fun CreatePostView(
             isPoll = isPoll.value,
             header = header,
             body = body,
+            options = options,
             topicSuggestions = topicSuggestions.value,
             selectedTopics = topics,
             searchSuggestions = searchSuggestions.value,
@@ -116,6 +134,7 @@ private fun CreatePostContent(
     isPoll: Boolean,
     header: MutableState<TextFieldValue>,
     body: MutableState<TextFieldValue>,
+    options: MutableState<List<MutableState<TextFieldValue>>>,
     topicSuggestions: List<Topic>,
     selectedTopics: MutableState<List<Topic>>,
     searchSuggestions: List<AdvancedProfileView>,
@@ -142,16 +161,19 @@ private fun CreatePostContent(
             placeholder = stringResource(id = R.string.subject_optional),
             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
         )
+
         TextInput(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
+                .let { if (isPoll) it.height(intrinsicSize = IntrinsicSize.Min) else it.fillMaxHeight() }
                 .focusRequester(focusRequester),
             value = body.value,
             onValueChange = { str -> body.value = str },
-            placeholder = if (isPoll) stringResource(id = R.string.poll_question) else stringResource(
-                id = R.string.body_text
-            ),
+            maxLines = if (isPoll) 3 else Int.MAX_VALUE,
+            placeholder = if (isPoll) stringResource(id = R.string.poll_question)
+            else stringResource(id = R.string.body_text),
         )
+        if (isPoll) PollEditor(modifier = Modifier.fillMaxSize(), options = options)
     }
 }
 
@@ -193,5 +215,25 @@ private fun TypeButtons(isPoll: MutableState<Boolean>) {
             )
         }
         Spacer(modifier = Modifier.width(spacing.medium))
+    }
+}
+
+@Composable
+private fun PollEditor(
+    modifier: Modifier = Modifier,
+    options: MutableState<List<MutableState<TextFieldValue>>>,
+) {
+    LazyColumn(modifier = modifier) {
+        items(options.value) { optionState ->
+            Row {
+                Icon(imageVector = AddIcon, contentDescription = null)
+                TextInput(
+                    value = optionState.value,
+                    onValueChange = { str -> optionState.value = str },
+                    placeholder = stringResource(R.string.option),
+                    maxLines = 2
+                )
+            }
+        }
     }
 }

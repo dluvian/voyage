@@ -4,6 +4,7 @@ import com.dluvian.voyage.core.MAX_DESCRIPTION_LEN
 import com.dluvian.voyage.core.MAX_MUTE_WORD_LEN
 import com.dluvian.voyage.core.MAX_NAME_LEN
 import com.dluvian.voyage.core.MAX_POLL_OPTIONS
+import com.dluvian.voyage.core.MAX_POLL_OPTION_LEN
 import com.dluvian.voyage.core.MAX_SUBJECT_LEN
 import com.dluvian.voyage.core.MAX_TOPIC_LEN
 import com.dluvian.voyage.core.Topic
@@ -44,6 +45,7 @@ fun Event.getNormalizedTopics(limit: Int = Int.MAX_VALUE): List<Topic> {
 
 fun Event.getNormalizedPollOptions(limit: Int = MAX_POLL_OPTIONS) =
     this.getPollOptions().take(limit)
+        .map { (id, label) -> Pair(id, label.take(MAX_POLL_OPTION_LEN)) }
 
 fun normalizeName(str: String) = str.filterNot { it.isWhitespace() }.take(MAX_NAME_LEN)
 

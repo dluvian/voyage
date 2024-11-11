@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -71,6 +70,7 @@ import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import com.dluvian.voyage.ui.components.indicator.SmallCircleProgressIndicator
 import com.dluvian.voyage.ui.components.row.ClickableRow
 import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
+import com.dluvian.voyage.ui.components.text.AltSectionHeader
 import com.dluvian.voyage.ui.theme.AccountIcon
 import com.dluvian.voyage.ui.theme.WarningIcon
 import com.dluvian.voyage.ui.theme.getTrustColor
@@ -415,14 +415,7 @@ private fun AccountRowButton(
 @Composable
 private fun SettingsSection(header: String, content: ComposableContent) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            modifier = Modifier
-                .padding(horizontal = spacing.bigScreenEdge)
-                .padding(top = spacing.xl, bottom = spacing.small),
-            text = header,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.primary
-        )
+        AltSectionHeader(header = header)
         content()
         Spacer(modifier = Modifier.height(spacing.screenEdge))
     }

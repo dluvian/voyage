@@ -283,4 +283,6 @@
     <string name="poll_question">Anket sorusu</string>
     <string name="poll">Anket</string>
     <string name="post">Postalamak</string>
+    <string name="poll_options">Anket seçenekleri</string>
+    <string name="option">Seçenek</string>
 </resources>

@@ -288,4 +288,6 @@
     <string name="poll_question">Poll question</string>
     <string name="poll">Poll</string>
     <string name="post">Post</string>
+    <string name="poll_options">Poll options</string>
+    <string name="option">Option</string>
 </resources>

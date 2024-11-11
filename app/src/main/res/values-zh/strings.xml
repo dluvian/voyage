@@ -284,4 +284,6 @@
     <string name="poll_question">民意调查问题</string>
     <string name="poll">轮询</string>
     <string name="post">邮政</string>
+    <string name="poll_options">投票选项</string>
+    <string name="option">选项</string>
 </resources>

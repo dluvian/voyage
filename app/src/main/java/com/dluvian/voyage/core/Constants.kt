@@ -13,6 +13,7 @@ const val MAX_NAME_LEN = 32
 const val MAX_TOPIC_LEN = 32
 const val MAX_TOPICS = 5
 const val MAX_POLL_OPTIONS = 12
+const val MAX_POLL_OPTION_LEN = 128
 
 const val MAX_SUBJECT_LINES = 3
 const val MAX_CONTENT_LINES = 12
