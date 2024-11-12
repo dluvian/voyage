@@ -13,23 +13,17 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ComposableContent
@@ -50,12 +44,10 @@ import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.model.ThreadableMainEvent
 import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.data.nostr.getCurrentSecs
-import com.dluvian.voyage.ui.components.FullHorizontalDivider
 import com.dluvian.voyage.ui.components.button.footer.CountedCommentButton
 import com.dluvian.voyage.ui.components.button.footer.ReplyIconButton
+import com.dluvian.voyage.ui.components.row.PollOptionRow
 import com.dluvian.voyage.ui.components.text.AnnotatedText
-import com.dluvian.voyage.ui.theme.VotedIcon
-import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
 import com.dluvian.voyage.ui.views.nonMain.MoreRepliesTextButton
 
@@ -299,59 +291,6 @@ private fun PollColumn(poll: Poll, onUpdate: OnUpdate, onClickRow: Fn) {
             }) {
                 Text(stringResource(id = R.string.vote))
             }
-        }
-    }
-}
-
-@Composable
-private fun PollOptionRow(
-    label: String,
-    isSelected: Boolean,
-    isRevealed: Boolean,
-    percentage: Int,
-    progress: Float,
-    onClick: Fn,
-) {
-    val isRevealedSelection = remember(isSelected, isRevealed) {
-        isSelected && isRevealed
-    }
-    Column {
-        Row(
-            modifier = Modifier
-                .clickable(onClick = onClick)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(
-                modifier = Modifier.width(42.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                if (isRevealed) Text(
-                    modifier = Modifier.padding(vertical = spacing.xl),
-                    text = "$percentage%",
-                    fontWeight = if (isRevealedSelection) FontWeight.SemiBold else null
-                )
-                else RadioButton(selected = isSelected, onClick = onClick)
-            }
-            Spacer(modifier = Modifier.padding(start = spacing.small))
-            if (isRevealedSelection) {
-                Icon(
-                    modifier = Modifier.size(sizing.smallIndicator),
-                    imageVector = VotedIcon,
-                    contentDescription = null
-                )
-                Spacer(modifier = Modifier.padding(start = spacing.small))
-
-            }
-            Text(text = label, fontWeight = if (isRevealedSelection) FontWeight.SemiBold else null)
-        }
-        Row {
-            Spacer(modifier = Modifier.width(spacing.medium))
-            if (isRevealed) LinearProgressIndicator(
-                modifier = Modifier.fillMaxWidth(),
-                progress = { progress })
-            else FullHorizontalDivider()
         }
     }
 }

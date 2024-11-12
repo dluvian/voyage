@@ -290,4 +290,5 @@
     <string name="post">Post</string>
     <string name="poll_options">Poll options</string>
     <string name="option">Option</string>
+    <string name="add_an_option">Add an option…</string>
 </resources>

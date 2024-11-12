@@ -19,11 +19,13 @@ import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material.icons.rounded.Abc
 import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material.icons.rounded.Bookmark
 import androidx.compose.material.icons.rounded.CellTower
 import androidx.compose.material.icons.rounded.CheckCircleOutline
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.DragHandle
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.ExpandLess
 import androidx.compose.material.icons.rounded.ExpandMore
@@ -47,6 +49,8 @@ val MenuIcon = Icons.Rounded.Menu
 val HomeIcon = Icons.Rounded.Home
 val DiscoverIcon = Icons.Rounded.TravelExplore
 val AddIcon = Icons.Rounded.Add
+val AddCircleIcon = Icons.Rounded.AddCircle
+val OptionItemIcon = Icons.Rounded.DragHandle
 val RemoveCircleIcon = Icons.Rounded.RemoveCircle
 val InboxIcon = Icons.Rounded.Inbox
 val SettingsIcon = Icons.Outlined.Settings

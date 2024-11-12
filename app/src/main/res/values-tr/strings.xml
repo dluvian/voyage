@@ -285,4 +285,5 @@
     <string name="post">Postalamak</string>
     <string name="poll_options">Anket seçenekleri</string>
     <string name="option">Seçenek</string>
+    <string name="add_an_option">Bir seçenek ekleyin…</string>
 </resources>

@@ -286,4 +286,5 @@
     <string name="post">邮政</string>
     <string name="poll_options">投票选项</string>
     <string name="option">选项</string>
+    <string name="add_an_option">添加一个选项…</string>
 </resources>

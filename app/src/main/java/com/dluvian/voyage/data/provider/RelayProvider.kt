@@ -54,7 +54,11 @@ class RelayProvider(
     private val myNip65 =
         nip65Dao.getMyNip65Flow().stateIn(scope, SharingStarted.Eagerly, emptyList())
 
-    fun getReadRelays(limit: Int = MAX_RELAYS, includeConnected: Boolean = false): List<RelayUrl> {
+    fun getReadRelays(
+        limit: Int = MAX_RELAYS,
+        includeConnected: Boolean = false,
+        includeLocalRelay: Boolean = true
+    ): List<RelayUrl> {
         return myNip65.value
             .filter { it.nip65Relay.isRead }
             .map { it.nip65Relay.url }
@@ -63,7 +67,9 @@ class RelayProvider(
             .let {
                 if (includeConnected) (it + nostrClient.getAllConnectedUrls()).distinct() else it
             }
-            .addLocalRelay(relayPreferences.getLocalRelayPort())
+            .let {
+                if (includeLocalRelay) it.addLocalRelay(relayPreferences.getLocalRelayPort()) else it
+            }
             .distinct()
     }
 

@@ -116,7 +116,7 @@ class PostSender(
             question = trimmedQuestion,
             options = trimmedOptions,
             endsAt = getCurrentSecs() + WEEK_IN_SECS,
-            pollRelays = relayProvider.getReadRelays(limit = 2),
+            pollRelays = relayProvider.getReadRelays(limit = 2, includeLocalRelay = false),
             topics = allTopics.distinct().take(MAX_TOPICS),
             mentions = mentions,
             quotes = extractQuotesFromString(content = concat),
