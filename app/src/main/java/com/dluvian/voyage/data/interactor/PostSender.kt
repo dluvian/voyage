@@ -106,7 +106,7 @@ class PostSender(
 
         val trimmedQuestion = question.trim()
         val trimmedOptions = options.map { it.trim() }
-        val concat = "$trimmedOptions ${trimmedOptions.joinToString(separator = " ")}"
+        val concat = "$trimmedQuestion ${trimmedOptions.joinToString(separator = " ")}"
 
         val mentions = extractMentionsFromString(content = concat, isAnon = isAnon)
         val allTopics = topics.toMutableList()
