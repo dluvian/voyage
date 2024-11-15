@@ -90,7 +90,7 @@ fun CreatePostView(
         showSendButton = showSendButton,
         isSendingContent = vm.isSending.value,
         snackbar = snackbar,
-        typeIcon = { TypeButtons(isPoll = isPoll) },
+        typeIcon = { if (!vm.isSending.value) TypeButtons(isPoll = isPoll) },
         title = title,
         onSend = {
             if (isPoll.value) onUpdate(
