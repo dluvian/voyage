@@ -286,4 +286,6 @@
     <string name="poll_options">Anket seçenekleri</string>
     <string name="option">Seçenek</string>
     <string name="add_an_option">Bir seçenek ekleyin…</string>
+    <string name="remove_item">Öğeyi kaldır</string>
+    <string name="remove_poll_option">Anket seçeneğini kaldır</string>
 </resources>

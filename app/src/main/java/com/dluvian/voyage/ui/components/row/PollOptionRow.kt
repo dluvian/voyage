@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.ui.components.FullHorizontalDivider
+import com.dluvian.voyage.ui.components.button.RemoveIconButton
 import com.dluvian.voyage.ui.components.text.TextInput
 import com.dluvian.voyage.ui.theme.AddCircleIcon
 import com.dluvian.voyage.ui.theme.OptionItemIcon
@@ -88,7 +89,7 @@ fun PollOptionRow(
 }
 
 @Composable
-fun PollOptionInputRow(input: MutableState<TextFieldValue>) {
+fun PollOptionInputRow(input: MutableState<TextFieldValue>, onRemove: Fn) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -104,7 +105,13 @@ fun PollOptionInputRow(input: MutableState<TextFieldValue>) {
             value = input.value,
             onValueChange = { str -> input.value = str },
             placeholder = stringResource(R.string.option),
-            maxLines = 2
+            maxLines = 2,
+            trailingIcon = {
+                RemoveIconButton(
+                    onRemove = onRemove,
+                    description = stringResource(R.string.remove_poll_option)
+                )
+            }
         )
     }
 }

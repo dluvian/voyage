@@ -12,6 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.utils.getTransparentTextFieldColors
 import com.dluvian.voyage.ui.theme.OnBgLight
 
@@ -24,7 +25,8 @@ fun TextInput(
     maxLines: Int = Int.MAX_VALUE,
     style: TextStyle = LocalTextStyle.current,
     imeAction: ImeAction = ImeAction.Default,
-    keyboardType: KeyboardType = KeyboardType.Text
+    keyboardType: KeyboardType = KeyboardType.Text,
+    trailingIcon: ComposableContent = {},
 ) {
     TextField(
         modifier = modifier.fillMaxWidth(),
@@ -37,6 +39,7 @@ fun TextInput(
             keyboardType = keyboardType,
             imeAction = imeAction
         ),
+        trailingIcon = trailingIcon,
         placeholder = {
             Text(
                 text = placeholder,

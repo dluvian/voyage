@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ComposableContent
@@ -38,7 +39,11 @@ fun ItemList(
                 leadingContent = icon,
                 trailingContent = {
                     if (isRemovable) {
-                        RemoveIconButton(onRemove = { onRemove(i) })
+                        RemoveIconButton(
+                            onRemove = { onRemove(i) },
+                            color = Color.Red,
+                            description = stringResource(R.string.remove_item)
+                        )
                     }
                 },
                 onClick = { onClick(i) }

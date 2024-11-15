@@ -287,4 +287,6 @@
     <string name="poll_options">投票选项</string>
     <string name="option">选项</string>
     <string name="add_an_option">添加一个选项…</string>
+    <string name="remove_item">移除项目</string>
+    <string name="remove_poll_option">删除投票选项</string>
 </resources>

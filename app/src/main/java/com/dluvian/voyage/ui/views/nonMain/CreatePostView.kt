@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -224,8 +224,11 @@ private fun PollEditor(
     options: MutableState<List<MutableState<TextFieldValue>>>,
 ) {
     LazyColumn(modifier = modifier) {
-        items(options.value) { optionState ->
-            PollOptionInputRow(input = optionState)
+        itemsIndexed(options.value) { index, optionState ->
+            PollOptionInputRow(
+                input = optionState,
+                onRemove = { options.value = options.value.filterIndexed { i, _ -> i != index } }
+            )
         }
         if (options.value.size < MAX_POLL_OPTIONS) item {
             PollOptionAddRow {
