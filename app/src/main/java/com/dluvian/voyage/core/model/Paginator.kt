@@ -147,6 +147,8 @@ class Paginator(
         filteredPage.value = flow
             // No duplicate cross-posts
             .map { postCtx -> postCtx.distinctBy { it.mainEvent.getRelevantId() } }
+            // Reported bug that LazyCol id has duplicates
+            .map { postCtx -> postCtx.distinctBy { it.mainEvent.id } }
             .map { postCtxs ->
                 when (feedSetting) {
                     // No muted words
