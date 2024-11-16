@@ -11,7 +11,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -30,7 +29,6 @@ import com.dluvian.voyage.ui.theme.spacing
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostDetailsBottomSheet(postDetails: PostDetails, onUpdate: OnUpdate) {
-    val context = LocalContext.current
     val onDismiss = { onUpdate(ClosePostInfo) }
     ModalBottomSheet(onDismissRequest = onDismiss) {
         BottomSheetColumn(header = stringResource(id = R.string.post_details)) {
@@ -39,21 +37,17 @@ fun PostDetailsBottomSheet(postDetails: PostDetails, onUpdate: OnUpdate) {
                 contentPadding = PaddingValues(bottom = spacing.xxl)
             ) {
                 item {
-                    SmallHeader(header = stringResource(id = R.string.time))
-                    val time = remember(postDetails.base.createdAt) {
-                        getFullDateTime(ctx = context, createdAt = postDetails.base.createdAt)
-                    }
-                    Text(text = time)
-                    Spacer(modifier = Modifier.height(spacing.large))
+                    SimpleTimeSection(
+                        header = stringResource(id = R.string.time),
+                        time = postDetails.base.createdAt,
+                    )
                 }
 
                 if (postDetails.pollEndsAt != null) item {
-                    SmallHeader(header = stringResource(id = R.string.poll_ends_at))
-                    val time = remember(postDetails.pollEndsAt) {
-                        getFullDateTime(ctx = context, createdAt = postDetails.pollEndsAt)
-                    }
-                    Text(text = time)
-                    Spacer(modifier = Modifier.height(spacing.large))
+                    SimpleTimeSection(
+                        header = stringResource(id = R.string.poll_ends_at),
+                        time = postDetails.pollEndsAt,
+                    )
                 }
 
                 if (postDetails.base.firstSeenIn.isNotEmpty()) item {
@@ -67,9 +61,10 @@ fun PostDetailsBottomSheet(postDetails: PostDetails, onUpdate: OnUpdate) {
                 }
 
                 if (!postDetails.client.isNullOrEmpty()) item {
-                    SmallHeader(header = stringResource(id = R.string.client))
-                    Text(text = postDetails.client)
-                    Spacer(modifier = Modifier.height(spacing.large))
+                    SimpleSection(
+                        header = stringResource(id = R.string.client),
+                        content = postDetails.client
+                    )
                 }
 
                 if (postDetails.indexedTopics.isNotEmpty()) {
@@ -93,4 +88,19 @@ fun PostDetailsBottomSheet(postDetails: PostDetails, onUpdate: OnUpdate) {
             }
         }
     }
+}
+
+@Composable
+private fun SimpleSection(header: String, content: String) {
+    SmallHeader(header = header)
+    Text(text = content)
+    Spacer(modifier = Modifier.height(spacing.large))
+}
+
+@Composable
+private fun SimpleTimeSection(header: String, time: Long) {
+    SimpleSection(
+        header = header,
+        content = getFullDateTime(ctx = LocalContext.current, createdAt = time)
+    )
 }
