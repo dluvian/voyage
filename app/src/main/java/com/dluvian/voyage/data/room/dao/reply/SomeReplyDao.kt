@@ -58,11 +58,11 @@ interface SomeReplyDao {
     suspend fun internalGetCommentParentId(id: EventIdHex): EventIdHex?
 
     // Should be like LegacyReplyDao.getRepliesFlow
-    @Query("SELECT COUNT(*) FROM LegacyReplyView WHERE parentId = :parentId AND authorIsMuted = 0")
+    @Query("SELECT COUNT(*) FROM LegacyReplyView WHERE parentId = :parentId")
     fun internalGetLegacyReplyCountFlow(parentId: EventIdHex): Flow<Int>
 
     // Should be like CommentDao.getCommentsFlow
-    @Query("SELECT COUNT(*) FROM CommentView WHERE parentId = :parentId AND authorIsMuted = 0")
+    @Query("SELECT COUNT(*) FROM CommentView WHERE parentId = :parentId")
     fun internalGetCommentCountFlow(parentId: EventIdHex): Flow<Int>
 
     suspend fun getProfileRepliesCreatedAt(pubkey: PubkeyHex, until: Long, size: Int): List<Long> {
