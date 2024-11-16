@@ -47,6 +47,15 @@ fun PostDetailsBottomSheet(postDetails: PostDetails, onUpdate: OnUpdate) {
                     Spacer(modifier = Modifier.height(spacing.large))
                 }
 
+                if (postDetails.pollEndsAt != null) item {
+                    SmallHeader(header = stringResource(id = R.string.poll_ends_at))
+                    val time = remember(postDetails.pollEndsAt) {
+                        getFullDateTime(ctx = context, createdAt = postDetails.pollEndsAt)
+                    }
+                    Text(text = time)
+                    Spacer(modifier = Modifier.height(spacing.large))
+                }
+
                 if (postDetails.base.firstSeenIn.isNotEmpty()) item {
                     SmallHeader(header = stringResource(id = R.string.first_seen_in))
                     ClickableRelayUrl(

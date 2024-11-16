@@ -293,4 +293,5 @@
     <string name="add_an_option">Add an option…</string>
     <string name="remove_item">Remove item</string>
     <string name="remove_poll_option">Remove poll option</string>
+    <string name="poll_ends_at">Poll ends at</string>
 </resources>

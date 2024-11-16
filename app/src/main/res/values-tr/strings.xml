@@ -288,4 +288,5 @@
     <string name="add_an_option">Bir seçenek ekleyin…</string>
     <string name="remove_item">Öğeyi kaldır</string>
     <string name="remove_poll_option">Anket seçeneğini kaldır</string>
+    <string name="poll_ends_at">Anket şu saatte sona eriyor:</string>
 </resources>
