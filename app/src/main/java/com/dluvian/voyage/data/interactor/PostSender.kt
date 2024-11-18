@@ -15,6 +15,7 @@ import com.dluvian.voyage.core.utils.getNormalizedTopics
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.event.COMMENT_U16
 import com.dluvian.voyage.data.event.EventValidator
+import com.dluvian.voyage.data.event.POLL_U16
 import com.dluvian.voyage.data.event.TEXT_NOTE_U16
 import com.dluvian.voyage.data.event.ValidatedComment
 import com.dluvian.voyage.data.event.ValidatedCrossPost
@@ -283,6 +284,12 @@ class PostSender(
             )
 
             COMMENT_U16 -> EventValidator.createValidatedComment(
+                event = crossPostedEvent,
+                relayUrl = post.relayUrl,
+                myPubkey = myPubkeyProvider.getPublicKey()
+            )
+
+            POLL_U16 -> EventValidator.createValidatedPoll(
                 event = crossPostedEvent,
                 relayUrl = post.relayUrl,
                 myPubkey = myPubkeyProvider.getPublicKey()
