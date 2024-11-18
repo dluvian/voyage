@@ -10,6 +10,6 @@ interface IPaginator {
     val isAppending: State<Boolean>
     val hasMoreRecentItems: State<Boolean>
     val hasPage: State<StateFlow<Boolean>>
-    val page: State<StateFlow<List<MainEventCtx>>>
+    val pageTimestamps: State<List<Long>>
     val filteredPage: State<StateFlow<List<MainEventCtx>>>
 }
