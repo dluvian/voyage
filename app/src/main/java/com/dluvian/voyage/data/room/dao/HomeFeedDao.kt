@@ -166,6 +166,8 @@ interface HomeFeedDao {
         until: Long,
         size: Int,
     ): Flow<List<RootPostView>> {
+        if (!setting.showRoots) return flowOf(emptyList())
+
         val withMyTopics = setting.topicSelection.isMyTopics()
 
         return when (setting.pubkeySelection) {
@@ -196,6 +198,8 @@ interface HomeFeedDao {
         until: Long,
         size: Int,
     ): Flow<List<CrossPostView>> {
+        if (!setting.showCrossPosts) return flowOf(emptyList())
+
         val withMyTopics = setting.topicSelection.isMyTopics()
 
         return when (setting.pubkeySelection) {
@@ -226,6 +230,8 @@ interface HomeFeedDao {
         until: Long,
         size: Int,
     ): Flow<List<PollView>> {
+        if (!setting.showPolls) return flowOf(emptyList())
+
         val withMyTopics = setting.topicSelection.isMyTopics()
 
         return when (setting.pubkeySelection) {
@@ -256,6 +262,8 @@ interface HomeFeedDao {
         until: Long,
         size: Int,
     ): Flow<List<PollOptionView>> {
+        if (!setting.showPolls) return flowOf(emptyList())
+
         val withMyTopics = setting.topicSelection.isMyTopics()
 
         return when (setting.pubkeySelection) {
@@ -286,6 +294,8 @@ interface HomeFeedDao {
         until: Long,
         size: Int
     ): List<RootPostView> {
+        if (!setting.showRoots) return emptyList()
+
         val withMyTopics = setting.topicSelection.isMyTopics()
 
         return when (setting.pubkeySelection) {
@@ -316,6 +326,8 @@ interface HomeFeedDao {
         until: Long,
         size: Int
     ): List<CrossPostView> {
+        if (!setting.showCrossPosts) return emptyList()
+
         val withMyTopics = setting.topicSelection.isMyTopics()
 
         return when (setting.pubkeySelection) {
@@ -346,6 +358,8 @@ interface HomeFeedDao {
         until: Long,
         size: Int
     ): List<PollView> {
+        if (!setting.showPolls) return emptyList()
+
         val withMyTopics = setting.topicSelection.isMyTopics()
 
         return when (setting.pubkeySelection) {
@@ -381,9 +395,14 @@ interface HomeFeedDao {
         return when (setting.pubkeySelection) {
             NoPubkeys -> if (withMyTopics) {
                 combine(
-                    internalHasTopicRootFlow(until = until, size = size),
-                    internalHasTopicCrossFlow(until = until, size = size),
-                    internalHasTopicPollFlow(until = until, size = size),
+                    if (setting.showRoots) internalHasTopicRootFlow(until = until, size = size)
+                    else flowOf(false),
+                    if (setting.showCrossPosts) internalHasTopicCrossFlow(
+                        until = until,
+                        size = size
+                    ) else flowOf(false),
+                    if (setting.showPolls) internalHasTopicPollFlow(until = until, size = size)
+                    else flowOf(false),
                 ) { root, cross, poll -> root || cross || poll }
             } else {
                 flowOf(false)
@@ -391,37 +410,64 @@ interface HomeFeedDao {
 
             FriendPubkeysNoLock -> if (withMyTopics) {
                 combine(
-                    internalHasFriendOrTopicRootFlow(until = until, size = size),
-                    internalHasFriendOrTopicCrossFlow(until = until, size = size),
-                    internalHasFriendOrTopicPollFlow(until = until, size = size),
+                    if (setting.showRoots) internalHasFriendOrTopicRootFlow(
+                        until = until,
+                        size = size
+                    ) else flowOf(false),
+                    if (setting.showCrossPosts) internalHasFriendOrTopicCrossFlow(
+                        until = until,
+                        size = size
+                    ) else flowOf(false),
+                    if (setting.showPolls) internalHasFriendOrTopicPollFlow(
+                        until = until,
+                        size = size
+                    ) else flowOf(false),
                 ) { root, cross, poll -> root || cross || poll }
             } else {
                 combine(
-                    internalHasFriendRootFlow(until = until, size = size),
-                    internalHasFriendCrossFlow(until = until, size = size),
-                    internalHasFriendPollFlow(until = until, size = size),
+                    if (setting.showRoots) internalHasFriendRootFlow(until = until, size = size)
+                    else flowOf(false),
+                    if (setting.showCrossPosts) internalHasFriendCrossFlow(
+                        until = until,
+                        size = size
+                    ) else flowOf(false),
+                    if (setting.showPolls) internalHasFriendPollFlow(until = until, size = size)
+                    else flowOf(false),
                 ) { root, cross, poll -> root || cross || poll }
             }
 
             WebOfTrustPubkeys -> if (withMyTopics) {
                 combine(
-                    internalHasWotOrTopicRootFlow(until = until, size = size),
-                    internalHasWotOrTopicCrossFlow(until = until, size = size),
-                    internalHasWotOrTopicPollFlow(until = until, size = size),
+                    if (setting.showRoots) internalHasWotOrTopicRootFlow(until = until, size = size)
+                    else flowOf(false),
+                    if (setting.showCrossPosts) internalHasWotOrTopicCrossFlow(
+                        until = until,
+                        size = size
+                    ) else flowOf(false),
+                    if (setting.showPolls) internalHasWotOrTopicPollFlow(until = until, size = size)
+                    else flowOf(false),
                 ) { root, cross, poll -> root || cross || poll }
             } else {
                 combine(
-                    internalHasWotRootFlow(until = until, size = size),
-                    internalHasWotCrossFlow(until = until, size = size),
-                    internalHasWotPollFlow(until = until, size = size),
+                    if (setting.showRoots) internalHasWotRootFlow(until = until, size = size)
+                    else flowOf(false),
+                    if (setting.showCrossPosts) internalHasWotCrossFlow(until = until, size = size)
+                    else flowOf(false),
+                    if (setting.showPolls) internalHasWotPollFlow(until = until, size = size)
+                    else flowOf(false),
                 ) { root, cross, poll -> root || cross || poll }
             }
 
             Global -> {
                 combine(
-                    internalHasGlobalRootFlow(until = until, size = size),
-                    internalHasGlobalCrossFlow(until = until, size = size),
-                    internalHasGlobalPollFlow(until = until, size = size),
+                    if (setting.showRoots) internalHasGlobalRootFlow(until = until, size = size)
+                    else flowOf(false),
+                    if (setting.showCrossPosts) internalHasGlobalCrossFlow(
+                        until = until,
+                        size = size
+                    ) else flowOf(false),
+                    if (setting.showPolls) internalHasGlobalPollFlow(until = until, size = size)
+                    else flowOf(false),
                 ) { root, cross, poll -> root || cross || poll }
             }
         }
@@ -436,36 +482,54 @@ interface HomeFeedDao {
 
         return when (setting.pubkeySelection) {
             NoPubkeys -> if (withMyTopics) {
-                internalGetTopicCreatedAtRoot(until = until, size = size) +
-                        internalGetTopicCreatedAtCross(until = until, size = size) +
+                internalGetTopicCreatedAtRoot(until = until, size = size)
+                    .orNoRoots(setting) +
+                        internalGetTopicCreatedAtCross(until = until, size = size)
+                            .orNoCross(setting) +
                         internalGetTopicCreatedAtPoll(until = until, size = size)
+                            .orNoPolls(setting)
             } else {
                 emptyList()
             }
 
             FriendPubkeysNoLock -> if (withMyTopics) {
-                internalGetFriendOrTopicCreatedAtRoot(until = until, size = size) +
-                        internalGetFriendOrTopicCreatedAtCross(until = until, size = size) +
+                internalGetFriendOrTopicCreatedAtRoot(until = until, size = size)
+                    .orNoRoots(setting) +
+                        internalGetFriendOrTopicCreatedAtCross(until = until, size = size)
+                            .orNoCross(setting) +
                         internalGetFriendOrTopicCreatedAtPoll(until = until, size = size)
+                            .orNoPolls(setting)
             } else {
-                internalGetFriendCreatedAtRoot(until = until, size = size) +
-                        internalGetFriendCreatedAtCross(until = until, size = size) +
+                internalGetFriendCreatedAtRoot(until = until, size = size)
+                    .orNoRoots(setting) +
+                        internalGetFriendCreatedAtCross(until = until, size = size)
+                            .orNoCross(setting) +
                         internalGetFriendCreatedAtPoll(until = until, size = size)
+                            .orNoPolls(setting)
             }
 
             WebOfTrustPubkeys -> if (withMyTopics) {
-                internalGetWotOrTopicCreatedAtRoot(until = until, size = size) +
-                        internalGetWotOrTopicCreatedAtCross(until = until, size = size) +
+                internalGetWotOrTopicCreatedAtRoot(until = until, size = size)
+                    .orNoRoots(setting) +
+                        internalGetWotOrTopicCreatedAtCross(until = until, size = size)
+                            .orNoCross(setting) +
                         internalGetWotOrTopicCreatedAtPoll(until = until, size = size)
+                            .orNoPolls(setting)
             } else {
-                internalGetWotCreatedAtRoot(until = until, size = size) +
-                        internalGetWotCreatedAtCross(until = until, size = size) +
+                internalGetWotCreatedAtRoot(until = until, size = size)
+                    .orNoRoots(setting) +
+                        internalGetWotCreatedAtCross(until = until, size = size)
+                            .orNoCross(setting) +
                         internalGetWotCreatedAtPoll(until = until, size = size)
+                            .orNoPolls(setting)
             }
 
-            Global -> internalGetGlobalCreatedAtRoot(until = until, size = size) +
-                    internalGetGlobalCreatedAtCross(until = until, size = size) +
+            Global -> internalGetGlobalCreatedAtRoot(until = until, size = size)
+                .orNoRoots(setting) +
+                    internalGetGlobalCreatedAtCross(until = until, size = size)
+                        .orNoCross(setting) +
                     internalGetGlobalCreatedAtPoll(until = until, size = size)
+                        .orNoPolls(setting)
         }
             .sortedDescending()
             .take(size)
@@ -704,4 +768,16 @@ interface HomeFeedDao {
 
     @Query(GLOBAL_CREATED_AT_POLL_QUERY)
     suspend fun internalGetGlobalCreatedAtPoll(until: Long, size: Int): List<Long>
+}
+
+private fun List<Long>.orNoRoots(setting: HomeFeedSetting): List<Long> {
+    return if (setting.showRoots) this else emptyList()
+}
+
+private fun List<Long>.orNoCross(setting: HomeFeedSetting): List<Long> {
+    return if (setting.showCrossPosts) this else emptyList()
+}
+
+private fun List<Long>.orNoPolls(setting: HomeFeedSetting): List<Long> {
+    return if (setting.showPolls) this else emptyList()
 }

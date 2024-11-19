@@ -35,7 +35,13 @@ class HomePreferences(context: Context) {
             GLOBAL -> Global
             else -> FriendPubkeysNoLock
         }
-        return HomeFeedSetting(topicSelection = topics, pubkeySelection = pubkeys)
+        return HomeFeedSetting(
+            topicSelection = topics,
+            pubkeySelection = pubkeys,
+            showRoots = TODO(),
+            showCrossPosts = TODO(),
+            showPolls = TODO(),
+        )
     }
 
     fun setHomeFeedSettings(setting: HomeFeedSetting) {
