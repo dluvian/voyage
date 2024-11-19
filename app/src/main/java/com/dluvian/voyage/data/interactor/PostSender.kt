@@ -316,6 +316,7 @@ class PostSender(
                 createdAt = event.createdAt().secs(),
                 relayUrl = "", // We don't know which relay accepted this note
                 crossPostedId = validatedEvent.id,
+                crossPostedKind = crossPostedEvent.kind().asU16(),
                 crossPostedThreadableEvent = validatedEvent,
             )
             mainEventInsertDao.insertCrossPosts(crossPosts = listOf(validatedCrossPost))

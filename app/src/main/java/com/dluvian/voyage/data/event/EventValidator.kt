@@ -290,6 +290,7 @@ class EventValidator(
             relayUrl = relayUrl,
             topics = event.getNormalizedTopics(limit = MAX_TOPICS),
             crossPostedId = crossPostedId,
+            crossPostedKind = crossPostedKind,
             crossPostedThreadableEvent = validatedCrossPostedEvent,
         )
     }

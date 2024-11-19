@@ -1,5 +1,6 @@
 package com.dluvian.voyage.data.room.entity.main
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -23,12 +24,15 @@ import com.dluvian.voyage.data.event.ValidatedCrossPost
 data class CrossPostEntity(
     val eventId: EventIdHex,
     val crossPostedId: EventIdHex,
+    @ColumnInfo(defaultValue = "1")
+    val crossPostedKind: Int,
 ) {
     companion object {
         fun from(crossPost: ValidatedCrossPost): CrossPostEntity {
             return CrossPostEntity(
                 eventId = crossPost.id,
                 crossPostedId = crossPost.crossPostedId,
+                crossPostedKind = crossPost.crossPostedKind.toInt(),
             )
         }
     }
