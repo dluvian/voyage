@@ -47,7 +47,7 @@ fun MainEventActions(
                 Spacer(modifier = Modifier.width(spacing.large))
             }
             when (mainEvent) {
-                is Poll,
+                is Poll -> {}
                 is CrossPost,
                 is RootPost,
                 is Comment,

@@ -81,7 +81,6 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
         LEFT JOIN mute AS cross_posted_mute ON cross_posted_mute.mutedItem = crossPostedEvent.pubkey AND cross_posted_mute.tag IS 'p'
         LEFT JOIN profileSetItem AS cross_posted_profile_set_item ON cross_posted_profile_set_item.pubkey = crossPostedEvent.pubkey
         LEFT JOIN lock AS cross_posted_lock ON cross_posted_lock.pubkey = crossPostedEvent.pubkey
-        WHERE crossPost.crossPostedKind = 1
 """
 )
 data class CrossPostView(

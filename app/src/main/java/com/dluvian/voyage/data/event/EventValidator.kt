@@ -121,11 +121,28 @@ class EventValidator(
                 myPubkey = myPubkeyProvider.getPublicKey()
             )
 
-            POLL_U16 -> createValidatedPoll(
-                event = event,
-                relayUrl = relayUrl,
-                myPubkey = myPubkeyProvider.getPublicKey()
-            )
+            POLL_U16 -> {
+                val endsAt = event.getEndsAt()
+                val createdAt = event.createdAt().secs()
+                if (endsAt != null && endsAt <= createdAt) return null
+
+                val options = event.getNormalizedPollOptions()
+                if (options.size < 2) return null
+
+                ValidatedPoll(
+                    id = event.id().toHex(),
+                    pubkey = event.author().toHex(),
+                    content = event.content(),
+                    createdAt = createdAt,
+                    relayUrl = relayUrl,
+                    json = event.asJson(),
+                    isMentioningMe = event.isMentioningMe(myPubkey = myPubkeyProvider.getPublicKey()),
+                    options = options,
+                    topics = event.getNormalizedTopics(limit = MAX_TOPICS),
+                    endsAt = endsAt,
+                    relays = event.getPollRelays(),
+                )
+            }
 
             POLL_RESPONSE_U16 -> {
                 ValidatedPollResponse(
@@ -266,12 +283,6 @@ class EventValidator(
                     myPubkey = myPubkeyProvider.getPublicKey()
                 )
 
-                POLL_U16 -> createValidatedPoll(
-                    event = it,
-                    relayUrl = relayUrl,
-                    myPubkey = myPubkeyProvider.getPublicKey()
-                )
-
                 else -> null
             }
 
@@ -290,7 +301,6 @@ class EventValidator(
             relayUrl = relayUrl,
             topics = event.getNormalizedTopics(limit = MAX_TOPICS),
             crossPostedId = crossPostedId,
-            crossPostedKind = crossPostedKind,
             crossPostedThreadableEvent = validatedCrossPostedEvent,
         )
     }
@@ -351,35 +361,6 @@ class EventValidator(
                 // Null means we don't support the parent (i and a tags)
                 parentId = event.getParentId(),
                 parentKind = event.getKindTag(),
-            )
-        }
-
-        fun createValidatedPoll(
-            event: Event,
-            relayUrl: RelayUrl,
-            myPubkey: PublicKey,
-        ): ValidatedPoll? {
-            if (event.kind().asU16() != POLL_U16) return null
-
-            val endsAt = event.getEndsAt()
-            val createdAt = event.createdAt().secs()
-            if (endsAt != null && endsAt <= createdAt) return null
-
-            val options = event.getNormalizedPollOptions()
-            if (options.size < 2) return null
-
-            return ValidatedPoll(
-                id = event.id().toHex(),
-                pubkey = event.author().toHex(),
-                content = event.content(),
-                createdAt = createdAt,
-                relayUrl = relayUrl,
-                json = event.asJson(),
-                isMentioningMe = event.isMentioningMe(myPubkey = myPubkey),
-                options = options,
-                topics = event.getNormalizedTopics(limit = MAX_TOPICS),
-                endsAt = endsAt,
-                relays = event.getPollRelays(),
             )
         }
 

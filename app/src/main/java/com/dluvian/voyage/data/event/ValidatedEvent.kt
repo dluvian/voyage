@@ -139,7 +139,6 @@ data class ValidatedCrossPost(
     override val relayUrl: RelayUrl,
     val topics: List<String>,
     val crossPostedId: EventIdHex,
-    val crossPostedKind: UShort,
     val crossPostedThreadableEvent: ValidatedThreadableEvent?
 ) : ValidatedMainEvent(
     id = id,

@@ -15,7 +15,6 @@ import com.dluvian.voyage.core.utils.getNormalizedTopics
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.event.COMMENT_U16
 import com.dluvian.voyage.data.event.EventValidator
-import com.dluvian.voyage.data.event.POLL_U16
 import com.dluvian.voyage.data.event.TEXT_NOTE_U16
 import com.dluvian.voyage.data.event.ValidatedComment
 import com.dluvian.voyage.data.event.ValidatedCrossPost
@@ -289,12 +288,6 @@ class PostSender(
                 myPubkey = myPubkeyProvider.getPublicKey()
             )
 
-            POLL_U16 -> EventValidator.createValidatedPoll(
-                event = crossPostedEvent,
-                relayUrl = post.relayUrl,
-                myPubkey = myPubkeyProvider.getPublicKey()
-            )
-
             else -> {
                 val kind = crossPostedEvent.kind().asU16()
                 Log.w(TAG, "Cross-posting kind $kind is not supported yet")
@@ -316,7 +309,6 @@ class PostSender(
                 createdAt = event.createdAt().secs(),
                 relayUrl = "", // We don't know which relay accepted this note
                 crossPostedId = validatedEvent.id,
-                crossPostedKind = crossPostedEvent.kind().asU16(),
                 crossPostedThreadableEvent = validatedEvent,
             )
             mainEventInsertDao.insertCrossPosts(crossPosts = listOf(validatedCrossPost))
