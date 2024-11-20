@@ -1,7 +1,7 @@
 package com.dluvian.voyage.ui.views.main.subViews
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -65,38 +65,68 @@ fun HomeView(vm: HomeViewModel, onUpdate: OnUpdate) {
 
 @Composable
 private fun Filter(setting: MutableState<HomeFeedSetting>) {
-    Column {
-        SmallHeader(header = stringResource(id = R.string.topics))
-        NamedCheckbox(
-            isChecked = setting.value.topicSelection.isMyTopics(),
-            name = stringResource(id = R.string.my_topics),
-            onClick = {
-                setting.value = when (setting.value.topicSelection) {
-                    MyTopics -> setting.value.copy(topicSelection = NoTopics)
-                    NoTopics -> setting.value.copy(topicSelection = MyTopics)
-                }
-            })
+    LazyColumn {
+        item {
+            SmallHeader(header = stringResource(id = R.string.topics))
+            NamedCheckbox(
+                isChecked = setting.value.topicSelection.isMyTopics(),
+                name = stringResource(id = R.string.my_topics),
+                onClick = {
+                    setting.value = when (setting.value.topicSelection) {
+                        MyTopics -> setting.value.copy(topicSelection = NoTopics)
+                        NoTopics -> setting.value.copy(topicSelection = MyTopics)
+                    }
+                })
+        }
 
-        SmallHeader(
-            modifier = Modifier.padding(top = spacing.small),
-            header = stringResource(id = R.string.profiles)
-        )
-        FeedPubkeySelectionRadio(
-            current = setting.value.pubkeySelection,
-            target = NoPubkeys,
-            onClick = { setting.value = setting.value.copy(pubkeySelection = NoPubkeys) })
-        FeedPubkeySelectionRadio(
-            current = setting.value.pubkeySelection,
-            target = FriendPubkeysNoLock,
-            onClick = { setting.value = setting.value.copy(pubkeySelection = FriendPubkeysNoLock) })
-        FeedPubkeySelectionRadio(
-            current = setting.value.pubkeySelection,
-            target = WebOfTrustPubkeys,
-            onClick = { setting.value = setting.value.copy(pubkeySelection = WebOfTrustPubkeys) })
-        FeedPubkeySelectionRadio(
-            current = setting.value.pubkeySelection,
-            target = Global,
-            onClick = { setting.value = setting.value.copy(pubkeySelection = Global) })
+        item {
+            SmallHeader(
+                modifier = Modifier.padding(top = spacing.small),
+                header = stringResource(id = R.string.profiles)
+            )
+            FeedPubkeySelectionRadio(
+                current = setting.value.pubkeySelection,
+                target = NoPubkeys,
+                onClick = { setting.value = setting.value.copy(pubkeySelection = NoPubkeys) })
+            FeedPubkeySelectionRadio(
+                current = setting.value.pubkeySelection,
+                target = FriendPubkeysNoLock,
+                onClick = {
+                    setting.value = setting.value.copy(pubkeySelection = FriendPubkeysNoLock)
+                })
+            FeedPubkeySelectionRadio(
+                current = setting.value.pubkeySelection,
+                target = WebOfTrustPubkeys,
+                onClick = {
+                    setting.value = setting.value.copy(pubkeySelection = WebOfTrustPubkeys)
+                })
+            FeedPubkeySelectionRadio(
+                current = setting.value.pubkeySelection,
+                target = Global,
+                onClick = { setting.value = setting.value.copy(pubkeySelection = Global) })
+        }
 
+        item {
+            SmallHeader(header = stringResource(id = R.string.content))
+            NamedCheckbox(
+                isChecked = setting.value.showRoots,
+                name = stringResource(id = R.string.root_posts),
+                onClick = {
+                    setting.value = setting.value.copy(showRoots = !setting.value.showRoots)
+                })
+            NamedCheckbox(
+                isChecked = setting.value.showCrossPosts,
+                name = stringResource(id = R.string.cross_posts),
+                onClick = {
+                    setting.value =
+                        setting.value.copy(showCrossPosts = !setting.value.showCrossPosts)
+                })
+            NamedCheckbox(
+                isChecked = setting.value.showPolls,
+                name = stringResource(id = R.string.polls),
+                onClick = {
+                    setting.value = setting.value.copy(showPolls = !setting.value.showPolls)
+                })
+        }
     }
 }

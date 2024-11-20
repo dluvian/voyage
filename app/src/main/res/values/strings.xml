@@ -294,4 +294,8 @@
     <string name="remove_item">Remove item</string>
     <string name="remove_poll_option">Remove poll option</string>
     <string name="poll_ends_at">Poll ends at</string>
+    <string name="content">Content</string>
+    <string name="root_posts">Root posts</string>
+    <string name="cross_posts">Cross posts</string>
+    <string name="polls">Polls</string>
 </resources>
