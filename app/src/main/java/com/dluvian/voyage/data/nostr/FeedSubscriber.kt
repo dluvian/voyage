@@ -11,6 +11,7 @@ import com.dluvian.voyage.core.utils.syncedPutOrAdd
 import com.dluvian.voyage.core.utils.takeRandom
 import com.dluvian.voyage.core.utils.threadableKinds
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
+import com.dluvian.voyage.data.event.POLL_U16
 import com.dluvian.voyage.data.model.FriendPubkeysNoLock
 import com.dluvian.voyage.data.model.Global
 import com.dluvian.voyage.data.model.HomeFeedSetting
@@ -27,6 +28,8 @@ import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.room.dao.BookmarkDao
 import rust.nostr.sdk.EventId
 import rust.nostr.sdk.Filter
+import rust.nostr.sdk.Kind
+import rust.nostr.sdk.KindEnum
 import rust.nostr.sdk.Nip19Profile
 import rust.nostr.sdk.PublicKey
 import rust.nostr.sdk.Timestamp
@@ -49,7 +52,10 @@ class FeedSubscriber(
             topicSelection = setting.topicSelection,
             until = until,
             since = since,
-            limit = limit
+            limit = limit,
+            showRoots = setting.showRoots,
+            showCrossPosts = setting.showCrossPosts,
+            showPolls = setting.showPolls,
         )
     }
 
@@ -64,7 +70,10 @@ class FeedSubscriber(
             topicSelection = ListTopics(identifier = identifier),
             until = until,
             since = since,
-            limit = limit
+            limit = limit,
+            showRoots = true,
+            showCrossPosts = true,
+            showPolls = true,
         )
     }
 
@@ -73,9 +82,19 @@ class FeedSubscriber(
         topicSelection: TopicSelection,
         until: ULong,
         since: ULong,
-        limit: ULong
+        limit: ULong,
+        showRoots: Boolean,
+        showCrossPosts: Boolean,
+        showPolls: Boolean,
     ): Map<RelayUrl, List<Filter>> {
         if (limit <= 0u || since >= until) return emptyMap()
+
+        val kinds = listOfNotNull(
+            if (showRoots) Kind.fromEnum(KindEnum.TextNote) else null,
+            if (showCrossPosts) Kind.fromEnum(KindEnum.Repost) else null,
+            if (showPolls) Kind(kind = POLL_U16) else null,
+        )
+        if (kinds.isEmpty()) return emptyMap()
 
         val result = mutableMapOf<RelayUrl, MutableList<Filter>>()
 
@@ -91,31 +110,39 @@ class FeedSubscriber(
         }
 
         if (pubkeySelection !is NoPubkeys) {
-                relayProvider
-                    .getObserveRelays(selection = pubkeySelection)
-                    .filter { (_, pubkeys) -> pubkeys.isNotEmpty() || pubkeySelection is Global }
-                    .forEach { (relayUrl, pubkeys) ->
-                        val publicKeys = pubkeys.takeRandom(MAX_KEYS).map { PublicKey.fromHex(it) }
-                        val pubkeysNoteFilter = createBaseFilter(publicKeys)
-                            .kinds(kinds = rootFeedableKindsNoKTag)
+            relayProvider
+                .getObserveRelays(selection = pubkeySelection)
+                .filter { (_, pubkeys) -> pubkeys.isNotEmpty() || pubkeySelection is Global }
+                .forEach { (relayUrl, pubkeys) ->
+                    val publicKeys = pubkeys.takeRandom(MAX_KEYS).map { PublicKey.fromHex(it) }
+                    val pubkeysNoteFilter = createBaseFilter(publicKeys).kinds(kinds = kinds)
+                    val filters = mutableListOf(pubkeysNoteFilter)
+                    if (showCrossPosts) {
                         val genericRepostFilter = createBaseFilter(publicKeys).genericRepost()
-                        val filters = mutableListOf(pubkeysNoteFilter, genericRepostFilter)
-                        result.syncedPutOrAdd(relayUrl, filters)
+                        filters.add(genericRepostFilter)
                     }
+                    result.syncedPutOrAdd(relayUrl, filters)
+                }
         }
 
         val topics = topicProvider.getTopicSelection(
             topicSelection = topicSelection,
             limit = MAX_KEYS
         )
+
         if (topics.isNotEmpty()) {
             val topicedNoteFilter = createBaseFilter(emptyList())
-                .kinds(kinds = rootFeedableKindsNoKTag)
+                .kinds(kinds = kinds)
                 .hashtags(hashtags = topics)
-            val genericRepostFilter = createBaseFilter(emptyList())
-                .genericRepost()
-                .hashtags(hashtags = topics)
-            val filters = mutableListOf(topicedNoteFilter, genericRepostFilter)
+
+            val filters = mutableListOf(topicedNoteFilter)
+
+            if (showCrossPosts) {
+                val genericRepostFilter = createBaseFilter(emptyList())
+                    .genericRepost()
+                    .hashtags(hashtags = topics)
+                filters.add(genericRepostFilter)
+            }
 
             relayProvider.getReadRelays().forEach { relay ->
                 result.syncedPutOrAdd(relay, filters)

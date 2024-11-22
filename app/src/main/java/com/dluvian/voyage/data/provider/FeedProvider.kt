@@ -68,7 +68,6 @@ class FeedProvider(
         setting: FeedSetting,
         forceSubscription: Boolean,
     ): Flow<List<MainEvent>> {
-        // TODO: Don't sub deactivated event types
         nostrSubscriber.subFeed(
             until = subUntil,
             limit = size,
