@@ -2,6 +2,7 @@ package com.dluvian.voyage.data.nostr
 
 import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.EventIdHex
+import com.dluvian.voyage.core.FEED_OFFSET
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.RESUB_TIMEOUT
 import com.dluvian.voyage.core.model.Poll
@@ -68,14 +69,15 @@ class NostrSubscriber(
                 setting = setting,
                 until = until.toULong(),
                 since = since,
-                limit = (4 * limit).toULong() // We don't know if we receive enough root posts
+                limit = if (setting.showRoots) (3 * limit).toULong() // We don't know if we receive enough root posts
+                else limit.toULong() + FEED_OFFSET.toULong()
             )
 
             is ListFeedSetting -> feedSubscriber.getListFeedSubscriptions(
                 identifier = setting.identifier,
                 until = until.toULong(),
                 since = since,
-                limit = (4 * limit).toULong() // We don't know if we receive enough root posts
+                limit = (3 * limit).toULong() // We don't know if we receive enough root posts
             )
 
             is TopicFeedSetting -> feedSubscriber.getTopicFeedSubscription(
@@ -83,34 +85,34 @@ class NostrSubscriber(
                 until = until.toULong(),
                 since = since,
                 // Smaller than adjustedLimit, bc posts with topics tend to be root
-                limit = (3 * limit).toULong()
+                limit = (2.5 * limit).toULong()
             )
 
             is ReplyFeedSetting -> feedSubscriber.getReplyFeedSubscription(
                 nprofile = setting.nprofile,
                 until = until.toULong(),
                 since = since,
-                limit = (3 * limit).toULong()
+                limit = (2.5 * limit).toULong()
             )
 
             is ProfileFeedSetting -> feedSubscriber.getProfileFeedSubscription(
                 nprofile = setting.nprofile,
                 until = until.toULong(),
                 since = since,
-                limit = (4 * limit).toULong()
+                limit = (3 * limit).toULong()
             )
 
             is InboxFeedSetting -> feedSubscriber.getInboxFeedSubscription(
                 setting = setting,
                 until = until.toULong(),
                 since = since,
-                limit = limit.toULong()
+                limit = limit.toULong() + FEED_OFFSET.toULong()
             )
 
             BookmarksFeedSetting -> feedSubscriber.getBookmarksFeedSubscription(
                 until = until.toULong(),
                 since = since,
-                limit = limit.toULong()
+                limit = limit.toULong() + FEED_OFFSET.toULong()
             )
         }
 
