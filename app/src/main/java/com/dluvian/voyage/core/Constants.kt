@@ -47,7 +47,7 @@ const val MAX_KEYS_SQL = 4 * MAX_KEYS // Exception when query gets too long
 const val MAX_EVENTS_TO_SUB = 200uL
 
 const val FEED_PAGE_SIZE = 30
-const val FEED_OFFSET = 6
+const val FEED_OFFSET = 3
 
 const val MIN_RETAIN_ROOT = 500f
 const val MAX_RETAIN_ROOT = 5_000f
