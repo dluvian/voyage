@@ -4,9 +4,9 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.dluvian.voyage.core.DELAY_1SEC
-import com.dluvian.voyage.core.FEED_OFFSET
 import com.dluvian.voyage.core.FEED_PAGE_SIZE
 import com.dluvian.voyage.core.Fn
+import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.utils.containsNoneIgnoreCase
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.model.BookmarksFeedSetting
@@ -118,10 +118,10 @@ class Paginator(
         hasMoreRecentItems.value = true
 
         scope.launchIO {
-            val newUntil = pageTimestamps.value.takeLast(FEED_OFFSET).first()
+            val newUntil = pageTimestamps.value.last()
             val subUntil = pageTimestamps.value.last() - 1
             setPage(until = newUntil, subUntil = subUntil)
-            delay(DELAY_1SEC)
+            delay(SHORT_DEBOUNCE)
         }.invokeOnCompletion {
             isAppending.value = false
         }

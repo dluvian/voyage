@@ -77,7 +77,12 @@ fun Feed(
         }
 
         LazyColumn(modifier = Modifier.fillMaxSize(), state = state) {
-            if (hasMoreRecentItems) item { MostRecentPostsTextButton(onClick = onRefresh) }
+            if (hasMoreRecentItems) item {
+                MostRecentPostsTextButton(onClick = {
+                    onRefresh()
+                    state.requestScrollToItem(index = 0)
+                })
+            }
 
             items(
                 items = filteredPage,
@@ -92,7 +97,11 @@ fun Feed(
             }
 
             if (pageTimestamps.size >= FEED_PAGE_SIZE) item {
-                NextPageButton(onAppend = onAppend)
+                NextPageButton(onAppend = {
+                    onAppend()
+                    // 2 = Skip TextButton and last post of previous page
+                    state.requestScrollToItem(index = 2)
+                })
             }
         }
         if (state.showScrollButton()) {
