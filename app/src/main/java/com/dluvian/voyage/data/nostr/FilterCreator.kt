@@ -25,6 +25,20 @@ class FilterCreator(
     private val lockProvider: LockProvider,
     private val relayProvider: RelayProvider,
 ) {
+    companion object {
+        fun createReactionaryFilter(
+            ids: List<EventId>,
+            kinds: List<Kind>,
+            until: Timestamp,
+        ): Filter {
+            return Filter()
+                .kinds(kinds = kinds)
+                .events(ids = ids)
+                .until(timestamp = until)
+                .limitRestricted(limit = MAX_EVENTS_TO_SUB)
+        }
+    }
+
     fun getMyKindFilter(kindAndSince: Collection<Pair<UShort, ULong>>): List<Filter> {
         if (kindAndSince.isEmpty()) return emptyList()
 

@@ -3,8 +3,11 @@ package com.dluvian.voyage.data.nostr
 import android.util.Log
 import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.EventIdHex
-import com.dluvian.voyage.core.utils.createReplyAndVoteFilters
+import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.utils.launchIO
+import com.dluvian.voyage.core.utils.reactionKind
+import com.dluvian.voyage.core.utils.reactionaryKinds
+import com.dluvian.voyage.core.utils.replyKinds
 import com.dluvian.voyage.core.utils.syncedPutOrAdd
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +21,8 @@ private const val TAG = "SubBatcher"
 private const val BATCH_DELAY = 2 * DEBOUNCE
 
 class SubBatcher(private val subCreator: SubscriptionCreator) {
-    private val idQueue = mutableMapOf<RelayUrl, MutableSet<EventIdHex>>()
+    private val idVoteQueue = mutableMapOf<RelayUrl, MutableSet<EventIdHex>>()
+    private val idReplyQueue = mutableMapOf<RelayUrl, MutableSet<EventIdHex>>()
     private val isProcessingSubs = AtomicBoolean(false)
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -26,10 +30,17 @@ class SubBatcher(private val subCreator: SubscriptionCreator) {
         startProcessingJob()
     }
 
-    fun submitVotesAndReplies(relayUrl: RelayUrl, eventIds: List<EventIdHex>) {
+    fun submitVotes(relayUrl: RelayUrl, eventIds: List<EventIdHex>) {
         if (eventIds.isEmpty()) return
 
-        idQueue.syncedPutOrAdd(relayUrl, eventIds)
+        idVoteQueue.syncedPutOrAdd(relayUrl, eventIds)
+        startProcessingJob()
+    }
+
+    fun submitReplies(relayUrl: RelayUrl, eventIds: List<EventIdHex>) {
+        if (eventIds.isEmpty()) return
+
+        idReplyQueue.syncedPutOrAdd(relayUrl, eventIds)
         startProcessingJob()
     }
 
@@ -40,19 +51,25 @@ class SubBatcher(private val subCreator: SubscriptionCreator) {
             while (true) {
                 delay(BATCH_DELAY)
 
-                val idsByRelay = mutableMapOf<RelayUrl, Set<EventIdHex>>()
-                synchronized(idQueue) {
-                    idsByRelay.putAll(idQueue)
-                    idQueue.clear()
+                val voteIdsByRelay = mutableMapOf<RelayUrl, Set<EventIdHex>>()
+                synchronized(idVoteQueue) {
+                    voteIdsByRelay.putAll(idVoteQueue)
+                    idVoteQueue.clear()
+                }
+
+                val replyIdsByRelay = mutableMapOf<RelayUrl, Set<EventIdHex>>()
+                synchronized(idReplyQueue) {
+                    replyIdsByRelay.putAll(idReplyQueue)
+                    idReplyQueue.clear()
                 }
 
                 val until = Timestamp.now()
 
-                val replyAndVoteFilters = getReplyAndVoteFilters(
-                    idsByRelay = idsByRelay,
+                getReplyAndVoteFilters(
+                    voteIdsByRelay = voteIdsByRelay,
+                    replyIdsByRelay = replyIdsByRelay,
                     until = until
-                )
-                replyAndVoteFilters.forEach { (relay, filters) ->
+                ).forEach { (relay, filters) ->
                     Log.d(TAG, "Sub ${filters.size} filters in $relay")
                     subCreator.subscribe(relayUrl = relay, filters = filters)
                 }
@@ -64,17 +81,47 @@ class SubBatcher(private val subCreator: SubscriptionCreator) {
     }
 
     private fun getReplyAndVoteFilters(
-        idsByRelay: Map<RelayUrl, Set<EventIdHex>>,
+        voteIdsByRelay: Map<RelayUrl, Set<EventIdHex>>,
+        replyIdsByRelay: Map<RelayUrl, Set<EventIdHex>>,
         until: Timestamp,
     ): Map<RelayUrl, List<Filter>> {
         val convertedIds = mutableMapOf<EventIdHex, EventId>()
+        val allRelays = voteIdsByRelay.keys + replyIdsByRelay.keys
 
-        return idsByRelay.mapValues { (_, ids) ->
-            val eventIds = ids.map {
-                val id = convertedIds[it] ?: EventId.fromHex(it)
-                convertedIds.putIfAbsent(it, id) ?: id
+        return allRelays.associateWith { relay ->
+            val voteIds = voteIdsByRelay.getOrDefault(relay, emptySet())
+                .map { convertedIds.mapCachedEventId(hex = it) }
+            val replyIds = replyIdsByRelay.getOrDefault(relay, emptySet())
+                .map { convertedIds.mapCachedEventId(hex = it) }
+
+            val combinedFilter = FilterCreator.createReactionaryFilter(
+                ids = voteIds.intersect(replyIds).toList(),
+                kinds = reactionaryKinds,
+                until = until
+            )
+            val voteOnlyFilter = voteIds.minus(replyIds).let { ids ->
+                if (ids.isEmpty()) null
+                else FilterCreator.createReactionaryFilter(
+                    ids = ids,
+                    kinds = listOf(reactionKind),
+                    until = until
+                )
             }
-            createReplyAndVoteFilters(ids = eventIds, until = until)
+            val replyOnlyFilter = replyIds.minus(voteIds).let { ids ->
+                if (ids.isEmpty()) null
+                else FilterCreator.createReactionaryFilter(
+                    ids = ids,
+                    kinds = replyKinds,
+                    until = until
+                )
+            }
+
+            listOfNotNull(combinedFilter, voteOnlyFilter, replyOnlyFilter)
         }
     }
+}
+
+private fun MutableMap<EventIdHex, EventId>.mapCachedEventId(hex: PubkeyHex): EventId {
+    val id = this[hex] ?: EventId.fromHex(hex)
+    return this.putIfAbsent(hex, id) ?: id
 }

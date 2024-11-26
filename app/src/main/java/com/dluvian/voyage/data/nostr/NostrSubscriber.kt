@@ -1,5 +1,7 @@
 package com.dluvian.voyage.data.nostr
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableLongStateOf
 import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.FEED_OFFSET
@@ -137,31 +139,63 @@ class NostrSubscriber(
             .forEach { relay -> subCreator.subscribe(relayUrl = relay, filters = filters) }
     }
 
-    private val votesAndRepliesCache = mutableSetOf<EventIdHex>()
-    private var lastUpdate = System.currentTimeMillis()
-    private val isSubbingVotesAndReplies = AtomicBoolean(false)
+    private val isSubbingVotes = AtomicBoolean(false)
+    private val lastVoteUpdate = mutableLongStateOf(System.currentTimeMillis())
+    private val voteCache = mutableSetOf<EventIdHex>()
+    fun subVotes(parentIds: Collection<EventIdHex>) {
+        subReactoryEvents(
+            parentIds = parentIds,
+            isSubbing = isSubbingVotes,
+            lastUpdate = lastVoteUpdate,
+            cache = voteCache,
+            isVote = true,
+            isReply = false,
+        )
+    }
 
-    fun subVotesAndReplies(parentIds: Collection<EventIdHex>) {
+    private val isSubbingReplies = AtomicBoolean(false)
+    private val lastReplyUpdate = mutableLongStateOf(System.currentTimeMillis())
+    private val replyCache = mutableSetOf<EventIdHex>()
+    fun subReplies(parentIds: Collection<EventIdHex>) {
+        subReactoryEvents(
+            parentIds = parentIds,
+            isSubbing = isSubbingReplies,
+            lastUpdate = lastReplyUpdate,
+            cache = replyCache,
+            isVote = false,
+            isReply = true,
+        )
+    }
+
+    private fun subReactoryEvents(
+        parentIds: Collection<EventIdHex>,
+        isSubbing: AtomicBoolean,
+        lastUpdate: MutableState<Long>,
+        cache: MutableSet<EventIdHex>,
+        isVote: Boolean,
+        isReply: Boolean,
+    ) {
         if (parentIds.isEmpty()) return
-        if (!isSubbingVotesAndReplies.compareAndSet(false, true)) return
+        if (!isSubbing.compareAndSet(false, true)) return
 
         scope.launch(Dispatchers.Default) {
             val currentMillis = System.currentTimeMillis()
-            if (currentMillis - lastUpdate > RESUB_TIMEOUT) {
-                votesAndRepliesCache.clear()
-                lastUpdate = currentMillis
+            if (currentMillis - lastUpdate.value > RESUB_TIMEOUT) {
+                cache.clear()
+                lastUpdate.value = currentMillis
             }
 
-            val newIds = parentIds - votesAndRepliesCache
+            val newIds = parentIds - cache
             if (newIds.isEmpty()) return@launch
 
-            votesAndRepliesCache.addAll(newIds)
+            cache.addAll(newIds)
 
             relayProvider.getReadRelays().forEach { relay ->
-                subBatcher.submitVotesAndReplies(relayUrl = relay, eventIds = newIds)
+                if (isVote) subBatcher.submitVotes(relayUrl = relay, eventIds = newIds)
+                if (isReply) subBatcher.submitReplies(relayUrl = relay, eventIds = newIds)
             }
         }.invokeOnCompletion {
-            isSubbingVotesAndReplies.set(false)
+            isSubbing.set(false)
         }
     }
 
@@ -176,7 +210,7 @@ class NostrSubscriber(
 
         scope.launch(Dispatchers.Default) {
             val currentMillis = System.currentTimeMillis()
-            if (currentMillis - lastUpdate > RESUB_TIMEOUT) {
+            if (currentMillis - lastPollUpdate > RESUB_TIMEOUT) {
                 pollCache.clear()
                 lastPollUpdate = currentMillis
             }

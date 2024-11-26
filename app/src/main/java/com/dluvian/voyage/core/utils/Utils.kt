@@ -53,7 +53,6 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import rust.nostr.sdk.Alphabet
 import rust.nostr.sdk.Event
-import rust.nostr.sdk.EventId
 import rust.nostr.sdk.Filter
 import rust.nostr.sdk.Kind
 import rust.nostr.sdk.KindEnum
@@ -61,7 +60,6 @@ import rust.nostr.sdk.Metadata
 import rust.nostr.sdk.PublicKey
 import rust.nostr.sdk.SingleLetterTag
 import rust.nostr.sdk.Tag
-import rust.nostr.sdk.Timestamp
 
 fun PublicKey.toShortenedNpub(): String {
     return this.toBech32().shortenBech32()
@@ -195,25 +193,6 @@ fun shortenUrl(url: String): String {
             noPrefix.takeLast(lastN)
 }
 
-fun createReplyAndVoteFilters(
-    ids: List<EventId>,
-    until: Timestamp,
-): List<Filter> {
-    val voteFilter = Filter()
-        .kind(kind = Kind.fromEnum(KindEnum.Reaction))
-        .events(ids = ids)
-        .until(timestamp = until)
-        .limitRestricted(limit = MAX_EVENTS_TO_SUB)
-
-    val replyFilter = Filter()
-        .kinds(kinds = replyKinds)
-        .events(ids = ids)
-        .until(timestamp = until)
-        .limitRestricted(limit = MAX_EVENTS_TO_SUB)
-
-    return listOf(voteFilter, replyFilter)
-}
-
 private val hashtagRegex = Regex("""#\w+(-\w+)*""")
 private val bareTopicRegex = Regex("[^#\\s]+\$")
 
@@ -270,6 +249,10 @@ val replyKinds = listOf(
     Kind.fromEnum(KindEnum.TextNote),
     Kind(kind = COMMENT_U16),
 )
+
+val reactionKind = Kind.fromEnum(KindEnum.Reaction)
+
+val reactionaryKinds = replyKinds + reactionKind
 
 val threadableKinds = listOf(
     Kind.fromEnum(KindEnum.TextNote),

@@ -74,7 +74,8 @@ class ThreadProvider(
                 lazyNostrSubscriber.lazySubRepliesAndVotes(parentId = id)
                 if (poll != null) lazyNostrSubscriber.lazySubPollResponses(poll = poll)
             } else {
-                nostrSubscriber.subVotesAndReplies(parentIds = listOf(id))
+                nostrSubscriber.subVotes(parentIds = listOf(id))
+                nostrSubscriber.subReplies(parentIds = listOf(id))
                 if (poll != null) nostrSubscriber.subPollResponsesByEntity(poll = poll)
             }
         }
@@ -235,9 +236,9 @@ class ThreadProvider(
                 result
             }
         }.onEach {
-            nostrSubscriber.subVotesAndReplies(
-                parentIds = it.map { reply -> reply.reply.getRelevantId() }
-            )
+            val ids = it.map { reply -> reply.reply.getRelevantId() }
+            nostrSubscriber.subVotes(parentIds = ids)
+            nostrSubscriber.subReplies(parentIds = ids)
             if (showAuthorName.value) {
                 nostrSubscriber.subProfiles(
                     pubkeys = it.filter { reply -> reply.reply.authorName.isNullOrEmpty() }
