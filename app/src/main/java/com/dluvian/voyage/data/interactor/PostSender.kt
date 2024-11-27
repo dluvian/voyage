@@ -161,7 +161,7 @@ class PostSender(
 
 
         return if (
-            trimmedBody.length <= 3 ||
+            trimmedBody.length <= 5 ||
             parentKind.asU16() != TEXT_NOTE_U16 ||
             eventPreferences.isUsingV2Replies()
         ) {
