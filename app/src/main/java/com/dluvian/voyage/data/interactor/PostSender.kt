@@ -143,45 +143,41 @@ class PostSender(
     }
 
     suspend fun sendReply(
-        parentId: EventIdHex,
-        parentKind: Kind,
-        parentPubkey: PubkeyHex,
+        parent: Event,
         body: String,
-        relayHint: RelayUrl,
+        relayHint: RelayUrl?,
         isAnon: Boolean,
     ): Result<Event> {
         val trimmedBody = body.trim()
-        val mentions = mutableListOf(parentPubkey).apply {
+
+        val mentions = mutableListOf<PubkeyHex>().apply {
             addAll(extractMentionPubkeys(content = trimmedBody))
-            mainEventDao.getParentAuthor(id = parentId)?.let { grandparentAuthor ->
+            mainEventDao.getParentAuthor(id = parent.id().toHex())?.let { grandparentAuthor ->
                 add(grandparentAuthor)
             }
             if (!isAnon) removeIf { it == myPubkeyProvider.getPubkeyHex() }
-        }.distinct()
-
+        }.minus(parent.tags().publicKeys().map { it.toHex() }) // rust-nostr uses p-tags of parent
+            .distinct()
 
         return if (
             trimmedBody.length <= 5 ||
-            parentKind.asU16() != TEXT_NOTE_U16 ||
+            parent.kind().asU16() != TEXT_NOTE_U16 ||
             eventPreferences.isUsingV2Replies()
         ) {
             sendComment(
                 content = trimmedBody,
-                parentId = parentId,
-                parentKind = parentKind,
+                parent = parent,
                 mentions = mentions,
                 topics = extractCleanHashtags(content = trimmedBody).take(MAX_TOPICS),
                 relayHint = relayHint,
-                pubkeyHint = parentPubkey,
                 isAnon = isAnon
             )
         } else {
             sendLegacyReply(
                 content = trimmedBody,
-                parentId = parentId,
+                parent = parent,
                 mentions = mentions,
                 relayHint = relayHint,
-                pubkeyHint = parentPubkey,
                 isAnon = isAnon
             )
         }
@@ -189,26 +185,24 @@ class PostSender(
 
     private suspend fun sendLegacyReply(
         content: String,
-        parentId: EventIdHex,
+        parent: Event,
         mentions: List<PubkeyHex>,
-        relayHint: RelayUrl,
-        pubkeyHint: PubkeyHex,
+        relayHint: RelayUrl?,
         isAnon: Boolean
     ): Result<Event> {
         return nostrService.publishLegacyReply(
             content = content,
-            parentId = parentId,
+            parent = parent,
             mentions = mentions,
             quotes = extractQuotesFromString(content = content),
             relayHint = relayHint,
-            pubkeyHint = pubkeyHint,
             relayUrls = relayProvider.getPublishRelays(publishTo = mentions),
             isAnon = isAnon,
         ).onSuccess { event ->
             val validatedReply = ValidatedLegacyReply(
                 id = event.id().toHex(),
                 pubkey = event.author().toHex(),
-                parentId = parentId,
+                parentId = parent.id().toHex(),
                 content = event.content(),
                 createdAt = event.createdAt().secs(),
                 relayUrl = "", // We don't know which relay accepted this note
@@ -224,23 +218,19 @@ class PostSender(
 
     private suspend fun sendComment(
         content: String,
-        parentId: EventIdHex,
-        parentKind: Kind,
+        parent: Event,
         mentions: List<PubkeyHex>,
         topics: List<Topic>,
-        relayHint: RelayUrl,
-        pubkeyHint: PubkeyHex,
+        relayHint: RelayUrl?,
         isAnon: Boolean
     ): Result<Event> {
         return nostrService.publishComment(
             content = content,
-            parentId = parentId,
-            parentKind = parentKind,
+            parent = parent,
             mentions = mentions,
             quotes = extractQuotesFromString(content = content),
             topics = topics,
             relayHint = relayHint,
-            pubkeyHint = pubkeyHint,
             relayUrls = relayProvider.getPublishRelays(publishTo = mentions),
             isAnon = isAnon,
         ).onSuccess { event ->
@@ -252,8 +242,8 @@ class PostSender(
                 content = event.content(),
                 json = event.asJson(),
                 isMentioningMe = mentions.contains(myPubkeyProvider.getPubkeyHex()),
-                parentId = parentId,
-                parentKind = parentKind.asU16(),
+                parentId = parent.id().toHex(),
+                parentKind = parent.kind().asU16(),
             )
             mainEventInsertDao.insertComments(comments = listOf(validatedComment))
 

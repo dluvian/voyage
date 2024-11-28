@@ -10,10 +10,7 @@ import com.dluvian.voyage.core.utils.createVoyageClientTag
 import com.dluvian.voyage.data.account.AccountManager
 import com.dluvian.voyage.data.nostr.Nip65Relay
 import com.dluvian.voyage.data.nostr.RelayUrl
-import com.dluvian.voyage.data.nostr.createCommentETag
 import com.dluvian.voyage.data.nostr.createDescriptionTag
-import com.dluvian.voyage.data.nostr.createKindTag
-import com.dluvian.voyage.data.nostr.createLegacyReplyTag
 import com.dluvian.voyage.data.nostr.createMentionTags
 import com.dluvian.voyage.data.nostr.createQuoteTags
 import com.dluvian.voyage.data.nostr.createSubjectTag
@@ -25,6 +22,7 @@ import rust.nostr.sdk.Coordinate
 import rust.nostr.sdk.Event
 import rust.nostr.sdk.EventBuilder
 import rust.nostr.sdk.EventId
+import rust.nostr.sdk.GitIssue
 import rust.nostr.sdk.Interests
 import rust.nostr.sdk.Keys
 import rust.nostr.sdk.Kind
@@ -57,7 +55,7 @@ class EventMaker(
         addClientTag(tags = tags, isAnon = isAnon)
 
         return signEvent(
-            eventBuilder = EventBuilder.textNote(content = content, tags = tags),
+            eventBuilder = EventBuilder.textNote(content = content).tags(tags = tags),
             isAnon = isAnon
         )
     }
@@ -82,71 +80,58 @@ class EventMaker(
         addClientTag(tags = tags, isAnon = isAnon)
 
         return signEvent(
-            eventBuilder = EventBuilder(
-                kind = Kind(kind = POLL_U16),
-                content = question,
-                tags = tags
-            ),
+            eventBuilder = EventBuilder(kind = Kind(kind = POLL_U16), content = question)
+                .tags(tags = tags),
             isAnon = isAnon
         )
     }
 
     suspend fun buildReply(
-        parentId: EventId,
+        parent: Event,
         mentions: List<PubkeyHex>,
         quotes: List<String>,
-        relayHint: RelayUrl,
-        pubkeyHint: PubkeyHex,
+        relayHint: RelayUrl?,
         content: String,
         isAnon: Boolean,
     ): Result<Event> {
-        val tags = mutableListOf(
-            createLegacyReplyTag(
-                parentEventId = parentId,
-                relayHint = relayHint,
-                pubkeyHint = pubkeyHint
-            )
-        )
+        val tags = mutableListOf<Tag>()
         if (mentions.isNotEmpty()) tags.addAll(createMentionTags(pubkeys = mentions))
         if (quotes.isNotEmpty()) tags.addAll(createQuoteTags(eventIdHexOrCoordinates = quotes))
         addClientTag(tags = tags, isAnon = isAnon)
 
         return signEvent(
-            eventBuilder = EventBuilder.textNote(content = content, tags = tags),
+            eventBuilder = EventBuilder.textNoteReply(
+                content = content,
+                replyTo = parent,
+                root = parent,
+                relayUrl = relayHint,
+            ).tags(tags = tags),
             isAnon = isAnon
         )
     }
 
     suspend fun buildComment(
-        parentId: EventId,
-        parentKind: Kind,
+        parent: Event,
         mentions: List<PubkeyHex>,
         quotes: List<String>,
         topics: List<Topic>,
-        relayHint: RelayUrl,
-        pubkeyHint: PubkeyHex,
+        relayHint: RelayUrl?,
         content: String,
         isAnon: Boolean,
     ): Result<Event> {
-        val tags = mutableListOf(
-            createCommentETag(
-                parentEventId = parentId,
-                relayHint = relayHint,
-                pubkeyHint = pubkeyHint
-            ),
-            createKindTag(kind = parentKind)
-        )
+        val tags = mutableListOf<Tag>()
         if (mentions.isNotEmpty()) tags.addAll(createMentionTags(pubkeys = mentions))
         if (quotes.isNotEmpty()) tags.addAll(createQuoteTags(eventIdHexOrCoordinates = quotes))
         if (topics.isNotEmpty()) tags.addAll(topics.map { Tag.hashtag(hashtag = it) })
         addClientTag(tags = tags, isAnon = isAnon)
 
         return signEvent(
-            eventBuilder = EventBuilder(
-                kind = Kind(kind = COMMENT_U16),
+            eventBuilder = EventBuilder.comment(
                 content = content,
-                tags = tags
-            ),
+                commentTo = parent,
+                relayUrl = relayHint,
+            )
+                .tags(tags = tags),
             isAnon = isAnon
         )
     }
@@ -163,7 +148,7 @@ class EventMaker(
         return signEvent(
             eventBuilder = EventBuilder
                 .repost(event = crossPostedEvent, relayUrl = relayHint)
-                .addTags(tags = tags),
+                .tags(tags = tags),
             isAnon = isAnon
         )
     }
@@ -181,12 +166,15 @@ class EventMaker(
     suspend fun buildPollResponse(pollId: EventId, optionId: OptionId): Result<Event> {
         val unsignedEvent = EventBuilder(
             kind = Kind(kind = POLL_RESPONSE_U16),
-            content = "",
-            tags = listOf(
-                Tag.event(pollId),
-                Tag.parse(listOf("response", optionId))
-            ),
-        ).build(publicKey = accountManager.getPublicKey())
+            content = ""
+        )
+            .tags(
+                tags = listOf(
+                    Tag.event(pollId),
+                    Tag.parse(listOf("response", optionId))
+                )
+            )
+            .build(publicKey = accountManager.getPublicKey())
 
         return accountManager.sign(unsignedEvent = unsignedEvent)
     }
@@ -317,7 +305,7 @@ class EventMaker(
     suspend fun buildLock(): Result<Event> {
         // Enhancement request in rust-nostr once nip has been merged
         return signEvent(
-            eventBuilder = EventBuilder(kind = Kind(LOCK_U16), content = "", tags = emptyList()),
+            eventBuilder = EventBuilder(kind = Kind(LOCK_U16), content = ""),
             isAnon = false
         )
     }
@@ -332,22 +320,21 @@ class EventMaker(
         isAnon: Boolean,
     ): Result<Event> {
         val tags = mutableListOf<Tag>()
-        tags.add(Tag.coordinate(coordinate = repoCoordinate))
-        tags.add(createSubjectTag(subject = subject))
-        tags.add(Tag.hashtag(hashtag = label))
-        tags.add(Tag.publicKey(publicKey = repoCoordinate.publicKey()))
-
-        val repoOwner = repoCoordinate.publicKey().toHex()
-        val filteredMentions = mentions.distinct().filterNot { it == repoOwner }
-        if (filteredMentions.isNotEmpty()) tags.addAll(createMentionTags(pubkeys = filteredMentions))
         if (quotes.isNotEmpty()) tags.addAll(createQuoteTags(eventIdHexOrCoordinates = quotes))
 
+        val repoOwner = repoCoordinate.publicKey().toHex()
+        val pubkeys = (mentions + repoOwner).distinct().map { PublicKey.fromHex(it) }
+
+        val issue = GitIssue(
+            content = content,
+            repository = repoCoordinate,
+            publicKeys = pubkeys,
+            subject = subject,
+            labels = listOf(label)
+        )
+
         return signEvent(
-            eventBuilder = EventBuilder(
-                kind = Kind.fromEnum(KindEnum.GitIssue),
-                content = content,
-                tags = tags
-            ),
+            eventBuilder = EventBuilder.gitIssue(issue = issue).tags(tags = tags),
             isAnon = isAnon
         )
     }
@@ -362,7 +349,7 @@ class EventMaker(
             createDescriptionTag(description = description)
         )
         val unsignedEvent = eventBuilder
-            .addTags(tags = additionalTags)
+            .tags(tags = additionalTags)
             .build(publicKey = accountManager.getPublicKey())
 
         return accountManager.sign(unsignedEvent = unsignedEvent)

@@ -23,6 +23,7 @@ import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.data.room.dao.EventRelayDao
 import com.dluvian.voyage.data.room.dao.MainEventDao
 import kotlinx.coroutines.delay
+import rust.nostr.sdk.Event
 
 class CreateReplyViewModel(
     private val lazyNostrSubscriber: LazyNostrSubscriber,
@@ -71,16 +72,14 @@ class CreateReplyViewModel(
 
         isSendingReply.value = true
         viewModelScope.launchIO {
-            val parentKind = action.parent.getRelevantKind()
-                ?: mainEventDao.getKind(id = action.parent.getRelevantId())
+            val json = mainEventDao.getJson(id = action.parent.id)
 
-            val result = if (parentKind != null) {
+            val result = if (json != null) {
                 postSender.sendReply(
-                    parentId = action.parent.getRelevantId(),
-                    parentKind = parentKind,
-                    parentPubkey = action.parent.getRelevantPubkey(),
+                    parent = Event.fromJson(json = json),
                     body = action.body,
-                    relayHint = eventRelayDao.getEventRelay(id = action.parent.id).orEmpty(),
+                    relayHint = eventRelayDao.getEventRelay(id = action.parent.id)
+                        ?.ifEmpty { null },
                     isAnon = action.isAnon
                 )
             } else {
