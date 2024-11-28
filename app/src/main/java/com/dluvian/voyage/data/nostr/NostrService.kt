@@ -81,7 +81,7 @@ class NostrService(
         }
 
         override fun onFailure(relayUrl: RelayUrl, msg: String?, throwable: Throwable?) {
-            Log.w(TAG, "OnFailure($relayUrl): $msg", throwable)
+            Log.i(TAG, "OnFailure($relayUrl): $msg", throwable)
             addConnectionStatus(relayUrl = relayUrl, status = BadConnection)
         }
 
