@@ -63,13 +63,12 @@ class FeedProvider(
 
     suspend fun getFeedFlow(
         until: Long,
-        subUntil: Long,
         size: Int,
         setting: FeedSetting,
         forceSubscription: Boolean,
     ): Flow<List<MainEvent>> {
         nostrSubscriber.subFeed(
-            until = subUntil,
+            until = until,
             limit = size,
             setting = setting,
             forceSubscription = forceSubscription

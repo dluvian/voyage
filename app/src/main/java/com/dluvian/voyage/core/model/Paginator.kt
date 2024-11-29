@@ -72,10 +72,8 @@ class Paginator(
         hasMoreRecentItems.value = false
         feedSetting = setting
 
-        val now = getCurrentSecs()
-
         scope.launch {
-            setPage(until = now, subUntil = now)
+            setPage(until = getCurrentSecs())
             delay(DELAY_1SEC)
         }.invokeOnCompletion {
             isRefreshing.value = false
@@ -91,18 +89,12 @@ class Paginator(
         hasMoreRecentItems.value = false
         hasPage.value = getHasPosts(setting = feedSetting)
 
-        val now = getCurrentSecs()
-
         scope.launchIO {
             if (onSub != null) {
                 onSub()
                 delay(DELAY_1SEC)
             }
-            setPage(
-                until = now,
-                subUntil = now,
-                forceSubscription = isFirstPage
-            )
+            setPage(until = getCurrentSecs(), forceSubscription = isFirstPage)
             delay(DELAY_1SEC)
         }.invokeOnCompletion {
             isRefreshing.value = false
@@ -118,9 +110,7 @@ class Paginator(
         hasMoreRecentItems.value = true
 
         scope.launchIO {
-            val newUntil = pageTimestamps.value.last()
-            val subUntil = pageTimestamps.value.last() - 1
-            setPage(until = newUntil, subUntil = subUntil)
+            setPage(until = pageTimestamps.value.last() - 1)
             delay(SHORT_DEBOUNCE)
         }.invokeOnCompletion {
             isAppending.value = false
@@ -129,7 +119,6 @@ class Paginator(
 
     private suspend fun setPage(
         until: Long,
-        subUntil: Long,
         feedSetting: FeedSetting = this.feedSetting,
         forceSubscription: Boolean = false
     ) {
@@ -137,7 +126,6 @@ class Paginator(
 
         val flow = feedProvider.getFeedFlow(
             until = until,
-            subUntil = subUntil,
             size = FEED_PAGE_SIZE,
             setting = feedSetting,
             forceSubscription = forceSubscription,

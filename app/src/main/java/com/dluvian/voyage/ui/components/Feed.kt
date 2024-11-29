@@ -99,8 +99,8 @@ fun Feed(
             if (pageTimestamps.size >= FEED_PAGE_SIZE) item {
                 NextPageButton(onAppend = {
                     onAppend()
-                    // 2 = Skip TextButton and last post of previous page
-                    state.requestScrollToItem(index = 2)
+                    // 1 = Skip TextButton
+                    state.requestScrollToItem(index = 1)
                 })
             }
         }
