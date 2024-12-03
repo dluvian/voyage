@@ -8,20 +8,29 @@ import com.dluvian.voyage.data.model.ItemSetMeta
 import com.dluvian.voyage.data.room.entity.helper.TitleAndDescription
 import kotlinx.coroutines.flow.Flow
 
+private const val LIST_PAIR_NOT_EMPTY = "AND (" +
+        "identifier IN (SELECT identifier FROM profileSetItem) " +
+        "OR " +
+        "identifier IN (SELECT identifier FROM topicSetItem)" +
+        ")"
 
 @Dao
 interface ItemSetDao {
     @Query(
         "SELECT identifier, title " +
                 "FROM profileSet " +
-                "WHERE myPubkey = (SELECT pubkey FROM account) AND deleted = 0"
+                "WHERE myPubkey = (SELECT pubkey FROM account) " +
+                "AND deleted = 0 " +
+                "AND identifier IN (SELECT identifier FROM profileSetItem)"
     )
     fun getMyProfileSetMetasFlow(): Flow<List<ItemSetMeta>>
 
     @Query(
         "SELECT identifier, title " +
                 "FROM topicSet " +
-                "WHERE myPubkey = (SELECT pubkey FROM account) AND deleted = 0"
+                "WHERE myPubkey = (SELECT pubkey FROM account) " +
+                "AND deleted = 0 " +
+                "AND identifier IN (SELECT identifier FROM topicSetItem)"
     )
     fun getMyTopicSetMetasFlow(): Flow<List<ItemSetMeta>>
 
@@ -29,7 +38,8 @@ interface ItemSetDao {
         "SELECT identifier, title " +
                 "FROM profileSet " +
                 "WHERE deleted = 0 " +
-                "AND identifier NOT IN (SELECT identifier FROM profileSetItem WHERE pubkey = :pubkey)"
+                "AND identifier NOT IN (SELECT identifier FROM profileSetItem WHERE pubkey = :pubkey) " +
+                LIST_PAIR_NOT_EMPTY
     )
     suspend fun getAddableProfileSets(pubkey: PubkeyHex): List<ItemSetMeta>
 
@@ -37,7 +47,8 @@ interface ItemSetDao {
         "SELECT identifier, title " +
                 "FROM profileSet " +
                 "WHERE deleted = 0 " +
-                "AND identifier IN (SELECT identifier FROM profileSetItem WHERE pubkey = :pubkey)"
+                "AND identifier IN (SELECT identifier FROM profileSetItem WHERE pubkey = :pubkey) " +
+                LIST_PAIR_NOT_EMPTY
     )
     suspend fun getNonAddableProfileSets(pubkey: PubkeyHex): List<ItemSetMeta>
 
@@ -45,7 +56,8 @@ interface ItemSetDao {
         "SELECT identifier, title " +
                 "FROM topicSet " +
                 "WHERE deleted = 0 " +
-                "AND identifier NOT IN (SELECT identifier FROM topicSetItem WHERE topic = :topic)"
+                "AND identifier NOT IN (SELECT identifier FROM topicSetItem WHERE topic = :topic) " +
+                LIST_PAIR_NOT_EMPTY
     )
     suspend fun getAddableTopicSets(topic: Topic): List<ItemSetMeta>
 
@@ -53,7 +65,8 @@ interface ItemSetDao {
         "SELECT identifier, title " +
                 "FROM topicSet " +
                 "WHERE deleted = 0 " +
-                "AND identifier IN (SELECT identifier FROM topicSetItem WHERE topic = :topic)"
+                "AND identifier IN (SELECT identifier FROM topicSetItem WHERE topic = :topic) " +
+                LIST_PAIR_NOT_EMPTY
     )
     suspend fun getNonAddableTopicSets(topic: Topic): List<ItemSetMeta>
 
