@@ -31,6 +31,7 @@ import com.dluvian.voyage.ui.theme.RoundedChip
 fun EditListTopAppBar(
     title: MutableState<String>,
     isSaving: Boolean,
+    hasItems: Boolean,
     focusRequester: FocusRequester,
     onUpdate: OnUpdate
 ) {
@@ -57,7 +58,7 @@ fun EditListTopAppBar(
         actions = {
             if (isSaving) {
                 SmallCircleProgressIndicator()
-            } else {
+            } else if (hasItems) {
                 val context = LocalContext.current
                 SaveIconButton(onSave = {
                     onUpdate(EditListViewSave(context = context, onGoBack = { onUpdate(GoBack) }))

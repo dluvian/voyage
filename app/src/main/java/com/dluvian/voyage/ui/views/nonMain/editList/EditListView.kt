@@ -44,6 +44,7 @@ fun EditListView(
     EditListScaffold(
         title = vm.title,
         isSaving = vm.isSaving.value,
+        hasItems = vm.topics.value.isNotEmpty() || vm.profiles.value.isNotEmpty(),
         snackbar = snackbar,
         onUpdate = onUpdate
     ) {
