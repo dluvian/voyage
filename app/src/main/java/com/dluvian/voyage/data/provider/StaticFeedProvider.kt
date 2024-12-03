@@ -33,6 +33,9 @@ class StaticFeedProvider(
             is InboxFeedSetting -> getStaticInboxFeed(setting = setting, until = until, size = size)
             BookmarksFeedSetting -> getStaticBookmarkFeed(until = until, size = size)
         }
+            // Some query is buggy and returns duplicates.
+            // TODO: Will be fixed once we move to in-memory view instead of room-view
+            .distinctBy { it.id }
     }
 
     private suspend fun getStaticMainFeed(

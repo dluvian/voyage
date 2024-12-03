@@ -84,10 +84,7 @@ fun Feed(
                 })
             }
 
-            items(
-                items = filteredPage,
-                key = { item -> item.mainEvent.id }
-            ) { mainEventCtx ->
+            items(items = filteredPage) { mainEventCtx ->
                 MainEventRow(
                     ctx = mainEventCtx,
                     showAuthorName = showAuthorName,

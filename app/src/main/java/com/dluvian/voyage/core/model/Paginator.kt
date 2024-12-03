@@ -137,6 +137,7 @@ class Paginator(
             // No duplicate cross-posts
             .map { postCtx -> postCtx.distinctBy { it.mainEvent.getRelevantId() } }
             // Reported bug that LazyCol id has duplicates
+            // TODO: Will be fixed once we move to in-memory view instead of room-view
             .map { postCtx -> postCtx.distinctBy { it.mainEvent.id } }
             .map { postCtxs ->
                 when (feedSetting) {
