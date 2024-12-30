@@ -151,10 +151,8 @@ class PostSender(
         val trimmedBody = body.trim()
 
         val mentions = mutableListOf<PubkeyHex>().apply {
+            // Not setting parent author, bc rust-nostr is doing it
             addAll(extractMentionPubkeys(content = trimmedBody))
-            mainEventDao.getParentAuthor(id = parent.id().toHex())?.let { grandparentAuthor ->
-                add(grandparentAuthor)
-            }
             if (!isAnon) removeIf { it == myPubkeyProvider.getPubkeyHex() }
         }.minus(parent.tags().publicKeys().map { it.toHex() }) // rust-nostr uses p-tags of parent
             .distinct()

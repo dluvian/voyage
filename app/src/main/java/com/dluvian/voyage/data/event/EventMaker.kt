@@ -103,7 +103,6 @@ class EventMaker(
             eventBuilder = EventBuilder.textNoteReply(
                 content = content,
                 replyTo = parent,
-                root = parent,
                 relayUrl = relayHint,
             ).tags(tags = tags),
             isAnon = isAnon
