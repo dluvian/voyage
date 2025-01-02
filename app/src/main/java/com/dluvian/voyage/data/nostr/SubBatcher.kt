@@ -122,6 +122,6 @@ class SubBatcher(private val subCreator: SubscriptionCreator) {
 }
 
 private fun MutableMap<EventIdHex, EventId>.mapCachedEventId(hex: PubkeyHex): EventId {
-    val id = this[hex] ?: EventId.fromHex(hex)
+    val id = this[hex] ?: EventId.parse(hex)
     return this.putIfAbsent(hex, id) ?: id
 }

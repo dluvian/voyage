@@ -114,7 +114,7 @@ class FeedSubscriber(
                 .getObserveRelays(selection = pubkeySelection)
                 .filter { (_, pubkeys) -> pubkeys.isNotEmpty() || pubkeySelection is Global }
                 .forEach { (relayUrl, pubkeys) ->
-                    val publicKeys = pubkeys.takeRandom(MAX_KEYS).map { PublicKey.fromHex(it) }
+                    val publicKeys = pubkeys.takeRandom(MAX_KEYS).map { PublicKey.parse(it) }
                     val pubkeysNoteFilter = createBaseFilter(publicKeys).kinds(kinds = kinds)
                     val filters = mutableListOf(pubkeysNoteFilter)
                     if (showCrossPosts) {
@@ -272,7 +272,7 @@ class FeedSubscriber(
             Global -> null
             WebOfTrustPubkeys -> null
             NoPubkeys -> return emptyMap()
-        }?.map { PublicKey.fromHex(it) }
+        }?.map { PublicKey.parse(it) }
 
         val mentionFilter = Filter()
             .kinds(kinds = threadableKinds)
@@ -300,7 +300,7 @@ class FeedSubscriber(
 
         val ids = bookmarkDao.getUnknownBookmarks()
             .takeRandom(MAX_KEYS)
-            .map { EventId.fromHex(it) }
+            .map { EventId.parse(it) }
 
         if (ids.isEmpty()) return emptyMap()
 

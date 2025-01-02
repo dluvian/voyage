@@ -307,7 +307,7 @@ class PostSender(
 
     private val repoCoordinate = Coordinate(
         kind = Kind.fromEnum(KindEnum.GitRepoAnnouncement),
-        publicKey = PublicKey.fromHex(hex = DLUVIAN_HEX),
+        publicKey = PublicKey.parse(DLUVIAN_HEX),
         identifier = VOYAGE
     )
 
@@ -339,7 +339,7 @@ class PostSender(
     private fun extractMentionPubkeys(content: String): List<PubkeyHex> {
         return extractMentions(content = content)
             .mapNotNull {
-                runCatching { PublicKey.fromBech32(it).toHex() }.getOrNull()
+                runCatching { PublicKey.parse(it).toHex() }.getOrNull()
                     ?: kotlin.runCatching { Nip19Profile.fromBech32(it).publicKey().toHex() }
                         .getOrNull()
             }.distinct()
@@ -357,8 +357,8 @@ class PostSender(
         return extractQuotes(content = content)
             .mapNotNull {
                 runCatching { Nip19Event.fromBech32(it).eventId().toHex() }.getOrNull()
-                    ?: runCatching { EventId.fromBech32(it).toHex() }.getOrNull()
-                    ?: runCatching { Coordinate.fromBech32(it).toString() }.getOrNull()
+                    ?: runCatching { EventId.parse(it).toHex() }.getOrNull()
+                    ?: runCatching { Coordinate.parse(it).toString() }.getOrNull()
             }.distinct()
     }
 }

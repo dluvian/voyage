@@ -37,7 +37,7 @@ data class FullProfileEntity(
 ) {
     fun toRelevantMetadata(): RelevantMetadata {
         return RelevantMetadata(
-            npub = PublicKey.fromHex(this.pubkey).toBech32(),
+            npub = PublicKey.parse(this.pubkey).toBech32(),
             name = this.name,
             about = this.about,
             lightning = this.lud16.ifEmpty { this.lud06 },

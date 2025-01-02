@@ -41,7 +41,7 @@ class PollVoter(
         val pollRelays = pollDao.getPollRelays(pollId = pollId)?.toList().orEmpty()
         val myRelays = relayProvider.getPublishRelays()
         nostrService.publishPollResponse(
-            pollId = EventId.fromHex(pollId),
+            pollId = EventId.parse(pollId),
             optionId = optionId,
             relayUrls = (pollRelays + myRelays).distinct(),
         )

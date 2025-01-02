@@ -101,7 +101,7 @@ private fun TextFieldValue.replaceWithSuggestion(pubkey: String): TextFieldValue
     val text = buildString {
         append(stringUntilCursor.removeSuffix(mentionedName).removeSuffix("@"))
         append(NOSTR_URI)
-        append(PublicKey.fromHex(pubkey).toBech32())
+        append(PublicKey.parse(pubkey).toBech32())
         append(" ")
         newCursorPos = this.length
         append(stringAfterCursor)

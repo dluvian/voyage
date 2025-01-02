@@ -169,7 +169,7 @@ class FilterCreator(
 
         return Filter()
             .kind(kind = Kind(POLL_RESPONSE_U16))
-            .event(eventId = EventId.fromHex(poll.eventId))
+            .event(eventId = EventId.parse(poll.eventId))
             .since(timestamp = Timestamp.fromSecs((newestResponseTime + 1).toULong()))
             .until(timestamp = Timestamp.fromSecs(endsAt.toULong()))
             .limitRestricted(limit = MAX_EVENTS_TO_SUB)
@@ -215,7 +215,7 @@ class FilterCreator(
     ): Filter {
         return Filter()
             .kind(kind = Kind(kind = POLL_RESPONSE_U16))
-            .events(ids = pollIds.map { EventId.fromHex(it) })
+            .events(ids = pollIds.map { EventId.parse(it) })
             .since(timestamp = since)
             .until(timestamp = until)
             .limitRestricted(limit = MAX_EVENTS_TO_SUB)

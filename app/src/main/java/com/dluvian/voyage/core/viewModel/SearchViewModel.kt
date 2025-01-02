@@ -82,7 +82,7 @@ class SearchViewModel(
 
         val stripped = action.text.trim().removeNostrUri().removeMentionChar().trim()
 
-        val pubkey = runCatching { PublicKey.fromBech32(bech32 = stripped) }.getOrNull()
+        val pubkey = runCatching { PublicKey.parse(stripped) }.getOrNull()
         if (pubkey != null) {
             action.onUpdate(OpenProfile(nprofile = createNprofile(pubkey = pubkey)))
             return
@@ -94,7 +94,7 @@ class SearchViewModel(
             return
         }
 
-        val note1 = runCatching { EventId.fromBech32(stripped) }.getOrNull()
+        val note1 = runCatching { EventId.parse(stripped) }.getOrNull()
         if (note1 != null) {
             action.onUpdate(OpenThreadRaw(nevent = createNevent(hex = note1.toHex())))
             return

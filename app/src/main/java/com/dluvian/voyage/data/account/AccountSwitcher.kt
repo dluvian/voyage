@@ -75,7 +75,7 @@ class AccountSwitcher(
         lazyNostrSubscriber.subCreator.unsubAll()
         idCacheClearer.clear()
         accountDao.updateAccount(account = account)
-        mainEventDao.reindexMentions(newPubkey = PublicKey.fromHex(account.pubkey))
+        mainEventDao.reindexMentions(newPubkey = PublicKey.parse(account.pubkey))
         lazyNostrSubscriber.lazySubMyAccount()
         delay(DELAY_1SEC)
         nostrSubscriber.subFeed(

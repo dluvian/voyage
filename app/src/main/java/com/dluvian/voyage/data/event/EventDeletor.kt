@@ -71,7 +71,7 @@ class EventDeletor(
 
     private suspend fun deleteEvent(eventId: EventIdHex): Result<Event> {
         return nostrService.publishDelete(
-            eventId = EventId.fromHex(eventId),
+            eventId = EventId.parse(eventId),
             relayUrls = relayProvider.getPublishRelays(),
         )
     }

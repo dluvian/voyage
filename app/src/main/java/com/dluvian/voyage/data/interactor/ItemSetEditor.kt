@@ -37,7 +37,7 @@ class ItemSetEditor(
             identifier = identifier,
             title = title.normalizeTitle(),
             description = description.normalizeDescription(),
-            pubkeys = pubkeys.map { PublicKey.fromHex(it) },
+            pubkeys = pubkeys.map { PublicKey.parse(it) },
             relayUrls = relayProvider.getWriteRelays()
         ).onFailure {
             Log.w(TAG, "Failed to sign profile set", it)

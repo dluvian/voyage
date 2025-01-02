@@ -281,7 +281,7 @@ class NostrSubscriber(
 
         scope.launch(Dispatchers.Default) {
             val filter = filterCreator.getProfileFilter(
-                pubkeys = newPubkeys.map { PublicKey.fromHex(it) }
+                pubkeys = newPubkeys.map { PublicKey.parse(it) }
             )
             relayProvider.getReadRelays().forEach { relay ->
                 subCreator.subscribe(relayUrl = relay, filters = listOf(filter))

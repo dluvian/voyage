@@ -201,8 +201,7 @@ class SettingsViewModel(
     private fun processExternalAccountData(result: ActivityResult, context: Context) {
         val npubOrPubkey = result.data?.getStringExtra("signature")
         val packageName = result.data?.getStringExtra("package")
-        val publicKey = runCatching { PublicKey.fromHex(npubOrPubkey.orEmpty()) }.getOrNull()
-            ?: runCatching { PublicKey.fromBech32(npubOrPubkey.orEmpty()) }.getOrNull()
+        val publicKey = runCatching { PublicKey.parse(npubOrPubkey.orEmpty()) }.getOrNull()
 
         if (npubOrPubkey == null || publicKey == null || packageName == null) {
             snackbar.showToast(

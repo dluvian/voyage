@@ -43,7 +43,7 @@ class AccountManager(
                 else Log.i(TAG, "Successfully saved new acc pubkey $hex in database")
             }
         } else {
-            val publicKey = PublicKey.fromHex(dbAccount.pubkey)
+            val publicKey = PublicKey.parse(dbAccount.pubkey)
             val account = if (dbAccount.packageName == null) DefaultAccount(publicKey = publicKey)
             else ExternalAccount(publicKey = publicKey)
             accountType = mutableStateOf(account)

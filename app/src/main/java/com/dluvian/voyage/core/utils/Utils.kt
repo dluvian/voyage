@@ -69,13 +69,13 @@ fun Bech32.shortenBech32() = "${this.take(10)}:${this.takeLast(5)}"
 
 fun PubkeyHex.toShortenedBech32(): String {
     if (this.isEmpty()) return ""
-    val pubkey = runCatching { PublicKey.fromHex(this) }.getOrNull() ?: return ""
+    val pubkey = runCatching { PublicKey.parse(this) }.getOrNull() ?: return ""
     return pubkey.toShortenedNpub()
 }
 
 fun PubkeyHex.toBech32(): String {
     if (this.isEmpty()) return ""
-    return runCatching { PublicKey.fromHex(this).toBech32() }.getOrNull() ?: ""
+    return runCatching { PublicKey.parse(this).toBech32() }.getOrNull() ?: ""
 }
 
 fun Metadata.toRelevantMetadata(pubkey: PubkeyHex, createdAt: Long): RelevantMetadata {

@@ -205,7 +205,7 @@ class EventMaker(
     }
 
     suspend fun buildBookmarkList(postIds: List<EventIdHex>): Result<Event> {
-        val bookmarks = Bookmarks(eventIds = postIds.map { EventId.fromHex(it) })
+        val bookmarks = Bookmarks(eventIds = postIds.map { EventId.parse(it) })
         val unsignedEvent = EventBuilder.bookmarks(list = bookmarks)
             .build(accountManager.getPublicKey())
 
@@ -218,7 +218,7 @@ class EventMaker(
         words: List<String>
     ): Result<Event> {
         val mutes = MuteList(
-            publicKeys = pubkeys.map { PublicKey.fromHex(it) },
+            publicKeys = pubkeys.map { PublicKey.parse(it) },
             hashtags = topics,
             words = words,
         )
@@ -229,7 +229,7 @@ class EventMaker(
     }
 
     suspend fun buildContactList(pubkeys: List<PubkeyHex>): Result<Event> {
-        val contacts = pubkeys.map { Contact(pk = PublicKey.fromHex(it)) }
+        val contacts = pubkeys.map { Contact(pk = PublicKey.parse(it)) }
         val unsignedEvent = EventBuilder.contactList(list = contacts)
             .build(accountManager.getPublicKey())
 
@@ -322,7 +322,7 @@ class EventMaker(
         if (quotes.isNotEmpty()) tags.addAll(createQuoteTags(eventIdHexOrCoordinates = quotes))
 
         val repoOwner = repoCoordinate.publicKey().toHex()
-        val pubkeys = (mentions + repoOwner).distinct().map { PublicKey.fromHex(it) }
+        val pubkeys = (mentions + repoOwner).distinct().map { PublicKey.parse(it) }
 
         val issue = GitIssue(
             content = content,

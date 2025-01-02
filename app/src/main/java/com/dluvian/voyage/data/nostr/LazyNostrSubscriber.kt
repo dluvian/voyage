@@ -159,7 +159,7 @@ class LazyNostrSubscriber(
     suspend fun lazySubRepliesAndVotes(parentId: EventIdHex) {
         Log.d(TAG, "lazySubRepliesAndVotes for parent $parentId")
 
-        val id = EventId.fromHex(parentId)
+        val id = EventId.parse(parentId)
         val filters = listOf(
             filterCreator.getLazyReplyFilter(parentId = id),
             filterCreator.getLazyVoteFilter(parentId = id)
@@ -199,7 +199,7 @@ class LazyNostrSubscriber(
             .forEach { (relay, pubkeyBatch) ->
                 if (pubkeyBatch.isNotEmpty()) {
                     val filter = filterCreator.getProfileFilter(
-                        pubkeys = pubkeyBatch.takeRandom(MAX_KEYS).map { PublicKey.fromHex(it) },
+                        pubkeys = pubkeyBatch.takeRandom(MAX_KEYS).map { PublicKey.parse(it) },
                         until = now
                     )
                     val filters = listOf(filter)
@@ -247,7 +247,7 @@ class LazyNostrSubscriber(
             .mapValues { (_, pubkeys) ->
                 listOf(
                     filterCreator.getNip65Filter(
-                        pubkeys = pubkeys.takeRandom(MAX_KEYS).map { PublicKey.fromHex(it) },
+                        pubkeys = pubkeys.takeRandom(MAX_KEYS).map { PublicKey.parse(it) },
                         until = now
                     )
                 )
@@ -278,7 +278,7 @@ class LazyNostrSubscriber(
     ): Map<RelayUrl, List<Filter>> {
         val pubkeys = pubkeyProvider.getPubkeys(selection = selection)
             .minus(excludePubkeys)
-            .map { PublicKey.fromHex(it) }
+            .map { PublicKey.parse(it) }
         val filters = listOf(
             filterCreator.getLazyNewestNip65Filter(pubkeys = pubkeys) ?: return emptyMap()
         )
@@ -296,7 +296,7 @@ class LazyNostrSubscriber(
             .getObserveRelays(selection = CustomPubkeys(pubkeys = friendsWithMissingContacts))
             .mapValues { (_, pubkeys) ->
                 val filter = filterCreator.getContactFilter(
-                    pubkeys = pubkeys.takeRandom(MAX_KEYS).map { PublicKey.fromHex(it) },
+                    pubkeys = pubkeys.takeRandom(MAX_KEYS).map { PublicKey.parse(it) },
                     until = now,
                 )
                 listOf(filter)
@@ -317,7 +317,7 @@ class LazyNostrSubscriber(
         val pubkeys = webOfTrustProvider.getFriendsAndWebOfTrustPubkeys(
             max = MAX_KEYS,
             friendsFirst = prioritizeFriends,
-        ).map { PublicKey.fromHex(it) }
+        ).map { PublicKey.parse(it) }
 
         if (pubkeys.isEmpty()) return emptyMap()
 
@@ -334,7 +334,7 @@ class LazyNostrSubscriber(
 
         val friendPubkeys = friendProvider
             .getFriendPubkeysNoLock(max = MAX_KEYS)
-            .map { PublicKey.fromHex(it) }
+            .map { PublicKey.parse(it) }
 
         if (friendPubkeys.isEmpty()) return emptyMap()
 

@@ -112,9 +112,9 @@ class PostVoter(
             eventDeletor.deleteVote(voteId = currentVote.id)
         }
         nostrService.publishVote(
-            eventId = EventId.fromHex(postId),
+            eventId = EventId.parse(postId),
             content = eventPreferences.getUpvoteContent(),
-            mention = PublicKey.fromHex(mention),
+            mention = PublicKey.parse(mention),
             relayUrls = relayProvider.getPublishRelays(
                 publishTo = listOf(mention),
                 addConnected = false

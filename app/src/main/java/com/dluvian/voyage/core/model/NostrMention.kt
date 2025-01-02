@@ -31,17 +31,17 @@ sealed class NostrMention(open val bech32: Bech32, open val hex: String) {
                 NeventMention(bech32 = trimmed, hex = result.eventId().toHex())
             } else if (trimmed.startsWith("npub1")) {
                 val result = runCatching {
-                    PublicKey.fromBech32(bech32 = trimmed)
+                    PublicKey.parse(publicKey = trimmed)
                 }.getOrNull() ?: return null
                 NpubMention(bech32 = trimmed, hex = result.toHex())
             } else if (trimmed.startsWith("note1")) {
                 val result = runCatching {
-                    EventId.fromBech32(bech32 = trimmed)
+                    EventId.parse(id = trimmed)
                 }.getOrNull() ?: return null
                 NoteMention(bech32 = trimmed, hex = result.toHex())
             } else if (trimmed.startsWith("naddr1")) {
                 val result = runCatching {
-                    Coordinate.fromBech32(bech32 = trimmed)
+                    Coordinate.parse(coordinate = trimmed)
                 }.getOrNull() ?: return null
                 CoordinateMention(
                     bech32 = trimmed,

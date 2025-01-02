@@ -46,7 +46,7 @@ fun extractMentions(content: String) = nostrMentionPattern.findAll(content)
     .map { it.value.removePrefix("@").removePrefix(NOSTR_URI) }
     .distinct()
     .filter {
-        runCatching { PublicKey.fromBech32(it) }.isSuccess ||
+        runCatching { PublicKey.parse(it) }.isSuccess ||
                 runCatching { Nip19Profile.fromBech32(it) }.isSuccess
     }
     .toList()
@@ -57,8 +57,8 @@ fun extractQuotes(content: String) = nostrQuotePattern.findAll(content)
     .distinct()
     .filter {
         runCatching { Nip19Event.fromBech32(it) }.isSuccess ||
-                runCatching { EventId.fromBech32(it) }.isSuccess ||
-                runCatching { Coordinate.fromBech32(it) }.isSuccess
+                runCatching { EventId.parse(it) }.isSuccess ||
+                runCatching { Coordinate.parse(it) }.isSuccess
     }
     .toList()
 
@@ -220,7 +220,7 @@ fun Event.isProfile(): Boolean {
 }
 
 fun createNprofile(hex: String, relays: List<String> = emptyList()): Nip19Profile {
-    return createNprofile(pubkey = PublicKey.fromHex(hex), relays = relays)
+    return createNprofile(pubkey = PublicKey.parse(hex), relays = relays)
 }
 
 fun createNprofile(pubkey: PublicKey, relays: List<String> = emptyList()): Nip19Profile {
@@ -234,8 +234,8 @@ fun createNevent(
     kind: Kind? = null
 ): Nip19Event {
     return createNevent(
-        eventId = EventId.fromHex(hex),
-        author = author?.let { PublicKey.fromHex(it) },
+        eventId = EventId.parse(hex),
+        author = author?.let { PublicKey.parse(it) },
         relays = relays,
         kind = kind
     )
@@ -257,8 +257,8 @@ fun createNeventStr(
     kind: Kind? = null
 ): String {
     return createNevent(
-        eventId = EventId.fromHex(hex),
-        author = author?.let { PublicKey.fromHex(it) },
+        eventId = EventId.parse(hex),
+        author = author?.let { PublicKey.parse(it) },
         relays = relays,
         kind = kind
     ).toBech32()
