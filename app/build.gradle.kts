@@ -100,7 +100,7 @@ dependencies {
     implementation("androidx.room:room-ktx:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
 
-    implementation("org.rust-nostr:nostr-sdk:0.38.0")
+    implementation("org.rust-nostr:nostr-sdk:0.38.1")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("cash.z.ecc.android:kotlin-bip39:1.0.8")
     implementation("com.anggrayudi:storage:2.0.0")
