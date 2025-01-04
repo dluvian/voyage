@@ -34,7 +34,7 @@ class EventPreferences(context: Context) {
     }
 
     fun isUsingV2Replies(): Boolean {
-        return preferences.getBoolean(V2_REPLIES, false)
+        return preferences.getBoolean(V2_REPLIES, true)
     }
 
     fun setIsUsingV2Replies(useV2Replies: Boolean) {
