@@ -16,7 +16,7 @@ android {
         minSdk = 26 // Android Oreo (Aug 2017 - Jan 2021)
         targetSdk = 35
         versionCode = 23
-        versionName = "v0.17.1"
+        versionName = "v0.17.2"
 
         // Change versionCode, versionName and strings.xml when releasing new
         // Reproducible build hints: https://gitlab.com/IzzyOnDroid/repo/-/wikis/Reproducible-Builds
