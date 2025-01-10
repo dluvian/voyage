@@ -15,8 +15,8 @@ android {
         applicationId = "com.dluvian.voyage"
         minSdk = 26 // Android Oreo (Aug 2017 - Jan 2021)
         targetSdk = 35
-        versionCode = 23
-        versionName = "v0.17.2"
+        versionCode = 24
+        versionName = "v0.17.3"
 
         // Change versionCode, versionName and strings.xml when releasing new
         // Reproducible build hints: https://gitlab.com/IzzyOnDroid/repo/-/wikis/Reproducible-Builds
@@ -100,7 +100,7 @@ dependencies {
     implementation("androidx.room:room-ktx:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
 
-    implementation("org.rust-nostr:nostr-sdk:0.38.2")
+    implementation("org.rust-nostr:nostr-sdk:0.38.3")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("cash.z.ecc.android:kotlin-bip39:1.0.8")
     implementation("com.anggrayudi:storage:2.0.0")
