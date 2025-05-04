@@ -29,7 +29,7 @@ import com.dluvian.voyage.data.room.dao.BookmarkDao
 import rust.nostr.sdk.EventId
 import rust.nostr.sdk.Filter
 import rust.nostr.sdk.Kind
-import rust.nostr.sdk.KindEnum
+import rust.nostr.sdk.KindStandard
 import rust.nostr.sdk.Nip19Profile
 import rust.nostr.sdk.PublicKey
 import rust.nostr.sdk.Timestamp
@@ -90,8 +90,8 @@ class FeedSubscriber(
         if (limit <= 0u || since >= until) return emptyMap()
 
         val kinds = listOfNotNull(
-            if (showRoots) Kind.fromEnum(KindEnum.TextNote) else null,
-            if (showCrossPosts) Kind.fromEnum(KindEnum.Repost) else null,
+            if (showRoots) Kind.fromStd(KindStandard.TEXT_NOTE) else null,
+            if (showCrossPosts) Kind.fromStd(KindStandard.REPOST) else null,
             if (showPolls) Kind(kind = POLL_U16) else null,
         )
         if (kinds.isEmpty()) return emptyMap()

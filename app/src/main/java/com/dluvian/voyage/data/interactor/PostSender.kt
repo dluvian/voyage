@@ -38,7 +38,7 @@ import rust.nostr.sdk.Coordinate
 import rust.nostr.sdk.Event
 import rust.nostr.sdk.EventId
 import rust.nostr.sdk.Kind
-import rust.nostr.sdk.KindEnum
+import rust.nostr.sdk.KindStandard
 import rust.nostr.sdk.Nip19Event
 import rust.nostr.sdk.Nip19Profile
 import rust.nostr.sdk.PublicKey
@@ -306,7 +306,7 @@ class PostSender(
     }
 
     private val repoCoordinate = Coordinate(
-        kind = Kind.fromEnum(KindEnum.GitRepoAnnouncement),
+        kind = Kind.fromStd(KindStandard.GIT_REPO_ANNOUNCEMENT),
         publicKey = PublicKey.parse(DLUVIAN_HEX),
         identifier = VOYAGE
     )

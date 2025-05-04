@@ -28,25 +28,25 @@ import rust.nostr.sdk.Event
 import rust.nostr.sdk.EventId
 import rust.nostr.sdk.Filter
 import rust.nostr.sdk.Kind
-import rust.nostr.sdk.KindEnum
+import rust.nostr.sdk.KindStandard
 import rust.nostr.sdk.PublicKey
 
 
 private const val TAG = "EventValidator"
 
-val TEXT_NOTE_U16 = Kind.fromEnum(KindEnum.TextNote).asU16()
-val REPOST_U16 = Kind.fromEnum(KindEnum.Repost).asU16()
-val GENERIC_REPOST_U16 = Kind.fromEnum(KindEnum.GenericRepost).asU16()
-private val REACTION_U16 = Kind.fromEnum(KindEnum.Reaction).asU16()
-private val CONTACT_U16 = Kind.fromEnum(KindEnum.ContactList).asU16()
-private val RELAYS_U16 = Kind.fromEnum(KindEnum.RelayList).asU16()
-private val METADATA_U16 = Kind.fromEnum(KindEnum.Metadata).asU16()
-private val FOLLOW_SET_U16 = Kind.fromEnum(KindEnum.FollowSet).asU16()
-private val INTEREST_SET_U16 = Kind.fromEnum(KindEnum.InterestSet).asU16()
-private val INTERESTS_U16 = Kind.fromEnum(KindEnum.Interests).asU16()
-private val BOOKMARKS_U16 = Kind.fromEnum(KindEnum.Bookmarks).asU16()
-private val MUTE_LIST_U16 = Kind.fromEnum(KindEnum.MuteList).asU16()
-val COMMENT_U16: UShort = Kind.fromEnum(KindEnum.Comment).asU16()
+val TEXT_NOTE_U16 = Kind.fromStd(KindStandard.TEXT_NOTE).asU16()
+val REPOST_U16 = Kind.fromStd(KindStandard.REPOST).asU16()
+val GENERIC_REPOST_U16 = Kind.fromStd(KindStandard.GENERIC_REPOST).asU16()
+private val REACTION_U16 = Kind.fromStd(KindStandard.REACTION).asU16()
+private val CONTACT_U16 = Kind.fromStd(KindStandard.CONTACT_LIST).asU16()
+private val RELAYS_U16 = Kind.fromStd(KindStandard.RELAY_LIST).asU16()
+private val METADATA_U16 = Kind.fromStd(KindStandard.METADATA).asU16()
+private val FOLLOW_SET_U16 = Kind.fromStd(KindStandard.FOLLOW_SET).asU16()
+private val INTEREST_SET_U16 = Kind.fromStd(KindStandard.INTEREST_SET).asU16()
+private val INTERESTS_U16 = Kind.fromStd(KindStandard.INTERESTS).asU16()
+private val BOOKMARKS_U16 = Kind.fromStd(KindStandard.BOOKMARKS).asU16()
+private val MUTE_LIST_U16 = Kind.fromStd(KindStandard.MUTE_LIST).asU16()
+val COMMENT_U16: UShort = Kind.fromStd(KindStandard.COMMENT).asU16()
 val LOCK_U16: UShort = 398u
 val POLL_U16: UShort = 1068u
 val POLL_RESPONSE_U16: UShort = 1018u

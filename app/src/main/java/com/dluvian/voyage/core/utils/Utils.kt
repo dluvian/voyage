@@ -55,7 +55,7 @@ import rust.nostr.sdk.Alphabet
 import rust.nostr.sdk.Event
 import rust.nostr.sdk.Filter
 import rust.nostr.sdk.Kind
-import rust.nostr.sdk.KindEnum
+import rust.nostr.sdk.KindStandard
 import rust.nostr.sdk.Metadata
 import rust.nostr.sdk.PublicKey
 import rust.nostr.sdk.SingleLetterTag
@@ -229,33 +229,33 @@ fun mergeRelayFilters(vararg maps: Map<RelayUrl, List<Filter>>): Map<RelayUrl, L
 }
 
 val commentableKinds = listOf(
-    Kind.fromEnum(KindEnum.TextNote),
+    Kind.fromStd(KindStandard.TEXT_NOTE),
     Kind(kind = COMMENT_U16),
     Kind(kind = POLL_U16)
 )
 
 val crossPostableKinds = listOf(
-    Kind.fromEnum(KindEnum.TextNote),
+    Kind.fromStd(KindStandard.TEXT_NOTE),
     Kind(kind = COMMENT_U16),
 )
 
 val rootFeedableKindsNoKTag = listOf(
-    Kind.fromEnum(KindEnum.TextNote),
-    Kind.fromEnum(KindEnum.Repost),
+    Kind.fromStd(KindStandard.TEXT_NOTE),
+    Kind.fromStd(KindStandard.REPOST),
     Kind(kind = POLL_U16)
 )
 
 val replyKinds = listOf(
-    Kind.fromEnum(KindEnum.TextNote),
+    Kind.fromStd(KindStandard.TEXT_NOTE),
     Kind(kind = COMMENT_U16),
 )
 
-val reactionKind = Kind.fromEnum(KindEnum.Reaction)
+val reactionKind = Kind.fromStd(KindStandard.TEXT_NOTE)
 
 val reactionaryKinds = replyKinds + reactionKind
 
 val threadableKinds = listOf(
-    Kind.fromEnum(KindEnum.TextNote),
+    Kind.fromStd(KindStandard.TEXT_NOTE),
     Kind(kind = COMMENT_U16),
     Kind(kind = POLL_U16)
 )
@@ -271,10 +271,10 @@ fun Filter.limitRestricted(limit: ULong, upperLimit: ULong = MAX_EVENTS_TO_SUB):
 
 fun Filter.genericRepost(): Filter {
     return this
-        .kind(Kind.fromEnum(KindEnum.GenericRepost))
-        .customTag(
+        .kind(Kind.fromStd(KindStandard.GENERIC_REPOST))
+        .customTags(
             tag = SingleLetterTag.lowercase(Alphabet.K),
-            content = crossPostableKinds.map { it.asU16().toString() }
+            contents = crossPostableKinds.map { it.asU16().toString() }
         )
 }
 

@@ -119,7 +119,7 @@ class NostrSubscriber(
         }
 
         subscriptions.forEach { (relay, filters) ->
-            subCreator.subscribe(relayUrl = relay, filters = filters)
+            subCreator.subscribe_many(relayUrl = relay, filters = filters)
         }
     }
 
@@ -127,7 +127,7 @@ class NostrSubscriber(
         val filters = listOf(filterCreator.getPostFilter(eventId = nevent.eventId()))
 
         relayProvider.getObserveRelays(nevent = nevent, includeConnected = true).forEach { relay ->
-            subCreator.subscribe(relayUrl = relay, filters = filters)
+            subCreator.subscribe_many(relayUrl = relay, filters = filters)
         }
     }
 
@@ -136,7 +136,7 @@ class NostrSubscriber(
         val filters = listOf(contactFilter)
 
         relayProvider.getObserveRelays(nprofile = nprofile, includeConnected = false)
-            .forEach { relay -> subCreator.subscribe(relayUrl = relay, filters = filters) }
+            .forEach { relay -> subCreator.subscribe_many(relayUrl = relay, filters = filters) }
     }
 
     private val isSubbingVotes = AtomicBoolean(false)
@@ -248,7 +248,7 @@ class NostrSubscriber(
             }
 
             relayProvider.getReadRelays().forEach { relay ->
-                subCreator.subscribe(relayUrl = relay, filters = filters)
+                subCreator.subscribe_many(relayUrl = relay, filters = filters)
             }
         }.invokeOnCompletion {
             isSubbingPolls.set(false)
@@ -263,7 +263,7 @@ class NostrSubscriber(
         )
 
         relayProvider.getReadRelays().forEach { relay ->
-            subCreator.subscribe(relayUrl = relay, filters = listOf(filter))
+            subCreator.subscribe_many(relayUrl = relay, filters = listOf(filter))
         }
     }
 
@@ -284,7 +284,7 @@ class NostrSubscriber(
                 pubkeys = newPubkeys.map { PublicKey.parse(it) }
             )
             relayProvider.getReadRelays().forEach { relay ->
-                subCreator.subscribe(relayUrl = relay, filters = listOf(filter))
+                subCreator.subscribe_many(relayUrl = relay, filters = listOf(filter))
             }
             delay(DEBOUNCE)
         }.invokeOnCompletion {

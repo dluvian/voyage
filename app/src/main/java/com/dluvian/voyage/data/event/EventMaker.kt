@@ -21,12 +21,13 @@ import rust.nostr.sdk.Contact
 import rust.nostr.sdk.Coordinate
 import rust.nostr.sdk.Event
 import rust.nostr.sdk.EventBuilder
+import rust.nostr.sdk.EventDeletionRequest
 import rust.nostr.sdk.EventId
 import rust.nostr.sdk.GitIssue
 import rust.nostr.sdk.Interests
 import rust.nostr.sdk.Keys
 import rust.nostr.sdk.Kind
-import rust.nostr.sdk.KindEnum
+import rust.nostr.sdk.KindStandard
 import rust.nostr.sdk.Metadata
 import rust.nostr.sdk.MuteList
 import rust.nostr.sdk.PublicKey
@@ -179,7 +180,9 @@ class EventMaker(
     }
 
     suspend fun buildDelete(eventId: EventId): Result<Event> {
-        val unsignedEvent = EventBuilder.delete(ids = listOf(eventId))
+        val req =
+            EventDeletionRequest(ids = listOf(eventId), coordinates = emptyList(), reason = null)
+        val unsignedEvent = EventBuilder.delete(request = req)
             .build(accountManager.getPublicKey())
 
         return accountManager.sign(unsignedEvent = unsignedEvent)
@@ -188,10 +191,12 @@ class EventMaker(
     suspend fun buildListDelete(identifier: String): Result<Event> {
         val pubkey = accountManager.getPublicKey()
         val coordinates = listOf(
-            Coordinate(Kind.fromEnum(KindEnum.FollowSet), pubkey, identifier),
-            Coordinate(Kind.fromEnum(KindEnum.InterestSet), pubkey, identifier)
+            Coordinate(Kind.fromStd(KindStandard.FOLLOW_SET), pubkey, identifier),
+            Coordinate(Kind.fromStd(KindStandard.INTEREST_SET), pubkey, identifier)
         )
-        val unsignedEvent = EventBuilder.delete(coordinates = coordinates).build(pubkey)
+        val req = EventDeletionRequest(ids = emptyList(), coordinates = coordinates, reason = null)
+
+        val unsignedEvent = EventBuilder.delete(request = req).build(pubkey)
 
         return accountManager.sign(unsignedEvent = unsignedEvent)
     }
@@ -229,8 +234,9 @@ class EventMaker(
     }
 
     suspend fun buildContactList(pubkeys: List<PubkeyHex>): Result<Event> {
-        val contacts = pubkeys.map { Contact(pk = PublicKey.parse(it)) }
-        val unsignedEvent = EventBuilder.contactList(list = contacts)
+        val contacts =
+            pubkeys.map { Contact(publicKey = PublicKey.parse(it), relayUrl = null, alias = null) }
+        val unsignedEvent = EventBuilder.contactList(contacts = contacts)
             .build(accountManager.getPublicKey())
 
         return accountManager.sign(unsignedEvent = unsignedEvent)
@@ -322,12 +328,13 @@ class EventMaker(
         if (quotes.isNotEmpty()) tags.addAll(createQuoteTags(eventIdHexOrCoordinates = quotes))
 
         val repoOwner = repoCoordinate.publicKey().toHex()
-        val pubkeys = (mentions + repoOwner).distinct().map { PublicKey.parse(it) }
+        val pubkeys =
+            (mentions + repoOwner).distinct().map { PublicKey.parse(it) }.map { Tag.publicKey(it) }
+        tags.addAll(pubkeys)
 
         val issue = GitIssue(
             content = content,
             repository = repoCoordinate,
-            publicKeys = pubkeys,
             subject = subject,
             labels = listOf(label)
         )

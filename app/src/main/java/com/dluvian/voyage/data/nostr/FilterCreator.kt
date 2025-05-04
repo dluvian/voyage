@@ -15,7 +15,7 @@ import com.dluvian.voyage.data.room.entity.main.poll.PollEntity
 import rust.nostr.sdk.EventId
 import rust.nostr.sdk.Filter
 import rust.nostr.sdk.Kind
-import rust.nostr.sdk.KindEnum
+import rust.nostr.sdk.KindStandard
 import rust.nostr.sdk.PublicKey
 import rust.nostr.sdk.Timestamp
 
@@ -72,7 +72,7 @@ class FilterCreator(
         until: Timestamp = Timestamp.now(),
     ): Filter {
         return Filter()
-            .kind(kind = Kind.fromEnum(KindEnum.Metadata))
+            .kind(kind = Kind.fromStd(KindStandard.METADATA))
             .authors(authors = pubkeys)
             .since(timestamp = since)
             .until(timestamp = until)
@@ -123,7 +123,7 @@ class FilterCreator(
         since: Timestamp = Timestamp.fromSecs(1uL)
     ): Filter {
         return Filter()
-            .kind(kind = Kind.fromEnum(KindEnum.RelayList))
+            .kind(kind = Kind.fromStd(KindStandard.RELAY_LIST))
             .authors(authors = pubkeys)
             .since(timestamp = since)
             .until(timestamp = until)
@@ -133,7 +133,7 @@ class FilterCreator(
     suspend fun getLazyMyProfileSetsFilter(): Filter {
         val profileSetsSince = room.contentSetDao().getProfileSetMaxCreatedAt()?.toULong() ?: 1uL
 
-        return Filter().kind(kind = Kind.fromEnum(KindEnum.FollowSet))
+        return Filter().kind(kind = Kind.fromStd(KindStandard.FOLLOW_SET))
             .author(author = myPubkeyProvider.getPublicKey())
             .until(timestamp = Timestamp.now())
             .since(timestamp = Timestamp.fromSecs(secs = profileSetsSince + 1u))
@@ -143,7 +143,7 @@ class FilterCreator(
     suspend fun getLazyMyTopicSetsFilter(): Filter {
         val topicSetsSince = room.contentSetDao().getTopicSetMaxCreatedAt()?.toULong() ?: 1uL
 
-        return Filter().kind(kind = Kind.fromEnum(KindEnum.InterestSet))
+        return Filter().kind(kind = Kind.fromStd(KindStandard.INTEREST_SET))
             .author(author = myPubkeyProvider.getPublicKey())
             .until(timestamp = Timestamp.now())
             .since(timestamp = Timestamp.fromSecs(secs = topicSetsSince + 1u))
@@ -179,7 +179,7 @@ class FilterCreator(
         val newestVoteTime = room.voteDao().getNewestVoteCreatedAt(postId = parentId.toHex()) ?: 1L
 
         return Filter()
-            .kind(kind = Kind.fromEnum(KindEnum.Reaction))
+            .kind(kind = Kind.fromStd(KindStandard.REACTION))
             .events(ids = listOf(parentId))
             .since(timestamp = Timestamp.fromSecs((newestVoteTime + 1).toULong()))
             .until(timestamp = Timestamp.now())
@@ -193,7 +193,7 @@ class FilterCreator(
         limit: ULong = pubkeys.size.toULong(),
     ): Filter {
         return Filter()
-            .kind(kind = Kind.fromEnum(KindEnum.ContactList))
+            .kind(kind = Kind.fromStd(KindStandard.CONTACT_LIST))
             .authors(authors = pubkeys)
             .since(timestamp = since)
             .until(timestamp = until)

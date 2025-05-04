@@ -23,7 +23,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import rust.nostr.sdk.Coordinate
 import rust.nostr.sdk.Kind
-import rust.nostr.sdk.KindEnum
+import rust.nostr.sdk.KindStandard
+import rust.nostr.sdk.Nip19Coordinate
 
 class ItemSetProvider(
     private val room: AppDatabase,
@@ -49,8 +50,10 @@ class ItemSetProvider(
 
     suspend fun loadList(identifier: String) {
         this.identifier.value = identifier
-        profileListNaddr.value = getNaddr(kind = KindEnum.FollowSet, identifier = identifier)
-        topicListNaddr.value = getNaddr(kind = KindEnum.InterestSet, identifier = identifier)
+        profileListNaddr.value =
+            getNaddr(kind = Kind.fromStd(KindStandard.FOLLOW_SET), identifier = identifier)
+        topicListNaddr.value =
+            getNaddr(kind = Kind.fromStd(KindStandard.INTEREST_SET), identifier = identifier)
 
         if (identifier != this.identifier.value) {
             title.value = ""
@@ -98,11 +101,14 @@ class ItemSetProvider(
         } else profile
     }
 
-    private fun getNaddr(kind: KindEnum, identifier: String): String {
-        return Coordinate(
-            kind = Kind.fromEnum(kind),
+    private fun getNaddr(kind: Kind, identifier: String): String {
+        val coord = Coordinate(
+            kind = kind,
             identifier = identifier,
             publicKey = myPubkeyProvider.getPublicKey(),
+        )
+        return Nip19Coordinate(
+            coordinate = coord,
             relays = relayProvider.getWriteRelays(limit = 2)
         ).toBech32()
     }

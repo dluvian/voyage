@@ -80,11 +80,11 @@ android {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.15.0")
+    implementation("androidx.core:core-ktx:1.16.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
-    implementation("androidx.activity:activity-compose:1.9.3")
+    implementation("androidx.activity:activity-compose:1.10.1")
 
-    implementation(platform("androidx.compose:compose-bom:2024.12.01"))
+    implementation(platform("androidx.compose:compose-bom:2025.04.01"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
@@ -92,19 +92,18 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
-    implementation("androidx.security:security-crypto-ktx:1.1.0-alpha06")
+    implementation("androidx.security:security-crypto-ktx:1.1.0-alpha07")
 
-    val roomVersion = "2.6.1"
-    annotationProcessor("androidx.room:room-compiler:$roomVersion")
-    implementation("androidx.room:room-runtime:$roomVersion")
-    implementation("androidx.room:room-ktx:$roomVersion")
-    ksp("androidx.room:room-compiler:$roomVersion")
+    annotationProcessor("androidx.room:room-compiler:2.7.1")
+    implementation("androidx.room:room-runtime:2.7.1")
+    implementation("androidx.room:room-ktx:2.7.1")
+    ksp("androidx.room:room-compiler:2.7.1")
 
-    implementation("org.rust-nostr:nostr-sdk:0.38.3")
+    implementation("org.rust-nostr:nostr-sdk:0.41.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("cash.z.ecc.android:kotlin-bip39:1.0.8")
+    implementation("cash.z.ecc.android:kotlin-bip39:1.0.9")
     implementation("com.anggrayudi:storage:2.0.0")
 
     // R8 error: Missing class com.google.errorprone.annotations...
-    implementation("com.google.errorprone:error_prone_annotations:2.35.1")
+    implementation("com.google.errorprone:error_prone_annotations:2.38.0")
 }

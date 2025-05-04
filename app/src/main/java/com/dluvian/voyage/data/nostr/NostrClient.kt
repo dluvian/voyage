@@ -112,18 +112,17 @@ class NostrClient {
         nostrListener = listener
     }
 
-    fun subscribe(filters: List<Filter>, relayUrl: RelayUrl): SubId? {
-        if (filters.isEmpty()) return null
+    fun subscribe(filter: Filter, relayUrl: RelayUrl): SubId? {
 
         addRelay(relayUrl)
         val socket = sockets[relayUrl]
         if (socket == null) {
-            Log.w(TAG, "Failed to sub ${filters.size} filters. Relay $relayUrl is not registered")
+            Log.w(TAG, "Failed to sub filter. Relay $relayUrl is not registered")
             return null
         }
         val subId = UUID.randomUUID().toString()
         subscriptions[subId] = socket
-        val request = ClientMessage.req(subscriptionId = subId, filters = filters).asJson()
+        val request = ClientMessage.req(subscriptionId = subId, filter = filter).asJson()
         Log.d(TAG, "Subscribe $subId in $relayUrl: $request")
         socket.send(request)
 

@@ -9,7 +9,7 @@ import rust.nostr.sdk.Coordinate
 import rust.nostr.sdk.Event
 import rust.nostr.sdk.EventId
 import rust.nostr.sdk.Kind
-import rust.nostr.sdk.KindEnum
+import rust.nostr.sdk.KindStandard
 import rust.nostr.sdk.Metadata
 import rust.nostr.sdk.Nip19Event
 import rust.nostr.sdk.Nip19Profile
@@ -77,7 +77,7 @@ fun Timestamp.secs(): Long {
 fun getCurrentSecs() = System.currentTimeMillis() / 1000
 
 fun Event.isTextNote(): Boolean {
-    return this.kind().asEnum() == KindEnum.TextNote
+    return this.kind() == Kind.fromStd(KindStandard.TEXT_NOTE)
 }
 
 fun Event.getClientTag(): String? {
@@ -216,7 +216,7 @@ fun Event.getMetadata(): Metadata? {
 }
 
 fun Event.isProfile(): Boolean {
-    return this.kind().asEnum() == KindEnum.Metadata
+    return this.kind() == Kind.fromStd(KindStandard.METADATA)
 }
 
 fun createNprofile(hex: String, relays: List<String> = emptyList()): Nip19Profile {

@@ -32,7 +32,7 @@ interface ProfileUpsertDao {
     @Query(
         "SELECT MAX(createdAt) AS maxCreatedAt, pubkey " +
                 "FROM profile " +
-                "WHERE pubkey IN (:pubkeys)"
+                "WHERE pubkey IN (:pubkeys) GROUP BY pubkey"
     )
     suspend fun internalGetNewestCreatedAt(pubkeys: Collection<PubkeyHex>):
             Map<@MapColumn("pubkey") PubkeyHex,

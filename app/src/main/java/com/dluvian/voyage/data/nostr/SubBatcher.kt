@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 private const val TAG = "SubBatcher"
 private const val BATCH_DELAY = 2 * DEBOUNCE
 
+// TODO: Not needed anymore? Since each REQ has a single filter
 class SubBatcher(private val subCreator: SubscriptionCreator) {
     private val idVoteQueue = mutableMapOf<RelayUrl, MutableSet<EventIdHex>>()
     private val idReplyQueue = mutableMapOf<RelayUrl, MutableSet<EventIdHex>>()
@@ -71,7 +72,7 @@ class SubBatcher(private val subCreator: SubscriptionCreator) {
                     until = until
                 ).forEach { (relay, filters) ->
                     Log.d(TAG, "Sub ${filters.size} filters in $relay")
-                    subCreator.subscribe(relayUrl = relay, filters = filters)
+                    subCreator.subscribe_many(relayUrl = relay, filters = filters)
                 }
             }
         }.invokeOnCompletion {

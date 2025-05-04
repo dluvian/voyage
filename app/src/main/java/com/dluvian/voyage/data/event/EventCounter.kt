@@ -6,6 +6,7 @@ import rust.nostr.sdk.Filter
 
 private const val TAG = "EventCounter"
 
+// TODO: Remove?
 class EventCounter {
     private val countdownCache = mutableMapOf<SubId, Int>()
 

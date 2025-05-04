@@ -11,19 +11,25 @@ class SubscriptionCreator(
     private val syncedFilterCache: MutableMap<SubId, List<Filter>>,
     private val eventCounter: EventCounter,
 ) {
-    fun subscribe(relayUrl: RelayUrl, filters: List<Filter>): SubId? {
-        if (filters.isEmpty()) return null
-        Log.d(TAG, "Subscribe ${filters.size} in $relayUrl")
+    fun subscribe(relayUrl: RelayUrl, filter: Filter): SubId? {
+        Log.d(TAG, "Subscribe filter in $relayUrl")
 
-        val subId = nostrClient.subscribe(filters = filters, relayUrl = relayUrl)
+        val subId = nostrClient.subscribe(filter = filter, relayUrl = relayUrl)
         if (subId == null) {
             Log.w(TAG, "Failed to create subscription ID")
             return null
         }
-        syncedFilterCache[subId] = filters
-        eventCounter.registerSubscription(subId = subId, filters = filters)
+        syncedFilterCache[subId] = listOf(filter) // TODO: adjust for single filter reqs
+        eventCounter.registerSubscription(subId = subId, filters = listOf(filter))
 
         return subId
+    }
+
+    // TODO: whack
+    fun subscribe_many(relayUrl: RelayUrl, filters: List<Filter>) {
+        filters.forEach {
+            subscribe(relayUrl = relayUrl, filter = it)
+        }
     }
 
     fun unsubAll() = nostrClient.unsubscribeAll()

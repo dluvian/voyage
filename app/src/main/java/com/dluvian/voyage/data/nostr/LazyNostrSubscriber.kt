@@ -31,7 +31,7 @@ import kotlinx.coroutines.delay
 import rust.nostr.sdk.EventId
 import rust.nostr.sdk.Filter
 import rust.nostr.sdk.Kind
-import rust.nostr.sdk.KindEnum
+import rust.nostr.sdk.KindStandard
 import rust.nostr.sdk.Nip19Profile
 import rust.nostr.sdk.PublicKey
 import rust.nostr.sdk.Timestamp
@@ -73,10 +73,10 @@ class LazyNostrSubscriber(
 
         lazySubMyKind(
             kindAndSince = listOf(
-                Pair(Kind.fromEnum(KindEnum.ContactList).asU16(), contactSince + 1uL),
-                Pair(Kind.fromEnum(KindEnum.Interests).asU16(), topicSince + 1uL),
-                Pair(Kind.fromEnum(KindEnum.RelayList).asU16(), nip65Since + 1uL),
-                Pair(Kind.fromEnum(KindEnum.Metadata).asU16(), profileSince + 1uL),
+                Pair(Kind.fromStd(KindStandard.CONTACT_LIST).asU16(), contactSince + 1uL),
+                Pair(Kind.fromStd(KindStandard.INTERESTS).asU16(), topicSince + 1uL),
+                Pair(Kind.fromStd(KindStandard.RELAY_LIST).asU16(), nip65Since + 1uL),
+                Pair(Kind.fromStd(KindStandard.METADATA).asU16(), profileSince + 1uL),
             ).let {
                 if (isLocked) it else it + Pair(LOCK_U16, 1uL)
             }
@@ -89,8 +89,8 @@ class LazyNostrSubscriber(
         val muteSince = room.muteDao().getMaxCreatedAt()?.toULong() ?: 1uL
         lazySubMyKind(
             kindAndSince = listOf(
-                Pair(Kind.fromEnum(KindEnum.Bookmarks).asU16(), bookmarksSince + 1uL),
-                Pair(Kind.fromEnum(KindEnum.MuteList).asU16(), muteSince + 1uL)
+                Pair(Kind.fromStd(KindStandard.BOOKMARKS).asU16(), bookmarksSince + 1uL),
+                Pair(Kind.fromStd(KindStandard.MUTE_LIST).asU16(), muteSince + 1uL)
             )
         )
     }
@@ -100,7 +100,7 @@ class LazyNostrSubscriber(
         val bookmarksSince = room.bookmarkDao().getMaxCreatedAt()?.toULong() ?: 1uL
         lazySubMyKind(
             kindAndSince = listOf(
-                Pair(Kind.fromEnum(KindEnum.Bookmarks).asU16(), bookmarksSince + 1uL)
+                Pair(Kind.fromStd(KindStandard.BOOKMARKS).asU16(), bookmarksSince + 1uL)
             )
         )
     }
@@ -110,7 +110,7 @@ class LazyNostrSubscriber(
         val muteSince = room.muteDao().getMaxCreatedAt()?.toULong() ?: 1uL
         lazySubMyKind(
             kindAndSince = listOf(
-                Pair(Kind.fromEnum(KindEnum.MuteList).asU16(), muteSince + 1uL)
+                Pair(Kind.fromStd(KindStandard.MUTE_LIST).asU16(), muteSince + 1uL)
             )
         )
     }
@@ -120,13 +120,13 @@ class LazyNostrSubscriber(
         val filters = listOf(profileFilter)
 
         relayProvider.getObserveRelays(nprofile = nprofile).forEach { relay ->
-            subCreator.subscribe(relayUrl = relay, filters = filters)
+            subCreator.subscribe_many(relayUrl = relay, filters = filters)
         }
     }
 
     fun lazySubWotLocks(prioritizeFriends: Boolean) {
         getWotLockFilters(prioritizeFriends = prioritizeFriends).forEach { (relay, filters) ->
-            subCreator.subscribe(relayUrl = relay, filters = filters)
+            subCreator.subscribe_many(relayUrl = relay, filters = filters)
         }
     }
 
@@ -140,7 +140,7 @@ class LazyNostrSubscriber(
         val filters = listOf(nip65Filter, lockFilter, profileFilter).mapNotNull { it }
 
         relayProvider.getObserveRelays(nprofile = nprofile, includeConnected = true)
-            .forEach { relay -> subCreator.subscribe(relayUrl = relay, filters = filters) }
+            .forEach { relay -> subCreator.subscribe_many(relayUrl = relay, filters = filters) }
     }
 
     suspend fun lazySubMySets() {
@@ -152,7 +152,7 @@ class LazyNostrSubscriber(
         )
 
         relayProvider.getWriteRelays().forEach { relay ->
-            subCreator.subscribe(relayUrl = relay, filters = filters)
+            subCreator.subscribe_many(relayUrl = relay, filters = filters)
         }
     }
 
@@ -166,7 +166,7 @@ class LazyNostrSubscriber(
         )
 
         relayProvider.getReadRelays().forEach { relay ->
-            subCreator.subscribe(relayUrl = relay, filters = filters)
+            subCreator.subscribe_many(relayUrl = relay, filters = filters)
         }
     }
 
@@ -174,7 +174,7 @@ class LazyNostrSubscriber(
         val filters = listOf(filterCreator.getLazyPollResponseFilter(poll = poll))
 
         relayProvider.getReadRelays().forEach { relay ->
-            subCreator.subscribe(relayUrl = relay, filters = filters)
+            subCreator.subscribe_many(relayUrl = relay, filters = filters)
         }
     }
 
@@ -203,7 +203,7 @@ class LazyNostrSubscriber(
                         until = now
                     )
                     val filters = listOf(filter)
-                    subCreator.subscribe(relayUrl = relay, filters = filters)
+                    subCreator.subscribe_many(relayUrl = relay, filters = filters)
                 }
             }
     }
@@ -213,7 +213,7 @@ class LazyNostrSubscriber(
             filterCreator.getLazyNip65Filter(pubkey = nprofile.publicKey())
         )
         relayProvider.getObserveRelays(nprofile = nprofile, includeConnected = true)
-            .forEach { relay -> subCreator.subscribe(relayUrl = relay, filters = filters) }
+            .forEach { relay -> subCreator.subscribe_many(relayUrl = relay, filters = filters) }
     }
 
     suspend fun lazySubNip65s(selection: PubkeySelection) {
@@ -258,7 +258,7 @@ class LazyNostrSubscriber(
         )
 
         mergeRelayFilters(missingSubs, newestSubs).forEach { (relay, filters) ->
-            subCreator.subscribe(relayUrl = relay, filters = filters)
+            subCreator.subscribe_many(relayUrl = relay, filters = filters)
         }
     }
 
@@ -268,7 +268,7 @@ class LazyNostrSubscriber(
         val filters = filterCreator.getMyKindFilter(kindAndSince = kindAndSince)
 
         relayProvider.getWriteRelays().forEach { relay ->
-            subCreator.subscribe(relayUrl = relay, filters = filters)
+            subCreator.subscribe_many(relayUrl = relay, filters = filters)
         }
     }
 
@@ -307,7 +307,7 @@ class LazyNostrSubscriber(
             getNewestWotPubkeysFilters(until = now),
             getWotLockFilters()
         ).forEach { (relay, filters) ->
-            subCreator.subscribe(relayUrl = relay, filters = filters)
+            subCreator.subscribe_many(relayUrl = relay, filters = filters)
         }
     }
 

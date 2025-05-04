@@ -16,7 +16,7 @@ import com.dluvian.voyage.data.room.view.PollOptionView
 import com.dluvian.voyage.data.room.view.PollView
 import com.dluvian.voyage.data.room.view.RootPostView
 import rust.nostr.sdk.Kind
-import rust.nostr.sdk.KindEnum
+import rust.nostr.sdk.KindStandard
 
 sealed class MainEvent(
     open val id: EventIdHex,
@@ -33,7 +33,7 @@ sealed class MainEvent(
 ) {
     fun getRelevantKind(): Kind? {
         return when (this) {
-            is RootPost, is LegacyReply -> Kind.fromEnum(KindEnum.TextNote)
+            is RootPost, is LegacyReply -> Kind.fromStd(KindStandard.TEXT_NOTE)
             is CrossPost -> null
             is Comment -> Kind(COMMENT_U16)
             is Poll -> Kind(POLL_U16)
