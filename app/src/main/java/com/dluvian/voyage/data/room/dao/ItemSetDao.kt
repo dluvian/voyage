@@ -86,8 +86,7 @@ interface ItemSetDao {
         "SELECT pubkey " +
                 "FROM profileSetItem " +
                 "WHERE identifier = :identifier " +
-                "AND pubkey NOT IN (SELECT pubkey FROM nip65) " +
-                "AND pubkey NOT IN (SELECT pubkey FROM lock)"
+                "AND pubkey NOT IN (SELECT pubkey FROM nip65)"
     )
     suspend fun getPubkeysWithMissingNip65(identifier: String): List<PubkeyHex>
 }

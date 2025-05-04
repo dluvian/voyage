@@ -25,7 +25,6 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             CASE WHEN friend.friendPubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsFriend,
             CASE WHEN weboftrust.webOfTrustPubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsTrusted,
             CASE WHEN profileSetItem.pubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsInList,
-            CASE WHEN lock.pubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsLocked,
             CASE WHEN vote.eventId IS NOT NULL THEN 1 ELSE 0 END isUpvoted,
             upvotes.upvoteCount,
             legacyReplies.legacyReplyCount,
@@ -45,7 +44,6 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
         LEFT JOIN friend ON friend.friendPubkey = mainEvent.pubkey
         LEFT JOIN weboftrust ON weboftrust.webOfTrustPubkey = mainEvent.pubkey
         LEFT JOIN profileSetItem ON profileSetItem.pubkey = mainEvent.pubkey
-        LEFT JOIN lock ON lock.pubkey = mainEvent.pubkey
         LEFT JOIN vote ON vote.eventId = mainEvent.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)
         LEFT JOIN (
             SELECT vote.eventId, COUNT(*) AS upvoteCount 
@@ -72,7 +70,6 @@ data class RootPostView(
     val authorIsFriend: Boolean,
     val authorIsTrusted: Boolean,
     val authorIsInList: Boolean,
-    val authorIsLocked: Boolean,
     val myTopic: Topic?,
     val subject: String,
     val content: String,

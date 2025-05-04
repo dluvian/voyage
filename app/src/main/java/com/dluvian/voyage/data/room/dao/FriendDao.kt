@@ -7,36 +7,30 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FriendDao {
-    @Query("SELECT friendPubkey FROM friend WHERE friendPubkey NOT IN (SELECT pubkey FROM lock)")
-    fun getFriendsNoLockFlow(): Flow<List<PubkeyHex>>
-
     @Query("SELECT friendPubkey FROM friend")
-    fun getFriendsIncludingLockedFlow(): Flow<List<PubkeyHex>>
+    fun getFriendPubkeys(): Flow<List<PubkeyHex>>
 
     @Query(
         "SELECT friendPubkey " +
                 "FROM friend " +
-                "WHERE friendPubkey NOT IN (SELECT friendPubkey FROM weboftrust) " +
-                "AND friendPubkey NOT IN (SELECT pubkey FROM lock)"
+                "WHERE friendPubkey NOT IN (SELECT friendPubkey FROM weboftrust)"
     )
     suspend fun getFriendsWithMissingContactList(): List<PubkeyHex>
 
     @Query(
         "SELECT friendPubkey " +
                 "FROM friend " +
-                "WHERE friendPubkey NOT IN (SELECT pubkey FROM nip65) " +
-                "AND friendPubkey NOT IN (SELECT pubkey FROM lock)"
+                "WHERE friendPubkey NOT IN (SELECT pubkey FROM nip65)"
     )
     suspend fun getFriendsWithMissingNip65(): List<PubkeyHex>
 
     @Query(
         "SELECT friendPubkey " +
                 "FROM friend " +
-                "WHERE friendPubkey NOT IN (SELECT pubkey FROM profile) " +
-                "AND friendPubkey NOT IN (SELECT pubkey FROM lock)"
+                "WHERE friendPubkey NOT IN (SELECT pubkey FROM profile)"
     )
     suspend fun getFriendsWithMissingProfile(): List<PubkeyHex>
 
-    @Query("SELECT MAX(createdAt) FROM friend WHERE friendPubkey NOT IN (SELECT pubkey FROM lock)")
+    @Query("SELECT MAX(createdAt) FROM friend")
     suspend fun getMaxCreatedAt(): Long?
 }

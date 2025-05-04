@@ -2,7 +2,7 @@ package com.dluvian.voyage.data.room.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.dluvian.voyage.data.model.FriendPubkeysNoLock
+import com.dluvian.voyage.data.model.FriendPubkeys
 import com.dluvian.voyage.data.model.Global
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.NoPubkeys
@@ -22,7 +22,6 @@ private const val POLL = "FROM PollView $CREATED_AT"
 private const val POLL_OPTION = "FROM PollOptionView "
 
 private const val ROOT_COND = "AND authorIsOneself = 0 " +
-        "AND authorIsLocked = 0 " +
         "ORDER BY createdAt DESC " +
         "LIMIT :size"
 
@@ -174,7 +173,7 @@ interface HomeFeedDao {
                 flowOf(emptyList())
             }
 
-            FriendPubkeysNoLock -> if (withMyTopics) {
+            FriendPubkeys -> if (withMyTopics) {
                 internalGetFriendOrTopicRootFlow(until = until, size = size)
             } else {
                 internalGetFriendRootFlow(until = until, size = size)
@@ -206,7 +205,7 @@ interface HomeFeedDao {
                 flowOf(emptyList())
             }
 
-            FriendPubkeysNoLock -> if (withMyTopics) {
+            FriendPubkeys -> if (withMyTopics) {
                 internalGetFriendOrTopicCrossFlow(until = until, size = size)
             } else {
                 internalGetFriendCrossFlow(until = until, size = size)
@@ -238,7 +237,7 @@ interface HomeFeedDao {
                 flowOf(emptyList())
             }
 
-            FriendPubkeysNoLock -> if (withMyTopics) {
+            FriendPubkeys -> if (withMyTopics) {
                 internalGetFriendOrTopicPollFlow(until = until, size = size)
             } else {
                 internalGetFriendPollFlow(until = until, size = size)
@@ -270,7 +269,7 @@ interface HomeFeedDao {
                 flowOf(emptyList())
             }
 
-            FriendPubkeysNoLock -> if (withMyTopics) {
+            FriendPubkeys -> if (withMyTopics) {
                 internalGetFriendOrTopicPollOptionFlow(until = until, size = size)
             } else {
                 internalGetFriendPollOptionFlow(until = until, size = size)
@@ -302,7 +301,7 @@ interface HomeFeedDao {
                 emptyList()
             }
 
-            FriendPubkeysNoLock -> if (withMyTopics) {
+            FriendPubkeys -> if (withMyTopics) {
                 internalGetFriendOrTopicRoot(until = until, size = size)
             } else {
                 internalGetFriendRoot(until = until, size = size)
@@ -334,7 +333,7 @@ interface HomeFeedDao {
                 emptyList()
             }
 
-            FriendPubkeysNoLock -> if (withMyTopics) {
+            FriendPubkeys -> if (withMyTopics) {
                 internalGetFriendOrTopicCross(until = until, size = size)
             } else {
                 internalGetFriendCross(until = until, size = size)
@@ -366,7 +365,7 @@ interface HomeFeedDao {
                 emptyList()
             }
 
-            FriendPubkeysNoLock -> if (withMyTopics) {
+            FriendPubkeys -> if (withMyTopics) {
                 internalGetFriendOrTopicPoll(until = until, size = size)
             } else {
                 internalGetFriendPoll(until = until, size = size)
@@ -405,7 +404,7 @@ interface HomeFeedDao {
                 flowOf(false)
             }
 
-            FriendPubkeysNoLock -> if (withMyTopics) {
+            FriendPubkeys -> if (withMyTopics) {
                 combine(
                     if (setting.showRoots) internalHasFriendOrTopicRootFlow(
                         until = until,
@@ -489,7 +488,7 @@ interface HomeFeedDao {
                 emptyList()
             }
 
-            FriendPubkeysNoLock -> if (withMyTopics) {
+            FriendPubkeys -> if (withMyTopics) {
                 internalGetFriendOrTopicCreatedAtRoot(until = until, size = size)
                     .orNoRoots(setting) +
                         internalGetFriendOrTopicCreatedAtCross(until = until, size = size)

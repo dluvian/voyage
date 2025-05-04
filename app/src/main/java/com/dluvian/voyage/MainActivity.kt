@@ -137,7 +137,6 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 databaseInteractor = appContainer.databaseInteractor,
                 externalSignerHandler = appContainer.externalSignerHandler,
                 mnemonicSigner = appContainer.mnemonicSigner,
-                accountLocker = appContainer.accountLocker
             )
         },
         searchVM = viewModel {
@@ -163,7 +162,6 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 eventRelayDao = appContainer.roomDb.eventRelayDao(),
                 itemSetProvider = appContainer.itemSetProvider,
                 myPubkeyProvider = appContainer.accountManager,
-                accountLocker = appContainer.accountLocker,
             )
         },
         threadVM = viewModel {

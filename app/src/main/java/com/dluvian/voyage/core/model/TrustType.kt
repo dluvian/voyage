@@ -17,11 +17,8 @@ sealed class TrustType {
             isFriend: Boolean,
             isWebOfTrust: Boolean,
             isInList: Boolean,
-            isLocked: Boolean,
         ): TrustType {
-            return if (isOneself && isLocked) LockedOneself
-            else if (isOneself) Oneself
-            else if (isLocked) Locked
+            return if (isOneself) Oneself
             else if (isFriend) FriendTrust
             else if (isInList) IsInListTrust
             else if (isWebOfTrust) WebTrust
@@ -38,7 +35,6 @@ sealed class TrustType {
                 isFriend = isFriend ?: rootPostView.authorIsFriend,
                 isWebOfTrust = rootPostView.authorIsTrusted,
                 isInList = rootPostView.authorIsInList,
-                isLocked = rootPostView.authorIsLocked,
             )
         }
 
@@ -53,7 +49,6 @@ sealed class TrustType {
                 isFriend = isFriend ?: pollView.authorIsFriend,
                 isWebOfTrust = pollView.authorIsTrusted,
                 isInList = pollView.authorIsInList,
-                isLocked = pollView.authorIsLocked,
             )
         }
 
@@ -67,7 +62,6 @@ sealed class TrustType {
                 isFriend = isFriend ?: legacyReplyView.authorIsFriend,
                 isWebOfTrust = legacyReplyView.authorIsTrusted,
                 isInList = legacyReplyView.authorIsInList,
-                isLocked = legacyReplyView.authorIsLocked,
             )
         }
 
@@ -81,7 +75,6 @@ sealed class TrustType {
                 isFriend = isFriend ?: commentView.authorIsFriend,
                 isWebOfTrust = commentView.authorIsTrusted,
                 isInList = commentView.authorIsInList,
-                isLocked = commentView.authorIsLocked,
             )
         }
 
@@ -95,7 +88,6 @@ sealed class TrustType {
                 isFriend = isFriend ?: crossPostView.authorIsFriend,
                 isWebOfTrust = crossPostView.authorIsTrusted,
                 isInList = crossPostView.authorIsInList,
-                isLocked = crossPostView.authorIsLocked,
             )
         }
 
@@ -109,16 +101,13 @@ sealed class TrustType {
                 isFriend = isFriend ?: crossPostView.crossPostedAuthorIsFriend,
                 isWebOfTrust = crossPostView.crossPostedAuthorIsTrusted,
                 isInList = crossPostView.crossPostedAuthorIsInList,
-                isLocked = crossPostView.crossPostedAuthorIsLocked,
             )
         }
     }
 }
 
-data object LockedOneself : TrustType()
 data object Oneself : TrustType()
 data object FriendTrust : TrustType()
 data object IsInListTrust : TrustType()
 data object WebTrust : TrustType()
 data object NoTrust : TrustType()
-data object Locked : TrustType()

@@ -7,7 +7,7 @@ sealed class PubkeySelection
 sealed class FeedPubkeySelection : PubkeySelection()
 
 data object NoPubkeys : FeedPubkeySelection()
-data object FriendPubkeysNoLock : FeedPubkeySelection()
+data object FriendPubkeys : FeedPubkeySelection()
 data object WebOfTrustPubkeys : FeedPubkeySelection()
 data object Global : FeedPubkeySelection()
 

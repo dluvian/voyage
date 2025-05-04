@@ -11,14 +11,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.unit.Dp
 import com.dluvian.voyage.core.model.FriendTrust
 import com.dluvian.voyage.core.model.IsInListTrust
-import com.dluvian.voyage.core.model.Locked
-import com.dluvian.voyage.core.model.LockedOneself
 import com.dluvian.voyage.core.model.NoTrust
 import com.dluvian.voyage.core.model.Oneself
 import com.dluvian.voyage.core.model.TrustType
@@ -41,9 +37,7 @@ fun TrustIcon(trustType: TrustType, size: Dp = sizing.trustIndicator) {
 
         IsInListTrust -> ListTrustBox(size = size, color = color)
 
-        Locked -> LockTriangle(size = size, color = color)
-
-        LockedOneself, Oneself -> {
+        Oneself -> {
             /* Nothing for oneself */
         }
     }
@@ -58,7 +52,6 @@ fun TrustIcon(profile: AdvancedProfileView) {
             isFriend = profile.isFriend,
             isWebOfTrust = profile.isWebOfTrust,
             isInList = profile.isInList,
-            isLocked = profile.isLocked,
         )
     )
 }
@@ -95,32 +88,4 @@ private fun ListTrustBox(size: Dp, color: Color) {
             )
         }
     }
-}
-
-@Stable
-@Composable
-private fun LockTriangle(size: Dp, color: Color) {
-    val xRatio = 0.7f
-    Box(
-        modifier = Modifier
-            .drawWithCache {
-                onDrawBehind {
-                    val maxX = size
-                        .toPx()
-                        .times(xRatio)
-                    val maxY = size.toPx()
-                    drawPath(
-                        path = Path().apply {
-                            moveTo(maxX.div(2), 0f)
-                            lineTo(maxX, maxY)
-                            lineTo(0f, maxY)
-                            close()
-                        },
-                        color = color,
-                    )
-                }
-            }
-            .height(height = size)
-            .width(width = size.times(xRatio)),
-    )
 }
