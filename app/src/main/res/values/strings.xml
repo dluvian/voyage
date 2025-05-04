@@ -38,7 +38,6 @@
     <string name="follow">Follow</string>
     <string name="failed_to_sign_topic_list">Failed to sign topic list</string>
     <string name="failed_to_sign_bookmarks">Failed to sign bookmarks</string>
-    <string name="failed_to_sign_mute_list">Failed to sign mute list</string>
     <string name="failed_to_sign_contact_list">Failed to sign contact list</string>
     <string name="about">About</string>
     <string name="popular_topics">Popular topics</string>
@@ -201,10 +200,6 @@
     <string name="choose_list">Choose list</string>
     <string name="added_to_list">Added to list</string>
     <string name="nostr_uri">Nostr URI</string>
-    <string name="muted">Muted</string>
-    <string name="unmute">Unmute</string>
-    <string name="mute">Mute</string>
-    <string name="mute_list">Mute list</string>
     <string name="list_is_empty">List is empty</string>
     <string name="in_list">In list</string>
     <string name="next">Next</string>
@@ -223,8 +218,6 @@
     <string name="profile_list_identifier">Profile List Identifier</string>
     <string name="topic_list_identifier">Topic List Identifier</string>
     <string name="describe_this_list">Describe this list</string>
-    <string name="words">Words</string>
-    <string name="add_word">Add word</string>
     <string name="send_bookmarked_post_to_local_relay">Send bookmarked post to local relay</string>
     <string name="send_post_to_local_relay_after_bookmarking_it">Send post to local relay after bookmarking it</string>
     <string name="send_upvoted_post_to_local_relay">Send upvoted post to local relay</string>

@@ -86,11 +86,9 @@ class LazyNostrSubscriber(
     suspend fun lazySubMyMainView() {
         Log.d(TAG, "lazySubMyMainView")
         val bookmarksSince = room.bookmarkDao().getMaxCreatedAt()?.toULong() ?: 1uL
-        val muteSince = room.muteDao().getMaxCreatedAt()?.toULong() ?: 1uL
         lazySubMyKind(
             kindAndSince = listOf(
                 Pair(Kind.fromStd(KindStandard.BOOKMARKS).asU16(), bookmarksSince + 1uL),
-                Pair(Kind.fromStd(KindStandard.MUTE_LIST).asU16(), muteSince + 1uL)
             )
         )
     }
@@ -101,16 +99,6 @@ class LazyNostrSubscriber(
         lazySubMyKind(
             kindAndSince = listOf(
                 Pair(Kind.fromStd(KindStandard.BOOKMARKS).asU16(), bookmarksSince + 1uL)
-            )
-        )
-    }
-
-    suspend fun lazySubMyMutes() {
-        Log.d(TAG, "lazySubMyMutes")
-        val muteSince = room.muteDao().getMaxCreatedAt()?.toULong() ?: 1uL
-        lazySubMyKind(
-            kindAndSince = listOf(
-                Pair(Kind.fromStd(KindStandard.MUTE_LIST).asU16(), muteSince + 1uL)
             )
         )
     }

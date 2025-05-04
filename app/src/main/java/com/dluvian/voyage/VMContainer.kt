@@ -13,7 +13,6 @@ import com.dluvian.voyage.core.viewModel.FollowListsViewModel
 import com.dluvian.voyage.core.viewModel.HomeViewModel
 import com.dluvian.voyage.core.viewModel.InboxViewModel
 import com.dluvian.voyage.core.viewModel.ListViewModel
-import com.dluvian.voyage.core.viewModel.MuteListViewModel
 import com.dluvian.voyage.core.viewModel.ProfileViewModel
 import com.dluvian.voyage.core.viewModel.RelayEditorViewModel
 import com.dluvian.voyage.core.viewModel.RelayProfileViewModel
@@ -42,6 +41,5 @@ data class VMContainer(
     val bookmarksVM: BookmarksViewModel,
     val editListVM: EditListViewModel,
     val listVM: ListViewModel,
-    val muteListVM: MuteListViewModel,
     val createGitIssueVM: CreateGitIssueViewModel,
 )

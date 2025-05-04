@@ -26,7 +26,6 @@ import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.core.model.Locked
 import com.dluvian.voyage.core.model.LockedOneself
 import com.dluvian.voyage.core.model.MainEvent
-import com.dluvian.voyage.core.model.Muted
 import com.dluvian.voyage.core.model.NoTrust
 import com.dluvian.voyage.core.model.Oneself
 import com.dluvian.voyage.core.model.Poll
@@ -167,7 +166,7 @@ private fun FollowItem(
     onUpdate: OnUpdate
 ) {
     when (mainEvent.trustType) {
-        Oneself, Muted, Locked, LockedOneself -> {}
+        Oneself, Locked, LockedOneself -> {}
         FriendTrust -> {
             SimpleDropdownItem(
                 text = stringResource(id = R.string.unfollow),
@@ -198,7 +197,7 @@ private fun FollowCrossPostedItem(
 ) {
     if (mainEvent is CrossPost) {
         when (mainEvent.crossPostedTrustType) {
-            Oneself, Muted, Locked, LockedOneself -> {}
+            Oneself, Locked, LockedOneself -> {}
             FriendTrust -> {
                 SimpleDropdownItem(
                     text = stringResource(id = R.string.unfollow_cross_posted_author),

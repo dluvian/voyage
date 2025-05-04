@@ -5,7 +5,6 @@ import com.dluvian.voyage.core.MAX_CONTENT_LEN
 import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.utils.getNormalizedDescription
-import com.dluvian.voyage.core.utils.getNormalizedMuteWords
 import com.dluvian.voyage.core.utils.getNormalizedPollOptions
 import com.dluvian.voyage.core.utils.getNormalizedTitle
 import com.dluvian.voyage.core.utils.getNormalizedTopics
@@ -45,7 +44,6 @@ private val FOLLOW_SET_U16 = Kind.fromStd(KindStandard.FOLLOW_SET).asU16()
 private val INTEREST_SET_U16 = Kind.fromStd(KindStandard.INTEREST_SET).asU16()
 private val INTERESTS_U16 = Kind.fromStd(KindStandard.INTERESTS).asU16()
 private val BOOKMARKS_U16 = Kind.fromStd(KindStandard.BOOKMARKS).asU16()
-private val MUTE_LIST_U16 = Kind.fromStd(KindStandard.MUTE_LIST).asU16()
 val COMMENT_U16: UShort = Kind.fromStd(KindStandard.COMMENT).asU16()
 val LOCK_U16: UShort = 398u
 val POLL_U16: UShort = 1068u
@@ -220,21 +218,6 @@ class EventValidator(
                         .distinct()
                         .takeRandom(MAX_KEYS_SQL)
                         .toSet(),
-                    createdAt = event.createdAt().secs()
-                )
-            }
-
-            MUTE_LIST_U16 -> {
-                val authorHex = event.author().toHex()
-                if (authorHex != myPubkeyProvider.getPubkeyHex()) return null
-                ValidatedMuteList(
-                    myPubkey = authorHex,
-                    pubkeys = event.tags().publicKeys().map { it.toHex() }
-                        .distinct()
-                        .takeRandom(MAX_KEYS_SQL)
-                        .toSet(),
-                    topics = event.getNormalizedTopics(limit = MAX_KEYS_SQL).toSet(),
-                    words = event.getNormalizedMuteWords(limit = MAX_KEYS_SQL).toSet(),
                     createdAt = event.createdAt().secs()
                 )
             }

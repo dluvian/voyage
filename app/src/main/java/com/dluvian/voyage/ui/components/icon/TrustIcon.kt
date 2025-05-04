@@ -19,7 +19,6 @@ import com.dluvian.voyage.core.model.FriendTrust
 import com.dluvian.voyage.core.model.IsInListTrust
 import com.dluvian.voyage.core.model.Locked
 import com.dluvian.voyage.core.model.LockedOneself
-import com.dluvian.voyage.core.model.Muted
 import com.dluvian.voyage.core.model.NoTrust
 import com.dluvian.voyage.core.model.Oneself
 import com.dluvian.voyage.core.model.TrustType
@@ -38,12 +37,11 @@ fun TrustIcon(trustType: TrustType, size: Dp = sizing.trustIndicator) {
         FriendTrust,
         WebTrust,
         NoTrust,
-        Muted,
         -> TrustBox(size = size, color = color)
 
         IsInListTrust -> ListTrustBox(size = size, color = color)
 
-        Locked -> MuteTriangle(size = size, color = color)
+        Locked -> LockTriangle(size = size, color = color)
 
         LockedOneself, Oneself -> {
             /* Nothing for oneself */
@@ -59,7 +57,6 @@ fun TrustIcon(profile: AdvancedProfileView) {
             isOneself = profile.isMe,
             isFriend = profile.isFriend,
             isWebOfTrust = profile.isWebOfTrust,
-            isMuted = profile.isMuted,
             isInList = profile.isInList,
             isLocked = profile.isLocked,
         )
@@ -102,7 +99,7 @@ private fun ListTrustBox(size: Dp, color: Color) {
 
 @Stable
 @Composable
-private fun MuteTriangle(size: Dp, color: Color) {
+private fun LockTriangle(size: Dp, color: Color) {
     val xRatio = 0.7f
     Box(
         modifier = Modifier

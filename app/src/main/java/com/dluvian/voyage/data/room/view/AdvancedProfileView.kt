@@ -12,7 +12,6 @@ import rust.nostr.sdk.Nip19Profile
             "(SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = profile.pubkey)) AS isFriend, " +
             "(SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = profile.pubkey)) AS isWebOfTrust, " +
             "(SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = profile.pubkey)) AS isMe, " +
-            "(SELECT EXISTS(SELECT * FROM mute WHERE mute.mutedItem = profile.pubkey AND mute.tag IS 'p')) AS isMuted, " +
             "(SELECT EXISTS(SELECT * FROM profileSetItem WHERE profileSetItem.pubkey = profile.pubkey)) AS isInList, " +
             "(SELECT EXISTS(SELECT * FROM lock WHERE pubkey = profile.pubkey)) AS isLocked " +
             "FROM profile "
@@ -23,7 +22,6 @@ data class AdvancedProfileView(
     val isMe: Boolean = false,
     val isFriend: Boolean = false,
     val isWebOfTrust: Boolean = false,
-    val isMuted: Boolean = false,
     val isInList: Boolean = false,
     val isLocked: Boolean = false,
 ) {

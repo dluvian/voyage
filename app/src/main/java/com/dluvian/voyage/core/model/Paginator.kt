@@ -7,20 +7,11 @@ import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.FEED_PAGE_SIZE
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
-import com.dluvian.voyage.core.utils.containsNoneIgnoreCase
 import com.dluvian.voyage.core.utils.launchIO
-import com.dluvian.voyage.data.model.BookmarksFeedSetting
 import com.dluvian.voyage.data.model.FeedSetting
-import com.dluvian.voyage.data.model.HomeFeedSetting
-import com.dluvian.voyage.data.model.InboxFeedSetting
-import com.dluvian.voyage.data.model.ListFeedSetting
-import com.dluvian.voyage.data.model.ProfileFeedSetting
-import com.dluvian.voyage.data.model.ReplyFeedSetting
-import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.nostr.getCurrentSecs
 import com.dluvian.voyage.data.provider.FeedProvider
-import com.dluvian.voyage.data.provider.MuteProvider
 import com.dluvian.voyage.ui.components.row.mainEvent.FeedCtx
 import com.dluvian.voyage.ui.components.row.mainEvent.MainEventCtx
 import kotlinx.coroutines.CoroutineScope
@@ -37,7 +28,6 @@ private const val TAG = "Paginator"
 
 class Paginator(
     private val feedProvider: FeedProvider,
-    private val muteProvider: MuteProvider,
     private val subCreator: SubscriptionCreator,
     private val scope: CoroutineScope,
 ) : IPaginator {
@@ -122,8 +112,6 @@ class Paginator(
         feedSetting: FeedSetting = this.feedSetting,
         forceSubscription: Boolean = false
     ) {
-        val mutedWords = muteProvider.getMutedWords()
-
         val flow = feedProvider.getFeedFlow(
             until = until,
             size = FEED_PAGE_SIZE,
@@ -139,20 +127,6 @@ class Paginator(
             // Reported bug that LazyCol id has duplicates
             // TODO: Will be fixed once we move to in-memory view instead of room-view
             .map { postCtx -> postCtx.distinctBy { it.mainEvent.id } }
-            .map { postCtxs ->
-                when (feedSetting) {
-                    // No muted words
-                    is HomeFeedSetting, is TopicFeedSetting,
-                    is InboxFeedSetting, is ListFeedSetting -> {
-                        postCtxs.filter { postCtx ->
-                            postCtx.mainEvent.trustType == Oneself ||
-                                    postCtx.mainEvent.content.text.containsNoneIgnoreCase(strs = mutedWords)
-                        }
-                    }
-                    // Muted words allowed
-                    BookmarksFeedSetting, is ReplyFeedSetting, is ProfileFeedSetting -> postCtxs
-                }
-            }
             .stateIn(scope, SharingStarted.WhileSubscribed(), getStaticFeed(until = until))
     }
 

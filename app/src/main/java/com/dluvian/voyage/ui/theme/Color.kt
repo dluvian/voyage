@@ -9,7 +9,6 @@ import com.dluvian.voyage.core.model.FriendTrust
 import com.dluvian.voyage.core.model.IsInListTrust
 import com.dluvian.voyage.core.model.Locked
 import com.dluvian.voyage.core.model.LockedOneself
-import com.dluvian.voyage.core.model.Muted
 import com.dluvian.voyage.core.model.NoTrust
 import com.dluvian.voyage.core.model.Oneself
 import com.dluvian.voyage.core.model.TrustType
@@ -21,7 +20,6 @@ val DenimBlue = Color(0xFF1565c0)
 
 val WotColor = Color(0xFFF8D97B)
 val FriendColor = Color(0xFFC1FA7F)
-val MutedColor = Color(0xFFFA6D6D)
 val LockedColor = Color.Red
 
 val HyperlinkBlue = Color(0xFF007AFF)
@@ -103,7 +101,6 @@ fun getTrustColor(trustType: TrustType): Color {
         Oneself -> FriendColor
         FriendTrust, IsInListTrust -> FriendColor
         WebTrust -> WotColor
-        Muted -> MutedColor
         Locked, LockedOneself -> LockedColor
         NoTrust -> MaterialTheme.colorScheme.onBackground.light(0.2f)
     }

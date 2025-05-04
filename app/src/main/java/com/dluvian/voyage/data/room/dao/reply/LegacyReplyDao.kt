@@ -17,7 +17,6 @@ interface LegacyReplyDao {
         SELECT * 
         FROM LegacyReplyView 
         WHERE parentId IN (:parentIds) 
-        AND authorIsMuted = 0
         ORDER BY createdAt ASC
     """
     )

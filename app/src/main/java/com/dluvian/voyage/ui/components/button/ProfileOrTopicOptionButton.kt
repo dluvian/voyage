@@ -10,13 +10,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Fn
-import com.dluvian.voyage.core.MuteProfile
-import com.dluvian.voyage.core.MuteTopic
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.ProfileViewLoadLists
 import com.dluvian.voyage.core.TopicViewLoadLists
-import com.dluvian.voyage.core.UnmuteProfile
-import com.dluvian.voyage.core.UnmuteTopic
 import com.dluvian.voyage.core.model.ItemSetItem
 import com.dluvian.voyage.core.model.ItemSetProfile
 import com.dluvian.voyage.core.model.ItemSetTopic
@@ -29,7 +25,6 @@ import kotlinx.coroutines.CoroutineScope
 @Composable
 fun ProfileOrTopicOptionButton(
     item: ItemSetItem,
-    isMuted: Boolean,
     addableLists: List<ItemSetMeta>,
     nonAddableLists: List<ItemSetMeta>,
     scope: CoroutineScope,
@@ -41,7 +36,6 @@ fun ProfileOrTopicOptionButton(
         ActionMenu(
             isExpanded = showMenu.value,
             item = item,
-            isMuted = isMuted,
             addableLists = addableLists,
             nonAddableLists = nonAddableLists,
             scope = scope,
@@ -68,7 +62,6 @@ fun ProfileOrTopicOptionButton(
 private fun ActionMenu(
     isExpanded: Boolean,
     item: ItemSetItem,
-    isMuted: Boolean,
     addableLists: List<ItemSetMeta>,
     nonAddableLists: List<ItemSetMeta>,
     scope: CoroutineScope,
@@ -92,43 +85,5 @@ private fun ActionMenu(
                 showAddToList.value = true
                 onDismiss()
             })
-        if (isMuted) {
-            SimpleDropdownItem(
-                text = stringResource(id = R.string.unmute),
-                onClick = {
-                    when (item) {
-                        is ItemSetProfile -> onUpdate(
-                            UnmuteProfile(
-                                pubkey = item.pubkey,
-                                debounce = false
-                            )
-                        )
-
-                        is ItemSetTopic -> onUpdate(
-                            UnmuteTopic(
-                                topic = item.topic,
-                                debounce = false
-                            )
-                        )
-                    }
-                    onDismiss()
-                })
-        } else {
-            SimpleDropdownItem(
-                text = stringResource(id = R.string.mute),
-                onClick = {
-                    when (item) {
-                        is ItemSetProfile -> onUpdate(
-                            MuteProfile(
-                                pubkey = item.pubkey,
-                                debounce = false
-                            )
-                        )
-
-                        is ItemSetTopic -> onUpdate(MuteTopic(topic = item.topic, debounce = false))
-                    }
-                    onDismiss()
-                })
-        }
     }
 }

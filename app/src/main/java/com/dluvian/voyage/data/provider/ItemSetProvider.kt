@@ -30,7 +30,6 @@ class ItemSetProvider(
     private val room: AppDatabase,
     private val myPubkeyProvider: IMyPubkeyProvider,
     private val friendProvider: FriendProvider,
-    private val muteProvider: MuteProvider,
     private val annotatedStringProvider: AnnotatedStringProvider,
     private val relayProvider: RelayProvider,
     private val lockProvider: LockProvider,
@@ -117,18 +116,15 @@ class ItemSetProvider(
         val known = room.profileDao().getAdvancedProfilesOfList(identifier = identifier)
         val unknown = room.profileDao().getUnknownPubkeysFromList(identifier = identifier)
         val friendPubkeys = friendProvider.getFriendPubkeysNoLock()
-        val mutedPubkeys = room.muteDao().getMyProfileMutes()
 
         return known + unknown.map { unknownPubkey ->
             createAdvancedProfile(
                 pubkey = unknownPubkey,
                 dbProfile = null,
                 forcedFollowState = friendPubkeys.contains(unknownPubkey),
-                forcedMuteState = mutedPubkeys.contains(unknownPubkey),
                 metadata = null,
                 myPubkey = myPubkeyProvider.getPubkeyHex(),
                 friendProvider = friendProvider,
-                muteProvider = muteProvider,
                 itemSetProvider = this,
                 lockProvider = lockProvider,
             )

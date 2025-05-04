@@ -37,7 +37,6 @@
     <string name="follow">关注</string>
     <string name="failed_to_sign_topic_list">签名话题列表失败</string>
     <string name="failed_to_sign_bookmarks">签名书签失败</string>
-    <string name="failed_to_sign_mute_list">签名静音列表失败</string>
     <string name="failed_to_sign_contact_list">签名联系人列表失败</string>
     <string name="about">关于</string>
     <string name="popular_topics">热门话题</string>
@@ -197,10 +196,6 @@
     <string name="choose_list">选择列表</string>
     <string name="added_to_list">已添加到列表</string>
     <string name="nostr_uri">Nostr URI</string>
-    <string name="muted">已静音</string>
-    <string name="unmute">取消静音</string>
-    <string name="mute">静音</string>
-    <string name="mute_list">静音列表</string>
     <string name="list_is_empty">列表为空</string>
     <string name="in_list">在列表中</string>
     <string name="next">下一个</string>
@@ -219,8 +214,6 @@
     <string name="profile_list_identifier">概要信息列表标识符</string>
     <string name="topic_list_identifier">主题列表标识符</string>
     <string name="describe_this_list">描述此列表</string>
-    <string name="words">字</string>
-    <string name="add_word">添加单词</string>
     <string name="send_bookmarked_post_to_local_relay">将书签帖子发送至本地中继</string>
     <string name="send_post_to_local_relay_after_bookmarking_it">将帖子添加书签后发送至本地中继</string>
     <string name="send_upvoted_post_to_local_relay">将点赞帖子发送至本地中继</string>
