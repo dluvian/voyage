@@ -141,12 +141,6 @@ class ThreadProvider(
         return room.existsDao().parentExistsFlow(id = replyId)
     }
 
-    // Unfiltered count for ProgressBar purpose
-    fun getTotalReplyCount(rootId: EventIdHex): Flow<Int> {
-        return room.someReplyDao().getReplyCountFlow(parentId = rootId)
-            .firstThenDistinctDebounce(SHORT_DEBOUNCE)
-    }
-
     // Don't update oldestCreatedAt in replies. They are always younger than root
     fun getReplyCtxs(
         rootId: EventIdHex,
