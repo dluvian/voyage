@@ -26,8 +26,6 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             CASE WHEN weboftrust.webOfTrustPubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsTrusted,
             CASE WHEN profileSetItem.pubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsInList,
             CASE WHEN vote.eventId IS NOT NULL THEN 1 ELSE 0 END isUpvoted,
-            upvotes.upvoteCount,
-            comments.commentCount,
             (SELECT EXISTS(SELECT * FROM bookmark WHERE bookmark.eventId = mainEvent.id)) AS isBookmarked,
              (SELECT createdAt FROM pollResponse WHERE pollId = mainEvent.id) AS latestResponse
         FROM poll
@@ -45,16 +43,6 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
         LEFT JOIN weboftrust ON weboftrust.webOfTrustPubkey = mainEvent.pubkey
         LEFT JOIN profileSetItem ON profileSetItem.pubkey = mainEvent.pubkey
         LEFT JOIN vote ON vote.eventId = mainEvent.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)
-        LEFT JOIN (
-            SELECT vote.eventId, COUNT(*) AS upvoteCount 
-            FROM vote 
-            GROUP BY vote.eventId
-        ) AS upvotes ON upvotes.eventId = mainEvent.id
-        LEFT JOIN (
-            SELECT comment.parentId, COUNT(*) AS commentCount 
-            FROM comment
-            GROUP BY comment.parentId
-        ) AS comments ON comments.parentId = mainEvent.id
 """
 )
 data class PollView(
@@ -70,8 +58,6 @@ data class PollView(
     val createdAt: Long,
     val endsAt: Long?,
     val isUpvoted: Boolean,
-    val upvoteCount: Int,
-    val commentCount: Int, // no legacy
     val relayUrl: RelayUrl,
     val isBookmarked: Boolean,
     val isMentioningMe: Boolean,

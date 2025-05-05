@@ -24,8 +24,6 @@ import com.dluvian.voyage.ui.components.row.mainEvent.ThreadReplyCtx
             "(SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = mainEvent.pubkey)) AS authorIsTrusted, " +
             "(SELECT EXISTS(SELECT * FROM profileSetItem WHERE profileSetItem.pubkey = mainEvent.pubkey)) AS authorIsInList, " +
             "(SELECT EXISTS(SELECT* FROM vote WHERE vote.eventId = mainEvent.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1))) AS isUpvoted, " +
-            "(SELECT COUNT(*) FROM vote WHERE vote.eventId = mainEvent.id) AS upvoteCount, " +
-            "(SELECT COUNT(*) FROM comment AS comment2 WHERE comment2.parentId = mainEvent.id) AS replyCount, " +
             "(SELECT EXISTS(SELECT * FROM bookmark WHERE bookmark.eventId = mainEvent.id)) AS isBookmarked " +
             "FROM comment " +
             "JOIN mainEvent ON mainEvent.id = comment.eventId"
@@ -43,8 +41,6 @@ data class CommentView(
     val authorIsTrusted: Boolean,
     val authorIsInList: Boolean,
     val isUpvoted: Boolean,
-    val upvoteCount: Int,
-    val replyCount: Int,
     val relayUrl: RelayUrl,
     val isBookmarked: Boolean,
     val isMentioningMe: Boolean,

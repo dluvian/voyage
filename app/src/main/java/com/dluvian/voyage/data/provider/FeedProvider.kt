@@ -88,12 +88,7 @@ class FeedProvider(
             .firstThenDistinctDebounce(SHORT_DEBOUNCE)
             .onEach { posts ->
                 oldestUsedEvent.updateOldestCreatedAt(posts.minOfOrNull { it.createdAt })
-                nostrSubscriber.subVotes(
-                    parentIds = posts.filter { it.upvoteCount == 0 }.map { it.getRelevantId() }
-                )
-                nostrSubscriber.subReplies(
-                    parentIds = posts.filter { it.replyCount == 0 }.map { it.getRelevantId() }
-                )
+                // TODO: Sub replies or upvotes?
 
                 nostrSubscriber.subPollResponses(polls = posts.filterIsInstance<Poll>())
                 if (showAuthorName.value) {

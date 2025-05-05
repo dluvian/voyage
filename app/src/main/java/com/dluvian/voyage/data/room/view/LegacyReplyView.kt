@@ -9,11 +9,6 @@ import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 import com.dluvian.voyage.ui.components.row.mainEvent.ThreadReplyCtx
 
-private const val LEGACY_COUNT =
-    "(SELECT COUNT(*) FROM legacyReply AS legacyReply2 WHERE legacyReply2.parentId = mainEvent.id)"
-private const val COMMENT_COUNT =
-    "(SELECT COUNT(*) FROM comment WHERE comment.parentId = mainEvent.id)"
-
 @DatabaseView(
     "SELECT mainEvent.id, " +
             "legacyReply.parentId, " +
@@ -28,9 +23,6 @@ private const val COMMENT_COUNT =
             "(SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = mainEvent.pubkey)) AS authorIsTrusted, " +
             "(SELECT EXISTS(SELECT * FROM profileSetItem WHERE profileSetItem.pubkey = mainEvent.pubkey)) AS authorIsInList, " +
             "(SELECT EXISTS(SELECT* FROM vote WHERE vote.eventId = mainEvent.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1))) AS isUpvoted, " +
-            "(SELECT COUNT(*) FROM vote WHERE vote.eventId = mainEvent.id) AS upvoteCount, " +
-            "$LEGACY_COUNT AS legacyReplyCount, " +
-            "$COMMENT_COUNT AS commentCount, " +
             "(SELECT EXISTS(SELECT * FROM bookmark WHERE bookmark.eventId = mainEvent.id)) AS isBookmarked " +
             "FROM legacyReply " +
             "JOIN mainEvent ON mainEvent.id = legacyReply.eventId"
@@ -47,9 +39,6 @@ data class LegacyReplyView(
     val authorIsTrusted: Boolean,
     val authorIsInList: Boolean,
     val isUpvoted: Boolean,
-    val upvoteCount: Int,
-    val legacyReplyCount: Int,
-    val commentCount: Int,
     val relayUrl: RelayUrl,
     val isBookmarked: Boolean,
     val isMentioningMe: Boolean,

@@ -44,7 +44,7 @@ import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.model.ThreadableMainEvent
 import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.data.nostr.getCurrentSecs
-import com.dluvian.voyage.ui.components.button.footer.CountedCommentButton
+import com.dluvian.voyage.ui.components.button.footer.CommentButton
 import com.dluvian.voyage.ui.components.button.footer.ReplyIconButton
 import com.dluvian.voyage.ui.components.row.PollOptionRow
 import com.dluvian.voyage.ui.components.text.AnnotatedText
@@ -174,9 +174,10 @@ private fun MainEventMainRow(
                 additionalStartAction = {
                     when (ctx) {
                         is ThreadReplyCtx -> {
-                            if (ctx.reply.replyCount > 0 && !ctx.hasLoadedReplies) {
+                            // TODO: Fix
+                            if (true) {//ctx.reply.replyCount > 0 && !ctx.hasLoadedReplies) {
                                 MoreRepliesTextButton(
-                                    replyCount = ctx.reply.replyCount,
+                                    replyCount = 21, //ctx.reply.replyCount,
                                     onShowReplies = {
                                         onUpdate(ThreadViewShowReplies(id = ctx.reply.id))
                                     }
@@ -192,13 +193,13 @@ private fun MainEventMainRow(
                     when (ctx) {
                         is ThreadReplyCtx -> ReplyIconButton(ctx = ctx, onUpdate = onUpdate)
 
-                        is ThreadRootCtx -> CountedCommentButton(ctx = ctx, onUpdate = onUpdate)
+                        is ThreadRootCtx -> CommentButton(ctx = ctx, onUpdate = onUpdate)
 
                         is FeedCtx -> {
                             when (ctx.mainEvent) {
                                 is RootPost,
                                 is Poll,
-                                is CrossPost -> CountedCommentButton(ctx = ctx, onUpdate = onUpdate)
+                                is CrossPost -> CommentButton(ctx = ctx, onUpdate = onUpdate)
 
                                 is LegacyReply, is Comment -> ReplyIconButton(
                                     ctx = ctx,

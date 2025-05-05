@@ -9,13 +9,9 @@
     <string name="go_back">Go back</string>
     <string name="options">Options</string>
     <string name="comment">Comment</string>
-    <string name="comments">Comments</string>
     <string name="upvote">Upvote</string>
     <string name="remove_upvote">Remove upvote</string>
     <string name="discover">Discover</string>
-    <string name="friend">Friend</string>
-    <string name="trusted">Trusted</string>
-    <string name="unknown">Unknown</string>
     <string name="account">Account</string>
     <string name="app">App</string>
     <string name="external_signer">External signer</string>
@@ -69,12 +65,9 @@
     <string name="thread">Thread</string>
     <string name="scroll_to_the_page_top">Scroll to the page top</string>
     <string name="click_to_load_most_recent_posts">Click to load most recent posts</string>
-    <string name="oneself">Oneself</string>
     <string name="no_posts_found">No posts found</string>
     <string name="op" translatable="false">OP</string>
-    <string name="no_topics_selected">No topics selected</string>
     <string name="my_topics">My topics</string>
-    <string name="you_dont_follow_any_topics_yet">You don\'t follow any topics yet</string>
     <string name="save">Save</string>
     <string name="describe_yourself">Describe yourself</string>
     <string name="name">Name</string>
@@ -172,7 +165,6 @@
     <string name="following_more_than_n_profiles_is_not_allowed">Following more than %d profiles is not allowed</string>
     <string name="following_more_than_n_topics_is_not_allowed">Following more than %d topics is not allowed</string>
     <string name="bookmarking_more_than_n_is_not_allowed">Bookmarking more than %d posts is not allowed</string>
-    <string name="muting_more_than_n_is_not_allowed">Muting more than %d items is not allowed</string>
     <string name="rebroadcast">Rebroadcast</string>
     <string name="event_json_is_not_available">Event JSON is not available</string>
     <string name="rebroadcasted_to_n_relays">Rebroadcasted to %d relays</string>
@@ -199,9 +191,7 @@
     <string name="add_to_list">Add to list</string>
     <string name="choose_list">Choose list</string>
     <string name="added_to_list">Added to list</string>
-    <string name="nostr_uri">Nostr URI</string>
     <string name="list_is_empty">List is empty</string>
-    <string name="in_list">In list</string>
     <string name="next">Next</string>
     <string name="local_relay_port">Local relay port</string>
     <string name="port_number_of_your_local_relay">Port number of your local relay</string>
@@ -254,7 +244,6 @@
     <string name="time">Time</string>
     <string name="client">Client</string>
     <string name="parent_event_is_not_supported">Parent event is not supported.</string>
-    <string name="n_replies_have_been_hidden">%d replies have been hidden.</string>
     <string name="always_use_v2_replies">Always use v2 replies</string>
     <string name="this_format_is_not_widely_adopted_yet">This format is not widely adopted yet, so your replies might not show up on other clients.</string>
     <string name="failed_to_sign_poll_response">Failed to sign poll response</string>
@@ -269,7 +258,6 @@
     <string name="poll_question">Poll question</string>
     <string name="poll">Poll</string>
     <string name="post">Post</string>
-    <string name="poll_options">Poll options</string>
     <string name="option">Option</string>
     <string name="add_an_option">Add an option…</string>
     <string name="remove_item">Remove item</string>

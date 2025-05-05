@@ -28,9 +28,6 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             CASE WHEN weboftrust.webOfTrustPubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsTrusted,
             CASE WHEN profileSetItem.pubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsInList,
             CASE WHEN vote.eventId IS NOT NULL THEN 1 ELSE 0 END crossPostedIsUpvoted,
-            upvotes.upvoteCount AS crossPostedUpvoteCount,
-            legacyReplies.legacyReplyCount AS crossPostedLegacyReplyCount,
-            comments.commentCount AS crossPostedCommentCount,
             CASE WHEN cross_posted_account.pubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsOneself,
             CASE WHEN cross_posted_friend.friendPubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsFriend,
             CASE WHEN cross_posted_wot.webOfTrustPubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsTrusted,
@@ -49,26 +46,11 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             WHERE topic.myPubkey = (SELECT pubkey FROM account LIMIT 1)
             GROUP BY hashtag.eventId
         ) AS ht ON ht.eventId = mainEvent.id
-        LEFT JOIN (
-            SELECT legacyReply.parentId, COUNT(*) AS legacyReplyCount 
-            FROM legacyReply
-            GROUP BY legacyReply.parentId
-        ) AS legacyReplies ON legacyReplies.parentId = crossPost.crossPostedId
-        LEFT JOIN (
-            SELECT comment.parentId, COUNT(*) AS commentCount 
-            FROM comment
-            GROUP BY comment.parentId
-        ) AS comments ON comments.parentId = crossPost.crossPostedId
         LEFT JOIN account ON account.pubkey = mainEvent.pubkey
         LEFT JOIN friend ON friend.friendPubkey = mainEvent.pubkey
         LEFT JOIN weboftrust ON weboftrust.webOfTrustPubkey = mainEvent.pubkey
         LEFT JOIN profileSetItem ON profileSetItem.pubkey = mainEvent.pubkey
         LEFT JOIN vote ON vote.eventId = crossPost.crossPostedId AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)
-        LEFT JOIN (
-            SELECT vote.eventId, COUNT(*) AS upvoteCount 
-            FROM vote 
-            GROUP BY vote.eventId
-        ) AS upvotes ON upvotes.eventId = crossPost.crossPostedId
         LEFT JOIN account AS cross_posted_account ON cross_posted_account.pubkey = crossPostedEvent.pubkey
         LEFT JOIN friend AS cross_posted_friend ON cross_posted_friend.friendPubkey = crossPostedEvent.pubkey
         LEFT JOIN weboftrust AS cross_posted_wot ON cross_posted_wot.webOfTrustPubkey = crossPostedEvent.pubkey
@@ -88,9 +70,6 @@ data class CrossPostView(
     val crossPostedSubject: String?,
     val crossPostedContent: String,
     val crossPostedIsUpvoted: Boolean,
-    val crossPostedUpvoteCount: Int,
-    val crossPostedLegacyReplyCount: Int,
-    val crossPostedCommentCount: Int,
     val crossPostedRelayUrl: RelayUrl,
     val crossPostedId: EventIdHex,
     val crossPostedPubkey: PubkeyHex,

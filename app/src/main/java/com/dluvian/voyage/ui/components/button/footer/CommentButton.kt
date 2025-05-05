@@ -10,10 +10,9 @@ import com.dluvian.voyage.ui.components.row.mainEvent.MainEventCtx
 import com.dluvian.voyage.ui.theme.CommentIcon
 
 @Composable
-fun CountedCommentButton(ctx: MainEventCtx, modifier: Modifier = Modifier, onUpdate: OnUpdate) {
-    CountedIconButton(
+fun CommentButton(ctx: MainEventCtx, modifier: Modifier = Modifier, onUpdate: OnUpdate) {
+    FooterIconButton(
         modifier = modifier,
-        count = ctx.mainEvent.replyCount,
         icon = CommentIcon,
         description = stringResource(id = R.string.comment),
         onClick = { onUpdate(OpenReplyCreation(parent = ctx.mainEvent)) },
