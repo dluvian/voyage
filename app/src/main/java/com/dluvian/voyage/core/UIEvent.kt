@@ -118,7 +118,6 @@ data class ClickNeutralizeVote(
     override val mention: PubkeyHex,
 ) : VoteEvent(postId = postId, mention = mention)
 
-data class VotePollOption(val pollId: EventIdHex, val optionId: OptionId) : UIEvent()
 
 sealed class TopicEvent(open val topic: Topic) : UIEvent()
 data class FollowTopic(override val topic: Topic) : TopicEvent(topic = topic)
@@ -232,14 +231,6 @@ sealed class CreatePostViewAction : UIEvent()
 data class SendPost(
     val header: String,
     val body: String,
-    val topics: List<Topic>,
-    val isAnon: Boolean,
-    val context: Context,
-    val onGoBack: Fn
-) : CreatePostViewAction()
-data class SendPoll(
-    val question: String,
-    val options: List<String>,
     val topics: List<Topic>,
     val isAnon: Boolean,
     val context: Context,

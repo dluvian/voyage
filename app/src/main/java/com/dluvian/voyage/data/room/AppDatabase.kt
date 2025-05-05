@@ -20,8 +20,6 @@ import com.dluvian.voyage.data.room.dao.InboxDao
 import com.dluvian.voyage.data.room.dao.ItemSetDao
 import com.dluvian.voyage.data.room.dao.MainEventDao
 import com.dluvian.voyage.data.room.dao.Nip65Dao
-import com.dluvian.voyage.data.room.dao.PollDao
-import com.dluvian.voyage.data.room.dao.PollResponseDao
 import com.dluvian.voyage.data.room.dao.ProfileDao
 import com.dluvian.voyage.data.room.dao.RootPostDao
 import com.dluvian.voyage.data.room.dao.TopicDao
@@ -58,9 +56,6 @@ import com.dluvian.voyage.data.room.entity.main.LegacyReplyEntity
 import com.dluvian.voyage.data.room.entity.main.MainEventEntity
 import com.dluvian.voyage.data.room.entity.main.RootPostEntity
 import com.dluvian.voyage.data.room.entity.main.VoteEntity
-import com.dluvian.voyage.data.room.entity.main.poll.PollEntity
-import com.dluvian.voyage.data.room.entity.main.poll.PollOptionEntity
-import com.dluvian.voyage.data.room.entity.main.poll.PollResponseEntity
 import com.dluvian.voyage.data.room.entity.sets.ProfileSetEntity
 import com.dluvian.voyage.data.room.entity.sets.ProfileSetItemEntity
 import com.dluvian.voyage.data.room.entity.sets.TopicSetEntity
@@ -70,8 +65,6 @@ import com.dluvian.voyage.data.room.view.CommentView
 import com.dluvian.voyage.data.room.view.CrossPostView
 import com.dluvian.voyage.data.room.view.EventRelayAuthorView
 import com.dluvian.voyage.data.room.view.LegacyReplyView
-import com.dluvian.voyage.data.room.view.PollOptionView
-import com.dluvian.voyage.data.room.view.PollView
 import com.dluvian.voyage.data.room.view.RootPostView
 import com.dluvian.voyage.data.room.view.SimplePostView
 
@@ -99,6 +92,13 @@ class V27 : AutoMigrationSpec
 
 @DeleteTable("lock")
 class V28 : AutoMigrationSpec
+
+@DeleteTable.Entries(
+    DeleteTable("poll"),
+    DeleteTable("pollOption"),
+    DeleteTable("pollResponse"),
+)
+class V29 : AutoMigrationSpec
 
 @Database(
     version = 29,
@@ -131,7 +131,7 @@ class V28 : AutoMigrationSpec
         AutoMigration(from = 25, to = 26),
         AutoMigration(from = 26, to = 27, spec = V27::class),
         AutoMigration(from = 27, to = 28, spec = V28::class),
-        AutoMigration(from = 28, to = 29),
+        AutoMigration(from = 28, to = 29, spec = V29::class),
     ],
     entities = [
         // Main
@@ -142,9 +142,6 @@ class V28 : AutoMigrationSpec
         CrossPostEntity::class,
         HashtagEntity::class,
         VoteEntity::class,
-        PollEntity::class,
-        PollOptionEntity::class,
-        PollResponseEntity::class,
 
         // Lists
         FriendEntity::class,
@@ -172,8 +169,6 @@ class V28 : AutoMigrationSpec
         CommentView::class,
         CrossPostView::class,
         AdvancedProfileView::class,
-        PollView::class,
-        PollOptionView::class,
     ]
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -198,8 +193,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun itemSetDao(): ItemSetDao
     abstract fun hashtagDao(): HashtagDao
     abstract fun someReplyDao(): SomeReplyDao
-    abstract fun pollResponseDao(): PollResponseDao
-    abstract fun pollDao(): PollDao
 
     // Util
     abstract fun deleteDao(): DeleteDao

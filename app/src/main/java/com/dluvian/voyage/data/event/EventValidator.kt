@@ -5,7 +5,6 @@ import com.dluvian.voyage.core.MAX_CONTENT_LEN
 import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.utils.getNormalizedDescription
-import com.dluvian.voyage.core.utils.getNormalizedPollOptions
 import com.dluvian.voyage.core.utils.getNormalizedTitle
 import com.dluvian.voyage.core.utils.getNormalizedTopics
 import com.dluvian.voyage.core.utils.getTrimmedSubject
@@ -13,14 +12,11 @@ import com.dluvian.voyage.core.utils.takeRandom
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.SubId
-import com.dluvian.voyage.data.nostr.getEndsAt
 import com.dluvian.voyage.data.nostr.getKindTag
 import com.dluvian.voyage.data.nostr.getLegacyReplyToId
 import com.dluvian.voyage.data.nostr.getMetadata
 import com.dluvian.voyage.data.nostr.getNip65s
 import com.dluvian.voyage.data.nostr.getParentId
-import com.dluvian.voyage.data.nostr.getPollRelays
-import com.dluvian.voyage.data.nostr.getPollResponse
 import com.dluvian.voyage.data.nostr.isTextNote
 import com.dluvian.voyage.data.nostr.secs
 import rust.nostr.sdk.Event
@@ -45,8 +41,6 @@ private val INTEREST_SET_U16 = Kind.fromStd(KindStandard.INTEREST_SET).asU16()
 private val INTERESTS_U16 = Kind.fromStd(KindStandard.INTERESTS).asU16()
 private val BOOKMARKS_U16 = Kind.fromStd(KindStandard.BOOKMARKS).asU16()
 val COMMENT_U16: UShort = Kind.fromStd(KindStandard.COMMENT).asU16()
-val POLL_U16: UShort = 1068u
-val POLL_RESPONSE_U16: UShort = 1018u
 
 class EventValidator(
     private val syncedFilterCache: Map<SubId, List<Filter>>,
@@ -117,38 +111,6 @@ class EventValidator(
                 relayUrl = relayUrl,
                 myPubkey = myPubkeyProvider.getPublicKey()
             )
-
-            POLL_U16 -> {
-                val endsAt = event.getEndsAt()
-                val createdAt = event.createdAt().secs()
-                if (endsAt != null && endsAt <= createdAt) return null
-
-                val options = event.getNormalizedPollOptions()
-                if (options.size < 2) return null
-
-                ValidatedPoll(
-                    id = event.id().toHex(),
-                    pubkey = event.author().toHex(),
-                    content = event.content(),
-                    createdAt = createdAt,
-                    relayUrl = relayUrl,
-                    json = event.asJson(),
-                    isMentioningMe = event.isMentioningMe(myPubkey = myPubkeyProvider.getPublicKey()),
-                    options = options,
-                    topics = event.getNormalizedTopics(limit = MAX_TOPICS),
-                    endsAt = endsAt,
-                    relays = event.getPollRelays(),
-                )
-            }
-
-            POLL_RESPONSE_U16 -> {
-                ValidatedPollResponse(
-                    pollId = event.tags().eventIds().firstOrNull()?.toHex() ?: return null,
-                    optionId = event.getPollResponse() ?: return null,
-                    pubkey = event.author().toHex(),
-                    createdAt = event.createdAt().secs(),
-                )
-            }
 
             CONTACT_U16 -> {
                 val author = event.author()

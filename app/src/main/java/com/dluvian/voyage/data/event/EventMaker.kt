@@ -2,8 +2,6 @@ package com.dluvian.voyage.data.event
 
 import android.util.Log
 import com.dluvian.voyage.core.EventIdHex
-import com.dluvian.voyage.core.Label
-import com.dluvian.voyage.core.OptionId
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.utils.createVoyageClientTag
@@ -56,32 +54,6 @@ class EventMaker(
 
         return signEvent(
             eventBuilder = EventBuilder.textNote(content = content).tags(tags = tags),
-            isAnon = isAnon
-        )
-    }
-
-    suspend fun buildPoll(
-        question: String,
-        options: List<Pair<OptionId, Label>>,
-        endsAt: Long,
-        pollRelays: List<RelayUrl>,
-        topics: List<Topic>,
-        mentions: List<PubkeyHex>,
-        quotes: List<String>,
-        isAnon: Boolean,
-    ): Result<Event> {
-        val tags = mutableListOf<Tag>()
-        options.forEach { (id, label) -> tags.add(Tag.parse(listOf("option", id, label))) }
-        tags.add(Tag.parse(listOf("endsAt", "$endsAt")))
-        pollRelays.forEach { tags.add(Tag.parse(listOf("relay", it))) }
-        topics.forEach { tags.add(Tag.hashtag(hashtag = it)) }
-        tags.addAll(createMentionTags(pubkeys = mentions))
-        tags.addAll(createQuoteTags(eventIdHexOrCoordinates = quotes))
-        addClientTag(tags = tags, isAnon = isAnon)
-
-        return signEvent(
-            eventBuilder = EventBuilder(kind = Kind(kind = POLL_U16), content = question)
-                .tags(tags = tags),
             isAnon = isAnon
         )
     }
@@ -158,22 +130,6 @@ class EventMaker(
             publicKey = mention,
             reaction = content,
         ).build(publicKey = accountManager.getPublicKey())
-
-        return accountManager.sign(unsignedEvent = unsignedEvent)
-    }
-
-    suspend fun buildPollResponse(pollId: EventId, optionId: OptionId): Result<Event> {
-        val unsignedEvent = EventBuilder(
-            kind = Kind(kind = POLL_RESPONSE_U16),
-            content = ""
-        )
-            .tags(
-                tags = listOf(
-                    Tag.event(pollId),
-                    Tag.parse(listOf("response", optionId))
-                )
-            )
-            .build(publicKey = accountManager.getPublicKey())
 
         return accountManager.sign(unsignedEvent = unsignedEvent)
     }

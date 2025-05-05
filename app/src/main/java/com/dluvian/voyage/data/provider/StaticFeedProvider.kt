@@ -15,7 +15,6 @@ import com.dluvian.voyage.data.model.ReplyFeedSetting
 import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.room.AppDatabase
 import com.dluvian.voyage.data.room.view.CrossPostView
-import com.dluvian.voyage.data.room.view.PollView
 import com.dluvian.voyage.data.room.view.RootPostView
 
 class StaticFeedProvider(
@@ -46,8 +45,6 @@ class StaticFeedProvider(
         return mergeToMainEventUIList(
             roots = getStaticRootPosts(setting = setting, until = until, size = size),
             crossPosts = getStaticCrossPosts(setting = setting, until = until, size = size),
-            polls = getStaticPolls(setting = setting, until = until, size = size),
-            pollOptions = emptyList(),
             legacyReplies = emptyList(),
             comments = emptyList(),
             votes = emptyMap(),
@@ -122,38 +119,6 @@ class StaticFeedProvider(
         }
     }
 
-    private suspend fun getStaticPolls(
-        setting: MainFeedSetting,
-        until: Long,
-        size: Int,
-    ): List<PollView> {
-        return when (setting) {
-            is HomeFeedSetting -> room.homeFeedDao().getHomePolls(
-                setting = setting,
-                until = until,
-                size = size,
-            )
-
-            is TopicFeedSetting -> room.feedDao().getTopicPolls(
-                topic = setting.topic,
-                until = until,
-                size = size,
-            )
-
-            is ProfileFeedSetting -> room.feedDao().getProfilePolls(
-                pubkey = setting.nprofile.publicKey().toHex(),
-                until = until,
-                size = size,
-            )
-
-            is ListFeedSetting -> room.feedDao().getListPolls(
-                identifier = setting.identifier,
-                until = until,
-                size = size,
-            )
-        }
-    }
-
     private suspend fun getStaticReplyFeed(
         setting: ReplyFeedSetting,
         until: Long,
@@ -190,12 +155,6 @@ class StaticFeedProvider(
                 size = size
             ),
             crossPosts = emptyList(),
-            polls = room.inboxDao().getInboxPolls(
-                setting = setting,
-                until = until,
-                size = size
-            ),
-            pollOptions = emptyList(),
             legacyReplies = room.inboxDao().getInboxReplies(
                 setting = setting,
                 until = until,
@@ -218,8 +177,6 @@ class StaticFeedProvider(
         return mergeToMainEventUIList(
             roots = room.bookmarkDao().getRootPosts(until = until, size = size),
             crossPosts = emptyList(),
-            polls = room.bookmarkDao().getPolls(until = until, size = size),
-            pollOptions = emptyList(),
             legacyReplies = room.bookmarkDao().getReplies(until = until, size = size),
             comments = room.bookmarkDao().getComments(until = until, size = size),
             votes = emptyMap(),

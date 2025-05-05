@@ -12,7 +12,6 @@ import com.dluvian.voyage.core.utils.firstThenDistinctDebounce
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.event.COMMENT_U16
 import com.dluvian.voyage.data.event.OldestUsedEvent
-import com.dluvian.voyage.data.event.POLL_U16
 import com.dluvian.voyage.data.event.TEXT_NOTE_U16
 import com.dluvian.voyage.data.model.ForcedData
 import com.dluvian.voyage.data.model.SingularPubkey
@@ -66,15 +65,11 @@ class ThreadProvider(
                 }
             }
 
-            val poll = room.pollDao().getPoll(pollId = id)
-
             if (isInit) {
                 lazyNostrSubscriber.lazySubRepliesAndVotes(parentId = id)
-                if (poll != null) lazyNostrSubscriber.lazySubPollResponses(poll = poll)
             } else {
                 nostrSubscriber.subVotes(parentIds = listOf(id))
                 nostrSubscriber.subReplies(parentIds = listOf(id))
-                if (poll != null) nostrSubscriber.subPollResponsesByEntity(poll = poll)
             }
         }
 
@@ -88,17 +83,13 @@ class ThreadProvider(
         val commentFlow =
             if (kind == COMMENT_U16 || kind == null) room.commentDao().getCommentFlow(id = id)
             else flowOf(null)
-        val pollFlow =
-            if (kind == POLL_U16 || kind == null) room.pollDao().getFullPollFlow(pollId = id)
-            else flowOf(null)
 
         return combine(
             rootFlow.firstThenDistinctDebounce(SHORT_DEBOUNCE),
             replyFlow.firstThenDistinctDebounce(SHORT_DEBOUNCE),
             commentFlow.firstThenDistinctDebounce(SHORT_DEBOUNCE),
-            pollFlow.firstThenDistinctDebounce(SHORT_DEBOUNCE),
             getForcedFlow(),
-        ) { post, reply, comment, pollPair, forced ->
+        ) { post, reply, comment, forced ->
             val threadableMainEvent = post?.mapToRootPostUI(
                 forcedFollows = forced.follows,
                 forcedVotes = forced.votes,
@@ -114,15 +105,7 @@ class ThreadProvider(
                 forcedVotes = forced.votes,
                 forcedBookmarks = forced.bookmarks,
                 annotatedStringProvider = annotatedStringProvider
-            ) ?: pollPair?.let { (poll, options) ->
-                poll.mapToPollUI(
-                    pollOptions = options,
-                    forcedFollows = forced.follows,
-                    forcedVotes = forced.votes,
-                    forcedBookmarks = forced.bookmarks,
-                    annotatedStringProvider = annotatedStringProvider
-                )
-            }
+            )
             threadableMainEvent?.let { ThreadRootCtx(threadableMainEvent = it) }
         }.onEach {
             oldestUsedEvent.updateOldestCreatedAt(it?.mainEvent?.createdAt)

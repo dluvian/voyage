@@ -5,7 +5,6 @@ import androidx.compose.runtime.MutableState
 import com.dluvian.voyage.core.AUTH_TIMEOUT
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_KEYS_SQL
-import com.dluvian.voyage.core.OptionId
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.BadConnection
@@ -145,30 +144,6 @@ class NostrService(
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
-    suspend fun publishPoll(
-        question: String,
-        options: List<String>,
-        endsAt: Long,
-        pollRelays: List<RelayUrl>,
-        topics: List<Topic>,
-        mentions: List<PubkeyHex>,
-        quotes: List<String>,
-        relayUrls: Collection<RelayUrl>,
-        isAnon: Boolean,
-    ): Result<Event> {
-        return eventMaker.buildPoll(
-            question = question,
-            options = options.withIndex().map { (i, label) -> Pair(i.toString(), label) },
-            endsAt = endsAt,
-            pollRelays = pollRelays,
-            topics = topics,
-            mentions = mentions,
-            quotes = quotes,
-            isAnon = isAnon,
-        )
-            .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
-    }
-
     suspend fun publishLegacyReply(
         content: String,
         parent: Event,
@@ -238,15 +213,6 @@ class NostrService(
             content = content,
             mention = mention,
         )
-            .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
-    }
-
-    suspend fun publishPollResponse(
-        pollId: EventId,
-        optionId: OptionId,
-        relayUrls: Collection<RelayUrl>,
-    ): Result<Event> {
-        return eventMaker.buildPollResponse(pollId = pollId, optionId = optionId)
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 

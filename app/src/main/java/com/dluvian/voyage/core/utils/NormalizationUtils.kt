@@ -2,13 +2,10 @@ package com.dluvian.voyage.core.utils
 
 import com.dluvian.voyage.core.MAX_DESCRIPTION_LEN
 import com.dluvian.voyage.core.MAX_NAME_LEN
-import com.dluvian.voyage.core.MAX_POLL_OPTIONS
-import com.dluvian.voyage.core.MAX_POLL_OPTION_LEN
 import com.dluvian.voyage.core.MAX_SUBJECT_LEN
 import com.dluvian.voyage.core.MAX_TOPIC_LEN
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.nostr.getDescription
-import com.dluvian.voyage.data.nostr.getPollOptions
 import com.dluvian.voyage.data.nostr.getTitle
 import rust.nostr.sdk.Event
 import rust.nostr.sdk.Metadata
@@ -40,10 +37,6 @@ fun Event.getNormalizedTopics(limit: Int = Int.MAX_VALUE): List<Topic> {
         .normalizeTopics()
         .take(limit)
 }
-
-fun Event.getNormalizedPollOptions(limit: Int = MAX_POLL_OPTIONS) =
-    this.getPollOptions().take(limit)
-        .map { (id, label) -> Pair(id, label.take(MAX_POLL_OPTION_LEN)) }
 
 fun normalizeName(str: String) = str.filterNot { it.isWhitespace() }.take(MAX_NAME_LEN)
 

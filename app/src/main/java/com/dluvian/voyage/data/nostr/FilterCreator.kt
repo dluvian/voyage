@@ -1,15 +1,12 @@
 package com.dluvian.voyage.data.nostr
 
-import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
 import com.dluvian.voyage.core.utils.limitRestricted
 import com.dluvian.voyage.core.utils.replyKinds
 import com.dluvian.voyage.core.utils.threadableKinds
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
-import com.dluvian.voyage.data.event.POLL_RESPONSE_U16
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.AppDatabase
-import com.dluvian.voyage.data.room.entity.main.poll.PollEntity
 import rust.nostr.sdk.EventId
 import rust.nostr.sdk.Filter
 import rust.nostr.sdk.Kind
@@ -143,19 +140,6 @@ class FilterCreator(
             .limitRestricted(limit = MAX_EVENTS_TO_SUB)
     }
 
-    suspend fun getLazyPollResponseFilter(poll: PollEntity): Filter {
-        val endsAt = poll.endsAt ?: getCurrentSecs()
-        val newestResponseTime = room.pollResponseDao()
-            .getLatestResponseTime(pollId = poll.eventId) ?: 1L
-
-        return Filter()
-            .kind(kind = Kind(POLL_RESPONSE_U16))
-            .event(eventId = EventId.parse(poll.eventId))
-            .since(timestamp = Timestamp.fromSecs((newestResponseTime + 1).toULong()))
-            .until(timestamp = Timestamp.fromSecs(endsAt.toULong()))
-            .limitRestricted(limit = MAX_EVENTS_TO_SUB)
-    }
-
     suspend fun getLazyVoteFilter(parentId: EventId): Filter {
         val newestVoteTime = room.voteDao().getNewestVoteCreatedAt(postId = parentId.toHex()) ?: 1L
 
@@ -187,18 +171,5 @@ class FilterCreator(
             .id(id = eventId)
             .until(timestamp = Timestamp.now())
             .limit(limit = 1u)
-    }
-
-    fun getPollResponseFilter(
-        pollIds: List<EventIdHex>,
-        since: Timestamp,
-        until: Timestamp
-    ): Filter {
-        return Filter()
-            .kind(kind = Kind(kind = POLL_RESPONSE_U16))
-            .events(ids = pollIds.map { EventId.parse(it) })
-            .since(timestamp = since)
-            .until(timestamp = until)
-            .limitRestricted(limit = MAX_EVENTS_TO_SUB)
     }
 }

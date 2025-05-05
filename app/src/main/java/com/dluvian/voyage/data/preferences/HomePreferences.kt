@@ -21,7 +21,6 @@ private const val GLOBAL = "global"
 
 private const val SHOW_ROOTS = "show_roots"
 private const val SHOW_CROSS = "show_cross"
-private const val SHOW_POLLS = "show_polls"
 
 class HomePreferences(context: Context) {
     private val preferences = context.getSharedPreferences(HOME_FILE, Context.MODE_PRIVATE)
@@ -44,7 +43,6 @@ class HomePreferences(context: Context) {
             pubkeySelection = pubkeys,
             showRoots = preferences.getBoolean(SHOW_ROOTS, true),
             showCrossPosts = preferences.getBoolean(SHOW_CROSS, true),
-            showPolls = preferences.getBoolean(SHOW_POLLS, true),
         )
     }
 
@@ -64,7 +62,6 @@ class HomePreferences(context: Context) {
             .putString(PUBKEYS, pubkeys)
             .putBoolean(SHOW_ROOTS, setting.showRoots)
             .putBoolean(SHOW_CROSS, setting.showCrossPosts)
-            .putBoolean(SHOW_POLLS, setting.showPolls)
             .apply()
     }
 }

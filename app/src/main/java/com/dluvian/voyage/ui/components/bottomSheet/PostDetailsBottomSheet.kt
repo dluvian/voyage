@@ -43,13 +43,6 @@ fun PostDetailsBottomSheet(postDetails: PostDetails, onUpdate: OnUpdate) {
                     )
                 }
 
-                if (postDetails.pollEndsAt != null) item {
-                    SimpleTimeSection(
-                        header = stringResource(id = R.string.poll_ends_at),
-                        time = postDetails.pollEndsAt,
-                    )
-                }
-
                 if (postDetails.base.firstSeenIn.isNotEmpty()) item {
                     SmallHeader(header = stringResource(id = R.string.first_seen_in))
                     ClickableRelayUrl(

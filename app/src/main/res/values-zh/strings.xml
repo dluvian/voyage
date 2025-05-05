@@ -242,25 +242,9 @@
     <string name="parent_event_is_not_supported">不支持父事件。</string>
     <string name="always_use_v2_replies">始终使用 v2 回复</string>
     <string name="this_format_is_not_widely_adopted_yet">这种格式尚未被广泛采用，因此您的回复可能不会显示在其他客户端上。</string>
-    <string name="failed_to_sign_poll_response">未能签署民意调查回复</string>
-    <string name="no_votes">沒有投票</string>
-    <string name="n_votes">%d 票</string>
-    <string name="poll_has_ended">投票已结束</string>
-    <string name="vote">投票</string>
-    <string name="create_a_text_note">创建文本注释</string>
-    <string name="create_a_poll">创建投票</string>
-    <string name="poll_created">已创建投票</string>
-    <string name="failed_to_create_poll">无法创建投票</string>
-    <string name="poll_question">民意调查问题</string>
-    <string name="poll">轮询</string>
     <string name="post">邮政</string>
-    <string name="option">选项</string>
-    <string name="add_an_option">添加一个选项…</string>
     <string name="remove_item">移除项目</string>
-    <string name="remove_poll_option">删除投票选项</string>
-    <string name="poll_ends_at">投票结束于</string>
     <string name="content">内容</string>
     <string name="root_posts">根柱</string>
     <string name="cross_posts">交叉帖子</string>
-    <string name="polls">民意调查</string>
 </resources>

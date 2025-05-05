@@ -246,25 +246,9 @@
     <string name="parent_event_is_not_supported">Parent event is not supported.</string>
     <string name="always_use_v2_replies">Always use v2 replies</string>
     <string name="this_format_is_not_widely_adopted_yet">This format is not widely adopted yet, so your replies might not show up on other clients.</string>
-    <string name="failed_to_sign_poll_response">Failed to sign poll response</string>
-    <string name="no_votes">No votes</string>
-    <string name="n_votes">%d votes</string>
-    <string name="poll_has_ended">Poll has ended</string>
-    <string name="vote">Vote</string>
-    <string name="create_a_text_note">Create a text note</string>
-    <string name="create_a_poll">Create a poll</string>
-    <string name="poll_created">Poll created</string>
-    <string name="failed_to_create_poll">Failed to create poll</string>
-    <string name="poll_question">Poll question</string>
-    <string name="poll">Poll</string>
     <string name="post">Post</string>
-    <string name="option">Option</string>
-    <string name="add_an_option">Add an option…</string>
     <string name="remove_item">Remove item</string>
-    <string name="remove_poll_option">Remove poll option</string>
-    <string name="poll_ends_at">Poll ends at</string>
     <string name="content">Content</string>
     <string name="root_posts">Root posts</string>
     <string name="cross_posts">Cross posts</string>
-    <string name="polls">Polls</string>
 </resources>

@@ -21,7 +21,6 @@ import com.dluvian.voyage.core.VOYAGE
 import com.dluvian.voyage.core.model.MainEvent
 import com.dluvian.voyage.core.model.SomeReply
 import com.dluvian.voyage.data.event.COMMENT_U16
-import com.dluvian.voyage.data.event.POLL_U16
 import com.dluvian.voyage.data.model.ForcedData
 import com.dluvian.voyage.data.model.RelevantMetadata
 import com.dluvian.voyage.data.nostr.LOCAL_WEBSOCKET
@@ -34,8 +33,6 @@ import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.data.room.view.CommentView
 import com.dluvian.voyage.data.room.view.CrossPostView
 import com.dluvian.voyage.data.room.view.LegacyReplyView
-import com.dluvian.voyage.data.room.view.PollOptionView
-import com.dluvian.voyage.data.room.view.PollView
 import com.dluvian.voyage.data.room.view.RootPostView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -229,7 +226,6 @@ fun mergeRelayFilters(vararg maps: Map<RelayUrl, List<Filter>>): Map<RelayUrl, L
 val commentableKinds = listOf(
     Kind.fromStd(KindStandard.TEXT_NOTE),
     Kind(kind = COMMENT_U16),
-    Kind(kind = POLL_U16)
 )
 
 val crossPostableKinds = listOf(
@@ -240,7 +236,6 @@ val crossPostableKinds = listOf(
 val rootFeedableKindsNoKTag = listOf(
     Kind.fromStd(KindStandard.TEXT_NOTE),
     Kind.fromStd(KindStandard.REPOST),
-    Kind(kind = POLL_U16)
 )
 
 val replyKinds = listOf(
@@ -255,7 +250,6 @@ val reactionaryKinds = replyKinds + reactionKind
 val threadableKinds = listOf(
     Kind.fromStd(KindStandard.TEXT_NOTE),
     Kind(kind = COMMENT_U16),
-    Kind(kind = POLL_U16)
 )
 
 
@@ -300,8 +294,6 @@ fun createProcessTextIntent(text: String, info: ResolveInfo): Intent {
 fun mergeToMainEventUIList(
     roots: Collection<RootPostView>,
     crossPosts: Collection<CrossPostView>,
-    polls: Collection<PollView>,
-    pollOptions: Collection<PollOptionView>,
     legacyReplies: Collection<LegacyReplyView>,
     comments: Collection<CommentView>,
     forcedData: ForcedData,
@@ -311,8 +303,6 @@ fun mergeToMainEventUIList(
     return mergeToMainEventUIList(
         roots = roots,
         crossPosts = crossPosts,
-        polls = polls,
-        pollOptions = pollOptions,
         legacyReplies = legacyReplies,
         comments = comments,
         votes = forcedData.votes,
@@ -326,8 +316,6 @@ fun mergeToMainEventUIList(
 fun mergeToMainEventUIList(
     roots: Collection<RootPostView>,
     crossPosts: Collection<CrossPostView>,
-    polls: Collection<PollView>,
-    pollOptions: Collection<PollOptionView>,
     legacyReplies: Collection<LegacyReplyView>,
     comments: Collection<CommentView>,
     votes: Map<EventIdHex, Boolean>,
@@ -341,7 +329,6 @@ fun mergeToMainEventUIList(
         .plus(crossPosts.map { it.createdAt })
         .plus(legacyReplies.map { it.createdAt })
         .plus(comments.map { it.createdAt })
-        .plus(polls.map { it.createdAt })
         .sortedDescending()
         .take(size)
         .toSet()
@@ -360,17 +347,6 @@ fun mergeToMainEventUIList(
     for (cross in crossPosts) {
         if (!applicableTimestamps.contains(cross.createdAt)) continue
         val mapped = cross.mapToCrossPostUI(
-            forcedVotes = votes,
-            forcedFollows = follows,
-            forcedBookmarks = bookmarks,
-            annotatedStringProvider = annotatedStringProvider
-        )
-        result.add(mapped)
-    }
-    for (poll in polls) {
-        if (!applicableTimestamps.contains(poll.createdAt)) continue
-        val mapped = poll.mapToPollUI(
-            pollOptions = pollOptions.filter { it.pollId == poll.id },
             forcedVotes = votes,
             forcedFollows = follows,
             forcedBookmarks = bookmarks,
@@ -416,8 +392,6 @@ fun mergeToSomeReplyUIList(
     mergeToMainEventUIList(
         roots = emptyList(),
         crossPosts = emptyList(),
-        polls = emptyList(),
-        pollOptions = emptyList(),
         legacyReplies = legacyReplies,
         comments = comments,
         votes = votes,
