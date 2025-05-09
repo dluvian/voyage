@@ -1,15 +1,11 @@
 package com.dluvian.voyage.data.preferences
 
 import android.content.Context
-import com.dluvian.voyage.core.DEFAULT_AUTOPILOT_RELAYS
-import com.dluvian.voyage.core.MAX_AUTOPILOT_RELAYS
-import com.dluvian.voyage.core.MIN_AUTOPILOT_RELAYS
 
 private const val SEND_AUTH = "send_auth"
 private const val SEND_BOOKMARKED_TO_LOCAL_RELAY = "send_bookmarked_to_local_relay"
 private const val SEND_UPVOTED_TO_LOCAL_RELAY = "send_upvoted_to_local_relay"
 private const val LOCAL_RELAY_PORT = "local_relay_port"
-private const val AUTOPILOT_RELAYS = "autopilot_relays"
 
 // https://github.com/greenart7c3/Citrine/blob/main/app/src/main/java/com/greenart7c3/citrine/server/Settings.kt#L11
 private const val DEFAULT_LOCAL_RELAY_PORT = 4869
@@ -44,20 +40,6 @@ class RelayPreferences(context: Context) {
     fun setSendUpvotedToLocalRelay(sendToLocalRelay: Boolean) {
         preferences.edit()
             .putBoolean(SEND_UPVOTED_TO_LOCAL_RELAY, sendToLocalRelay)
-            .apply()
-    }
-
-    fun getAutopilotRelays(): Int {
-        val num = preferences.getInt(AUTOPILOT_RELAYS, DEFAULT_AUTOPILOT_RELAYS)
-        return if (num in MIN_AUTOPILOT_RELAYS..MAX_AUTOPILOT_RELAYS) num else DEFAULT_AUTOPILOT_RELAYS
-    }
-
-    fun setAutopilotRelays(newNumber: Int) {
-        val newNum = if (newNumber in MIN_AUTOPILOT_RELAYS..MAX_AUTOPILOT_RELAYS) newNumber
-        else DEFAULT_AUTOPILOT_RELAYS
-
-        preferences.edit()
-            .putInt(AUTOPILOT_RELAYS, newNum)
             .apply()
     }
 

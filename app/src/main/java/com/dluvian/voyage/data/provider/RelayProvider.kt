@@ -2,6 +2,7 @@ package com.dluvian.voyage.data.provider
 
 import android.util.Log
 import androidx.compose.runtime.State
+import com.dluvian.voyage.core.MAX_AUTOPILOT_RELAYS
 import com.dluvian.voyage.core.MAX_KEYS
 import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.MAX_POPULAR_RELAYS
@@ -219,8 +220,6 @@ class RelayProvider(
             }
         }
 
-        val numToSelect = relayPreferences.getAutopilotRelays()
-
         // Cover pubkey-write-relay pairing
         val pubkeyCache = mutableSetOf<PubkeyHex>()
         writeRelays
@@ -231,7 +230,7 @@ class RelayProvider(
             .sortedByDescending { (relay, _) -> eventRelays.contains(relay) }
             .sortedByDescending { (relay, _) -> connectedRelays.contains(relay) }
             .sortedByDescending { (relay, _) -> connectionStatuses.value[relay] !is Disconnected }
-            .take(numToSelect)
+            .take(MAX_AUTOPILOT_RELAYS)
             .forEach { (relay, nip65Entities) ->
                 val maxToAdd = maxOf(0, MAX_KEYS - result[relay].orEmpty().size)
                 val newPubkeys = nip65Entities
@@ -253,7 +252,7 @@ class RelayProvider(
             .distinctBy { it.pubkey }
             .groupBy(keySelector = { it.relayUrl }, valueTransform = { it.pubkey })
             .forEach { (relay, pubkeys) ->
-                if (pubkeys.isNotEmpty() && (result.containsKey(relay) || result.size < numToSelect)) {
+                if (pubkeys.isNotEmpty() && (result.containsKey(relay) || result.size < MAX_AUTOPILOT_RELAYS)) {
                     result.putOrAdd(relay, pubkeys)
                     pubkeyCache.addAll(pubkeys)
                 }

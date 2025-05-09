@@ -23,7 +23,6 @@ import com.dluvian.voyage.core.SendAuth
 import com.dluvian.voyage.core.SendBookmarkedToLocalRelay
 import com.dluvian.voyage.core.SendUpvotedToLocalRelay
 import com.dluvian.voyage.core.SettingsViewAction
-import com.dluvian.voyage.core.UpdateAutopilotRelays
 import com.dluvian.voyage.core.UpdateLocalRelayPort
 import com.dluvian.voyage.core.UpdateRootPostThreshold
 import com.dluvian.voyage.core.UseDefaultAccount
@@ -66,7 +65,6 @@ class SettingsViewModel(
     val sendBookmarkedToLocalRelay =
         mutableStateOf(relayPreferences.getSendBookmarkedToLocalRelay())
     val sendUpvotedToLocalRelay = mutableStateOf(relayPreferences.getSendUpvotedToLocalRelay())
-    val autopilotRelays = mutableIntStateOf(relayPreferences.getAutopilotRelays())
     val localRelayPort = mutableStateOf(relayPreferences.getLocalRelayPort())
     val isDeleting = mutableStateOf(false)
     val isExporting = mutableStateOf(false)
@@ -91,11 +89,6 @@ class SettingsViewModel(
                 val newThreshold = action.threshold.toInt()
                 rootPostThreshold.intValue = newThreshold
                 databasePreferences.setSweepThreshold(newThreshold = newThreshold)
-            }
-
-            is UpdateAutopilotRelays -> {
-                autopilotRelays.intValue = action.numberOfRelays
-                relayPreferences.setAutopilotRelays(newNumber = action.numberOfRelays)
             }
 
             is LoadSeed -> seed.value = mnemonicSigner.getSeed()

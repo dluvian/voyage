@@ -52,27 +52,6 @@ class EventMaker(
         )
     }
 
-    suspend fun buildReply(
-        parent: Event,
-        mentions: List<PubkeyHex>,
-        quotes: List<String>,
-        relayHint: RelayUrl?,
-        content: String,
-    ): Result<Event> {
-        val tags = mutableListOf<Tag>()
-        if (mentions.isNotEmpty()) tags.addAll(createMentionTags(pubkeys = mentions))
-        if (quotes.isNotEmpty()) tags.addAll(createQuoteTags(eventIdHexOrCoordinates = quotes))
-        addClientTag(tags = tags)
-
-        return signEvent(
-            eventBuilder = EventBuilder.textNoteReply(
-                content = content,
-                replyTo = parent,
-                relayUrl = relayHint,
-            ).tags(tags = tags),
-        )
-    }
-
     suspend fun buildComment(
         parent: Event,
         mentions: List<PubkeyHex>,
