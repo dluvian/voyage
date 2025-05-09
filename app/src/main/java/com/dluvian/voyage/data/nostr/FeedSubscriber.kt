@@ -52,8 +52,6 @@ class FeedSubscriber(
             until = until,
             since = since,
             limit = limit,
-            showRoots = setting.showRoots,
-            showCrossPosts = setting.showCrossPosts,
         )
     }
 
@@ -69,8 +67,6 @@ class FeedSubscriber(
             until = until,
             since = since,
             limit = limit,
-            showRoots = true,
-            showCrossPosts = true,
         )
     }
 
@@ -80,17 +76,10 @@ class FeedSubscriber(
         until: ULong,
         since: ULong,
         limit: ULong,
-        showRoots: Boolean,
-        showCrossPosts: Boolean,
     ): Map<RelayUrl, List<Filter>> {
         if (limit <= 0u || since >= until) return emptyMap()
 
-        val kinds = listOfNotNull(
-            if (showRoots) Kind.fromStd(KindStandard.TEXT_NOTE) else null,
-            if (showCrossPosts) Kind.fromStd(KindStandard.REPOST) else null,
-        )
-        if (kinds.isEmpty()) return emptyMap()
-
+        val kinds = listOf(Kind.fromStd(KindStandard.TEXT_NOTE), Kind.fromStd(KindStandard.REPOST))
         val result = mutableMapOf<RelayUrl, MutableList<Filter>>()
 
         val sinceTimestamp = Timestamp.fromSecs(since)
@@ -112,10 +101,8 @@ class FeedSubscriber(
                     val publicKeys = pubkeys.takeRandom(MAX_KEYS).map { PublicKey.parse(it) }
                     val pubkeysNoteFilter = createBaseFilter(publicKeys).kinds(kinds = kinds)
                     val filters = mutableListOf(pubkeysNoteFilter)
-                    if (showCrossPosts) {
                         val genericRepostFilter = createBaseFilter(publicKeys).genericRepost()
                         filters.add(genericRepostFilter)
-                    }
                     result.syncedPutOrAdd(relayUrl, filters)
                 }
         }
@@ -131,14 +118,10 @@ class FeedSubscriber(
                 .hashtags(hashtags = topics)
 
             val filters = mutableListOf(topicedNoteFilter)
-
-            if (showCrossPosts) {
                 val genericRepostFilter = createBaseFilter(emptyList())
                     .genericRepost()
                     .hashtags(hashtags = topics)
                 filters.add(genericRepostFilter)
-            }
-
             relayProvider.getReadRelays().forEach { relay ->
                 result.syncedPutOrAdd(relay, filters)
             }

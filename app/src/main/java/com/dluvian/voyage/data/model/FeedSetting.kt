@@ -15,8 +15,6 @@ sealed class MainFeedSetting : FeedSetting()
 data class HomeFeedSetting(
     val topicSelection: HomeFeedTopicSelection,
     val pubkeySelection: FeedPubkeySelection,
-    val showRoots: Boolean,
-    val showCrossPosts: Boolean,
 ) : MainFeedSetting()
 
 data class TopicFeedSetting(val topic: Topic) : MainFeedSetting()
