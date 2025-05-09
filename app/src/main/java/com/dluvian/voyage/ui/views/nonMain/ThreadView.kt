@@ -64,7 +64,6 @@ fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpd
                     localRoot = it,
                     replies = vm.replies.value.collectAsState().value,
                     parentIsAvailable = vm.parentIsAvailable.collectAsState().value,
-                    showAuthorName = vm.showAuthorName.value,
                     isRefreshing = vm.isRefreshing.value,
                     state = vm.threadState,
                     onUpdate = onUpdate
@@ -80,7 +79,6 @@ private fun ThreadViewContent(
     localRoot: ThreadRootCtx,
     replies: List<ThreadReplyCtx>,
     parentIsAvailable: Boolean,
-    showAuthorName: Boolean,
     isRefreshing: Boolean,
     state: LazyListState,
     onUpdate: OnUpdate
@@ -119,7 +117,6 @@ private fun ThreadViewContent(
             item {
                 MainEventRow(
                     ctx = localRoot,
-                    showAuthorName = showAuthorName,
                     onUpdate = onUpdate
                 )
             }
@@ -134,7 +131,6 @@ private fun ThreadViewContent(
             itemsIndexed(adjustedReplies) { i, reply ->
                 MainEventRow(
                     ctx = reply,
-                    showAuthorName = showAuthorName,
                     onUpdate = onUpdate
                 )
                 if (i == adjustedReplies.size - 1) FullHorizontalDivider()

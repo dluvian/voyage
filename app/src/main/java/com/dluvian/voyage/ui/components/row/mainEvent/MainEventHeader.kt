@@ -49,7 +49,6 @@ import com.dluvian.voyage.ui.theme.spacing
 @Composable
 fun MainEventHeader(
     ctx: MainEventCtx,
-    showAuthorName: Boolean,
     onUpdate: OnUpdate
 ) {
     Row(
@@ -63,7 +62,7 @@ fun MainEventHeader(
             modifier = Modifier.weight(1f, fill = false),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            MainEventHeaderIconsAndName(ctx = ctx, showAuthor = showAuthorName, onUpdate = onUpdate)
+            MainEventHeaderIconsAndName(ctx = ctx, onUpdate = onUpdate)
             if (ctx.isCollapsedReply()) AnnotatedText(
                 modifier = Modifier.padding(start = spacing.large),
                 text = ctx.mainEvent.content,
@@ -92,7 +91,6 @@ fun MainEventHeader(
 @Composable
 private fun MainEventHeaderIconsAndName(
     ctx: MainEventCtx,
-    showAuthor: Boolean,
     onUpdate: OnUpdate
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -104,7 +102,6 @@ private fun MainEventHeaderIconsAndName(
                 is ThreadReplyCtx -> ctx.isOp
             },
             authorName = getUiAuthorName(
-                showAuthor = showAuthor,
                 name = ctx.mainEvent.authorName,
                 pubkey = ctx.mainEvent.pubkey
             ),
@@ -114,7 +111,6 @@ private fun MainEventHeaderIconsAndName(
         )
         when (val mainEvent = ctx.mainEvent) {
             is CrossPost -> CrossPostIcon(
-                showAuthor = showAuthor,
                 crossPost = mainEvent,
                 onUpdate = onUpdate
             )
@@ -125,7 +121,7 @@ private fun MainEventHeaderIconsAndName(
 }
 
 @Composable
-private fun CrossPostIcon(showAuthor: Boolean, crossPost: CrossPost, onUpdate: OnUpdate) {
+private fun CrossPostIcon(crossPost: CrossPost, onUpdate: OnUpdate) {
     Icon(
         modifier = Modifier
             .size(sizing.smallIndicator)
@@ -137,7 +133,6 @@ private fun CrossPostIcon(showAuthor: Boolean, crossPost: CrossPost, onUpdate: O
     ClickableTrustIcon(
         trustType = crossPost.crossPostedTrustType,
         authorName = getUiAuthorName(
-            showAuthor = showAuthor,
             name = crossPost.crossPostedAuthorName,
             pubkey = crossPost.crossPostedPubkey
         ),
@@ -172,6 +167,6 @@ private fun BorderedTopic(topic: Topic, onUpdate: OnUpdate) {
 
 @Stable
 @Composable
-private fun getUiAuthorName(showAuthor: Boolean, name: String?, pubkey: PubkeyHex): String {
-    return (if (showAuthor) name else null).orEmpty().ifEmpty { pubkey.take(8) }
+private fun getUiAuthorName(name: String?, pubkey: PubkeyHex): String {
+    return name.orEmpty().ifEmpty { pubkey.take(8) }
 }

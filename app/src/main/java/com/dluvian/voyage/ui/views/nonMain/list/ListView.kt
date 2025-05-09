@@ -85,7 +85,6 @@ private fun ScreenContent(vm: ListViewModel, onUpdate: OnUpdate) {
                 paginator = vm.paginator,
                 postDetails = vm.postDetails,
                 state = vm.feedState,
-                showAuthorName = vm.showAuthorName.value,
                 onRefresh = { onUpdate(ListViewRefresh) },
                 onAppend = { onUpdate(ListViewFeedAppend) },
                 onUpdate = onUpdate,

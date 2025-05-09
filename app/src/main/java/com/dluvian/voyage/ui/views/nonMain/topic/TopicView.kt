@@ -15,7 +15,6 @@ fun TopicView(vm: TopicViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdat
             paginator = vm.paginator,
             postDetails = vm.postDetails,
             state = vm.feedState,
-            showAuthorName = vm.showAuthorName.value,
             onRefresh = { onUpdate(TopicViewRefresh) },
             onAppend = { onUpdate(TopicViewAppend) },
             onUpdate = onUpdate

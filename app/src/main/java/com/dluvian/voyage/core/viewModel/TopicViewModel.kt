@@ -31,7 +31,6 @@ class TopicViewModel(
     feedProvider: FeedProvider,
     val postDetails: State<PostDetails?>,
     val feedState: LazyListState,
-    val showAuthorName: State<Boolean>,
     private val subCreator: SubscriptionCreator,
     private val topicProvider: TopicProvider,
     private val itemSetProvider: ItemSetProvider,

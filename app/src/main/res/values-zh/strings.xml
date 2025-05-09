@@ -232,8 +232,6 @@
     <string name="indexed_topics">索引主题</string>
     <string name="add_client_tag">添加 Voyage 客户端标签</string>
     <string name="let_other_clients_know_that_you_are_posting_with_voyage">让其他客户知道您正在使用 Voyage 发帖。</string>
-    <string name="show_usernames_in_feed">在信息流中显示用户名</string>
-    <string name="show_the_authors_username_in_feeds">在动态中显示作者的用户名</string>
     <string name="time">时间</string>
     <string name="client">客户</string>
     <string name="parent_event_is_not_supported">不支持父事件。</string>
