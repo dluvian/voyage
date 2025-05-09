@@ -74,9 +74,9 @@ class CreateReplyViewModel(
             val json = mainEventDao.getJson(id = action.parent.id)
 
             val result = if (json != null) {
-                postSender.sendReply(
+                postSender.sendComment(
                     parent = Event.fromJson(json = json),
-                    body = action.body,
+                    content = action.body,
                     relayHint = eventRelayDao.getEventRelay(id = action.parent.id)
                         ?.ifEmpty { null },
                 )
