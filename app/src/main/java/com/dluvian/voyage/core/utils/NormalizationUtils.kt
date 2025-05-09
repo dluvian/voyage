@@ -2,7 +2,7 @@ package com.dluvian.voyage.core.utils
 
 import com.dluvian.voyage.core.MAX_DESCRIPTION_LEN
 import com.dluvian.voyage.core.MAX_NAME_LEN
-import com.dluvian.voyage.core.MAX_SUBJECT_LEN
+import com.dluvian.voyage.core.MAX_TITLE_LEN
 import com.dluvian.voyage.core.MAX_TOPIC_LEN
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.nostr.getDescription
@@ -10,7 +10,7 @@ import com.dluvian.voyage.data.nostr.getTitle
 import rust.nostr.sdk.Event
 import rust.nostr.sdk.Metadata
 
-fun String.normalizeTitle() = this.trim().take(MAX_SUBJECT_LEN).trim()
+fun String.normalizeTitle() = this.trim().take(MAX_TITLE_LEN).trim()
 
 fun String.normalizeDescription() = this.trim().take(MAX_DESCRIPTION_LEN).trim()
 

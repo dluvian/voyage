@@ -14,7 +14,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import com.dluvian.voyage.core.Bech32
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
-import com.dluvian.voyage.core.MAX_SUBJECT_LEN
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.VOYAGE
@@ -25,7 +24,6 @@ import com.dluvian.voyage.data.model.ForcedData
 import com.dluvian.voyage.data.model.RelevantMetadata
 import com.dluvian.voyage.data.nostr.LOCAL_WEBSOCKET
 import com.dluvian.voyage.data.nostr.RelayUrl
-import com.dluvian.voyage.data.nostr.getSubject
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.ItemSetProvider
@@ -47,7 +45,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import rust.nostr.sdk.Alphabet
-import rust.nostr.sdk.Event
 import rust.nostr.sdk.Filter
 import rust.nostr.sdk.Kind
 import rust.nostr.sdk.KindStandard
@@ -252,10 +249,6 @@ val threadableKinds = listOf(
     Kind(kind = COMMENT_U16),
 )
 
-
-fun Event.getTrimmedSubject(maxLen: Int = MAX_SUBJECT_LEN): String? {
-    return this.getSubject()?.trim()?.take(maxLen)
-}
 
 fun Filter.limitRestricted(limit: ULong, upperLimit: ULong = MAX_EVENTS_TO_SUB): Filter {
     return this.limit(minOf(limit, upperLimit))

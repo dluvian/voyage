@@ -18,13 +18,11 @@ import com.dluvian.voyage.data.event.ValidatedRootPost
 )
 data class RootPostEntity(
     val eventId: EventIdHex,
-    val subject: String,
 ) {
     companion object {
         fun from(rootPost: ValidatedRootPost): RootPostEntity {
             return RootPostEntity(
                 eventId = rootPost.id,
-                subject = rootPost.subject
             )
         }
     }

@@ -11,7 +11,6 @@ import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.createDescriptionTag
 import com.dluvian.voyage.data.nostr.createMentionTags
 import com.dluvian.voyage.data.nostr.createQuoteTags
-import com.dluvian.voyage.data.nostr.createSubjectTag
 import com.dluvian.voyage.data.nostr.createTitleTag
 import com.dluvian.voyage.data.preferences.EventPreferences
 import rust.nostr.sdk.Bookmarks
@@ -37,14 +36,12 @@ class EventMaker(
     private val eventPreferences: EventPreferences,
 ) {
     suspend fun buildPost(
-        subject: String,
         content: String,
         topics: List<Topic>,
         mentions: List<PubkeyHex>,
         quotes: List<String>,
     ): Result<Event> {
         val tags = mutableListOf<Tag>()
-        if (subject.isNotEmpty()) tags.add(createSubjectTag(subject = subject))
         topics.forEach { tags.add(Tag.hashtag(hashtag = it)) }
         if (mentions.isNotEmpty()) tags.addAll(createMentionTags(pubkeys = mentions))
         if (quotes.isNotEmpty()) tags.addAll(createQuoteTags(eventIdHexOrCoordinates = quotes))
@@ -239,7 +236,7 @@ class EventMaker(
 
     suspend fun buildGitIssue(
         repoCoordinate: Coordinate,
-        subject: String,
+        title: String,
         content: String,
         label: String,
         mentions: List<PubkeyHex>,
@@ -256,7 +253,7 @@ class EventMaker(
         val issue = GitIssue(
             content = content,
             repository = repoCoordinate,
-            subject = subject,
+            subject = title,
             labels = listOf(label)
         )
 

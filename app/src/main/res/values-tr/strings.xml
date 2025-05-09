@@ -38,8 +38,6 @@
     <string name="popular_profiles">Popüler profiller</string>
     <string name="no_profiles_found">Profil bulunamadı</string>
     <string name="no_topics_found">Konu bulunamadı</string>
-    <string name="subject">Konu</string>
-    <string name="subject_optional">Konu (isteğe bağlı)</string>
     <string name="body_text">Gövde metni</string>
     <string name="body_text_optional">Gövde metni (isteğe bağlı)</string>
     <string name="send">Gönder</string>

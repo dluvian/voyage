@@ -43,12 +43,6 @@ sealed class MainEvent(
         is RootPost, is LegacyReply, is Comment -> this.pubkey
         is CrossPost -> this.crossPostedPubkey
     }
-
-    fun getRelevantSubject() = when (this) {
-        is RootPost -> this.subject
-        is LegacyReply, is Comment -> null
-        is CrossPost -> this.crossPostedSubject
-    }
 }
 
 sealed class ThreadableMainEvent(
@@ -85,7 +79,6 @@ data class RootPost(
     override val isUpvoted: Boolean,
     override val isBookmarked: Boolean,
     val myTopic: String?,
-    val subject: AnnotatedString,
 ) : ThreadableMainEvent(
     id = id,
     pubkey = pubkey,
@@ -109,7 +102,6 @@ data class RootPost(
                 trustType = TrustType.from(rootPostView = rootPostView),
                 myTopic = rootPostView.myTopic,
                 createdAt = rootPostView.createdAt,
-                subject = annotatedStringProvider.annotate(rootPostView.subject),
                 content = annotatedStringProvider.annotate(rootPostView.content),
                 relayUrl = rootPostView.relayUrl,
                 isUpvoted = rootPostView.isUpvoted,
@@ -250,7 +242,6 @@ data class CrossPost(
     val crossPostedIsUpvoted: Boolean,
     val crossPostedIsBookmarked: Boolean,
     val crossPostedContent: AnnotatedString,
-    val crossPostedSubject: AnnotatedString,
     val crossPostedTrustType: TrustType,
 ) : MainEvent(
     id = id,
@@ -275,7 +266,6 @@ data class CrossPost(
                 trustType = TrustType.fromCrossPostAuthor(crossPostView = crossPostView),
                 myTopic = crossPostView.myTopic,
                 createdAt = crossPostView.createdAt,
-                crossPostedSubject = annotatedStringProvider.annotate(crossPostView.crossPostedSubject.orEmpty()),
                 crossPostedContent = annotatedStringProvider.annotate(crossPostView.crossPostedContent),
                 crossPostedIsUpvoted = crossPostView.crossPostedIsUpvoted,
                 crossPostedRelayUrl = crossPostView.crossPostedRelayUrl,

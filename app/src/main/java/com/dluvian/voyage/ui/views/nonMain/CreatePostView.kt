@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,11 +16,9 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.GoBack
-import com.dluvian.voyage.core.MAX_SUBJECT_LINES
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.SendPost
 import com.dluvian.voyage.core.Topic
@@ -41,7 +38,6 @@ fun CreatePostView(
     snackbar: SnackbarHostState,
     onUpdate: OnUpdate
 ) {
-    val header = remember { mutableStateOf(TextFieldValue()) }
     val body = remember { mutableStateOf(TextFieldValue()) }
     val topics = remember { mutableStateOf(emptyList<Topic>()) }
     val context = LocalContext.current
@@ -60,7 +56,6 @@ fun CreatePostView(
         title = stringResource(R.string.post),
         onSend = {
                 SendPost(
-                    header = header.value.text,
                     body = body.value.text,
                     topics = topics.value,
                     context = context,
@@ -69,7 +64,6 @@ fun CreatePostView(
         onUpdate = onUpdate,
     ) {
         CreatePostContent(
-            header = header,
             body = body,
             topicSuggestions = topicSuggestions.value,
             selectedTopics = topics,
@@ -82,7 +76,6 @@ fun CreatePostView(
 
 @Composable
 private fun CreatePostContent(
-    header: MutableState<TextFieldValue>,
     body: MutableState<TextFieldValue>,
     topicSuggestions: List<Topic>,
     selectedTopics: MutableState<List<Topic>>,
@@ -101,14 +94,6 @@ private fun CreatePostContent(
             onUpdate = onUpdate
         )
         Spacer(modifier = Modifier.height(spacing.medium))
-        TextInput(
-            value = header.value,
-            onValueChange = { txt -> header.value = txt },
-            maxLines = MAX_SUBJECT_LINES,
-            placeholder = stringResource(id = R.string.subject_optional),
-            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-        )
-
         TextInput(
             modifier = Modifier
                 .fillMaxWidth()

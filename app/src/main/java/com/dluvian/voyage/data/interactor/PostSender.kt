@@ -21,7 +21,6 @@ import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.extractMentions
 import com.dluvian.voyage.data.nostr.extractQuotes
-import com.dluvian.voyage.data.nostr.getSubject
 import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.MainEventDao
@@ -45,31 +44,26 @@ class PostSender(
     private val myPubkeyProvider: IMyPubkeyProvider,
 ) {
     suspend fun sendPost(
-        header: String,
         body: String,
         topics: List<Topic>,
     ): Result<Event> {
-        val trimmedHeader = header.trim()
         val trimmedBody = body.trim()
-        val concat = "$trimmedHeader $trimmedBody"
 
-        val mentions = extractMentions(content = concat)
+        val mentions = extractMentions(content = trimmedBody)
         val allTopics = topics.toMutableList()
-        allTopics.addAll(extractCleanHashtags(content = concat))
+        allTopics.addAll(extractCleanHashtags(content = trimmedBody))
 
         return nostrService.publishPost(
-            subject = trimmedHeader,
             content = trimmedBody,
             topics = allTopics.distinct().take(MAX_TOPICS),
             mentions = mentions,
-            quotes = extractQuotesFromString(content = concat),
+            quotes = extractQuotesFromString(content = trimmedBody),
             relayUrls = relayProvider.getPublishRelays(publishTo = mentions),
         ).onSuccess { event ->
             val validatedPost = ValidatedRootPost(
                 id = event.id().toHex(),
                 pubkey = event.author().toHex(),
                 topics = event.getNormalizedTopics(),
-                subject = event.getSubject().orEmpty(),
                 content = event.content(),
                 createdAt = event.createdAt().secs(),
                 relayUrl = "", // We don't know which relay accepted this note
@@ -188,7 +182,7 @@ class PostSender(
 
         return nostrService.publishGitIssue(
             repoCoordinate = repoCoordinate,
-            subject = trimmedHeader,
+            title = trimmedHeader,
             content = trimmedBody,
             label = issue.getLabel(),
             mentions = mentions,

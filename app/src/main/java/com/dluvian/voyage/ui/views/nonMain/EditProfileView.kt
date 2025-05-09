@@ -23,7 +23,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.LoadFullProfile
-import com.dluvian.voyage.core.MAX_SUBJECT_LINES
+import com.dluvian.voyage.core.MAX_TITLE_LINES
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.SaveProfile
 import com.dluvian.voyage.core.utils.normalizeName
@@ -178,7 +178,7 @@ private fun About(about: MutableState<TextFieldValue>) {
         header = stringResource(id = R.string.about),
         input = about,
         placeholder = stringResource(id = R.string.describe_yourself),
-        maxLines = MAX_SUBJECT_LINES
+        maxLines = MAX_TITLE_LINES
     )
 }
 
