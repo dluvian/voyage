@@ -220,7 +220,6 @@
     <string name="none">Hiçbiri</string>
     <string name="web_of_trust">Güven ağı</string>
     <string name="global">Küresel</string>
-    <string name="create_anonymously">Anonim olarak oluştur</string>
     <string name="more">Daha</string>
     <string name="post_details">Gönderi detayları</string>
     <string name="first_seen_in">İlk olarak görüldü</string>
@@ -233,7 +232,7 @@
     <string name="enhancement_request">Geliştirme isteği</string>
     <string name="indexed_topics">Dizinlenmiş konular</string>
     <string name="add_client_tag">Voyage istemci etiketini ekle</string>
-    <string name="let_other_clients_know_that_you_are_posting_with_voyage">Diğer müşterilerin Voyage ile gönderi paylaştığınızı bilmelerini sağlayın. Anonim olarak gönderi paylaştığınızda eklenmeyecektir.</string>
+    <string name="let_other_clients_know_that_you_are_posting_with_voyage">Diğer müşterilerin Voyage ile gönderi paylaştığınızı bilmelerini sağlayın.</string>
     <string name="show_usernames_in_feed">Kullanıcı adlarını beslemede göster</string>
     <string name="show_the_authors_username_in_feeds">Yazarın kullanıcı adını beslemelerde göster</string>
     <string name="time">Zaman</string>

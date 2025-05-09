@@ -23,7 +23,6 @@ import rust.nostr.sdk.EventDeletionRequest
 import rust.nostr.sdk.EventId
 import rust.nostr.sdk.GitIssue
 import rust.nostr.sdk.Interests
-import rust.nostr.sdk.Keys
 import rust.nostr.sdk.Kind
 import rust.nostr.sdk.KindStandard
 import rust.nostr.sdk.Metadata
@@ -43,18 +42,16 @@ class EventMaker(
         topics: List<Topic>,
         mentions: List<PubkeyHex>,
         quotes: List<String>,
-        isAnon: Boolean,
     ): Result<Event> {
         val tags = mutableListOf<Tag>()
         if (subject.isNotEmpty()) tags.add(createSubjectTag(subject = subject))
         topics.forEach { tags.add(Tag.hashtag(hashtag = it)) }
         if (mentions.isNotEmpty()) tags.addAll(createMentionTags(pubkeys = mentions))
         if (quotes.isNotEmpty()) tags.addAll(createQuoteTags(eventIdHexOrCoordinates = quotes))
-        addClientTag(tags = tags, isAnon = isAnon)
+        addClientTag(tags = tags)
 
         return signEvent(
             eventBuilder = EventBuilder.textNote(content = content).tags(tags = tags),
-            isAnon = isAnon
         )
     }
 
@@ -64,12 +61,11 @@ class EventMaker(
         quotes: List<String>,
         relayHint: RelayUrl?,
         content: String,
-        isAnon: Boolean,
     ): Result<Event> {
         val tags = mutableListOf<Tag>()
         if (mentions.isNotEmpty()) tags.addAll(createMentionTags(pubkeys = mentions))
         if (quotes.isNotEmpty()) tags.addAll(createQuoteTags(eventIdHexOrCoordinates = quotes))
-        addClientTag(tags = tags, isAnon = isAnon)
+        addClientTag(tags = tags)
 
         return signEvent(
             eventBuilder = EventBuilder.textNoteReply(
@@ -77,7 +73,6 @@ class EventMaker(
                 replyTo = parent,
                 relayUrl = relayHint,
             ).tags(tags = tags),
-            isAnon = isAnon
         )
     }
 
@@ -88,13 +83,12 @@ class EventMaker(
         topics: List<Topic>,
         relayHint: RelayUrl?,
         content: String,
-        isAnon: Boolean,
     ): Result<Event> {
         val tags = mutableListOf<Tag>()
         if (mentions.isNotEmpty()) tags.addAll(createMentionTags(pubkeys = mentions))
         if (quotes.isNotEmpty()) tags.addAll(createQuoteTags(eventIdHexOrCoordinates = quotes))
         if (topics.isNotEmpty()) tags.addAll(topics.map { Tag.hashtag(hashtag = it) })
-        addClientTag(tags = tags, isAnon = isAnon)
+        addClientTag(tags = tags)
 
         return signEvent(
             eventBuilder = EventBuilder.comment(
@@ -103,7 +97,6 @@ class EventMaker(
                 relayUrl = relayHint,
             )
                 .tags(tags = tags),
-            isAnon = isAnon
         )
     }
 
@@ -111,16 +104,14 @@ class EventMaker(
         crossPostedEvent: Event,
         topics: List<Topic>,
         relayHint: RelayUrl,
-        isAnon: Boolean,
     ): Result<Event> {
         val tags = topics.map { Tag.hashtag(hashtag = it) }.toMutableList()
-        addClientTag(tags = tags, isAnon = isAnon)
+        addClientTag(tags = tags)
 
         return signEvent(
             eventBuilder = EventBuilder
                 .repost(event = crossPostedEvent, relayUrl = relayHint)
                 .tags(tags = tags),
-            isAnon = isAnon
         )
     }
 
@@ -253,7 +244,6 @@ class EventMaker(
         label: String,
         mentions: List<PubkeyHex>,
         quotes: List<String>,
-        isAnon: Boolean,
     ): Result<Event> {
         val tags = mutableListOf<Tag>()
         if (quotes.isNotEmpty()) tags.addAll(createQuoteTags(eventIdHexOrCoordinates = quotes))
@@ -272,7 +262,6 @@ class EventMaker(
 
         return signEvent(
             eventBuilder = EventBuilder.gitIssue(issue = issue).tags(tags = tags),
-            isAnon = isAnon
         )
     }
 
@@ -292,17 +281,14 @@ class EventMaker(
         return accountManager.sign(unsignedEvent = unsignedEvent)
     }
 
-    private suspend fun signEvent(eventBuilder: EventBuilder, isAnon: Boolean): Result<Event> {
-        return if (isAnon) {
-            Result.success(eventBuilder.signWithKeys(Keys.generate()))
-        } else {
-            val unsignedEvent = eventBuilder.build(accountManager.getPublicKey())
-            accountManager.sign(unsignedEvent = unsignedEvent)
-        }
+    private suspend fun signEvent(eventBuilder: EventBuilder): Result<Event> {
+        val unsignedEvent = eventBuilder.build(accountManager.getPublicKey())
+
+        return accountManager.sign(unsignedEvent = unsignedEvent)
     }
 
-    private fun addClientTag(tags: MutableList<Tag>, isAnon: Boolean) {
-        if (isAnon || !eventPreferences.isAddingClientTag()) return
+    private fun addClientTag(tags: MutableList<Tag>) {
+        if (!eventPreferences.isAddingClientTag()) return
 
         tags.add(createVoyageClientTag())
     }

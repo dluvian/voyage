@@ -51,13 +51,12 @@ class PostSender(
         header: String,
         body: String,
         topics: List<Topic>,
-        isAnon: Boolean,
     ): Result<Event> {
         val trimmedHeader = header.trim()
         val trimmedBody = body.trim()
         val concat = "$trimmedHeader $trimmedBody"
 
-        val mentions = extractMentionsFromString(content = concat, isAnon = isAnon)
+        val mentions = extractMentions(content = concat)
         val allTopics = topics.toMutableList()
         allTopics.addAll(extractCleanHashtags(content = concat))
 
@@ -68,7 +67,6 @@ class PostSender(
             mentions = mentions,
             quotes = extractQuotesFromString(content = concat),
             relayUrls = relayProvider.getPublishRelays(publishTo = mentions),
-            isAnon = isAnon,
         ).onSuccess { event ->
             val validatedPost = ValidatedRootPost(
                 id = event.id().toHex(),
@@ -91,14 +89,12 @@ class PostSender(
         parent: Event,
         body: String,
         relayHint: RelayUrl?,
-        isAnon: Boolean,
     ): Result<Event> {
         val trimmedBody = body.trim()
 
         val mentions = mutableListOf<PubkeyHex>().apply {
             // Not setting parent author, bc rust-nostr is doing it
             addAll(extractMentionPubkeys(content = trimmedBody))
-            if (!isAnon) removeIf { it == myPubkeyProvider.getPubkeyHex() }
         }.minus(parent.tags().publicKeys().map { it.toHex() }) // rust-nostr uses p-tags of parent
             .distinct()
 
@@ -113,7 +109,6 @@ class PostSender(
                 mentions = mentions,
                 topics = extractCleanHashtags(content = trimmedBody).take(MAX_TOPICS),
                 relayHint = relayHint,
-                isAnon = isAnon
             )
         } else {
             sendLegacyReply(
@@ -121,7 +116,6 @@ class PostSender(
                 parent = parent,
                 mentions = mentions,
                 relayHint = relayHint,
-                isAnon = isAnon
             )
         }
     }
@@ -131,7 +125,6 @@ class PostSender(
         parent: Event,
         mentions: List<PubkeyHex>,
         relayHint: RelayUrl?,
-        isAnon: Boolean
     ): Result<Event> {
         return nostrService.publishLegacyReply(
             content = content,
@@ -140,7 +133,6 @@ class PostSender(
             quotes = extractQuotesFromString(content = content),
             relayHint = relayHint,
             relayUrls = relayProvider.getPublishRelays(publishTo = mentions),
-            isAnon = isAnon,
         ).onSuccess { event ->
             val validatedReply = ValidatedLegacyReply(
                 id = event.id().toHex(),
@@ -165,7 +157,6 @@ class PostSender(
         mentions: List<PubkeyHex>,
         topics: List<Topic>,
         relayHint: RelayUrl?,
-        isAnon: Boolean
     ): Result<Event> {
         return nostrService.publishComment(
             content = content,
@@ -175,7 +166,6 @@ class PostSender(
             topics = topics,
             relayHint = relayHint,
             relayUrls = relayProvider.getPublishRelays(publishTo = mentions),
-            isAnon = isAnon,
         ).onSuccess { event ->
             val validatedComment = ValidatedComment(
                 id = event.id().toHex(),
@@ -198,7 +188,6 @@ class PostSender(
     suspend fun sendCrossPost(
         id: EventIdHex,
         topics: List<Topic>,
-        isAnon: Boolean,
     ): Result<Event> {
         val post = mainEventDao.getPost(id = id)
             ?: return Result.failure(IllegalStateException("Post not found"))
@@ -233,7 +222,6 @@ class PostSender(
             topics = topics,
             relayHint = post.relayUrl,
             relayUrls = relayProvider.getPublishRelays(),
-            isAnon = isAnon,
         ).onSuccess { event ->
             val validatedCrossPost = ValidatedCrossPost(
                 id = event.id().toHex(),
@@ -256,16 +244,10 @@ class PostSender(
         identifier = VOYAGE
     )
 
-    suspend fun sendGitIssue(
-        issue: LabledGitIssue,
-        isAnon: Boolean,
-    ): Result<Event> {
+    suspend fun sendGitIssue(issue: LabledGitIssue): Result<Event> {
         val trimmedHeader = issue.header.trim()
         val trimmedBody = issue.body.trim()
-        val mentions = extractMentionsFromString(
-            content = "$trimmedHeader $trimmedBody",
-            isAnon = isAnon
-        )
+        val mentions = extractMentions(content = "$trimmedHeader $trimmedBody")
         val repoCoordinateStr = repoCoordinate.toString()
 
         return nostrService.publishGitIssue(
@@ -277,10 +259,10 @@ class PostSender(
             quotes = extractQuotesFromString(content = trimmedBody)
                 .filterNot { it == repoCoordinateStr },
             relayUrls = relayProvider.getPublishRelays(publishTo = listOf(DLUVIAN_HEX)),
-            isAnon = isAnon,
         )
     }
 
+    // TODO: Use nostr-sdk
     private fun extractMentionPubkeys(content: String): List<PubkeyHex> {
         return extractMentions(content = content)
             .mapNotNull {
@@ -290,13 +272,7 @@ class PostSender(
             }.distinct()
     }
 
-    private fun extractMentionsFromString(content: String, isAnon: Boolean): List<PubkeyHex> {
-        return extractMentionPubkeys(content = content).let { pubkeys ->
-            if (!isAnon) pubkeys.filter { it != myPubkeyProvider.getPubkeyHex() }
-            else pubkeys
-        }
-    }
-
+    // TODO: Use nostr-sdk
     // Either EventIdHex or Coordinate
     private fun extractQuotesFromString(content: String): List<String> {
         return extractQuotes(content = content)
