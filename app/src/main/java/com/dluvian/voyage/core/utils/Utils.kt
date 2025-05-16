@@ -423,6 +423,7 @@ fun createLocalRelayUrl(port: Int?): String? {
     return if (port != null) "$LOCAL_WEBSOCKET$port" else null
 }
 
+// TODO: Remove this
 fun Collection<RelayUrl>.addLocalRelay(port: Int?): List<RelayUrl> {
     val local = createLocalRelayUrl(port = port)
     return if (local != null) {

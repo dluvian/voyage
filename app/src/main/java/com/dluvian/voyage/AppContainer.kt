@@ -33,7 +33,6 @@ import com.dluvian.voyage.data.interactor.ThreadCollapser
 import com.dluvian.voyage.data.interactor.TopicFollower
 import com.dluvian.voyage.data.nostr.FilterCreator
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
-import com.dluvian.voyage.data.nostr.NostrClient
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.nostr.RelayUrl
@@ -62,8 +61,12 @@ import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import com.dluvian.voyage.data.room.AppDatabase
 import kotlinx.coroutines.flow.MutableStateFlow
+import rust.nostr.sdk.ClientBuilder
 import rust.nostr.sdk.EventId
 import rust.nostr.sdk.Filter
+import rust.nostr.sdk.Keys
+import rust.nostr.sdk.NostrSigner
+import rust.nostr.sdk.Options
 import java.util.Collections
 
 class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
@@ -79,7 +82,17 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
     private val syncedIdCache = Collections.synchronizedSet(mutableSetOf<EventId>())
 
     val snackbar = SnackbarHostState()
-    private val nostrClient = NostrClient()
+
+    // TODO: Use value from settings
+    val clientOpts = Options().gossip(true).automaticAuthentication(false)
+
+    // TODO: Use mnemonic or bunker
+    val signer = NostrSigner.keys(Keys.generate())
+
+    // TODO: Admit Policy and database
+    private val nostrClient = ClientBuilder().signer(signer)
+
+    // TODO: Extract this for nostrClient
     val mnemonicSigner = MnemonicSigner(context = context)
     val externalSignerHandler = ExternalSignerHandler()
     private val externalSigner = ExternalSigner(handler = externalSignerHandler)
