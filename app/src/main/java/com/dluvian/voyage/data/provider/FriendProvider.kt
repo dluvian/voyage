@@ -2,7 +2,6 @@ package com.dluvian.voyage.data.provider
 
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.utils.takeRandom
-import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.room.dao.FriendDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -11,14 +10,13 @@ import kotlinx.coroutines.flow.stateIn
 
 class FriendProvider(
     private val friendDao: FriendDao,
-    private val myPubkeyProvider: IMyPubkeyProvider,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val friends = friendDao.getFriendPubkeys()
         .stateIn(scope, SharingStarted.Eagerly, emptyList())
 
     fun getFriendPubkeys(max: Int = Int.MAX_VALUE): List<PubkeyHex> {
-        return (friends.value - myPubkeyProvider.getPubkeyHex()).takeRandom(max)
+        return (friends.value).takeRandom(max)
     }
 
     suspend fun getFriendsWithMissingContactList() = friendDao.getFriendsWithMissingContactList()

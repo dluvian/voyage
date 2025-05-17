@@ -2,16 +2,10 @@ package com.dluvian.voyage
 
 import android.content.Context
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.runtime.mutableStateOf
 import androidx.room.Room
 import com.anggrayudi.storage.SimpleStorageHelper
-import com.dluvian.voyage.core.ExternalSignerHandler
-import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.model.ConnectionStatus
-import com.dluvian.voyage.data.account.AccountManager
-import com.dluvian.voyage.data.account.AccountSwitcher
-import com.dluvian.voyage.data.account.ExternalSigner
-import com.dluvian.voyage.data.account.MnemonicSigner
+import com.dluvian.voyage.data.AccountSwitcher
+import com.dluvian.voyage.data.KeyStore
 import com.dluvian.voyage.data.event.EventCounter
 import com.dluvian.voyage.data.event.EventDeletor
 import com.dluvian.voyage.data.event.EventMaker
@@ -20,7 +14,6 @@ import com.dluvian.voyage.data.event.EventQueue
 import com.dluvian.voyage.data.event.EventRebroadcaster
 import com.dluvian.voyage.data.event.EventSweeper
 import com.dluvian.voyage.data.event.EventValidator
-import com.dluvian.voyage.data.event.IdCacheClearer
 import com.dluvian.voyage.data.event.OldestUsedEvent
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
 import com.dluvian.voyage.data.interactor.Bookmarker
@@ -35,7 +28,6 @@ import com.dluvian.voyage.data.nostr.FilterCreator
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.NostrSubscriber
-import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.SubBatcher
 import com.dluvian.voyage.data.nostr.SubId
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
@@ -53,19 +45,15 @@ import com.dluvian.voyage.data.provider.NameProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.provider.PubkeyProvider
 import com.dluvian.voyage.data.provider.RelayProfileProvider
-import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.SearchProvider
 import com.dluvian.voyage.data.provider.SuggestionProvider
 import com.dluvian.voyage.data.provider.ThreadProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import com.dluvian.voyage.data.room.AppDatabase
-import kotlinx.coroutines.flow.MutableStateFlow
 import rust.nostr.sdk.ClientBuilder
 import rust.nostr.sdk.EventId
 import rust.nostr.sdk.Filter
-import rust.nostr.sdk.Keys
-import rust.nostr.sdk.NostrSigner
 import rust.nostr.sdk.Options
 import java.util.Collections
 
@@ -83,44 +71,23 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
 
     val snackbar = SnackbarHostState()
 
-    // TODO: Use value from settings
-    val clientOpts = Options().gossip(true).automaticAuthentication(false)
-
-    // TODO: Use mnemonic or bunker
-    val signer = NostrSigner.keys(Keys.generate())
-
-    // TODO: Admit Policy and database
-    private val nostrClient = ClientBuilder().signer(signer)
-
-    // TODO: Extract this for nostrClient
-    val mnemonicSigner = MnemonicSigner(context = context)
-    val externalSignerHandler = ExternalSignerHandler()
-    private val externalSigner = ExternalSigner(handler = externalSignerHandler)
-
-    private val idCacheClearer = IdCacheClearer(
-        syncedIdCache = syncedIdCache,
-    )
-
-    val connectionStatuses = mutableStateOf(mapOf<RelayUrl, ConnectionStatus>())
-
-    private val forcedFollowTopicStates = MutableStateFlow(emptyMap<Topic, Boolean>())
-
     val homePreferences = HomePreferences(context = context)
     val inboxPreferences = InboxPreferences(context = context)
     val databasePreferences = DatabasePreferences(context = context)
     val relayPreferences = RelayPreferences(context = context)
     val eventPreferences = EventPreferences(context = context)
 
-    val accountManager = AccountManager(
-        mnemonicSigner = mnemonicSigner,
-        externalSigner = externalSigner,
-        accountDao = roomDb.accountDao(),
-    )
+    val keyStore = KeyStore(context = context)
 
-    private val friendProvider = FriendProvider(
-        friendDao = roomDb.friendDao(),
-        myPubkeyProvider = accountManager,
-    )
+    // Issue: Turn gossip on/off in setttings
+    val clientOpts = Options().gossip(true).automaticAuthentication(relayPreferences.getSendAuth())
+    // TODO: Admit Policy and database
+    private val nostrClient =
+        ClientBuilder().signer(keyStore.activeSigner()).opts(clientOpts).build()
+
+    // TODO: Extract this for nostrClient
+
+    private val friendProvider = FriendProvider(friendDao = roomDb.friendDao())
 
     val metadataInMemory = MetadataInMemory()
 
@@ -141,26 +108,13 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
         webOfTrustProvider = webOfTrustProvider
     )
 
-    val relayProvider = RelayProvider(
-        nip65Dao = roomDb.nip65Dao(),
-        eventRelayDao = roomDb.eventRelayDao(),
-        nostrClient = nostrClient,
-        connectionStatuses = connectionStatuses,
-        pubkeyProvider = pubkeyProvider,
-        relayPreferences = relayPreferences,
-        webOfTrustProvider = webOfTrustProvider
-    )
-
     val itemSetProvider = ItemSetProvider(
         room = roomDb,
-        myPubkeyProvider = accountManager,
         friendProvider = friendProvider,
         annotatedStringProvider = annotatedStringProvider,
-        relayProvider = relayProvider,
     )
 
     val topicProvider = TopicProvider(
-        forcedFollowStates = forcedFollowTopicStates,
         topicDao = roomDb.topicDao(),
         itemSetProvider = itemSetProvider,
     )
@@ -173,21 +127,15 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
         eventCounter = eventCounter
     )
 
-    private val filterCreator = FilterCreator(
-        room = roomDb,
-        myPubkeyProvider = accountManager,
-        relayProvider = relayProvider,
-    )
+    private val filterCreator = FilterCreator(room = roomDb)
 
     val lazyNostrSubscriber = LazyNostrSubscriber(
         subCreator = subCreator,
         room = roomDb,
-        relayProvider = relayProvider,
         filterCreator = filterCreator,
         webOfTrustProvider = webOfTrustProvider,
         friendProvider = friendProvider,
         topicProvider = topicProvider,
-        myPubkeyProvider = accountManager,
         itemSetProvider = itemSetProvider,
         pubkeyProvider = pubkeyProvider,
     )
@@ -196,20 +144,16 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
 
     val nostrSubscriber = NostrSubscriber(
         topicProvider = topicProvider,
-        myPubkeyProvider = accountManager,
         friendProvider = friendProvider,
         subCreator = subCreator,
-        relayProvider = relayProvider,
         subBatcher = subBatcher,
         room = roomDb,
         filterCreator = filterCreator,
     )
 
     val accountSwitcher = AccountSwitcher(
-        accountManager = accountManager,
         accountDao = roomDb.accountDao(),
         mainEventDao = roomDb.mainEventDao(),
-        idCacheClearer = idCacheClearer,
         lazyNostrSubscriber = lazyNostrSubscriber,
         nostrSubscriber = nostrSubscriber,
         homePreferences = homePreferences,
@@ -218,19 +162,16 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
     private val eventValidator = EventValidator(
         syncedFilterCache = syncedFilterCache,
         syncedIdCache = syncedIdCache,
-        myPubkeyProvider = accountManager
     )
     private val eventProcessor = EventProcessor(
         room = roomDb,
         metadataInMemory = metadataInMemory,
-        myPubkeyProvider = accountManager
     )
     private val eventQueue = EventQueue(
         eventValidator = eventValidator,
         eventProcessor = eventProcessor
     )
     private val eventMaker = EventMaker(
-        accountManager = accountManager,
         eventPreferences = eventPreferences,
     )
 
@@ -243,12 +184,7 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
 
     val nostrService = NostrService(
         nostrClient = nostrClient,
-        eventQueue = eventQueue,
         eventMaker = eventMaker,
-        filterCache = syncedFilterCache,
-        relayPreferences = relayPreferences,
-        connectionStatuses = connectionStatuses,
-        eventCounter = eventCounter,
     )
 
     init {

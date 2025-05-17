@@ -9,7 +9,6 @@ import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.utils.mergeRelayFilters
 import com.dluvian.voyage.core.utils.takeRandom
-import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.model.CustomPubkeys
 import com.dluvian.voyage.data.model.FriendPubkeys
 import com.dluvian.voyage.data.model.Global
@@ -21,7 +20,6 @@ import com.dluvian.voyage.data.model.WebOfTrustPubkeys
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.ItemSetProvider
 import com.dluvian.voyage.data.provider.PubkeyProvider
-import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import com.dluvian.voyage.data.room.AppDatabase
@@ -40,12 +38,10 @@ private const val TAG = "LazyNostrSubscriber"
 class LazyNostrSubscriber(
     val subCreator: SubscriptionCreator,
     private val room: AppDatabase,
-    private val relayProvider: RelayProvider,
     private val filterCreator: FilterCreator,
     private val webOfTrustProvider: WebOfTrustProvider,
     private val friendProvider: FriendProvider,
     private val topicProvider: TopicProvider,
-    private val myPubkeyProvider: IMyPubkeyProvider,
     private val itemSetProvider: ItemSetProvider,
     private val pubkeyProvider: PubkeyProvider,
 ) {

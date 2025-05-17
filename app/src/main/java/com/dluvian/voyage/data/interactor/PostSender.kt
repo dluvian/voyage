@@ -22,7 +22,6 @@ import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.extractMentions
 import com.dluvian.voyage.data.nostr.extractQuotes
 import com.dluvian.voyage.data.nostr.secs
-import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.MainEventDao
 import com.dluvian.voyage.data.room.dao.insert.MainEventInsertDao
 import rust.nostr.sdk.Coordinate
@@ -38,7 +37,6 @@ private const val TAG = "PostSender"
 
 class PostSender(
     private val nostrService: NostrService,
-    private val relayProvider: RelayProvider,
     private val mainEventInsertDao: MainEventInsertDao,
     private val mainEventDao: MainEventDao,
     private val myPubkeyProvider: IMyPubkeyProvider,
@@ -95,7 +93,6 @@ class PostSender(
             quotes = extractQuotesFromString(content = content),
             topics = extractCleanHashtags(content = trimmedContent).take(MAX_TOPICS),
             relayHint = relayHint,
-            relayUrls = relayProvider.getPublishRelays(publishTo = mentions),
         ).onSuccess { event ->
             val validatedComment = ValidatedComment(
                 id = event.id().toHex(),

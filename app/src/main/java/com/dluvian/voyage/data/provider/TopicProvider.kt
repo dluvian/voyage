@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 
 class TopicProvider(
-    val forcedFollowStates: Flow<Map<Topic, Boolean>>,
     private val topicDao: TopicDao,
     private val itemSetProvider: ItemSetProvider,
 ) {

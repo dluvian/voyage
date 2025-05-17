@@ -8,7 +8,6 @@ import com.dluvian.voyage.core.utils.getNormalizedDescription
 import com.dluvian.voyage.core.utils.getNormalizedTitle
 import com.dluvian.voyage.core.utils.getNormalizedTopics
 import com.dluvian.voyage.core.utils.takeRandom
-import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.SubId
 import com.dluvian.voyage.data.nostr.getKindTag
@@ -44,7 +43,6 @@ val COMMENT_U16: UShort = Kind.fromStd(KindStandard.COMMENT).asU16()
 class EventValidator(
     private val syncedFilterCache: Map<SubId, List<Filter>>,
     private val syncedIdCache: MutableSet<EventId>,
-    private val myPubkeyProvider: IMyPubkeyProvider,
 ) {
 
     fun getValidatedEvent(

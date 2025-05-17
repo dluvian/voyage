@@ -4,8 +4,6 @@ import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
 import com.dluvian.voyage.core.utils.limitRestricted
 import com.dluvian.voyage.core.utils.replyKinds
 import com.dluvian.voyage.core.utils.threadableKinds
-import com.dluvian.voyage.data.account.IMyPubkeyProvider
-import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.AppDatabase
 import rust.nostr.sdk.EventId
 import rust.nostr.sdk.Filter
@@ -16,8 +14,6 @@ import rust.nostr.sdk.Timestamp
 
 class FilterCreator(
     private val room: AppDatabase,
-    private val myPubkeyProvider: IMyPubkeyProvider,
-    private val relayProvider: RelayProvider,
 ) {
     companion object {
         fun createReactionaryFilter(
@@ -36,7 +32,6 @@ class FilterCreator(
     fun getMyKindFilter(kindAndSince: Collection<Pair<UShort, ULong>>): List<Filter> {
         if (kindAndSince.isEmpty()) return emptyList()
 
-        val myPubkey = myPubkeyProvider.getPublicKey()
         val now = Timestamp.now()
 
         return kindAndSince.map { (kind, since) ->
@@ -75,7 +70,7 @@ class FilterCreator(
 
     suspend fun getLazyNewestNip65Filter(pubkeys: List<PublicKey>): Filter? {
         if (pubkeys.isEmpty()) return null
-        val newestCreatedAt = relayProvider.getNewestCreatedAt()?.toULong() ?: return null
+        val newestCreatedAt = TODO()
         val now = Timestamp.now()
         if (newestCreatedAt >= now.asSecs()) return null
 
@@ -87,7 +82,7 @@ class FilterCreator(
     }
 
     suspend fun getLazyNip65Filter(pubkey: PublicKey): Filter {
-        val nip65Since = relayProvider.getCreatedAt(pubkey = pubkey.toHex()) ?: 1
+        val nip65Since = TODO()
 
         return getNip65Filter(
             pubkeys = listOf(pubkey),

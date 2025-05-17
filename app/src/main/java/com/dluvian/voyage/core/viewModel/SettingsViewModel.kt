@@ -31,8 +31,8 @@ import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.core.utils.showToast
-import com.dluvian.voyage.data.account.AccountSwitcher
-import com.dluvian.voyage.data.account.MnemonicSigner
+import com.dluvian.voyage.data.AccountSwitcher
+import com.dluvian.voyage.data.KeyStore
 import com.dluvian.voyage.data.preferences.DatabasePreferences
 import com.dluvian.voyage.data.preferences.EventPreferences
 import com.dluvian.voyage.data.preferences.RelayPreferences
@@ -54,7 +54,7 @@ class SettingsViewModel(
     private val eventPreferences: EventPreferences,
     private val databaseInteractor: DatabaseInteractor,
     private val externalSignerHandler: ExternalSignerHandler,
-    private val mnemonicSigner: MnemonicSigner,
+    private val mnemonicSigner: KeyStore,
 ) : ViewModel() {
     val accountType: State<AccountType> = accountSwitcher.accountType
     val rootPostThreshold = mutableIntStateOf(databasePreferences.getSweepThreshold())

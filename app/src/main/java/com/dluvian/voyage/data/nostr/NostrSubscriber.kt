@@ -6,7 +6,6 @@ import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.RESUB_TIMEOUT
-import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.model.BookmarksFeedSetting
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.HomeFeedSetting
@@ -16,7 +15,6 @@ import com.dluvian.voyage.data.model.ProfileFeedSetting
 import com.dluvian.voyage.data.model.ReplyFeedSetting
 import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.provider.FriendProvider
-import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.room.AppDatabase
 import kotlinx.coroutines.CoroutineScope
@@ -30,10 +28,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class NostrSubscriber(
     topicProvider: TopicProvider,
-    myPubkeyProvider: IMyPubkeyProvider,
     friendProvider: FriendProvider,
     val subCreator: SubscriptionCreator,
-    private val relayProvider: RelayProvider,
     private val subBatcher: SubBatcher,
     private val room: AppDatabase,
     private val filterCreator: FilterCreator,

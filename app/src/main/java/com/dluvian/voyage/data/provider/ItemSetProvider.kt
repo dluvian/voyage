@@ -10,7 +10,6 @@ import com.dluvian.voyage.core.model.ItemSetProfile
 import com.dluvian.voyage.core.model.ItemSetTopic
 import com.dluvian.voyage.core.utils.createAdvancedProfile
 import com.dluvian.voyage.core.utils.firstThenDistinctDebounce
-import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.model.ItemSetMeta
 import com.dluvian.voyage.data.room.AppDatabase
 import com.dluvian.voyage.data.room.entity.helper.TitleAndDescription
@@ -28,10 +27,8 @@ import rust.nostr.sdk.Nip19Coordinate
 
 class ItemSetProvider(
     private val room: AppDatabase,
-    private val myPubkeyProvider: IMyPubkeyProvider,
     private val friendProvider: FriendProvider,
     private val annotatedStringProvider: AnnotatedStringProvider,
-    private val relayProvider: RelayProvider,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val allPubkeys = room.itemSetDao().getAllPubkeysFlow()
