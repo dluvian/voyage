@@ -1,4 +1,4 @@
-package com.dluvian.voyage.data.event
+package com.dluvian.voyage.data
 
 import android.util.Log
 import com.dluvian.voyage.data.nostr.SubId

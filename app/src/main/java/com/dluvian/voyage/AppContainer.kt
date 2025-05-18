@@ -5,24 +5,22 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.room.Room
 import com.anggrayudi.storage.SimpleStorageHelper
 import com.dluvian.voyage.data.AccountSwitcher
-import com.dluvian.voyage.data.KeyStore
-import com.dluvian.voyage.data.event.EventCounter
+import com.dluvian.voyage.data.EventCounter
+import com.dluvian.voyage.data.EventProcessor
+import com.dluvian.voyage.data.EventRebroadcaster
+import com.dluvian.voyage.data.EventSweeper
+import com.dluvian.voyage.data.OldestUsedEvent
+import com.dluvian.voyage.data.PostDetailInspector
+import com.dluvian.voyage.data.ThreadCollapser
 import com.dluvian.voyage.data.event.EventDeletor
-import com.dluvian.voyage.data.event.EventMaker
-import com.dluvian.voyage.data.event.EventProcessor
 import com.dluvian.voyage.data.event.EventQueue
-import com.dluvian.voyage.data.event.EventRebroadcaster
-import com.dluvian.voyage.data.event.EventSweeper
 import com.dluvian.voyage.data.event.EventValidator
-import com.dluvian.voyage.data.event.OldestUsedEvent
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
 import com.dluvian.voyage.data.interactor.Bookmarker
 import com.dluvian.voyage.data.interactor.ItemSetEditor
-import com.dluvian.voyage.data.interactor.PostDetailInspector
 import com.dluvian.voyage.data.interactor.PostSender
 import com.dluvian.voyage.data.interactor.PostVoter
 import com.dluvian.voyage.data.interactor.ProfileFollower
-import com.dluvian.voyage.data.interactor.ThreadCollapser
 import com.dluvian.voyage.data.interactor.TopicFollower
 import com.dluvian.voyage.data.nostr.FilterCreator
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
@@ -51,10 +49,8 @@ import com.dluvian.voyage.data.provider.ThreadProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import com.dluvian.voyage.data.room.AppDatabase
-import rust.nostr.sdk.ClientBuilder
 import rust.nostr.sdk.EventId
 import rust.nostr.sdk.Filter
-import rust.nostr.sdk.Options
 import java.util.Collections
 
 class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
@@ -77,15 +73,10 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
     val relayPreferences = RelayPreferences(context = context)
     val eventPreferences = EventPreferences(context = context)
 
-    val keyStore = KeyStore(context = context)
-
-    // Issue: Turn gossip on/off in setttings
-    val clientOpts = Options().gossip(true).automaticAuthentication(relayPreferences.getSendAuth())
-    // TODO: Admit Policy and database
-    private val nostrClient =
-        ClientBuilder().signer(keyStore.activeSigner()).opts(clientOpts).build()
-
-    // TODO: Extract this for nostrClient
+    val nostrService = NostrService(
+        relayPreferences = relayPreferences,
+        eventPreferences = eventPreferences,
+    )
 
     private val friendProvider = FriendProvider(friendDao = roomDb.friendDao())
 
@@ -171,9 +162,6 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
         eventValidator = eventValidator,
         eventProcessor = eventProcessor
     )
-    private val eventMaker = EventMaker(
-        eventPreferences = eventPreferences,
-    )
 
     val databaseInteractor = DatabaseInteractor(
         room = roomDb,
@@ -182,22 +170,10 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
         snackbar = snackbar
     )
 
-    val nostrService = NostrService(
-        nostrClient = nostrClient,
-        eventMaker = eventMaker,
-    )
-
-    init {
-        nameProvider.lazyNostrSubscriber = lazyNostrSubscriber
-        pubkeyProvider.itemSetProvider = itemSetProvider
-        nostrService.initialize(initRelayUrls = relayProvider.getReadRelays())
-    }
-
     val eventDeletor = EventDeletor(
         snackbar = snackbar,
         nostrService = nostrService,
         context = context,
-        relayProvider = relayProvider,
         deleteDao = roomDb.deleteDao()
     )
 
@@ -229,12 +205,10 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
 
     val topicFollower = TopicFollower(
         nostrService = nostrService,
-        relayProvider = relayProvider,
         topicUpsertDao = roomDb.topicUpsertDao(),
         topicDao = roomDb.topicDao(),
         snackbar = snackbar,
         context = context,
-        forcedFollowStates = forcedFollowTopicStates
     )
 
     val bookmarker = Bookmarker(

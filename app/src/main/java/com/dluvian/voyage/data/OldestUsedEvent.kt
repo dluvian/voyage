@@ -1,4 +1,4 @@
-package com.dluvian.voyage.data.event
+package com.dluvian.voyage.data
 
 import java.util.concurrent.atomic.AtomicLong
 

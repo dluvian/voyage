@@ -1,4 +1,4 @@
-package com.dluvian.voyage.data.interactor
+package com.dluvian.voyage.data
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -19,7 +19,7 @@ class PostDetailInspector(
         if (currentDetails.value?.base?.id == postId) return
 
         currentDetails.value = mainEventDao.getPostDetails(id = postId)?.let { base ->
-            val event = kotlin.runCatching { Event.fromJson(json = base.json) }.getOrNull()
+            val event = runCatching { Event.fromJson(json = base.json) }.getOrNull()
             PostDetails(
                 indexedTopics = hashtagDao.getHashtags(postId = postId),
                 client = event?.getClientTag(),

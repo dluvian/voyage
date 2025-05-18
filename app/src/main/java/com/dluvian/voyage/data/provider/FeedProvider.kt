@@ -9,7 +9,7 @@ import com.dluvian.voyage.core.model.SomeReply
 import com.dluvian.voyage.core.utils.firstThenDistinctDebounce
 import com.dluvian.voyage.core.utils.mergeToMainEventUIList
 import com.dluvian.voyage.core.utils.mergeToSomeReplyUIList
-import com.dluvian.voyage.data.event.OldestUsedEvent
+import com.dluvian.voyage.data.OldestUsedEvent
 import com.dluvian.voyage.data.model.BookmarksFeedSetting
 import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.model.ForcedData
