@@ -15,7 +15,8 @@ interface EventRelayDao {
 
     @Query(
         "SELECT * FROM EventRelayAuthorView " +
-                "WHERE pubkey IN (SELECT friendPubkey FROM friend)"
+                "WHERE pubkey IN (SELECT friendPubkey FROM friend) " +
+                "AND pubkey NOT IN (SELECT pubkey FROM lock)"
     )
     suspend fun getFriendsEventRelayAuthorView(): List<EventRelayAuthorView>
 
@@ -23,7 +24,8 @@ interface EventRelayDao {
         "SELECT * " +
                 "FROM EventRelayAuthorView " +
                 "WHERE pubkey " +
-                "IN (SELECT pubkey FROM profileSetItem WHERE identifier = :identifier)"
+                "IN (SELECT pubkey FROM profileSetItem WHERE identifier = :identifier) " +
+                "AND pubkey NOT IN (SELECT pubkey FROM lock)"
     )
     suspend fun getEventRelayAuthorViewFromList(identifier: String): List<EventRelayAuthorView>
 

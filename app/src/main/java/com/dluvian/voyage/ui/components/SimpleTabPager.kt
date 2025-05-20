@@ -15,6 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.zIndex
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
@@ -27,6 +28,7 @@ fun SimpleTabPager(
     index: MutableIntState,
     pagerState: PagerState,
     isLoading: Boolean = false,
+    redHeader: String? = null,
     scope: CoroutineScope = rememberCoroutineScope(),
     onScrollUp: (Int) -> Unit,
     pageContent: @Composable PagerScope.(page: Int) -> Unit
@@ -40,6 +42,7 @@ fun SimpleTabPager(
         PagerTabRow(
             headers = headers,
             index = index,
+            redHeader = redHeader,
             onClickTab = { i ->
                 scope.launch { pagerState.animateScrollToPage(i) }
                 if (pagerState.currentPage == i) onScrollUp(i)
@@ -60,6 +63,7 @@ fun SimpleTabPager(
 @Composable
 private fun PagerTabRow(
     headers: List<String>,
+    redHeader: String?,
     index: MutableIntState,
     onClickTab: (Int) -> Unit
 ) {
@@ -72,8 +76,8 @@ private fun PagerTabRow(
                     index.intValue = i
                     onClickTab(i)
                 },
-                selectedContentColor = LocalContentColor.current,
-                unselectedContentColor = LocalContentColor.current,
+                selectedContentColor = if (header == redHeader) Color.Red else LocalContentColor.current,
+                unselectedContentColor = if (header == redHeader) Color.Red else LocalContentColor.current,
                 text = { Text(text = header, maxLines = 1, overflow = TextOverflow.Ellipsis) }
             )
         }

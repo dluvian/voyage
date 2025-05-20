@@ -1,7 +1,7 @@
 package com.dluvian.voyage.data.preferences
 
 import android.content.Context
-import com.dluvian.voyage.data.model.FriendPubkeys
+import com.dluvian.voyage.data.model.FriendPubkeysNoLock
 import com.dluvian.voyage.data.model.Global
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.MyTopics
@@ -34,10 +34,10 @@ class HomePreferences(context: Context) {
         }
         val pubkeys = when (preferences.getString(PUBKEYS, FRIENDS)) {
             NO_PUBKEYS -> NoPubkeys
-            FRIENDS -> FriendPubkeys
+            FRIENDS -> FriendPubkeysNoLock
             WEB_OF_TRUST -> WebOfTrustPubkeys
             GLOBAL -> Global
-            else -> FriendPubkeys
+            else -> FriendPubkeysNoLock
         }
         return HomeFeedSetting(
             topicSelection = topics,
@@ -55,7 +55,7 @@ class HomePreferences(context: Context) {
         }
         val pubkeys = when (setting.pubkeySelection) {
             NoPubkeys -> NO_PUBKEYS
-            FriendPubkeys -> FRIENDS
+            FriendPubkeysNoLock -> FRIENDS
             WebOfTrustPubkeys -> WEB_OF_TRUST
             Global -> GLOBAL
         }

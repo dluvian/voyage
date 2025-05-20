@@ -10,14 +10,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.core.ProfileViewAction
 import com.dluvian.voyage.core.ProfileViewLoadLists
+import com.dluvian.voyage.core.ProfileViewRebroadcastLock
 import com.dluvian.voyage.core.ProfileViewRefresh
 import com.dluvian.voyage.core.ProfileViewReplyAppend
 import com.dluvian.voyage.core.ProfileViewRootAppend
 import com.dluvian.voyage.core.PubkeyHex
+import com.dluvian.voyage.core.REBROADCAST_DELAY
 import com.dluvian.voyage.core.model.ItemSetProfile
 import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.core.navigator.ProfileNavView
 import com.dluvian.voyage.core.utils.launchIO
+import com.dluvian.voyage.data.account.AccountLocker
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.model.FullProfileUI
 import com.dluvian.voyage.data.model.ItemSetMeta
@@ -34,12 +37,15 @@ import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.room.dao.EventRelayDao
 import com.dluvian.voyage.data.room.dao.Nip65Dao
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicBoolean
 
 class ProfileViewModel(
     feedProvider: FeedProvider,
@@ -56,6 +62,7 @@ class ProfileViewModel(
     private val eventRelayDao: EventRelayDao,
     private val itemSetProvider: ItemSetProvider,
     private val myPubkeyProvider: IMyPubkeyProvider,
+    private val accountLocker: AccountLocker,
 ) : ViewModel() {
     val tabIndex = mutableIntStateOf(0)
     val addableLists = mutableStateOf(emptyList<ItemSetMeta>())
@@ -116,6 +123,7 @@ class ProfileViewModel(
             ProfileViewRootAppend -> rootPaginator.append()
             ProfileViewReplyAppend -> replyPaginator.append()
             ProfileViewLoadLists -> updateLists(pubkey = profile.value.value.inner.pubkey)
+            is ProfileViewRebroadcastLock -> rebroadcastLock(uiScope = action.uiScope)
         }
     }
 
@@ -146,6 +154,22 @@ class ProfileViewModel(
                 .getAddableSets(item = ItemSetProfile(pubkey = pubkey))
             nonAddableLists.value = itemSetProvider
                 .getNonAddableSets(item = ItemSetProfile(pubkey = pubkey))
+        }
+    }
+
+    private val isRebroadcasting = AtomicBoolean(false)
+    private fun rebroadcastLock(uiScope: CoroutineScope) {
+        if (!profile.value.value.inner.isLocked) return
+        if (!isRebroadcasting.compareAndSet(false, true)) return
+
+        viewModelScope.launchIO {
+            accountLocker.rebroadcastLock(
+                uiScope = uiScope,
+                pubkey = profile.value.value.inner.pubkey
+            )
+            delay(REBROADCAST_DELAY)
+        }.invokeOnCompletion {
+            isRebroadcasting.set(false)
         }
     }
 }

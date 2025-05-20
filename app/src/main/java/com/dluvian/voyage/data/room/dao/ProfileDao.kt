@@ -68,6 +68,7 @@ interface ProfileDao {
                 "AND pk NOT IN (SELECT pubkey FROM account) " +
                 "AND pk IN (SELECT webOfTrustPubkey FROM weboftrust) " +
                 "AND pk NOT IN (SELECT pubkey FROM profileSetItem) " +
+                "AND pk NOT IN (SELECT pubkey FROM lock) " +
                 "GROUP BY pk " +
                 "ORDER BY COUNT(pk) DESC " +
                 "LIMIT :limit"

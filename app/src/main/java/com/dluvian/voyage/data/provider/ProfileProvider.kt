@@ -30,6 +30,7 @@ class ProfileProvider(
     private val itemSetProvider: ItemSetProvider,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val annotatedStringProvider: AnnotatedStringProvider,
+    private val lockProvider: LockProvider,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -79,6 +80,7 @@ class ProfileProvider(
                     myPubkey = myPubkeyProvider.getPubkeyHex(),
                     friendProvider = friendProvider,
                     itemSetProvider = itemSetProvider,
+                    lockProvider = lockProvider,
                 )
             }
     }
@@ -117,8 +119,9 @@ class ProfileProvider(
         val unfollowedPubkeys = room.profileDao().getPopularUnfollowedPubkeys(limit = limit)
             .ifEmpty {
                 val default = defaultPubkeys.toMutableSet()
-                default.removeAll(friendProvider.getFriendPubkeys().toSet())
+                default.removeAll(friendProvider.getFriendPubkeysNoLock().toSet())
                 default.remove(myPubkeyProvider.getPubkeyHex())
+                default.removeAll(lockProvider.getLockedPubkeys().toSet())
                 default
             }
         lazyNostrSubscriber
@@ -136,6 +139,7 @@ class ProfileProvider(
             }
         val friendsWithoutProfile = room.profileDao().getUnknownFriends()
         lazyNostrSubscriber.lazySubUnknownProfiles(CustomPubkeys(pubkeys = friendsWithoutProfile))
+        lazyNostrSubscriber.lazySubWotLocks(prioritizeFriends = true)
 
         return forcedFollowFlow.map { forcedFollows ->
             friends.map {
@@ -149,8 +153,11 @@ class ProfileProvider(
                     myPubkey = myPubkeyProvider.getPubkeyHex(),
                     friendProvider = friendProvider,
                     itemSetProvider = itemSetProvider,
+                    lockProvider = lockProvider,
                 )
             }
+        }.map { friendList ->
+            friendList.sortedByDescending { it.isLocked }
         }
     }
 
@@ -170,6 +177,7 @@ class ProfileProvider(
                     myPubkey = myPubkeyProvider.getPubkeyHex(),
                     friendProvider = friendProvider,
                     itemSetProvider = itemSetProvider,
+                    lockProvider = lockProvider,
                 )
             }
         }
@@ -189,6 +197,7 @@ class ProfileProvider(
             myPubkey = myPubkeyProvider.getPubkeyHex(),
             friendProvider = friendProvider,
             itemSetProvider = itemSetProvider,
+            lockProvider = lockProvider,
         )
         return FullProfileUI(
             inner = inner,

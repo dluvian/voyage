@@ -31,14 +31,16 @@ interface Nip65Dao {
                 "FROM nip65 " +
                 "WHERE pubkey " +
                 "IN (SELECT pubkey FROM profilesetitem WHERE identifier = :identifier) " +
-                "AND isWrite = 1"
+                "AND isWrite = 1 " +
+                "AND pubkey NOT IN (SELECT pubkey FROM lock)"
     )
     suspend fun getWriteRelaysFromList(identifier: String): List<Nip65Entity>
 
     @Query(
         "SELECT DISTINCT * FROM nip65 " +
                 "WHERE pubkey IN (SELECT friendPubkey FROM friend) " +
-                "AND isWrite = 1"
+                "AND isWrite = 1 " +
+                "AND pubkey NOT IN (SELECT pubkey FROM lock)"
     )
     suspend fun getFriendsWriteRelays(): List<Nip65Entity>
 

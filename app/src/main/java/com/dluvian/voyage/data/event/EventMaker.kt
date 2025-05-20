@@ -290,6 +290,14 @@ class EventMaker(
         )
     }
 
+    suspend fun buildLock(): Result<Event> {
+        // Enhancement request in rust-nostr once nip has been merged
+        return signEvent(
+            eventBuilder = EventBuilder(kind = Kind(LOCK_U16), content = ""),
+            isAnon = false
+        )
+    }
+
     suspend fun buildGitIssue(
         repoCoordinate: Coordinate,
         subject: String,

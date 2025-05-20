@@ -227,6 +227,8 @@ data object ProfileViewRefresh : ProfileViewAction()
 data object ProfileViewRootAppend : ProfileViewAction()
 data object ProfileViewReplyAppend : ProfileViewAction()
 data object ProfileViewLoadLists : ProfileViewAction()
+data class ProfileViewRebroadcastLock(val uiScope: CoroutineScope) : ProfileViewAction()
+
 
 sealed class CreatePostViewAction : UIEvent()
 data class SendPost(
@@ -312,6 +314,8 @@ data class UpdateLocalRelayPort(val port: UShort?) : SettingsViewAction()
 data class ExportDatabase(val uiScope: CoroutineScope) : SettingsViewAction()
 data class DeleteAllPosts(val uiScope: CoroutineScope) : SettingsViewAction()
 data class ChangeUpvoteContent(val newContent: String) : SettingsViewAction()
+data class LockAccount(val uiScope: CoroutineScope) : SettingsViewAction()
+data class RebroadcastMyLockEvent(val uiScope: CoroutineScope) : SettingsViewAction()
 
 
 sealed class SearchViewAction : UIEvent()

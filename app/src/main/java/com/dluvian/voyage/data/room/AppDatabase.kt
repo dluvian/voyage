@@ -18,6 +18,7 @@ import com.dluvian.voyage.data.room.dao.HashtagDao
 import com.dluvian.voyage.data.room.dao.HomeFeedDao
 import com.dluvian.voyage.data.room.dao.InboxDao
 import com.dluvian.voyage.data.room.dao.ItemSetDao
+import com.dluvian.voyage.data.room.dao.LockDao
 import com.dluvian.voyage.data.room.dao.MainEventDao
 import com.dluvian.voyage.data.room.dao.Nip65Dao
 import com.dluvian.voyage.data.room.dao.PollDao
@@ -27,6 +28,7 @@ import com.dluvian.voyage.data.room.dao.RootPostDao
 import com.dluvian.voyage.data.room.dao.TopicDao
 import com.dluvian.voyage.data.room.dao.VoteDao
 import com.dluvian.voyage.data.room.dao.WebOfTrustDao
+import com.dluvian.voyage.data.room.dao.insert.LockInsertDao
 import com.dluvian.voyage.data.room.dao.insert.MainEventInsertDao
 import com.dluvian.voyage.data.room.dao.reply.CommentDao
 import com.dluvian.voyage.data.room.dao.reply.LegacyReplyDao
@@ -45,6 +47,7 @@ import com.dluvian.voyage.data.room.dao.util.DeleteDao
 import com.dluvian.voyage.data.room.dao.util.ExistsDao
 import com.dluvian.voyage.data.room.entity.AccountEntity
 import com.dluvian.voyage.data.room.entity.FullProfileEntity
+import com.dluvian.voyage.data.room.entity.LockEntity
 import com.dluvian.voyage.data.room.entity.ProfileEntity
 import com.dluvian.voyage.data.room.entity.lists.BookmarkEntity
 import com.dluvian.voyage.data.room.entity.lists.FriendEntity
@@ -97,11 +100,8 @@ class V25 : AutoMigrationSpec
 @DeleteTable("mute")
 class V27 : AutoMigrationSpec
 
-@DeleteTable("lock")
-class V28 : AutoMigrationSpec
-
 @Database(
-    version = 28,
+    version = 27,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -130,7 +130,6 @@ class V28 : AutoMigrationSpec
         AutoMigration(from = 24, to = 25, spec = V25::class),
         AutoMigration(from = 25, to = 26),
         AutoMigration(from = 26, to = 27, spec = V27::class),
-        AutoMigration(from = 27, to = 28, spec = V28::class),
     ],
     entities = [
         // Main
@@ -162,6 +161,7 @@ class V28 : AutoMigrationSpec
         AccountEntity::class,
         ProfileEntity::class,
         FullProfileEntity::class,
+        LockEntity::class,
     ],
     views = [
         SimplePostView::class,
@@ -195,6 +195,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun bookmarkDao(): BookmarkDao
     abstract fun contentSetDao(): ContentSetDao
     abstract fun itemSetDao(): ItemSetDao
+    abstract fun lockDao(): LockDao // TODO: Remove
     abstract fun hashtagDao(): HashtagDao
     abstract fun someReplyDao(): SomeReplyDao
     abstract fun pollResponseDao(): PollResponseDao
@@ -207,6 +208,7 @@ abstract class AppDatabase : RoomDatabase() {
 
     // Insert
     abstract fun mainEventInsertDao(): MainEventInsertDao
+    abstract fun lockInsertDao(): LockInsertDao
 
     // Upsert
     abstract fun friendUpsertDao(): FriendUpsertDao

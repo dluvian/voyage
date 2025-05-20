@@ -19,8 +19,8 @@ private const val POLL_OPTION = "FROM PollOptionView "
 
 private const val ORDER_AND_LIMIT = "ORDER BY createdAt DESC LIMIT :size"
 
-private const val TOPIC_ROOT_COND =
-    "AND id IN (SELECT eventId FROM hashtag WHERE hashtag = :topic) " +
+private const val TOPIC_ROOT_COND = "AND authorIsLocked = 0 " +
+        "AND id IN (SELECT eventId FROM hashtag WHERE hashtag = :topic) " +
         ORDER_AND_LIMIT
 
 private const val TOPIC_CROSS_COND = "AND crossPostedAuthorIsOneself = 0 " +
@@ -66,6 +66,7 @@ private const val LIST_ROOT = """
         pubkey IN (SELECT pubkey FROM profileSetItem WHERE identifier = :identifier)
         OR id IN (SELECT eventId FROM hashtag WHERE hashtag IN (SELECT topic FROM topicSetItem WHERE identifier = :identifier))
     )
+    AND authorIsLocked = 0 
 """ + ORDER_AND_LIMIT
 
 private const val LIST_CROSS = "AND crossPostedAuthorIsOneself = 0 " +

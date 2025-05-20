@@ -1,6 +1,9 @@
 package com.dluvian.voyage.ui.views.nonMain.profile
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,10 +16,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -31,6 +37,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Bech32
@@ -40,6 +47,7 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenLightningWallet
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.OpenRelayProfile
+import com.dluvian.voyage.core.ProfileViewRebroadcastLock
 import com.dluvian.voyage.core.ProfileViewRefresh
 import com.dluvian.voyage.core.ProfileViewReplyAppend
 import com.dluvian.voyage.core.ProfileViewRootAppend
@@ -91,6 +99,7 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
     ) {
         SimpleTabPager(
             headers = headers,
+            redHeader = if (profile.inner.isLocked) stringResource(id = R.string.about) else null,
             index = vm.tabIndex,
             pagerState = vm.pagerState,
             onScrollUp = {
@@ -144,6 +153,7 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
                         null
                     },
                     about = profile.about,
+                    isLocked = profile.inner.isLocked,
                     isRefreshing = vm.rootPaginator.isRefreshing.value,
                     state = vm.profileAboutState,
                     scope = scope,
@@ -186,6 +196,7 @@ private fun AboutPage(
     lightning: String?,
     trustedBy: AdvancedProfileView?,
     about: AnnotatedString?,
+    isLocked: Boolean,
     isRefreshing: Boolean,
     state: LazyListState,
     scope: CoroutineScope,
@@ -194,6 +205,9 @@ private fun AboutPage(
 ) {
     ProfileViewPage(isRefreshing = isRefreshing, onUpdate = onUpdate) {
         LazyColumn(modifier = modifier, state = state) {
+            if (isLocked) item {
+                LockHint(scope = scope, onUpdate = onUpdate)
+            }
             item {
                 AboutPageTextRow(
                     modifier = Modifier
@@ -262,6 +276,40 @@ private fun AboutPage(
                     text = about
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun LockHint(scope: CoroutineScope, onUpdate: OnUpdate) {
+    Column(
+        modifier = Modifier
+            .padding(top = spacing.large)
+            .background(
+                color = MaterialTheme.colorScheme.errorContainer,
+                shape = CardDefaults.outlinedShape
+            )
+            .border(
+                width = spacing.small,
+                color = MaterialTheme.colorScheme.error,
+                shape = CardDefaults.outlinedShape
+            )
+            .padding(horizontal = spacing.screenEdge)
+            .padding(top = spacing.screenEdge)
+            .padding(bottom = spacing.small)
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            textAlign = TextAlign.Center,
+            text = stringResource(id = R.string.this_user_is_locked_and_should_not_be_trusted)
+        )
+        TextButton(onClick = { onUpdate(ProfileViewRebroadcastLock(uiScope = scope)) }) {
+            Text(
+                text = stringResource(id = R.string.rebroadcast_lock_event),
+                color = MaterialTheme.colorScheme.onErrorContainer
+            )
         }
     }
 }

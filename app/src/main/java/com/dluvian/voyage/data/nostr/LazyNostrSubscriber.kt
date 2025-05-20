@@ -10,8 +10,9 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.utils.mergeRelayFilters
 import com.dluvian.voyage.core.utils.takeRandom
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
+import com.dluvian.voyage.data.event.LOCK_U16
 import com.dluvian.voyage.data.model.CustomPubkeys
-import com.dluvian.voyage.data.model.FriendPubkeys
+import com.dluvian.voyage.data.model.FriendPubkeysNoLock
 import com.dluvian.voyage.data.model.Global
 import com.dluvian.voyage.data.model.ListPubkeys
 import com.dluvian.voyage.data.model.NoPubkeys
@@ -34,10 +35,10 @@ import rust.nostr.sdk.KindStandard
 import rust.nostr.sdk.Nip19Profile
 import rust.nostr.sdk.PublicKey
 import rust.nostr.sdk.Timestamp
+import kotlin.random.Random
 
 private const val TAG = "LazyNostrSubscriber"
 
-// TODO: Simplify; Consider only one filter per REQ
 class LazyNostrSubscriber(
     val subCreator: SubscriptionCreator,
     private val room: AppDatabase,
@@ -54,7 +55,7 @@ class LazyNostrSubscriber(
         Log.d(TAG, "subMyAccountAndTrustData")
         lazySubMyAccount()
         delay(DELAY_1SEC)
-        lazySubNip65s(selection = FriendPubkeys)
+        lazySubNip65s(selection = FriendPubkeysNoLock)
         delay(DELAY_1SEC)
         lazySubWebOfTrust()
     }
@@ -68,6 +69,7 @@ class LazyNostrSubscriber(
         val topicSince = topicProvider.getCreatedAt()?.toULong() ?: 1uL
         val nip65Since = relayProvider.getCreatedAt(pubkey = hex)?.toULong() ?: 1uL
         val profileSince = room.profileDao().getMaxCreatedAt(pubkey = hex)?.toULong() ?: 1uL
+        val isLocked = room.lockDao().isLocked(pubkey = hex)
 
         lazySubMyKind(
             kindAndSince = listOf(
@@ -75,7 +77,9 @@ class LazyNostrSubscriber(
                 Pair(Kind.fromStd(KindStandard.INTERESTS).asU16(), topicSince + 1uL),
                 Pair(Kind.fromStd(KindStandard.RELAY_LIST).asU16(), nip65Since + 1uL),
                 Pair(Kind.fromStd(KindStandard.METADATA).asU16(), profileSince + 1uL),
-            )
+            ).let {
+                if (isLocked) it else it + Pair(LOCK_U16, 1uL)
+            }
         )
     }
 
@@ -108,13 +112,20 @@ class LazyNostrSubscriber(
         }
     }
 
+    fun lazySubWotLocks(prioritizeFriends: Boolean) {
+        getWotLockFilters(prioritizeFriends = prioritizeFriends).forEach { (relay, filters) ->
+            subCreator.subscribe_many(relayUrl = relay, filters = filters)
+        }
+    }
+
     suspend fun lazySubOpenProfile(nprofile: Nip19Profile, subMeta: Boolean) {
+        val lockFilter = filterCreator.getLazyLockFilter(pubkey = nprofile.publicKey())
         val nip65Filter = filterCreator.getLazyNip65Filter(pubkey = nprofile.publicKey())
         val profileFilter = if (subMeta) {
             filterCreator.getSemiLazyProfileFilter(pubkey = nprofile.publicKey())
         } else null
 
-        val filters = listOf(nip65Filter, profileFilter).mapNotNull { it }
+        val filters = listOf(nip65Filter, lockFilter, profileFilter).mapNotNull { it }
 
         relayProvider.getObserveRelays(nprofile = nprofile, includeConnected = true)
             .forEach { relay -> subCreator.subscribe_many(relayUrl = relay, filters = filters) }
@@ -195,7 +206,7 @@ class LazyNostrSubscriber(
 
     suspend fun lazySubNip65s(selection: PubkeySelection) {
         val missingPubkeys = when (selection) {
-            FriendPubkeys -> friendProvider.getFriendsWithMissingNip65()
+            FriendPubkeysNoLock -> friendProvider.getFriendsWithMissingNip65()
 
             is CustomPubkeys -> relayProvider.filterMissingPubkeys(
                 pubkeys = selection.pubkeys.toList()
@@ -282,9 +293,26 @@ class LazyNostrSubscriber(
         mergeRelayFilters(
             missingSubs,
             getNewestWotPubkeysFilters(until = now),
+            getWotLockFilters()
         ).forEach { (relay, filters) ->
             subCreator.subscribe_many(relayUrl = relay, filters = filters)
         }
+    }
+
+    private fun getWotLockFilters(
+        prioritizeFriends: Boolean = Random.nextBoolean() // Prioritize friends half of the time
+    ): Map<RelayUrl, List<Filter>> {
+        val pubkeys = webOfTrustProvider.getFriendsAndWebOfTrustPubkeys(
+            max = MAX_KEYS,
+            friendsFirst = prioritizeFriends,
+        ).map { PublicKey.parse(it) }
+
+        if (pubkeys.isEmpty()) return emptyMap()
+
+        val lockFilter = filterCreator.getLockFilter(pubkeys = pubkeys) ?: return emptyMap()
+        val filters = listOf(lockFilter)
+
+        return relayProvider.getReadRelays().associateWith { filters }
     }
 
     private suspend fun getNewestWotPubkeysFilters(until: Timestamp): Map<RelayUrl, List<Filter>> {
@@ -293,7 +321,7 @@ class LazyNostrSubscriber(
         if (newestCreatedAt >= until.asSecs()) return emptyMap()
 
         val friendPubkeys = friendProvider
-            .getFriendPubkeys(max = MAX_KEYS)
+            .getFriendPubkeysNoLock(max = MAX_KEYS)
             .map { PublicKey.parse(it) }
 
         if (friendPubkeys.isEmpty()) return emptyMap()

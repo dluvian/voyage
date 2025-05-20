@@ -18,7 +18,7 @@ import com.dluvian.voyage.core.HomeViewRefresh
 import com.dluvian.voyage.core.HomeViewSubAccountAndTrustData
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.viewModel.HomeViewModel
-import com.dluvian.voyage.data.model.FriendPubkeys
+import com.dluvian.voyage.data.model.FriendPubkeysNoLock
 import com.dluvian.voyage.data.model.Global
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.MyTopics
@@ -90,9 +90,9 @@ private fun Filter(setting: MutableState<HomeFeedSetting>) {
                 onClick = { setting.value = setting.value.copy(pubkeySelection = NoPubkeys) })
             FeedPubkeySelectionRadio(
                 current = setting.value.pubkeySelection,
-                target = FriendPubkeys,
+                target = FriendPubkeysNoLock,
                 onClick = {
-                    setting.value = setting.value.copy(pubkeySelection = FriendPubkeys)
+                    setting.value = setting.value.copy(pubkeySelection = FriendPubkeysNoLock)
                 })
             FeedPubkeySelectionRadio(
                 current = setting.value.pubkeySelection,

@@ -12,7 +12,7 @@ import com.dluvian.voyage.core.utils.takeRandom
 import com.dluvian.voyage.core.utils.threadableKinds
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.event.POLL_U16
-import com.dluvian.voyage.data.model.FriendPubkeys
+import com.dluvian.voyage.data.model.FriendPubkeysNoLock
 import com.dluvian.voyage.data.model.Global
 import com.dluvian.voyage.data.model.HomeFeedSetting
 import com.dluvian.voyage.data.model.InboxFeedSetting
@@ -268,9 +268,9 @@ class FeedSubscriber(
         if (limit <= 0u || since >= until) return emptyMap()
 
         val pubkeys = when (setting.pubkeySelection) {
-            FriendPubkeys -> friendProvider.getFriendPubkeys()
+            FriendPubkeysNoLock -> friendProvider.getFriendPubkeysNoLock()
             Global -> null
-            WebOfTrustPubkeys -> null // TODO: Get WoT Pubkeys to prevent global filter
+            WebOfTrustPubkeys -> null
             NoPubkeys -> return emptyMap()
         }?.map { PublicKey.parse(it) }
 
