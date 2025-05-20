@@ -2,7 +2,7 @@ package com.dluvian.voyage.data.room.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.dluvian.voyage.data.model.FriendPubkeysNoLock
+import com.dluvian.voyage.data.model.FriendPubkeys
 import com.dluvian.voyage.data.model.Global
 import com.dluvian.voyage.data.model.InboxFeedSetting
 import com.dluvian.voyage.data.model.NoPubkeys
@@ -19,8 +19,7 @@ import kotlinx.coroutines.flow.flowOf
 private const val INBOX_CONDITION = "WHERE createdAt <= :until " +
         "AND isMentioningMe = 1 " +
         "AND authorIsOneself = 0 " +
-        "AND authorIsMuted = 0 " +
-        "AND authorIsLocked = 0 "
+        "AND authorIsMuted = 0 "
 
 private const val INBOX_ORDER = "ORDER BY createdAt DESC LIMIT :size "
 
@@ -130,7 +129,7 @@ interface InboxDao {
         size: Int
     ): Flow<List<RootPostView>> {
         return when (setting.pubkeySelection) {
-            FriendPubkeysNoLock -> internalGetFriendRootFlow(until = until, size = size)
+            FriendPubkeys -> internalGetFriendRootFlow(until = until, size = size)
             WebOfTrustPubkeys -> internalGetWotRootFlow(until = until, size = size)
             Global -> internalGetGlobalRootFlow(until = until, size = size)
             NoPubkeys -> flowOf(emptyList())
@@ -143,7 +142,7 @@ interface InboxDao {
         size: Int
     ): List<RootPostView> {
         return when (setting.pubkeySelection) {
-            FriendPubkeysNoLock -> internalGetFriendRoot(until = until, size = size)
+            FriendPubkeys -> internalGetFriendRoot(until = until, size = size)
             WebOfTrustPubkeys -> internalGetWotRoot(until = until, size = size)
             Global -> internalGetGlobalRoot(until = until, size = size)
             NoPubkeys -> emptyList()
@@ -156,7 +155,7 @@ interface InboxDao {
         size: Int
     ): Flow<List<LegacyReplyView>> {
         return when (setting.pubkeySelection) {
-            FriendPubkeysNoLock -> internalGetFriendReplyFlow(until = until, size = size)
+            FriendPubkeys -> internalGetFriendReplyFlow(until = until, size = size)
             WebOfTrustPubkeys -> internalGetWotReplyFlow(until = until, size = size)
             Global -> internalGetGlobalReplyFlow(until = until, size = size)
             NoPubkeys -> flowOf(emptyList())
@@ -169,7 +168,7 @@ interface InboxDao {
         size: Int
     ): Flow<List<CommentView>> {
         return when (setting.pubkeySelection) {
-            FriendPubkeysNoLock -> internalGetFriendCommentFlow(until = until, size = size)
+            FriendPubkeys -> internalGetFriendCommentFlow(until = until, size = size)
             WebOfTrustPubkeys -> internalGetWotCommentFlow(until = until, size = size)
             Global -> internalGetGlobalCommentFlow(until = until, size = size)
             NoPubkeys -> flowOf(emptyList())
@@ -182,7 +181,7 @@ interface InboxDao {
         size: Int
     ): Flow<List<PollView>> {
         return when (setting.pubkeySelection) {
-            FriendPubkeysNoLock -> internalGetFriendPollFlow(until = until, size = size)
+            FriendPubkeys -> internalGetFriendPollFlow(until = until, size = size)
             WebOfTrustPubkeys -> internalGetWotPollFlow(until = until, size = size)
             Global -> internalGetGlobalPollFlow(until = until, size = size)
             NoPubkeys -> flowOf(emptyList())
@@ -195,7 +194,7 @@ interface InboxDao {
         size: Int
     ): Flow<List<PollOptionView>> {
         return when (setting.pubkeySelection) {
-            FriendPubkeysNoLock -> internalGetFriendPollOptionFlow(until = until, size = size)
+            FriendPubkeys -> internalGetFriendPollOptionFlow(until = until, size = size)
             WebOfTrustPubkeys -> internalGetWotPollOptionFlow(until = until, size = size)
             Global -> internalGetGlobalPollOptionFlow(until = until, size = size)
             NoPubkeys -> flowOf(emptyList())
@@ -208,7 +207,7 @@ interface InboxDao {
         size: Int
     ): List<LegacyReplyView> {
         return when (setting.pubkeySelection) {
-            FriendPubkeysNoLock -> internalGetFriendReply(until = until, size = size)
+            FriendPubkeys -> internalGetFriendReply(until = until, size = size)
             WebOfTrustPubkeys -> internalGetWotReply(until = until, size = size)
             Global -> internalGetGlobalReply(until = until, size = size)
             NoPubkeys -> emptyList()
@@ -221,7 +220,7 @@ interface InboxDao {
         size: Int
     ): List<CommentView> {
         return when (setting.pubkeySelection) {
-            FriendPubkeysNoLock -> internalGetFriendComment(until = until, size = size)
+            FriendPubkeys -> internalGetFriendComment(until = until, size = size)
             WebOfTrustPubkeys -> internalGetWotComment(until = until, size = size)
             Global -> internalGetGlobalComment(until = until, size = size)
             NoPubkeys -> emptyList()
@@ -234,7 +233,7 @@ interface InboxDao {
         size: Int
     ): List<PollView> {
         return when (setting.pubkeySelection) {
-            FriendPubkeysNoLock -> internalGetFriendPoll(until = until, size = size)
+            FriendPubkeys -> internalGetFriendPoll(until = until, size = size)
             WebOfTrustPubkeys -> internalGetWotPoll(until = until, size = size)
             Global -> internalGetGlobalPoll(until = until, size = size)
             NoPubkeys -> emptyList()
@@ -243,7 +242,7 @@ interface InboxDao {
 
     fun hasInboxFlow(setting: InboxFeedSetting, until: Long = Long.MAX_VALUE): Flow<Boolean> {
         return when (setting.pubkeySelection) {
-            FriendPubkeysNoLock -> internalHasFriendInboxFlow(until = until)
+            FriendPubkeys -> internalHasFriendInboxFlow(until = until)
             WebOfTrustPubkeys -> internalHasWotInboxFlow(until = until)
             Global -> internalHasGlobalInboxFlow(until = until)
             NoPubkeys -> flowOf(false)
@@ -256,7 +255,7 @@ interface InboxDao {
         size: Int
     ): List<Long> {
         return when (setting.pubkeySelection) {
-            FriendPubkeysNoLock -> internalGetFriendRootCreatedAt(until = until, size = size)
+            FriendPubkeys -> internalGetFriendRootCreatedAt(until = until, size = size)
                 .plus(internalGetFriendReplyCreatedAt(until = until, size = size))
                 .plus(internalGetFriendCommentCreatedAt(until = until, size = size))
                 .plus(internalGetFriendPollCreatedAt(until = until, size = size))

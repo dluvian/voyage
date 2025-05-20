@@ -8,7 +8,6 @@ import com.anggrayudi.storage.SimpleStorageHelper
 import com.dluvian.voyage.core.ExternalSignerHandler
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.ConnectionStatus
-import com.dluvian.voyage.data.account.AccountLocker
 import com.dluvian.voyage.data.account.AccountManager
 import com.dluvian.voyage.data.account.AccountSwitcher
 import com.dluvian.voyage.data.account.ExternalSigner
@@ -54,7 +53,6 @@ import com.dluvian.voyage.data.provider.DatabaseInteractor
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.ItemSetProvider
-import com.dluvian.voyage.data.provider.LockProvider
 import com.dluvian.voyage.data.provider.MuteProvider
 import com.dluvian.voyage.data.provider.NameProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
@@ -119,7 +117,6 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
 
     val muteProvider = MuteProvider(muteDao = roomDb.muteDao())
 
-    val lockProvider = LockProvider(lockDao = roomDb.lockDao())
 
     val metadataInMemory = MetadataInMemory()
 
@@ -157,7 +154,6 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
         muteProvider = muteProvider,
         annotatedStringProvider = annotatedStringProvider,
         relayProvider = relayProvider,
-        lockProvider = lockProvider,
     )
 
     val topicProvider = TopicProvider(
@@ -180,7 +176,6 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
     private val filterCreator = FilterCreator(
         room = roomDb,
         myPubkeyProvider = accountManager,
-        lockProvider = lockProvider,
         relayProvider = relayProvider,
     )
 
@@ -280,17 +275,6 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
         mainEventDao = roomDb.mainEventDao(),
         relayProvider = relayProvider,
         snackbar = snackbar,
-    )
-
-    val accountLocker = AccountLocker(
-        context = context,
-        myPubkeyProvider = accountManager,
-        snackbar = snackbar,
-        eventRebroadcaster = eventRebroadcaster,
-        lockDao = roomDb.lockDao(),
-        lockInsertDao = roomDb.lockInsertDao(),
-        nostrService = nostrService,
-        relayProvider = relayProvider,
     )
 
     val postVoter = PostVoter(
@@ -395,7 +379,6 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
         itemSetProvider = itemSetProvider,
         lazyNostrSubscriber = lazyNostrSubscriber,
         annotatedStringProvider = annotatedStringProvider,
-        lockProvider = lockProvider,
     )
 
     val searchProvider = SearchProvider(

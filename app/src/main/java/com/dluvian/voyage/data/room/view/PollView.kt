@@ -26,7 +26,6 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             CASE WHEN weboftrust.webOfTrustPubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsTrusted,
             CASE WHEN mute.mutedItem IS NOT NULL THEN 1 ELSE 0 END AS authorIsMuted,
             CASE WHEN profileSetItem.pubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsInList,
-            CASE WHEN lock.pubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsLocked,
             CASE WHEN vote.eventId IS NOT NULL THEN 1 ELSE 0 END isUpvoted,
             upvotes.upvoteCount,
             comments.commentCount,
@@ -47,7 +46,6 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
         LEFT JOIN weboftrust ON weboftrust.webOfTrustPubkey = mainEvent.pubkey
         LEFT JOIN mute ON mute.mutedItem = mainEvent.pubkey AND mute.tag IS 'p'
         LEFT JOIN profileSetItem ON profileSetItem.pubkey = mainEvent.pubkey
-        LEFT JOIN lock ON lock.pubkey = mainEvent.pubkey
         LEFT JOIN vote ON vote.eventId = mainEvent.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)
         LEFT JOIN (
             SELECT vote.eventId, COUNT(*) AS upvoteCount 
@@ -70,7 +68,6 @@ data class PollView(
     val authorIsTrusted: Boolean,
     val authorIsMuted: Boolean,
     val authorIsInList: Boolean,
-    val authorIsLocked: Boolean,
     val myTopic: Topic?,
     val content: String,
     val createdAt: Long,

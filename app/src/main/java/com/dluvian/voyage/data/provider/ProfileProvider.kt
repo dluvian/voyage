@@ -32,7 +32,6 @@ class ProfileProvider(
     private val itemSetProvider: ItemSetProvider,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val annotatedStringProvider: AnnotatedStringProvider,
-    private val lockProvider: LockProvider,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -86,7 +85,6 @@ class ProfileProvider(
                 friendProvider = friendProvider,
                 muteProvider = muteProvider,
                 itemSetProvider = itemSetProvider,
-                lockProvider = lockProvider,
             )
 
         }
@@ -126,9 +124,8 @@ class ProfileProvider(
         val unfollowedPubkeys = room.profileDao().getPopularUnfollowedPubkeys(limit = limit)
             .ifEmpty {
                 val default = defaultPubkeys.toMutableSet()
-                default.removeAll(friendProvider.getFriendPubkeysNoLock().toSet())
+                default.removeAll(friendProvider.getFriendPubkeys().toSet())
                 default.remove(myPubkeyProvider.getPubkeyHex())
-                default.removeAll(lockProvider.getLockedPubkeys().toSet())
                 default
             }
         lazyNostrSubscriber
@@ -146,7 +143,6 @@ class ProfileProvider(
             }
         val friendsWithoutProfile = room.profileDao().getUnknownFriends()
         lazyNostrSubscriber.lazySubUnknownProfiles(CustomPubkeys(pubkeys = friendsWithoutProfile))
-        lazyNostrSubscriber.lazySubWotLocks(prioritizeFriends = true)
 
         return combine(forcedFollowFlow, forcedMuteFlow) { forcedFollows, forcedMutes ->
             friends.map {
@@ -162,11 +158,10 @@ class ProfileProvider(
                     friendProvider = friendProvider,
                     muteProvider = muteProvider,
                     itemSetProvider = itemSetProvider,
-                    lockProvider = lockProvider,
                 )
             }
         }.map { friendList ->
-            friendList.sortedByDescending { it.isLocked || it.isMuted }
+            friendList.sortedByDescending { it.isMuted }
         }
     }
 
@@ -174,7 +169,6 @@ class ProfileProvider(
         // We want to be able to unmute on the same list
         val mutedProfiles = room.profileDao().getAdvancedProfilesOfMutes()
         val mutesWithoutProfile = room.profileDao().getUnknownMutes()
-        lazyNostrSubscriber.lazySubWotLocks(prioritizeFriends = false)
 
         return combine(forcedFollowFlow, forcedMuteFlow) { forcedFollows, forcedMutes ->
             mutedProfiles.map {
@@ -190,7 +184,6 @@ class ProfileProvider(
                     friendProvider = friendProvider,
                     muteProvider = muteProvider,
                     itemSetProvider = itemSetProvider,
-                    lockProvider = lockProvider,
                 )
             }
         }
@@ -215,7 +208,6 @@ class ProfileProvider(
                     friendProvider = friendProvider,
                     muteProvider = muteProvider,
                     itemSetProvider = itemSetProvider,
-                    lockProvider = lockProvider,
                 )
             }
         }
@@ -238,7 +230,6 @@ class ProfileProvider(
             friendProvider = friendProvider,
             muteProvider = muteProvider,
             itemSetProvider = itemSetProvider,
-            lockProvider = lockProvider,
         )
         return FullProfileUI(
             inner = inner,

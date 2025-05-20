@@ -22,7 +22,7 @@ class WebOfTrustProvider(
     ): List<PubkeyHex> {
         val result = mutableListOf<PubkeyHex>()
 
-        result.addAll(friendProvider.getFriendPubkeysNoLock(max = max))
+        result.addAll(friendProvider.getFriendPubkeys(max = max))
         result.addAll(webOfTrust.value.minus(result.toSet()).takeRandom(max))
 
         return if (friendsFirst) {

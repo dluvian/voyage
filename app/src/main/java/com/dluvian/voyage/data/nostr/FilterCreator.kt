@@ -6,9 +6,7 @@ import com.dluvian.voyage.core.utils.limitRestricted
 import com.dluvian.voyage.core.utils.replyKinds
 import com.dluvian.voyage.core.utils.threadableKinds
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
-import com.dluvian.voyage.data.event.LOCK_U16
 import com.dluvian.voyage.data.event.POLL_RESPONSE_U16
-import com.dluvian.voyage.data.provider.LockProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.AppDatabase
 import com.dluvian.voyage.data.room.entity.main.poll.PollEntity
@@ -22,7 +20,6 @@ import rust.nostr.sdk.Timestamp
 class FilterCreator(
     private val room: AppDatabase,
     private val myPubkeyProvider: IMyPubkeyProvider,
-    private val lockProvider: LockProvider,
     private val relayProvider: RelayProvider,
 ) {
     companion object {
@@ -76,22 +73,6 @@ class FilterCreator(
             .authors(authors = pubkeys)
             .since(timestamp = since)
             .until(timestamp = until)
-            .limitRestricted(limit = pubkeys.size.toULong())
-    }
-
-    fun getLazyLockFilter(pubkey: PublicKey): Filter? {
-        if (lockProvider.isLocked(pubkey = pubkey.toHex())) return null
-
-        return getLockFilter(pubkeys = listOf(pubkey))
-    }
-
-    fun getLockFilter(pubkeys: List<PublicKey>): Filter? {
-        if (pubkeys.isEmpty()) return null
-
-        return Filter()
-            .kind(kind = Kind(LOCK_U16))
-            .authors(authors = pubkeys)
-            .until(timestamp = Timestamp.now())
             .limitRestricted(limit = pubkeys.size.toULong())
     }
 

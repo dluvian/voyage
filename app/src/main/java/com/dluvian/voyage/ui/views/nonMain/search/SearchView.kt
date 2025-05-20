@@ -94,7 +94,6 @@ private fun SearchViewContent(
                         isWebOfTrust = post.authorIsTrusted,
                         isMuted = post.authorIsMuted,
                         isInList = post.authorIsInList,
-                        isLocked = post.authorIsLocked,
                     ),
                     header = post.subject,
                     content = post.content,

@@ -1,7 +1,7 @@
 package com.dluvian.voyage.data.preferences
 
 import android.content.Context
-import com.dluvian.voyage.data.model.FriendPubkeysNoLock
+import com.dluvian.voyage.data.model.FriendPubkeys
 import com.dluvian.voyage.data.model.Global
 import com.dluvian.voyage.data.model.InboxFeedSetting
 import com.dluvian.voyage.data.model.NoPubkeys
@@ -17,7 +17,7 @@ class InboxPreferences(context: Context) {
 
     fun getInboxFeedSetting(): InboxFeedSetting {
         val pubkeys = when (preferences.getString(PUBKEYS, GLOBAL)) {
-            FRIENDS -> FriendPubkeysNoLock
+            FRIENDS -> FriendPubkeys
             WEB_OF_TRUST -> WebOfTrustPubkeys
             GLOBAL -> Global
             else -> Global
@@ -27,7 +27,7 @@ class InboxPreferences(context: Context) {
 
     fun setInboxFeedSettings(setting: InboxFeedSetting) {
         val pubkeys = when (setting.pubkeySelection) {
-            FriendPubkeysNoLock -> FRIENDS
+            FriendPubkeys -> FRIENDS
             WebOfTrustPubkeys -> WEB_OF_TRUST
             Global -> GLOBAL
             // For some reason I can't model PubkeySelection like:

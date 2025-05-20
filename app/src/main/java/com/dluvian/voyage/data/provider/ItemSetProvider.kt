@@ -33,7 +33,6 @@ class ItemSetProvider(
     private val muteProvider: MuteProvider,
     private val annotatedStringProvider: AnnotatedStringProvider,
     private val relayProvider: RelayProvider,
-    private val lockProvider: LockProvider,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val allPubkeys = room.itemSetDao().getAllPubkeysFlow()
@@ -116,7 +115,7 @@ class ItemSetProvider(
     private suspend fun getProfilesFromList(identifier: String): List<AdvancedProfileView> {
         val known = room.profileDao().getAdvancedProfilesOfList(identifier = identifier)
         val unknown = room.profileDao().getUnknownPubkeysFromList(identifier = identifier)
-        val friendPubkeys = friendProvider.getFriendPubkeysNoLock()
+        val friendPubkeys = friendProvider.getFriendPubkeys()
         val mutedPubkeys = room.muteDao().getMyProfileMutes()
 
         return known + unknown.map { unknownPubkey ->
@@ -130,7 +129,6 @@ class ItemSetProvider(
                 friendProvider = friendProvider,
                 muteProvider = muteProvider,
                 itemSetProvider = this,
-                lockProvider = lockProvider,
             )
         }
     }

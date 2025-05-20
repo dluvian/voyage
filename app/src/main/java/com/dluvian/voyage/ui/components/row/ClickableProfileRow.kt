@@ -20,7 +20,6 @@ fun ClickableProfileRow(
             isWebOfTrust = profile.isWebOfTrust,
             isMuted = profile.isMuted,
             isInList = profile.isInList,
-            isLocked = profile.isLocked,
         ),
         header = profile.name,
         trailingContent = trailingContent,

@@ -13,8 +13,7 @@ import com.dluvian.voyage.core.PubkeyHex
             "(SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = mainEvent.pubkey)) AS authorIsFriend, " +
             "(SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = mainEvent.pubkey)) AS authorIsTrusted, " +
             "(SELECT EXISTS(SELECT * FROM mute WHERE mute.mutedItem = mainEvent.pubkey AND mute.tag IS 'p')) AS authorIsMuted, " +
-            "(SELECT EXISTS(SELECT * FROM profileSetItem WHERE profileSetItem.pubkey = mainEvent.pubkey)) AS authorIsInList, " +
-            "(SELECT EXISTS(SELECT * FROM lock WHERE lock.pubkey = mainEvent.pubkey)) AS authorIsLocked " +
+            "(SELECT EXISTS(SELECT * FROM profileSetItem WHERE profileSetItem.pubkey = mainEvent.pubkey)) AS authorIsInList " +
             "FROM mainEvent " +
             "LEFT JOIN rootPost ON rootPost.eventId = mainEvent.id"
 )
@@ -28,5 +27,4 @@ data class SimplePostView(
     val authorIsTrusted: Boolean,
     val authorIsMuted: Boolean,
     val authorIsInList: Boolean,
-    val authorIsLocked: Boolean,
 )

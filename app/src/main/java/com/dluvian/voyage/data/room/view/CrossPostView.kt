@@ -28,7 +28,6 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             CASE WHEN weboftrust.webOfTrustPubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsTrusted,
             CASE WHEN mute.mutedItem IS NOT NULL THEN 1 ELSE 0 END AS authorIsMuted,
             CASE WHEN profileSetItem.pubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsInList,
-            CASE WHEN lock.pubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsLocked,
             CASE WHEN vote.eventId IS NOT NULL THEN 1 ELSE 0 END crossPostedIsUpvoted,
             upvotes.upvoteCount AS crossPostedUpvoteCount,
             legacyReplies.legacyReplyCount AS crossPostedLegacyReplyCount,
@@ -38,7 +37,6 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             CASE WHEN cross_posted_wot.webOfTrustPubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsTrusted,
             CASE WHEN cross_posted_mute.mutedItem IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsMuted,
             CASE WHEN cross_posted_profile_set_item.pubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsInList,
-            CASE WHEN cross_posted_lock.pubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsLocked,
             (SELECT EXISTS(SELECT * FROM bookmark WHERE bookmark.eventId = crossPost.crossPostedId)) AS crossPostedIsBookmarked 
         FROM crossPost
         JOIN mainEvent ON crossPost.eventId = mainEvent.id
@@ -68,7 +66,6 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
         LEFT JOIN weboftrust ON weboftrust.webOfTrustPubkey = mainEvent.pubkey
         LEFT JOIN mute ON mute.mutedItem = mainEvent.pubkey AND mute.tag IS 'p'
         LEFT JOIN profileSetItem ON profileSetItem.pubkey = mainEvent.pubkey
-        LEFT JOIN lock ON lock.pubkey = mainEvent.pubkey
         LEFT JOIN vote ON vote.eventId = crossPost.crossPostedId AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)
         LEFT JOIN (
             SELECT vote.eventId, COUNT(*) AS upvoteCount 
@@ -80,7 +77,6 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
         LEFT JOIN weboftrust AS cross_posted_wot ON cross_posted_wot.webOfTrustPubkey = crossPostedEvent.pubkey
         LEFT JOIN mute AS cross_posted_mute ON cross_posted_mute.mutedItem = crossPostedEvent.pubkey AND cross_posted_mute.tag IS 'p'
         LEFT JOIN profileSetItem AS cross_posted_profile_set_item ON cross_posted_profile_set_item.pubkey = crossPostedEvent.pubkey
-        LEFT JOIN lock AS cross_posted_lock ON cross_posted_lock.pubkey = crossPostedEvent.pubkey
 """
 )
 data class CrossPostView(
@@ -92,7 +88,6 @@ data class CrossPostView(
     val authorIsTrusted: Boolean,
     val authorIsMuted: Boolean,
     val authorIsInList: Boolean,
-    val authorIsLocked: Boolean,
     val myTopic: Topic?,
     val createdAt: Long,
     val crossPostedSubject: String?,
@@ -110,7 +105,6 @@ data class CrossPostView(
     val crossPostedAuthorIsTrusted: Boolean,
     val crossPostedAuthorIsMuted: Boolean,
     val crossPostedAuthorIsInList: Boolean,
-    val crossPostedAuthorIsLocked: Boolean,
     val crossPostedIsBookmarked: Boolean,
 ) {
     fun mapToCrossPostUI(
