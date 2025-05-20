@@ -1,15 +1,25 @@
 package com.dluvian.voyage.data.nostr
 
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import com.dluvian.voyage.core.AUTH_TIMEOUT
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.core.model.BadConnection
+import com.dluvian.voyage.core.model.Connected
+import com.dluvian.voyage.core.model.ConnectionStatus
+import com.dluvian.voyage.core.model.Spam
+import com.dluvian.voyage.core.model.Waiting
+import com.dluvian.voyage.core.utils.addLocalRelay
+import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.event.EventCounter
 import com.dluvian.voyage.data.event.EventMaker
+import com.dluvian.voyage.data.event.EventQueue
 import com.dluvian.voyage.data.preferences.RelayPreferences
-import rust.nostr.sdk.Client
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import rust.nostr.sdk.Coordinate
 import rust.nostr.sdk.Event
 import rust.nostr.sdk.EventId
@@ -20,20 +30,95 @@ import rust.nostr.sdk.PublicKey
 private const val TAG = "NostrService"
 
 class NostrService(
-    private val nostrClient: Client,
+    private val nostrClient: NostrClient,
+    private val eventQueue: EventQueue,
     private val eventMaker: EventMaker,
     private val filterCache: MutableMap<SubId, List<Filter>>,
     private val relayPreferences: RelayPreferences,
+    private val connectionStatuses: MutableState<Map<RelayUrl, ConnectionStatus>>,
     private val eventCounter: EventCounter,
 ) {
-    suspend fun initialize(initRelayUrls: Collection<RelayUrl>) {
-        initRelayUrls.forEach { relay -> nostrClient.addRelay(relay) }
-        nostrClient.connect()
+    private val scope = CoroutineScope(Dispatchers.IO)
+
+    private val listener = object : INostrListener {
+        override fun onOpen(relayUrl: RelayUrl, msg: String) {
+            Log.i(TAG, "OnOpen($relayUrl): $msg")
+            addConnectionStatus(relayUrl = relayUrl, status = Connected)
+        }
+
+        override fun onEvent(subId: SubId, event: Event, relayUrl: RelayUrl?) {
+            if (!relayUrl.isNullOrEmpty() && eventCounter.isExceedingLimit(subId = subId)) {
+                nostrClient.removeRelay(
+                    relayUrl = relayUrl,
+                    reason = "You're sending me more than I requested"
+                )
+                addConnectionStatus(relayUrl = relayUrl, status = Spam)
+                Log.w(TAG, "$relayUrl sends more events than requested in $subId")
+                return
+            }
+
+            eventQueue.submit(event = event, subId = subId, relayUrl = relayUrl)
+        }
+
+        override fun onError(relayUrl: RelayUrl, msg: String, throwable: Throwable?) {
+            Log.w(TAG, "OnError($relayUrl): $msg", throwable)
+        }
+
+        override fun onEOSE(relayUrl: RelayUrl, subId: SubId) {
+            Log.d(TAG, "OnEOSE($relayUrl): $subId")
+            nostrClient.unsubscribe(subId)
+        }
+
+        override fun onClosed(relayUrl: RelayUrl, subId: SubId, reason: String) {
+            Log.d(TAG, "OnClosed($relayUrl): $subId, reason: $reason")
+        }
+
+        override fun onClose(relayUrl: RelayUrl, reason: String) {
+            Log.i(TAG, "OnClose($relayUrl): $reason")
+            addConnectionStatus(relayUrl = relayUrl, status = BadConnection)
+        }
+
+        override fun onFailure(relayUrl: RelayUrl, msg: String?, throwable: Throwable?) {
+            Log.i(TAG, "OnFailure($relayUrl): $msg", throwable)
+            addConnectionStatus(relayUrl = relayUrl, status = BadConnection)
+        }
+
+        override fun onOk(relayUrl: RelayUrl, eventId: EventId, accepted: Boolean, msg: String) {
+            Log.d(
+                TAG,
+                "OnOk($relayUrl): ${eventId.toHex()}, accepted=$accepted, ${msg.ifBlank { "No message" }}"
+            )
+        }
+
+        override fun onAuth(relayUrl: RelayUrl, challenge: String) {
+            Log.d(TAG, "OnAuth($relayUrl): challenge=$challenge")
+
+            if (!relayPreferences.getSendAuth()) {
+                Log.i(TAG, "Reject AUTH from $relayUrl")
+                return
+            }
+
+            scope.launchIO {
+                sendAuth(relayUrl = relayUrl, challenge = challenge)
+            }
+        }
     }
 
-    suspend fun publishJson(eventJson: String): Result<Event> {
+    fun initialize(initRelayUrls: Collection<RelayUrl>) {
+        nostrClient.setListener(listener)
+        Log.i(TAG, "Add ${initRelayUrls.size} relays: $initRelayUrls")
+        nostrClient.addRelays(initRelayUrls.addLocalRelay(relayPreferences.getLocalRelayPort()))
+
+        initRelayUrls.forEach {
+            addConnectionStatus(relayUrl = it, status = Waiting)
+        }
+    }
+
+    fun publishJson(eventJson: String, relayUrls: Collection<RelayUrl>): Result<Event> {
         return runCatching { Event.fromJson(json = eventJson) }
-            .onSuccess { event -> nostrClient.sendEvent(event) }
+            .onSuccess { event ->
+                nostrClient.publishToRelays(event = event, relayUrls = relayUrls)
+            }
             .onFailure {
                 Log.w(TAG, "Failed to deserialize $eventJson")
             }
@@ -44,6 +129,7 @@ class NostrService(
         topics: List<Topic>,
         mentions: List<PubkeyHex>,
         quotes: List<String>,
+        relayUrls: Collection<RelayUrl>,
     ): Result<Event> {
         return eventMaker.buildPost(
             content = content,
@@ -51,7 +137,7 @@ class NostrService(
             mentions = mentions,
             quotes = quotes,
         )
-            .onSuccess { nostrClient.sendEvent(event = it) }
+            .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
     suspend fun publishComment(
@@ -258,5 +344,15 @@ class NostrService(
                 nostrClient.publishAuth(authEvent = event, relayUrl = relayUrl)
             }
             .onFailure { Log.w(TAG, "Failed to sign AUTH event for $relayUrl") }
+    }
+
+    private fun addConnectionStatus(relayUrl: RelayUrl, status: ConnectionStatus) {
+        synchronized(connectionStatuses) {
+            connectionStatuses.value = connectionStatuses.value.let {
+                val mutable = it.toMutableMap()
+                mutable[relayUrl] = status
+                mutable
+            }
+        }
     }
 }
