@@ -307,8 +307,11 @@ data class SearchText(
 ) : SearchViewAction()
 
 
+data class ProcessExternalSignature(val activityResult: ActivityResult) : UIEvent()
 data class ClickClickableText(val text: String, val uriHandler: UriHandler) : UIEvent()
 
+data class RegisterSignerLauncher(val launcher: ManagedLauncher) : UIEvent()
+data class RegisterAccountLauncher(val launcher: ManagedLauncher) : UIEvent()
 data class RegisterUriHandler(val uriHandler: UriHandler) : UIEvent()
 data class RebroadcastPost(val postId: EventIdHex, val context: Context) : UIEvent()
 data class DeleteList(val identifier: String, val onCloseDrawer: Fn) : UIEvent()

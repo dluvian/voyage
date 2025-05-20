@@ -1,4 +1,4 @@
-package com.dluvian.voyage.data
+package com.dluvian.voyage.data.interactor
 
 import com.dluvian.voyage.core.EventIdHex
 import kotlinx.coroutines.CoroutineScope

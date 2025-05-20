@@ -7,6 +7,7 @@ sealed class FeedSetting
 
 data class InboxFeedSetting(val pubkeySelection: FeedPubkeySelection) : FeedSetting()
 data object BookmarksFeedSetting : FeedSetting()
+data class ReplyFeedSetting(val nprofile: Nip19Profile) : FeedSetting()
 
 
 sealed class MainFeedSetting : FeedSetting()
