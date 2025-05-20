@@ -5,6 +5,7 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.utils.createVoyageClientTag
+import com.dluvian.voyage.data.account.AccountManager
 import com.dluvian.voyage.data.nostr.Nip65Relay
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.createDescriptionTag
@@ -30,8 +31,8 @@ import rust.nostr.sdk.Tag
 
 private const val TAG = "EventMaker"
 
-// TODO: Remove class, only functions, sign with sdk client
 class EventMaker(
+    private val accountManager: AccountManager,
     private val eventPreferences: EventPreferences,
 ) {
     suspend fun buildPost(
@@ -262,7 +263,6 @@ class EventMaker(
         return accountManager.sign(unsignedEvent = unsignedEvent)
     }
 
-    // TODO: Move to nostrService?
     private fun addClientTag(tags: MutableList<Tag>) {
         if (!eventPreferences.isAddingClientTag()) return
 

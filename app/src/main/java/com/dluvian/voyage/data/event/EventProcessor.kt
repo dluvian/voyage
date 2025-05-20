@@ -4,6 +4,7 @@ import android.util.Log
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.utils.toRelevantMetadata
+import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
 import com.dluvian.voyage.data.room.AppDatabase
 import com.dluvian.voyage.data.room.entity.FullProfileEntity
@@ -19,6 +20,7 @@ private const val TAG = "EventProcessor"
 class EventProcessor(
     private val room: AppDatabase,
     private val metadataInMemory: MetadataInMemory,
+    private val myPubkeyProvider: IMyPubkeyProvider,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val listEventProcessor = ListEventProcessor(

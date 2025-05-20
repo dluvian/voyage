@@ -1,4 +1,4 @@
-package com.dluvian.voyage.data
+package com.dluvian.voyage.data.account
 
 import android.content.Context
 import android.content.Intent
@@ -10,6 +10,7 @@ import com.dluvian.voyage.core.FEED_PAGE_SIZE
 import com.dluvian.voyage.core.model.AccountType
 import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
+import com.dluvian.voyage.data.event.IdCacheClearer
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.nostr.getCurrentSecs
@@ -23,8 +24,10 @@ import rust.nostr.sdk.PublicKey
 private const val TAG = "AccountSwitcher"
 
 class AccountSwitcher(
+    private val accountManager: AccountManager,
     private val accountDao: AccountDao,
     private val mainEventDao: MainEventDao,
+    private val idCacheClearer: IdCacheClearer,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val nostrSubscriber: NostrSubscriber,
     private val homePreferences: HomePreferences,
