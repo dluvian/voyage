@@ -229,6 +229,7 @@ data object ProfileViewLoadLists : ProfileViewAction()
 
 sealed class CreatePostViewAction : UIEvent()
 data class SendPost(
+    val header: String,
     val body: String,
     val topics: List<Topic>,
     val context: Context,

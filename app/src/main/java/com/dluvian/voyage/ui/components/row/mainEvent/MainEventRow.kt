@@ -12,11 +12,14 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.MAX_CONTENT_LINES
+import com.dluvian.voyage.core.MAX_SUBJECT_LINES
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenThread
 import com.dluvian.voyage.core.OpenThreadRaw
@@ -117,6 +120,17 @@ private fun MainEventMainRow(
                 .fillMaxWidth()
                 .padding(end = spacing.bigScreenEdge)
         ) {
+            ctx.mainEvent.getRelevantSubject()?.let { subject ->
+                if (subject.isNotEmpty()) {
+                    AnnotatedText(
+                        text = subject,
+                        maxLines = MAX_SUBJECT_LINES,
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold)
+                    )
+                    Spacer(modifier = Modifier.height(spacing.large))
+                }
+            }
+
             AnimatedVisibility(
                 visible = !ctx.isCollapsedReply(),
                 exit = slideOutVertically(animationSpec = tween(durationMillis = 0))

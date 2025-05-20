@@ -101,11 +101,8 @@ class V28 : AutoMigrationSpec
 )
 class V29 : AutoMigrationSpec
 
-@DeleteColumn(tableName = "post", columnName = "subject")
-class V30 : AutoMigrationSpec
-
 @Database(
-    version = 30,
+    version = 29,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -136,7 +133,6 @@ class V30 : AutoMigrationSpec
         AutoMigration(from = 26, to = 27, spec = V27::class),
         AutoMigration(from = 27, to = 28, spec = V28::class),
         AutoMigration(from = 28, to = 29, spec = V29::class),
-        AutoMigration(from = 29, to = 30, spec = V30::class),
     ],
     entities = [
         // Main

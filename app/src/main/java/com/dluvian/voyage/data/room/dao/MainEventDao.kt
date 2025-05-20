@@ -81,6 +81,10 @@ interface MainEventDao {
 
     @Query(
         "SELECT * FROM SimplePostView " +
+                "WHERE subject IS NOT NULL " +
+                "AND subject LIKE :somewhere " +
+                "UNION " +
+                "SELECT * FROM SimplePostView " +
                 "WHERE content LIKE :somewhere " +
                 "LIMIT :limit"
     )

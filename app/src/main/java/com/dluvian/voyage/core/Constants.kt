@@ -5,12 +5,12 @@ const val VOYAGE = "voyage"
 
 const val MAX_CONTENT_LEN = 8_192
 const val MAX_DESCRIPTION_LEN = 1024
-const val MAX_TITLE_LEN = 256
+const val MAX_SUBJECT_LEN = 256
 const val MAX_NAME_LEN = 32
 const val MAX_TOPIC_LEN = 32
 const val MAX_TOPICS = 5
 
-const val MAX_TITLE_LINES = 3
+const val MAX_SUBJECT_LINES = 3
 const val MAX_CONTENT_LINES = 12
 
 const val DELAY_1SEC = 1000L
@@ -40,6 +40,7 @@ const val MAX_KEYS_SQL = 4 * MAX_KEYS // Exception when query gets too long
 const val MAX_EVENTS_TO_SUB = 200uL
 
 const val FEED_PAGE_SIZE = 25
+const val FEED_OFFSET = 1
 
 const val MIN_RETAIN_ROOT = 500f
 const val MAX_RETAIN_ROOT = 5_000f

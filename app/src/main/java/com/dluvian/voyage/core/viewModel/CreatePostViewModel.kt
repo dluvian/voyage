@@ -32,6 +32,7 @@ class CreatePostViewModel(
         isSending.value = true
         viewModelScope.launchIO {
             val result = postSender.sendPost(
+                header = action.header,
                 body = action.body,
                 topics = action.topics,
             )

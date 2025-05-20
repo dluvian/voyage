@@ -7,6 +7,7 @@ import com.dluvian.voyage.core.PubkeyHex
 @DatabaseView(
     "SELECT mainEvent.id, " +
             "mainEvent.pubkey, " +
+            "rootPost.subject, " +
             "mainEvent.content, " +
             "(SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = mainEvent.pubkey)) AS authorIsOneself, " +
             "(SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = mainEvent.pubkey)) AS authorIsFriend, " +
@@ -18,6 +19,7 @@ import com.dluvian.voyage.core.PubkeyHex
 data class SimplePostView(
     val id: EventIdHex,
     val pubkey: PubkeyHex,
+    val subject: String?,
     val content: String,
     val authorIsOneself: Boolean,
     val authorIsFriend: Boolean,

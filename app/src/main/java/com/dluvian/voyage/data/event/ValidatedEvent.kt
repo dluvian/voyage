@@ -58,6 +58,7 @@ data class ValidatedRootPost(
     override val json: String,
     override val isMentioningMe: Boolean,
     val topics: List<String>,
+    val subject: String,
 ) : ValidatedTextNote(
     id = id,
     pubkey = pubkey,

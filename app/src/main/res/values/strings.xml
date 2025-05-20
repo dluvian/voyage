@@ -40,6 +40,8 @@
     <string name="popular_profiles">Popular profiles</string>
     <string name="no_profiles_found">No profiles found</string>
     <string name="no_topics_found">No topics found</string>
+    <string name="subject">Subject</string>
+    <string name="subject_optional">Subject (optional)</string>
     <string name="body_text">Body text</string>
     <string name="body_text_optional">Body text (optional)</string>
     <string name="send">Send</string>

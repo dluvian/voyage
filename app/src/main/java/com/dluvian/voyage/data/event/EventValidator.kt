@@ -7,6 +7,7 @@ import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.utils.getNormalizedDescription
 import com.dluvian.voyage.core.utils.getNormalizedTitle
 import com.dluvian.voyage.core.utils.getNormalizedTopics
+import com.dluvian.voyage.core.utils.getTrimmedSubject
 import com.dluvian.voyage.core.utils.takeRandom
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.nostr.RelayUrl
@@ -252,7 +253,8 @@ class EventValidator(
             val replyToId = event.getLegacyReplyToId()
             val content = event.content().trim().take(MAX_CONTENT_LEN)
             return if (replyToId == null) {
-                if (content.isEmpty()) return null // TODO: Allow empty notes
+                val subject = event.getTrimmedSubject()
+                if (subject.isNullOrEmpty() && content.isEmpty()) return null
                 ValidatedRootPost(
                     id = event.id().toHex(),
                     pubkey = event.author().toHex(),
@@ -262,6 +264,7 @@ class EventValidator(
                     json = event.asJson(),
                     isMentioningMe = event.isMentioningMe(myPubkey = myPubkey),
                     topics = event.getNormalizedTopics(limit = MAX_TOPICS),
+                    subject = subject.orEmpty(),
                 )
             } else {
                 if (content.isEmpty() || replyToId == event.id().toHex()) return null

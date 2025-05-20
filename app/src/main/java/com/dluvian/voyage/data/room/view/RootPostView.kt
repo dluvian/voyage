@@ -14,6 +14,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
         SELECT 
             mainEvent.id, 
             mainEvent.pubkey, 
+            rootPost.subject, 
             mainEvent.content, 
             mainEvent.createdAt, 
             mainEvent.relayUrl, 
@@ -52,6 +53,7 @@ data class RootPostView(
     val authorIsTrusted: Boolean,
     val authorIsInList: Boolean,
     val myTopic: Topic?,
+    val subject: String,
     val content: String,
     val createdAt: Long,
     val isUpvoted: Boolean,

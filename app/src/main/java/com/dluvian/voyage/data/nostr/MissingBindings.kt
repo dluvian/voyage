@@ -18,6 +18,10 @@ import rust.nostr.sdk.TagStandard
 import rust.nostr.sdk.Timestamp
 import java.security.SecureRandom
 
+fun createSubjectTag(subject: String): Tag {
+    return Tag.fromStandardized(TagStandard.Subject(subject = subject))
+}
+
 fun createTitleTag(title: String): Tag {
     return Tag.fromStandardized(TagStandard.Title(title = title))
 }
@@ -145,6 +149,7 @@ fun Event.getNip65s(): List<Nip65Relay> {
         .distinctBy { it.url }.toList()
 }
 
+fun Event.getSubject() = this.getValue(kind = TagKind.Subject)
 fun Event.getTitle() = this.getValue(kind = TagKind.Title)
 fun Event.getDescription() = this.getValue(kind = TagKind.Description)
 

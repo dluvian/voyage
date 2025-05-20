@@ -125,6 +125,7 @@ class NostrService(
     }
 
     suspend fun publishPost(
+        subject: String,
         content: String,
         topics: List<Topic>,
         mentions: List<PubkeyHex>,
@@ -132,10 +133,29 @@ class NostrService(
         relayUrls: Collection<RelayUrl>,
     ): Result<Event> {
         return eventMaker.buildPost(
+            subject = subject,
             content = content,
             topics = topics,
             mentions = mentions,
             quotes = quotes,
+        )
+            .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
+    }
+
+    suspend fun publishLegacyReply(
+        content: String,
+        parent: Event,
+        mentions: List<PubkeyHex>,
+        quotes: List<String>,
+        relayHint: RelayUrl?,
+        relayUrls: Collection<RelayUrl>,
+    ): Result<Event> {
+        return eventMaker.buildReply(
+            parent = parent,
+            mentions = mentions,
+            quotes = quotes,
+            relayHint = relayHint,
+            content = content,
         )
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
@@ -298,7 +318,7 @@ class NostrService(
 
     suspend fun publishGitIssue(
         repoCoordinate: Coordinate,
-        title: String,
+        subject: String,
         content: String,
         label: String,
         mentions: List<PubkeyHex>,
@@ -307,7 +327,7 @@ class NostrService(
     ): Result<Event> {
         return eventMaker.buildGitIssue(
             repoCoordinate = repoCoordinate,
-            title = title,
+            subject = subject,
             content = content,
             label = label,
             mentions = mentions,

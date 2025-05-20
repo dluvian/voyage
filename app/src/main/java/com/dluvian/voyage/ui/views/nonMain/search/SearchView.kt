@@ -94,6 +94,7 @@ private fun SearchViewContent(
                         isWebOfTrust = post.authorIsTrusted,
                         isInList = post.authorIsInList,
                     ),
+                    header = post.subject,
                     content = post.content,
                     onClick = {
                         onUpdate(OpenThreadRaw(nevent = createNevent(hex = post.id)))
