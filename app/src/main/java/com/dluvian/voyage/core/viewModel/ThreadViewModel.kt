@@ -16,7 +16,7 @@ import com.dluvian.voyage.core.model.MainEvent
 import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.model.ThreadableMainEvent
 import com.dluvian.voyage.core.utils.launchIO
-import com.dluvian.voyage.data.ThreadCollapser
+import com.dluvian.voyage.data.interactor.ThreadCollapser
 import com.dluvian.voyage.data.model.PostDetails
 import com.dluvian.voyage.data.provider.ThreadProvider
 import com.dluvian.voyage.ui.components.row.mainEvent.ThreadReplyCtx

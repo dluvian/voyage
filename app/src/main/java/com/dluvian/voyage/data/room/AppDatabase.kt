@@ -60,6 +60,13 @@ import com.dluvian.voyage.data.room.entity.sets.ProfileSetEntity
 import com.dluvian.voyage.data.room.entity.sets.ProfileSetItemEntity
 import com.dluvian.voyage.data.room.entity.sets.TopicSetEntity
 import com.dluvian.voyage.data.room.entity.sets.TopicSetItemEntity
+import com.dluvian.voyage.data.room.view.AdvancedProfileView
+import com.dluvian.voyage.data.room.view.CommentView
+import com.dluvian.voyage.data.room.view.CrossPostView
+import com.dluvian.voyage.data.room.view.EventRelayAuthorView
+import com.dluvian.voyage.data.room.view.LegacyReplyView
+import com.dluvian.voyage.data.room.view.RootPostView
+import com.dluvian.voyage.data.room.view.SimplePostView
 
 // TODO: Complete new db to stop bothering with migration
 @DeleteColumn(tableName = "vote", columnName = "isPositive")
@@ -159,6 +166,15 @@ class V30 : AutoMigrationSpec
         ProfileEntity::class,
         FullProfileEntity::class,
     ],
+    views = [
+        SimplePostView::class,
+        EventRelayAuthorView::class,
+        RootPostView::class,
+        LegacyReplyView::class,
+        CommentView::class,
+        CrossPostView::class,
+        AdvancedProfileView::class,
+    ]
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun accountDao(): AccountDao

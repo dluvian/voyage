@@ -14,7 +14,7 @@ class PubkeyProvider(
     private val friendProvider: FriendProvider,
     private val webOfTrustProvider: WebOfTrustProvider,
 ) {
-    val itemSetProvider: ItemSetProvider
+    lateinit var itemSetProvider: ItemSetProvider
 
     suspend fun getPubkeys(selection: PubkeySelection): List<PubkeyHex> {
         return when (selection) {
