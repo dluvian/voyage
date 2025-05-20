@@ -34,6 +34,15 @@ interface SomeReplyDao {
         return internalGetLegacyReplyParentId(id = id) ?: internalGetCommentParentId(id = id)
     }
 
+    fun getReplyCountFlow(parentId: EventIdHex): Flow<Int> {
+        return combine(
+            internalGetLegacyReplyCountFlow(parentId = parentId),
+            internalGetCommentCountFlow(parentId = parentId),
+        ) { legacyCount, commentCount ->
+            legacyCount + commentCount
+        }
+    }
+
     suspend fun getNewestReplyCreatedAt(parentId: String): Long? {
         val legacy = internalGetNewestLegacyReplyCreatedAt(parentId = parentId)
         val comment = internalGetNewestCommentCreatedAt(parentId = parentId)
@@ -47,6 +56,14 @@ interface SomeReplyDao {
 
     @Query("SELECT parentId FROM comment WHERE eventId = :id")
     suspend fun internalGetCommentParentId(id: EventIdHex): EventIdHex?
+
+    // Should be like LegacyReplyDao.getRepliesFlow
+    @Query("SELECT COUNT(*) FROM LegacyReplyView WHERE parentId = :parentId")
+    fun internalGetLegacyReplyCountFlow(parentId: EventIdHex): Flow<Int>
+
+    // Should be like CommentDao.getCommentsFlow
+    @Query("SELECT COUNT(*) FROM CommentView WHERE parentId = :parentId")
+    fun internalGetCommentCountFlow(parentId: EventIdHex): Flow<Int>
 
     suspend fun getProfileRepliesCreatedAt(pubkey: PubkeyHex, until: Long, size: Int): List<Long> {
         val legacy = internalGetProfileLegacyRepliesCreatedAt(
