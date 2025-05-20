@@ -16,6 +16,7 @@ import com.dluvian.voyage.data.event.EventValidator
 import com.dluvian.voyage.data.event.TEXT_NOTE_U16
 import com.dluvian.voyage.data.event.ValidatedComment
 import com.dluvian.voyage.data.event.ValidatedCrossPost
+import com.dluvian.voyage.data.event.ValidatedLegacyReply
 import com.dluvian.voyage.data.event.ValidatedRootPost
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.RelayUrl
@@ -23,6 +24,7 @@ import com.dluvian.voyage.data.nostr.extractMentions
 import com.dluvian.voyage.data.nostr.extractQuotes
 import com.dluvian.voyage.data.nostr.getSubject
 import com.dluvian.voyage.data.nostr.secs
+import com.dluvian.voyage.data.preferences.EventPreferences
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.MainEventDao
 import com.dluvian.voyage.data.room.dao.insert.MainEventInsertDao
@@ -43,6 +45,7 @@ class PostSender(
     private val mainEventInsertDao: MainEventInsertDao,
     private val mainEventDao: MainEventDao,
     private val myPubkeyProvider: IMyPubkeyProvider,
+    private val eventPreferences: EventPreferences
 ) {
     suspend fun sendPost(
         header: String,
@@ -82,24 +85,85 @@ class PostSender(
         }
     }
 
-    suspend fun sendComment(
-        content: String,
+    suspend fun sendReply(
         parent: Event,
+        body: String,
         relayHint: RelayUrl?,
     ): Result<Event> {
-        val trimmedContent = content.trim()
+        val trimmedBody = body.trim()
+
         val mentions = mutableListOf<PubkeyHex>().apply {
             // Not setting parent author, bc rust-nostr is doing it
-            addAll(extractMentionPubkeys(content = trimmedContent))
+            addAll(extractMentionPubkeys(content = trimmedBody))
         }.minus(parent.tags().publicKeys().map { it.toHex() }) // rust-nostr uses p-tags of parent
             .distinct()
 
-        return nostrService.publishComment(
-            content = trimmedContent,
+        return if (
+            trimmedBody.length <= 6 ||
+            parent.kind().asU16() != TEXT_NOTE_U16 ||
+            eventPreferences.isUsingV2Replies()
+        ) {
+            sendComment(
+                content = trimmedBody,
+                parent = parent,
+                mentions = mentions,
+                topics = extractCleanHashtags(content = trimmedBody).take(MAX_TOPICS),
+                relayHint = relayHint,
+            )
+        } else {
+            sendLegacyReply(
+                content = trimmedBody,
+                parent = parent,
+                mentions = mentions,
+                relayHint = relayHint,
+            )
+        }
+    }
+
+    private suspend fun sendLegacyReply(
+        content: String,
+        parent: Event,
+        mentions: List<PubkeyHex>,
+        relayHint: RelayUrl?,
+    ): Result<Event> {
+        return nostrService.publishLegacyReply(
+            content = content,
             parent = parent,
             mentions = mentions,
             quotes = extractQuotesFromString(content = content),
-            topics = extractCleanHashtags(content = trimmedContent).take(MAX_TOPICS),
+            relayHint = relayHint,
+            relayUrls = relayProvider.getPublishRelays(publishTo = mentions),
+        ).onSuccess { event ->
+            val validatedReply = ValidatedLegacyReply(
+                id = event.id().toHex(),
+                pubkey = event.author().toHex(),
+                parentId = parent.id().toHex(),
+                content = event.content(),
+                createdAt = event.createdAt().secs(),
+                relayUrl = "", // We don't know which relay accepted this note
+                json = event.asJson(),
+                isMentioningMe = mentions.contains(myPubkeyProvider.getPubkeyHex())
+            )
+            mainEventInsertDao.insertLegacyReplies(replies = listOf(validatedReply))
+
+        }.onFailure {
+            Log.w(TAG, "Failed to create legacy reply event", it)
+        }
+    }
+
+    private suspend fun sendComment(
+        content: String,
+        parent: Event,
+        mentions: List<PubkeyHex>,
+        topics: List<Topic>,
+        relayHint: RelayUrl?,
+    ): Result<Event> {
+        return nostrService.publishComment(
+            content = content,
+            parent = parent,
+            mentions = mentions,
+            quotes = extractQuotesFromString(content = content),
+            topics = topics,
             relayHint = relayHint,
             relayUrls = relayProvider.getPublishRelays(publishTo = mentions),
         ).onSuccess { event ->

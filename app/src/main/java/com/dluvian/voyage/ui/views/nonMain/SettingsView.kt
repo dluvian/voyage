@@ -52,6 +52,7 @@ import com.dluvian.voyage.core.UpdateAutopilotRelays
 import com.dluvian.voyage.core.UpdateLocalRelayPort
 import com.dluvian.voyage.core.UpdateRootPostThreshold
 import com.dluvian.voyage.core.UseDefaultAccount
+import com.dluvian.voyage.core.UseV2Replies
 import com.dluvian.voyage.core.model.AccountType
 import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
@@ -332,6 +333,12 @@ private fun AppSection(vm: SettingsViewModel, onUpdate: OnUpdate) {
             text = stringResource(id = R.string.let_other_clients_know_that_you_are_posting_with_voyage),
             checked = vm.isAddingClientTag.value,
             onClickChange = { onUpdate(AddClientTag(addClientTag = it)) })
+
+        ClickableRowCheckbox(
+            header = stringResource(id = R.string.always_use_v2_replies),
+            text = stringResource(id = R.string.this_format_is_not_widely_adopted_yet),
+            checked = vm.useV2Replies.value,
+            onClickChange = { onUpdate(UseV2Replies(useV2Replies = it)) })
 
         ClickableRow(
             header = stringResource(id = R.string.upvote_event_content) + ": ${vm.currentUpvote.value}",
