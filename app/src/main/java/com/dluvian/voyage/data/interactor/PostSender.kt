@@ -7,8 +7,10 @@ import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.VOYAGE
+import com.dluvian.voyage.core.WEEK_IN_SECS
 import com.dluvian.voyage.core.model.LabledGitIssue
 import com.dluvian.voyage.core.utils.extractCleanHashtags
+import com.dluvian.voyage.core.utils.getNormalizedPollOptions
 import com.dluvian.voyage.core.utils.getNormalizedTopics
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.event.COMMENT_U16
@@ -17,11 +19,15 @@ import com.dluvian.voyage.data.event.TEXT_NOTE_U16
 import com.dluvian.voyage.data.event.ValidatedComment
 import com.dluvian.voyage.data.event.ValidatedCrossPost
 import com.dluvian.voyage.data.event.ValidatedLegacyReply
+import com.dluvian.voyage.data.event.ValidatedPoll
 import com.dluvian.voyage.data.event.ValidatedRootPost
 import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.extractMentions
 import com.dluvian.voyage.data.nostr.extractQuotes
+import com.dluvian.voyage.data.nostr.getCurrentSecs
+import com.dluvian.voyage.data.nostr.getEndsAt
+import com.dluvian.voyage.data.nostr.getPollRelays
 import com.dluvian.voyage.data.nostr.getSubject
 import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.data.preferences.EventPreferences
@@ -84,6 +90,55 @@ class PostSender(
             mainEventInsertDao.insertRootPosts(roots = listOf(validatedPost))
         }.onFailure {
             Log.w(TAG, "Failed to create post event", it)
+        }
+    }
+
+    suspend fun sendPoll(
+        question: String,
+        options: List<String>,
+        topics: List<Topic>,
+        isAnon: Boolean,
+    ): Result<Event> {
+        if (options.size < 2) {
+            val err = "${options.size} poll options is not enough, at least 2 needed."
+            return Result.failure(IllegalArgumentException(err))
+        }
+
+        val trimmedQuestion = question.trim()
+        val trimmedOptions = options.map { it.trim() }
+        val concat = "$trimmedQuestion ${trimmedOptions.joinToString(separator = " ")}"
+
+        val mentions = extractMentionsFromString(content = concat, isAnon = isAnon)
+        val allTopics = topics.toMutableList()
+        allTopics.addAll(extractCleanHashtags(content = concat))
+
+        return nostrService.publishPoll(
+            question = trimmedQuestion,
+            options = trimmedOptions,
+            endsAt = getCurrentSecs() + WEEK_IN_SECS,
+            pollRelays = relayProvider.getReadRelays(limit = 2, includeLocalRelay = false),
+            topics = allTopics.distinct().take(MAX_TOPICS),
+            mentions = mentions,
+            quotes = extractQuotesFromString(content = concat),
+            relayUrls = relayProvider.getPublishRelays(publishTo = mentions),
+            isAnon = isAnon,
+        ).onSuccess { event ->
+            val validatedPoll = ValidatedPoll(
+                id = event.id().toHex(),
+                pubkey = event.author().toHex(),
+                topics = event.getNormalizedTopics(),
+                content = event.content(),
+                createdAt = event.createdAt().secs(),
+                relayUrl = "", // We don't know which relay accepted this note
+                json = event.asJson(),
+                isMentioningMe = mentions.contains(myPubkeyProvider.getPubkeyHex()),
+                options = event.getNormalizedPollOptions(),
+                endsAt = event.getEndsAt(),
+                relays = event.getPollRelays()
+            )
+            mainEventInsertDao.insertPolls(polls = listOf(validatedPoll))
+        }.onFailure {
+            Log.w(TAG, "Failed to create poll event", it)
         }
     }
 

@@ -25,6 +25,7 @@ import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
 import com.dluvian.voyage.data.room.AppDatabase
+import com.dluvian.voyage.data.room.entity.main.poll.PollEntity
 import kotlinx.coroutines.delay
 import rust.nostr.sdk.EventId
 import rust.nostr.sdk.Filter
@@ -140,6 +141,14 @@ class LazyNostrSubscriber(
             filterCreator.getLazyReplyFilter(parentId = id),
             filterCreator.getLazyVoteFilter(parentId = id)
         )
+
+        relayProvider.getReadRelays().forEach { relay ->
+            subCreator.subscribe_many(relayUrl = relay, filters = filters)
+        }
+    }
+
+    suspend fun lazySubPollResponses(poll: PollEntity) {
+        val filters = listOf(filterCreator.getLazyPollResponseFilter(poll = poll))
 
         relayProvider.getReadRelays().forEach { relay ->
             subCreator.subscribe_many(relayUrl = relay, filters = filters)

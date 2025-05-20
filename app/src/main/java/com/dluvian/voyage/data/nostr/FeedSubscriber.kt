@@ -11,6 +11,7 @@ import com.dluvian.voyage.core.utils.syncedPutOrAdd
 import com.dluvian.voyage.core.utils.takeRandom
 import com.dluvian.voyage.core.utils.threadableKinds
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
+import com.dluvian.voyage.data.event.POLL_U16
 import com.dluvian.voyage.data.model.FriendPubkeys
 import com.dluvian.voyage.data.model.Global
 import com.dluvian.voyage.data.model.HomeFeedSetting
@@ -54,6 +55,7 @@ class FeedSubscriber(
             limit = limit,
             showRoots = setting.showRoots,
             showCrossPosts = setting.showCrossPosts,
+            showPolls = setting.showPolls,
         )
     }
 
@@ -71,6 +73,7 @@ class FeedSubscriber(
             limit = limit,
             showRoots = true,
             showCrossPosts = true,
+            showPolls = true,
         )
     }
 
@@ -82,12 +85,14 @@ class FeedSubscriber(
         limit: ULong,
         showRoots: Boolean,
         showCrossPosts: Boolean,
+        showPolls: Boolean,
     ): Map<RelayUrl, List<Filter>> {
         if (limit <= 0u || since >= until) return emptyMap()
 
         val kinds = listOfNotNull(
             if (showRoots) Kind.fromStd(KindStandard.TEXT_NOTE) else null,
             if (showCrossPosts) Kind.fromStd(KindStandard.REPOST) else null,
+            if (showPolls) Kind(kind = POLL_U16) else null,
         )
         if (kinds.isEmpty()) return emptyMap()
 

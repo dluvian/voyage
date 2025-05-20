@@ -7,6 +7,7 @@ import com.dluvian.voyage.data.nostr.RelayUrl
 data class PostDetails(
     val indexedTopics: List<Topic>,
     val client: String?,
+    val pollEndsAt: Long?,
     val base: PostDetailsBase,
 )
 

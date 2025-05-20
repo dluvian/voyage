@@ -10,15 +10,20 @@ import androidx.compose.material.icons.automirrored.rounded.Reply
 import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.filled.ThumbUpAlt
 import androidx.compose.material.icons.outlined.Book
+import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material.icons.outlined.FilterAlt
+import androidx.compose.material.icons.outlined.Poll
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material.icons.rounded.Bookmark
 import androidx.compose.material.icons.rounded.CellTower
+import androidx.compose.material.icons.rounded.CheckCircleOutline
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.DragHandle
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.ExpandLess
 import androidx.compose.material.icons.rounded.ExpandMore
@@ -36,11 +41,14 @@ import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Tag
 import androidx.compose.material.icons.rounded.TravelExplore
+import androidx.compose.material.icons.rounded.WarningAmber
 
 val MenuIcon = Icons.Rounded.Menu
 val HomeIcon = Icons.Rounded.Home
 val DiscoverIcon = Icons.Rounded.TravelExplore
 val AddIcon = Icons.Rounded.Add
+val AddCircleIcon = Icons.Rounded.AddCircle
+val OptionItemIcon = Icons.Rounded.DragHandle
 val RemoveCircleIcon = Icons.Rounded.RemoveCircle
 val InboxIcon = Icons.Rounded.Inbox
 val SettingsIcon = Icons.Outlined.Settings
@@ -72,3 +80,7 @@ val RelayIcon = Icons.Rounded.CellTower
 val OpenIcon = Icons.AutoMirrored.Rounded.OpenInNew
 val EditIcon = Icons.Rounded.Edit
 val FilterIcon = Icons.Outlined.FilterAlt
+val WarningIcon = Icons.Rounded.WarningAmber
+val VotedIcon = Icons.Rounded.CheckCircleOutline
+val PollIcon = Icons.Outlined.Poll
+val TextIcon = Icons.Outlined.Create

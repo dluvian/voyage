@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 29,
-    "identityHash": "8dcc23d1ede9b27d7dd3f9b44ecb510a",
+    "identityHash": "f0ecebb380af294f60f4a4c34a613f67",
     "entities": [
       {
         "tableName": "mainEvent",
@@ -355,6 +355,146 @@
             ],
             "referencedColumns": [
               "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "poll",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`eventId` TEXT NOT NULL, `relay1` TEXT, `relay2` TEXT, `endsAt` INTEGER, PRIMARY KEY(`eventId`), FOREIGN KEY(`eventId`) REFERENCES `mainEvent`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "eventId",
+            "columnName": "eventId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "relay1",
+            "columnName": "relay1",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "relay2",
+            "columnName": "relay2",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "endsAt",
+            "columnName": "endsAt",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "eventId"
+          ]
+        },
+        "foreignKeys": [
+          {
+            "table": "mainEvent",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "eventId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "pollOption",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`pollId` TEXT NOT NULL, `optionId` TEXT NOT NULL, `label` TEXT NOT NULL, PRIMARY KEY(`pollId`, `optionId`), FOREIGN KEY(`pollId`) REFERENCES `poll`(`eventId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "pollId",
+            "columnName": "pollId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "optionId",
+            "columnName": "optionId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "label",
+            "columnName": "label",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "pollId",
+            "optionId"
+          ]
+        },
+        "foreignKeys": [
+          {
+            "table": "poll",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "pollId"
+            ],
+            "referencedColumns": [
+              "eventId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "pollResponse",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`pollId` TEXT NOT NULL, `optionId` TEXT NOT NULL, `pubkey` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`pollId`, `pubkey`), FOREIGN KEY(`pollId`) REFERENCES `poll`(`eventId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "pollId",
+            "columnName": "pollId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "optionId",
+            "columnName": "optionId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pubkey",
+            "columnName": "pubkey",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "pollId",
+            "pubkey"
+          ]
+        },
+        "foreignKeys": [
+          {
+            "table": "poll",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "pollId"
+            ],
+            "referencedColumns": [
+              "eventId"
             ]
           }
         ]
@@ -1026,11 +1166,19 @@
       {
         "viewName": "AdvancedProfileView",
         "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT profile.pubkey, profile.name,  (SELECT EXISTS(SELECT * FROM friend WHERE friend.friendPubkey = profile.pubkey)) AS isFriend, (SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = profile.pubkey)) AS isWebOfTrust, (SELECT EXISTS(SELECT * FROM account WHERE account.pubkey = profile.pubkey)) AS isMe, (SELECT EXISTS(SELECT * FROM profileSetItem WHERE profileSetItem.pubkey = profile.pubkey)) AS isInList FROM profile"
+      },
+      {
+        "viewName": "PollView",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT \n            mainEvent.id, \n            mainEvent.pubkey, \n            mainEvent.content, \n            poll.endsAt,\n            mainEvent.createdAt, \n            mainEvent.relayUrl, \n            mainEvent.isMentioningMe, \n            profile.name AS authorName,\n            ht.min_hashtag AS myTopic,\n            CASE WHEN account.pubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsOneself,\n            CASE WHEN friend.friendPubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsFriend,\n            CASE WHEN weboftrust.webOfTrustPubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsTrusted,\n            CASE WHEN profileSetItem.pubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsInList,\n            CASE WHEN vote.eventId IS NOT NULL THEN 1 ELSE 0 END isUpvoted,\n            (SELECT EXISTS(SELECT * FROM bookmark WHERE bookmark.eventId = mainEvent.id)) AS isBookmarked,\n             (SELECT createdAt FROM pollResponse WHERE pollId = mainEvent.id) AS latestResponse\n        FROM poll\n        JOIN mainEvent ON mainEvent.id = poll.eventId\n        LEFT JOIN profile ON profile.pubkey = mainEvent.pubkey\n        LEFT JOIN (\n            SELECT DISTINCT hashtag.eventId, MIN(hashtag.hashtag) AS min_hashtag\n            FROM hashtag \n            JOIN topic ON hashtag.hashtag = topic.topic\n            WHERE topic.myPubkey = (SELECT pubkey FROM account LIMIT 1)\n            GROUP BY hashtag.eventId\n        ) AS ht ON ht.eventId = mainEvent.id\n        LEFT JOIN account ON account.pubkey = mainEvent.pubkey\n        LEFT JOIN friend ON friend.friendPubkey = mainEvent.pubkey\n        LEFT JOIN weboftrust ON weboftrust.webOfTrustPubkey = mainEvent.pubkey\n        LEFT JOIN profileSetItem ON profileSetItem.pubkey = mainEvent.pubkey\n        LEFT JOIN vote ON vote.eventId = mainEvent.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)"
+      },
+      {
+        "viewName": "PollOptionView",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT pollOption.pollId, pollOption.optionId, pollOption.label, (SELECT COUNT(*) FROM pollResponse WHERE pollResponse.pollId = pollOption.pollId AND pollResponse.optionId = pollOption.optionId) AS voteCount, (SELECT EXISTS(SELECT * FROM pollResponse WHERE pubkey = (SELECT pubkey FROM account) AND pollResponse.pollId = pollOption.pollId AND pollResponse.optionId = pollOption.optionId)) AS isMyVote FROM pollOption"
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8dcc23d1ede9b27d7dd3f9b44ecb510a')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f0ecebb380af294f60f4a4c34a613f67')"
     ]
   }
 }

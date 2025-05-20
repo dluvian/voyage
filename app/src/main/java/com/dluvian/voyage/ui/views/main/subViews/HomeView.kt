@@ -121,6 +121,12 @@ private fun Filter(setting: MutableState<HomeFeedSetting>) {
                     setting.value =
                         setting.value.copy(showCrossPosts = !setting.value.showCrossPosts)
                 })
+            NamedCheckbox(
+                isChecked = setting.value.showPolls,
+                name = stringResource(id = R.string.polls),
+                onClick = {
+                    setting.value = setting.value.copy(showPolls = !setting.value.showPolls)
+                })
         }
     }
 }

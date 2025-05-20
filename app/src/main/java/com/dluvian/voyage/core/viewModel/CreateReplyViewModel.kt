@@ -13,6 +13,7 @@ import com.dluvian.voyage.core.model.Comment
 import com.dluvian.voyage.core.model.CrossPost
 import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.core.model.MainEvent
+import com.dluvian.voyage.core.model.Poll
 import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.core.utils.showToast
@@ -54,7 +55,7 @@ class CreateReplyViewModel(
                 }
             }
 
-            is RootPost, is CrossPost -> {}
+            is RootPost, is CrossPost, is Poll -> {}
         }
 
         this.parent.value = newParent

@@ -6,11 +6,14 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.utils.commentableKinds
 import com.dluvian.voyage.data.event.COMMENT_U16
+import com.dluvian.voyage.data.event.POLL_U16
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 import com.dluvian.voyage.data.room.view.CommentView
 import com.dluvian.voyage.data.room.view.CrossPostView
 import com.dluvian.voyage.data.room.view.LegacyReplyView
+import com.dluvian.voyage.data.room.view.PollOptionView
+import com.dluvian.voyage.data.room.view.PollView
 import com.dluvian.voyage.data.room.view.RootPostView
 import rust.nostr.sdk.Kind
 import rust.nostr.sdk.KindStandard
@@ -31,22 +34,23 @@ sealed class MainEvent(
             is RootPost, is LegacyReply -> Kind.fromStd(KindStandard.TEXT_NOTE)
             is CrossPost -> null
             is Comment -> Kind(COMMENT_U16)
+            is Poll -> Kind(POLL_U16)
         }
     }
 
     fun getRelevantId() = when (this) {
-        is RootPost, is LegacyReply, is Comment -> this.id
+        is RootPost, is LegacyReply, is Comment, is Poll -> this.id
         is CrossPost -> this.crossPostedId
     }
 
     fun getRelevantPubkey() = when (this) {
-        is RootPost, is LegacyReply, is Comment -> this.pubkey
+        is RootPost, is LegacyReply, is Comment, is Poll -> this.pubkey
         is CrossPost -> this.crossPostedPubkey
     }
 
     fun getRelevantSubject() = when (this) {
         is RootPost -> this.subject
-        is LegacyReply, is Comment -> null
+        is LegacyReply, is Comment, is Poll -> null
         is CrossPost -> this.crossPostedSubject
     }
 }
@@ -114,6 +118,57 @@ data class RootPost(
                 relayUrl = rootPostView.relayUrl,
                 isUpvoted = rootPostView.isUpvoted,
                 isBookmarked = rootPostView.isBookmarked,
+            )
+        }
+    }
+}
+
+@Immutable
+data class Poll(
+    override val id: EventIdHex,
+    override val pubkey: PubkeyHex,
+    override val content: AnnotatedString,
+    override val authorName: String?,
+    override val trustType: TrustType,
+    override val createdAt: Long,
+    override val relayUrl: RelayUrl,
+    override val isUpvoted: Boolean,
+    override val isBookmarked: Boolean,
+    val myTopic: String?,
+    val options: List<PollOptionView>,
+    val latestResponse: Long?,
+    val endsAt: Long?,
+) : ThreadableMainEvent(
+    id = id,
+    pubkey = pubkey,
+    content = content,
+    authorName = authorName,
+    trustType = trustType,
+    relayUrl = relayUrl,
+    createdAt = createdAt,
+    isUpvoted = isUpvoted,
+    isBookmarked = isBookmarked,
+) {
+    companion object {
+        fun from(
+            pollView: PollView,
+            pollOptions: List<PollOptionView>,
+            annotatedStringProvider: AnnotatedStringProvider
+        ): Poll {
+            return Poll(
+                id = pollView.id,
+                pubkey = pollView.pubkey,
+                authorName = pollView.authorName,
+                trustType = TrustType.from(pollView = pollView),
+                myTopic = pollView.myTopic,
+                createdAt = pollView.createdAt,
+                content = annotatedStringProvider.annotate(pollView.content),
+                relayUrl = pollView.relayUrl,
+                isUpvoted = pollView.isUpvoted,
+                isBookmarked = pollView.isBookmarked,
+                options = pollOptions,
+                latestResponse = pollView.latestResponse,
+                endsAt = pollView.endsAt,
             )
         }
     }

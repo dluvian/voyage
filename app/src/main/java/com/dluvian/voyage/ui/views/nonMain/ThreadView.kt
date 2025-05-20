@@ -32,6 +32,7 @@ import com.dluvian.voyage.core.OpenThreadRaw
 import com.dluvian.voyage.core.ThreadViewRefresh
 import com.dluvian.voyage.core.model.Comment
 import com.dluvian.voyage.core.model.LegacyReply
+import com.dluvian.voyage.core.model.Poll
 import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.model.SomeReply
 import com.dluvian.voyage.core.viewModel.ThreadViewModel
@@ -87,7 +88,7 @@ private fun ThreadViewContent(
 ) {
     val adjustedReplies = remember(localRoot, replies) {
         when (localRoot.threadableMainEvent) {
-            is RootPost -> replies
+            is RootPost, is Poll -> replies
             is LegacyReply, is Comment -> replies.map { it.copy(level = it.level + 2) }
         }
     }
@@ -124,7 +125,7 @@ private fun ThreadViewContent(
                 )
             }
             when (localRoot.threadableMainEvent) {
-                is RootPost -> item { FullHorizontalDivider() }
+                is RootPost, is Poll -> item { FullHorizontalDivider() }
                 is Comment, is LegacyReply -> {}
             }
             // TODO: Show loader: if (localRoot.mainEvent.replyCount > totalReplyCount) item {

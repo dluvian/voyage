@@ -26,6 +26,7 @@ import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.core.model.MainEvent
 import com.dluvian.voyage.core.model.NoTrust
 import com.dluvian.voyage.core.model.Oneself
+import com.dluvian.voyage.core.model.Poll
 import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.model.WebTrust
 import com.dluvian.voyage.core.utils.copyAndToast
@@ -57,7 +58,7 @@ fun FeedItemDropdown(
         )
 
         when (mainEvent) {
-            is RootPost, is CrossPost -> {}
+            is RootPost, is CrossPost, is Poll -> {}
             is LegacyReply, is Comment -> SimpleDropdownItem(
                 text = stringResource(id = R.string.open_as_root),
                 onClick = {

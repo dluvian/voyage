@@ -7,6 +7,7 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.FEED_OFFSET
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.RESUB_TIMEOUT
+import com.dluvian.voyage.core.model.Poll
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.model.BookmarksFeedSetting
 import com.dluvian.voyage.data.model.FeedSetting
@@ -20,13 +21,16 @@ import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.room.AppDatabase
+import com.dluvian.voyage.data.room.entity.main.poll.PollEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import rust.nostr.sdk.Filter
 import rust.nostr.sdk.Nip19Event
 import rust.nostr.sdk.Nip19Profile
 import rust.nostr.sdk.PublicKey
+import rust.nostr.sdk.Timestamp
 import java.util.concurrent.atomic.AtomicBoolean
 
 class NostrSubscriber(
@@ -196,6 +200,74 @@ class NostrSubscriber(
             }
         }.invokeOnCompletion {
             isSubbing.set(false)
+        }
+    }
+
+
+    private val pollCache = mutableSetOf<EventIdHex>()
+    private var lastPollUpdate = System.currentTimeMillis()
+    private val isSubbingPolls = AtomicBoolean(false)
+
+    fun subPollResponses(polls: Collection<Poll>) {
+        if (polls.isEmpty()) return
+        if (!isSubbingPolls.compareAndSet(false, true)) return
+
+        scope.launch(Dispatchers.Default) {
+            val currentMillis = System.currentTimeMillis()
+            if (currentMillis - lastPollUpdate > RESUB_TIMEOUT) {
+                pollCache.clear()
+                lastPollUpdate = currentMillis
+            }
+
+            val newPolls = polls.filterNot { pollCache.contains(it.id) }
+            if (newPolls.isEmpty()) return@launch
+
+            pollCache.addAll(newPolls.map { it.id })
+
+            val now = Timestamp.now()
+            val nowInSecs = now.asSecs().toLong()
+
+            val filters = mutableListOf<Filter>()
+
+            val openPolls = newPolls.filter { it.endsAt == null || it.endsAt > nowInSecs }
+            if (openPolls.isNotEmpty()) {
+                val filter = filterCreator.getPollResponseFilter(
+                    pollIds = openPolls.map { it.id },
+                    since = Timestamp.fromSecs(openPolls.minOf { it.createdAt }.toULong()),
+                    until = now
+                )
+                filters.add(filter)
+            }
+
+            val closedPolls = newPolls.filter { it.endsAt != null && it.endsAt <= nowInSecs }
+            // We are not too strict here :D
+            val maxEndsAt = closedPolls.maxOfOrNull { it.endsAt ?: nowInSecs }
+            if (closedPolls.isNotEmpty() && maxEndsAt != null) {
+                val filter = filterCreator.getPollResponseFilter(
+                    pollIds = closedPolls.map { it.id },
+                    since = Timestamp.fromSecs(closedPolls.minOf { it.createdAt }.toULong()),
+                    until = Timestamp.fromSecs(maxEndsAt.toULong())
+                )
+                filters.add(filter)
+            }
+
+            relayProvider.getReadRelays().forEach { relay ->
+                subCreator.subscribe_many(relayUrl = relay, filters = filters)
+            }
+        }.invokeOnCompletion {
+            isSubbingPolls.set(false)
+        }
+    }
+
+    fun subPollResponsesByEntity(poll: PollEntity) {
+        val filter = filterCreator.getPollResponseFilter(
+            pollIds = listOf(poll.eventId),
+            since = Timestamp.fromSecs(1uL),
+            until = poll.endsAt?.let { Timestamp.fromSecs(it.toULong()) } ?: Timestamp.now()
+        )
+
+        relayProvider.getReadRelays().forEach { relay ->
+            subCreator.subscribe_many(relayUrl = relay, filters = listOf(filter))
         }
     }
 

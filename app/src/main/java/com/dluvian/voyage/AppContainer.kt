@@ -25,6 +25,7 @@ import com.dluvian.voyage.data.event.OldestUsedEvent
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
 import com.dluvian.voyage.data.interactor.Bookmarker
 import com.dluvian.voyage.data.interactor.ItemSetEditor
+import com.dluvian.voyage.data.interactor.PollVoter
 import com.dluvian.voyage.data.interactor.PostDetailInspector
 import com.dluvian.voyage.data.interactor.PostSender
 import com.dluvian.voyage.data.interactor.PostVoter
@@ -276,6 +277,15 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
         rebroadcaster = eventRebroadcaster,
         relayPreferences = relayPreferences,
         eventPreferences = eventPreferences,
+    )
+
+    val pollVoter = PollVoter(
+        nostrService = nostrService,
+        relayProvider = relayProvider,
+        snackbar = snackbar,
+        context = context,
+        pollResponseDao = roomDb.pollResponseDao(),
+        pollDao = roomDb.pollDao(),
     )
 
     val threadCollapser = ThreadCollapser()

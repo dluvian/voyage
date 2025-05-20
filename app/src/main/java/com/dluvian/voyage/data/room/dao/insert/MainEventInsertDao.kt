@@ -8,6 +8,7 @@ import com.dluvian.voyage.data.event.ValidatedComment
 import com.dluvian.voyage.data.event.ValidatedCrossPost
 import com.dluvian.voyage.data.event.ValidatedLegacyReply
 import com.dluvian.voyage.data.event.ValidatedMainEvent
+import com.dluvian.voyage.data.event.ValidatedPoll
 import com.dluvian.voyage.data.event.ValidatedRootPost
 import com.dluvian.voyage.data.room.entity.main.CommentEntity
 import com.dluvian.voyage.data.room.entity.main.CrossPostEntity
@@ -15,6 +16,8 @@ import com.dluvian.voyage.data.room.entity.main.HashtagEntity
 import com.dluvian.voyage.data.room.entity.main.LegacyReplyEntity
 import com.dluvian.voyage.data.room.entity.main.MainEventEntity
 import com.dluvian.voyage.data.room.entity.main.RootPostEntity
+import com.dluvian.voyage.data.room.entity.main.poll.PollEntity
+import com.dluvian.voyage.data.room.entity.main.poll.PollOptionEntity
 
 @Dao
 interface MainEventInsertDao {
@@ -36,6 +39,16 @@ interface MainEventInsertDao {
         internalInsertMainEvents(mainEvents = roots)
         internalInsertHashtags(mainEvents = roots)
         internalInsertRootPostEntities(roots = roots.map { RootPostEntity.from(rootPost = it) })
+    }
+
+    @Transaction
+    suspend fun insertPolls(polls: Collection<ValidatedPoll>) {
+        if (polls.isEmpty()) return
+
+        internalInsertMainEvents(mainEvents = polls)
+        internalInsertHashtags(mainEvents = polls)
+        internalInsertPollEntities(polls = polls.map { PollEntity.from(poll = it) })
+        internalInsertPollOptionEntities(options = PollOptionEntity.from(polls = polls))
     }
 
     @Transaction
@@ -72,6 +85,10 @@ interface MainEventInsertDao {
                     HashtagEntity(eventId = event.id, hashtag = topic)
                 }
 
+                is ValidatedPoll -> event.topics.map { topic ->
+                    HashtagEntity(eventId = event.id, hashtag = topic)
+                }
+
                 // We don't index hashtags of replies
                 is ValidatedLegacyReply, is ValidatedComment -> emptyList()
             }
@@ -97,4 +114,10 @@ interface MainEventInsertDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun internalInsertCommentEntities(comments: Collection<CommentEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun internalInsertPollEntities(polls: Collection<PollEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun internalInsertPollOptionEntities(options: Collection<PollOptionEntity>)
 }

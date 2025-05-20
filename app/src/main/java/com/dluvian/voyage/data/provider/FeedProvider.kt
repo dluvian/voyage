@@ -6,6 +6,7 @@ import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.model.CrossPost
 import com.dluvian.voyage.core.model.MainEvent
+import com.dluvian.voyage.core.model.Poll
 import com.dluvian.voyage.core.model.SomeReply
 import com.dluvian.voyage.core.utils.firstThenDistinctDebounce
 import com.dluvian.voyage.core.utils.mergeToMainEventUIList
@@ -24,6 +25,8 @@ import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.room.AppDatabase
 import com.dluvian.voyage.data.room.view.CrossPostView
+import com.dluvian.voyage.data.room.view.PollOptionView
+import com.dluvian.voyage.data.room.view.PollView
 import com.dluvian.voyage.data.room.view.RootPostView
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -87,6 +90,7 @@ class FeedProvider(
                 oldestUsedEvent.updateOldestCreatedAt(posts.minOfOrNull { it.createdAt })
                 // TODO: Sub replies or upvotes?
 
+                nostrSubscriber.subPollResponses(polls = posts.filterIsInstance<Poll>())
                 if (showAuthorName.value) {
                     val pubkeys = posts.filter { it.authorName.isNullOrEmpty() }
                         .map { it.pubkey }
@@ -109,19 +113,29 @@ class FeedProvider(
     ): Flow<List<MainEvent>> {
         val rootPosts = getRootPostFlow(setting = setting, until = until, size = size)
         val crossPosts = getCrossPostFlow(setting = setting, until = until, size = size)
+        // We combine it to wait until both flows emit something
+        val polls = combine(
+            getPollFlow(setting = setting, until = until, size = size),
+            getPollOptionFlow(setting = setting, until = until, size = size)
+        ) { poll, option ->
+            Pair(poll, option)
+        }
 
         return combine(
             rootPosts.firstThenDistinctDebounce(SHORT_DEBOUNCE),
             crossPosts.firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            polls.firstThenDistinctDebounce(SHORT_DEBOUNCE),
             ForcedData.combineFlows(
                 votes = forcedVotes,
                 follows = forcedFollows,
                 bookmarks = forcedBookmarks
             )
-        ) { root, cross, forced ->
+        ) { root, cross, (poll, option), forced ->
             mergeToMainEventUIList(
                 roots = root,
                 crossPosts = cross,
+                polls = poll,
+                pollOptions = option,
                 legacyReplies = emptyList(),
                 comments = emptyList(),
                 forcedData = forced,
@@ -195,6 +209,70 @@ class FeedProvider(
         }
     }
 
+    private fun getPollFlow(
+        setting: MainFeedSetting,
+        until: Long,
+        size: Int,
+    ): Flow<List<PollView>> {
+        return when (setting) {
+            is HomeFeedSetting -> room.homeFeedDao().getHomePollFlow(
+                setting = setting,
+                until = until,
+                size = size
+            )
+
+            is TopicFeedSetting -> room.feedDao().getTopicPollFlow(
+                topic = setting.topic,
+                until = until,
+                size = size
+            )
+
+            is ProfileFeedSetting -> room.feedDao().getProfilePollFlow(
+                pubkey = setting.nprofile.publicKey().toHex(),
+                until = until,
+                size = size
+            )
+
+            is ListFeedSetting -> room.feedDao().getListPollFlow(
+                identifier = setting.identifier,
+                until = until,
+                size = size
+            )
+        }
+    }
+
+    private fun getPollOptionFlow(
+        setting: MainFeedSetting,
+        until: Long,
+        size: Int,
+    ): Flow<List<PollOptionView>> {
+        return when (setting) {
+            is HomeFeedSetting -> room.homeFeedDao().getHomePollOptionFlow(
+                setting = setting,
+                until = until,
+                size = size
+            )
+
+            is TopicFeedSetting -> room.feedDao().getTopicPollOptionFlow(
+                topic = setting.topic,
+                until = until,
+                size = size
+            )
+
+            is ProfileFeedSetting -> room.feedDao().getProfilePollOptionFlow(
+                pubkey = setting.nprofile.publicKey().toHex(),
+                until = until,
+                size = size
+            )
+
+            is ListFeedSetting -> room.feedDao().getListPollOptionFlow(
+                identifier = setting.identifier,
+                until = until,
+                size = size
+            )
+        }
+    }
+
     private fun getReplyFeedFlow(
         setting: ReplyFeedSetting,
         until: Long,
@@ -228,6 +306,13 @@ class FeedProvider(
         until: Long,
         size: Int
     ): Flow<List<MainEvent>> {
+        val pollFlow = combine(
+            room.inboxDao().getInboxPollFlow(setting = setting, until = until, size = size)
+                .firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            room.inboxDao().getInboxPollOptionFlow(setting = setting, until = until, size = size)
+                .firstThenDistinctDebounce(SHORT_DEBOUNCE),
+        ) { poll, option -> Pair(poll, option) }
+
         return combine(
             room.inboxDao()
                 .getInboxRootFlow(setting = setting, until = until, size = size)
@@ -238,11 +323,14 @@ class FeedProvider(
             room.inboxDao()
                 .getInboxCommentFlow(setting = setting, until = until, size = size)
                 .firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            pollFlow,
             getForcedFlow()
-        ) { roots, legacyReplies, comments, forced ->
+        ) { roots, legacyReplies, comments, (polls, options), forced ->
             mergeToMainEventUIList(
                 roots = roots,
                 crossPosts = emptyList(),
+                polls = polls,
+                pollOptions = options,
                 legacyReplies = legacyReplies,
                 comments = comments,
                 forcedData = forced,
@@ -253,6 +341,11 @@ class FeedProvider(
     }
 
     private fun getBookmarksFeedFlow(until: Long, size: Int): Flow<List<MainEvent>> {
+        val pollFlow = combine(
+            room.bookmarkDao().getPollFlow(until = until, size = size),
+            room.bookmarkDao().getPollOptionFlow(until = until, size = size),
+        ) { poll, option -> Pair(poll, option) }
+
         return combine(
             room.bookmarkDao()
                 .getRootPostsFlow(until = until, size = size)
@@ -263,11 +356,14 @@ class FeedProvider(
             room.bookmarkDao()
                 .getCommentFlow(until = until, size = size)
                 .firstThenDistinctDebounce(SHORT_DEBOUNCE),
+            pollFlow.firstThenDistinctDebounce(SHORT_DEBOUNCE),
             getForcedFlow()
-        ) { roots, legacyReplies, comments, forced ->
+        ) { roots, legacyReplies, comments, (polls, options), forced ->
             mergeToMainEventUIList(
                 roots = roots,
                 crossPosts = emptyList(),
+                polls = polls,
+                pollOptions = options,
                 legacyReplies = legacyReplies,
                 comments = comments,
                 forcedData = forced,
