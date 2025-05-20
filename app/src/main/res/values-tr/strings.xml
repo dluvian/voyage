@@ -7,9 +7,13 @@
     <string name="go_back">Geri dön</string>
     <string name="options">Seçenekler</string>
     <string name="comment">Yorum</string>
+    <string name="comments">Yorumlar</string>
     <string name="upvote">Beğen</string>
     <string name="remove_upvote">Beğeniyi kaldır</string>
     <string name="discover">Keşfet</string>
+    <string name="friend">Arkadaş</string>
+    <string name="trusted">Güvenilir</string>
+    <string name="unknown">Bilinmeyen</string>
     <string name="account">Hesap</string>
     <string name="app">Uygulama</string>
     <string name="external_signer">Harici imzalayıcı</string>
@@ -63,8 +67,11 @@
     <string name="thread">Konu</string>
     <string name="scroll_to_the_page_top">Sayfanın üstüne kaydır</string>
     <string name="click_to_load_most_recent_posts">En son gönderileri yüklemek için tıklayın</string>
+    <string name="oneself">Kendisi</string>
     <string name="no_posts_found">Gönderi bulunamadı</string>
+    <string name="no_topics_selected">Konu seçilmedi</string>
     <string name="my_topics">Konularım</string>
+    <string name="you_dont_follow_any_topics_yet">Henüz herhangi bir konuyu takip etmiyorsunuz</string>
     <string name="save">Kaydet</string>
     <string name="describe_yourself">Kendinizi tanımlayın</string>
     <string name="name">Ad</string>
@@ -160,6 +167,7 @@
     <string name="following_more_than_n_profiles_is_not_allowed">%d\'den fazla profili takip etmek yasaktır</string>
     <string name="following_more_than_n_topics_is_not_allowed">%d\'den fazla konuyu takip etmek yasaktır</string>
     <string name="bookmarking_more_than_n_is_not_allowed">%d\'den fazla gönderiyi yer imlerine eklemek yasaktır</string>
+    <string name="muting_more_than_n_is_not_allowed">%d öğeden fazlasının sessize alınmasına izin verilmiyor</string>
     <string name="rebroadcast">Yeniden yayınla</string>
     <string name="event_json_is_not_available">Etkinlik JSON mevcut değil</string>
     <string name="rebroadcasted_to_n_relays">%d röleye yeniden yayınlandı</string>
@@ -186,7 +194,9 @@
     <string name="add_to_list">Listeye ekle</string>
     <string name="choose_list">Liste seç</string>
     <string name="added_to_list">Listeye eklendi</string>
+    <string name="nostr_uri">Nostr URI</string>
     <string name="list_is_empty">Liste boş</string>
+    <string name="in_list">"Listede "</string>
     <string name="next">Sonraki</string>
     <string name="local_relay_port">Yerel röle bağlantı noktası</string>
     <string name="port_number_of_your_local_relay">Yerel aktarıcınızın bağlantı noktası numarası</string>
@@ -239,6 +249,7 @@
     <string name="time">Zaman</string>
     <string name="client">Müşteri</string>
     <string name="parent_event_is_not_supported">Üst etkinlik desteklenmiyor.</string>
+    <string name="n_replies_have_been_hidden">%d yanıt gizlendi.</string>
     <string name="always_use_v2_replies">Her zaman v2 yanıtlarını kullanın</string>
     <string name="this_format_is_not_widely_adopted_yet">Bu format henüz yaygın olarak benimsenmediğinden, yanıtlarınız diğer istemcilerde görünmeyebilir.</string>
     <string name="failed_to_sign_poll_response">Anket yanıtını imzalama başarısız oldu</string>
@@ -253,6 +264,7 @@
     <string name="poll_question">Anket sorusu</string>
     <string name="poll">Anket</string>
     <string name="post">Postalamak</string>
+    <string name="poll_options">Anket seçenekleri</string>
     <string name="option">Seçenek</string>
     <string name="add_an_option">Bir seçenek ekleyin…</string>
     <string name="remove_item">Öğeyi kaldır</string>

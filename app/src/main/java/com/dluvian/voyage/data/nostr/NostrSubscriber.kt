@@ -142,8 +142,6 @@ class NostrSubscriber(
     private val isSubbingVotes = AtomicBoolean(false)
     private val lastVoteUpdate = mutableLongStateOf(System.currentTimeMillis())
     private val voteCache = mutableSetOf<EventIdHex>()
-
-    // TODO: Only sub personal votes
     fun subVotes(parentIds: Collection<EventIdHex>) {
         subReactoryEvents(
             parentIds = parentIds,
@@ -158,8 +156,6 @@ class NostrSubscriber(
     private val isSubbingReplies = AtomicBoolean(false)
     private val lastReplyUpdate = mutableLongStateOf(System.currentTimeMillis())
     private val replyCache = mutableSetOf<EventIdHex>()
-
-    // TODO: Only when opening thread
     fun subReplies(parentIds: Collection<EventIdHex>) {
         subReactoryEvents(
             parentIds = parentIds,

@@ -8,9 +8,13 @@
     <string name="go_back">返回</string>
     <string name="options">选项</string>
     <string name="comment">评论</string>
+    <string name="comments">评论</string>
     <string name="upvote">点赞</string>
     <string name="remove_upvote">取消点赞</string>
     <string name="discover">发现</string>
+    <string name="friend">朋友</string>
+    <string name="trusted">信任的</string>
+    <string name="unknown">未知</string>
     <string name="account">账户</string>
     <string name="app">应用</string>
     <string name="external_signer">外部签名器</string>
@@ -64,8 +68,11 @@
     <string name="thread">主题</string>
     <string name="scroll_to_the_page_top">滚动到页面顶部</string>
     <string name="click_to_load_most_recent_posts">点击加载最近的帖子</string>
+    <string name="oneself">自己</string>
     <string name="no_posts_found">未找到帖子</string>
+    <string name="no_topics_selected">未选择话题</string>
     <string name="my_topics">我的话题</string>
+    <string name="you_dont_follow_any_topics_yet">您尚未关注任何话题</string>
     <string name="save">保存</string>
     <string name="describe_yourself">描述自己</string>
     <string name="name">姓名</string>
@@ -161,6 +168,7 @@
     <string name="following_more_than_n_profiles_is_not_allowed">不允许关注超过%d个个人资料</string>
     <string name="following_more_than_n_topics_is_not_allowed">不允许关注超过%d个话题</string>
     <string name="bookmarking_more_than_n_is_not_allowed">不允许书签超过%d个帖子</string>
+    <string name="muting_more_than_n_is_not_allowed">不允许静音超过%d个项目</string>
     <string name="rebroadcast">转播</string>
     <string name="event_json_is_not_available">事件JSON不可用</string>
     <string name="rebroadcasted_to_n_relays">已转播到%d个中继</string>
@@ -187,7 +195,9 @@
     <string name="add_to_list">添加到列表</string>
     <string name="choose_list">选择列表</string>
     <string name="added_to_list">已添加到列表</string>
+    <string name="nostr_uri">Nostr URI</string>
     <string name="list_is_empty">列表为空</string>
+    <string name="in_list">在列表中</string>
     <string name="next">下一个</string>
     <string name="local_relay_port">本地中继端口</string>
     <string name="port_number_of_your_local_relay">"本地中继的端口号 "</string>
@@ -240,6 +250,7 @@
     <string name="time">时间</string>
     <string name="client">客户</string>
     <string name="parent_event_is_not_supported">不支持父事件。</string>
+    <string name="n_replies_have_been_hidden">%d 条回复已被隐藏。</string>
     <string name="always_use_v2_replies">始终使用 v2 回复</string>
     <string name="this_format_is_not_widely_adopted_yet">这种格式尚未被广泛采用，因此您的回复可能不会显示在其他客户端上。</string>
     <string name="failed_to_sign_poll_response">未能签署民意调查回复</string>
@@ -254,6 +265,7 @@
     <string name="poll_question">民意调查问题</string>
     <string name="poll">轮询</string>
     <string name="post">邮政</string>
+    <string name="poll_options">投票选项</string>
     <string name="option">选项</string>
     <string name="add_an_option">添加一个选项…</string>
     <string name="remove_item">移除项目</string>

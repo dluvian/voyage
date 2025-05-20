@@ -26,6 +26,9 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             CASE WHEN weboftrust.webOfTrustPubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsTrusted,
             CASE WHEN profileSetItem.pubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsInList,
             CASE WHEN vote.eventId IS NOT NULL THEN 1 ELSE 0 END isUpvoted,
+            upvotes.upvoteCount,
+            legacyReplies.legacyReplyCount,
+            comments.commentCount,
             (SELECT EXISTS(SELECT * FROM bookmark WHERE bookmark.eventId = mainEvent.id)) AS isBookmarked 
         FROM rootPost
         JOIN mainEvent ON mainEvent.id = rootPost.eventId
@@ -42,6 +45,21 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
         LEFT JOIN weboftrust ON weboftrust.webOfTrustPubkey = mainEvent.pubkey
         LEFT JOIN profileSetItem ON profileSetItem.pubkey = mainEvent.pubkey
         LEFT JOIN vote ON vote.eventId = mainEvent.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)
+        LEFT JOIN (
+            SELECT vote.eventId, COUNT(*) AS upvoteCount 
+            FROM vote 
+            GROUP BY vote.eventId
+        ) AS upvotes ON upvotes.eventId = mainEvent.id
+        LEFT JOIN (
+            SELECT legacyReply.parentId, COUNT(*) AS legacyReplyCount 
+            FROM legacyReply
+            GROUP BY legacyReply.parentId
+        ) AS legacyReplies ON legacyReplies.parentId = mainEvent.id
+        LEFT JOIN (
+            SELECT comment.parentId, COUNT(*) AS commentCount 
+            FROM comment
+            GROUP BY comment.parentId
+        ) AS comments ON comments.parentId = mainEvent.id
 """
 )
 data class RootPostView(
@@ -57,6 +75,9 @@ data class RootPostView(
     val content: String,
     val createdAt: Long,
     val isUpvoted: Boolean,
+    val upvoteCount: Int,
+    val legacyReplyCount: Int,
+    val commentCount: Int,
     val relayUrl: RelayUrl,
     val isBookmarked: Boolean,
     val isMentioningMe: Boolean,

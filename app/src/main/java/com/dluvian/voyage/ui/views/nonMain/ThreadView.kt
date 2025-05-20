@@ -64,6 +64,7 @@ fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpd
                 ThreadViewContent(
                     localRoot = it,
                     replies = vm.replies.value.collectAsState().value,
+                    totalReplyCount = vm.totalReplyCount.value.collectAsState().value,
                     parentIsAvailable = vm.parentIsAvailable.collectAsState().value,
                     showAuthorName = vm.showAuthorName.value,
                     isRefreshing = vm.isRefreshing.value,
@@ -80,6 +81,7 @@ fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpd
 private fun ThreadViewContent(
     localRoot: ThreadRootCtx,
     replies: List<ThreadReplyCtx>,
+    totalReplyCount: Int,
     parentIsAvailable: Boolean,
     showAuthorName: Boolean,
     isRefreshing: Boolean,
@@ -93,6 +95,11 @@ private fun ThreadViewContent(
         }
     }
     PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(ThreadViewRefresh) }) {
+        val replyCountDif = remember(localRoot.mainEvent.replyCount, adjustedReplies) {
+            val minLvl = adjustedReplies.minByOrNull { it.level }?.level
+            localRoot.mainEvent.replyCount - adjustedReplies.filter { it.level == minLvl }.size
+        }
+
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(bottom = spacing.xxl),
@@ -128,8 +135,7 @@ private fun ThreadViewContent(
                 is RootPost, is Poll -> item { FullHorizontalDivider() }
                 is Comment, is LegacyReply -> {}
             }
-            // TODO: Show loader: if (localRoot.mainEvent.replyCount > totalReplyCount) item {
-            if (false) item {
+            if (localRoot.mainEvent.replyCount > totalReplyCount) item {
                 FullLinearProgressIndicator()
             }
             itemsIndexed(adjustedReplies) { i, reply ->
@@ -141,8 +147,16 @@ private fun ThreadViewContent(
                 if (i == adjustedReplies.size - 1) FullHorizontalDivider()
             }
 
-            // TODO: Dont show when loading
-            if (adjustedReplies.isEmpty()) item {
+            if (replyCountDif > 0) item {
+                HintText(
+                    text = stringResource(
+                        id = R.string.n_replies_have_been_hidden,
+                        replyCountDif
+                    )
+                )
+            }
+
+            if (localRoot.mainEvent.replyCount == 0 && adjustedReplies.isEmpty()) item {
                 Column(modifier = Modifier.fillParentMaxHeight(0.5f)) {
                     BaseHint(text = stringResource(id = R.string.no_comments_found))
                 }
