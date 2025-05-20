@@ -37,7 +37,9 @@ import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.DeleteAllPosts
 import com.dluvian.voyage.core.ExportDatabase
 import com.dluvian.voyage.core.LoadSeed
+import com.dluvian.voyage.core.MAX_AUTOPILOT_RELAYS
 import com.dluvian.voyage.core.MAX_RETAIN_ROOT
+import com.dluvian.voyage.core.MIN_AUTOPILOT_RELAYS
 import com.dluvian.voyage.core.MIN_RETAIN_ROOT
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenProfile
@@ -45,6 +47,7 @@ import com.dluvian.voyage.core.RequestExternalAccount
 import com.dluvian.voyage.core.SendAuth
 import com.dluvian.voyage.core.SendBookmarkedToLocalRelay
 import com.dluvian.voyage.core.SendUpvotedToLocalRelay
+import com.dluvian.voyage.core.UpdateAutopilotRelays
 import com.dluvian.voyage.core.UpdateLocalRelayPort
 import com.dluvian.voyage.core.UpdateRootPostThreshold
 import com.dluvian.voyage.core.UseDefaultAccount
@@ -143,6 +146,29 @@ private fun RelaySection(vm: SettingsViewModel, onUpdate: OnUpdate) {
     val focusRequester = remember { FocusRequester() }
 
     SettingsSection(header = stringResource(id = R.string.relays)) {
+        val showAutopilotDialog = remember { mutableStateOf(false) }
+        if (showAutopilotDialog.value) {
+            val newVal = remember { mutableFloatStateOf(vm.autopilotRelays.intValue.toFloat()) }
+            BaseActionDialog(
+                title = stringResource(id = R.string.max_relays) + ": ${newVal.floatValue.toInt()}",
+                main = {
+                    Slider(
+                        modifier = Modifier.padding(horizontal = spacing.bigScreenEdge),
+                        value = newVal.floatValue,
+                        onValueChange = { newVal.floatValue = it },
+                        valueRange = MIN_AUTOPILOT_RELAYS.toFloat()..MAX_AUTOPILOT_RELAYS.toFloat()
+                    )
+                },
+                onConfirm = {
+                    onUpdate(UpdateAutopilotRelays(numberOfRelays = newVal.floatValue.toInt()))
+                },
+                onDismiss = { showAutopilotDialog.value = false })
+        }
+        ClickableRow(
+            header = stringResource(id = R.string.max_autopilot_relays) + ": ${vm.autopilotRelays.intValue}",
+            text = stringResource(id = R.string.max_num_of_relays_autopilot_is_allowed_to_select),
+            onClick = { showAutopilotDialog.value = true })
+
         val showPortDialog = remember { mutableStateOf(false) }
         if (showPortDialog.value) {
             val newPort = remember {

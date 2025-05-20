@@ -113,7 +113,7 @@ fun <K, V> MutableMap<K, MutableSet<V>>.syncedPutOrAdd(key: K, value: Collection
 
 fun <K, V> MutableMap<K, MutableSet<V>>.putOrAdd(key: K, value: Collection<V>): Boolean {
     val alreadyPresent = this.putIfAbsent(key, value.toMutableSet())
-    return alreadyPresent?.addAll(value) == true
+    return alreadyPresent?.addAll(value) ?: false
 }
 
 @OptIn(FlowPreview::class)
@@ -414,7 +414,7 @@ fun createAdvancedProfile(
         isMe = dbProfile?.isMe ?: (myPubkey == pubkey),
         isFriend = forcedFollowState ?: dbProfile?.isFriend
         ?: friendProvider.isFriend(pubkey = pubkey),
-        isWebOfTrust = dbProfile?.isWebOfTrust == true,
+        isWebOfTrust = dbProfile?.isWebOfTrust ?: false,
         isInList = dbProfile?.isInList ?: itemSetProvider.isInAnySet(pubkey = pubkey),
     )
 }
