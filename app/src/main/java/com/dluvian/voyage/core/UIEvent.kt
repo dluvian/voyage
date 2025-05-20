@@ -232,6 +232,7 @@ data class SendPost(
     val header: String,
     val body: String,
     val topics: List<Topic>,
+    val isAnon: Boolean,
     val context: Context,
     val onGoBack: Fn
 ) : CreatePostViewAction()
@@ -240,6 +241,7 @@ data class SendPost(
 sealed class CreateGitIssueViewAction : UIEvent()
 data class SendGitIssue(
     val issue: LabledGitIssue,
+    val isAnon: Boolean,
     val context: Context,
     val onGoBack: Fn
 ) : CreateGitIssueViewAction()
@@ -250,6 +252,7 @@ sealed class CreateReplyViewAction : UIEvent()
 data class SendReply(
     val parent: MainEvent,
     val body: String,
+    val isAnon: Boolean,
     val context: Context,
     val onGoBack: Fn
 ) : CreateReplyViewAction()
@@ -258,6 +261,7 @@ data class SendReply(
 sealed class CreateCrossPostViewAction : UIEvent()
 data class SendCrossPost(
     val topics: List<Topic>,
+    val isAnon: Boolean,
     val context: Context,
     val onGoBack: Fn
 ) : CreateCrossPostViewAction()

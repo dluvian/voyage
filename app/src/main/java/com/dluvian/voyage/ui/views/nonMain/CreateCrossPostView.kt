@@ -31,6 +31,7 @@ import com.dluvian.voyage.core.viewModel.CreateCrossPostViewModel
 import com.dluvian.voyage.ui.components.TopicSelectionColumn
 import com.dluvian.voyage.ui.components.dialog.AddTopicDialog
 import com.dluvian.voyage.ui.components.scaffold.ContentCreationScaffold
+import com.dluvian.voyage.ui.components.selection.NamedCheckbox
 import com.dluvian.voyage.ui.theme.CrossPostIcon
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
@@ -44,6 +45,7 @@ fun CreateCrossPostView(
 ) {
     val isSending by vm.isSending
     val selectedTopics = remember { mutableStateOf(emptyList<Topic>()) }
+    val isAnon = remember { mutableStateOf(false) }
 
     ContentCreationScaffold(
         showSendButton = false,
@@ -59,6 +61,7 @@ fun CreateCrossPostView(
         CreateCrossPostViewContent(
             topicSuggestions = topicSuggestions.value,
             selectedTopics = selectedTopics,
+            isAnon = isAnon,
             onUpdate = onUpdate
         )
     }
@@ -68,6 +71,7 @@ fun CreateCrossPostView(
 private fun CreateCrossPostViewContent(
     topicSuggestions: List<Topic>,
     selectedTopics: MutableState<List<Topic>>,
+    isAnon: MutableState<Boolean>,
     onUpdate: OnUpdate,
 ) {
     val showTopicSelection = remember { mutableStateOf(false) }
@@ -86,11 +90,16 @@ private fun CreateCrossPostViewContent(
             selectedTopics = selectedTopics,
             onUpdate = onUpdate
         )
+        NamedCheckbox(
+            isChecked = isAnon.value,
+            name = stringResource(id = R.string.create_anonymously),
+            onClick = { isAnon.value = !isAnon.value })
         CrossPostButton(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = spacing.xxl, horizontal = spacing.bigScreenEdge),
             selectedTopics = selectedTopics,
+            isAnon = isAnon.value,
             onUpdate = onUpdate
         )
     }
@@ -100,6 +109,7 @@ private fun CreateCrossPostViewContent(
 private fun CrossPostButton(
     modifier: Modifier = Modifier,
     selectedTopics: State<List<Topic>>,
+    isAnon: Boolean,
     onUpdate: OnUpdate
 ) {
     val context = LocalContext.current
@@ -110,6 +120,7 @@ private fun CrossPostButton(
             onUpdate(
                 SendCrossPost(
                     topics = selectedTopics.value,
+                    isAnon = isAnon,
                     context = context,
                     onGoBack = { onUpdate(GoBack) })
             )

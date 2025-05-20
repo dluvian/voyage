@@ -44,6 +44,7 @@ class CreateCrossPostViewModel(
             val result = postSender.sendCrossPost(
                 id = nonNullId,
                 topics = action.topics,
+                isAnon = action.isAnon
             )
 
             delay(DELAY_1SEC)

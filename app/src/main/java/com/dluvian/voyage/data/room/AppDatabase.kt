@@ -68,7 +68,6 @@ import com.dluvian.voyage.data.room.view.LegacyReplyView
 import com.dluvian.voyage.data.room.view.RootPostView
 import com.dluvian.voyage.data.room.view.SimplePostView
 
-// TODO: Complete new db to stop bothering with migration
 @DeleteColumn(tableName = "vote", columnName = "isPositive")
 class V10 : AutoMigrationSpec
 

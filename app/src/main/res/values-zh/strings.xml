@@ -221,6 +221,7 @@
     <string name="none">没有任何</string>
     <string name="web_of_trust">信任网络</string>
     <string name="global">全球的</string>
+    <string name="create_anonymously">匿名创作</string>
     <string name="more">更多的</string>
     <string name="post_details">帖子详细信息</string>
     <string name="first_seen_in">首次出现于</string>
@@ -233,7 +234,7 @@
     <string name="enhancement_request">增强请求</string>
     <string name="indexed_topics">索引主题</string>
     <string name="add_client_tag">添加 Voyage 客户端标签</string>
-    <string name="let_other_clients_know_that_you_are_posting_with_voyage">让其他客户知道您正在使用 Voyage 发帖。</string>
+    <string name="let_other_clients_know_that_you_are_posting_with_voyage">让其他客户知道您正在使用 Voyage 发帖。匿名发帖时不会被添加。</string>
     <string name="show_usernames_in_feed">在信息流中显示用户名</string>
     <string name="show_the_authors_username_in_feeds">在动态中显示作者的用户名</string>
     <string name="time">时间</string>

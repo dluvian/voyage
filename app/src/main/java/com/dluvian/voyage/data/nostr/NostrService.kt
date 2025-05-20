@@ -131,6 +131,7 @@ class NostrService(
         mentions: List<PubkeyHex>,
         quotes: List<String>,
         relayUrls: Collection<RelayUrl>,
+        isAnon: Boolean,
     ): Result<Event> {
         return eventMaker.buildPost(
             subject = subject,
@@ -138,6 +139,7 @@ class NostrService(
             topics = topics,
             mentions = mentions,
             quotes = quotes,
+            isAnon = isAnon,
         )
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
@@ -149,6 +151,7 @@ class NostrService(
         quotes: List<String>,
         relayHint: RelayUrl?,
         relayUrls: Collection<RelayUrl>,
+        isAnon: Boolean,
     ): Result<Event> {
         return eventMaker.buildReply(
             parent = parent,
@@ -156,6 +159,7 @@ class NostrService(
             quotes = quotes,
             relayHint = relayHint,
             content = content,
+            isAnon = isAnon,
         )
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
@@ -168,6 +172,7 @@ class NostrService(
         topics: List<Topic>,
         relayHint: RelayUrl?,
         relayUrls: Collection<RelayUrl>,
+        isAnon: Boolean,
     ): Result<Event> {
         return eventMaker.buildComment(
             parent = parent,
@@ -176,6 +181,7 @@ class NostrService(
             topics = topics,
             relayHint = relayHint,
             content = content,
+            isAnon = isAnon,
         )
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
@@ -185,11 +191,13 @@ class NostrService(
         topics: List<Topic>,
         relayHint: RelayUrl,
         relayUrls: Collection<RelayUrl>,
+        isAnon: Boolean,
     ): Result<Event> {
         return eventMaker.buildCrossPost(
             crossPostedEvent = crossPostedEvent,
             topics = topics,
             relayHint = relayHint,
+            isAnon = isAnon,
         )
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
@@ -324,6 +332,7 @@ class NostrService(
         mentions: List<PubkeyHex>,
         quotes: List<String>,
         relayUrls: Collection<RelayUrl>,
+        isAnon: Boolean,
     ): Result<Event> {
         return eventMaker.buildGitIssue(
             repoCoordinate = repoCoordinate,
@@ -332,6 +341,7 @@ class NostrService(
             label = label,
             mentions = mentions,
             quotes = quotes,
+            isAnon = isAnon,
         )
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }

@@ -12,8 +12,10 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
+import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ClickProfileSuggestion
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.OnUpdate
@@ -21,12 +23,14 @@ import com.dluvian.voyage.core.SearchProfileSuggestion
 import com.dluvian.voyage.data.nostr.NOSTR_URI
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.ui.components.row.ClickableProfileRow
+import com.dluvian.voyage.ui.components.selection.NamedCheckbox
 import rust.nostr.sdk.PublicKey
 
 @Composable
 fun InputWithSuggestions(
     body: MutableState<TextFieldValue>,
     searchSuggestions: List<AdvancedProfileView>,
+    isAnon: MutableState<Boolean>,
     onUpdate: OnUpdate,
     input: ComposableContent
 ) {
@@ -58,11 +62,10 @@ fun InputWithSuggestions(
                 }
             )
         } else {
-            // TODO: Toggle feed reply (if content is long enough)
-//            NamedCheckbox(
-//                isChecked = isAnon.value,
-//                name = stringResource(id = R.string.create_anonymously),
-//                onClick = { isAnon.value = !isAnon.value })
+            NamedCheckbox(
+                isChecked = isAnon.value,
+                name = stringResource(id = R.string.create_anonymously),
+                onClick = { isAnon.value = !isAnon.value })
         }
     }
 }
