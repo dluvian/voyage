@@ -31,12 +31,13 @@ fun ProfileTopAppBar(
             if (!profile.inner.isMe) {
                 ProfileOrTopicOptionButton(
                     item = ItemSetProfile(pubkey = profile.inner.pubkey),
+                    isMuted = profile.inner.isMuted,
                     addableLists = addableLists,
                     nonAddableLists = nonAddableLists,
                     scope = rememberCoroutineScope(),
                     onUpdate = onUpdate
                 )
-                FollowButton(
+                if (!profile.inner.isMuted || profile.inner.isFriend) FollowButton(
                     isFollowed = profile.inner.isFriend,
                     isEnabled = profile.inner.isFriend || !profile.inner.isLocked,
                     onFollow = {

@@ -1,9 +1,9 @@
 package com.dluvian.voyage
 
+import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -11,6 +11,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.anggrayudi.storage.SimpleStorageHelper
 import com.dluvian.voyage.core.Core
@@ -28,6 +29,7 @@ import com.dluvian.voyage.core.viewModel.FollowListsViewModel
 import com.dluvian.voyage.core.viewModel.HomeViewModel
 import com.dluvian.voyage.core.viewModel.InboxViewModel
 import com.dluvian.voyage.core.viewModel.ListViewModel
+import com.dluvian.voyage.core.viewModel.MuteListViewModel
 import com.dluvian.voyage.core.viewModel.ProfileViewModel
 import com.dluvian.voyage.core.viewModel.RelayEditorViewModel
 import com.dluvian.voyage.core.viewModel.RelayProfileViewModel
@@ -53,7 +55,7 @@ class MainActivity : ComponentActivity() {
         )
 
         setContent {
-            val activity = LocalActivity.current
+            val activity = (LocalContext.current as? Activity)
             val closeApp: Fn = { activity?.finish() }
             val vmContainer = createVMContainer(appContainer = appContainer)
             val core = viewModel {
@@ -96,6 +98,9 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
     val inboxFeedState = rememberLazyListState()
     val contactListState = rememberLazyListState()
     val topicListState = rememberLazyListState()
+    val mutedProfileListState = rememberLazyListState()
+    val mutedTopicListState = rememberLazyListState()
+    val mutedWordListState = rememberLazyListState()
     val bookmarksFeedState = rememberLazyListState()
     val relayEditorState = rememberLazyListState()
     val listFeedState = rememberLazyListState()
@@ -104,6 +109,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
 
     val profilePagerState = rememberPagerState { 4 }
     val followListsPagerState = rememberPagerState { 2 }
+    val muteListPagerState = rememberPagerState { 3 }
     val listViewPagerState = rememberPagerState { 4 }
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -111,6 +117,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
     return VMContainer(
         homeVM = viewModel {
             HomeViewModel(
+                muteProvider = appContainer.muteProvider,
                 feedProvider = appContainer.feedProvider,
                 postDetails = appContainer.postDetailInspector.currentDetails,
                 feedState = homeFeedState,
@@ -150,6 +157,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         profileVM = viewModel {
             ProfileViewModel(
                 feedProvider = appContainer.feedProvider,
+                muteProvider = appContainer.muteProvider,
                 postDetails = appContainer.postDetailInspector.currentDetails,
                 rootFeedState = profileRootFeedState,
                 replyFeedState = profileReplyFeedState,
@@ -178,6 +186,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         topicVM = viewModel {
             TopicViewModel(
                 feedProvider = appContainer.feedProvider,
+                muteProvider = appContainer.muteProvider,
                 postDetails = appContainer.postDetailInspector.currentDetails,
                 feedState = topicFeedState,
                 showAuthorName = appContainer.appPreferences.showAuthorNameState,
@@ -237,6 +246,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         inboxVM = viewModel {
             InboxViewModel(
                 feedProvider = appContainer.feedProvider,
+                muteProvider = appContainer.muteProvider,
                 subCreator = appContainer.lazyNostrSubscriber.subCreator,
                 postDetails = appContainer.postDetailInspector.currentDetails,
                 feedState = inboxFeedState,
@@ -265,6 +275,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         bookmarksVM = viewModel {
             BookmarksViewModel(
                 feedProvider = appContainer.feedProvider,
+                muteProvider = appContainer.muteProvider,
                 feedState = bookmarksFeedState,
                 postDetails = appContainer.postDetailInspector.currentDetails,
                 showAuthorName = appContainer.appPreferences.showAuthorNameState,
@@ -282,6 +293,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         listVM = viewModel {
             ListViewModel(
                 feedProvider = appContainer.feedProvider,
+                muteProvider = appContainer.muteProvider,
                 postDetails = appContainer.postDetailInspector.currentDetails,
                 feedState = listFeedState,
                 profileState = listProfileState,
@@ -290,6 +302,18 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 pagerState = listViewPagerState,
                 showAuthorName = appContainer.appPreferences.showAuthorNameState,
                 lazyNostrSubscriber = appContainer.lazyNostrSubscriber
+            )
+        },
+        muteListVM = viewModel {
+            MuteListViewModel(
+                mutedProfileState = mutedProfileListState,
+                mutedTopicState = mutedTopicListState,
+                mutedWordState = mutedWordListState,
+                pagerState = muteListPagerState,
+                lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
+                profileProvider = appContainer.profileProvider,
+                topicProvider = appContainer.topicProvider,
+                muteProvider = appContainer.muteProvider
             )
         },
         createGitIssueVM = viewModel {

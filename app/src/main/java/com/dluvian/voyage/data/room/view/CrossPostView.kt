@@ -26,6 +26,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             CASE WHEN account.pubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsOneself,
             CASE WHEN friend.friendPubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsFriend,
             CASE WHEN weboftrust.webOfTrustPubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsTrusted,
+            CASE WHEN mute.mutedItem IS NOT NULL THEN 1 ELSE 0 END AS authorIsMuted,
             CASE WHEN profileSetItem.pubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsInList,
             CASE WHEN lock.pubkey IS NOT NULL THEN 1 ELSE 0 END AS authorIsLocked,
             CASE WHEN vote.eventId IS NOT NULL THEN 1 ELSE 0 END crossPostedIsUpvoted,
@@ -35,6 +36,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
             CASE WHEN cross_posted_account.pubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsOneself,
             CASE WHEN cross_posted_friend.friendPubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsFriend,
             CASE WHEN cross_posted_wot.webOfTrustPubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsTrusted,
+            CASE WHEN cross_posted_mute.mutedItem IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsMuted,
             CASE WHEN cross_posted_profile_set_item.pubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsInList,
             CASE WHEN cross_posted_lock.pubkey IS NOT NULL THEN 1 ELSE 0 END AS crossPostedAuthorIsLocked,
             (SELECT EXISTS(SELECT * FROM bookmark WHERE bookmark.eventId = crossPost.crossPostedId)) AS crossPostedIsBookmarked 
@@ -64,6 +66,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
         LEFT JOIN account ON account.pubkey = mainEvent.pubkey
         LEFT JOIN friend ON friend.friendPubkey = mainEvent.pubkey
         LEFT JOIN weboftrust ON weboftrust.webOfTrustPubkey = mainEvent.pubkey
+        LEFT JOIN mute ON mute.mutedItem = mainEvent.pubkey AND mute.tag IS 'p'
         LEFT JOIN profileSetItem ON profileSetItem.pubkey = mainEvent.pubkey
         LEFT JOIN lock ON lock.pubkey = mainEvent.pubkey
         LEFT JOIN vote ON vote.eventId = crossPost.crossPostedId AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1)
@@ -75,6 +78,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
         LEFT JOIN account AS cross_posted_account ON cross_posted_account.pubkey = crossPostedEvent.pubkey
         LEFT JOIN friend AS cross_posted_friend ON cross_posted_friend.friendPubkey = crossPostedEvent.pubkey
         LEFT JOIN weboftrust AS cross_posted_wot ON cross_posted_wot.webOfTrustPubkey = crossPostedEvent.pubkey
+        LEFT JOIN mute AS cross_posted_mute ON cross_posted_mute.mutedItem = crossPostedEvent.pubkey AND cross_posted_mute.tag IS 'p'
         LEFT JOIN profileSetItem AS cross_posted_profile_set_item ON cross_posted_profile_set_item.pubkey = crossPostedEvent.pubkey
         LEFT JOIN lock AS cross_posted_lock ON cross_posted_lock.pubkey = crossPostedEvent.pubkey
 """
@@ -86,6 +90,7 @@ data class CrossPostView(
     val authorIsOneself: Boolean,
     val authorIsFriend: Boolean,
     val authorIsTrusted: Boolean,
+    val authorIsMuted: Boolean,
     val authorIsInList: Boolean,
     val authorIsLocked: Boolean,
     val myTopic: Topic?,
@@ -103,6 +108,7 @@ data class CrossPostView(
     val crossPostedAuthorIsOneself: Boolean,
     val crossPostedAuthorIsFriend: Boolean,
     val crossPostedAuthorIsTrusted: Boolean,
+    val crossPostedAuthorIsMuted: Boolean,
     val crossPostedAuthorIsInList: Boolean,
     val crossPostedAuthorIsLocked: Boolean,
     val crossPostedIsBookmarked: Boolean,

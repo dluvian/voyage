@@ -19,9 +19,11 @@ import com.dluvian.voyage.data.model.PostDetails
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.preferences.InboxPreferences
 import com.dluvian.voyage.data.provider.FeedProvider
+import com.dluvian.voyage.data.provider.MuteProvider
 
 class InboxViewModel(
     feedProvider: FeedProvider,
+    muteProvider: MuteProvider,
     subCreator: SubscriptionCreator,
     val postDetails: State<PostDetails?>,
     val feedState: LazyListState,
@@ -33,6 +35,7 @@ class InboxViewModel(
         mutableStateOf(inboxPreferences.getInboxFeedSetting())
     val paginator = Paginator(
         feedProvider = feedProvider,
+        muteProvider = muteProvider,
         scope = viewModelScope,
         subCreator = subCreator
     )

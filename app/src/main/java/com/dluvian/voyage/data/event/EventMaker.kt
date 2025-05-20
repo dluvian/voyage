@@ -29,6 +29,7 @@ import rust.nostr.sdk.Keys
 import rust.nostr.sdk.Kind
 import rust.nostr.sdk.KindStandard
 import rust.nostr.sdk.Metadata
+import rust.nostr.sdk.MuteList
 import rust.nostr.sdk.PublicKey
 import rust.nostr.sdk.RelayMetadata
 import rust.nostr.sdk.Tag
@@ -211,6 +212,22 @@ class EventMaker(
     suspend fun buildBookmarkList(postIds: List<EventIdHex>): Result<Event> {
         val bookmarks = Bookmarks(eventIds = postIds.map { EventId.parse(it) })
         val unsignedEvent = EventBuilder.bookmarks(list = bookmarks)
+            .build(accountManager.getPublicKey())
+
+        return accountManager.sign(unsignedEvent = unsignedEvent)
+    }
+
+    suspend fun buildMuteList(
+        pubkeys: List<PubkeyHex>,
+        topics: List<Topic>,
+        words: List<String>
+    ): Result<Event> {
+        val mutes = MuteList(
+            publicKeys = pubkeys.map { PublicKey.parse(it) },
+            hashtags = topics,
+            words = words,
+        )
+        val unsignedEvent = EventBuilder.muteList(list = mutes)
             .build(accountManager.getPublicKey())
 
         return accountManager.sign(unsignedEvent = unsignedEvent)

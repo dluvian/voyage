@@ -21,6 +21,7 @@ fun TopicScaffold(
             TopicTopAppBar(
                 topic = vm.currentTopic.value,
                 isFollowed = vm.isFollowed.collectAsState().value,
+                isMuted = vm.isMuted.collectAsState().value,
                 addableLists = vm.addableLists.value,
                 nonAddableLists = vm.nonAddableLists.value,
                 onUpdate = onUpdate

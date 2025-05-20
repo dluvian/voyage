@@ -33,6 +33,7 @@ import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.ItemSetProvider
+import com.dluvian.voyage.data.provider.MuteProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.room.dao.EventRelayDao
 import com.dluvian.voyage.data.room.dao.Nip65Dao
@@ -49,6 +50,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class ProfileViewModel(
     feedProvider: FeedProvider,
+    muteProvider: MuteProvider,
     val postDetails: State<PostDetails?>,
     val rootFeedState: LazyListState,
     val replyFeedState: LazyListState,
@@ -77,11 +79,13 @@ class ProfileViewModel(
         mutableStateOf(MutableStateFlow(null))
     val rootPaginator = Paginator(
         feedProvider = feedProvider,
+        muteProvider = muteProvider,
         scope = viewModelScope,
         subCreator = nostrSubscriber.subCreator
     )
     val replyPaginator = Paginator(
         feedProvider = feedProvider,
+        muteProvider = muteProvider,
         scope = viewModelScope,
         subCreator = nostrSubscriber.subCreator
     )

@@ -31,6 +31,7 @@ import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.ItemSetProvider
 import com.dluvian.voyage.data.provider.LockProvider
+import com.dluvian.voyage.data.provider.MuteProvider
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.data.room.view.CommentView
 import com.dluvian.voyage.data.room.view.CrossPostView
@@ -435,9 +436,11 @@ fun createAdvancedProfile(
     pubkey: PubkeyHex,
     dbProfile: AdvancedProfileView?,
     forcedFollowState: Boolean?,
+    forcedMuteState: Boolean?,
     metadata: RelevantMetadata?,
     myPubkey: PubkeyHex,
     friendProvider: FriendProvider,
+    muteProvider: MuteProvider,
     itemSetProvider: ItemSetProvider,
     lockProvider: LockProvider,
 ): AdvancedProfileView {
@@ -450,6 +453,7 @@ fun createAdvancedProfile(
         isFriend = forcedFollowState ?: dbProfile?.isFriend
         ?: friendProvider.isFriend(pubkey = pubkey),
         isWebOfTrust = dbProfile?.isWebOfTrust ?: false,
+        isMuted = forcedMuteState ?: dbProfile?.isMuted ?: muteProvider.isMuted(pubkey = pubkey),
         isInList = dbProfile?.isInList ?: itemSetProvider.isInAnySet(pubkey = pubkey),
         isLocked = dbProfile?.isLocked ?: lockProvider.isLocked(pubkey = pubkey)
     )
@@ -468,9 +472,12 @@ fun Collection<RelayUrl>.addLocalRelay(port: Int?): List<RelayUrl> {
     }
 }
 
+fun String.containsNoneIgnoreCase(strs: Collection<String>): Boolean {
+    return strs.none { this.contains(other = it, ignoreCase = true) }
+}
+
 fun String.toTextFieldValue() = TextFieldValue(text = this, selection = TextRange(this.length))
 
-// TODO: use nostr sdk
 fun createVoyageClientTag() = Tag.parse(listOf("client", VOYAGE))
 
 fun getFullDateTime(ctx: Context, createdAt: Long): String {

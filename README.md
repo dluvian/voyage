@@ -29,6 +29,7 @@ I don't plan to publish this app in the Google Play Store.
   locally cached events.
 - Trust indicator: Each profile has a colored badge which indicates their trust level.
   - Red triangle: This profile is locked.
+  - Red rectangle: This profile is in your mute list.
   - Green rectangle: You follow this profile (friend).
   - 3 stacked green rectangles: This profile is in one of your lists but not your friend.
   - Orange rectangle: You don't follow this profile, but at least one of your friends does.

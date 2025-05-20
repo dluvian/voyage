@@ -20,6 +20,7 @@ class ListEventProcessor(
         val contactLists = mutableListOf<ValidatedContactList>()
         val topicLists = mutableListOf<ValidatedTopicList>()
         val bookmarkLists = mutableListOf<ValidatedBookmarkList>()
+        val muteLists = mutableListOf<ValidatedMuteList>()
 
         lists.forEach { list ->
             when (list) {
@@ -27,6 +28,7 @@ class ListEventProcessor(
                 is ValidatedContactList -> contactLists.add(list)
                 is ValidatedTopicList -> topicLists.add(list)
                 is ValidatedBookmarkList -> bookmarkLists.add(list)
+                is ValidatedMuteList -> muteLists.add(list)
             }
         }
 
@@ -34,6 +36,7 @@ class ListEventProcessor(
         processNip65s(nip65s = nip65s)
         processTopicLists(topicLists = topicLists)
         processBookmarkLists(bookmarkLists = bookmarkLists)
+        processMuteLists(muteLists = muteLists)
     }
 
     private fun processContactLists(contactLists: Collection<ValidatedContactList>) {
@@ -106,6 +109,18 @@ class ListEventProcessor(
         scope.launch {
             Log.d(TAG, "Upsert bookmark list of ${myNewestList.eventIds.size} postIds")
             room.bookmarkUpsertDao().upsertBookmarks(validatedBookmarkList = myNewestList)
+        }
+    }
+
+    private fun processMuteLists(muteLists: Collection<ValidatedMuteList>) {
+        if (muteLists.isEmpty()) return
+
+        val myNewestList = filterNewestLists(lists = muteLists)
+            .firstOrNull { it.myPubkey == myPubkeyProvider.getPubkeyHex() } ?: return
+
+        scope.launch {
+            Log.d(TAG, "Upsert mute list")
+            room.muteUpsertDao().upsertMuteList(muteList = myNewestList)
         }
     }
 

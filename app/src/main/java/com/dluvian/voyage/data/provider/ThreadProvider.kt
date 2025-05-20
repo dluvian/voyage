@@ -8,6 +8,7 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.model.Comment
+import com.dluvian.voyage.core.utils.containsNoneIgnoreCase
 import com.dluvian.voyage.core.utils.firstThenDistinctDebounce
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.event.COMMENT_U16
@@ -43,6 +44,7 @@ class ThreadProvider(
     private val forcedVotes: Flow<Map<EventIdHex, Boolean>>,
     private val forcedFollows: Flow<Map<PubkeyHex, Boolean>>,
     private val forcedBookmarks: Flow<Map<EventIdHex, Boolean>>,
+    private val muteProvider: MuteProvider,
     private val showAuthorName: State<Boolean>,
 ) {
 
@@ -160,6 +162,7 @@ class ThreadProvider(
             .firstThenDistinctDebounce(DEBOUNCE)
         val opPubkeyFlow = room.mainEventDao().getAuthorFlow(id = rootId)
             .firstThenDistinctDebounce(DEBOUNCE)
+        val mutedWords = muteProvider.getMutedWords()
 
         return combine(
             legacyFlow,
@@ -169,8 +172,10 @@ class ThreadProvider(
             collapsedIds,
         ) { replies, comments, forced, opPubkey, collapsed ->
             val result = LinkedList<ThreadReplyCtx>()
+            val hasMutedWords = { str: String -> !str.containsNoneIgnoreCase(strs = mutedWords) }
 
             for (reply in replies) {
+                if (!reply.authorIsOneself && hasMutedWords(reply.content)) continue
                 val parent = result.find { it.reply.id == reply.parentId }
 
                 if (parent?.isCollapsed == true) continue
@@ -197,6 +202,7 @@ class ThreadProvider(
 
             // Comments after replies because they can reference replies, not the other way around
             for (comment in comments) {
+                if (!comment.authorIsOneself && hasMutedWords(comment.content)) continue
                 val parent = result.find { it.reply.id == comment.parentId }
 
                 if (parent?.isCollapsed == true) continue

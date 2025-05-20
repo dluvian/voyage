@@ -10,6 +10,7 @@ import com.dluvian.voyage.core.navigator.EditExistingListNavView
 import com.dluvian.voyage.core.navigator.EditNewListNavView
 import com.dluvian.voyage.core.navigator.EditProfileNavView
 import com.dluvian.voyage.core.navigator.FollowListsNavView
+import com.dluvian.voyage.core.navigator.MuteListNavView
 import com.dluvian.voyage.core.navigator.NonMainNavView
 import com.dluvian.voyage.core.navigator.OpenListNavView
 import com.dluvian.voyage.core.navigator.ProfileNavView
@@ -117,6 +118,12 @@ fun NonMainView(
 
         is OpenListNavView -> ListView(
             vm = core.vmContainer.listVM,
+            snackbar = core.appContainer.snackbar,
+            onUpdate = core.onUpdate
+        )
+
+        MuteListNavView -> MuteListView(
+            vm = core.vmContainer.muteListVM,
             snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate
         )

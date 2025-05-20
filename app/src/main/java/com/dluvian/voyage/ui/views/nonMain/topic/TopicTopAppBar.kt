@@ -16,6 +16,7 @@ import com.dluvian.voyage.ui.components.button.ProfileOrTopicOptionButton
 fun TopicTopAppBar(
     topic: Topic,
     isFollowed: Boolean,
+    isMuted: Boolean,
     addableLists: List<ItemSetMeta>,
     nonAddableLists: List<ItemSetMeta>,
     onUpdate: OnUpdate
@@ -25,12 +26,13 @@ fun TopicTopAppBar(
         actions = {
             ProfileOrTopicOptionButton(
                 item = ItemSetTopic(topic = topic),
+                isMuted = isMuted,
                 addableLists = addableLists,
                 nonAddableLists = nonAddableLists,
                 scope = rememberCoroutineScope(),
                 onUpdate = onUpdate
             )
-            FollowButton(
+            if (!isMuted || isFollowed) FollowButton(
                 isFollowed = isFollowed,
                 onFollow = { onUpdate(FollowTopic(topic = topic)) },
                 onUnfollow = { onUpdate(UnfollowTopic(topic = topic)) })

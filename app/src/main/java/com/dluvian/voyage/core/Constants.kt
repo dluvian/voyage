@@ -8,6 +8,7 @@ const val WEEK_IN_SECS = 7 * 24 * 60 * 60
 const val MAX_CONTENT_LEN = 8_192
 const val MAX_DESCRIPTION_LEN = 1024
 const val MAX_SUBJECT_LEN = 256
+const val MAX_MUTE_WORD_LEN = 32
 const val MAX_NAME_LEN = 32
 const val MAX_TOPIC_LEN = 32
 const val MAX_TOPICS = 5

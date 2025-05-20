@@ -290,6 +290,20 @@ class NostrService(
             .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
     }
 
+    suspend fun publishMuteList(
+        pubkeys: List<PubkeyHex>,
+        topics: List<Topic>,
+        words: List<String>,
+        relayUrls: Collection<RelayUrl>,
+    ): Result<Event> {
+        if (pubkeys.size + topics.size + words.size > MAX_KEYS_SQL) {
+            return Result.failure(IllegalArgumentException("Too many mutes"))
+        }
+
+        return eventMaker.buildMuteList(pubkeys = pubkeys, topics = topics, words = words)
+            .onSuccess { nostrClient.publishToRelays(event = it, relayUrls = relayUrls) }
+    }
+
     suspend fun publishContactList(
         pubkeys: List<PubkeyHex>,
         relayUrls: Collection<RelayUrl>,

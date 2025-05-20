@@ -193,6 +193,15 @@ data class ValidatedBookmarkList(
     override val createdAt: Long
 ) : ValidatedList(owner = myPubkey, createdAt = createdAt)
 
+data class ValidatedMuteList(
+    val myPubkey: PubkeyHex,
+    val pubkeys: Set<PubkeyHex>,
+    val topics: Set<Topic>,
+    val words: Set<String>,
+    override val createdAt: Long
+) : ValidatedList(owner = myPubkey, createdAt = createdAt)
+
+
 sealed class ValidatedSet(
     open val identifier: String,
     open val createdAt: Long

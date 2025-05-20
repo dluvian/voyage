@@ -96,6 +96,13 @@ fun Event.getParentId(): String? {
         ?.toHex()
 }
 
+fun Event.getMuteWords(): List<String> {
+    return this.tags()
+        .filter(TagKind.Word)
+        .mapNotNull { it.content() }
+        .filterNot { it.isEmpty() }
+}
+
 fun Event.getLegacyReplyToId(): String? {
     if (!this.isTextNote()) return null
 

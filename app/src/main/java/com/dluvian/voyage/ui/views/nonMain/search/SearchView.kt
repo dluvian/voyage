@@ -92,6 +92,7 @@ private fun SearchViewContent(
                         isOneself = post.authorIsOneself,
                         isFriend = post.authorIsFriend,
                         isWebOfTrust = post.authorIsTrusted,
+                        isMuted = post.authorIsMuted,
                         isInList = post.authorIsInList,
                         isLocked = post.authorIsLocked,
                     ),
