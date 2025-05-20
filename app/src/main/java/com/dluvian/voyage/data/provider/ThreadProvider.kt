@@ -9,8 +9,8 @@ import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.model.Comment
 import com.dluvian.voyage.core.utils.firstThenDistinctDebounce
 import com.dluvian.voyage.core.utils.launchIO
+import com.dluvian.voyage.data.OldestUsedEvent
 import com.dluvian.voyage.data.event.COMMENT_U16
-import com.dluvian.voyage.data.event.OldestUsedEvent
 import com.dluvian.voyage.data.event.TEXT_NOTE_U16
 import com.dluvian.voyage.data.model.ForcedData
 import com.dluvian.voyage.data.model.SingularPubkey

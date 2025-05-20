@@ -24,7 +24,6 @@ import com.dluvian.voyage.core.utils.showToast
 import com.dluvian.voyage.core.utils.threadableKinds
 import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.data.nostr.createNprofile
-import kotlinx.coroutines.launch
 import rust.nostr.sdk.Nip19Event
 import rust.nostr.sdk.Nip19Profile
 
@@ -108,21 +107,9 @@ class Core(
             is EditListViewAction -> vmContainer.editListVM.handle(action = uiEvent)
             is ListViewAction -> vmContainer.listVM.handle(action = uiEvent)
 
-            is ProcessExternalSignature -> viewModelScope.launch {
-                appContainer.externalSignerHandler.processExternalSignature(
-                    result = uiEvent.activityResult
-                )
-            }
-
             is ClickClickableText -> clickText(action = uiEvent)
 
             is SuggestionAction -> appContainer.suggestionProvider.handle(action = uiEvent)
-
-            is RegisterAccountLauncher -> appContainer.externalSignerHandler
-                .setAccountLauncher(launcher = uiEvent.launcher)
-
-            is RegisterSignerLauncher -> appContainer.externalSignerHandler
-                .setSignerLauncher(launcher = uiEvent.launcher)
 
             is RegisterUriHandler -> appContainer.annotatedStringProvider
                 .setUriHandler(uriHandler = uiEvent.uriHandler)

@@ -1,9 +1,8 @@
 package com.dluvian.voyage.data
 
-import android.content.Context
 import rust.nostr.sdk.NostrSigner
 
-class KeyStore(context: Context) {
+class KeyStore() {
     fun activeSigner(): NostrSigner {
         TODO()
     }

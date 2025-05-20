@@ -1,4 +1,4 @@
-package com.dluvian.voyage.data.event
+package com.dluvian.voyage.data
 
 import android.content.Context
 import android.util.Log
@@ -50,18 +50,5 @@ class EventRebroadcaster(
                     msg = context.getString(R.string.failed_to_rebroadcast)
                 )
             }
-    }
-
-    suspend fun rebroadcastLocally(postId: EventIdHex) {
-        val localRelay = relayProvider.getConnectedLocalRelay()
-        if (localRelay.isNullOrEmpty()) {
-            Log.i(TAG, "No open local relay connection to rebroadcast bookmarked post")
-            return
-        }
-
-        val json = mainEventDao.getJson(id = postId)
-        if (json.isNullOrEmpty()) return
-
-        nostrService.publishJson(eventJson = json, relayUrls = listOf(localRelay))
     }
 }

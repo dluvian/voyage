@@ -5,20 +5,39 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.data.KeyStore
 import com.dluvian.voyage.data.event.EventMaker
-import rust.nostr.sdk.Client
+import com.dluvian.voyage.data.preferences.EventPreferences
+import com.dluvian.voyage.data.preferences.RelayPreferences
+import rust.nostr.sdk.ClientBuilder
 import rust.nostr.sdk.Coordinate
 import rust.nostr.sdk.Event
 import rust.nostr.sdk.EventId
 import rust.nostr.sdk.Metadata
+import rust.nostr.sdk.Options
 import rust.nostr.sdk.PublicKey
 
 private const val TAG = "NostrService"
 
 class NostrService(
-    private val nostrClient: Client,
-    private val eventMaker: EventMaker,
+    relayPreferences: RelayPreferences,
+    eventPreferences: EventPreferences,
 ) {
+    private val keyStore = KeyStore()
+
+    // Issue: Turn gossip on/off in setttings
+    // TODO: Mention that auth setting only applies after restarting the app
+    private val clientOpts = Options()
+        .gossip(true)
+        .automaticAuthentication(relayPreferences.getSendAuth())
+
+    private val nostrClient = ClientBuilder()
+        .signer(keyStore.activeSigner())
+        .opts(clientOpts)
+        .build()
+
+    private val eventMaker = EventMaker(eventPreferences = eventPreferences)
+
     suspend fun initialize(initRelayUrls: Collection<RelayUrl>) {
         initRelayUrls.forEach { relay -> nostrClient.addRelay(relay) }
         nostrClient.connect()

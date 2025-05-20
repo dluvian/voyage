@@ -23,7 +23,7 @@ class NameProvider(
     private val nameCache = Collections.synchronizedMap(mutableMapOf<PublicKey, String?>())
     private val subCache = Collections.synchronizedSet(mutableSetOf<PubkeyHex>())
     private val jobs = Collections.synchronizedMap(mutableMapOf<PublicKey, Job>())
-    lateinit var lazyNostrSubscriber: LazyNostrSubscriber
+    val lazyNostrSubscriber: LazyNostrSubscriber
 
 
     fun getName(nprofile: Nip19Profile): String? {
