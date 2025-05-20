@@ -1,5 +1,6 @@
 package com.dluvian.voyage.data.provider
 
+import androidx.compose.runtime.State
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
@@ -36,6 +37,7 @@ class FeedProvider(
     private val forcedVotes: Flow<Map<EventIdHex, Boolean>>,
     private val forcedFollows: Flow<Map<PubkeyHex, Boolean>>,
     private val forcedBookmarks: Flow<Map<EventIdHex, Boolean>>,
+    private val showAuthorName: State<Boolean>,
 ) {
     private val staticFeedProvider = StaticFeedProvider(
         room = room,
@@ -85,6 +87,7 @@ class FeedProvider(
                 oldestUsedEvent.updateOldestCreatedAt(posts.minOfOrNull { it.createdAt })
                 // TODO: Sub replies or upvotes?
 
+                if (showAuthorName.value) {
                     val pubkeys = posts.filter { it.authorName.isNullOrEmpty() }
                         .map { it.pubkey }
                         .toMutableSet()
@@ -95,6 +98,7 @@ class FeedProvider(
                     }
                     pubkeys.addAll(crossPostedPubkeys)
                     nostrSubscriber.subProfiles(pubkeys = pubkeys)
+                }
             }
     }
 

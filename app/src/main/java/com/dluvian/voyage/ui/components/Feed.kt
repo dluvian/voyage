@@ -53,6 +53,7 @@ fun Feed(
     paginator: IPaginator,
     postDetails: State<PostDetails?>,
     state: LazyListState,
+    showAuthorName: Boolean,
     onRefresh: Fn,
     onAppend: Fn,
     onUpdate: OnUpdate,
@@ -86,6 +87,7 @@ fun Feed(
             items(items = filteredPage) { mainEventCtx ->
                 MainEventRow(
                     ctx = mainEventCtx,
+                    showAuthorName = showAuthorName,
                     onUpdate = onUpdate
                 )
                 FullHorizontalDivider()

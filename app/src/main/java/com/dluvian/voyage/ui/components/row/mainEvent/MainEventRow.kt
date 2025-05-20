@@ -37,11 +37,13 @@ import com.dluvian.voyage.ui.views.nonMain.MoreRepliesTextButton
 @Composable
 fun MainEventRow(
     ctx: MainEventCtx,
+    showAuthorName: Boolean,
     onUpdate: OnUpdate
 ) {
     when (ctx) {
         is FeedCtx -> MainEventMainRow(
             ctx = ctx,
+            showAuthorName = showAuthorName,
             onUpdate = onUpdate
         )
 
@@ -49,12 +51,14 @@ fun MainEventRow(
             when (ctx.threadableMainEvent) {
                 is RootPost -> MainEventMainRow(
                     ctx = ctx,
+                    showAuthorName = showAuthorName,
                     onUpdate = onUpdate
                 )
 
                 is LegacyReply, is Comment -> RowWithDivider(level = 1) {
                     MainEventMainRow(
                         ctx = ctx,
+                        showAuthorName = showAuthorName,
                         onUpdate = onUpdate
                     )
                 }
@@ -65,6 +69,7 @@ fun MainEventRow(
             RowWithDivider(level = ctx.level) {
                 MainEventMainRow(
                     ctx = ctx,
+                    showAuthorName = showAuthorName,
                     onUpdate = onUpdate
                 )
             }
@@ -75,6 +80,7 @@ fun MainEventRow(
 @Composable
 private fun MainEventMainRow(
     ctx: MainEventCtx,
+    showAuthorName: Boolean,
     onUpdate: OnUpdate
 ) {
     val onClickRow = {
@@ -100,6 +106,7 @@ private fun MainEventMainRow(
     ) {
         MainEventHeader(
             ctx = ctx,
+            showAuthorName = showAuthorName,
             onUpdate = onUpdate,
         )
         Spacer(modifier = Modifier.height(spacing.large))

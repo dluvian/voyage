@@ -43,6 +43,7 @@ fun HomeView(vm: HomeViewModel, onUpdate: OnUpdate) {
         paginator = vm.paginator,
         postDetails = vm.postDetails,
         state = vm.feedState,
+        showAuthorName = vm.showAuthorName.value,
         onRefresh = { onUpdate(HomeViewRefresh) },
         onAppend = { onUpdate(HomeViewAppend) },
         onUpdate = onUpdate

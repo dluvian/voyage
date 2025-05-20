@@ -25,6 +25,7 @@ class InboxViewModel(
     subCreator: SubscriptionCreator,
     val postDetails: State<PostDetails?>,
     val feedState: LazyListState,
+    val showAuthorName: State<Boolean>,
     private val inboxPreferences: InboxPreferences
 ) : ViewModel() {
     val showFilterMenu: MutableState<Boolean> = mutableStateOf(false)

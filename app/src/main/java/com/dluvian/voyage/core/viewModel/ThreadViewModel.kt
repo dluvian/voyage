@@ -31,6 +31,7 @@ import rust.nostr.sdk.Nip19Event
 class ThreadViewModel(
     val postDetails: State<PostDetails?>,
     val threadState: LazyListState,
+    val showAuthorName: State<Boolean>,
     private val threadProvider: ThreadProvider,
     private val threadCollapser: ThreadCollapser,
 ) : ViewModel() {
