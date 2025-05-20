@@ -105,5 +105,22 @@ private fun Filter(setting: MutableState<HomeFeedSetting>) {
                 target = Global,
                 onClick = { setting.value = setting.value.copy(pubkeySelection = Global) })
         }
+
+        item {
+            SmallHeader(header = stringResource(id = R.string.content))
+            NamedCheckbox(
+                isChecked = setting.value.showRoots,
+                name = stringResource(id = R.string.root_posts),
+                onClick = {
+                    setting.value = setting.value.copy(showRoots = !setting.value.showRoots)
+                })
+            NamedCheckbox(
+                isChecked = setting.value.showCrossPosts,
+                name = stringResource(id = R.string.cross_posts),
+                onClick = {
+                    setting.value =
+                        setting.value.copy(showCrossPosts = !setting.value.showCrossPosts)
+                })
+        }
     }
 }

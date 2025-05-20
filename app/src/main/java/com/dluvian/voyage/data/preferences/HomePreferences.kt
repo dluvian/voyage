@@ -19,6 +19,9 @@ private const val FRIENDS = "friends"
 private const val WEB_OF_TRUST = "web_of_trust"
 private const val GLOBAL = "global"
 
+private const val SHOW_ROOTS = "show_roots"
+private const val SHOW_CROSS = "show_cross"
+
 class HomePreferences(context: Context) {
     private val preferences = context.getSharedPreferences(HOME_FILE, Context.MODE_PRIVATE)
 
@@ -38,6 +41,8 @@ class HomePreferences(context: Context) {
         return HomeFeedSetting(
             topicSelection = topics,
             pubkeySelection = pubkeys,
+            showRoots = preferences.getBoolean(SHOW_ROOTS, true),
+            showCrossPosts = preferences.getBoolean(SHOW_CROSS, true),
         )
     }
 
@@ -55,6 +60,8 @@ class HomePreferences(context: Context) {
         preferences.edit()
             .putString(TOPICS, topics)
             .putString(PUBKEYS, pubkeys)
+            .putBoolean(SHOW_ROOTS, setting.showRoots)
+            .putBoolean(SHOW_CROSS, setting.showCrossPosts)
             .apply()
     }
 }
