@@ -21,7 +21,6 @@ import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.ItemSetProvider
-import com.dluvian.voyage.data.provider.MuteProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -30,7 +29,6 @@ import kotlinx.coroutines.flow.stateIn
 
 class TopicViewModel(
     feedProvider: FeedProvider,
-    muteProvider: MuteProvider,
     val postDetails: State<PostDetails?>,
     val feedState: LazyListState,
     val showAuthorName: State<Boolean>,
@@ -42,10 +40,8 @@ class TopicViewModel(
     val nonAddableLists = mutableStateOf(emptyList<ItemSetMeta>())
     val currentTopic = mutableStateOf("")
     var isFollowed: StateFlow<Boolean> = MutableStateFlow(false)
-    var isMuted: StateFlow<Boolean> = MutableStateFlow(false)
     val paginator = Paginator(
         feedProvider = feedProvider,
-        muteProvider = muteProvider,
         scope = viewModelScope,
         subCreator = subCreator
     )
@@ -56,13 +52,10 @@ class TopicViewModel(
         paginator.reinit(setting = TopicFeedSetting(topic = stripped))
 
         val initFollowVal = if (currentTopic.value == stripped) isFollowed.value else false
-        val initMuteVal = if (currentTopic.value == stripped) isMuted.value else false
         currentTopic.value = stripped
 
         isFollowed = topicProvider.getIsFollowedFlow(topic = stripped)
             .stateIn(viewModelScope, SharingStarted.Eagerly, initFollowVal)
-        isMuted = topicProvider.getIsMutedFlow(topic = stripped)
-            .stateIn(viewModelScope, SharingStarted.Eagerly, initMuteVal)
     }
 
     fun handle(action: TopicViewAction) {

@@ -25,7 +25,6 @@ import com.dluvian.voyage.data.event.OldestUsedEvent
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
 import com.dluvian.voyage.data.interactor.Bookmarker
 import com.dluvian.voyage.data.interactor.ItemSetEditor
-import com.dluvian.voyage.data.interactor.Muter
 import com.dluvian.voyage.data.interactor.PollVoter
 import com.dluvian.voyage.data.interactor.PostDetailInspector
 import com.dluvian.voyage.data.interactor.PostSender
@@ -53,7 +52,6 @@ import com.dluvian.voyage.data.provider.DatabaseInteractor
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.FriendProvider
 import com.dluvian.voyage.data.provider.ItemSetProvider
-import com.dluvian.voyage.data.provider.MuteProvider
 import com.dluvian.voyage.data.provider.NameProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.provider.PubkeyProvider
@@ -95,7 +93,6 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
     val connectionStatuses = mutableStateOf(mapOf<RelayUrl, ConnectionStatus>())
 
     private val forcedFollowTopicStates = MutableStateFlow(emptyMap<Topic, Boolean>())
-    private val forcedMuteTopicStates = MutableStateFlow(emptyMap<Topic, Boolean>())
 
     val homePreferences = HomePreferences(context = context)
     val inboxPreferences = InboxPreferences(context = context)
@@ -114,9 +111,6 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
         friendDao = roomDb.friendDao(),
         myPubkeyProvider = accountManager,
     )
-
-    val muteProvider = MuteProvider(muteDao = roomDb.muteDao())
-
 
     val metadataInMemory = MetadataInMemory()
 
@@ -151,16 +145,13 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
         room = roomDb,
         myPubkeyProvider = accountManager,
         friendProvider = friendProvider,
-        muteProvider = muteProvider,
         annotatedStringProvider = annotatedStringProvider,
         relayProvider = relayProvider,
     )
 
     val topicProvider = TopicProvider(
         forcedFollowStates = forcedFollowTopicStates,
-        forcedMuteStates = forcedMuteTopicStates,
         topicDao = roomDb.topicDao(),
-        muteDao = roomDb.muteDao(),
         itemSetProvider = itemSetProvider,
     )
 
@@ -321,16 +312,6 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
         relayPreferences = relayPreferences,
     )
 
-    val muter = Muter(
-        forcedTopicMuteFlow = forcedMuteTopicStates,
-        nostrService = nostrService,
-        relayProvider = relayProvider,
-        muteUpsertDao = roomDb.muteUpsertDao(),
-        muteDao = roomDb.muteDao(),
-        snackbar = snackbar,
-        context = context,
-    )
-
     private val oldestUsedEvent = OldestUsedEvent()
 
     val profileFollower = ProfileFollower(
@@ -350,7 +331,6 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
         forcedVotes = postVoter.forcedVotes,
         forcedFollows = profileFollower.forcedFollowsFlow,
         forcedBookmarks = bookmarker.forcedBookmarksFlow,
-        muteProvider = muteProvider,
         showAuthorName = appPreferences.showAuthorNameState
     )
 
@@ -364,18 +344,15 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
         forcedVotes = postVoter.forcedVotes,
         forcedFollows = profileFollower.forcedFollowsFlow,
         forcedBookmarks = bookmarker.forcedBookmarksFlow,
-        muteProvider = muteProvider,
         showAuthorName = appPreferences.showAuthorNameState
     )
 
     val profileProvider = ProfileProvider(
         forcedFollowFlow = profileFollower.forcedFollowsFlow,
-        forcedMuteFlow = muter.forcedProfileMuteFlow,
         myPubkeyProvider = accountManager,
         metadataInMemory = metadataInMemory,
         room = roomDb,
         friendProvider = friendProvider,
-        muteProvider = muteProvider,
         itemSetProvider = itemSetProvider,
         lazyNostrSubscriber = lazyNostrSubscriber,
         annotatedStringProvider = annotatedStringProvider,

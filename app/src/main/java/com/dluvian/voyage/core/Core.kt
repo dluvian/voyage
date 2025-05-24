@@ -89,8 +89,6 @@ class Core(
             }
 
             is BookmarkEvent -> appContainer.bookmarker.handle(action = uiEvent)
-            is MuteEvent -> appContainer.muter.handle(action = uiEvent)
-
             is HomeViewAction -> vmContainer.homeVM.handle(action = uiEvent)
             is DiscoverViewAction -> vmContainer.discoverVM.handle(action = uiEvent)
             is ThreadViewAction -> vmContainer.threadVM.handle(action = uiEvent)
@@ -109,7 +107,6 @@ class Core(
             is BookmarksViewAction -> vmContainer.bookmarksVM.handle(action = uiEvent)
             is EditListViewAction -> vmContainer.editListVM.handle(action = uiEvent)
             is ListViewAction -> vmContainer.listVM.handle(action = uiEvent)
-            is MuteListViewAction -> vmContainer.muteListVM.handle(action = uiEvent)
 
             is ProcessExternalSignature -> viewModelScope.launch {
                 appContainer.externalSignerHandler.processExternalSignature(

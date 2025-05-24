@@ -18,7 +18,6 @@ import com.dluvian.voyage.core.navigator.EditProfileNavView
 import com.dluvian.voyage.core.navigator.FollowListsNavView
 import com.dluvian.voyage.core.navigator.HomeNavView
 import com.dluvian.voyage.core.navigator.InboxNavView
-import com.dluvian.voyage.core.navigator.MuteListNavView
 import com.dluvian.voyage.core.navigator.NavView
 import com.dluvian.voyage.core.navigator.OpenListNavView
 import com.dluvian.voyage.core.navigator.ProfileNavView
@@ -62,7 +61,6 @@ sealed class PushNavEvent : NavEvent() {
             ClickRelayEditor -> RelayEditorNavView
             ClickFollowLists -> FollowListsNavView
             ClickBookmarks -> BookmarksNavView
-            ClickMuteList -> MuteListNavView
             ClickCreateList -> EditNewListNavView
             ClickCreateGitIssue -> CreateGitIssueNavView
             is OpenThread -> ThreadNavView(mainEvent = this.mainEvent)
@@ -88,7 +86,6 @@ data object ClickEditProfile : PushNavEvent()
 data object ClickRelayEditor : PushNavEvent()
 data object ClickFollowLists : PushNavEvent()
 data object ClickBookmarks : PushNavEvent()
-data object ClickMuteList : PushNavEvent()
 data object ClickCreateList : PushNavEvent()
 data object ClickCreateGitIssue : PushNavEvent()
 
@@ -122,15 +119,6 @@ data class ClickNeutralizeVote(
 ) : VoteEvent(postId = postId, mention = mention)
 
 data class VotePollOption(val pollId: EventIdHex, val optionId: OptionId) : UIEvent()
-
-sealed class MuteEvent : UIEvent()
-data class MuteProfile(val pubkey: PubkeyHex, val debounce: Boolean = true) : MuteEvent()
-data class UnmuteProfile(val pubkey: PubkeyHex, val debounce: Boolean = true) : MuteEvent()
-data class MuteTopic(val topic: Topic, val debounce: Boolean = true) : MuteEvent()
-data class UnmuteTopic(val topic: Topic, val debounce: Boolean = true) : MuteEvent()
-data class MuteWord(val word: String, val debounce: Boolean = true) : MuteEvent()
-data class UnmuteWord(val word: String, val debounce: Boolean = true) : MuteEvent()
-
 
 sealed class TopicEvent(open val topic: Topic) : UIEvent()
 data class FollowTopic(override val topic: Topic) : TopicEvent(topic = topic)
@@ -181,11 +169,6 @@ data object DiscoverViewRefresh : DiscoverViewAction()
 sealed class FollowListsViewAction : UIEvent()
 data object FollowListsViewInit : FollowListsViewAction()
 data object FollowListsViewRefresh : FollowListsViewAction()
-
-
-sealed class MuteListViewAction : UIEvent()
-data object MuteListViewOpen : MuteListViewAction()
-data object MuteListViewRefresh : MuteListViewAction()
 
 
 sealed class BookmarksViewAction : UIEvent()

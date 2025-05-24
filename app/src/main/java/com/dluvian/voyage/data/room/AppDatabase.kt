@@ -19,7 +19,6 @@ import com.dluvian.voyage.data.room.dao.HomeFeedDao
 import com.dluvian.voyage.data.room.dao.InboxDao
 import com.dluvian.voyage.data.room.dao.ItemSetDao
 import com.dluvian.voyage.data.room.dao.MainEventDao
-import com.dluvian.voyage.data.room.dao.MuteDao
 import com.dluvian.voyage.data.room.dao.Nip65Dao
 import com.dluvian.voyage.data.room.dao.PollDao
 import com.dluvian.voyage.data.room.dao.PollResponseDao
@@ -35,7 +34,6 @@ import com.dluvian.voyage.data.room.dao.reply.SomeReplyDao
 import com.dluvian.voyage.data.room.dao.upsert.BookmarkUpsertDao
 import com.dluvian.voyage.data.room.dao.upsert.FriendUpsertDao
 import com.dluvian.voyage.data.room.dao.upsert.FullProfileUpsertDao
-import com.dluvian.voyage.data.room.dao.upsert.MuteUpsertDao
 import com.dluvian.voyage.data.room.dao.upsert.Nip65UpsertDao
 import com.dluvian.voyage.data.room.dao.upsert.ProfileSetUpsertDao
 import com.dluvian.voyage.data.room.dao.upsert.ProfileUpsertDao
@@ -50,7 +48,6 @@ import com.dluvian.voyage.data.room.entity.FullProfileEntity
 import com.dluvian.voyage.data.room.entity.ProfileEntity
 import com.dluvian.voyage.data.room.entity.lists.BookmarkEntity
 import com.dluvian.voyage.data.room.entity.lists.FriendEntity
-import com.dluvian.voyage.data.room.entity.lists.MuteEntity
 import com.dluvian.voyage.data.room.entity.lists.Nip65Entity
 import com.dluvian.voyage.data.room.entity.lists.TopicEntity
 import com.dluvian.voyage.data.room.entity.lists.WebOfTrustEntity
@@ -100,8 +97,11 @@ class V25 : AutoMigrationSpec
 @DeleteTable(tableName = "lock")
 class V27 : AutoMigrationSpec
 
+@DeleteTable(tableName = "mute")
+class V28 : AutoMigrationSpec
+
 @Database(
-    version = 27,
+    version = 28,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -130,6 +130,7 @@ class V27 : AutoMigrationSpec
         AutoMigration(from = 24, to = 25, spec = V25::class),
         AutoMigration(from = 25, to = 26),
         AutoMigration(from = 26, to = 27, spec = V27::class),
+        AutoMigration(from = 27, to = 28, spec = V28::class),
     ],
     entities = [
         // Main
@@ -150,7 +151,6 @@ class V27 : AutoMigrationSpec
         TopicEntity::class,
         Nip65Entity::class,
         BookmarkEntity::class,
-        MuteEntity::class,
 
         // Sets
         ProfileSetEntity::class,
@@ -195,7 +195,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun bookmarkDao(): BookmarkDao
     abstract fun contentSetDao(): ContentSetDao
     abstract fun itemSetDao(): ItemSetDao
-    abstract fun muteDao(): MuteDao
     abstract fun hashtagDao(): HashtagDao
     abstract fun someReplyDao(): SomeReplyDao
     abstract fun pollResponseDao(): PollResponseDao
@@ -219,5 +218,4 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun fullProfileUpsertDao(): FullProfileUpsertDao
     abstract fun profileSetUpsertDao(): ProfileSetUpsertDao
     abstract fun topicSetUpsertDao(): TopicSetUpsertDao
-    abstract fun muteUpsertDao(): MuteUpsertDao
 }

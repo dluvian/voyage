@@ -21,13 +21,11 @@ import com.dluvian.voyage.data.model.PostDetails
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.preferences.HomePreferences
 import com.dluvian.voyage.data.provider.FeedProvider
-import com.dluvian.voyage.data.provider.MuteProvider
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 
 
 class HomeViewModel(
-    muteProvider: MuteProvider,
     feedProvider: FeedProvider,
     val postDetails: State<PostDetails?>,
     val feedState: LazyListState,
@@ -40,7 +38,6 @@ class HomeViewModel(
         mutableStateOf(homePreferences.getHomeFeedSetting())
     val paginator = Paginator(
         feedProvider = feedProvider,
-        muteProvider = muteProvider,
         scope = viewModelScope,
         subCreator = lazyNostrSubscriber.subCreator
     )

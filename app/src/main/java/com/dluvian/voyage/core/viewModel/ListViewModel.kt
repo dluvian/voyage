@@ -19,11 +19,9 @@ import com.dluvian.voyage.data.model.PostDetails
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.ItemSetProvider
-import com.dluvian.voyage.data.provider.MuteProvider
 
 class ListViewModel(
     feedProvider: FeedProvider,
-    muteProvider: MuteProvider,
     val postDetails: State<PostDetails?>,
     val feedState: LazyListState,
     val profileState: LazyListState,
@@ -38,7 +36,6 @@ class ListViewModel(
 
     val paginator = Paginator(
         feedProvider = feedProvider,
-        muteProvider = muteProvider,
         scope = viewModelScope,
         subCreator = lazyNostrSubscriber.subCreator
     )

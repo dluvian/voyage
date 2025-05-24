@@ -34,7 +34,6 @@
     <string name="follow">Follow</string>
     <string name="failed_to_sign_topic_list">Failed to sign topic list</string>
     <string name="failed_to_sign_bookmarks">Failed to sign bookmarks</string>
-    <string name="failed_to_sign_mute_list">Failed to sign mute list</string>
     <string name="failed_to_sign_contact_list">Failed to sign contact list</string>
     <string name="about">About</string>
     <string name="popular_topics">Popular topics</string>
@@ -193,10 +192,6 @@
     <string name="add_to_list">Add to list</string>
     <string name="choose_list">Choose list</string>
     <string name="added_to_list">Added to list</string>
-    <string name="muted">Muted</string>
-    <string name="unmute">Unmute</string>
-    <string name="mute">Mute</string>
-    <string name="mute_list">Mute list</string>
     <string name="list_is_empty">List is empty</string>
     <string name="next">Next</string>
     <string name="local_relay_port">Local relay port</string>

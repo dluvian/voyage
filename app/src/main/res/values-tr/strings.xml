@@ -187,10 +187,6 @@
     <string name="add_to_list">Listeye ekle</string>
     <string name="choose_list">Liste seç</string>
     <string name="added_to_list">Listeye eklendi</string>
-    <string name="muted">"Sessize alındı "</string>
-    <string name="unmute">Unmute</string>
-    <string name="mute">Sesini kapatmak</string>
-    <string name="mute_list">Listeyi sessize al</string>
     <string name="list_is_empty">Liste boş</string>
     <string name="next">Sonraki</string>
     <string name="local_relay_port">Yerel röle bağlantı noktası</string>
@@ -209,7 +205,6 @@
     <string name="topic_list_identifier">Konu listesi tanımlayıcısı</string>
     <string name="describe_this_list">Bu listeyi açıklayın</string>
     <string name="words">Kelimeler</string>
-    <string name="failed_to_sign_mute_list">Sessiz listeyi imzalama başarısız oldu</string>
     <string name="add_word">Kelime ekle</string>
     <string name="send_bookmarked_post_to_local_relay">Yer imlerine eklenen gönderiyi yerel röleye gönder</string>
     <string name="send_post_to_local_relay_after_bookmarking_it">Yer imlerine ekledikten sonra gönderiyi yerel röleye gönder</string>

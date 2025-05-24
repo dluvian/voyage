@@ -22,13 +22,10 @@ private const val POLL = "FROM PollView $CREATED_AT"
 private const val POLL_OPTION = "FROM PollOptionView "
 
 private const val ROOT_COND = "AND authorIsOneself = 0 " +
-        "AND authorIsMuted = 0 " +
-        "AND NOT EXISTS (SELECT * FROM hashtag WHERE eventId = id AND hashtag IN (SELECT mutedItem FROM mute WHERE tag IS 't')) " +
         "ORDER BY createdAt DESC " +
         "LIMIT :size"
 
 private const val CROSS_COND = "AND crossPostedAuthorIsOneself = 0 " +
-        "AND crossPostedAuthorIsMuted = 0 " +
         ROOT_COND
 
 private const val POLL_COND = ROOT_COND

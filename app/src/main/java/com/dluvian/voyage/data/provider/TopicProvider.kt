@@ -1,15 +1,12 @@
 package com.dluvian.voyage.data.provider
 
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.VOYAGE
 import com.dluvian.voyage.core.model.TopicFollowState
-import com.dluvian.voyage.core.model.TopicMuteState
 import com.dluvian.voyage.core.utils.takeRandom
 import com.dluvian.voyage.data.model.ListTopics
 import com.dluvian.voyage.data.model.MyTopics
 import com.dluvian.voyage.data.model.NoTopics
 import com.dluvian.voyage.data.model.TopicSelection
-import com.dluvian.voyage.data.room.dao.MuteDao
 import com.dluvian.voyage.data.room.dao.TopicDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -17,9 +14,7 @@ import kotlinx.coroutines.flow.map
 
 class TopicProvider(
     val forcedFollowStates: Flow<Map<Topic, Boolean>>,
-    val forcedMuteStates: Flow<Map<Topic, Boolean>>,
     private val topicDao: TopicDao,
-    private val muteDao: MuteDao,
     private val itemSetProvider: ItemSetProvider,
 ) {
     suspend fun getMyTopics(limit: Int = Int.MAX_VALUE): List<Topic> {
@@ -63,20 +58,6 @@ class TopicProvider(
         }
     }
 
-    suspend fun getMutedTopicsFlow(): Flow<List<TopicMuteState>> {
-        // We want to be able to unmute on the same list
-        val mutedTopics = muteDao.getMyTopicMutes()
-
-        return forcedMuteStates.map { forcedMutes ->
-            mutedTopics.map { topic ->
-                TopicMuteState(
-                    topic = topic,
-                    isMuted = forcedMutes[topic] ?: true
-                )
-            }
-        }
-    }
-
     fun getIsFollowedFlow(topic: Topic): Flow<Boolean> {
         return combine(
             topicDao.getIsFollowedFlow(topic = topic),
@@ -86,20 +67,11 @@ class TopicProvider(
         }
     }
 
-    fun getIsMutedFlow(topic: Topic): Flow<Boolean> {
-        return combine(
-            muteDao.getTopicIsMutedFlow(topic = topic),
-            forcedMuteStates
-        ) { db, forced ->
-            forced[topic] ?: db
-        }
-    }
-
     // Not named "getMaxCreatedAt" bc there should only be one createdAt available
     suspend fun getCreatedAt() = topicDao.getMaxCreatedAt()
 
     private val defaultTopics = listOf(
-        VOYAGE,
+        "voyage",
         "nostr",
         "asknostr",
         "introductions",

@@ -23,12 +23,10 @@ import rust.nostr.sdk.Nip19Profile
 
 class ProfileProvider(
     private val forcedFollowFlow: Flow<Map<PubkeyHex, Boolean>>,
-    private val forcedMuteFlow: Flow<Map<PubkeyHex, Boolean>>,
     private val myPubkeyProvider: IMyPubkeyProvider,
     private val metadataInMemory: MetadataInMemory,
     private val room: AppDatabase,
     private val friendProvider: FriendProvider,
-    private val muteProvider: MuteProvider,
     private val itemSetProvider: ItemSetProvider,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val annotatedStringProvider: AnnotatedStringProvider,
@@ -54,14 +52,12 @@ class ProfileProvider(
         return combine(
             room.profileDao().getAdvancedProfileFlow(pubkey = hex),
             forcedFollowFlow,
-            forcedMuteFlow,
             metadataInMemory.getMetadataFlow(pubkey = hex)
-        ) { dbProfile, forcedFollows, forcedMute, metadata ->
+        ) { dbProfile, forcedFollows, metadata ->
             createFullProfile(
                 pubkey = hex,
                 dbProfile = dbProfile,
                 forcedFollowState = forcedFollows[hex],
-                forcedMuteState = forcedMute[hex],
                 metadata = metadata
             )
         }
@@ -71,22 +67,16 @@ class ProfileProvider(
         val trustedBy = room.webOfTrustDao().getTrustedByPubkey(pubkey = pubkey)
             ?: return flowOf(null)
 
-        return combine(
-            room.profileDao().getAdvancedProfileTrustedByFlow(pubkey = pubkey),
-            forcedMuteFlow,
-        ) { dbProfile, forcedMute ->
+        return room.profileDao().getAdvancedProfileTrustedByFlow(pubkey = pubkey).map { dbProfile ->
             createAdvancedProfile(
                 pubkey = dbProfile?.pubkey ?: trustedBy,
                 dbProfile = dbProfile,
                 forcedFollowState = true, // Return null if not followed
-                forcedMuteState = forcedMute[dbProfile?.pubkey],
                 metadata = metadataInMemory.getMetadata(pubkey = dbProfile?.pubkey ?: trustedBy),
                 myPubkey = myPubkeyProvider.getPubkeyHex(),
                 friendProvider = friendProvider,
-                muteProvider = muteProvider,
                 itemSetProvider = itemSetProvider,
             )
-
         }
     }
 
@@ -144,7 +134,7 @@ class ProfileProvider(
         val friendsWithoutProfile = room.profileDao().getUnknownFriends()
         lazyNostrSubscriber.lazySubUnknownProfiles(CustomPubkeys(pubkeys = friendsWithoutProfile))
 
-        return combine(forcedFollowFlow, forcedMuteFlow) { forcedFollows, forcedMutes ->
+        return forcedFollowFlow.map { forcedFollows ->
             friends.map {
                 it.copy(isFriend = forcedFollows[it.pubkey] ?: true)
             } + friendsWithoutProfile.map { pubkey ->
@@ -152,37 +142,9 @@ class ProfileProvider(
                     pubkey = pubkey,
                     dbProfile = null,
                     forcedFollowState = forcedFollows[pubkey],
-                    forcedMuteState = forcedMutes[pubkey],
                     metadata = null,
                     myPubkey = myPubkeyProvider.getPubkeyHex(),
                     friendProvider = friendProvider,
-                    muteProvider = muteProvider,
-                    itemSetProvider = itemSetProvider,
-                )
-            }
-        }.map { friendList ->
-            friendList.sortedByDescending { it.isMuted }
-        }
-    }
-
-    suspend fun getMutedProfiles(): Flow<List<AdvancedProfileView>> {
-        // We want to be able to unmute on the same list
-        val mutedProfiles = room.profileDao().getAdvancedProfilesOfMutes()
-        val mutesWithoutProfile = room.profileDao().getUnknownMutes()
-
-        return combine(forcedFollowFlow, forcedMuteFlow) { forcedFollows, forcedMutes ->
-            mutedProfiles.map {
-                it.copy(isMuted = forcedMutes[it.pubkey] ?: true)
-            } + mutesWithoutProfile.map { pubkey ->
-                createAdvancedProfile(
-                    pubkey = pubkey,
-                    dbProfile = null,
-                    forcedFollowState = forcedFollows[pubkey],
-                    forcedMuteState = forcedMutes[pubkey],
-                    metadata = null,
-                    myPubkey = myPubkeyProvider.getPubkeyHex(),
-                    friendProvider = friendProvider,
-                    muteProvider = muteProvider,
                     itemSetProvider = itemSetProvider,
                 )
             }
@@ -195,18 +157,15 @@ class ProfileProvider(
         return combine(
             room.profileDao().getAdvancedProfilesFlow(pubkeys = pubkeys),
             forcedFollowFlow,
-            forcedMuteFlow,
-        ) { dbProfiles, forcedFollows, forcedMutes ->
+        ) { dbProfiles, forcedFollows ->
             dbProfiles.map { dbProfile ->
                 createAdvancedProfile(
                     pubkey = dbProfile.pubkey,
                     dbProfile = dbProfile,
                     forcedFollowState = forcedFollows[dbProfile.pubkey],
-                    forcedMuteState = forcedMutes[dbProfile.pubkey],
                     metadata = null,
                     myPubkey = myPubkeyProvider.getPubkeyHex(),
                     friendProvider = friendProvider,
-                    muteProvider = muteProvider,
                     itemSetProvider = itemSetProvider,
                 )
             }
@@ -217,18 +176,15 @@ class ProfileProvider(
         pubkey: PubkeyHex,
         dbProfile: AdvancedProfileView?,
         forcedFollowState: Boolean?,
-        forcedMuteState: Boolean?,
         metadata: RelevantMetadata?
     ): FullProfileUI {
         val inner = createAdvancedProfile(
             pubkey = pubkey,
             dbProfile = dbProfile,
             forcedFollowState = forcedFollowState,
-            forcedMuteState = forcedMuteState,
             metadata = metadata,
             myPubkey = myPubkeyProvider.getPubkeyHex(),
             friendProvider = friendProvider,
-            muteProvider = muteProvider,
             itemSetProvider = itemSetProvider,
         )
         return FullProfileUI(
@@ -238,6 +194,7 @@ class ProfileProvider(
         )
     }
 
+    // TODO: Update this
     private val defaultPubkeys = listOf(
         // dluvian
         "e4336cd525df79fa4d3af364fd9600d4b10dce4215aa4c33ed77ea0842344b10",

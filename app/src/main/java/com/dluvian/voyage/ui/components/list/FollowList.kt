@@ -13,13 +13,13 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.row.ClickableRow
-import com.dluvian.voyage.ui.model.FollowableOrMutableItem
+import com.dluvian.voyage.ui.model.FollowableItem
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FollowOrMuteList(
-    rows: List<FollowableOrMutableItem>,
+fun FollowList(
+    rows: List<FollowableItem>,
     isRefreshing: Boolean,
     state: LazyListState,
     onRefresh: Fn,

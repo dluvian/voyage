@@ -15,7 +15,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import com.dluvian.voyage.core.model.FriendTrust
 import com.dluvian.voyage.core.model.IsInListTrust
-import com.dluvian.voyage.core.model.Muted
 import com.dluvian.voyage.core.model.NoTrust
 import com.dluvian.voyage.core.model.Oneself
 import com.dluvian.voyage.core.model.TrustType
@@ -34,7 +33,6 @@ fun TrustIcon(trustType: TrustType, size: Dp = sizing.trustIndicator) {
         FriendTrust,
         WebTrust,
         NoTrust,
-        Muted,
         -> TrustBox(size = size, color = color)
 
         IsInListTrust -> ListTrustBox(size = size, color = color)
@@ -53,7 +51,6 @@ fun TrustIcon(profile: AdvancedProfileView) {
             isOneself = profile.isMe,
             isFriend = profile.isFriend,
             isWebOfTrust = profile.isWebOfTrust,
-            isMuted = profile.isMuted,
             isInList = profile.isInList,
         )
     )

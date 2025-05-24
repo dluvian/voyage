@@ -1,7 +1,6 @@
 package com.dluvian.voyage.core.utils
 
 import com.dluvian.voyage.core.MAX_DESCRIPTION_LEN
-import com.dluvian.voyage.core.MAX_MUTE_WORD_LEN
 import com.dluvian.voyage.core.MAX_NAME_LEN
 import com.dluvian.voyage.core.MAX_POLL_OPTIONS
 import com.dluvian.voyage.core.MAX_POLL_OPTION_LEN
@@ -9,7 +8,6 @@ import com.dluvian.voyage.core.MAX_SUBJECT_LEN
 import com.dluvian.voyage.core.MAX_TOPIC_LEN
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.nostr.getDescription
-import com.dluvian.voyage.data.nostr.getMuteWords
 import com.dluvian.voyage.data.nostr.getPollOptions
 import com.dluvian.voyage.data.nostr.getTitle
 import rust.nostr.sdk.Event
@@ -52,10 +50,4 @@ fun normalizeName(str: String) = str.filterNot { it.isWhitespace() }.take(MAX_NA
 fun Metadata.getNormalizedName(): String {
     val name = this.getName().orEmpty().ifBlank { this.getDisplayName() }.orEmpty()
     return normalizeName(str = name)
-}
-
-fun String.normalizeMuteWord() = this.lowercase().take(MAX_MUTE_WORD_LEN)
-
-fun Event.getNormalizedMuteWords(limit: Int = Int.MAX_VALUE): List<Topic> {
-    return this.getMuteWords().map { it.normalizeMuteWord() }.distinct().take(limit)
 }

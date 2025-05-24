@@ -18,8 +18,7 @@ import kotlinx.coroutines.flow.flowOf
 
 private const val INBOX_CONDITION = "WHERE createdAt <= :until " +
         "AND isMentioningMe = 1 " +
-        "AND authorIsOneself = 0 " +
-        "AND authorIsMuted = 0 "
+        "AND authorIsOneself = 0 "
 
 private const val INBOX_ORDER = "ORDER BY createdAt DESC LIMIT :size "
 

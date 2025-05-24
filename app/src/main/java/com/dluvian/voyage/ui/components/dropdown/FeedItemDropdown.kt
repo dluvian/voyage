@@ -24,7 +24,6 @@ import com.dluvian.voyage.core.model.FriendTrust
 import com.dluvian.voyage.core.model.IsInListTrust
 import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.core.model.MainEvent
-import com.dluvian.voyage.core.model.Muted
 import com.dluvian.voyage.core.model.NoTrust
 import com.dluvian.voyage.core.model.Oneself
 import com.dluvian.voyage.core.model.Poll
@@ -68,6 +67,7 @@ fun FeedItemDropdown(
                 })
         }
 
+        // TODO: Update
         val clip = LocalClipboardManager.current
         val context = LocalContext.current
         val idCopiedToast = stringResource(id = R.string.note_uri_copied)
@@ -165,7 +165,7 @@ private fun FollowItem(
     onUpdate: OnUpdate
 ) {
     when (mainEvent.trustType) {
-        Oneself, Muted -> {}
+        Oneself -> {}
         FriendTrust -> {
             SimpleDropdownItem(
                 text = stringResource(id = R.string.unfollow),
@@ -196,7 +196,7 @@ private fun FollowCrossPostedItem(
 ) {
     if (mainEvent is CrossPost) {
         when (mainEvent.crossPostedTrustType) {
-            Oneself, Muted -> {}
+            Oneself -> {}
             FriendTrust -> {
                 SimpleDropdownItem(
                     text = stringResource(id = R.string.unfollow_cross_posted_author),

@@ -8,7 +8,6 @@ import androidx.compose.material.icons.automirrored.rounded.ListAlt
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.automirrored.rounded.Reply
 import androidx.compose.material.icons.automirrored.rounded.Send
-import androidx.compose.material.icons.automirrored.rounded.VolumeOff
 import androidx.compose.material.icons.filled.ThumbUpAlt
 import androidx.compose.material.icons.outlined.Book
 import androidx.compose.material.icons.outlined.Create
@@ -16,7 +15,6 @@ import androidx.compose.material.icons.outlined.FilterAlt
 import androidx.compose.material.icons.outlined.Poll
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.ThumbUp
-import androidx.compose.material.icons.rounded.Abc
 import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.AddCircle
@@ -43,7 +41,6 @@ import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Tag
 import androidx.compose.material.icons.rounded.TravelExplore
-import androidx.compose.material.icons.rounded.WarningAmber
 
 val MenuIcon = Icons.Rounded.Menu
 val HomeIcon = Icons.Rounded.Home
@@ -81,10 +78,7 @@ val BookmarkIcon = Icons.Rounded.Bookmark
 val RelayIcon = Icons.Rounded.CellTower
 val OpenIcon = Icons.AutoMirrored.Rounded.OpenInNew
 val EditIcon = Icons.Rounded.Edit
-val MuteIcon = Icons.AutoMirrored.Rounded.VolumeOff
-val WordIcon = Icons.Rounded.Abc
 val FilterIcon = Icons.Outlined.FilterAlt
-val WarningIcon = Icons.Rounded.WarningAmber
 val VotedIcon = Icons.Rounded.CheckCircleOutline
 val PollIcon = Icons.Outlined.Poll
 val TextIcon = Icons.Outlined.Create

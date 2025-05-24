@@ -16,11 +16,9 @@ sealed class TrustType {
             isOneself: Boolean,
             isFriend: Boolean,
             isWebOfTrust: Boolean,
-            isMuted: Boolean,
             isInList: Boolean,
         ): TrustType {
             return if (isOneself) Oneself
-            else if (isMuted) Muted
             else if (isFriend) FriendTrust
             else if (isInList) IsInListTrust
             else if (isWebOfTrust) WebTrust
@@ -36,7 +34,6 @@ sealed class TrustType {
                 isOneself = rootPostView.authorIsOneself,
                 isFriend = isFriend ?: rootPostView.authorIsFriend,
                 isWebOfTrust = rootPostView.authorIsTrusted,
-                isMuted = rootPostView.authorIsMuted,
                 isInList = rootPostView.authorIsInList,
             )
         }
@@ -51,7 +48,6 @@ sealed class TrustType {
                 isOneself = pollView.authorIsOneself,
                 isFriend = isFriend ?: pollView.authorIsFriend,
                 isWebOfTrust = pollView.authorIsTrusted,
-                isMuted = pollView.authorIsMuted,
                 isInList = pollView.authorIsInList,
             )
         }
@@ -65,7 +61,6 @@ sealed class TrustType {
                 isOneself = legacyReplyView.authorIsOneself,
                 isFriend = isFriend ?: legacyReplyView.authorIsFriend,
                 isWebOfTrust = legacyReplyView.authorIsTrusted,
-                isMuted = legacyReplyView.authorIsMuted,
                 isInList = legacyReplyView.authorIsInList,
             )
         }
@@ -79,7 +74,6 @@ sealed class TrustType {
                 isOneself = commentView.authorIsOneself,
                 isFriend = isFriend ?: commentView.authorIsFriend,
                 isWebOfTrust = commentView.authorIsTrusted,
-                isMuted = commentView.authorIsMuted,
                 isInList = commentView.authorIsInList,
             )
         }
@@ -93,7 +87,6 @@ sealed class TrustType {
                 isOneself = crossPostView.authorIsOneself,
                 isFriend = isFriend ?: crossPostView.authorIsFriend,
                 isWebOfTrust = crossPostView.authorIsTrusted,
-                isMuted = crossPostView.authorIsMuted,
                 isInList = crossPostView.authorIsInList,
             )
         }
@@ -107,7 +100,6 @@ sealed class TrustType {
                 isOneself = crossPostView.crossPostedAuthorIsOneself,
                 isFriend = isFriend ?: crossPostView.crossPostedAuthorIsFriend,
                 isWebOfTrust = crossPostView.crossPostedAuthorIsTrusted,
-                isMuted = crossPostView.crossPostedAuthorIsMuted,
                 isInList = crossPostView.crossPostedAuthorIsInList,
             )
         }
@@ -118,5 +110,4 @@ data object Oneself : TrustType()
 data object FriendTrust : TrustType()
 data object IsInListTrust : TrustType()
 data object WebTrust : TrustType()
-data object Muted : TrustType()
 data object NoTrust : TrustType()

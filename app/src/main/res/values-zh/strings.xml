@@ -33,7 +33,6 @@
     <string name="follow">关注</string>
     <string name="failed_to_sign_topic_list">签名话题列表失败</string>
     <string name="failed_to_sign_bookmarks">签名书签失败</string>
-    <string name="failed_to_sign_mute_list">签名静音列表失败</string>
     <string name="failed_to_sign_contact_list">签名联系人列表失败</string>
     <string name="about">关于</string>
     <string name="popular_topics">热门话题</string>
@@ -189,10 +188,6 @@
     <string name="add_to_list">添加到列表</string>
     <string name="choose_list">选择列表</string>
     <string name="added_to_list">已添加到列表</string>
-    <string name="muted">已静音</string>
-    <string name="unmute">取消静音</string>
-    <string name="mute">静音</string>
-    <string name="mute_list">静音列表</string>
     <string name="list_is_empty">列表为空</string>
     <string name="next">下一个</string>
     <string name="local_relay_port">本地中继端口</string>
