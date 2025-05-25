@@ -14,6 +14,7 @@ import com.dluvian.voyage.data.event.OldestUsedEvent
 import com.dluvian.voyage.data.event.POLL_U16
 import com.dluvian.voyage.data.event.TEXT_NOTE_U16
 import com.dluvian.voyage.data.model.ForcedData
+import com.dluvian.voyage.data.model.SingularPubkey
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.nostr.createNevent
@@ -53,6 +54,12 @@ class ThreadProvider(
             if (!room.existsDao().postExists(id = id)) {
                 nostrSubscriber.subPost(nevent = nevent)
                 delay(DELAY_1SEC)
+            }
+
+
+            val author = nevent.author()?.toHex() ?: room.mainEventDao().getAuthor(id = id)
+            if (author != null) {
+                lazyNostrSubscriber.lazySubUnknownProfiles(SingularPubkey(pubkey = author))
             }
 
             val poll = room.pollDao().getPoll(pollId = id)
@@ -222,6 +229,11 @@ class ThreadProvider(
             val ids = it.map { reply -> reply.reply.getRelevantId() }
             nostrSubscriber.subVotes(parentIds = ids)
             nostrSubscriber.subReplies(parentIds = ids)
+
+            nostrSubscriber.subProfiles(
+                pubkeys = it.filter { reply -> reply.reply.authorName.isNullOrEmpty() }
+                    .map { reply -> reply.reply.pubkey }
+            )
         }
     }
 
