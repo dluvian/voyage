@@ -36,8 +36,6 @@ const val MAX_RELAYS = 5
 const val MAX_RELAYS_PER_PUBKEY = 2
 const val MAX_POPULAR_RELAYS = 50
 
-const val MIN_AUTOPILOT_RELAYS = MAX_RELAYS
-const val DEFAULT_AUTOPILOT_RELAYS = 12
 const val MAX_AUTOPILOT_RELAYS = 25
 
 const val MAX_KEYS = 750 // Filter requests might get too long for most relays. Limit to 750

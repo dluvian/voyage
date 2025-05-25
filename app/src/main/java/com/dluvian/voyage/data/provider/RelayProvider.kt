@@ -2,6 +2,7 @@ package com.dluvian.voyage.data.provider
 
 import android.util.Log
 import androidx.compose.runtime.State
+import com.dluvian.voyage.core.MAX_AUTOPILOT_RELAYS
 import com.dluvian.voyage.core.MAX_KEYS
 import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.MAX_POPULAR_RELAYS
@@ -219,7 +220,7 @@ class RelayProvider(
             }
         }
 
-        val numToSelect = relayPreferences.getAutopilotRelays()
+        val numToSelect = MAX_AUTOPILOT_RELAYS
 
         // Cover pubkey-write-relay pairing
         val pubkeyCache = mutableSetOf<PubkeyHex>()

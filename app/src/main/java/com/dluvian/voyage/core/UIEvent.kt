@@ -301,7 +301,6 @@ data class ProcessExternalAccount(
 ) : SettingsViewAction()
 
 data class UpdateRootPostThreshold(val threshold: Float) : SettingsViewAction()
-data class UpdateAutopilotRelays(val numberOfRelays: Int) : SettingsViewAction()
 data object LoadSeed : SettingsViewAction()
 data class SendAuth(val sendAuth: Boolean) : SettingsViewAction()
 data class SendUpvotedToLocalRelay(val sendToLocalRelay: Boolean) : SettingsViewAction()
