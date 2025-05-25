@@ -1,9 +1,9 @@
 package com.dluvian.voyage
 
-import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -11,7 +11,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.anggrayudi.storage.SimpleStorageHelper
 import com.dluvian.voyage.core.Core
@@ -54,8 +53,7 @@ class MainActivity : ComponentActivity() {
         )
 
         setContent {
-            // TODO: Fix
-            val activity = (LocalContext.current as? Activity)
+            val activity = LocalActivity.current
             val closeApp: Fn = { activity?.finish() }
             val vmContainer = createVMContainer(appContainer = appContainer)
             val core = viewModel {

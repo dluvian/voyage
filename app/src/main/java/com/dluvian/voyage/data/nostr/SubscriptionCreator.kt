@@ -26,7 +26,7 @@ class SubscriptionCreator(
     }
 
     // TODO: whack
-    fun subscribe_many(relayUrl: RelayUrl, filters: List<Filter>) {
+    fun subscribeMany(relayUrl: RelayUrl, filters: List<Filter>) {
         filters.forEach {
             subscribe(relayUrl = relayUrl, filter = it)
         }

@@ -2,10 +2,8 @@ package com.dluvian.voyage.data.nostr
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableLongStateOf
-import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.FEED_OFFSET
-import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.RESUB_TIMEOUT
 import com.dluvian.voyage.core.model.Poll
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
@@ -24,12 +22,10 @@ import com.dluvian.voyage.data.room.AppDatabase
 import com.dluvian.voyage.data.room.entity.main.poll.PollEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import rust.nostr.sdk.Filter
 import rust.nostr.sdk.Nip19Event
 import rust.nostr.sdk.Nip19Profile
-import rust.nostr.sdk.PublicKey
 import rust.nostr.sdk.Timestamp
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -119,7 +115,7 @@ class NostrSubscriber(
         }
 
         subscriptions.forEach { (relay, filters) ->
-            subCreator.subscribe_many(relayUrl = relay, filters = filters)
+            subCreator.subscribeMany(relayUrl = relay, filters = filters)
         }
     }
 
@@ -127,7 +123,7 @@ class NostrSubscriber(
         val filters = listOf(filterCreator.getPostFilter(eventId = nevent.eventId()))
 
         relayProvider.getObserveRelays(nevent = nevent, includeConnected = true).forEach { relay ->
-            subCreator.subscribe_many(relayUrl = relay, filters = filters)
+            subCreator.subscribeMany(relayUrl = relay, filters = filters)
         }
     }
 
@@ -136,7 +132,7 @@ class NostrSubscriber(
         val filters = listOf(contactFilter)
 
         relayProvider.getObserveRelays(nprofile = nprofile, includeConnected = false)
-            .forEach { relay -> subCreator.subscribe_many(relayUrl = relay, filters = filters) }
+            .forEach { relay -> subCreator.subscribeMany(relayUrl = relay, filters = filters) }
     }
 
     private val isSubbingVotes = AtomicBoolean(false)
@@ -248,7 +244,7 @@ class NostrSubscriber(
             }
 
             relayProvider.getReadRelays().forEach { relay ->
-                subCreator.subscribe_many(relayUrl = relay, filters = filters)
+                subCreator.subscribeMany(relayUrl = relay, filters = filters)
             }
         }.invokeOnCompletion {
             isSubbingPolls.set(false)
@@ -263,32 +259,7 @@ class NostrSubscriber(
         )
 
         relayProvider.getReadRelays().forEach { relay ->
-            subCreator.subscribe_many(relayUrl = relay, filters = listOf(filter))
-        }
-    }
-
-    private val pubkeyCache = mutableSetOf<PubkeyHex>()
-    private val isSubbingProfiles = AtomicBoolean(false)
-    fun subProfiles(pubkeys: Collection<PubkeyHex>) {
-        if (pubkeys.isEmpty()) return
-
-        val newPubkeys = pubkeys - pubkeyCache
-        if (newPubkeys.isEmpty()) return
-
-        if (!isSubbingProfiles.compareAndSet(false, true)) return
-
-        pubkeyCache.addAll(newPubkeys)
-
-        scope.launch(Dispatchers.Default) {
-            val filter = filterCreator.getProfileFilter(
-                pubkeys = newPubkeys.map { PublicKey.parse(it) }
-            )
-            relayProvider.getReadRelays().forEach { relay ->
-                subCreator.subscribe_many(relayUrl = relay, filters = listOf(filter))
-            }
-            delay(DEBOUNCE)
-        }.invokeOnCompletion {
-            isSubbingProfiles.set(false)
+            subCreator.subscribeMany(relayUrl = relay, filters = listOf(filter))
         }
     }
 

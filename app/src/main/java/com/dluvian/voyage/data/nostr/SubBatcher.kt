@@ -72,7 +72,7 @@ class SubBatcher(private val subCreator: SubscriptionCreator) {
                     until = until
                 ).forEach { (relay, filters) ->
                     Log.d(TAG, "Sub ${filters.size} filters in $relay")
-                    subCreator.subscribe_many(relayUrl = relay, filters = filters)
+                    subCreator.subscribeMany(relayUrl = relay, filters = filters)
                 }
             }
         }.invokeOnCompletion {

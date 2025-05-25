@@ -103,7 +103,7 @@ class LazyNostrSubscriber(
         val filters = listOf(profileFilter)
 
         relayProvider.getObserveRelays(nprofile = nprofile).forEach { relay ->
-            subCreator.subscribe_many(relayUrl = relay, filters = filters)
+            subCreator.subscribeMany(relayUrl = relay, filters = filters)
         }
     }
 
@@ -116,7 +116,7 @@ class LazyNostrSubscriber(
         val filters = listOf(nip65Filter, profileFilter).mapNotNull { it }
 
         relayProvider.getObserveRelays(nprofile = nprofile, includeConnected = true)
-            .forEach { relay -> subCreator.subscribe_many(relayUrl = relay, filters = filters) }
+            .forEach { relay -> subCreator.subscribeMany(relayUrl = relay, filters = filters) }
     }
 
     suspend fun lazySubMySets() {
@@ -128,7 +128,7 @@ class LazyNostrSubscriber(
         )
 
         relayProvider.getWriteRelays().forEach { relay ->
-            subCreator.subscribe_many(relayUrl = relay, filters = filters)
+            subCreator.subscribeMany(relayUrl = relay, filters = filters)
         }
     }
 
@@ -142,7 +142,7 @@ class LazyNostrSubscriber(
         )
 
         relayProvider.getReadRelays().forEach { relay ->
-            subCreator.subscribe_many(relayUrl = relay, filters = filters)
+            subCreator.subscribeMany(relayUrl = relay, filters = filters)
         }
     }
 
@@ -150,7 +150,7 @@ class LazyNostrSubscriber(
         val filters = listOf(filterCreator.getLazyPollResponseFilter(poll = poll))
 
         relayProvider.getReadRelays().forEach { relay ->
-            subCreator.subscribe_many(relayUrl = relay, filters = filters)
+            subCreator.subscribeMany(relayUrl = relay, filters = filters)
         }
     }
 
@@ -179,7 +179,7 @@ class LazyNostrSubscriber(
                         until = now
                     )
                     val filters = listOf(filter)
-                    subCreator.subscribe_many(relayUrl = relay, filters = filters)
+                    subCreator.subscribeMany(relayUrl = relay, filters = filters)
                 }
             }
     }
@@ -189,7 +189,7 @@ class LazyNostrSubscriber(
             filterCreator.getLazyNip65Filter(pubkey = nprofile.publicKey())
         )
         relayProvider.getObserveRelays(nprofile = nprofile, includeConnected = true)
-            .forEach { relay -> subCreator.subscribe_many(relayUrl = relay, filters = filters) }
+            .forEach { relay -> subCreator.subscribeMany(relayUrl = relay, filters = filters) }
     }
 
     suspend fun lazySubNip65s(selection: PubkeySelection) {
@@ -234,7 +234,7 @@ class LazyNostrSubscriber(
         )
 
         mergeRelayFilters(missingSubs, newestSubs).forEach { (relay, filters) ->
-            subCreator.subscribe_many(relayUrl = relay, filters = filters)
+            subCreator.subscribeMany(relayUrl = relay, filters = filters)
         }
     }
 
@@ -244,7 +244,7 @@ class LazyNostrSubscriber(
         val filters = filterCreator.getMyKindFilter(kindAndSince = kindAndSince)
 
         relayProvider.getWriteRelays().forEach { relay ->
-            subCreator.subscribe_many(relayUrl = relay, filters = filters)
+            subCreator.subscribeMany(relayUrl = relay, filters = filters)
         }
     }
 
@@ -282,7 +282,7 @@ class LazyNostrSubscriber(
             missingSubs,
             getNewestWotPubkeysFilters(until = now),
         ).forEach { (relay, filters) ->
-            subCreator.subscribe_many(relayUrl = relay, filters = filters)
+            subCreator.subscribeMany(relayUrl = relay, filters = filters)
         }
     }
 

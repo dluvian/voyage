@@ -230,8 +230,6 @@ class ProfileProvider(
         "726a1e261cc6474674e8285e3951b3bb139be9a773d1acf49dc868db861a1c11",
         // max_hillebrand
         "b7ed68b062de6b4a12e51fd5285c1e1e0ed0e5128cda93ab11b4150b55ed32fc",
-        // sommerfeld
-        "d0debf9fb12def81f43d7c69429bb784812ac1e4d2d53a202db6aac7ea4b466c",
         // cyph3rp9nk
         "fcf70a45cfa817eaa813b9ba8a375d713d3169f4a27f3dcac3d49112df67d37e",
         // alex_gleason
