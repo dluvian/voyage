@@ -1,7 +1,6 @@
 package com.dluvian.voyage.data.provider
 
 import android.util.Log
-import androidx.compose.runtime.State
 import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.EventIdHex
@@ -15,7 +14,6 @@ import com.dluvian.voyage.data.event.OldestUsedEvent
 import com.dluvian.voyage.data.event.POLL_U16
 import com.dluvian.voyage.data.event.TEXT_NOTE_U16
 import com.dluvian.voyage.data.model.ForcedData
-import com.dluvian.voyage.data.model.SingularPubkey
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.nostr.createNevent
@@ -43,7 +41,6 @@ class ThreadProvider(
     private val forcedVotes: Flow<Map<EventIdHex, Boolean>>,
     private val forcedFollows: Flow<Map<PubkeyHex, Boolean>>,
     private val forcedBookmarks: Flow<Map<EventIdHex, Boolean>>,
-    private val showAuthorName: State<Boolean>,
 ) {
 
     fun getLocalRoot(
@@ -56,14 +53,6 @@ class ThreadProvider(
             if (!room.existsDao().postExists(id = id)) {
                 nostrSubscriber.subPost(nevent = nevent)
                 delay(DELAY_1SEC)
-            }
-            if (showAuthorName.value) {
-                val author = nevent.author()?.toHex() ?: room.mainEventDao().getAuthor(id = id)
-                if (author != null) {
-                    lazyNostrSubscriber.lazySubUnknownProfiles(
-                        selection = SingularPubkey(pubkey = author)
-                    )
-                }
             }
 
             val poll = room.pollDao().getPoll(pollId = id)
@@ -235,12 +224,6 @@ class ThreadProvider(
             val ids = it.map { reply -> reply.reply.getRelevantId() }
             nostrSubscriber.subVotes(parentIds = ids)
             nostrSubscriber.subReplies(parentIds = ids)
-            if (showAuthorName.value) {
-                nostrSubscriber.subProfiles(
-                    pubkeys = it.filter { reply -> reply.reply.authorName.isNullOrEmpty() }
-                        .map { reply -> reply.reply.pubkey }
-                )
-            }
         }
     }
 

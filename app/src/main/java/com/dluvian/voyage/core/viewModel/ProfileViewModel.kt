@@ -49,7 +49,6 @@ class ProfileViewModel(
     val profileAboutState: LazyListState,
     val profileRelayState: LazyListState,
     val pagerState: PagerState,
-    val showAuthorName: State<Boolean>,
     private val nostrSubscriber: NostrSubscriber,
     private val profileProvider: ProfileProvider,
     private val nip65Dao: Nip65Dao,

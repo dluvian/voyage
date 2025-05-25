@@ -23,7 +23,6 @@ import com.dluvian.voyage.core.SendAuth
 import com.dluvian.voyage.core.SendBookmarkedToLocalRelay
 import com.dluvian.voyage.core.SendUpvotedToLocalRelay
 import com.dluvian.voyage.core.SettingsViewAction
-import com.dluvian.voyage.core.ShowUsernames
 import com.dluvian.voyage.core.UpdateLocalRelayPort
 import com.dluvian.voyage.core.UpdateRootPostThreshold
 import com.dluvian.voyage.core.UseDefaultAccount
@@ -35,7 +34,6 @@ import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.core.utils.showToast
 import com.dluvian.voyage.data.account.AccountSwitcher
 import com.dluvian.voyage.data.account.MnemonicSigner
-import com.dluvian.voyage.data.preferences.AppPreferences
 import com.dluvian.voyage.data.preferences.DatabasePreferences
 import com.dluvian.voyage.data.preferences.EventPreferences
 import com.dluvian.voyage.data.preferences.RelayPreferences
@@ -55,7 +53,6 @@ class SettingsViewModel(
     private val databasePreferences: DatabasePreferences,
     private val relayPreferences: RelayPreferences,
     private val eventPreferences: EventPreferences,
-    private val appPreferences: AppPreferences,
     private val databaseInteractor: DatabaseInteractor,
     private val externalSignerHandler: ExternalSignerHandler,
     private val mnemonicSigner: MnemonicSigner,
@@ -76,7 +73,6 @@ class SettingsViewModel(
     val currentUpvote = mutableStateOf(eventPreferences.getUpvoteContent())
     val isAddingClientTag = mutableStateOf(eventPreferences.isAddingClientTag())
     val useV2Replies = mutableStateOf(eventPreferences.isUsingV2Replies())
-    val showUsernames = appPreferences.showAuthorNameState
 
     val isLoadingAccount = mutableStateOf(false)
 
@@ -133,8 +129,6 @@ class SettingsViewModel(
                 relayPreferences.setLocalRelayPort(port = action.port?.toInt())
                 this.localRelayPort.value = action.port?.toInt()
             }
-
-            is ShowUsernames -> appPreferences.setShowAuthorName(showAuthorName = action.showUsernames)
 
             is ExportDatabase -> exportDatabase(uiScope = action.uiScope)
 

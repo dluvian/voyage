@@ -1,10 +1,8 @@
 package com.dluvian.voyage.data.provider
 
-import androidx.compose.runtime.State
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
-import com.dluvian.voyage.core.model.CrossPost
 import com.dluvian.voyage.core.model.MainEvent
 import com.dluvian.voyage.core.model.Poll
 import com.dluvian.voyage.core.model.SomeReply
@@ -40,7 +38,6 @@ class FeedProvider(
     private val forcedVotes: Flow<Map<EventIdHex, Boolean>>,
     private val forcedFollows: Flow<Map<PubkeyHex, Boolean>>,
     private val forcedBookmarks: Flow<Map<EventIdHex, Boolean>>,
-    private val showAuthorName: State<Boolean>,
 ) {
     private val staticFeedProvider = StaticFeedProvider(
         room = room,
@@ -97,18 +94,6 @@ class FeedProvider(
                 )
 
                 nostrSubscriber.subPollResponses(polls = posts.filterIsInstance<Poll>())
-                if (showAuthorName.value) {
-                    val pubkeys = posts.filter { it.authorName.isNullOrEmpty() }
-                        .map { it.pubkey }
-                        .toMutableSet()
-                    val crossPostedPubkeys = posts.mapNotNull {
-                        if (it is CrossPost && it.crossPostedAuthorName.isNullOrEmpty())
-                            it.crossPostedPubkey
-                        else null
-                    }
-                    pubkeys.addAll(crossPostedPubkeys)
-                    nostrSubscriber.subProfiles(pubkeys = pubkeys)
-                }
             }
     }
 

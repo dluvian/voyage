@@ -45,7 +45,6 @@ import com.dluvian.voyage.core.RequestExternalAccount
 import com.dluvian.voyage.core.SendAuth
 import com.dluvian.voyage.core.SendBookmarkedToLocalRelay
 import com.dluvian.voyage.core.SendUpvotedToLocalRelay
-import com.dluvian.voyage.core.ShowUsernames
 import com.dluvian.voyage.core.UpdateLocalRelayPort
 import com.dluvian.voyage.core.UpdateRootPostThreshold
 import com.dluvian.voyage.core.UseDefaultAccount
@@ -275,13 +274,6 @@ private fun AppSection(vm: SettingsViewModel, onUpdate: OnUpdate) {
     val focusRequester = remember { FocusRequester() }
 
     SettingsSection(header = stringResource(id = R.string.app)) {
-
-        ClickableRowCheckbox(
-            header = stringResource(id = R.string.show_usernames_in_feed),
-            text = stringResource(id = R.string.show_the_authors_username_in_feeds),
-            checked = vm.showUsernames.value,
-            onClickChange = { onUpdate(ShowUsernames(showUsernames = it)) })
-
         val showUpvoteDialog = remember { mutableStateOf(false) }
         if (showUpvoteDialog.value) {
             val newUpvote = remember { mutableStateOf(vm.currentUpvote.value.toTextFieldValue()) }

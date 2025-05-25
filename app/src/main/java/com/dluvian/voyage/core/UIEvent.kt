@@ -307,7 +307,6 @@ data class SendUpvotedToLocalRelay(val sendToLocalRelay: Boolean) : SettingsView
 data class SendBookmarkedToLocalRelay(val sendToLocalRelay: Boolean) : SettingsViewAction()
 data class AddClientTag(val addClientTag: Boolean) : SettingsViewAction()
 data class UseV2Replies(val useV2Replies: Boolean) : SettingsViewAction()
-data class ShowUsernames(val showUsernames: Boolean) : SettingsViewAction()
 data class UpdateLocalRelayPort(val port: UShort?) : SettingsViewAction()
 data class ExportDatabase(val uiScope: CoroutineScope) : SettingsViewAction()
 data class DeleteAllPosts(val uiScope: CoroutineScope) : SettingsViewAction()

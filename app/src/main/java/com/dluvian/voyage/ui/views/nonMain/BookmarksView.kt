@@ -27,7 +27,6 @@ fun BookmarksView(vm: BookmarksViewModel, snackbar: SnackbarHostState, onUpdate:
             paginator = vm.paginator,
             postDetails = vm.postDetails,
             state = vm.feedState,
-            showAuthorName = vm.showAuthorName.value,
             onRefresh = { onUpdate(BookmarksViewRefresh) },
             onAppend = { onUpdate(BookmarksViewAppend) },
             onUpdate = onUpdate

@@ -28,7 +28,6 @@ class ListViewModel(
     val topicState: LazyListState,
     val itemSetProvider: ItemSetProvider,
     val pagerState: PagerState,
-    val showAuthorName: State<Boolean>,
     private val lazyNostrSubscriber: LazyNostrSubscriber
 ) : ViewModel() {
     val isLoading = mutableStateOf(false)
