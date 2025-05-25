@@ -160,7 +160,6 @@ class ThreadProvider(
             val result = LinkedList<ThreadReplyCtx>()
 
             for (reply in replies) {
-                if (!reply.authorIsOneself) continue
                 val parent = result.find { it.reply.id == reply.parentId }
 
                 if (parent?.isCollapsed == true) continue
@@ -187,7 +186,6 @@ class ThreadProvider(
 
             // Comments after replies because they can reference replies, not the other way around
             for (comment in comments) {
-                if (!comment.authorIsOneself) continue
                 val parent = result.find { it.reply.id == comment.parentId }
 
                 if (parent?.isCollapsed == true) continue

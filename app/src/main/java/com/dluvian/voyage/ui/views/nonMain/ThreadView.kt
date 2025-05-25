@@ -1,6 +1,5 @@
 package com.dluvian.voyage.ui.views.nonMain
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -39,7 +38,6 @@ import com.dluvian.voyage.core.viewModel.ThreadViewModel
 import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.ui.components.FullHorizontalDivider
 import com.dluvian.voyage.ui.components.bottomSheet.PostDetailsBottomSheet
-import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import com.dluvian.voyage.ui.components.row.mainEvent.MainEventRow
 import com.dluvian.voyage.ui.components.row.mainEvent.ThreadReplyCtx
@@ -93,11 +91,6 @@ private fun ThreadViewContent(
         }
     }
     PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(ThreadViewRefresh) }) {
-        val replyCountDif = remember(localRoot.mainEvent.replyCount, adjustedReplies) {
-            val minLvl = adjustedReplies.minByOrNull { it.level }?.level
-            localRoot.mainEvent.replyCount - adjustedReplies.filter { it.level == minLvl }.size
-        }
-
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(bottom = spacing.xxl),
@@ -142,22 +135,6 @@ private fun ThreadViewContent(
                 )
                 if (i == adjustedReplies.size - 1) FullHorizontalDivider()
             }
-
-            if (replyCountDif > 0) item {
-                HintText(
-                    text = stringResource(
-                        id = R.string.n_replies_have_been_hidden,
-                        replyCountDif
-                    )
-                )
-            }
-
-            if (localRoot.mainEvent.replyCount == 0 && adjustedReplies.isEmpty()) item {
-                Column(modifier = Modifier.fillParentMaxHeight(0.5f)) {
-                    BaseHint(text = stringResource(id = R.string.no_comments_found))
-                }
-            }
-
         }
     }
 }
