@@ -5,7 +5,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
@@ -67,8 +67,7 @@ fun FeedItemDropdown(
                 })
         }
 
-        // TODO: Update
-        val clip = LocalClipboardManager.current
+        val clip = LocalClipboard.current
         val context = LocalContext.current
         val idCopiedToast = stringResource(id = R.string.note_uri_copied)
         SimpleDropdownItem(

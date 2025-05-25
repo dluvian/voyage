@@ -1,5 +1,6 @@
 package com.dluvian.voyage.core.utils
 
+import android.content.ClipData
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -7,7 +8,7 @@ import android.content.pm.ResolveInfo
 import android.text.format.DateUtils
 import android.widget.Toast
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.platform.Clipboard
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
@@ -205,12 +206,13 @@ fun extractHashtags(extractFrom: String) = hashtagRegex.findAll(extractFrom).toL
 
 fun String.isBareTopicStr(): Boolean = bareTopicRegex.matches(this)
 
-fun copyAndToast(text: String, toast: String, context: Context, clip: ClipboardManager) {
+fun copyAndToast(text: String, toast: String, context: Context, clip: Clipboard) {
     copyAndToast(text = AnnotatedString(text), toast = toast, context = context, clip = clip)
 }
 
-fun copyAndToast(text: AnnotatedString, toast: String, context: Context, clip: ClipboardManager) {
-    clip.setText(text)
+fun copyAndToast(text: AnnotatedString, toast: String, context: Context, clip: Clipboard) {
+    val data = ClipData.newPlainText(text.text, text.text)
+    clip.nativeClipboard.setPrimaryClip(data)
     Toast.makeText(context, toast, Toast.LENGTH_SHORT).show()
 }
 

@@ -194,7 +194,6 @@ class ProfileProvider(
         )
     }
 
-    // TODO: Update this
     private val defaultPubkeys = listOf(
         // dluvian
         "e4336cd525df79fa4d3af364fd9600d4b10dce4215aa4c33ed77ea0842344b10",
