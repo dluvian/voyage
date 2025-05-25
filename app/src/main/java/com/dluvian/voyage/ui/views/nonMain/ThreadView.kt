@@ -1,5 +1,6 @@
 package com.dluvian.voyage.ui.views.nonMain
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -38,6 +39,7 @@ import com.dluvian.voyage.core.viewModel.ThreadViewModel
 import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.ui.components.FullHorizontalDivider
 import com.dluvian.voyage.ui.components.bottomSheet.PostDetailsBottomSheet
+import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import com.dluvian.voyage.ui.components.row.mainEvent.MainEventRow
 import com.dluvian.voyage.ui.components.row.mainEvent.ThreadReplyCtx
@@ -135,6 +137,13 @@ private fun ThreadViewContent(
                 )
                 if (i == adjustedReplies.size - 1) FullHorizontalDivider()
             }
+
+            if (localRoot.mainEvent.replyCount == 0 && adjustedReplies.isEmpty()) item {
+                Column(modifier = Modifier.fillParentMaxHeight(0.5f)) {
+                    BaseHint(text = stringResource(id = R.string.no_comments_found))
+                }
+            }
+
         }
     }
 }
