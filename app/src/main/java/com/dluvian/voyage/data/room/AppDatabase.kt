@@ -101,7 +101,7 @@ class V27 : AutoMigrationSpec
 class V28 : AutoMigrationSpec
 
 @Database(
-    version = 28,
+    version = 29,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -131,6 +131,7 @@ class V28 : AutoMigrationSpec
         AutoMigration(from = 25, to = 26),
         AutoMigration(from = 26, to = 27, spec = V27::class),
         AutoMigration(from = 27, to = 28, spec = V28::class),
+        AutoMigration(from = 28, to = 29),
     ],
     entities = [
         // Main

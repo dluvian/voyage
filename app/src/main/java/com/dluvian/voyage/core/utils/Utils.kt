@@ -250,10 +250,6 @@ val replyKinds = listOf(
     Kind(kind = COMMENT_U16),
 )
 
-val reactionKind = Kind.fromStd(KindStandard.TEXT_NOTE)
-
-val reactionaryKinds = replyKinds + reactionKind
-
 val threadableKinds = listOf(
     Kind.fromStd(KindStandard.TEXT_NOTE),
     Kind(kind = COMMENT_U16),

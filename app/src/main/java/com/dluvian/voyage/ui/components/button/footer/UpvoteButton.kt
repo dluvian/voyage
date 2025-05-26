@@ -11,9 +11,9 @@ import com.dluvian.voyage.ui.theme.UpvoteIcon
 import com.dluvian.voyage.ui.theme.UpvoteOffIcon
 
 @Composable
-fun CountedUpvoteButton(mainEvent: MainEvent, onUpdate: OnUpdate) {
+fun UpvoteButton(mainEvent: MainEvent, onUpdate: OnUpdate) {
     CountedIconButton(
-        count = mainEvent.upvoteCount,
+        count = 0,
         icon = if (mainEvent.isUpvoted) UpvoteIcon else UpvoteOffIcon,
         description = if (mainEvent.isUpvoted) {
             stringResource(id = R.string.remove_upvote)

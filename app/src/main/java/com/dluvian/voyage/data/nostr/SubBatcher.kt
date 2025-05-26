@@ -5,15 +5,16 @@ import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.utils.launchIO
-import com.dluvian.voyage.core.utils.reactionKind
-import com.dluvian.voyage.core.utils.reactionaryKinds
 import com.dluvian.voyage.core.utils.replyKinds
 import com.dluvian.voyage.core.utils.syncedPutOrAdd
+import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import rust.nostr.sdk.EventId
 import rust.nostr.sdk.Filter
+import rust.nostr.sdk.Kind
+import rust.nostr.sdk.KindStandard
 import rust.nostr.sdk.Timestamp
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -21,8 +22,12 @@ private const val TAG = "SubBatcher"
 private const val BATCH_DELAY = 2 * DEBOUNCE
 
 // TODO: Not needed anymore? Since each REQ has a single filter
-class SubBatcher(private val subCreator: SubscriptionCreator) {
-    private val idVoteQueue = mutableMapOf<RelayUrl, MutableSet<EventIdHex>>()
+// TODO: This feels bad -> go FIX
+class SubBatcher(
+    private val subCreator: SubscriptionCreator,
+    private val myPubkeyProvider: IMyPubkeyProvider
+) {
+    private val idMyVoteQueue = mutableMapOf<RelayUrl, MutableSet<EventIdHex>>()
     private val idReplyQueue = mutableMapOf<RelayUrl, MutableSet<EventIdHex>>()
     private val isProcessingSubs = AtomicBoolean(false)
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -31,10 +36,10 @@ class SubBatcher(private val subCreator: SubscriptionCreator) {
         startProcessingJob()
     }
 
-    fun submitVotes(relayUrl: RelayUrl, eventIds: List<EventIdHex>) {
+    fun submitMyVotes(relayUrl: RelayUrl, eventIds: List<EventIdHex>) {
         if (eventIds.isEmpty()) return
 
-        idVoteQueue.syncedPutOrAdd(relayUrl, eventIds)
+        idMyVoteQueue.syncedPutOrAdd(relayUrl, eventIds)
         startProcessingJob()
     }
 
@@ -53,9 +58,9 @@ class SubBatcher(private val subCreator: SubscriptionCreator) {
                 delay(BATCH_DELAY)
 
                 val voteIdsByRelay = mutableMapOf<RelayUrl, Set<EventIdHex>>()
-                synchronized(idVoteQueue) {
-                    voteIdsByRelay.putAll(idVoteQueue)
-                    idVoteQueue.clear()
+                synchronized(idMyVoteQueue) {
+                    voteIdsByRelay.putAll(idMyVoteQueue)
+                    idMyVoteQueue.clear()
                 }
 
                 val replyIdsByRelay = mutableMapOf<RelayUrl, Set<EventIdHex>>()
@@ -66,7 +71,7 @@ class SubBatcher(private val subCreator: SubscriptionCreator) {
 
                 val until = Timestamp.now()
 
-                getReplyAndVoteFilters(
+                getReplyAndMyVoteFilters(
                     voteIdsByRelay = voteIdsByRelay,
                     replyIdsByRelay = replyIdsByRelay,
                     until = until
@@ -81,7 +86,7 @@ class SubBatcher(private val subCreator: SubscriptionCreator) {
         }
     }
 
-    private fun getReplyAndVoteFilters(
+    private fun getReplyAndMyVoteFilters(
         voteIdsByRelay: Map<RelayUrl, Set<EventIdHex>>,
         replyIdsByRelay: Map<RelayUrl, Set<EventIdHex>>,
         until: Timestamp,
@@ -95,20 +100,15 @@ class SubBatcher(private val subCreator: SubscriptionCreator) {
             val replyIds = replyIdsByRelay.getOrDefault(relay, emptySet())
                 .map { convertedIds.mapCachedEventId(hex = it) }
 
-            val combinedFilter = FilterCreator.createReactionaryFilter(
-                ids = voteIds.intersect(replyIds).toList(),
-                kinds = reactionaryKinds,
-                until = until
-            )
-            val voteOnlyFilter = voteIds.minus(replyIds).let { ids ->
+            val voteFilter = voteIds.let { ids ->
                 if (ids.isEmpty()) null
                 else FilterCreator.createReactionaryFilter(
                     ids = ids,
-                    kinds = listOf(reactionKind),
+                    kinds = listOf(Kind.fromStd(KindStandard.REACTION)),
                     until = until
-                )
+                ).author(myPubkeyProvider.getPublicKey())
             }
-            val replyOnlyFilter = replyIds.minus(voteIds).let { ids ->
+            val replyFilter = replyIds.minus(voteIds).let { ids ->
                 if (ids.isEmpty()) null
                 else FilterCreator.createReactionaryFilter(
                     ids = ids,
@@ -117,7 +117,7 @@ class SubBatcher(private val subCreator: SubscriptionCreator) {
                 )
             }
 
-            listOfNotNull(combinedFilter, voteOnlyFilter, replyOnlyFilter)
+            listOfNotNull(voteFilter, replyFilter)
         }
     }
 }

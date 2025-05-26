@@ -3,7 +3,6 @@ package com.dluvian.voyage.data.nostr
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.MAX_EVENTS_TO_SUB
 import com.dluvian.voyage.core.utils.limitRestricted
-import com.dluvian.voyage.core.utils.replyKinds
 import com.dluvian.voyage.core.utils.threadableKinds
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.event.POLL_RESPONSE_U16
@@ -128,18 +127,6 @@ class FilterCreator(
             .author(author = myPubkeyProvider.getPublicKey())
             .until(timestamp = Timestamp.now())
             .since(timestamp = Timestamp.fromSecs(secs = topicSetsSince + 1u))
-            .limitRestricted(limit = MAX_EVENTS_TO_SUB)
-    }
-
-    suspend fun getLazyReplyFilter(parentId: EventId): Filter {
-        val newestReplyTime = room.someReplyDao()
-            .getNewestReplyCreatedAt(parentId = parentId.toHex()) ?: 1L
-
-        return Filter()
-            .kinds(kinds = replyKinds)
-            .events(ids = listOf(parentId))
-            .since(timestamp = Timestamp.fromSecs((newestReplyTime + 1).toULong()))
-            .until(timestamp = Timestamp.now())
             .limitRestricted(limit = MAX_EVENTS_TO_SUB)
     }
 

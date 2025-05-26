@@ -132,17 +132,14 @@ class LazyNostrSubscriber(
         }
     }
 
-    suspend fun lazySubRepliesAndVotes(parentId: EventIdHex) {
+    suspend fun lazySubReplies(parentId: EventIdHex) {
         Log.d(TAG, "lazySubRepliesAndVotes for parent $parentId")
 
         val id = EventId.parse(parentId)
-        val filters = listOf(
-            filterCreator.getLazyReplyFilter(parentId = id),
-            filterCreator.getLazyVoteFilter(parentId = id)
-        )
+        val filter = filterCreator.getLazyVoteFilter(parentId = id)
 
         relayProvider.getReadRelays().forEach { relay ->
-            subCreator.subscribeMany(relayUrl = relay, filters = filters)
+            subCreator.subscribe(relayUrl = relay, filter = filter)
         }
     }
 

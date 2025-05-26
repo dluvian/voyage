@@ -141,7 +141,7 @@ class NostrSubscriber(
     private val isSubbingVotes = AtomicBoolean(false)
     private val lastVoteUpdate = mutableLongStateOf(System.currentTimeMillis())
     private val voteCache = mutableSetOf<EventIdHex>()
-    fun subVotes(parentIds: Collection<EventIdHex>) {
+    fun subMyVotes(parentIds: Collection<EventIdHex>) {
         subReactoryEvents(
             parentIds = parentIds,
             isSubbing = isSubbingVotes,
@@ -190,7 +190,7 @@ class NostrSubscriber(
             cache.addAll(newIds)
 
             relayProvider.getReadRelays().forEach { relay ->
-                if (isVote) subBatcher.submitVotes(relayUrl = relay, eventIds = newIds)
+                if (isVote) subBatcher.submitMyVotes(relayUrl = relay, eventIds = newIds)
                 if (isReply) subBatcher.submitReplies(relayUrl = relay, eventIds = newIds)
             }
         }.invokeOnCompletion {
