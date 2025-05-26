@@ -28,7 +28,6 @@ private const val COMMENT_COUNT =
             "(SELECT EXISTS(SELECT * FROM weboftrust WHERE weboftrust.webOfTrustPubkey = mainEvent.pubkey)) AS authorIsTrusted, " +
             "(SELECT EXISTS(SELECT * FROM profileSetItem WHERE profileSetItem.pubkey = mainEvent.pubkey)) AS authorIsInList, " +
             "(SELECT EXISTS(SELECT* FROM vote WHERE vote.eventId = mainEvent.id AND vote.pubkey = (SELECT pubkey FROM account LIMIT 1))) AS isUpvoted, " +
-            "(SELECT COUNT(*) FROM vote WHERE vote.eventId = mainEvent.id) AS upvoteCount, " +
             "$LEGACY_COUNT AS legacyReplyCount, " +
             "$COMMENT_COUNT AS commentCount, " +
             "(SELECT EXISTS(SELECT * FROM bookmark WHERE bookmark.eventId = mainEvent.id)) AS isBookmarked " +
@@ -47,7 +46,6 @@ data class LegacyReplyView(
     val authorIsTrusted: Boolean,
     val authorIsInList: Boolean,
     val isUpvoted: Boolean,
-    val upvoteCount: Int,
     val legacyReplyCount: Int,
     val commentCount: Int,
     val relayUrl: RelayUrl,
