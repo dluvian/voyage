@@ -30,7 +30,6 @@ import com.dluvian.voyage.data.nostr.getEndsAt
 import com.dluvian.voyage.data.nostr.getPollRelays
 import com.dluvian.voyage.data.nostr.getSubject
 import com.dluvian.voyage.data.nostr.secs
-import com.dluvian.voyage.data.preferences.EventPreferences
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.MainEventDao
 import com.dluvian.voyage.data.room.dao.insert.MainEventInsertDao
@@ -51,7 +50,6 @@ class PostSender(
     private val mainEventInsertDao: MainEventInsertDao,
     private val mainEventDao: MainEventDao,
     private val myPubkeyProvider: IMyPubkeyProvider,
-    private val eventPreferences: EventPreferences
 ) {
     suspend fun sendPost(
         header: String,
@@ -157,11 +155,7 @@ class PostSender(
         }.minus(parent.tags().publicKeys().map { it.toHex() }) // rust-nostr uses p-tags of parent
             .distinct()
 
-        return if (
-            trimmedBody.length <= 6 ||
-            parent.kind().asU16() != TEXT_NOTE_U16 ||
-            eventPreferences.isUsingV2Replies()
-        ) {
+        return if (parent.kind().asU16() != TEXT_NOTE_U16) {
             sendComment(
                 content = trimmedBody,
                 parent = parent,

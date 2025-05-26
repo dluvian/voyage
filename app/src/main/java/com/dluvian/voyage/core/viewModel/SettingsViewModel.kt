@@ -26,7 +26,6 @@ import com.dluvian.voyage.core.SettingsViewAction
 import com.dluvian.voyage.core.UpdateLocalRelayPort
 import com.dluvian.voyage.core.UpdateRootPostThreshold
 import com.dluvian.voyage.core.UseDefaultAccount
-import com.dluvian.voyage.core.UseV2Replies
 import com.dluvian.voyage.core.model.AccountType
 import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
@@ -72,7 +71,6 @@ class SettingsViewModel(
     val exportCount = mutableIntStateOf(0)
     val currentUpvote = mutableStateOf(eventPreferences.getUpvoteContent())
     val isAddingClientTag = mutableStateOf(eventPreferences.isAddingClientTag())
-    val useV2Replies = mutableStateOf(eventPreferences.isUsingV2Replies())
 
     val isLoadingAccount = mutableStateOf(false)
 
@@ -108,11 +106,6 @@ class SettingsViewModel(
             is AddClientTag -> {
                 eventPreferences.setIsAddingClientTag(addClientTag = action.addClientTag)
                 this.isAddingClientTag.value = action.addClientTag
-            }
-
-            is UseV2Replies -> {
-                eventPreferences.setIsUsingV2Replies(useV2Replies = action.useV2Replies)
-                this.useV2Replies.value = action.useV2Replies
             }
 
             is SendBookmarkedToLocalRelay -> {

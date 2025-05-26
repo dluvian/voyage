@@ -5,8 +5,6 @@ import android.content.Context
 
 private const val UPVOTE_CONTENT = "upvote_content"
 private const val CLIENT_TAG = "client_tag"
-private const val V2_REPLIES = "v2_replies"
-
 private const val DEFAULT_UPVOTE_CONTENT = "+"
 
 class EventPreferences(context: Context) {
@@ -33,13 +31,4 @@ class EventPreferences(context: Context) {
             .apply()
     }
 
-    fun isUsingV2Replies(): Boolean {
-        return preferences.getBoolean(V2_REPLIES, true)
-    }
-
-    fun setIsUsingV2Replies(useV2Replies: Boolean) {
-        preferences.edit()
-            .putBoolean(V2_REPLIES, useV2Replies)
-            .apply()
-    }
 }
