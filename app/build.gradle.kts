@@ -99,11 +99,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.0")
     implementation("androidx.security:security-crypto-ktx:1.1.0-alpha07")
 
-    annotationProcessor("androidx.room:room-compiler:2.7.1")
-    implementation("androidx.room:room-runtime:2.7.1")
-    implementation("androidx.room:room-ktx:2.7.1")
-    ksp("androidx.room:room-compiler:2.7.1")
-
     implementation("org.rust-nostr:nostr-sdk:0.42.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("cash.z.ecc.android:kotlin-bip39:1.0.9")
