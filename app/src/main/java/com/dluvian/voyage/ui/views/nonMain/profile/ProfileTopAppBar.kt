@@ -11,8 +11,8 @@ import com.dluvian.voyage.core.FollowProfile
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.UnfollowProfile
 import com.dluvian.voyage.core.model.ItemSetProfile
-import com.dluvian.voyage.data.model.FullProfileUI
-import com.dluvian.voyage.data.model.ItemSetMeta
+import com.dluvian.voyage.data.filterSetting.FullProfileUI
+import com.dluvian.voyage.data.filterSetting.ItemSetMeta
 import com.dluvian.voyage.ui.components.bar.SimpleGoBackTopAppBar
 import com.dluvian.voyage.ui.components.button.FollowButton
 import com.dluvian.voyage.ui.components.button.ProfileOrTopicOptionButton

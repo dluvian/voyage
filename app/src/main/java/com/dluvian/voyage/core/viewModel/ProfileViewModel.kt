@@ -19,11 +19,6 @@ import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.core.navigator.ProfileNavView
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
-import com.dluvian.voyage.data.model.FullProfileUI
-import com.dluvian.voyage.data.model.ItemSetMeta
-import com.dluvian.voyage.data.model.PostDetails
-import com.dluvian.voyage.data.model.ProfileFeedSetting
-import com.dluvian.voyage.data.model.ReplyFeedSetting
 import com.dluvian.voyage.data.nostr.Nip65Relay
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.nostr.RelayUrl
@@ -34,6 +29,11 @@ import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.room.dao.EventRelayDao
 import com.dluvian.voyage.data.room.dao.Nip65Dao
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
+import com.dluvian.voyage.filterSetting.FullProfileUI
+import com.dluvian.voyage.filterSetting.ItemSetMeta
+import com.dluvian.voyage.filterSetting.PostDetails
+import com.dluvian.voyage.filterSetting.ProfileFeedSetting
+import com.dluvian.voyage.filterSetting.ReplyFeedSetting
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

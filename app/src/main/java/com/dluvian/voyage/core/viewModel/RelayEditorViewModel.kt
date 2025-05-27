@@ -7,6 +7,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dluvian.voyage.NostrService
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.AddRelay
 import com.dluvian.voyage.core.DELAY_1SEC
@@ -22,7 +23,6 @@ import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.core.utils.showToast
 import com.dluvian.voyage.data.event.ValidatedNip65
 import com.dluvian.voyage.data.nostr.Nip65Relay
-import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.WEBSOCKET_URI
 import com.dluvian.voyage.data.nostr.getNip65s

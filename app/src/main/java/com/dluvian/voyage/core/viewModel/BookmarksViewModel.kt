@@ -10,10 +10,10 @@ import com.dluvian.voyage.core.BookmarksViewInit
 import com.dluvian.voyage.core.BookmarksViewRefresh
 import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.core.utils.launchIO
-import com.dluvian.voyage.data.model.BookmarksFeedSetting
-import com.dluvian.voyage.data.model.PostDetails
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.FeedProvider
+import com.dluvian.voyage.filterSetting.BookmarksFeedSetting
+import com.dluvian.voyage.filterSetting.PostDetails
 
 class BookmarksViewModel(
     feedProvider: FeedProvider,

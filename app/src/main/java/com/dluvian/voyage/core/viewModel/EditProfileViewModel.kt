@@ -5,6 +5,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dluvian.voyage.NostrService
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.EditProfileViewAction
@@ -14,7 +15,6 @@ import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.core.utils.showToast
 import com.dluvian.voyage.core.utils.toRelevantMetadata
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
-import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.getMetadata
 import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.data.provider.RelayProvider

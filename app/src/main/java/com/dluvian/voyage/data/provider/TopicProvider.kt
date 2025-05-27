@@ -3,10 +3,10 @@ package com.dluvian.voyage.data.provider
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.TopicFollowState
 import com.dluvian.voyage.core.utils.takeRandom
-import com.dluvian.voyage.data.model.ListTopics
-import com.dluvian.voyage.data.model.MyTopics
-import com.dluvian.voyage.data.model.NoTopics
-import com.dluvian.voyage.data.model.TopicSelection
+import com.dluvian.voyage.data.filterSetting.ListTopics
+import com.dluvian.voyage.data.filterSetting.MyTopics
+import com.dluvian.voyage.data.filterSetting.NoTopics
+import com.dluvian.voyage.data.filterSetting.TopicSelection
 import com.dluvian.voyage.data.room.dao.TopicDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine

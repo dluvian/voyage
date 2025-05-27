@@ -37,7 +37,7 @@ import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.model.IPaginator
 import com.dluvian.voyage.core.utils.showScrollButton
-import com.dluvian.voyage.data.model.PostDetails
+import com.dluvian.voyage.data.filterSetting.PostDetails
 import com.dluvian.voyage.ui.components.bottomSheet.PostDetailsBottomSheet
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator

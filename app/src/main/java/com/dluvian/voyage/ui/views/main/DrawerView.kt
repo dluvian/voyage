@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -45,7 +44,7 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.OpenList
 import com.dluvian.voyage.core.OpenProfile
 import com.dluvian.voyage.core.viewModel.DrawerViewModel
-import com.dluvian.voyage.data.model.ItemSetMeta
+import com.dluvian.voyage.data.filterSetting.ItemSetMeta
 import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.ui.theme.AccountIcon
 import com.dluvian.voyage.ui.theme.AddIcon

@@ -3,7 +3,6 @@ package com.dluvian.voyage
 import android.content.Context
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.mutableStateOf
-import androidx.room.Room
 import com.anggrayudi.storage.SimpleStorageHelper
 import com.dluvian.voyage.core.ExternalSignerHandler
 import com.dluvian.voyage.core.Topic
@@ -12,7 +11,6 @@ import com.dluvian.voyage.data.account.AccountManager
 import com.dluvian.voyage.data.account.AccountSwitcher
 import com.dluvian.voyage.data.account.ExternalSigner
 import com.dluvian.voyage.data.account.MnemonicSigner
-import com.dluvian.voyage.data.event.EventCounter
 import com.dluvian.voyage.data.event.EventDeletor
 import com.dluvian.voyage.data.event.EventMaker
 import com.dluvian.voyage.data.event.EventProcessor
@@ -21,7 +19,6 @@ import com.dluvian.voyage.data.event.EventRebroadcaster
 import com.dluvian.voyage.data.event.EventSweeper
 import com.dluvian.voyage.data.event.EventValidator
 import com.dluvian.voyage.data.event.IdCacheClearer
-import com.dluvian.voyage.data.event.OldestUsedEvent
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
 import com.dluvian.voyage.data.interactor.Bookmarker
 import com.dluvian.voyage.data.interactor.ItemSetEditor
@@ -30,22 +27,14 @@ import com.dluvian.voyage.data.interactor.PostDetailInspector
 import com.dluvian.voyage.data.interactor.PostSender
 import com.dluvian.voyage.data.interactor.PostVoter
 import com.dluvian.voyage.data.interactor.ProfileFollower
-import com.dluvian.voyage.data.interactor.ThreadCollapser
 import com.dluvian.voyage.data.interactor.TopicFollower
 import com.dluvian.voyage.data.nostr.FilterCreator
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
-import com.dluvian.voyage.data.nostr.NostrClient
-import com.dluvian.voyage.data.nostr.NostrService
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.SubBatcher
 import com.dluvian.voyage.data.nostr.SubId
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
-import com.dluvian.voyage.data.preferences.DatabasePreferences
-import com.dluvian.voyage.data.preferences.EventPreferences
-import com.dluvian.voyage.data.preferences.HomePreferences
-import com.dluvian.voyage.data.preferences.InboxPreferences
-import com.dluvian.voyage.data.preferences.RelayPreferences
 import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 import com.dluvian.voyage.data.provider.DatabaseInteractor
 import com.dluvian.voyage.data.provider.FeedProvider
@@ -61,26 +50,23 @@ import com.dluvian.voyage.data.provider.SuggestionProvider
 import com.dluvian.voyage.data.provider.ThreadProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.provider.WebOfTrustProvider
-import com.dluvian.voyage.data.room.AppDatabase
+import com.dluvian.voyage.preferences.DatabasePreferences
+import com.dluvian.voyage.preferences.EventPreferences
+import com.dluvian.voyage.preferences.HomePreferences
+import com.dluvian.voyage.preferences.InboxPreferences
+import com.dluvian.voyage.preferences.RelayPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import rust.nostr.sdk.EventId
 import rust.nostr.sdk.Filter
 import java.util.Collections
 
 class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
-    val roomDb: AppDatabase = Room.databaseBuilder(
-        context = context,
-        klass = AppDatabase::class.java,
-        name = "voyage_database",
-    ).build()
-
     // Shared collections
     private val syncedFilterCache = Collections
         .synchronizedMap(mutableMapOf<SubId, List<Filter>>())
     private val syncedIdCache = Collections.synchronizedSet(mutableSetOf<EventId>())
 
     val snackbar = SnackbarHostState()
-    private val nostrClient = NostrClient()
     val mnemonicSigner = MnemonicSigner(context = context)
     val externalSignerHandler = ExternalSignerHandler()
     private val externalSigner = ExternalSigner(handler = externalSignerHandler)

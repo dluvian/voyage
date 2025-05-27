@@ -11,10 +11,10 @@ import com.dluvian.voyage.core.model.ItemSetTopic
 import com.dluvian.voyage.core.utils.createAdvancedProfile
 import com.dluvian.voyage.core.utils.firstThenDistinctDebounce
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
-import com.dluvian.voyage.data.model.ItemSetMeta
 import com.dluvian.voyage.data.room.AppDatabase
 import com.dluvian.voyage.data.room.entity.helper.TitleAndDescription
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
+import com.dluvian.voyage.filterSetting.ItemSetMeta
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

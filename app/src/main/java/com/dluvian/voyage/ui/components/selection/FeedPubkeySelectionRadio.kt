@@ -4,11 +4,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Fn
-import com.dluvian.voyage.data.model.FeedPubkeySelection
-import com.dluvian.voyage.data.model.FriendPubkeys
-import com.dluvian.voyage.data.model.Global
-import com.dluvian.voyage.data.model.NoPubkeys
-import com.dluvian.voyage.data.model.WebOfTrustPubkeys
+import com.dluvian.voyage.data.filterSetting.FeedPubkeySelection
+import com.dluvian.voyage.data.filterSetting.FriendPubkeys
+import com.dluvian.voyage.data.filterSetting.Global
+import com.dluvian.voyage.data.filterSetting.NoPubkeys
+import com.dluvian.voyage.data.filterSetting.WebOfTrustPubkeys
 
 @Composable
 fun FeedPubkeySelectionRadio(

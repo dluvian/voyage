@@ -33,10 +33,10 @@ import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.core.utils.showToast
 import com.dluvian.voyage.data.account.AccountSwitcher
 import com.dluvian.voyage.data.account.MnemonicSigner
-import com.dluvian.voyage.data.preferences.DatabasePreferences
-import com.dluvian.voyage.data.preferences.EventPreferences
-import com.dluvian.voyage.data.preferences.RelayPreferences
 import com.dluvian.voyage.data.provider.DatabaseInteractor
+import com.dluvian.voyage.preferences.DatabasePreferences
+import com.dluvian.voyage.preferences.EventPreferences
+import com.dluvian.voyage.preferences.RelayPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted

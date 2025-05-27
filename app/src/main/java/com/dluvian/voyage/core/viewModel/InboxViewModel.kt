@@ -14,11 +14,11 @@ import com.dluvian.voyage.core.InboxViewInit
 import com.dluvian.voyage.core.InboxViewOpenFilter
 import com.dluvian.voyage.core.InboxViewRefresh
 import com.dluvian.voyage.core.model.Paginator
-import com.dluvian.voyage.data.model.InboxFeedSetting
-import com.dluvian.voyage.data.model.PostDetails
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
-import com.dluvian.voyage.data.preferences.InboxPreferences
 import com.dluvian.voyage.data.provider.FeedProvider
+import com.dluvian.voyage.filterSetting.InboxFeedSetting
+import com.dluvian.voyage.filterSetting.PostDetails
+import com.dluvian.voyage.preferences.InboxPreferences
 
 class InboxViewModel(
     feedProvider: FeedProvider,

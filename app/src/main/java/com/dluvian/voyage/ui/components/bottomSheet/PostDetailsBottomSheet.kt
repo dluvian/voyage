@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -18,7 +17,7 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.core.ClosePostInfo
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.utils.getFullDateTime
-import com.dluvian.voyage.data.model.PostDetails
+import com.dluvian.voyage.data.filterSetting.PostDetails
 import com.dluvian.voyage.ui.components.text.ClickableRelayUrl
 import com.dluvian.voyage.ui.components.text.ClickableTopic
 import com.dluvian.voyage.ui.components.text.CopyableText

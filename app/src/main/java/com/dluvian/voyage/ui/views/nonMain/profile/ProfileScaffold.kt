@@ -4,8 +4,8 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.data.model.FullProfileUI
-import com.dluvian.voyage.data.model.ItemSetMeta
+import com.dluvian.voyage.data.filterSetting.FullProfileUI
+import com.dluvian.voyage.data.filterSetting.ItemSetMeta
 import com.dluvian.voyage.ui.components.scaffold.VoyageScaffold
 
 @Composable

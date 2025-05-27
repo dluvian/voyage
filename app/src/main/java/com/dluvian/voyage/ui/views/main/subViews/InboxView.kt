@@ -18,10 +18,10 @@ import com.dluvian.voyage.core.InboxViewInit
 import com.dluvian.voyage.core.InboxViewRefresh
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.viewModel.InboxViewModel
-import com.dluvian.voyage.data.model.FriendPubkeys
-import com.dluvian.voyage.data.model.Global
-import com.dluvian.voyage.data.model.InboxFeedSetting
-import com.dluvian.voyage.data.model.WebOfTrustPubkeys
+import com.dluvian.voyage.data.filterSetting.FriendPubkeys
+import com.dluvian.voyage.data.filterSetting.Global
+import com.dluvian.voyage.data.filterSetting.InboxFeedSetting
+import com.dluvian.voyage.data.filterSetting.WebOfTrustPubkeys
 import com.dluvian.voyage.ui.components.Feed
 import com.dluvian.voyage.ui.components.dialog.BaseActionDialog
 import com.dluvian.voyage.ui.components.selection.FeedPubkeySelectionRadio

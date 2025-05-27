@@ -16,11 +16,11 @@ import com.dluvian.voyage.core.HomeViewRefresh
 import com.dluvian.voyage.core.HomeViewSubAccountAndTrustData
 import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.core.utils.launchIO
-import com.dluvian.voyage.data.model.HomeFeedSetting
-import com.dluvian.voyage.data.model.PostDetails
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
-import com.dluvian.voyage.data.preferences.HomePreferences
 import com.dluvian.voyage.data.provider.FeedProvider
+import com.dluvian.voyage.filterSetting.HomeFeedSetting
+import com.dluvian.voyage.filterSetting.PostDetails
+import com.dluvian.voyage.preferences.HomePreferences
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 

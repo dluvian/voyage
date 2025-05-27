@@ -12,13 +12,13 @@ import com.dluvian.voyage.core.ListViewFeedAppend
 import com.dluvian.voyage.core.ListViewRefresh
 import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.core.utils.launchIO
-import com.dluvian.voyage.data.model.CustomPubkeys
-import com.dluvian.voyage.data.model.ListFeedSetting
-import com.dluvian.voyage.data.model.ListPubkeys
-import com.dluvian.voyage.data.model.PostDetails
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.ItemSetProvider
+import com.dluvian.voyage.filterSetting.CustomPubkeys
+import com.dluvian.voyage.filterSetting.ListFeedSetting
+import com.dluvian.voyage.filterSetting.ListPubkeys
+import com.dluvian.voyage.filterSetting.PostDetails
 
 class ListViewModel(
     feedProvider: FeedProvider,

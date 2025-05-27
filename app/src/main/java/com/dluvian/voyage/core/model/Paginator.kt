@@ -8,10 +8,10 @@ import com.dluvian.voyage.core.FEED_PAGE_SIZE
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.SHORT_DEBOUNCE
 import com.dluvian.voyage.core.utils.launchIO
-import com.dluvian.voyage.data.model.FeedSetting
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.nostr.getCurrentSecs
 import com.dluvian.voyage.data.provider.FeedProvider
+import com.dluvian.voyage.filterSetting.FeedSetting
 import com.dluvian.voyage.ui.components.row.mainEvent.FeedCtx
 import com.dluvian.voyage.ui.components.row.mainEvent.MainEventCtx
 import kotlinx.coroutines.CoroutineScope

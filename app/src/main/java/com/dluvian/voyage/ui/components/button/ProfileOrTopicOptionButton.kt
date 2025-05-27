@@ -16,7 +16,7 @@ import com.dluvian.voyage.core.TopicViewLoadLists
 import com.dluvian.voyage.core.model.ItemSetItem
 import com.dluvian.voyage.core.model.ItemSetProfile
 import com.dluvian.voyage.core.model.ItemSetTopic
-import com.dluvian.voyage.data.model.ItemSetMeta
+import com.dluvian.voyage.data.filterSetting.ItemSetMeta
 import com.dluvian.voyage.ui.components.dialog.AddToListDialog
 import com.dluvian.voyage.ui.components.dropdown.SimpleDropdownItem
 import com.dluvian.voyage.ui.theme.HorizMoreIcon

@@ -6,13 +6,13 @@ import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.core.utils.toShortenedBech32
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
-import com.dluvian.voyage.data.model.CustomPubkeys
-import com.dluvian.voyage.data.model.FullProfileUI
-import com.dluvian.voyage.data.model.RelevantMetadata
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.room.AppDatabase
 import com.dluvian.voyage.data.room.entity.ProfileEntity
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
+import com.dluvian.voyage.filterSetting.CustomPubkeys
+import com.dluvian.voyage.filterSetting.FullProfileUI
+import com.dluvian.voyage.filterSetting.RelevantMetadata
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

@@ -1,14 +1,14 @@
 package com.dluvian.voyage.data.provider
 
 import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.data.model.CustomPubkeys
-import com.dluvian.voyage.data.model.FriendPubkeys
-import com.dluvian.voyage.data.model.Global
-import com.dluvian.voyage.data.model.ListPubkeys
-import com.dluvian.voyage.data.model.NoPubkeys
-import com.dluvian.voyage.data.model.PubkeySelection
-import com.dluvian.voyage.data.model.SingularPubkey
-import com.dluvian.voyage.data.model.WebOfTrustPubkeys
+import com.dluvian.voyage.data.filterSetting.NoPubkeys
+import com.dluvian.voyage.data.filterSetting.PubkeySelection
+import com.dluvian.voyage.data.filterSetting.SingularPubkey
+import com.dluvian.voyage.data.filterSetting.WebOfTrustPubkeys
+import com.dluvian.voyage.filterSetting.CustomPubkeys
+import com.dluvian.voyage.filterSetting.FriendPubkeys
+import com.dluvian.voyage.filterSetting.Global
+import com.dluvian.voyage.filterSetting.ListPubkeys
 
 class PubkeyProvider(
     private val friendProvider: FriendProvider,

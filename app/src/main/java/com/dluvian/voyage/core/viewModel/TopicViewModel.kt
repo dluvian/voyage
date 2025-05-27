@@ -15,13 +15,13 @@ import com.dluvian.voyage.core.model.Paginator
 import com.dluvian.voyage.core.navigator.TopicNavView
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.core.utils.normalizeTopic
-import com.dluvian.voyage.data.model.ItemSetMeta
-import com.dluvian.voyage.data.model.PostDetails
-import com.dluvian.voyage.data.model.TopicFeedSetting
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.ItemSetProvider
 import com.dluvian.voyage.data.provider.TopicProvider
+import com.dluvian.voyage.filterSetting.ItemSetMeta
+import com.dluvian.voyage.filterSetting.PostDetails
+import com.dluvian.voyage.filterSetting.TopicFeedSetting
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

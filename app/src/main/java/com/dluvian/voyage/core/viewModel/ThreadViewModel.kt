@@ -6,6 +6,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dluvian.voyage.ThreadCollapser
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.ThreadViewAction
@@ -16,9 +17,8 @@ import com.dluvian.voyage.core.model.MainEvent
 import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.model.ThreadableMainEvent
 import com.dluvian.voyage.core.utils.launchIO
-import com.dluvian.voyage.data.interactor.ThreadCollapser
-import com.dluvian.voyage.data.model.PostDetails
 import com.dluvian.voyage.data.provider.ThreadProvider
+import com.dluvian.voyage.filterSetting.PostDetails
 import com.dluvian.voyage.ui.components.row.mainEvent.ThreadReplyCtx
 import com.dluvian.voyage.ui.components.row.mainEvent.ThreadRootCtx
 import kotlinx.coroutines.delay

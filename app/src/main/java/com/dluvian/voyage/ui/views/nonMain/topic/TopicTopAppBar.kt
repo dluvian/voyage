@@ -7,7 +7,7 @@ import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.UnfollowTopic
 import com.dluvian.voyage.core.model.ItemSetTopic
-import com.dluvian.voyage.data.model.ItemSetMeta
+import com.dluvian.voyage.data.filterSetting.ItemSetMeta
 import com.dluvian.voyage.ui.components.bar.SimpleGoBackTopAppBar
 import com.dluvian.voyage.ui.components.button.FollowButton
 import com.dluvian.voyage.ui.components.button.ProfileOrTopicOptionButton

@@ -1,6 +1,7 @@
 package com.dluvian.voyage.data.provider
 
 import android.util.Log
+import com.dluvian.voyage.OldestUsedEvent
 import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.EventIdHex
@@ -10,11 +11,10 @@ import com.dluvian.voyage.core.model.Comment
 import com.dluvian.voyage.core.utils.firstThenDistinctDebounce
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.event.COMMENT_U16
-import com.dluvian.voyage.data.event.OldestUsedEvent
 import com.dluvian.voyage.data.event.POLL_U16
 import com.dluvian.voyage.data.event.TEXT_NOTE_U16
-import com.dluvian.voyage.data.model.ForcedData
-import com.dluvian.voyage.data.model.SingularPubkey
+import com.dluvian.voyage.data.filterSetting.ForcedData
+import com.dluvian.voyage.data.filterSetting.SingularPubkey
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.nostr.NostrSubscriber
 import com.dluvian.voyage.data.nostr.createNevent

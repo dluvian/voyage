@@ -23,8 +23,6 @@ import com.dluvian.voyage.core.model.MainEvent
 import com.dluvian.voyage.core.model.SomeReply
 import com.dluvian.voyage.data.event.COMMENT_U16
 import com.dluvian.voyage.data.event.POLL_U16
-import com.dluvian.voyage.data.model.ForcedData
-import com.dluvian.voyage.data.model.RelevantMetadata
 import com.dluvian.voyage.data.nostr.LOCAL_WEBSOCKET
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.getSubject
@@ -38,6 +36,8 @@ import com.dluvian.voyage.data.room.view.LegacyReplyView
 import com.dluvian.voyage.data.room.view.PollOptionView
 import com.dluvian.voyage.data.room.view.PollView
 import com.dluvian.voyage.data.room.view.RootPostView
+import com.dluvian.voyage.filterSetting.ForcedData
+import com.dluvian.voyage.filterSetting.RelevantMetadata
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview

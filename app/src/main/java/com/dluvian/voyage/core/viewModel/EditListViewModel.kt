@@ -20,10 +20,10 @@ import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.core.utils.normalizeTopic
 import com.dluvian.voyage.core.utils.showToast
 import com.dluvian.voyage.data.interactor.ItemSetEditor
-import com.dluvian.voyage.data.model.CustomPubkeys
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.ItemSetProvider
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
+import com.dluvian.voyage.filterSetting.CustomPubkeys
 import kotlinx.coroutines.delay
 import java.util.UUID
 
