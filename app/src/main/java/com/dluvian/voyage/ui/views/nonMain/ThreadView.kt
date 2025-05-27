@@ -24,18 +24,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import com.dluvian.voyage.OpenThreadRaw
 import com.dluvian.voyage.R
+import com.dluvian.voyage.ThreadViewRefresh
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.OpenThreadRaw
-import com.dluvian.voyage.core.ThreadViewRefresh
 import com.dluvian.voyage.core.model.Comment
 import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.core.model.Poll
 import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.model.SomeReply
-import com.dluvian.voyage.core.viewModel.ThreadViewModel
 import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.ui.components.FullHorizontalDivider
 import com.dluvian.voyage.ui.components.bottomSheet.PostDetailsBottomSheet
@@ -47,6 +46,7 @@ import com.dluvian.voyage.ui.components.row.mainEvent.ThreadRootCtx
 import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
+import com.dluvian.voyage.viewModel.ThreadViewModel
 
 @Composable
 fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {

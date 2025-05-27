@@ -5,8 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.viewModel.TopicViewModel
 import com.dluvian.voyage.ui.components.scaffold.VoyageScaffold
+import com.dluvian.voyage.viewModel.TopicViewModel
 
 @Composable
 fun TopicScaffold(

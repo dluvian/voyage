@@ -2,11 +2,11 @@ package com.dluvian.voyage.ui.views.nonMain.topic
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import com.dluvian.voyage.TopicViewAppend
+import com.dluvian.voyage.TopicViewRefresh
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.TopicViewAppend
-import com.dluvian.voyage.core.TopicViewRefresh
-import com.dluvian.voyage.core.viewModel.TopicViewModel
 import com.dluvian.voyage.ui.components.Feed
+import com.dluvian.voyage.viewModel.TopicViewModel
 
 @Composable
 fun TopicView(vm: TopicViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {

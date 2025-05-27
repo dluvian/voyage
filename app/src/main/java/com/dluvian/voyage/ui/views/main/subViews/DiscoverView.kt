@@ -19,17 +19,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import com.dluvian.voyage.DiscoverViewInit
+import com.dluvian.voyage.DiscoverViewRefresh
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.DiscoverViewInit
-import com.dluvian.voyage.core.DiscoverViewRefresh
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.viewModel.DiscoverViewModel
 import com.dluvian.voyage.ui.components.chip.FollowChip
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.text.SectionHeader
 import com.dluvian.voyage.ui.model.FollowableItem
 import com.dluvian.voyage.ui.model.FollowableProfileItem
 import com.dluvian.voyage.ui.model.FollowableTopicItem
+import com.dluvian.voyage.viewModel.DiscoverViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

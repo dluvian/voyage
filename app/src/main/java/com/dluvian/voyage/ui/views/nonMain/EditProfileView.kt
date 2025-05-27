@@ -20,18 +20,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import com.dluvian.voyage.GoBack
+import com.dluvian.voyage.LoadFullProfile
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.GoBack
-import com.dluvian.voyage.core.LoadFullProfile
+import com.dluvian.voyage.SaveProfile
 import com.dluvian.voyage.core.MAX_SUBJECT_LINES
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.SaveProfile
 import com.dluvian.voyage.core.utils.normalizeName
-import com.dluvian.voyage.core.viewModel.EditProfileViewModel
 import com.dluvian.voyage.ui.components.button.ExpandToggleTextButton
 import com.dluvian.voyage.ui.components.scaffold.SaveableScaffold
 import com.dluvian.voyage.ui.components.text.TextInput
 import com.dluvian.voyage.ui.theme.spacing
+import com.dluvian.voyage.viewModel.EditProfileViewModel
 import rust.nostr.sdk.Metadata
 import rust.nostr.sdk.MetadataRecord
 

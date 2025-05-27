@@ -10,23 +10,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import com.dluvian.voyage.InboxViewAppend
+import com.dluvian.voyage.InboxViewApplyFilter
+import com.dluvian.voyage.InboxViewDismissFilter
+import com.dluvian.voyage.InboxViewInit
+import com.dluvian.voyage.InboxViewRefresh
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.InboxViewAppend
-import com.dluvian.voyage.core.InboxViewApplyFilter
-import com.dluvian.voyage.core.InboxViewDismissFilter
-import com.dluvian.voyage.core.InboxViewInit
-import com.dluvian.voyage.core.InboxViewRefresh
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.viewModel.InboxViewModel
 import com.dluvian.voyage.data.filterSetting.FriendPubkeys
 import com.dluvian.voyage.data.filterSetting.Global
-import com.dluvian.voyage.data.filterSetting.InboxFeedSetting
 import com.dluvian.voyage.data.filterSetting.WebOfTrustPubkeys
+import com.dluvian.voyage.filterSetting.InboxFeedSetting
 import com.dluvian.voyage.ui.components.Feed
 import com.dluvian.voyage.ui.components.dialog.BaseActionDialog
 import com.dluvian.voyage.ui.components.selection.FeedPubkeySelectionRadio
 import com.dluvian.voyage.ui.components.text.SmallHeader
 import com.dluvian.voyage.ui.theme.spacing
+import com.dluvian.voyage.viewModel.InboxViewModel
 import kotlinx.coroutines.launch
 
 @Composable

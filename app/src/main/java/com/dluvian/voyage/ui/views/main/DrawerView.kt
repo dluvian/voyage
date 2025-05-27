@@ -28,22 +28,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import com.dluvian.voyage.ClickBookmarks
+import com.dluvian.voyage.ClickCreateList
+import com.dluvian.voyage.ClickFollowLists
+import com.dluvian.voyage.ClickRelayEditor
+import com.dluvian.voyage.ClickSettings
+import com.dluvian.voyage.CloseDrawer
+import com.dluvian.voyage.DeleteList
+import com.dluvian.voyage.DrawerViewSubscribeSets
+import com.dluvian.voyage.EditList
+import com.dluvian.voyage.OpenList
+import com.dluvian.voyage.OpenProfile
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.ClickBookmarks
-import com.dluvian.voyage.core.ClickCreateList
-import com.dluvian.voyage.core.ClickFollowLists
-import com.dluvian.voyage.core.ClickRelayEditor
-import com.dluvian.voyage.core.ClickSettings
-import com.dluvian.voyage.core.CloseDrawer
 import com.dluvian.voyage.core.ComposableContent
-import com.dluvian.voyage.core.DeleteList
-import com.dluvian.voyage.core.DrawerViewSubscribeSets
-import com.dluvian.voyage.core.EditList
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.OpenList
-import com.dluvian.voyage.core.OpenProfile
-import com.dluvian.voyage.core.viewModel.DrawerViewModel
 import com.dluvian.voyage.data.filterSetting.ItemSetMeta
 import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.ui.theme.AccountIcon
@@ -55,6 +54,7 @@ import com.dluvian.voyage.ui.theme.SettingsIcon
 import com.dluvian.voyage.ui.theme.ViewListIcon
 import com.dluvian.voyage.ui.theme.light
 import com.dluvian.voyage.ui.theme.spacing
+import com.dluvian.voyage.viewModel.DrawerViewModel
 import kotlinx.coroutines.CoroutineScope
 
 @Composable

@@ -13,16 +13,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import com.dluvian.voyage.EditListViewAddProfile
+import com.dluvian.voyage.EditListViewAddTopic
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.EditListViewAddProfile
-import com.dluvian.voyage.core.EditListViewAddTopic
 import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.utils.getListTabHeaders
-import com.dluvian.voyage.core.utils.getTransparentTextFieldColors
-import com.dluvian.voyage.core.viewModel.EditListViewModel
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
+import com.dluvian.voyage.getListTabHeaders
+import com.dluvian.voyage.getTransparentTextFieldColors
 import com.dluvian.voyage.ui.components.SimpleTabPager
 import com.dluvian.voyage.ui.components.dialog.AddProfileDialog
 import com.dluvian.voyage.ui.components.dialog.AddTopicDialog
@@ -30,6 +29,7 @@ import com.dluvian.voyage.ui.components.indicator.ComingSoon
 import com.dluvian.voyage.ui.components.list.ProfileList
 import com.dluvian.voyage.ui.components.list.TopicList
 import com.dluvian.voyage.ui.components.row.AddRow
+import com.dluvian.voyage.viewModel.EditListViewModel
 import kotlinx.coroutines.launch
 
 

@@ -16,14 +16,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import com.dluvian.voyage.ListViewFeedAppend
+import com.dluvian.voyage.ListViewRefresh
+import com.dluvian.voyage.OpenProfile
+import com.dluvian.voyage.OpenTopic
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.ListViewFeedAppend
-import com.dluvian.voyage.core.ListViewRefresh
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.OpenProfile
-import com.dluvian.voyage.core.OpenTopic
 import com.dluvian.voyage.core.utils.shortenBech32
-import com.dluvian.voyage.core.viewModel.ListViewModel
 import com.dluvian.voyage.data.nostr.NOSTR_URI
 import com.dluvian.voyage.ui.components.Feed
 import com.dluvian.voyage.ui.components.SimpleTabPager
@@ -33,6 +32,7 @@ import com.dluvian.voyage.ui.components.text.AnnotatedTextWithHeader
 import com.dluvian.voyage.ui.components.text.CopyableText
 import com.dluvian.voyage.ui.components.text.SmallHeader
 import com.dluvian.voyage.ui.theme.spacing
+import com.dluvian.voyage.viewModel.ListViewModel
 import kotlinx.coroutines.launch
 
 @Composable

@@ -3,9 +3,9 @@ package com.dluvian.voyage.ui.components.button.footer
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import com.dluvian.voyage.OpenReplyCreation
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.OpenReplyCreation
 import com.dluvian.voyage.ui.components.row.mainEvent.MainEventCtx
 import com.dluvian.voyage.ui.theme.CommentIcon
 

@@ -1,7 +1,7 @@
 package com.dluvian.voyage.ui.views.nonMain
 
 import androidx.compose.runtime.Composable
-import com.dluvian.voyage.core.Core
+import com.dluvian.voyage.Core
 import com.dluvian.voyage.core.navigator.BookmarksNavView
 import com.dluvian.voyage.core.navigator.CreateGitIssueNavView
 import com.dluvian.voyage.core.navigator.CreatePostNavView

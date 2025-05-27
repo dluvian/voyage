@@ -17,9 +17,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import com.dluvian.voyage.EditListViewSave
+import com.dluvian.voyage.GoBack
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.EditListViewSave
-import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.ui.components.button.GoBackIconButton
 import com.dluvian.voyage.ui.components.button.SaveIconButton

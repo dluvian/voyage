@@ -20,14 +20,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import com.dluvian.voyage.GoBack
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.GoBack
+import com.dluvian.voyage.SendCrossPost
+import com.dluvian.voyage.canAddAnotherTopic
 import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.SendCrossPost
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.utils.canAddAnotherTopic
-import com.dluvian.voyage.core.viewModel.CreateCrossPostViewModel
 import com.dluvian.voyage.ui.components.TopicSelectionColumn
 import com.dluvian.voyage.ui.components.dialog.AddTopicDialog
 import com.dluvian.voyage.ui.components.scaffold.ContentCreationScaffold
@@ -35,6 +34,7 @@ import com.dluvian.voyage.ui.components.selection.NamedCheckbox
 import com.dluvian.voyage.ui.theme.CrossPostIcon
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
+import com.dluvian.voyage.viewModel.CreateCrossPostViewModel
 
 @Composable
 fun CreateCrossPostView(

@@ -19,12 +19,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.viewModel.RelayProfileViewModel
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.ui.components.text.CopyableText
 import com.dluvian.voyage.ui.theme.spacing
+import com.dluvian.voyage.viewModel.RelayProfileViewModel
 import rust.nostr.sdk.RelayInformationDocument
 
 @Composable

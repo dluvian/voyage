@@ -2,10 +2,10 @@ package com.dluvian.voyage.ui.views.nonMain.topic
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import com.dluvian.voyage.core.FollowTopic
+import com.dluvian.voyage.FollowTopic
+import com.dluvian.voyage.UnfollowTopic
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.UnfollowTopic
 import com.dluvian.voyage.core.model.ItemSetTopic
 import com.dluvian.voyage.data.filterSetting.ItemSetMeta
 import com.dluvian.voyage.ui.components.bar.SimpleGoBackTopAppBar

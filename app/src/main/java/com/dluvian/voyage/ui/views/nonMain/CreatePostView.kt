@@ -31,15 +31,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import com.dluvian.voyage.GoBack
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.GoBack
+import com.dluvian.voyage.SendPoll
+import com.dluvian.voyage.SendPost
 import com.dluvian.voyage.core.MAX_POLL_OPTIONS
 import com.dluvian.voyage.core.MAX_SUBJECT_LINES
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.SendPoll
-import com.dluvian.voyage.core.SendPost
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.viewModel.CreatePostViewModel
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.ui.components.row.PollOptionAddRow
 import com.dluvian.voyage.ui.components.row.PollOptionInputRow
@@ -52,6 +51,7 @@ import com.dluvian.voyage.ui.theme.RoundedChip
 import com.dluvian.voyage.ui.theme.TextIcon
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
+import com.dluvian.voyage.viewModel.CreatePostViewModel
 
 @Composable
 fun CreatePostView(

@@ -3,11 +3,11 @@ package com.dluvian.voyage.preferences
 import android.content.Context
 import com.dluvian.voyage.data.filterSetting.FriendPubkeys
 import com.dluvian.voyage.data.filterSetting.Global
-import com.dluvian.voyage.data.filterSetting.HomeFeedSetting
 import com.dluvian.voyage.data.filterSetting.MyTopics
 import com.dluvian.voyage.data.filterSetting.NoPubkeys
 import com.dluvian.voyage.data.filterSetting.NoTopics
 import com.dluvian.voyage.data.filterSetting.WebOfTrustPubkeys
+import com.dluvian.voyage.filterSetting.HomeFeedSetting
 
 private const val TOPICS = "topics"
 private const val NO_TOPICS = "no_topics"

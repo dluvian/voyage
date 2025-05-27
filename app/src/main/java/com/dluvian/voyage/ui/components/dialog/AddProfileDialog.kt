@@ -3,7 +3,6 @@ package com.dluvian.voyage.ui.components.dialog
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -16,9 +15,9 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import com.dluvian.voyage.R
+import com.dluvian.voyage.SearchProfileSuggestion
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.SearchProfileSuggestion
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.ui.components.row.ClickableProfileRow
 import com.dluvian.voyage.ui.theme.sizing

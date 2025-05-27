@@ -3,10 +3,10 @@ package com.dluvian.voyage.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalUriHandler
-import com.dluvian.voyage.core.Core
-import com.dluvian.voyage.core.RegisterAccountLauncher
-import com.dluvian.voyage.core.RegisterSignerLauncher
-import com.dluvian.voyage.core.RegisterUriHandler
+import com.dluvian.voyage.Core
+import com.dluvian.voyage.RegisterAccountLauncher
+import com.dluvian.voyage.RegisterSignerLauncher
+import com.dluvian.voyage.RegisterUriHandler
 import com.dluvian.voyage.core.navigator.MainNavView
 import com.dluvian.voyage.core.navigator.NonMainNavView
 import com.dluvian.voyage.core.utils.getAccountLauncher

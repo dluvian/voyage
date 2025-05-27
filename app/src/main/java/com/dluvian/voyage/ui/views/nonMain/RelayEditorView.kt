@@ -35,19 +35,18 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import com.dluvian.voyage.AddRelay
+import com.dluvian.voyage.GoBack
+import com.dluvian.voyage.LoadRelays
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.AddRelay
-import com.dluvian.voyage.core.GoBack
-import com.dluvian.voyage.core.LoadRelays
+import com.dluvian.voyage.RemoveRelay
+import com.dluvian.voyage.SaveRelays
+import com.dluvian.voyage.ToggleReadRelay
+import com.dluvian.voyage.ToggleWriteRelay
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.RemoveRelay
-import com.dluvian.voyage.core.SaveRelays
-import com.dluvian.voyage.core.ToggleReadRelay
-import com.dluvian.voyage.core.ToggleWriteRelay
 import com.dluvian.voyage.core.model.Connected
 import com.dluvian.voyage.core.model.ConnectionStatus
 import com.dluvian.voyage.core.model.Waiting
-import com.dluvian.voyage.core.viewModel.RelayEditorViewModel
 import com.dluvian.voyage.data.nostr.LOCAL_WEBSOCKET
 import com.dluvian.voyage.data.nostr.Nip65Relay
 import com.dluvian.voyage.data.nostr.RelayUrl
@@ -60,6 +59,7 @@ import com.dluvian.voyage.ui.theme.AddIcon
 import com.dluvian.voyage.ui.theme.DeleteIcon
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
+import com.dluvian.voyage.viewModel.RelayEditorViewModel
 import kotlinx.coroutines.CoroutineScope
 
 @Composable

@@ -4,14 +4,14 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.stringResource
+import com.dluvian.voyage.BookmarksViewAppend
+import com.dluvian.voyage.BookmarksViewInit
+import com.dluvian.voyage.BookmarksViewRefresh
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.BookmarksViewAppend
-import com.dluvian.voyage.core.BookmarksViewInit
-import com.dluvian.voyage.core.BookmarksViewRefresh
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.viewModel.BookmarksViewModel
 import com.dluvian.voyage.ui.components.Feed
 import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
+import com.dluvian.voyage.viewModel.BookmarksViewModel
 
 @Composable
 fun BookmarksView(vm: BookmarksViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {

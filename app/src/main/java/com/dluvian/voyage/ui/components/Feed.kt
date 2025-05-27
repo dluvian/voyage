@@ -35,9 +35,9 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.core.FEED_PAGE_SIZE
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.model.IPaginator
-import com.dluvian.voyage.core.utils.showScrollButton
 import com.dluvian.voyage.data.filterSetting.PostDetails
+import com.dluvian.voyage.paginator.IPaginator
+import com.dluvian.voyage.showScrollButton
 import com.dluvian.voyage.ui.components.bottomSheet.PostDetailsBottomSheet
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator

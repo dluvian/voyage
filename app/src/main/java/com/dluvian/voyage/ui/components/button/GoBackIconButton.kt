@@ -4,8 +4,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import com.dluvian.voyage.GoBack
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.GoBack
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.ui.theme.BackIcon
 

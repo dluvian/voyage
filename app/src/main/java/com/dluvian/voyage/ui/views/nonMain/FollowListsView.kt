@@ -7,15 +7,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
+import com.dluvian.voyage.FollowListsViewInit
+import com.dluvian.voyage.FollowListsViewRefresh
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.FollowListsViewInit
-import com.dluvian.voyage.core.FollowListsViewRefresh
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.viewModel.FollowListsViewModel
 import com.dluvian.voyage.ui.components.list.ProfileAndTopicList
 import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.ui.model.FollowableProfileItem
 import com.dluvian.voyage.ui.model.FollowableTopicItem
+import com.dluvian.voyage.viewModel.FollowListsViewModel
 
 @Composable
 fun FollowListsView(vm: FollowListsViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {

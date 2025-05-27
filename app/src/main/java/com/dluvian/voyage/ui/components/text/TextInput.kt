@@ -13,7 +13,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import com.dluvian.voyage.core.ComposableContent
-import com.dluvian.voyage.core.utils.getTransparentTextFieldColors
+import com.dluvian.voyage.getTransparentTextFieldColors
 import com.dluvian.voyage.ui.theme.OnBgLight
 
 @Composable

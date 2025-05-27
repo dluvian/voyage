@@ -1,16 +1,16 @@
 package com.dluvian.voyage.ui.model
 
 import androidx.compose.material3.Icon
+import com.dluvian.voyage.FollowProfile
+import com.dluvian.voyage.FollowTopic
+import com.dluvian.voyage.OpenProfile
+import com.dluvian.voyage.OpenTopic
+import com.dluvian.voyage.UnfollowProfile
+import com.dluvian.voyage.UnfollowTopic
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.Fn
-import com.dluvian.voyage.core.FollowProfile
-import com.dluvian.voyage.core.FollowTopic
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.OpenProfile
-import com.dluvian.voyage.core.OpenTopic
 import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.UnfollowProfile
-import com.dluvian.voyage.core.UnfollowTopic
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.ui.components.button.FollowButton
 import com.dluvian.voyage.ui.components.icon.TrustIcon

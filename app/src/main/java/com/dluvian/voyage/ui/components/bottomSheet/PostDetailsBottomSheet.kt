@@ -13,8 +13,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import com.dluvian.voyage.ClosePostInfo
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.ClosePostInfo
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.utils.getFullDateTime
 import com.dluvian.voyage.data.filterSetting.PostDetails

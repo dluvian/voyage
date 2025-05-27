@@ -202,4 +202,8 @@ class NostrService(
     suspend fun addWriteRelay(relay: String) {
         TODO()
     }
+
+    suspend fun close() {
+        TODO()
+    }
 }

@@ -35,7 +35,6 @@ import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.SubBatcher
 import com.dluvian.voyage.data.nostr.SubId
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
-import com.dluvian.voyage.data.provider.AnnotatedStringProvider
 import com.dluvian.voyage.data.provider.DatabaseInteractor
 import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.data.provider.FriendProvider
@@ -55,6 +54,7 @@ import com.dluvian.voyage.preferences.EventPreferences
 import com.dluvian.voyage.preferences.HomePreferences
 import com.dluvian.voyage.preferences.InboxPreferences
 import com.dluvian.voyage.preferences.RelayPreferences
+import com.dluvian.voyage.provider.AnnotatedStringProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import rust.nostr.sdk.EventId
 import rust.nostr.sdk.Filter

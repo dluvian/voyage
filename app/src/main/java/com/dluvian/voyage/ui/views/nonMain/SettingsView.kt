@@ -29,31 +29,30 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import com.dluvian.voyage.AddClientTag
+import com.dluvian.voyage.ChangeUpvoteContent
+import com.dluvian.voyage.ClickCreateGitIssue
+import com.dluvian.voyage.ExportDatabase
+import com.dluvian.voyage.LoadSeed
+import com.dluvian.voyage.OpenProfile
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.AddClientTag
-import com.dluvian.voyage.core.ChangeUpvoteContent
-import com.dluvian.voyage.core.ClickCreateGitIssue
+import com.dluvian.voyage.RequestExternalAccount
+import com.dluvian.voyage.ResetDatabase
+import com.dluvian.voyage.SendAuth
+import com.dluvian.voyage.UseDefaultAccount
 import com.dluvian.voyage.core.ComposableContent
-import com.dluvian.voyage.core.DeleteAllPosts
-import com.dluvian.voyage.core.ExportDatabase
-import com.dluvian.voyage.core.LoadSeed
 import com.dluvian.voyage.core.MAX_RETAIN_ROOT
 import com.dluvian.voyage.core.MIN_RETAIN_ROOT
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.OpenProfile
-import com.dluvian.voyage.core.RequestExternalAccount
-import com.dluvian.voyage.core.SendAuth
 import com.dluvian.voyage.core.SendBookmarkedToLocalRelay
 import com.dluvian.voyage.core.SendUpvotedToLocalRelay
 import com.dluvian.voyage.core.UpdateLocalRelayPort
 import com.dluvian.voyage.core.UpdateRootPostThreshold
-import com.dluvian.voyage.core.UseDefaultAccount
 import com.dluvian.voyage.core.model.AccountType
 import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
 import com.dluvian.voyage.core.utils.toShortenedNpub
 import com.dluvian.voyage.core.utils.toTextFieldValue
-import com.dluvian.voyage.core.viewModel.SettingsViewModel
 import com.dluvian.voyage.data.nostr.LOCAL_WEBSOCKET
 import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.ui.components.bottomSheet.SeedBottomSheet
@@ -65,6 +64,7 @@ import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.ui.components.text.AltSectionHeader
 import com.dluvian.voyage.ui.theme.AccountIcon
 import com.dluvian.voyage.ui.theme.spacing
+import com.dluvian.voyage.viewModel.SettingsViewModel
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
@@ -229,6 +229,7 @@ private fun DatabaseSection(
                 },
                 onDismiss = { showThresholdDialog.value = false })
         }
+
         ClickableRow(header = stringResource(
             id = R.string.keep_at_least_n_root_posts, vm.rootPostThreshold.intValue
         ), text = stringResource(
@@ -256,7 +257,7 @@ private fun DatabaseSection(
             title = stringResource(id = R.string.delete_posts),
             text = stringResource(id = R.string.are_you_sure_you_want_to_delete_all_posts_from_the_database),
             confirmText = stringResource(id = R.string.delete),
-            onConfirm = { onUpdate(DeleteAllPosts(uiScope = scope)) },
+            onConfirm = { onUpdate(ResetDatabase(uiScope = scope)) },
             onDismiss = { showDeleteDialog.value = false })
         ClickableRow(
             header = stringResource(id = R.string.delete_posts),
