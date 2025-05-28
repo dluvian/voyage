@@ -13,7 +13,6 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.anggrayudi.storage.SimpleStorageHelper
-import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.ui.VoyageApp
 import com.dluvian.voyage.viewModel.BookmarksViewModel
 import com.dluvian.voyage.viewModel.CreateCrossPostViewModel
@@ -54,7 +53,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val activity = LocalActivity.current
-            val closeApp: Fn = { activity?.finish() }
+            val closeApp: () -> Unit = { activity?.finish() }
             val vmContainer = createVMContainer(appContainer = appContainer)
             val core = viewModel {
                 Core(
@@ -64,7 +63,6 @@ class MainActivity : ComponentActivity() {
                 )
             }
             appContainer.annotatedStringProvider.setOnUpdate(onUpdate = core.onUpdate)
-            core.handleDeeplink(intent = intent)
 
             VoyageApp(core)
         }
@@ -127,14 +125,9 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         },
         settingsVM = viewModel {
             SettingsViewModel(
-                accountSwitcher = appContainer.accountSwitcher,
                 snackbar = appContainer.snackbar,
-                databasePreferences = appContainer.databasePreferences,
                 relayPreferences = appContainer.relayPreferences,
                 eventPreferences = appContainer.eventPreferences,
-                databaseInteractor = appContainer.databaseInteractor,
-                externalSignerHandler = appContainer.externalSignerHandler,
-                mnemonicSigner = appContainer.mnemonicSigner,
             )
         },
         searchVM = viewModel {
@@ -147,7 +140,6 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         profileVM = viewModel {
             ProfileViewModel(
                 feedProvider = appContainer.feedProvider,
-                postDetails = appContainer.postDetailInspector.currentDetails,
                 rootFeedState = profileRootFeedState,
                 replyFeedState = profileReplyFeedState,
                 profileAboutState = profileAboutState,
@@ -155,8 +147,6 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 pagerState = profilePagerState,
                 nostrSubscriber = appContainer.nostrSubscriber,
                 profileProvider = appContainer.profileProvider,
-                nip65Dao = appContainer.roomDb.nip65Dao(),
-                eventRelayDao = appContainer.roomDb.eventRelayDao(),
                 itemSetProvider = appContainer.itemSetProvider,
                 myPubkeyProvider = appContainer.accountManager,
             )

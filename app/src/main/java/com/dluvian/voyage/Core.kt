@@ -17,12 +17,13 @@ private const val TAG = "Core"
 class Core(
     val vmContainer: VMContainer,
     val appContainer: AppContainer,
+    val closeApp: () -> Unit,
 ) : ViewModel() {
     val navigator = Navigator(vmContainer = vmContainer)
 
     val onUpdate: (UIEvent) -> Unit = { uiEvent ->
         when (uiEvent) {
-            is NavEvent -> navigator.handle(action = uiEvent)
+            is NavEvent -> navigator.handle(action = uiEvent, closeApp = closeApp)
 
             is DrawerViewAction -> vmContainer.drawerVM.handle(action = uiEvent)
 

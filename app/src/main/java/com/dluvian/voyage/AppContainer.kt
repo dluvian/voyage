@@ -22,7 +22,6 @@ import com.dluvian.voyage.data.event.IdCacheClearer
 import com.dluvian.voyage.data.inMemory.MetadataInMemory
 import com.dluvian.voyage.data.interactor.Bookmarker
 import com.dluvian.voyage.data.interactor.ItemSetEditor
-import com.dluvian.voyage.data.interactor.PostDetailInspector
 import com.dluvian.voyage.data.interactor.PostSender
 import com.dluvian.voyage.data.interactor.PostVoter
 import com.dluvian.voyage.data.interactor.ProfileFollower
@@ -237,11 +236,6 @@ class AppContainer(val context: Context, storageHelper: SimpleStorageHelper) {
         context = context,
         relayProvider = relayProvider,
         deleteDao = roomDb.deleteDao()
-    )
-
-    val postDetailInspector = PostDetailInspector(
-        mainEventDao = roomDb.mainEventDao(),
-        hashtagDao = roomDb.hashtagDao(),
     )
 
     val eventRebroadcaster = EventRebroadcaster(

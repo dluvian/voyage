@@ -20,12 +20,10 @@ import com.dluvian.voyage.SendAuth
 import com.dluvian.voyage.SettingsViewAction
 import com.dluvian.voyage.UseDefaultAccount
 import com.dluvian.voyage.core.DEBOUNCE
-import com.dluvian.voyage.core.ExternalSignerHandler
 import com.dluvian.voyage.core.model.DefaultAccount
 import com.dluvian.voyage.core.model.ExternalAccount
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.core.utils.showToast
-import com.dluvian.voyage.data.provider.DatabaseInteractor
 import com.dluvian.voyage.preferences.EventPreferences
 import com.dluvian.voyage.preferences.RelayPreferences
 import kotlinx.coroutines.CoroutineScope
@@ -39,8 +37,6 @@ class SettingsViewModel(
     private val snackbar: SnackbarHostState,
     private val relayPreferences: RelayPreferences,
     private val eventPreferences: EventPreferences,
-    private val databaseInteractor: DatabaseInteractor,
-    private val externalSignerHandler: ExternalSignerHandler,
 ) : ViewModel() {
     val seed = mutableStateOf(emptyList<String>())
     val sendAuth = mutableStateOf(relayPreferences.getSendAuth())

@@ -6,7 +6,7 @@ import com.dluvian.voyage.PopNavEvent
 import com.dluvian.voyage.PushNavEvent
 import com.dluvian.voyage.viewModel.VMContainer
 
-class Navigator(private val vmContainer: VMContainer) {
+class Navigator(private val vmContainer: VMContainer, private val closeApp: () -> Unit) {
     val stack = mutableStateOf<List<NavView>>(listOf(HomeNavView))
 
     fun handle(action: NavEvent) {
