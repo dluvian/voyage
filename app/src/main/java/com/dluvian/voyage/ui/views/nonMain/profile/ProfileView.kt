@@ -36,7 +36,6 @@ import com.dluvian.voyage.OpenLightningWallet
 import com.dluvian.voyage.OpenProfile
 import com.dluvian.voyage.OpenRelayProfile
 import com.dluvian.voyage.ProfileViewRefresh
-import com.dluvian.voyage.ProfileViewReplyAppend
 import com.dluvian.voyage.ProfileViewRootAppend
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Bech32
@@ -76,7 +75,6 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
     val nip65Relays by vm.nip65Relays.value.collectAsState()
     val headers = listOf(
         stringResource(id = R.string.posts),
-        stringResource(id = R.string.replies),
         stringResource(id = R.string.about),
         stringResource(id = R.string.relays),
     )
@@ -113,16 +111,7 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
                     onUpdate = onUpdate,
                 )
 
-                1 -> Feed(
-                    paginator = vm.replyPaginator,
-                    postDetails = vm.postDetails,
-                    state = vm.replyFeedState,
-                    onRefresh = { onUpdate(ProfileViewRefresh) },
-                    onAppend = { onUpdate(ProfileViewReplyAppend) },
-                    onUpdate = onUpdate,
-                )
-
-                2 -> AboutPage(
+                1 -> AboutPage(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(horizontal = spacing.bigScreenEdge),
@@ -148,7 +137,7 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
                     onUpdate = onUpdate
                 )
 
-                3 -> RelayPage(
+                2 -> RelayPage(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(horizontal = spacing.bigScreenEdge),

@@ -3,7 +3,6 @@ package com.dluvian.voyage.viewModel
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -30,7 +29,6 @@ import com.dluvian.voyage.data.room.dao.Nip65Dao
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.filterSetting.FullProfileUI
 import com.dluvian.voyage.filterSetting.ItemSetMeta
-import com.dluvian.voyage.filterSetting.PostDetails
 import com.dluvian.voyage.filterSetting.ProfileFeedSetting
 import com.dluvian.voyage.filterSetting.ReplyFeedSetting
 import com.dluvian.voyage.paginator.Paginator
@@ -43,7 +41,6 @@ import kotlinx.coroutines.launch
 
 class ProfileViewModel(
     feedProvider: FeedProvider,
-    val postDetails: State<PostDetails?>,
     val rootFeedState: LazyListState,
     val replyFeedState: LazyListState,
     val profileAboutState: LazyListState,
@@ -68,11 +65,6 @@ class ProfileViewModel(
     val trustedBy: MutableState<StateFlow<AdvancedProfileView?>> =
         mutableStateOf(MutableStateFlow(null))
     val rootPaginator = Paginator(
-        feedProvider = feedProvider,
-        scope = viewModelScope,
-        subCreator = nostrSubscriber.subCreator
-    )
-    val replyPaginator = Paginator(
         feedProvider = feedProvider,
         scope = viewModelScope,
         subCreator = nostrSubscriber.subCreator

@@ -102,7 +102,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
     val listProfileState = rememberLazyListState()
     val listTopicState = rememberLazyListState()
 
-    val profilePagerState = rememberPagerState { 4 }
+    val profilePagerState = rememberPagerState { 3 }
     val followListsPagerState = rememberPagerState { 2 }
     val listViewPagerState = rememberPagerState { 4 }
 
