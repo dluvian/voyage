@@ -100,7 +100,6 @@ dependencies {
     implementation("androidx.security:security-crypto-ktx:1.1.0-alpha07")
 
     implementation("org.rust-nostr:nostr-sdk:0.42.0")
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("cash.z.ecc.android:kotlin-bip39:1.0.9")
     implementation("com.anggrayudi:storage:2.0.0")
 
