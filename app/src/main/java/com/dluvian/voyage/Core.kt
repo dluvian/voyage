@@ -19,109 +19,141 @@ class Core(
 ) : ViewModel() {
     val navigator = Navigator(vmContainer = vmContainer, closeApp = closeApp)
 
-    val onUpdate: (UIEvent) -> Unit = { uiEvent ->
-        when (uiEvent) {
-            is NavEvent -> navigator.handle(action = uiEvent)
+    val onUpdate: (Cmd) -> Unit = { cmd ->
+        when (cmd) {
+            is NavCmd -> navigator.handle(action = cmd)
 
-            is DrawerViewAction -> vmContainer.drawerVM.handle(action = uiEvent)
+            is DrawerViewAction -> vmContainer.drawerVM.handle(action = cmd)
 
-            is VoteCmd -> appContainer.postVoter.handle(action = uiEvent)
-            is ProfileCmd -> appContainer.profileFollower.handle(action = uiEvent)
-            is TopicCmd -> appContainer.topicFollower.handle(action = uiEvent)
+            is VoteCmd -> when (cmd) {
+                is ClickUpvote -> viewModelScope.launch {
+                    appContainer.nostrService.publishVote(cmd.event)
+                    // TODO: Show error in snackbar
+                }
+
+                is ClickNeutralizeVotes -> viewModelScope.launch {
+                    appContainer.nostrService.publishDelete(eventIds = cmd.voteIds)
+                    // TODO: Show error in snackbar
+                }
+            }
+
+            is ProfileCmd -> when (cmd) {
+                is FollowProfile -> viewModelScope.launch {
+                    appContainer.nostrService.followProfile(cmd.pubkey)
+                    // TODO: Show error in snackbar
+                }
+
+                is UnfollowProfile -> viewModelScope.launch {
+                    appContainer.nostrService.unfollowProfile(cmd.pubkey)
+                    // TODO: Show error in snackbar
+                }
+            }
+
+            is TopicCmd -> when (cmd) {
+                is FollowTopic -> viewModelScope.launch {
+                    appContainer.nostrService.followTopic(cmd.topic)
+                    // TODO: Show error in snackbar
+                }
+
+                is UnfollowTopic -> viewModelScope.launch {
+                    appContainer.nostrService.unfollowTopic(cmd.topic)
+                    // TODO: Show error in snackbar
+                }
+            }
             is DeletePost -> viewModelScope.launchIO {
-                appContainer.eventDeletor.deletePost(postId = uiEvent.id)
+                appContainer.eventDeletor.deletePost(postId = cmd.id)
             }
 
             is DeleteList -> viewModelScope.launchIO {
                 appContainer.eventDeletor.deleteList(
-                    identifier = uiEvent.identifier,
-                    onCloseDrawer = uiEvent.onCloseDrawer
+                    identifier = cmd.identifier,
+                    onCloseDrawer = cmd.onCloseDrawer
                 )
             }
 
             is AddItemToList -> viewModelScope.launchIO {
                 appContainer.itemSetEditor.addItemToSet(
-                    item = uiEvent.item,
-                    identifier = uiEvent.identifier
+                    item = cmd.item,
+                    identifier = cmd.identifier
                 ).onFailure {
-                    val errId = when (uiEvent.item) {
+                    val errId = when (cmd.item) {
                         is ItemSetProfile -> R.string.failed_to_sign_profile_list
                         is ItemSetTopic -> R.string.failed_to_sign_topic_list
                     }
                     appContainer.snackbar.showToast(
-                        scope = uiEvent.scope,
-                        msg = uiEvent.context.getString(errId)
+                        scope = cmd.scope,
+                        msg = cmd.context.getString(errId)
                     )
                 }.onSuccess {
                     appContainer.snackbar.showToast(
-                        scope = uiEvent.scope,
-                        msg = uiEvent.context.getString(R.string.added_to_list)
+                        scope = cmd.scope,
+                        msg = cmd.context.getString(R.string.added_to_list)
                     )
                 }
             }
 
-            is BookmarkCmd -> appContainer.bookmarker.handle(action = uiEvent)
-            is HomeViewAction -> vmContainer.homeVM.handle(action = uiEvent)
-            is DiscoverViewAction -> vmContainer.discoverVM.handle(action = uiEvent)
-            is ThreadViewAction -> vmContainer.threadVM.handle(action = uiEvent)
-            is TopicViewAction -> vmContainer.topicVM.handle(action = uiEvent)
-            is ProfileViewAction -> vmContainer.profileVM.handle(action = uiEvent)
-            is SettingsViewAction -> vmContainer.settingsVM.handle(action = uiEvent)
-            is CreatePostViewAction -> vmContainer.createPostVM.handle(action = uiEvent)
-            is CreateGitIssueViewAction -> vmContainer.createGitIssueVM.handle(action = uiEvent)
-            is CreateReplyViewAction -> vmContainer.createReplyVM.handle(action = uiEvent)
-            is CreateCrossPostViewAction -> vmContainer.createCrossPostVM.handle(action = uiEvent)
-            is SearchViewAction -> vmContainer.searchVM.handle(action = uiEvent)
-            is EditProfileViewAction -> vmContainer.editProfileVM.handle(action = uiEvent)
-            is RelayEditorViewAction -> vmContainer.relayEditorVM.handle(action = uiEvent)
-            is InboxViewAction -> vmContainer.inboxVM.handle(action = uiEvent)
-            is FollowListsViewAction -> vmContainer.followListsVM.handle(action = uiEvent)
-            is BookmarksViewAction -> vmContainer.bookmarksVM.handle(action = uiEvent)
-            is EditListViewAction -> vmContainer.editListVM.handle(action = uiEvent)
-            is ListViewAction -> vmContainer.listVM.handle(action = uiEvent)
+            is BookmarkCmd -> appContainer.bookmarker.handle(action = cmd)
+            is HomeViewAction -> vmContainer.homeVM.handle(action = cmd)
+            is DiscoverViewAction -> vmContainer.discoverVM.handle(action = cmd)
+            is ThreadViewAction -> vmContainer.threadVM.handle(action = cmd)
+            is TopicViewAction -> vmContainer.topicVM.handle(action = cmd)
+            is ProfileViewAction -> vmContainer.profileVM.handle(action = cmd)
+            is SettingsViewAction -> vmContainer.settingsVM.handle(action = cmd)
+            is CreatePostViewAction -> vmContainer.createPostVM.handle(action = cmd)
+            is CreateGitIssueViewAction -> vmContainer.createGitIssueVM.handle(action = cmd)
+            is CreateReplyViewAction -> vmContainer.createReplyVM.handle(action = cmd)
+            is CreateCrossPostViewAction -> vmContainer.createCrossPostVM.handle(action = cmd)
+            is SearchViewAction -> vmContainer.searchVM.handle(action = cmd)
+            is EditProfileViewAction -> vmContainer.editProfileVM.handle(action = cmd)
+            is RelayEditorViewAction -> vmContainer.relayEditorVM.handle(action = cmd)
+            is InboxViewAction -> vmContainer.inboxVM.handle(action = cmd)
+            is FollowListsViewAction -> vmContainer.followListsVM.handle(action = cmd)
+            is BookmarksViewAction -> vmContainer.bookmarksVM.handle(action = cmd)
+            is EditListViewAction -> vmContainer.editListVM.handle(action = cmd)
+            is ListViewAction -> vmContainer.listVM.handle(action = cmd)
 
             is ProcessExternalSignature -> viewModelScope.launch {
                 appContainer.externalSignerHandler.processExternalSignature(
-                    result = uiEvent.activityResult
+                    result = cmd.activityResult
                 )
             }
 
-            is ClickClickableText -> clickText(action = uiEvent)
+            is ClickClickableText -> clickText(action = cmd)
 
-            is SuggestionAction -> appContainer.suggestionProvider.handle(action = uiEvent)
+            is SuggestionAction -> appContainer.suggestionProvider.handle(action = cmd)
 
             is RegisterAccountLauncher -> appContainer.externalSignerHandler
-                .setAccountLauncher(launcher = uiEvent.launcher)
+                .setAccountLauncher(launcher = cmd.launcher)
 
             is RegisterSignerLauncher -> appContainer.externalSignerHandler
-                .setSignerLauncher(launcher = uiEvent.launcher)
+                .setSignerLauncher(launcher = cmd.launcher)
 
             is RegisterUriHandler -> appContainer.annotatedStringProvider
-                .setUriHandler(uriHandler = uiEvent.uriHandler)
+                .setUriHandler(uriHandler = cmd.uriHandler)
 
 
             is Rebroadcast -> viewModelScope.launchIO {
                 appContainer.eventRebroadcaster.rebroadcast(
-                    postId = uiEvent.postId,
-                    context = uiEvent.context,
+                    postId = cmd.postId,
+                    context = cmd.context,
                     uiScope = viewModelScope
                 )
             }
 
             ClosePostInfo -> appContainer.postDetailInspector.closePostDetails()
             is OpenPostInfo -> viewModelScope.launchIO {
-                appContainer.postDetailInspector.setPostDetails(postId = uiEvent.postId)
+                appContainer.postDetailInspector.setPostDetails(postId = cmd.postId)
             }
 
             is OpenLightningWallet -> {
                 val intent = Intent(
                     Intent.ACTION_VIEW,
-                    Uri.parse("lightning:${uiEvent.address}")
+                    Uri.parse("lightning:${cmd.address}")
                 )
-                runCatching { uiEvent.launcher.launch(intent) }
+                runCatching { cmd.launcher.launch(intent) }
                     .onFailure {
                         appContainer.snackbar.showToast(
-                            scope = uiEvent.scope,
+                            scope = cmd.scope,
                             msg = appContainer.context.getString(R.string.you_dont_have_a_lightning_wallet_installed)
                         )
                     }

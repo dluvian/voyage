@@ -1,13 +1,12 @@
 package com.dluvian.voyage
 
-import com.dluvian.voyage.core.PubkeyHex
-import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.preferences.EventPreferences
 import com.dluvian.voyage.preferences.RelayPreferences
 import rust.nostr.sdk.ClientBuilder
 import rust.nostr.sdk.Coordinate
 import rust.nostr.sdk.Event
 import rust.nostr.sdk.EventBuilder
+import rust.nostr.sdk.EventDeletionRequest
 import rust.nostr.sdk.EventId
 import rust.nostr.sdk.Filter
 import rust.nostr.sdk.Kind
@@ -68,16 +67,15 @@ class NostrService(
 
         val tags = listOf(Tag.fromStandardized(TagStandard.Subject(subject)))
         val builder = EventBuilder.textNote(content = content).tags(tags)
-        val event = client.signEventBuilder(builder)
 
-        return client.sendEvent(event)
+        return client.sendEventBuilder(builder)
         // TODO: Client Tag
     }
 
     suspend fun publishReply(
         content: String,
         parent: Event,
-        mentions: List<PubkeyHex>,
+        mentions: List<PublicKey>,
     ): SendEventOutput {
         TODO()
         // TODO: Client Tag
@@ -90,17 +88,23 @@ class NostrService(
         TODO()
     }
 
-    suspend fun publishVote(
-        eventId: EventId,
-        content: String,
-    ): SendEventOutput {
-        TODO()
+    suspend fun publishVote(event: Event): SendEventOutput {
+        val reaction = eventPreferences.getUpvoteContent()
+        val builder = EventBuilder.reaction(event = event, reaction = reaction)
+
+        return client.sendEventBuilder(builder)
     }
 
     suspend fun publishDelete(
-        eventId: EventId,
+        eventIds: List<EventId>,
+        coords: List<Coordinate> = emptyList(),
     ): SendEventOutput {
-        TODO("")
+        // TODO: Issue for better SendEventOutput struct
+        // TODO: Issue for default params
+        val deletion = EventDeletionRequest(ids = eventIds, coordinates = coords, reason = null)
+        val builder = EventBuilder.delete(request = deletion)
+
+        return client.sendEventBuilder(builder)
     }
 
     suspend fun publishListDeletion(
@@ -117,12 +121,6 @@ class NostrService(
 
     suspend fun publishBookmarkList(
         eventIds: List<EventId>,
-    ): SendEventOutput {
-        TODO("")
-    }
-
-    suspend fun publishContactList(
-        pubkeys: List<PublicKey>,
     ): SendEventOutput {
         TODO("")
     }
@@ -165,6 +163,38 @@ class NostrService(
         label: String,
     ): SendEventOutput {
         TODO("")
+    }
+
+    suspend fun followProfile(pubkey: PublicKey): SendEventOutput {
+        val current = TODO()
+        val followed = TODO()
+        val builder = EventBuilder.contactList(contacts = followed)
+
+        return client.sendEventBuilder(builder)
+    }
+
+    suspend fun unfollowProfile(pubkey: PublicKey): SendEventOutput {
+        val current = TODO()
+        val unfollowed = TODO()
+        val builder = EventBuilder.contactList(contacts = unfollowed)
+
+        return client.sendEventBuilder(builder)
+    }
+
+    suspend fun followTopic(topic: Topic): SendEventOutput {
+        val current = TODO()
+        val followed = TODO()
+        val builder = EventBuilder.interests(list = followed)
+
+        return client.sendEventBuilder(builder)
+    }
+
+    suspend fun unfollowTopic(topic: Topic): SendEventOutput {
+        val current = TODO()
+        val unfollowed = TODO()
+        val builder = EventBuilder.interests(list = unfollowed)
+
+        return client.sendEventBuilder(builder)
     }
 
     suspend fun rebroadcast(eventId: EventId): SendEventOutput {

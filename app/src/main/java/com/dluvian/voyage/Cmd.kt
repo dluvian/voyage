@@ -95,9 +95,9 @@ data class OpenRelayProfile(val relayUrl: RelayUrl) : AdvancedPushNavCmd()
 data class OpenList(val identifier: Ident) : AdvancedPushNavCmd()
 data class EditList(val identifier: Ident) : AdvancedPushNavCmd()
 
-sealed class VoteCmd(open val event: Event) : Cmd()
-data class ClickUpvote(override val event: Event) : VoteCmd(event = event)
-data class ClickNeutralizeVote(override val event: Event) : VoteCmd(event = event)
+sealed class VoteCmd() : Cmd()
+data class ClickUpvote(val event: Event) : VoteCmd()
+data class ClickNeutralizeVotes(val voteIds: List<EventId>) : VoteCmd()
 
 sealed class TopicCmd(open val topic: Topic) : Cmd()
 data class FollowTopic(override val topic: Topic) : TopicCmd(topic = topic)
