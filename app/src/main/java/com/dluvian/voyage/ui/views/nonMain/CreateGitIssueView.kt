@@ -47,7 +47,6 @@ fun CreateGitIssueView(
     val header = remember { mutableStateOf(TextFieldValue()) }
     val body = remember { mutableStateOf(TextFieldValue()) }
     val type: MutableState<LabledGitIssue> = remember { mutableStateOf(BugReport()) }
-    val isAnon = remember { mutableStateOf(false) }
     val context = LocalContext.current
 
     val focusRequester = remember { FocusRequester() }
@@ -74,7 +73,6 @@ fun CreateGitIssueView(
                             body = body.value.text
                         )
                     },
-                    isAnon = isAnon.value,
                     context = context,
                     onGoBack = { onUpdate(GoBack) }
                 )
@@ -87,7 +85,6 @@ fun CreateGitIssueView(
             body = body,
             type = type,
             searchSuggestions = searchSuggestions.value,
-            isAnon = isAnon,
             focusRequester = focusRequester,
             onUpdate = onUpdate
         )
@@ -100,14 +97,12 @@ private fun CreateGitIssueContent(
     body: MutableState<TextFieldValue>,
     type: MutableState<LabledGitIssue>,
     searchSuggestions: List<AdvancedProfileView>,
-    isAnon: MutableState<Boolean>,
     focusRequester: FocusRequester,
     onUpdate: OnUpdate,
 ) {
     InputWithSuggestions(
         body = body,
         searchSuggestions = searchSuggestions,
-        isAnon = isAnon,
         onUpdate = onUpdate
     ) {
         IssueTypeSelection(type = type)

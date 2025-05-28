@@ -66,7 +66,6 @@ fun CreatePostView(
                     header = header.value.text,
                     body = body.value.text,
                     topics = topics.value,
-                    isAnon = isAnon.value,
                     context = context,
                     onGoBack = { onUpdate(GoBack) })
             )
@@ -80,7 +79,6 @@ fun CreatePostView(
             topicSuggestions = topicSuggestions.value,
             selectedTopics = topics,
             searchSuggestions = searchSuggestions.value,
-            isAnon = isAnon,
             focusRequester = focusRequester,
             onUpdate = onUpdate
         )
@@ -94,14 +92,12 @@ private fun CreatePostContent(
     topicSuggestions: List<Topic>,
     selectedTopics: MutableState<List<Topic>>,
     searchSuggestions: List<AdvancedProfileView>,
-    isAnon: MutableState<Boolean>,
     focusRequester: FocusRequester,
     onUpdate: OnUpdate,
 ) {
     InputWithSuggestions(
         body = body,
         searchSuggestions = searchSuggestions,
-        isAnon = isAnon,
         onUpdate = onUpdate
     ) {
         TopicSelectionRow(

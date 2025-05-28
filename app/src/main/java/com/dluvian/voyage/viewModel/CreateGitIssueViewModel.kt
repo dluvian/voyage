@@ -40,7 +40,6 @@ class CreateGitIssueViewModel(
         viewModelScope.launchIO {
             val result = postSender.sendGitIssue(
                 issue = action.issue,
-                isAnon = action.isAnon,
             )
 
             delay(DELAY_1SEC)

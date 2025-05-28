@@ -79,7 +79,6 @@ class CreateReplyViewModel(
                     body = action.body,
                     relayHint = eventRelayDao.getEventRelay(id = action.parent.id)
                         ?.ifEmpty { null },
-                    isAnon = action.isAnon
                 )
             } else {
                 val err = "Can't determine event kind of ${action.parent.getRelevantId()}"
