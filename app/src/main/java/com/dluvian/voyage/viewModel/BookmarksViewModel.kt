@@ -4,10 +4,10 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.State
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.voyage.BookmarksViewAction
-import com.dluvian.voyage.BookmarksViewAppend
-import com.dluvian.voyage.BookmarksViewInit
-import com.dluvian.voyage.BookmarksViewRefresh
+import com.dluvian.voyage.cmd.BookmarksViewAction
+import com.dluvian.voyage.cmd.BookmarksViewAppend
+import com.dluvian.voyage.cmd.BookmarksViewInit
+import com.dluvian.voyage.cmd.BookmarksViewRefresh
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.FeedProvider

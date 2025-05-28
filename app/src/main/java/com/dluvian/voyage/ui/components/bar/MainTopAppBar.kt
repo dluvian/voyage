@@ -5,8 +5,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.style.TextOverflow
-import com.dluvian.voyage.HomeViewOpenFilter
-import com.dluvian.voyage.InboxViewOpenFilter
+import com.dluvian.voyage.cmd.HomeViewOpenFilter
+import com.dluvian.voyage.cmd.InboxViewOpenFilter
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.navigator.DiscoverNavView
 import com.dluvian.voyage.core.navigator.HomeNavView

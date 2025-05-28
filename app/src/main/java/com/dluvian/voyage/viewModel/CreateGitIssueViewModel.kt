@@ -4,10 +4,10 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.voyage.CreateGitIssueViewAction
 import com.dluvian.voyage.R
-import com.dluvian.voyage.SendGitIssue
-import com.dluvian.voyage.SubRepoOwnerRelays
+import com.dluvian.voyage.cmd.CreateGitIssueViewAction
+import com.dluvian.voyage.cmd.SendGitIssue
+import com.dluvian.voyage.cmd.SubRepoOwnerRelays
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.DLUVIAN_HEX
 import com.dluvian.voyage.core.utils.launchIO

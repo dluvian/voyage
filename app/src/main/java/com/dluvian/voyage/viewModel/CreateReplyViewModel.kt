@@ -5,9 +5,9 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.voyage.CreateReplyViewAction
 import com.dluvian.voyage.R
-import com.dluvian.voyage.SendReply
+import com.dluvian.voyage.cmd.CreateReplyViewAction
+import com.dluvian.voyage.cmd.SendReply
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.model.Comment
 import com.dluvian.voyage.core.model.CrossPost

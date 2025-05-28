@@ -7,7 +7,7 @@ import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
-import com.dluvian.voyage.ClickClickableText
+import com.dluvian.voyage.cmd.ClickClickableText
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.model.CoordinateMention
 import com.dluvian.voyage.core.model.NeventMention
@@ -20,7 +20,6 @@ import com.dluvian.voyage.core.utils.extractNostrMentions
 import com.dluvian.voyage.core.utils.extractUrls
 import com.dluvian.voyage.core.utils.shortenBech32
 import com.dluvian.voyage.core.utils.shortenUrl
-import com.dluvian.voyage.data.provider.NameProvider
 import com.dluvian.voyage.ui.theme.HashtagStyle
 import com.dluvian.voyage.ui.theme.MentionStyle
 import com.dluvian.voyage.ui.theme.UrlStyle

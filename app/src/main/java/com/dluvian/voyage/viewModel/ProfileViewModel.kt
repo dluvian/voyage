@@ -7,11 +7,11 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.voyage.ProfileViewAction
-import com.dluvian.voyage.ProfileViewLoadLists
-import com.dluvian.voyage.ProfileViewRefresh
-import com.dluvian.voyage.ProfileViewReplyAppend
-import com.dluvian.voyage.ProfileViewRootAppend
+import com.dluvian.voyage.cmd.ProfileViewAction
+import com.dluvian.voyage.cmd.ProfileViewLoadLists
+import com.dluvian.voyage.cmd.ProfileViewRefresh
+import com.dluvian.voyage.cmd.ProfileViewReplyAppend
+import com.dluvian.voyage.cmd.ProfileViewRootAppend
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.model.ItemSetProfile
 import com.dluvian.voyage.core.navigator.ProfileNavView

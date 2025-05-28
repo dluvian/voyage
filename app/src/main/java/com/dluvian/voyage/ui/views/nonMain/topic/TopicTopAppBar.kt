@@ -2,8 +2,8 @@ package com.dluvian.voyage.ui.views.nonMain.topic
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import com.dluvian.voyage.FollowTopic
-import com.dluvian.voyage.UnfollowTopic
+import com.dluvian.voyage.cmd.FollowTopic
+import com.dluvian.voyage.cmd.UnfollowTopic
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.ItemSetTopic

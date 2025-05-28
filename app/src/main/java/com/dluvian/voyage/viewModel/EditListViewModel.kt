@@ -6,11 +6,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.voyage.EditListViewAction
-import com.dluvian.voyage.EditListViewAddProfile
-import com.dluvian.voyage.EditListViewAddTopic
-import com.dluvian.voyage.EditListViewSave
 import com.dluvian.voyage.R
+import com.dluvian.voyage.cmd.EditListViewAction
+import com.dluvian.voyage.cmd.EditListViewAddProfile
+import com.dluvian.voyage.cmd.EditListViewAddTopic
+import com.dluvian.voyage.cmd.EditListViewSave
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.Topic

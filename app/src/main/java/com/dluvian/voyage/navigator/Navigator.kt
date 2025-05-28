@@ -1,9 +1,9 @@
 package com.dluvian.voyage.core.navigator
 
 import androidx.compose.runtime.mutableStateOf
-import com.dluvian.voyage.NavEvent
-import com.dluvian.voyage.PopNavEvent
-import com.dluvian.voyage.PushNavEvent
+import com.dluvian.voyage.cmd.NavEvent
+import com.dluvian.voyage.cmd.PopNavEvent
+import com.dluvian.voyage.cmd.PushNavEvent
 import com.dluvian.voyage.viewModel.VMContainer
 
 class Navigator(private val vmContainer: VMContainer, private val closeApp: () -> Unit) {
@@ -42,8 +42,8 @@ class Navigator(private val vmContainer: VMContainer, private val closeApp: () -
             is AdvancedNonMainNavView -> {
                 when (navView) {
                     is ThreadNavView -> vmContainer.threadVM.openThread(
-                        nevent = createNevent(hex = navView.mainEvent.id),
-                        parentUi = navView.mainEvent
+                        nevent = createNevent(hex = navView.event.id),
+                        parentUi = navView.event
                     )
 
                     is ThreadRawNavView -> vmContainer.threadVM.openThread(

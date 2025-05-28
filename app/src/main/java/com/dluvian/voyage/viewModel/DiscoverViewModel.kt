@@ -4,9 +4,9 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.voyage.DiscoverViewAction
-import com.dluvian.voyage.DiscoverViewInit
-import com.dluvian.voyage.DiscoverViewRefresh
+import com.dluvian.voyage.cmd.DiscoverViewAction
+import com.dluvian.voyage.cmd.DiscoverViewInit
+import com.dluvian.voyage.cmd.DiscoverViewRefresh
 import com.dluvian.voyage.core.model.TopicFollowState
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber

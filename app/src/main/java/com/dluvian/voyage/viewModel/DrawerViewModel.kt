@@ -3,10 +3,10 @@ package com.dluvian.voyage.viewModel
 import androidx.compose.material3.DrawerState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.voyage.CloseDrawer
-import com.dluvian.voyage.DrawerViewAction
-import com.dluvian.voyage.DrawerViewSubscribeSets
-import com.dluvian.voyage.OpenDrawer
+import com.dluvian.voyage.cmd.CloseDrawer
+import com.dluvian.voyage.cmd.DrawerViewAction
+import com.dluvian.voyage.cmd.DrawerViewSubscribeSets
+import com.dluvian.voyage.cmd.OpenDrawer
 import com.dluvian.voyage.core.DELAY_10SEC
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber

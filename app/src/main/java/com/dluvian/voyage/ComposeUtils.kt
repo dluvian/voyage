@@ -39,7 +39,7 @@ fun getListTabHeaders(numOfProfiles: Int, numOfTopics: Int): List<String> {
 }
 
 @Composable
-fun canAddAnotherTopic(selectedItemLength: Int, maxItems: Int = MAX_TOPICS): Boolean {
+fun canAddAnotherTopic(selectedItemLength: Int, maxItems: Int = MAX_LIST_LEN): Boolean {
     return remember(selectedItemLength) { maxItems - selectedItemLength > 1 }
 }
 

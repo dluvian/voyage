@@ -5,10 +5,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
-import com.dluvian.voyage.ClickEditProfile
-import com.dluvian.voyage.FollowProfile
 import com.dluvian.voyage.R
-import com.dluvian.voyage.UnfollowProfile
+import com.dluvian.voyage.cmd.ClickEditProfile
+import com.dluvian.voyage.cmd.FollowProfile
+import com.dluvian.voyage.cmd.UnfollowProfile
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.model.ItemSetProfile
 import com.dluvian.voyage.data.filterSetting.FullProfileUI

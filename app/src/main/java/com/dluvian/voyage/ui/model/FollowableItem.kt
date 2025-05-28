@@ -3,10 +3,10 @@ package com.dluvian.voyage.ui.model
 import androidx.compose.material3.Icon
 import com.dluvian.voyage.FollowProfile
 import com.dluvian.voyage.FollowTopic
-import com.dluvian.voyage.OpenProfile
-import com.dluvian.voyage.OpenTopic
-import com.dluvian.voyage.UnfollowProfile
-import com.dluvian.voyage.UnfollowTopic
+import com.dluvian.voyage.cmd.OpenProfile
+import com.dluvian.voyage.cmd.OpenTopic
+import com.dluvian.voyage.cmd.UnfollowProfile
+import com.dluvian.voyage.cmd.UnfollowTopic
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate

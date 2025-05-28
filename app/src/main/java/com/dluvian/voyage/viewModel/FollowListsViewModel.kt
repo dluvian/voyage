@@ -7,9 +7,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.voyage.FollowListsViewAction
-import com.dluvian.voyage.FollowListsViewInit
-import com.dluvian.voyage.FollowListsViewRefresh
+import com.dluvian.voyage.cmd.FollowListsViewAction
+import com.dluvian.voyage.cmd.FollowListsViewInit
+import com.dluvian.voyage.cmd.FollowListsViewRefresh
 import com.dluvian.voyage.core.DEBOUNCE
 import com.dluvian.voyage.core.model.TopicFollowState
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber

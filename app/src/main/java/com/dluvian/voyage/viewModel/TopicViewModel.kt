@@ -5,10 +5,10 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.voyage.TopicViewAction
-import com.dluvian.voyage.TopicViewAppend
-import com.dluvian.voyage.TopicViewLoadLists
-import com.dluvian.voyage.TopicViewRefresh
+import com.dluvian.voyage.cmd.TopicViewAction
+import com.dluvian.voyage.cmd.TopicViewAppend
+import com.dluvian.voyage.cmd.TopicViewLoadLists
+import com.dluvian.voyage.cmd.TopicViewRefresh
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.ItemSetTopic
 import com.dluvian.voyage.core.navigator.TopicNavView

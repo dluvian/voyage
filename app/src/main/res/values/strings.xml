@@ -4,7 +4,9 @@
     <string name="comment">Comment</string>
     <string name="upvote">Upvote</string>
     <string name="remove_upvote">Remove upvote</string>
+    <string name="home">Home</string>
     <string name="discover">Discover</string>
+    <string name="inbox">Inbox</string>
     <string name="account">Account</string>
     <string name="app">App</string>
     <string name="external_signer">External signer</string>

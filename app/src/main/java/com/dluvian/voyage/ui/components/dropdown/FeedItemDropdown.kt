@@ -8,13 +8,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import com.dluvian.voyage.BookmarkPost
+import com.dluvian.voyage.BookmarkCmd
 import com.dluvian.voyage.DeletePost
 import com.dluvian.voyage.FollowProfile
 import com.dluvian.voyage.OpenPostInfo
 import com.dluvian.voyage.OpenThreadRaw
 import com.dluvian.voyage.R
-import com.dluvian.voyage.RebroadcastPost
+import com.dluvian.voyage.Rebroadcast
 import com.dluvian.voyage.UnfollowProfile
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
@@ -103,7 +103,7 @@ fun FeedItemDropdown(
             SimpleDropdownItem(
                 text = stringResource(id = R.string.bookmark),
                 onClick = {
-                    onUpdate(BookmarkPost(postId = mainEvent.getRelevantId()))
+                    onUpdate(BookmarkCmd(postId = mainEvent.getRelevantId()))
                     onDismiss()
                 }
             )
@@ -112,7 +112,7 @@ fun FeedItemDropdown(
             text = stringResource(id = R.string.rebroadcast),
             onClick = {
                 // RelevantId bc repost json is not saved in db
-                onUpdate(RebroadcastPost(postId = mainEvent.getRelevantId(), context = context))
+                onUpdate(Rebroadcast(postId = mainEvent.getRelevantId(), context = context))
                 onDismiss()
             }
         )

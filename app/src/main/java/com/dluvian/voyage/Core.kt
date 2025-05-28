@@ -12,24 +12,22 @@ import com.dluvian.voyage.core.utils.showToast
 import com.dluvian.voyage.viewModel.VMContainer
 import kotlinx.coroutines.launch
 
-private const val TAG = "Core"
-
 class Core(
     val vmContainer: VMContainer,
     val appContainer: AppContainer,
     val closeApp: () -> Unit,
 ) : ViewModel() {
-    val navigator = Navigator(vmContainer = vmContainer)
+    val navigator = Navigator(vmContainer = vmContainer, closeApp = closeApp)
 
     val onUpdate: (UIEvent) -> Unit = { uiEvent ->
         when (uiEvent) {
-            is NavEvent -> navigator.handle(action = uiEvent, closeApp = closeApp)
+            is NavEvent -> navigator.handle(action = uiEvent)
 
             is DrawerViewAction -> vmContainer.drawerVM.handle(action = uiEvent)
 
-            is VoteEvent -> appContainer.postVoter.handle(action = uiEvent)
-            is ProfileEvent -> appContainer.profileFollower.handle(action = uiEvent)
-            is TopicEvent -> appContainer.topicFollower.handle(action = uiEvent)
+            is VoteCmd -> appContainer.postVoter.handle(action = uiEvent)
+            is ProfileCmd -> appContainer.profileFollower.handle(action = uiEvent)
+            is TopicCmd -> appContainer.topicFollower.handle(action = uiEvent)
             is DeletePost -> viewModelScope.launchIO {
                 appContainer.eventDeletor.deletePost(postId = uiEvent.id)
             }
@@ -62,7 +60,7 @@ class Core(
                 }
             }
 
-            is BookmarkEvent -> appContainer.bookmarker.handle(action = uiEvent)
+            is BookmarkCmd -> appContainer.bookmarker.handle(action = uiEvent)
             is HomeViewAction -> vmContainer.homeVM.handle(action = uiEvent)
             is DiscoverViewAction -> vmContainer.discoverVM.handle(action = uiEvent)
             is ThreadViewAction -> vmContainer.threadVM.handle(action = uiEvent)
@@ -102,7 +100,7 @@ class Core(
                 .setUriHandler(uriHandler = uiEvent.uriHandler)
 
 
-            is RebroadcastPost -> viewModelScope.launchIO {
+            is Rebroadcast -> viewModelScope.launchIO {
                 appContainer.eventRebroadcaster.rebroadcast(
                     postId = uiEvent.postId,
                     context = uiEvent.context,

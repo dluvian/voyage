@@ -4,9 +4,9 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.voyage.CreatePostViewAction
 import com.dluvian.voyage.R
-import com.dluvian.voyage.SendPost
+import com.dluvian.voyage.cmd.CreatePostViewAction
+import com.dluvian.voyage.cmd.SendPost
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.core.utils.showToast

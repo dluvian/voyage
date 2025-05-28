@@ -6,9 +6,9 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.voyage.CreateCrossPostViewAction
 import com.dluvian.voyage.R
-import com.dluvian.voyage.SendCrossPost
+import com.dluvian.voyage.cmd.CreateCrossPostViewAction
+import com.dluvian.voyage.cmd.SendCrossPost
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.utils.launchIO

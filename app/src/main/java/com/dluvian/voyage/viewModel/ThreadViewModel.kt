@@ -7,10 +7,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.ThreadCollapser
-import com.dluvian.voyage.ThreadViewAction
-import com.dluvian.voyage.ThreadViewRefresh
-import com.dluvian.voyage.ThreadViewShowReplies
-import com.dluvian.voyage.ThreadViewToggleCollapse
+import com.dluvian.voyage.cmd.ThreadViewAction
+import com.dluvian.voyage.cmd.ThreadViewRefresh
+import com.dluvian.voyage.cmd.ThreadViewShowReplies
+import com.dluvian.voyage.cmd.ThreadViewToggleCollapse
 import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.model.MainEvent
