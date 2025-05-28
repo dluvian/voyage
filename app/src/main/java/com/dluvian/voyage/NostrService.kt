@@ -1,6 +1,5 @@
 package com.dluvian.voyage
 
-import com.dluvian.voyage.core.OptionId
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.preferences.EventPreferences
@@ -75,15 +74,6 @@ class NostrService(
         // TODO: Client Tag
     }
 
-    suspend fun publishPoll(
-        question: String,
-        options: List<String>,
-        endsAt: Long,
-    ): SendEventOutput {
-        TODO("Wait for v0.43")
-        // TODO: Client Tag
-    }
-
     suspend fun publishReply(
         content: String,
         parent: Event,
@@ -106,14 +96,6 @@ class NostrService(
     ): SendEventOutput {
         TODO()
     }
-
-    suspend fun publishPollResponse(
-        poll: Event,
-        optionId: OptionId,
-    ): SendEventOutput {
-        TODO("Wait for v0.43")
-    }
-
 
     suspend fun publishDelete(
         eventId: EventId,

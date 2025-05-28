@@ -245,11 +245,6 @@
     <string name="poll_has_ended">Poll has ended</string>
     <string name="vote">Vote</string>
     <string name="create_a_text_note">Create a text note</string>
-    <string name="create_a_poll">Create a poll</string>
-    <string name="poll_created">Poll created</string>
-    <string name="failed_to_create_poll">Failed to create poll</string>
-    <string name="poll_question">Poll question</string>
-    <string name="poll">Poll</string>
     <string name="post">Post</string>
     <string name="option">Option</string>
     <string name="add_an_option">Add an option…</string>

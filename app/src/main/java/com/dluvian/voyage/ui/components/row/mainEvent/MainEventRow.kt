@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -13,40 +12,27 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 import com.dluvian.voyage.OpenThread
 import com.dluvian.voyage.OpenThreadRaw
-import com.dluvian.voyage.R
 import com.dluvian.voyage.ThreadViewShowReplies
 import com.dluvian.voyage.ThreadViewToggleCollapse
-import com.dluvian.voyage.VotePollOption
 import com.dluvian.voyage.core.ComposableContent
-import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.MAX_CONTENT_LINES
 import com.dluvian.voyage.core.MAX_SUBJECT_LINES
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.model.Comment
 import com.dluvian.voyage.core.model.CrossPost
 import com.dluvian.voyage.core.model.LegacyReply
-import com.dluvian.voyage.core.model.Poll
 import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.model.ThreadableMainEvent
 import com.dluvian.voyage.data.nostr.createNevent
-import com.dluvian.voyage.data.nostr.getCurrentSecs
 import com.dluvian.voyage.ui.components.button.footer.CountedCommentButton
 import com.dluvian.voyage.ui.components.button.footer.ReplyIconButton
-import com.dluvian.voyage.ui.components.row.PollOptionRow
 import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.theme.spacing
 import com.dluvian.voyage.ui.views.nonMain.MoreRepliesTextButton
@@ -64,7 +50,7 @@ fun MainEventRow(
 
         is ThreadRootCtx -> {
             when (ctx.threadableMainEvent) {
-                is RootPost, is Poll -> MainEventMainRow(
+                is RootPost -> MainEventMainRow(
                     ctx = ctx,
                     onUpdate = onUpdate
                 )
@@ -153,7 +139,6 @@ private fun MainEventMainRow(
             }
 
             when (val event = ctx.mainEvent) {
-                is Poll -> PollColumn(poll = event, onUpdate = onUpdate, onClickRow = onClickRow)
                 is CrossPost,
                 is RootPost,
                 is Comment,
@@ -190,7 +175,6 @@ private fun MainEventMainRow(
                         is FeedCtx -> {
                             when (ctx.mainEvent) {
                                 is RootPost,
-                                is Poll,
                                 is CrossPost -> CountedCommentButton(ctx = ctx, onUpdate = onUpdate)
 
                                 is LegacyReply, is Comment -> ReplyIconButton(
@@ -216,74 +200,5 @@ private fun RowWithDivider(level: Int, content: ComposableContent) {
             )
         }
         content()
-    }
-}
-
-@Composable
-private fun PollColumn(poll: Poll, onUpdate: OnUpdate, onClickRow: Fn) {
-    val isExpired = remember(poll.endsAt) {
-        poll.endsAt != null && poll.endsAt <= getCurrentSecs()
-    }
-    val clickedId = remember {
-        mutableStateOf<String?>(null)
-    }
-    val alreadyVoted = remember(poll) {
-        poll.options.any { it.isMyVote }
-    }
-    val isRevealed = remember(isExpired, alreadyVoted) {
-        alreadyVoted || isExpired
-    }
-    val topVotes = remember(poll) {
-        poll.options.maxOfOrNull { it.voteCount } ?: 0
-    }
-    val totalVotes = remember(poll) {
-        poll.options.sumOf { it.voteCount }
-    }
-    Column {
-        for (option in poll.options) {
-            PollOptionRow(
-                label = option.label,
-                isSelected = if (clickedId.value != null) clickedId.value == option.optionId else option.isMyVote,
-                isRevealed = isRevealed,
-                percentage = remember(option.voteCount, totalVotes) {
-                    if (totalVotes == 0) 0
-                    else option.voteCount.toFloat().div(totalVotes).times(100).toInt()
-                },
-                progress = remember(option.voteCount, topVotes) {
-                    if (topVotes == 0) 0f else option.voteCount.toFloat().div(topVotes)
-                },
-                onClick = {
-                    if (isRevealed) onClickRow.invoke() else clickedId.value = option.optionId
-                },
-            )
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = spacing.medium),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                modifier = Modifier.padding(start = spacing.large),
-                text = if (totalVotes == 0) stringResource(id = R.string.no_votes)
-                else stringResource(id = R.string.n_votes, totalVotes),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-            )
-            Spacer(modifier = Modifier.width(spacing.medium))
-            if (isExpired) Text(
-                text = stringResource(id = R.string.poll_has_ended),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-            )
-        }
-
-        if (!alreadyVoted) clickedId.value?.let { optionId ->
-            Button(onClick = {
-                onUpdate(VotePollOption(pollId = poll.id, optionId = optionId))
-            }) {
-                Text(stringResource(id = R.string.vote))
-            }
-        }
     }
 }

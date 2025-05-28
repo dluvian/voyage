@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.ui.components.button.SendIconButton
@@ -18,7 +17,6 @@ fun ContentCreationTopAppBar(
     showSendButton: Boolean,
     isSendingContent: Boolean,
     title: String? = null,
-    typeIcon: ComposableContent = {},
     onSend: Fn,
     onUpdate: OnUpdate
 ) {
@@ -31,7 +29,6 @@ fun ContentCreationTopAppBar(
             )
         },
         actions = {
-            typeIcon()
             if (showSendButton && !isSendingContent) {
                 SendIconButton(onSend = onSend)
             }

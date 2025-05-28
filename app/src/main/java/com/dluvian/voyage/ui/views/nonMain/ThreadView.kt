@@ -32,7 +32,6 @@ import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.model.Comment
 import com.dluvian.voyage.core.model.LegacyReply
-import com.dluvian.voyage.core.model.Poll
 import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.model.SomeReply
 import com.dluvian.voyage.data.nostr.createNevent

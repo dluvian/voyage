@@ -15,8 +15,6 @@ import com.dluvian.voyage.core.model.Comment
 import com.dluvian.voyage.core.model.CrossPost
 import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.core.model.MainEvent
-import com.dluvian.voyage.core.model.Poll
-import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.ui.components.button.footer.BookmarkIconButton
 import com.dluvian.voyage.ui.components.button.footer.CrossPostIconButton
 import com.dluvian.voyage.ui.components.button.footer.UpvoteButton
@@ -47,7 +45,6 @@ fun MainEventActions(
                 Spacer(modifier = Modifier.width(spacing.large))
             }
             when (mainEvent) {
-                is Poll -> {}
                 is CrossPost,
                 is RootPost,
                 is Comment,
