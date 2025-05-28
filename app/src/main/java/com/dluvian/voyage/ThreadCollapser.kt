@@ -7,10 +7,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import rust.nostr.sdk.EventId
 
 class ThreadCollapser {
     private val scope = CoroutineScope(Dispatchers.IO)
-    private val _collapsedIds = MutableStateFlow(setOf<EventIdHex>())
+    private val _collapsedIds = MutableStateFlow(setOf<EventId>())
 
     val collapsedIds = _collapsedIds
         .stateIn(scope, SharingStarted.Eagerly, _collapsedIds.value)
