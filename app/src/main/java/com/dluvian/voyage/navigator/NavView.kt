@@ -43,9 +43,9 @@ data object CreateGitIssueNavView : SimpleNonMainNavView()
 
 sealed class AdvancedNonMainNavView : NonMainNavView()
 data class ThreadNavView(val event: Event) : AdvancedNonMainNavView()
-data class ThreadRawNavView(val nevent: Nip19Event, val parent: Event?) : AdvancedNonMainNavView()
-
-data class ProfileNavView(val nprofile: Nip19Profile) : AdvancedNonMainNavView()
+data class ThreadNeventNavView(val nevent: Nip19Event) : AdvancedNonMainNavView()
+data class ProfileNavView(val profileEvent: Event) : AdvancedNonMainNavView()
+data class NProfileNavView(val nprofile: Nip19Profile) : AdvancedNonMainNavView()
 data class TopicNavView(val topic: Topic) : AdvancedNonMainNavView()
 data class ReplyCreationNavView(val parent: Event) : AdvancedNonMainNavView()
 data class CrossPostCreationNavView(val event: Event) : AdvancedNonMainNavView()

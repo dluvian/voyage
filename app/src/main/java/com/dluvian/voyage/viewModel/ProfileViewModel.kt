@@ -14,7 +14,6 @@ import com.dluvian.voyage.cmd.ProfileViewReplyAppend
 import com.dluvian.voyage.cmd.ProfileViewRootAppend
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.model.ItemSetProfile
-import com.dluvian.voyage.core.navigator.ProfileNavView
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.account.IMyPubkeyProvider
 import com.dluvian.voyage.data.nostr.Nip65Relay
@@ -38,6 +37,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import rust.nostr.sdk.Event
+import rust.nostr.sdk.Nip19Profile
 
 class ProfileViewModel(
     feedProvider: FeedProvider,
@@ -70,7 +71,12 @@ class ProfileViewModel(
         subCreator = nostrSubscriber.subCreator
     )
 
-    fun openProfile(profileNavView: ProfileNavView) {
+    fun openNProfile(nprofile: Nip19Profile) {
+        val profileEvent = TODO()
+        openProfile(profileEvent)
+    }
+
+    fun openProfile(profile: Event) {
         val pubkeyHex = profileNavView.nprofile.publicKey().toHex()
         if (profile.value.value.inner.pubkey == pubkeyHex) return
 

@@ -22,7 +22,7 @@ import com.dluvian.voyage.core.navigator.ReplyCreationNavView
 import com.dluvian.voyage.core.navigator.SearchNavView
 import com.dluvian.voyage.core.navigator.SettingsNavView
 import com.dluvian.voyage.core.navigator.ThreadNavView
-import com.dluvian.voyage.core.navigator.ThreadRawNavView
+import com.dluvian.voyage.core.navigator.ThreadNeventNavView
 import com.dluvian.voyage.core.navigator.TopicNavView
 import com.dluvian.voyage.filterSetting.HomeFeedSetting
 import com.dluvian.voyage.filterSetting.InboxFeedSetting
@@ -62,7 +62,7 @@ sealed class PushNavCmd : NavCmd() {
             is OpenProfile -> ProfileNavView(nprofile = this.nprofile)
             is OpenTopic -> TopicNavView(topic = this.topic)
             is OpenReplyCreation -> ReplyCreationNavView(parent = this.parent)
-            is OpenThreadRaw -> ThreadRawNavView(nevent = this.nevent, parent = this.parent)
+            is OpenThreadRaw -> ThreadNeventNavView(nevent = this.nevent, parent = this.parent)
             is OpenCrossPostCreation -> CrossPostCreationNavView(event = this.event)
             is OpenRelayProfile -> RelayProfileNavView(relayUrl = this.relayUrl)
             is OpenList -> OpenListNavView(identifier = this.identifier)

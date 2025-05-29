@@ -1,18 +1,18 @@
 package com.dluvian.voyage.core.navigator
 
 import androidx.compose.runtime.mutableStateOf
-import com.dluvian.voyage.cmd.NavEvent
-import com.dluvian.voyage.cmd.PopNavEvent
-import com.dluvian.voyage.cmd.PushNavEvent
+import com.dluvian.voyage.NavCmd
+import com.dluvian.voyage.PopNavCmd
+import com.dluvian.voyage.PushNavCmd
 import com.dluvian.voyage.viewModel.VMContainer
 
 class Navigator(private val vmContainer: VMContainer, private val closeApp: () -> Unit) {
     val stack = mutableStateOf<List<NavView>>(listOf(HomeNavView))
 
-    fun handle(action: NavEvent) {
-        when (action) {
-            is PopNavEvent -> pop()
-            is PushNavEvent -> push(view = action.getNavView())
+    fun handle(cmd: NavCmd) {
+        when (cmd) {
+            is PopNavCmd -> pop()
+            is PushNavCmd -> push(view = cmd.getNavView())
         }
     }
 
@@ -41,19 +41,13 @@ class Navigator(private val vmContainer: VMContainer, private val closeApp: () -
         when (navView) {
             is AdvancedNonMainNavView -> {
                 when (navView) {
-                    is ThreadNavView -> vmContainer.threadVM.openThread(
-                        nevent = createNevent(hex = navView.event.id),
-                        parentUi = navView.event
-                    )
-
-                    is ThreadRawNavView -> vmContainer.threadVM.openThread(
-                        nevent = navView.nevent,
-                        parentUi = navView.parent
-                    )
-
-                    is ProfileNavView -> vmContainer.profileVM.openProfile(profileNavView = navView)
-                    is TopicNavView -> vmContainer.topicVM.openTopic(topicNavView = navView)
-                    is ReplyCreationNavView -> vmContainer.createReplyVM.openParent(newParent = navView.parent)
+                    // TODO: Do push and pop functions for each viewmodel
+                    is ThreadNavView -> vmContainer.threadVM.openThread(navView.event)
+                    is ThreadNeventNavView -> vmContainer.threadVM.openNeventThread(navView.nevent)
+                    is ProfileNavView -> vmContainer.profileVM.openProfile(navView.profileEvent)
+                    is NProfileNavView -> vmContainer.profileVM.openNProfile(navView.nprofile)
+                    is TopicNavView -> vmContainer.topicVM.openTopic(navView.topic)
+                    is ReplyCreationNavView -> vmContainer.createReplyVM.openParent(navView.parent)
                     is CrossPostCreationNavView -> vmContainer.createCrossPostVM.prepareCrossPost(id = navView.id)
                     is RelayProfileNavView -> vmContainer.relayProfileVM.openProfile(relayUrl = navView.relayUrl)
                     is OpenListNavView -> vmContainer.listVM.openList(identifier = navView.identifier)

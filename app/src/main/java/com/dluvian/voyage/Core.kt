@@ -17,7 +17,7 @@ class Core(
 
     private fun handleCmd(cmd: Cmd) {
         when (cmd) {
-            is NavCmd -> navigator.handle(action = cmd)
+            is NavCmd -> navigator.handle(cmd = cmd)
 
             is DrawerViewCmd -> vmContainer.drawerVM.handle(action = cmd)
 

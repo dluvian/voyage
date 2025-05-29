@@ -15,7 +15,6 @@ import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.model.MainEvent
 import com.dluvian.voyage.core.model.RootPost
-import com.dluvian.voyage.core.model.ThreadableMainEvent
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.provider.ThreadProvider
 import com.dluvian.voyage.filterSetting.PostDetails
@@ -26,6 +25,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import rust.nostr.sdk.Event
 import rust.nostr.sdk.Nip19Event
 
 class ThreadViewModel(
@@ -44,26 +44,13 @@ class ThreadViewModel(
     private val parentIds = mutableStateOf(emptySet<EventIdHex>())
     private var nevent: Nip19Event? = null
 
-    fun openThread(nevent: Nip19Event, parentUi: ThreadableMainEvent?) {
-        val id = nevent.eventId().toHex()
-        if (id == localRoot.value?.mainEvent?.id) return
+    fun openNeventThread(nevent: Nip19Event) {
+        val event = TODO()
+        openThread(event = event)
+    }
 
-        replies.value = MutableStateFlow(emptyList())
-        this.nevent = nevent
-
-        localRoot = threadProvider
-            .getLocalRoot(scope = viewModelScope, nevent = nevent, isInit = true)
-            .stateIn(
-                viewModelScope,
-                SharingStarted.Eagerly,
-                parentUi?.let { ThreadRootCtx(threadableMainEvent = it) }
-            )
-        checkParentAvailability(replyId = id, parentUi = parentUi)
-        loadReplies(
-            rootId = id,
-            parentId = id,
-            isInit = true,
-        )
+    fun openThread(event: Event) {
+        TODO()
     }
 
     fun handle(action: ThreadViewAction) {

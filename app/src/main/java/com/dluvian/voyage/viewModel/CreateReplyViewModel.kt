@@ -34,7 +34,7 @@ class CreateReplyViewModel(
     val isSendingReply = mutableStateOf(false)
     val parent: MutableState<MainEvent?> = mutableStateOf(null)
 
-    fun openParent(newParent: MainEvent) {
+    fun openParent(parent: Event) {
         val relevantId = newParent.getRelevantId()
         if (relevantId == this.parent.value?.id) return
 

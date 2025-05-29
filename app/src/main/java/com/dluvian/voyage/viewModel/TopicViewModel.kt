@@ -5,13 +5,12 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dluvian.voyage.Topic
 import com.dluvian.voyage.cmd.TopicViewAction
 import com.dluvian.voyage.cmd.TopicViewAppend
 import com.dluvian.voyage.cmd.TopicViewLoadLists
 import com.dluvian.voyage.cmd.TopicViewRefresh
-import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.ItemSetTopic
-import com.dluvian.voyage.core.navigator.TopicNavView
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.core.utils.normalizeTopic
 import com.dluvian.voyage.data.nostr.SubscriptionCreator
@@ -45,7 +44,7 @@ class TopicViewModel(
         subCreator = subCreator
     )
 
-    fun openTopic(topicNavView: TopicNavView) {
+    fun openTopic(topic: Topic) {
         val stripped = topicNavView.topic.normalizeTopic()
         subCreator.unsubAll()
         paginator.reinit(setting = TopicFeedSetting(topic = stripped))
