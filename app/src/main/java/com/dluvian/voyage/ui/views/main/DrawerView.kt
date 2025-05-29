@@ -227,7 +227,7 @@ private fun ItemSetOptionsMenu(
         DropdownMenuItem(
             text = { Text(text = stringResource(R.string.delete_list)) },
             onClick = {
-                onUpdate(DeleteList(identifier = identifier, onCloseDrawer = onCloseDrawer))
+                onUpdate(DeleteList(ident = identifier, onCloseDrawer = onCloseDrawer))
                 onDismiss()
             }
         )

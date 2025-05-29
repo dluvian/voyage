@@ -95,164 +95,131 @@ data class OpenRelayProfile(val relayUrl: RelayUrl) : AdvancedPushNavCmd()
 data class OpenList(val identifier: Ident) : AdvancedPushNavCmd()
 data class EditList(val identifier: Ident) : AdvancedPushNavCmd()
 
-sealed class VoteCmd() : Cmd()
-data class ClickUpvote(val event: Event) : VoteCmd()
-data class ClickNeutralizeVotes(val voteIds: List<EventId>) : VoteCmd()
+data class ClickUpvote(val event: Event) : Cmd()
+data class ClickNeutralizeVotes(val voteIds: List<EventId>) : Cmd()
 
-sealed class TopicCmd(open val topic: Topic) : Cmd()
-data class FollowTopic(override val topic: Topic) : TopicCmd(topic = topic)
-data class UnfollowTopic(override val topic: Topic) : TopicCmd(topic = topic)
+data class FollowTopic(val topic: Topic) : Cmd()
+data class UnfollowTopic(val topic: Topic) : Cmd()
 
-sealed class BookmarkCmd(open val event: Event) : Cmd()
-data class BookmarkPost(override val event: Event) : BookmarkCmd(event = event)
-data class UnbookmarkPost(override val event: Event) : BookmarkCmd(event = event)
+data class BookmarkPost(val event: Event) : Cmd()
+data class UnbookmarkPost(val event: Event) : Cmd()
 
-sealed class ProfileCmd(open val pubkey: PublicKey) : Cmd()
-data class FollowProfile(override val pubkey: PublicKey) : ProfileCmd(pubkey = pubkey)
-data class UnfollowProfile(override val pubkey: PublicKey) : ProfileCmd(pubkey = pubkey)
+data class FollowProfile(val pubkey: PublicKey) : Cmd()
+data class UnfollowProfile(val pubkey: PublicKey) : Cmd()
 
-sealed class HomeViewAction : Cmd()
-data object HomeViewRefresh : HomeViewAction()
-data object HomeViewAppend : HomeViewAction()
-data object HomeViewSubAccountAndTrustData : HomeViewAction()
-data object HomeViewOpenFilter : HomeViewAction()
-data object HomeViewDismissFilter : HomeViewAction()
-data class HomeViewApplyFilter(val setting: HomeFeedSetting) : HomeViewAction()
+data class AddPubkeyToList(val pubkey: PublicKey, val ident: String) : Cmd()
+data class AddTopicToList(val topic: Topic, val ident: String) : Cmd()
+data class ClickClickableText(val text: String, val uriHandler: UriHandler) : Cmd()
+data class RegisterUriHandler(val uriHandler: UriHandler) : Cmd()
+data class Rebroadcast(val event: Event) : Cmd()
+data class DeleteList(val ident: Ident) : Cmd()
+data class DeletePost(val event: Event) : Cmd()
 
-sealed class ThreadViewAction : Cmd()
-data object ThreadViewRefresh : ThreadViewAction()
-data class ThreadViewToggleCollapse(val id: EventId) : ThreadViewAction()
-data class ThreadViewShowReplies(val id: EventId) : ThreadViewAction()
+sealed class HomeViewCmd : Cmd()
+data object HomeViewRefresh : HomeViewCmd()
+data object HomeViewAppend : HomeViewCmd()
+data object HomeViewSubAccountAndTrustData : HomeViewCmd()
+data object HomeViewOpenFilter : HomeViewCmd()
+data object HomeViewDismissFilter : HomeViewCmd()
+data class HomeViewApplyFilter(val setting: HomeFeedSetting) : HomeViewCmd()
 
-sealed class InboxViewAction : Cmd()
-data object InboxViewInit : InboxViewAction()
-data object InboxViewRefresh : InboxViewAction()
-data object InboxViewAppend : InboxViewAction()
-data object InboxViewOpenFilter : InboxViewAction()
-data object InboxViewDismissFilter : InboxViewAction()
-data class InboxViewApplyFilter(val setting: InboxFeedSetting) : InboxViewAction()
+sealed class ThreadViewCmd : Cmd()
+data object ThreadViewRefresh : ThreadViewCmd()
+data class ThreadViewToggleCollapse(val id: EventId) : ThreadViewCmd()
+data class ThreadViewShowReplies(val id: EventId) : ThreadViewCmd()
 
-sealed class DiscoverViewAction : Cmd()
-data object DiscoverViewInit : DiscoverViewAction()
-data object DiscoverViewRefresh : DiscoverViewAction()
+sealed class InboxViewCmd : Cmd()
+data object InboxViewInit : InboxViewCmd()
+data object InboxViewRefresh : InboxViewCmd()
+data object InboxViewAppend : InboxViewCmd()
+data object InboxViewOpenFilter : InboxViewCmd()
+data object InboxViewDismissFilter : InboxViewCmd()
+data class InboxViewApplyFilter(val setting: InboxFeedSetting) : InboxViewCmd()
 
-sealed class FollowListsViewAction : Cmd()
-data object FollowListsViewInit : FollowListsViewAction()
-data object FollowListsViewRefresh : FollowListsViewAction()
+sealed class DiscoverViewCmd : Cmd()
+data object DiscoverViewInit : DiscoverViewCmd()
+data object DiscoverViewRefresh : DiscoverViewCmd()
 
-sealed class BookmarksViewAction : Cmd()
-data object BookmarksViewInit : BookmarksViewAction()
-data object BookmarksViewRefresh : BookmarksViewAction()
-data object BookmarksViewAppend : BookmarksViewAction()
+sealed class FollowListsViewCmd : Cmd()
+data object FollowListsViewInit : FollowListsViewCmd()
+data object FollowListsViewRefresh : FollowListsViewCmd()
 
-sealed class EditListViewAction : Cmd()
-data class EditListViewSave(val context: Context, val onGoBack: () -> Unit) : EditListViewAction()
-data class EditListViewAddProfile(val profile: Pair<PublicKey, Metadata>) : EditListViewAction()
-data class EditListViewAddTopic(val topic: Topic) : EditListViewAction()
+sealed class BookmarksViewCmd : Cmd()
+data object BookmarksViewInit : BookmarksViewCmd()
+data object BookmarksViewRefresh : BookmarksViewCmd()
+data object BookmarksViewAppend : BookmarksViewCmd()
 
-data class AddItemToList(
-    val identifier: String,
-    val scope: CoroutineScope,
-    val context: Context
-) : Cmd()
+sealed class EditListViewCmd : Cmd()
+data class EditListViewSave(val context: Context, val onGoBack: () -> Unit) : EditListViewCmd()
+data class EditListViewAddProfile(val profile: Pair<PublicKey, Metadata>) : EditListViewCmd()
+data class EditListViewAddTopic(val topic: Topic) : EditListViewCmd()
 
-sealed class ListViewAction : Cmd()
-data object ListViewRefresh : ListViewAction()
-data object ListViewFeedAppend : ListViewAction()
+sealed class ListViewCmd : Cmd()
+data object ListViewRefresh : ListViewCmd()
+data object ListViewFeedAppend : ListViewCmd()
 
-sealed class DrawerViewAction : Cmd()
-data object DrawerViewSubscribeSets : DrawerViewAction()
-data class OpenDrawer(val scope: CoroutineScope) : DrawerViewAction()
-data class CloseDrawer(val scope: CoroutineScope) : DrawerViewAction()
+sealed class DrawerViewCmd : Cmd()
+data object DrawerViewSubscribeSets : DrawerViewCmd()
+data class OpenDrawer(val scope: CoroutineScope) : DrawerViewCmd()
+data class CloseDrawer(val scope: CoroutineScope) : DrawerViewCmd()
 
-sealed class TopicViewAction : Cmd()
-data object TopicViewRefresh : TopicViewAction()
-data object TopicViewAppend : TopicViewAction()
-data object TopicViewLoadLists : TopicViewAction()
+sealed class TopicViewCmd : Cmd()
+data object TopicViewRefresh : TopicViewCmd()
+data object TopicViewAppend : TopicViewCmd()
+data object TopicViewLoadLists : TopicViewCmd()
 
-sealed class RelayEditorViewAction : Cmd()
-data class AddRelay(
-    val relayUrl: RelayUrl,
-    val scope: CoroutineScope,
-    val context: Context
-) : RelayEditorViewAction()
+sealed class RelayEditorViewCmd : Cmd()
+data class AddRelay(val relayUrl: RelayUrl) : RelayEditorViewCmd()
+data class RemoveRelay(val relayUrl: RelayUrl) : RelayEditorViewCmd()
+data class ToggleReadRelay(val relayUrl: RelayUrl) : RelayEditorViewCmd()
+data class ToggleWriteRelay(val relayUrl: RelayUrl) : RelayEditorViewCmd()
+data object SaveRelays : RelayEditorViewCmd()
+data object LoadRelays : RelayEditorViewCmd()
 
-data class RemoveRelay(val relayUrl: RelayUrl) : RelayEditorViewAction()
-data class ToggleReadRelay(val relayUrl: RelayUrl) : RelayEditorViewAction()
-data class ToggleWriteRelay(val relayUrl: RelayUrl) : RelayEditorViewAction()
-data class SaveRelays(val context: Context, val onGoBack: () -> Unit) : RelayEditorViewAction()
-data object LoadRelays : RelayEditorViewAction()
+sealed class ProfileViewCmd : Cmd()
+data object ProfileViewRefresh : ProfileViewCmd()
+data object ProfileViewRootAppend : ProfileViewCmd()
+data object ProfileViewLoadLists : ProfileViewCmd()
 
-sealed class ProfileViewAction : Cmd()
-data object ProfileViewRefresh : ProfileViewAction()
-data object ProfileViewRootAppend : ProfileViewAction()
-data object ProfileViewLoadLists : ProfileViewAction()
-
-sealed class CreatePostViewAction : Cmd()
+sealed class CreatePostViewCmd : Cmd()
 data class SendPost(
     val header: String,
     val body: String,
     val topics: List<Topic>,
-    val context: Context,
-    val onGoBack: () -> Unit
-) : CreatePostViewAction()
+) : CreatePostViewCmd()
 
-sealed class CreateGitIssueViewAction : Cmd()
-data class SendGitIssue(
-    val issue: LabledGitIssue,
-    val context: Context,
-    val onGoBack: () -> Unit
-) : CreateGitIssueViewAction()
-data object SubRepoOwnerRelays : CreateGitIssueViewAction()
+sealed class CreateGitIssueViewCmd : Cmd()
+data class SendGitIssue(val issue: LabledGitIssue) : CreateGitIssueViewCmd()
+data object SubRepoOwnerRelays : CreateGitIssueViewCmd()
 
-sealed class CreateReplyViewAction : Cmd()
-data class SendReply(
-    val parent: Event,
-    val body: String,
-    val context: Context,
-    val onGoBack: () -> Unit
-) : CreateReplyViewAction()
+sealed class CreateReplyViewCmd : Cmd()
+data class SendReply(val parent: Event, val body: String) : CreateReplyViewCmd()
 
-sealed class CreateCrossPostViewAction : Cmd()
-data class SendCrossPost(
-    val topics: List<Topic>,
-    val context: Context,
-    val onGoBack: () -> Unit
-) : CreateCrossPostViewAction()
+sealed class CreateCrossPostViewCmd : Cmd()
+data class SendCrossPost(val topics: List<Topic>) : CreateCrossPostViewCmd()
 
-sealed class SuggestionAction : Cmd()
-data class SearchProfileSuggestion(val name: String) : SuggestionAction()
-data class ClickProfileSuggestion(val profileEvent: Event) : SuggestionAction()
-data class SearchTopicSuggestion(val topic: Topic) : SuggestionAction()
+sealed class SuggestionCmd : Cmd()
+data class SearchProfileSuggestion(val name: String) : SuggestionCmd()
+data class ClickProfileSuggestion(val profileEvent: Event) : SuggestionCmd()
+data class SearchTopicSuggestion(val topic: Topic) : SuggestionCmd()
 
-sealed class EditProfileViewAction : Cmd()
-data object LoadFullProfile : EditProfileViewAction()
-data class SaveProfile(
-    val metadata: Metadata,
-    val context: Context,
-    val onGoBack: () -> Unit,
-) : EditProfileViewAction()
+sealed class EditProfileViewCmd : Cmd()
+data object LoadFullProfile : EditProfileViewCmd()
+data class SaveProfile(val metadata: Metadata) : EditProfileViewCmd()
 
-sealed class SettingsViewAction : Cmd()
-data object LoadSeed : SettingsViewAction()
-data class SendAuth(val sendAuth: Boolean) : SettingsViewAction()
-data class AddClientTag(val addClientTag: Boolean) : SettingsViewAction()
-data class ExportDatabase(val uiScope: CoroutineScope) : SettingsViewAction()
-data class ResetDatabase(val uiScope: CoroutineScope) : SettingsViewAction()
-data class ChangeUpvoteContent(val newContent: String) : SettingsViewAction()
+sealed class SettingsViewCmd : Cmd()
+data object LoadSeed : SettingsViewCmd()
+data class SendAuth(val sendAuth: Boolean) : SettingsViewCmd()
+data class AddClientTag(val addClientTag: Boolean) : SettingsViewCmd()
+data class ExportDatabase(val uiScope: CoroutineScope) : SettingsViewCmd()
+data class ResetDatabase(val uiScope: CoroutineScope) : SettingsViewCmd()
+data class ChangeUpvoteContent(val newContent: String) : SettingsViewCmd()
 
-sealed class SearchViewAction : Cmd()
-data object SubUnknownProfiles : SearchViewAction()
-data class UpdateSearchText(val text: String) : SearchViewAction()
+sealed class SearchViewCmd : Cmd()
+data object SubUnknownProfiles : SearchViewCmd()
+data class UpdateSearchText(val text: String) : SearchViewCmd()
 data class SearchText(
     val text: String,
     val context: Context,
     val onUpdate: (Cmd) -> Unit
-) : SearchViewAction()
-
-data class ClickClickableText(val text: String, val uriHandler: UriHandler) : Cmd()
-
-data class RegisterUriHandler(val uriHandler: UriHandler) : Cmd()
-data class Rebroadcast(val event: Event, val context: Context) : Cmd()
-data class DeleteList(val identifier: Ident, val onCloseDrawer: () -> Unit) : Cmd()
-data class DeletePost(val event: Event) : Cmd()
+) : SearchViewCmd()

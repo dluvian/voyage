@@ -3,6 +3,7 @@ package com.dluvian.voyage
 import com.dluvian.voyage.preferences.EventPreferences
 import com.dluvian.voyage.preferences.RelayPreferences
 import rust.nostr.sdk.ClientBuilder
+import rust.nostr.sdk.Contact
 import rust.nostr.sdk.Coordinate
 import rust.nostr.sdk.Event
 import rust.nostr.sdk.EventBuilder
@@ -58,6 +59,7 @@ class NostrService(
             .limit(1u)
         val event = client.database().query(filter).first()
 
+        // TODO: Catch excecption
         TODO("Read nip65 or return default")
     }
 
@@ -68,6 +70,7 @@ class NostrService(
         val tags = listOf(Tag.fromStandardized(TagStandard.Subject(subject)))
         val builder = EventBuilder.textNote(content = content).tags(tags)
 
+        // TODO: Catch excecption
         return client.sendEventBuilder(builder)
         // TODO: Client Tag
     }
@@ -92,6 +95,7 @@ class NostrService(
         val reaction = eventPreferences.getUpvoteContent()
         val builder = EventBuilder.reaction(event = event, reaction = reaction)
 
+        // TODO: Catch excecption
         return client.sendEventBuilder(builder)
     }
 
@@ -99,29 +103,31 @@ class NostrService(
         eventIds: List<EventId>,
         coords: List<Coordinate> = emptyList(),
     ): SendEventOutput {
-        // TODO: Issue for better SendEventOutput struct
-        // TODO: Issue for default params
         val deletion = EventDeletionRequest(ids = eventIds, coordinates = coords, reason = null)
         val builder = EventBuilder.delete(request = deletion)
 
+        // TODO: Catch excecption
         return client.sendEventBuilder(builder)
     }
 
     suspend fun publishListDeletion(
-        identifier: String,
+        ident: String,
     ): SendEventOutput {
+        // TODO: Catch excecption
         TODO("")
     }
 
     suspend fun publishTopicList(
         topics: List<Topic>,
     ): SendEventOutput {
+        // TODO: Catch excecption
         TODO("")
     }
 
     suspend fun publishBookmarkList(
         eventIds: List<EventId>,
     ): SendEventOutput {
+        // TODO: Catch excecption
         TODO("")
     }
 
@@ -129,6 +135,7 @@ class NostrService(
         read: List<String>, // TODO: No RelayUrl struct?
         write: List<String>
     ): SendEventOutput {
+        // TODO: Catch excecption
         TODO("")
     }
 
@@ -138,6 +145,7 @@ class NostrService(
         description: String,
         pubkeys: List<PublicKey>,
     ): SendEventOutput {
+        // TODO: Catch excecption
         TODO("")
     }
 
@@ -147,12 +155,14 @@ class NostrService(
         description: String,
         topics: List<Topic>,
     ): SendEventOutput {
+        // TODO: Catch excecption
         TODO("")
     }
 
     suspend fun publishProfile(
         metadata: Metadata,
     ): SendEventOutput {
+        // TODO: Catch excecption
         TODO("")
     }
 
@@ -162,6 +172,7 @@ class NostrService(
         content: String,
         label: String,
     ): SendEventOutput {
+        // TODO: Catch excecption
         TODO("")
     }
 
@@ -170,14 +181,17 @@ class NostrService(
         val followed = TODO()
         val builder = EventBuilder.contactList(contacts = followed)
 
+        // TODO: Catch excecption
         return client.sendEventBuilder(builder)
     }
 
     suspend fun unfollowProfile(pubkey: PublicKey): SendEventOutput {
+        val lol = Contact(publicKey = pubkey, relayUrl = null, alias = null)
         val current = TODO()
         val unfollowed = TODO()
         val builder = EventBuilder.contactList(contacts = unfollowed)
 
+        // TODO: Catch excecption
         return client.sendEventBuilder(builder)
     }
 
@@ -186,6 +200,7 @@ class NostrService(
         val followed = TODO()
         val builder = EventBuilder.interests(list = followed)
 
+        // TODO: Catch excecption
         return client.sendEventBuilder(builder)
     }
 
@@ -194,14 +209,54 @@ class NostrService(
         val unfollowed = TODO()
         val builder = EventBuilder.interests(list = unfollowed)
 
+        // TODO: Catch excecption
         return client.sendEventBuilder(builder)
     }
 
-    suspend fun rebroadcast(eventId: EventId): SendEventOutput {
+    suspend fun addPubkeyToList(pubkey: PublicKey, ident: Ident): SendEventOutput {
+        val current = TODO()
+        val added = TODO()
+        val builder = EventBuilder.followSet(identifier = ident, added)
+        // TODO: Read name
+
+        // TODO: Catch excecption
+        return client.sendEventBuilder(builder)
+    }
+
+    suspend fun addTopicToList(topic: Topic, ident: Ident): SendEventOutput {
+        val current = TODO()
+        val added = TODO()
+        val builder = EventBuilder.interestSet(identifier = ident, added)
+        // TODO: Read name
+
+        // TODO: Catch excecption
+        return client.sendEventBuilder(builder)
+    }
+
+    suspend fun addBookmark(eventId: EventId): SendEventOutput {
+        val current = TODO()
+        val added = TODO()
+        val builder = EventBuilder.bookmarks(list = added)
+
+        // TODO: Catch excecption
+        return client.sendEventBuilder(builder)
+    }
+
+    suspend fun removeBookmark(eventId: EventId): SendEventOutput {
+        val current = TODO()
+        val removed = TODO()
+        val builder = EventBuilder.bookmarks(list = removed)
+
+        // TODO: Catch excecption
+        return client.sendEventBuilder(builder)
+    }
+
+    suspend fun rebroadcast(event: Event): SendEventOutput {
         TODO("")
     }
 
     suspend fun removeOldEvents(threshold: Timestamp) {
+        client.database()
         TODO()
     }
 
