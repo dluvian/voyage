@@ -24,7 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.dluvian.voyage.OpenThreadRaw
+import com.dluvian.voyage.OpenThreadLink
 import com.dluvian.voyage.R
 import com.dluvian.voyage.ThreadViewRefresh
 import com.dluvian.voyage.core.EventIdHex
@@ -176,7 +176,7 @@ private fun OpenParentButton(
 ) {
     TextButton(
         modifier = modifier,
-        onClick = { onUpdate(OpenThreadRaw(nevent = createNevent(hex = parentId))) }
+        onClick = { onUpdate(OpenThreadLink(nevent = createNevent(hex = parentId))) }
     ) {
         Text(text = stringResource(id = R.string.open_parent))
     }

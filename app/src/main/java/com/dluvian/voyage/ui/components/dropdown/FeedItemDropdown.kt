@@ -12,7 +12,7 @@ import com.dluvian.voyage.BookmarkCmd
 import com.dluvian.voyage.DeletePost
 import com.dluvian.voyage.FollowProfile
 import com.dluvian.voyage.OpenPostInfo
-import com.dluvian.voyage.OpenThreadRaw
+import com.dluvian.voyage.OpenThreadLink
 import com.dluvian.voyage.R
 import com.dluvian.voyage.Rebroadcast
 import com.dluvian.voyage.UnfollowProfile
@@ -61,7 +61,7 @@ fun FeedItemDropdown(
             is LegacyReply, is Comment -> SimpleDropdownItem(
                 text = stringResource(id = R.string.open_as_root),
                 onClick = {
-                    onUpdate(OpenThreadRaw(nevent = createNevent(hex = mainEvent.id)))
+                    onUpdate(OpenThreadLink(nevent = createNevent(hex = mainEvent.id)))
                     onDismiss()
                 })
         }

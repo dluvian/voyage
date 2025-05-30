@@ -13,6 +13,7 @@ import com.dluvian.voyage.core.navigator.EditProfileNavView
 import com.dluvian.voyage.core.navigator.FollowListsNavView
 import com.dluvian.voyage.core.navigator.HomeNavView
 import com.dluvian.voyage.core.navigator.InboxNavView
+import com.dluvian.voyage.core.navigator.NProfileNavView
 import com.dluvian.voyage.core.navigator.NavView
 import com.dluvian.voyage.core.navigator.OpenListNavView
 import com.dluvian.voyage.core.navigator.ProfileNavView
@@ -58,11 +59,12 @@ sealed class PushNavCmd : NavCmd() {
             ClickBookmarks -> BookmarksNavView
             ClickCreateList -> EditNewListNavView
             ClickCreateGitIssue -> CreateGitIssueNavView
-            is OpenThread -> ThreadNavView(event = this.event)
-            is OpenProfile -> ProfileNavView(nprofile = this.nprofile)
+            is OpenThread -> ThreadNavView(this.event)
+            is OpenThreadLink -> ThreadNeventNavView(nevent = this.nevent)
+            is OpenNProfile -> NProfileNavView(this.nprofile)
+            is OpenProfile -> ProfileNavView(this.profileEvent)
             is OpenTopic -> TopicNavView(topic = this.topic)
             is OpenReplyCreation -> ReplyCreationNavView(parent = this.parent)
-            is OpenThreadRaw -> ThreadNeventNavView(nevent = this.nevent, parent = this.parent)
             is OpenCrossPostCreation -> CrossPostCreationNavView(event = this.event)
             is OpenRelayProfile -> RelayProfileNavView(relayUrl = this.relayUrl)
             is OpenList -> OpenListNavView(identifier = this.identifier)
@@ -86,8 +88,9 @@ data object ClickCreateGitIssue : PushNavCmd()
 
 sealed class AdvancedPushNavCmd : PushNavCmd()
 data class OpenThread(val event: Event) : AdvancedPushNavCmd()
-data class OpenThreadRaw(val nevent: Nip19Event, val parent: Event? = null) : AdvancedPushNavCmd()
-data class OpenProfile(val nprofile: Nip19Profile) : AdvancedPushNavCmd()
+data class OpenThreadLink(val nevent: Nip19Event) : AdvancedPushNavCmd()
+data class OpenProfile(val profileEvent: Event) : AdvancedPushNavCmd()
+data class OpenNProfile(val nprofile: Nip19Profile) : AdvancedPushNavCmd()
 data class OpenTopic(val topic: Topic) : AdvancedPushNavCmd()
 data class OpenReplyCreation(val parent: Event) : AdvancedPushNavCmd()
 data class OpenCrossPostCreation(val event: Event) : AdvancedPushNavCmd()

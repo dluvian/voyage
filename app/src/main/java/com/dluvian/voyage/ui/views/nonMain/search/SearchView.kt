@@ -9,7 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.OpenProfile
-import com.dluvian.voyage.OpenThreadRaw
+import com.dluvian.voyage.OpenThreadLink
 import com.dluvian.voyage.OpenTopic
 import com.dluvian.voyage.R
 import com.dluvian.voyage.SubUnknownProfiles
@@ -96,7 +96,7 @@ private fun SearchViewContent(
                     header = post.subject,
                     content = post.content,
                     onClick = {
-                        onUpdate(OpenThreadRaw(nevent = createNevent(hex = post.id)))
+                        onUpdate(OpenThreadLink(nevent = createNevent(hex = post.id)))
                     },
                 )
             }

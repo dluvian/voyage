@@ -18,7 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.dluvian.voyage.OpenThread
-import com.dluvian.voyage.OpenThreadRaw
+import com.dluvian.voyage.OpenThreadLink
 import com.dluvian.voyage.ThreadViewShowReplies
 import com.dluvian.voyage.ThreadViewToggleCollapse
 import com.dluvian.voyage.core.ComposableContent
@@ -86,7 +86,7 @@ private fun MainEventMainRow(
             is FeedCtx -> {
                 when (val event = ctx.mainEvent) {
                     is ThreadableMainEvent -> onUpdate(OpenThread(mainEvent = event))
-                    is CrossPost -> onUpdate(OpenThreadRaw(nevent = createNevent(hex = event.crossPostedId)))
+                    is CrossPost -> onUpdate(OpenThreadLink(nevent = createNevent(hex = event.crossPostedId)))
                 }
             }
 

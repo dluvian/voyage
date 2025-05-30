@@ -15,6 +15,8 @@ class Core(
 
     val onUpdate: (Cmd) -> Unit = { cmd -> handleCmd(cmd) }
 
+    // TODO: Handle new database events somewhere
+
     private fun handleCmd(cmd: Cmd) {
         when (cmd) {
             is NavCmd -> navigator.handle(cmd = cmd)
