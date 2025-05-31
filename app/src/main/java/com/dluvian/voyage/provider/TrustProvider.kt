@@ -3,7 +3,7 @@ package com.dluvian.voyage.provider
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.dluvian.voyage.Ident
-import rust.nostr.sdk.Client
+import com.dluvian.voyage.NostrService
 import rust.nostr.sdk.Event
 import rust.nostr.sdk.Filter
 import rust.nostr.sdk.Kind
@@ -11,7 +11,7 @@ import rust.nostr.sdk.KindStandard
 import rust.nostr.sdk.PublicKey
 
 
-class TrustProvider(private val client: Client) : IProvider {
+class TrustProvider(private val service: NostrService) {
     private val logTag = "TrustProvider"
 
     // TODO: No mutable State. It should not be used in the UI root as it would trigger too many UI refreshes
@@ -19,13 +19,13 @@ class TrustProvider(private val client: Client) : IProvider {
     private val lists = mutableStateOf(emptyMap<Ident, Set<PublicKey>>())
     private val web = mutableStateOf(emptyMap<PublicKey, Set<PublicKey>>())
 
-    override suspend fun init() {
-        val pubkey = client.signer().getPublicKey()
+    suspend fun init() {
+        val pubkey = service.signer().getPublicKey()
         val friendFilter = Filter()
             .author(pubkey)
             .kind(Kind.fromStd(KindStandard.CONTACT_LIST))
             .limit(1u)
-        val current = client.database()
+        val current = service.database()
             .query(friendFilter)
             .first()
             ?.tags()

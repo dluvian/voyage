@@ -71,7 +71,7 @@ class MainActivity : ComponentActivity() {
         Log.i(TAG, "onPause")
 
         CoroutineScope(Dispatchers.IO).launch {
-            appContainer.nostrService.dbRemoveOldData()
+            appContainer.service.dbRemoveOldData()
         }
     }
 
@@ -187,7 +187,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         editProfileVM = viewModel {
             EditProfileViewModel(
                 fullProfileUpsertDao = appContainer.roomDb.fullProfileUpsertDao(),
-                nostrService = appContainer.nostrService,
+                nostrService = appContainer.service,
                 snackbar = appContainer.snackbar,
                 relayProvider = appContainer.relayProvider,
                 fullProfileDao = appContainer.roomDb.fullProfileDao(),
@@ -200,7 +200,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 lazyListState = relayEditorState,
                 relayProvider = appContainer.relayProvider,
                 snackbar = appContainer.snackbar,
-                nostrService = appContainer.nostrService,
+                nostrService = appContainer.service,
                 nip65UpsertDao = appContainer.roomDb.nip65UpsertDao(),
                 connectionStatuses = appContainer.connectionStatuses
             )

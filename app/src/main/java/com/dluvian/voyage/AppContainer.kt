@@ -7,7 +7,10 @@ import com.dluvian.voyage.preferences.HomePreferences
 import com.dluvian.voyage.preferences.InboxPreferences
 import com.dluvian.voyage.preferences.RelayPreferences
 import com.dluvian.voyage.provider.AnnotatedStringProvider
+import com.dluvian.voyage.provider.BookmarkProvider
 import com.dluvian.voyage.provider.NameProvider
+import com.dluvian.voyage.provider.TopicProvider
+import com.dluvian.voyage.provider.TrustProvider
 
 class AppContainer(val context: Context) {
     val snackbar = SnackbarHostState()
@@ -23,10 +26,21 @@ class AppContainer(val context: Context) {
     val nameProvider = NameProvider()
     val annotatedStringProvider = AnnotatedStringProvider(nameProvider = nameProvider)
 
-    val nostrService = NostrService(
+    val service = NostrService(
         relayPreferences = relayPreferences,
-        eventPreferences = eventPreferences,
         keyStore = keyStore
+    )
+
+    val trustProvider = TrustProvider(service)
+    val topicProvider = TopicProvider(service)
+    val bookmarkProvider = BookmarkProvider(service)
+
+    val eventCreator = EventCreator(
+        service,
+        eventPreferences,
+        trustProvider,
+        topicProvider,
+        bookmarkProvider
     )
 
     val threadCollapser = ThreadCollapser()

@@ -1,17 +1,17 @@
 package com.dluvian.voyage
 
-import java.util.concurrent.atomic.AtomicLong
+import rust.nostr.sdk.Timestamp
 
 class OldestUsedEvent {
-    private val oldestCreatedAt = AtomicLong(Long.MAX_VALUE)
+    private var oldestCreatedAt = Timestamp.now()
 
-    fun getOldestCreatedAt() = oldestCreatedAt.get()
+    fun createdAt() = oldestCreatedAt
 
-    fun updateOldestCreatedAt(createdAt: Long?) {
+    fun updateCreatedAt(createdAt: Timestamp?) {
         if (createdAt == null) return
-        oldestCreatedAt.getAndUpdate { old -> if (createdAt < old) createdAt else old }
-    }
 
-    // No reset method.
-    // Resetting in EventSweeper could be fatal if user closes and reopens many times
+        if (createdAt.asSecs() < oldestCreatedAt.asSecs()) {
+            oldestCreatedAt = createdAt
+        }
+    }
 }

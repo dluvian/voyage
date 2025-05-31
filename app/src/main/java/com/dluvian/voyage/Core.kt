@@ -24,68 +24,68 @@ class Core(
             is DrawerViewCmd -> vmContainer.drawerVM.handle(action = cmd)
 
             is ClickUpvote -> viewModelScope.launch {
-                appContainer.nostrService.publishVote(cmd.event)
+                appContainer.eventCreator.publishVote(cmd.event)
                 // TODO: Show error in snackbar
             }
 
             is ClickNeutralizeVotes -> viewModelScope.launch {
-                appContainer.nostrService.publishDelete(eventIds = cmd.voteIds)
+                appContainer.eventCreator.publishDelete(eventIds = cmd.voteIds)
                 // TODO: Show error in snackbar
             }
 
             is FollowProfile -> viewModelScope.launch {
-                appContainer.nostrService.followProfile(cmd.pubkey)
+                appContainer.eventCreator.followProfile(cmd.pubkey)
                 // TODO: Show error in snackbar
             }
 
             is UnfollowProfile -> viewModelScope.launch {
-                appContainer.nostrService.unfollowProfile(cmd.pubkey)
+                appContainer.eventCreator.unfollowProfile(cmd.pubkey)
                 // TODO: Show error in snackbar
             }
 
             is FollowTopic -> viewModelScope.launch {
-                appContainer.nostrService.followTopic(cmd.topic)
+                appContainer.eventCreator.followTopic(cmd.topic)
                 // TODO: Show error in snackbar
             }
 
             is UnfollowTopic -> viewModelScope.launch {
-                appContainer.nostrService.unfollowTopic(cmd.topic)
+                appContainer.eventCreator.unfollowTopic(cmd.topic)
                 // TODO: Show error in snackbar
             }
 
             is DeletePost -> viewModelScope.launch {
-                appContainer.nostrService.publishDelete(eventIds = listOf(cmd.event.id()))
+                appContainer.eventCreator.publishDelete(eventIds = listOf(cmd.event.id()))
                 // TODO: Show error in snackbar
             }
 
             is DeleteList -> viewModelScope.launch {
-                appContainer.nostrService.publishListDeletion(cmd.ident)
+                appContainer.eventCreator.publishListDeletion(cmd.ident)
                 // TODO: Show error in snackbar
                 // TODO: Close drawer
             }
 
             is AddPubkeyToList -> viewModelScope.launch {
-                appContainer.nostrService.addPubkeyToList(cmd.pubkey, cmd.ident)
+                appContainer.eventCreator.addPubkeyToList(cmd.pubkey, cmd.ident)
                 // TODO: Show error in snackbar
             }
 
             is AddTopicToList -> viewModelScope.launch {
-                appContainer.nostrService.addTopicToList(cmd.topic, cmd.ident)
+                appContainer.eventCreator.addTopicToList(cmd.topic, cmd.ident)
                 // TODO: Show error in snackbar
             }
 
             is BookmarkPost -> viewModelScope.launch {
-                appContainer.nostrService.addBookmark(cmd.event.id())
+                appContainer.eventCreator.addBookmark(cmd.event.id())
                 // TODO: Show error in snackbar
             }
 
             is UnbookmarkPost -> viewModelScope.launch {
-                appContainer.nostrService.removeBookmark(cmd.event.id())
+                appContainer.eventCreator.removeBookmark(cmd.event.id())
                 // TODO: Show error in snackbar
             }
 
             is Rebroadcast -> viewModelScope.launch {
-                appContainer.nostrService.rebroadcast(cmd.event)
+                appContainer.service.rebroadcast(cmd.event)
                 // TODO: Show error in snackbar
             }
 
@@ -119,7 +119,7 @@ class Core(
 
     override fun onCleared() {
         viewModelScope.launch {
-            appContainer.nostrService.close()
+            appContainer.service.close()
         }
         super.onCleared()
     }

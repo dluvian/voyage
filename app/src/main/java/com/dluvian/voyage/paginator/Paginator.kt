@@ -61,6 +61,6 @@ class Paginator(
     }
 
     private suspend fun setPage(until: Timestamp) {
-        service.TODO("Get pagesize until + all posts of oldest timestamp")
+        TODO("Get pagesize until + all posts of oldest timestamp")
     }
 }
