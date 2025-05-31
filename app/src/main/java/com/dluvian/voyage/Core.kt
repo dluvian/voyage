@@ -118,9 +118,9 @@ class Core(
     }
 
     override fun onCleared() {
-        super.onCleared()
         viewModelScope.launch {
             appContainer.nostrService.close()
         }
+        super.onCleared()
     }
 }

@@ -2,6 +2,8 @@ package com.dluvian.voyage
 
 import com.dluvian.voyage.preferences.EventPreferences
 import com.dluvian.voyage.preferences.RelayPreferences
+import com.dluvian.voyage.provider.TopicProvider
+import com.dluvian.voyage.provider.TrustProvider
 import rust.nostr.sdk.ClientBuilder
 import rust.nostr.sdk.Contact
 import rust.nostr.sdk.Coordinate
@@ -10,10 +12,11 @@ import rust.nostr.sdk.EventBuilder
 import rust.nostr.sdk.EventDeletionRequest
 import rust.nostr.sdk.EventId
 import rust.nostr.sdk.Filter
+import rust.nostr.sdk.GitIssue
+import rust.nostr.sdk.Interests
 import rust.nostr.sdk.Kind
 import rust.nostr.sdk.KindStandard
 import rust.nostr.sdk.Metadata
-import rust.nostr.sdk.Nip21
 import rust.nostr.sdk.NostrDatabase
 import rust.nostr.sdk.Options
 import rust.nostr.sdk.PublicKey
@@ -21,26 +24,31 @@ import rust.nostr.sdk.RelayMetadata
 import rust.nostr.sdk.RelayOptions
 import rust.nostr.sdk.SendEventOutput
 import rust.nostr.sdk.Tag
+import rust.nostr.sdk.TagKind
 import rust.nostr.sdk.TagStandard
+import rust.nostr.sdk.Tags
 import rust.nostr.sdk.Timestamp
 import rust.nostr.sdk.extractRelayList
-import rust.nostr.sdk.nip21ExtractFromText
 
 class NostrService(
     private val relayPreferences: RelayPreferences,
     private val eventPreferences: EventPreferences,
     keyStore: KeyStore,
 ) {
-    val clientOpts = Options()
+    private val logTag = "NostrService"
+    private val clientOpts = Options()
         .gossip(true)
         .automaticAuthentication(relayPreferences.getSendAuth())
 
-    val client = ClientBuilder()
+    private val client = ClientBuilder()
         .signer(keyStore.getSigner())
         .opts(clientOpts)
         .database(NostrDatabase.lmdb("voyage_db"))
         .admitPolicy(RelayChecker())
         .build()
+
+    private val trustProvider = TrustProvider(client)
+    private val topicProvider = TopicProvider(client)
 
     suspend fun init() {
         getPersonalRelays().forEach { (relay, meta) ->
@@ -79,18 +87,9 @@ class NostrService(
         topics: List<Topic>
     ): Result<SendEventOutput> {
         val tags = mutableListOf(Tag.fromStandardized(TagStandard.Subject(subject)))
-
         topics.forEach { topic -> tags.add(Tag.hashtag(topic)) }
-
-        val extractedNip21 = mutableListOf<Nip21>()
-        extractedNip21.addAll(nip21ExtractFromText(subject))
-        extractedNip21.addAll(nip21ExtractFromText(content))
-        val extractedTags: List<Tag> = extractedNip21.map { nip21 ->
-            when (nip21.asEnum()) {
-                else -> TODO("wait for rust-nostr to provide mapping")
-            }
-        }
-        tags.addAll(extractedTags)
+        tags.addAll(Tags.fromText(subject).toVec())
+        tags.addAll(Tags.fromText(content).toVec())
 
         if (eventPreferences.isAddingClientTag()) {
             // TODO: Wait for default nullability
@@ -106,19 +105,17 @@ class NostrService(
         content: String,
         parent: Event,
     ): Result<SendEventOutput> {
-        val tags: MutableList<Tag> = nip21ExtractFromText(content).map { nip21 ->
-            when (nip21.asEnum()) {
-                else -> TODO("wait for rust-nostr to provide mapping")
-            }
-        }.toMutableList()
+        val tags = Tags.fromText(content).toVec().toMutableList()
 
         if (eventPreferences.isAddingClientTag()) {
             // TODO: Wait for default nullability
             tags.add(Tag.fromStandardized(TagStandard.Client(name = APP_NAME, address = null)))
         }
 
-        val builder =
-            EventBuilder.textNoteReply(content = content, replyTo = parent).tags(tags).dedupTags()
+        val builder = EventBuilder
+            .textNoteReply(content = content, replyTo = parent)
+            .tags(tags)
+            .dedupTags()
 
         return runCatching { client.sendEventBuilder(builder) }
     }
@@ -178,112 +175,157 @@ class NostrService(
         return runCatching { client.sendEventBuilder(builder) }
     }
 
-    suspend fun publishTopicList(
-        topics: List<Topic>,
-    ): Result<SendEventOutput> {
-        // TODO: Catch excecption
-        TODO("")
-    }
-
-    suspend fun publishBookmarkList(
-        eventIds: List<EventId>,
-    ): Result<SendEventOutput> {
-        // TODO: Catch excecption
-        TODO("")
-    }
-
     suspend fun publishNip65(
-        read: List<String>, // TODO: No RelayUrl struct?
-        write: List<String>
+        relays: Map<String, RelayMetadata?>, // TODO: No RelayUrl struct?
     ): Result<SendEventOutput> {
-        // TODO: Catch excecption
-        TODO("")
+        val builder = EventBuilder.relayList(relays)
+
+        return runCatching { client.sendEventBuilder(builder) }
     }
 
-    suspend fun publishProfileSet(
-        identifier: String,
+    suspend fun publishPubkeySet(
+        ident: Ident,
         title: String,
         description: String,
         pubkeys: List<PublicKey>,
     ): Result<SendEventOutput> {
-        // TODO: Catch excecption
-        TODO("")
+        val tags = listOf(
+            Tag.fromStandardized(TagStandard.Title(title)),
+            Tag.fromStandardized(TagStandard.Description(description))
+        )
+        val builder = EventBuilder.followSet(identifier = ident, publicKeys = pubkeys).tags(tags)
+
+        return runCatching { client.sendEventBuilder(builder) }
     }
 
     suspend fun publishTopicSet(
-        identifier: String,
+        ident: String,
         title: String,
         description: String,
         topics: List<Topic>,
     ): Result<SendEventOutput> {
-        // TODO: Catch excecption
-        TODO("")
+        val tags = listOf(
+            Tag.fromStandardized(TagStandard.Title(title)),
+            Tag.fromStandardized(TagStandard.Description(description))
+        )
+        val builder = EventBuilder.interestSet(identifier = ident, hashtags = topics).tags(tags)
+
+        return runCatching { client.sendEventBuilder(builder) }
     }
 
     suspend fun publishProfile(
         metadata: Metadata,
     ): Result<SendEventOutput> {
-        // TODO: Catch excecption
-        TODO("")
+        val builder = EventBuilder.metadata(metadata)
+
+        return runCatching { client.sendEventBuilder(builder) }
     }
 
     suspend fun publishGitIssue(
-        repoCoordinate: Coordinate,
+        repoCoord: Coordinate,
         subject: String,
         content: String,
         label: String,
     ): Result<SendEventOutput> {
-        // TODO: Catch excecption
-        TODO("")
+        val issue = GitIssue(
+            repository = repoCoord,
+            content = content,
+            subject = subject,
+            labels = listOf(label)
+        )
+        val builder = EventBuilder.gitIssue(issue)
+
+        return runCatching { client.sendEventBuilder(builder) }
     }
 
     suspend fun followProfile(pubkey: PublicKey): Result<SendEventOutput> {
-        val current = TODO()
-        val followed = TODO()
-        val builder = EventBuilder.contactList(contacts = followed)
+        val current = trustProvider.friends().toMutableSet()
+        if (current.contains(pubkey)) return Result.failure(AlreadyFollowedException())
+
+        current.add(pubkey)
+        val newContacts = current.map { Contact(it, null, null) } // TODO: Wait for nullability
+        val builder = EventBuilder.contactList(contacts = newContacts)
 
         return runCatching { client.sendEventBuilder(builder) }
     }
 
     suspend fun unfollowProfile(pubkey: PublicKey): Result<SendEventOutput> {
-        val lol = Contact(publicKey = pubkey, relayUrl = null, alias = null)
-        val current = TODO()
-        val unfollowed = TODO()
-        val builder = EventBuilder.contactList(contacts = unfollowed)
+        val current = trustProvider.friends().toMutableSet()
+        if (!current.contains(pubkey)) return Result.failure(AlreadyFollowedException())
+
+        current.remove(pubkey)
+        val newContacts = current.map { Contact(it, null, null) } // TODO: Wait for nullability
+        val builder = EventBuilder.contactList(contacts = newContacts)
 
         return runCatching { client.sendEventBuilder(builder) }
     }
 
     suspend fun followTopic(topic: Topic): Result<SendEventOutput> {
-        val current = TODO()
-        val followed = TODO()
-        val builder = EventBuilder.interests(list = followed)
+        val current = topicProvider.topics().toMutableSet()
+        if (current.contains(topic)) return Result.failure(AlreadyFollowedException())
+
+        current.add(topic)
+        val newTopics = Interests(hashtags = current.toList())
+        val builder = EventBuilder.interests(newTopics)
 
         return runCatching { client.sendEventBuilder(builder) }
     }
 
     suspend fun unfollowTopic(topic: Topic): Result<SendEventOutput> {
-        val current = TODO()
-        val unfollowed = TODO()
-        val builder = EventBuilder.interests(list = unfollowed)
+        val current = topicProvider.topics().toMutableSet()
+        if (!current.contains(topic)) return Result.failure(AlreadyUnfollowedException())
+
+        current.remove(topic)
+        val newTopics = Interests(hashtags = current.toList())
+        val builder = EventBuilder.interests(newTopics)
 
         return runCatching { client.sendEventBuilder(builder) }
     }
 
     suspend fun addPubkeyToList(pubkey: PublicKey, ident: Ident): Result<SendEventOutput> {
-        val current = TODO()
-        val added = TODO()
-        val builder = EventBuilder.followSet(identifier = ident, added)
-        // TODO: Read name
+        val filter = Filter()
+            .author(client.signer().getPublicKey())
+            .kind(Kind.fromStd(KindStandard.FOLLOW_SET))
+            .identifier(ident)
+            .limit(1u)
+        val event = client.database().query(filter).first()
+        if (event == null) return Result.failure(EventNotInDatabaseException())
+
+        val pubkeys = event.tags().publicKeys().toMutableSet()
+        if (pubkeys.contains(pubkey)) return Result.failure(AlreadyFollowedException())
+
+        pubkeys.add(pubkey)
+        val tags = listOf(
+            event.tags().findStandardized(TagKind.Title),
+            event.tags().findStandardized(TagKind.Description)
+        ).mapNotNull { std -> std?.let { Tag.fromStandardized(std) } }
+        val builder = EventBuilder
+            .followSet(identifier = ident, publicKeys = pubkeys.toList())
+            .tags(tags)
 
         return runCatching { client.sendEventBuilder(builder) }
     }
 
     suspend fun addTopicToList(topic: Topic, ident: Ident): Result<SendEventOutput> {
-        val current = TODO()
-        val added = TODO()
-        val builder = EventBuilder.interestSet(identifier = ident, added)
-        // TODO: Read name
+        val filter = Filter()
+            .author(client.signer().getPublicKey())
+            .kind(Kind.fromStd(KindStandard.INTEREST_SET))
+            .identifier(ident)
+            .limit(1u)
+        val event = client.database().query(filter).first()
+        if (event == null) return Result.failure(EventNotInDatabaseException())
+
+        val topics = event.tags().hashtags().toMutableSet()
+        if (topics.contains(topic)) return Result.failure(AlreadyFollowedException())
+
+        topics.add(topic)
+        val tags = listOf(
+            event.tags().findStandardized(TagKind.Title),
+            event.tags().findStandardized(TagKind.Description)
+        ).mapNotNull { std -> std?.let { Tag.fromStandardized(std) } }
+        val builder = EventBuilder
+            .interestSet(identifier = ident, hashtags = topics.toList())
+            .tags(tags)
 
         return runCatching { client.sendEventBuilder(builder) }
     }
@@ -304,26 +346,26 @@ class NostrService(
         return runCatching { client.sendEventBuilder(builder) }
     }
 
-    suspend fun rebroadcast(event: Event): Result<SendEventOutput> {
-        TODO("")
+    suspend fun rebroadcast(event: Event): SendEventOutput {
+        val relays = client.relays().keys.toList()
+
+        return client.sendEventTo(urls = relays, event = event)
     }
 
-    suspend fun removeOldEvents(threshold: Timestamp) {
-        client.database()
-        TODO()
-    }
+    suspend fun dbRemoveOldData(threshold: Timestamp) {
+        val kinds = listOf(
+            KindStandard.TEXT_NOTE,
+            KindStandard.REPOST,
+            KindStandard.COMMENT,
+            KindStandard.REACTION
+        )
+            .map { Kind.fromStd(it) }
+        val deletion = Filter().kinds(kinds).until(threshold)
 
-    // TODO: RelayUrl struct
-    suspend fun addReadRelay(relay: String) {
-        TODO()
-    }
-
-    // TODO: RelayUrl struct
-    suspend fun addWriteRelay(relay: String) {
-        TODO()
+        client.database().delete(deletion)
     }
 
     suspend fun close() {
-        TODO()
+        client.shutdown()
     }
 }

@@ -28,6 +28,7 @@ import java.util.Collections
 
 private const val TAG = "AnnotatedStringProvider"
 
+// TODO: Should be single function used in UI
 class AnnotatedStringProvider(private val nameProvider: NameProvider) {
     companion object {
         const val NEVENT_TAG = "NEVENT"

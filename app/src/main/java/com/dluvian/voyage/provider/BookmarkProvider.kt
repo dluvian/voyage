@@ -2,7 +2,7 @@ package com.dluvian.voyage.provider
 
 import rust.nostr.sdk.Event
 
-class NameProvider : IProvider {
+class BookmarkProvider : IProvider {
     override suspend fun init() {
         TODO("Not yet implemented")
     }
