@@ -2,7 +2,7 @@ package com.dluvian.voyage
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.voyage.core.navigator.Navigator
+import com.dluvian.voyage.navigator.Navigator
 import com.dluvian.voyage.viewModel.VMContainer
 import kotlinx.coroutines.launch
 

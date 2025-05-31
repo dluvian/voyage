@@ -27,7 +27,7 @@ import com.dluvian.voyage.core.navigator.ThreadNeventNavView
 import com.dluvian.voyage.core.navigator.TopicNavView
 import com.dluvian.voyage.filterSetting.HomeFeedSetting
 import com.dluvian.voyage.filterSetting.InboxFeedSetting
-import com.dluvian.voyage.model.LabledGitIssue
+import com.dluvian.voyage.model.LabeledGitIssue
 import kotlinx.coroutines.CoroutineScope
 import rust.nostr.sdk.Event
 import rust.nostr.sdk.EventId
@@ -192,7 +192,7 @@ data class SendPost(
 ) : CreatePostViewCmd()
 
 sealed class CreateGitIssueViewCmd : Cmd()
-data class SendGitIssue(val issue: LabledGitIssue) : CreateGitIssueViewCmd()
+data class SendGitIssue(val issue: LabeledGitIssue) : CreateGitIssueViewCmd()
 data object SubRepoOwnerRelays : CreateGitIssueViewCmd()
 
 sealed class CreateReplyViewCmd : Cmd()

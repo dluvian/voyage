@@ -13,6 +13,7 @@ import rust.nostr.sdk.Event
 import rust.nostr.sdk.EventBuilder
 import rust.nostr.sdk.EventDeletionRequest
 import rust.nostr.sdk.EventId
+import rust.nostr.sdk.Events
 import rust.nostr.sdk.Filter
 import rust.nostr.sdk.GitIssue
 import rust.nostr.sdk.Interests
@@ -24,7 +25,10 @@ import rust.nostr.sdk.Options
 import rust.nostr.sdk.PublicKey
 import rust.nostr.sdk.RelayMetadata
 import rust.nostr.sdk.RelayOptions
+import rust.nostr.sdk.ReqExitPolicy
 import rust.nostr.sdk.SendEventOutput
+import rust.nostr.sdk.SubscribeAutoCloseOptions
+import rust.nostr.sdk.SubscribeOutput
 import rust.nostr.sdk.Tag
 import rust.nostr.sdk.TagKind
 import rust.nostr.sdk.TagStandard
@@ -70,8 +74,7 @@ class NostrService(
             .author(client.signer().getPublicKey())
             .kind(Kind.fromStd(KindStandard.RELAY_LIST))
             .limit(1u)
-        val event = client.database().query(filter).first()
-
+        val event = dbQuery(filter).first()
 
         return if (event != null) {
             extractRelayList(event)
@@ -83,6 +86,44 @@ class NostrService(
             )
         }
     }
+
+    suspend fun rebroadcast(event: Event): SendEventOutput {
+        val relays = client.relays().keys.toList()
+
+        return client.sendEventTo(urls = relays, event = event)
+    }
+
+    suspend fun publish(event: Event): SendEventOutput {
+        return client.sendEvent(event)
+    }
+
+    suspend fun sign(builder: EventBuilder): Result<Event> {
+        return runCatching { client.signEventBuilder(builder) }
+    }
+
+    suspend fun pubkey(): PublicKey {
+        return client.signer().getPublicKey()
+    }
+
+    suspend fun dbQuery(filter: Filter): Events {
+        return client.database().query(filter)
+    }
+
+    suspend fun dbDelete(filter: Filter) {
+        return client.database().delete(filter)
+    }
+
+    suspend fun subscribe(filter: Filter): SubscribeOutput {
+        val opts = SubscribeAutoCloseOptions().exitPolicy(ReqExitPolicy.ExitOnEose)
+
+        return client.subscribe(filter = filter, opts = opts)
+    }
+
+    suspend fun close() {
+        client.shutdown()
+    }
+
+    // TODO: Everything below belongs to a different class
 
     suspend fun publishPost(
         subject: String,
@@ -355,13 +396,7 @@ class NostrService(
         return runCatching { client.sendEventBuilder(builder) }
     }
 
-    suspend fun rebroadcast(event: Event): SendEventOutput {
-        val relays = client.relays().keys.toList()
-
-        return client.sendEventTo(urls = relays, event = event)
-    }
-
-    suspend fun dbRemoveOldData(threshold: Timestamp) {
+    suspend fun dbRemoveOldData() {
         val kinds = listOf(
             KindStandard.TEXT_NOTE,
             KindStandard.REPOST,
@@ -369,12 +404,10 @@ class NostrService(
             KindStandard.REACTION
         )
             .map { Kind.fromStd(it) }
-        val deletion = Filter().kinds(kinds).until(threshold)
+        val untilSecs = Timestamp.now().asSecs() - DB_SWEEP_THRESHOLD.toUInt()
+        val until = Timestamp.fromSecs(untilSecs)
+        val deletion = Filter().kinds(kinds).until(until)
 
         client.database().delete(deletion)
-    }
-
-    suspend fun close() {
-        client.shutdown()
     }
 }

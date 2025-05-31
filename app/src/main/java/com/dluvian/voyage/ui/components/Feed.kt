@@ -58,8 +58,8 @@ fun Feed(
     onUpdate: OnUpdate,
 ) {
     val isRefreshing by paginator.isRefreshing
-    val isAppending by paginator.isAppending
-    val hasMoreRecentItems by paginator.hasMoreRecentItems
+    val isAppending by paginator.isSwitchingPage
+    val hasMoreRecentItems by paginator.isNotFirstPage
     val hasPage by paginator.hasPage.value.collectAsState()
     val pageTimestamps by paginator.pageTimestamps
     val filteredPage by paginator.filteredPage.value.collectAsState()

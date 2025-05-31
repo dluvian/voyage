@@ -1,15 +1,12 @@
 package com.dluvian.voyage.paginator
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
-import com.dluvian.voyage.ui.components.row.mainEvent.MainEventCtx
-import kotlinx.coroutines.flow.StateFlow
+import rust.nostr.sdk.Event
 
 interface IPaginator {
-    val isInitialized: State<Boolean>
     val isRefreshing: State<Boolean>
-    val isAppending: State<Boolean>
-    val hasMoreRecentItems: State<Boolean>
-    val hasPage: State<StateFlow<Boolean>>
-    val pageTimestamps: State<List<Long>>
-    val filteredPage: State<StateFlow<List<MainEventCtx>>>
+    val isSwitchingPage: State<Boolean>
+    val isNotFirstPage: State<Boolean>
+    val page: MutableState<List<Event>>
 }

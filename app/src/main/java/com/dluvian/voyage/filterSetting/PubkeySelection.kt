@@ -1,6 +1,7 @@
 package com.dluvian.voyage.data.filterSetting
 
-import com.dluvian.voyage.core.PubkeyHex
+import rust.nostr.sdk.PublicKey
+
 
 sealed class PubkeySelection
 
@@ -11,8 +12,8 @@ data object FriendPubkeys : FeedPubkeySelection()
 data object WebOfTrustPubkeys : FeedPubkeySelection()
 data object Global : FeedPubkeySelection()
 
-data class CustomPubkeys(val pubkeys: Collection<PubkeyHex>) : PubkeySelection()
+data class CustomPubkeys(val pubkeys: Collection<PublicKey>) : PubkeySelection()
 data class ListPubkeys(val identifier: String) : PubkeySelection()
-data class SingularPubkey(val pubkey: PubkeyHex) : PubkeySelection() {
+data class SingularPubkey(val pubkey: PublicKey) : PubkeySelection() {
     fun asList() = listOf(pubkey)
 }

@@ -1,3 +1,3 @@
 package com.dluvian.voyage.model
 
-sealed class LabledGitIssue
+sealed class LabeledGitIssue

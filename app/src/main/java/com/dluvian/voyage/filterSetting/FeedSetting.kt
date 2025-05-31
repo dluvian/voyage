@@ -1,6 +1,6 @@
 package com.dluvian.voyage.filterSetting
 
-import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.Topic
 import com.dluvian.voyage.data.filterSetting.FeedPubkeySelection
 import com.dluvian.voyage.data.filterSetting.HomeFeedTopicSelection
 import rust.nostr.sdk.Nip19Profile

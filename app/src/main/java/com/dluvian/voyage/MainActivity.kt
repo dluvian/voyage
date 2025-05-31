@@ -12,7 +12,6 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.anggrayudi.storage.SimpleStorageHelper
 import com.dluvian.voyage.ui.VoyageApp
 import com.dluvian.voyage.viewModel.BookmarksViewModel
 import com.dluvian.voyage.viewModel.CreateCrossPostViewModel
@@ -35,6 +34,9 @@ import com.dluvian.voyage.viewModel.SettingsViewModel
 import com.dluvian.voyage.viewModel.ThreadViewModel
 import com.dluvian.voyage.viewModel.TopicViewModel
 import com.dluvian.voyage.viewModel.VMContainer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 private const val TAG = "MainActivity"
 
@@ -44,12 +46,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        val storageHelper = SimpleStorageHelper(this@MainActivity)
 
-        appContainer = AppContainer(
-            context = this.applicationContext,
-            storageHelper = storageHelper
-        )
+        appContainer = AppContainer(this.applicationContext)
 
         setContent {
             val activity = LocalActivity.current
@@ -72,7 +70,9 @@ class MainActivity : ComponentActivity() {
         super.onPause()
         Log.i(TAG, "onPause")
 
-        appContainer.eventSweeper.sweep()
+        CoroutineScope(Dispatchers.IO).launch {
+            appContainer.nostrService.dbRemoveOldData()
+        }
     }
 
     override fun onDestroy() {
