@@ -1,8 +1,12 @@
 package com.dluvian.voyage.provider
 
+import rust.nostr.sdk.Client
 import rust.nostr.sdk.Event
+import rust.nostr.sdk.EventId
 
-class BookmarkProvider : IProvider {
+class BookmarkProvider(private val client: Client) : IProvider {
+    private val bookmarks = mutableSetOf<EventId>()
+
     override suspend fun init() {
         TODO("Not yet implemented")
     }
@@ -14,4 +18,6 @@ class BookmarkProvider : IProvider {
     override suspend fun update(event: Event) {
         TODO("Not yet implemented")
     }
+
+    fun bookmarks() = bookmarks.toSet()
 }

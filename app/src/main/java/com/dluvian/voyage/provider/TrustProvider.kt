@@ -15,9 +15,9 @@ class TrustProvider(private val client: Client) : IProvider {
     private val logTag = "TrustProvider"
 
     // TODO: No mutable State. It should not be used in the UI root as it would trigger too many UI refreshes
-    val friends = mutableStateOf(emptySet<PublicKey>())
-    val lists = mutableStateOf(emptyMap<Ident, Set<PublicKey>>())
-    val web = mutableStateOf(emptyMap<PublicKey, Set<PublicKey>>())
+    private val friends = mutableStateOf(emptySet<PublicKey>())
+    private val lists = mutableStateOf(emptyMap<Ident, Set<PublicKey>>())
+    private val web = mutableStateOf(emptyMap<PublicKey, Set<PublicKey>>())
 
     override suspend fun init() {
         val pubkey = client.signer().getPublicKey()

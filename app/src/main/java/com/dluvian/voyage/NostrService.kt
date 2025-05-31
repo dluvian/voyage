@@ -2,8 +2,10 @@ package com.dluvian.voyage
 
 import com.dluvian.voyage.preferences.EventPreferences
 import com.dluvian.voyage.preferences.RelayPreferences
+import com.dluvian.voyage.provider.BookmarkProvider
 import com.dluvian.voyage.provider.TopicProvider
 import com.dluvian.voyage.provider.TrustProvider
+import rust.nostr.sdk.Bookmarks
 import rust.nostr.sdk.ClientBuilder
 import rust.nostr.sdk.Contact
 import rust.nostr.sdk.Coordinate
@@ -49,6 +51,7 @@ class NostrService(
 
     private val trustProvider = TrustProvider(client)
     private val topicProvider = TopicProvider(client)
+    private val bookmarkProvider = BookmarkProvider(client)
 
     suspend fun init() {
         getPersonalRelays().forEach { (relay, meta) ->
@@ -331,17 +334,23 @@ class NostrService(
     }
 
     suspend fun addBookmark(eventId: EventId): Result<SendEventOutput> {
-        val current = TODO()
-        val added = TODO()
-        val builder = EventBuilder.bookmarks(list = added)
+        val current = bookmarkProvider.bookmarks().toMutableSet()
+        if (current.contains(eventId)) return Result.failure(AlreadyFollowedException())
+
+        current.add(eventId)
+        val newBookmarks = Bookmarks(eventIds = current.toList())
+        val builder = EventBuilder.bookmarks(newBookmarks)
 
         return runCatching { client.sendEventBuilder(builder) }
     }
 
     suspend fun removeBookmark(eventId: EventId): Result<SendEventOutput> {
-        val current = TODO()
-        val removed = TODO()
-        val builder = EventBuilder.bookmarks(list = removed)
+        val current = bookmarkProvider.bookmarks().toMutableSet()
+        if (!current.contains(eventId)) return Result.failure(AlreadyUnfollowedException())
+
+        current.remove(eventId)
+        val newBookmarks = Bookmarks(eventIds = current.toList())
+        val builder = EventBuilder.bookmarks(newBookmarks)
 
         return runCatching { client.sendEventBuilder(builder) }
     }
