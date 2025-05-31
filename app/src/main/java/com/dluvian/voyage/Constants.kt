@@ -5,7 +5,3 @@ const val PAGE_SIZE = 20
 
 private const val DAY_IN_SECS = 24 * 60 * 60
 const val DB_SWEEP_THRESHOLD = (90 * DAY_IN_SECS)
-
-class FeedProvider {
-
-}

@@ -71,7 +71,7 @@ class MainActivity : ComponentActivity() {
         Log.i(TAG, "onPause")
 
         CoroutineScope(Dispatchers.IO).launch {
-            appContainer.service.dbRemoveOldData()
+            appContainer.dbSweeper.sweep()
         }
     }
 

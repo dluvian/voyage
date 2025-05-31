@@ -43,5 +43,7 @@ class AppContainer(val context: Context) {
         bookmarkProvider
     )
 
+    val dbSweeper = DatabaseSweeper(service, oldestUsedEvent)
+
     val threadCollapser = ThreadCollapser()
 }

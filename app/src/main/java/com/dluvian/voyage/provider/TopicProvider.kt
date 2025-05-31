@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.dluvian.voyage.NostrService
 import com.dluvian.voyage.Topic
-import rust.nostr.sdk.Event
 import rust.nostr.sdk.Filter
 import rust.nostr.sdk.Kind
 import rust.nostr.sdk.KindStandard
@@ -14,14 +13,15 @@ class TopicProvider(private val service: NostrService) {
     private val logTag = "TrustProvider"
     val topics = mutableStateOf(emptySet<Topic>())
 
-    override suspend fun init() {
-        val pubkey = service.signer().getPublicKey()
+    // TODO: Switch signer
+    // TODO: Listen to database events
+    suspend fun init() {
+        val pubkey = service.pubkey()
         val topicFilter = Filter()
             .author(pubkey)
             .kind(Kind.fromStd(KindStandard.INTERESTS))
             .limit(1u)
-        val current = service.database()
-            .query(topicFilter)
+        val current = service.dbQuery(topicFilter)
             .first()
             ?.tags()
             ?.hashtags()
@@ -32,14 +32,6 @@ class TopicProvider(private val service: NostrService) {
         } else {
             topics.value = current
         }
-    }
-
-    override suspend fun updateSigner() {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun update(event: Event) {
-        TODO("Not yet implemented")
     }
 
     fun topics() = topics.value

@@ -39,11 +39,6 @@ fun getListTabHeaders(numOfProfiles: Int, numOfTopics: Int): List<String> {
 }
 
 @Composable
-fun canAddAnotherTopic(selectedItemLength: Int, maxItems: Int = MAX_LIST_LEN): Boolean {
-    return remember(selectedItemLength) { maxItems - selectedItemLength > 1 }
-}
-
-@Composable
 fun LazyListState.showScrollButton(): Boolean {
     val hasOffset by remember { derivedStateOf { this.firstVisibleItemIndex > 2 } }
     var hasScrolled by remember(this) { mutableStateOf(false) }

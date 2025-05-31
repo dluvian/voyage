@@ -23,7 +23,6 @@ class NostrService(
     relayPreferences: RelayPreferences,
     keyStore: KeyStore,
 ) {
-    private val logTag = "NostrService"
     private val clientOpts = Options()
         .gossip(true)
         .automaticAuthentication(relayPreferences.getSendAuth())
