@@ -1,8 +1,7 @@
 package com.dluvian.voyage.filterSetting
 
 import com.dluvian.voyage.Topic
-import com.dluvian.voyage.data.filterSetting.FeedPubkeySelection
-import com.dluvian.voyage.data.filterSetting.HomeFeedTopicSelection
+import rust.nostr.sdk.Kind
 import rust.nostr.sdk.Nip19Profile
 
 sealed class FeedSetting
@@ -14,10 +13,10 @@ data object BookmarksFeedSetting : FeedSetting()
 sealed class MainFeedSetting : FeedSetting()
 
 data class HomeFeedSetting(
-    val topicSelection: HomeFeedTopicSelection,
     val pubkeySelection: FeedPubkeySelection,
-    val showRoots: Boolean,
-    val showCrossPosts: Boolean,
+    val withTopics: Boolean,
+    val kinds: List<Kind>,
+    val pageSize: ULong,
 ) : MainFeedSetting()
 
 data class TopicFeedSetting(val topic: Topic) : MainFeedSetting()

@@ -1,5 +1,7 @@
 package com.dluvian.voyage.provider
 
+import androidx.compose.ui.text.AnnotatedString
+
 private const val TAG = "AnnotatedStringProvider"
 
 
@@ -11,6 +13,11 @@ class AnnotatedStringProvider(private val nameProvider: NameProvider) {
         const val NPUB_TAG = "NPUB"
         const val HASHTAG = "HASHTAG"
         const val COORDINATE = "COORDINATE"
+    }
+
+    fun annotate(str: String): AnnotatedString {
+        // TODO: Implement with NostrParser
+        return AnnotatedString(str)
     }
 
 //    private var uriHandler: UriHandler? = null

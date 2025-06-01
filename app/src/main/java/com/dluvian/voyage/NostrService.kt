@@ -1,5 +1,6 @@
 package com.dluvian.voyage
 
+import android.util.Log
 import com.dluvian.voyage.preferences.RelayPreferences
 import rust.nostr.sdk.ClientBuilder
 import rust.nostr.sdk.Event
@@ -17,12 +18,15 @@ import rust.nostr.sdk.ReqExitPolicy
 import rust.nostr.sdk.SendEventOutput
 import rust.nostr.sdk.SubscribeAutoCloseOptions
 import rust.nostr.sdk.SubscribeOutput
+import rust.nostr.sdk.SyncDirection
+import rust.nostr.sdk.SyncOptions
 import rust.nostr.sdk.extractRelayList
 
 class NostrService(
     relayPreferences: RelayPreferences,
     keyStore: KeyStore,
 ) {
+    private val logTag = "NostrService"
     private val clientOpts = Options()
         .gossip(true)
         .automaticAuthentication(relayPreferences.getSendAuth())
@@ -93,6 +97,16 @@ class NostrService(
     suspend fun subscribe(filter: Filter): SubscribeOutput {
         val opts = SubscribeAutoCloseOptions().exitPolicy(ReqExitPolicy.ExitOnEose)
         return client.subscribe(filter = filter, opts = opts)
+    }
+
+    suspend fun sync(filter: Filter) {
+        val opts = SyncOptions().direction(direction = SyncDirection.DOWN)
+        val result = client.sync(filter = filter, opts = opts)
+        if (result.failed.isNotEmpty()) {
+            Log.i(logTag, "Failed to sync with ${result.failed.keys}")
+            val opts = SubscribeAutoCloseOptions().exitPolicy(ReqExitPolicy.ExitOnEose)
+            client.subscribeTo(urls = result.failed.keys.toList(), filter = filter, opts = opts)
+        }
     }
 
     suspend fun close() {

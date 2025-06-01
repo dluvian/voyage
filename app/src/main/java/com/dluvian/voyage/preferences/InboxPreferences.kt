@@ -1,11 +1,11 @@
 package com.dluvian.voyage.preferences
 
 import android.content.Context
-import com.dluvian.voyage.data.filterSetting.FriendPubkeys
-import com.dluvian.voyage.data.filterSetting.Global
-import com.dluvian.voyage.data.filterSetting.NoPubkeys
 import com.dluvian.voyage.data.filterSetting.WebOfTrustPubkeys
+import com.dluvian.voyage.filterSetting.FriendPubkeys
+import com.dluvian.voyage.filterSetting.Global
 import com.dluvian.voyage.filterSetting.InboxFeedSetting
+import com.dluvian.voyage.filterSetting.NoPubkeys
 
 private const val PUBKEYS = "pubkeys"
 private const val FRIENDS = "friends"

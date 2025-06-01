@@ -54,7 +54,7 @@ class Paginator(
             val untilSecs = oldest.asSecs() - 1u // TODO: Wait for arithmetics
             val until = Timestamp.fromSecs(untilSecs)
             page.value =
-                feedProvider.buildFeed(until = until, setting = feedSetting, hasPreviousPage = true)
+                feedProvider.buildFeed(until = until, setting = feedSetting)
         }.invokeOnCompletion {
             isSwitchingPage.value = false
         }

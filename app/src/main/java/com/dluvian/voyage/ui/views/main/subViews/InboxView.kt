@@ -17,9 +17,9 @@ import com.dluvian.voyage.InboxViewInit
 import com.dluvian.voyage.InboxViewRefresh
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.data.filterSetting.FriendPubkeys
-import com.dluvian.voyage.data.filterSetting.Global
 import com.dluvian.voyage.data.filterSetting.WebOfTrustPubkeys
+import com.dluvian.voyage.filterSetting.FriendPubkeys
+import com.dluvian.voyage.filterSetting.Global
 import com.dluvian.voyage.filterSetting.InboxFeedSetting
 import com.dluvian.voyage.ui.components.Feed
 import com.dluvian.voyage.ui.components.dialog.BaseActionDialog
