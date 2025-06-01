@@ -11,6 +11,7 @@ import com.dluvian.voyage.provider.BookmarkProvider
 import com.dluvian.voyage.provider.NameProvider
 import com.dluvian.voyage.provider.TopicProvider
 import com.dluvian.voyage.provider.TrustProvider
+import com.dluvian.voyage.provider.UpvoteProvider
 
 class AppContainer(val context: Context) {
     val snackbar = SnackbarHostState()
@@ -23,17 +24,19 @@ class AppContainer(val context: Context) {
     val keyStore = KeyStore()
     val oldestUsedEvent = OldestUsedEvent()
 
-    val nameProvider = NameProvider()
-    val annotatedStringProvider = AnnotatedStringProvider(nameProvider = nameProvider)
+
 
     val service = NostrService(
         relayPreferences = relayPreferences,
         keyStore = keyStore
     )
 
+    val nameProvider = NameProvider(service)
     val trustProvider = TrustProvider(service)
     val topicProvider = TopicProvider(service)
     val bookmarkProvider = BookmarkProvider(service)
+    val upvoteProvider = UpvoteProvider(service)
+    val annotatedStringProvider = AnnotatedStringProvider(nameProvider = nameProvider)
 
     val eventCreator = EventCreator(
         service,

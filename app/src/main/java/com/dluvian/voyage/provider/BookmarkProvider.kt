@@ -40,16 +40,12 @@ class BookmarkProvider(private val service: NostrService) {
     }
 
     suspend fun update(event: Event) {
-        if (event.kind() != Kind.fromStd(KindStandard.BOOKMARKS)) {
-            return
-        }
+        if (event.kind() != Kind.fromStd(KindStandard.BOOKMARKS)) return
+
         val currentTime = mutex.withLock { bookmarkEvent?.createdAt()?.asSecs() ?: 0u }
-        if (event.createdAt().asSecs() <= currentTime) {
-            return
-        }
-        if (event.author() != service.pubkey()) {
-            return
-        }
+        if (event.createdAt().asSecs() <= currentTime) return
+        if (event.author() != service.pubkey()) return
+
         mutex.withLock {
             bookmarkEvent = event
         }

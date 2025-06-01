@@ -18,8 +18,8 @@ class TrustProvider(private val service: NostrService) {
     private val logTag = "TrustProvider"
     private val mutex = Mutex()
     private var friendEvent: Event? = null
-    private var web = mutableMapOf<PublicKey, Pair<Timestamp, Set<PublicKey>>>()
-    private var lists = mutableMapOf<Ident, Pair<Timestamp, Set<PublicKey>>>()
+    private val web = mutableMapOf<PublicKey, Pair<Timestamp, Set<PublicKey>>>()
+    private val lists = mutableMapOf<Ident, Pair<Timestamp, Set<PublicKey>>>()
 
     suspend fun init() {
         val pubkey = service.pubkey()
@@ -58,9 +58,9 @@ class TrustProvider(private val service: NostrService) {
     }
 
     suspend fun update(event: Event) {
-        val pubkey = service.pubkey()
         when (event.kind().asStd()) {
             KindStandard.EVENT_DELETION -> {
+                val pubkey = service.pubkey()
                 if (event.author() != pubkey) return
                 val idents = event.tags()
                     .coordinates()
@@ -73,7 +73,7 @@ class TrustProvider(private val service: NostrService) {
             }
 
             KindStandard.CONTACT_LIST -> {
-                if (event.author() == pubkey) {
+                if (event.author() == service.pubkey()) {
                     val currentTime = mutex.withLock { friendEvent?.createdAt()?.asSecs() ?: 0u }
                     if (event.createdAt().asSecs() <= currentTime) return // TODO: Wait for compare
                     val friends = event.tags().publicKeys().toSet()
@@ -99,7 +99,7 @@ class TrustProvider(private val service: NostrService) {
             }
 
             KindStandard.FOLLOW_SET -> {
-                if (event.author() != pubkey) return
+                if (event.author() != service.pubkey()) return
                 val ident = event.tags().identifier()
                 if (ident == null) return
 
@@ -110,12 +110,10 @@ class TrustProvider(private val service: NostrService) {
 
             null -> {
                 Log.w(logTag, "${event.kind().asU16()} has no KindStandard")
-                return
             }
 
             else -> {
                 Log.d(logTag, "Updating ${event.kind().asU16()} is not supported")
-                return
             }
         }
     }
@@ -146,6 +144,7 @@ class TrustProvider(private val service: NostrService) {
         val dbMissing = missing.filterNot { dbPubkeys.contains(it) }
         if (dbMissing.isEmpty()) return
 
+        // TODO: Don't spam this
         val subFilter = Filter()
             .kind(Kind.fromStd(KindStandard.CONTACT_LIST))
             .authors(friends())

@@ -99,7 +99,7 @@ data class OpenList(val identifier: Ident) : AdvancedPushNavCmd()
 data class EditList(val identifier: Ident) : AdvancedPushNavCmd()
 
 data class ClickUpvote(val event: Event) : Cmd()
-data class ClickNeutralizeVotes(val voteIds: List<EventId>) : Cmd()
+data class ClickNeutralizeVotes(val event: Event) : Cmd()
 
 data class FollowTopic(val topic: Topic) : Cmd()
 data class UnfollowTopic(val topic: Topic) : Cmd()

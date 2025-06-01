@@ -16,7 +16,7 @@ import rust.nostr.sdk.Timestamp
 class NameProvider(private val service: NostrService) {
     private val logTag = "NameProvider"
     private val mutex = Mutex()
-    private var names = mutableMapOf<PublicKey, Pair<Timestamp, String>>()
+    private val names = mutableMapOf<PublicKey, Pair<Timestamp, String>>()
 
     suspend fun init() {
         val profileFilter = Filter()
@@ -55,7 +55,7 @@ class NameProvider(private val service: NostrService) {
     }
 
     suspend fun reserve(pubkeys: List<PublicKey>) {
-        val keys = mutex.withLock { names.keys }.toSet()
+        val keys = mutex.withLock { names.keys.toSet() }
         val missing = pubkeys.filterNot { keys.contains(it) }
         if (missing.isEmpty()) return
 
@@ -70,6 +70,7 @@ class NameProvider(private val service: NostrService) {
         val dbMissing = missing.filterNot { dbPubkeys.contains(it) }
         if (dbMissing.isEmpty()) return
 
+        // TODO: Don't spam this
         val subFilter = Filter()
             .kind(Kind.fromStd(KindStandard.METADATA))
             .authors(dbMissing)

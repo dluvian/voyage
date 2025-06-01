@@ -29,7 +29,8 @@ class Core(
             }
 
             is ClickNeutralizeVotes -> viewModelScope.launch {
-                appContainer.eventCreator.publishDelete(eventIds = cmd.voteIds)
+                val ids = appContainer.upvoteProvider.upvotes(cmd.event.id())
+                appContainer.eventCreator.publishDelete(eventIds = ids.toList())
                 // TODO: Show error in snackbar
             }
 
@@ -93,8 +94,11 @@ class Core(
 
             is SuggestionCmd -> TODO()
 
-            is RegisterUriHandler -> appContainer.annotatedStringProvider
-                .setUriHandler(uriHandler = cmd.uriHandler)
+            is RegisterUriHandler -> {
+                TODO()
+//                appContainer.annotatedStringProvider
+//                    .setUriHandler(uriHandler = cmd.uriHandler)
+            }
 
             is HomeViewCmd -> vmContainer.homeVM.handle(action = cmd)
             is DiscoverViewCmd -> vmContainer.discoverVM.handle(action = cmd)
