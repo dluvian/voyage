@@ -92,7 +92,6 @@ class NostrService(
 
     suspend fun subscribe(filter: Filter): SubscribeOutput {
         val opts = SubscribeAutoCloseOptions().exitPolicy(ReqExitPolicy.ExitOnEose)
-
         return client.subscribe(filter = filter, opts = opts)
     }
 
