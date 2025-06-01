@@ -1,19 +1,18 @@
 package com.dluvian.voyage.paginator
 
 import androidx.compose.runtime.mutableStateOf
-import com.dluvian.voyage.NostrService
 import com.dluvian.voyage.PAGE_SIZE
 import com.dluvian.voyage.filterSetting.FeedSetting
+import com.dluvian.voyage.provider.FeedProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import rust.nostr.sdk.Event
 import rust.nostr.sdk.Timestamp
 
-private const val TAG = "Paginator"
 
 class Paginator(
-    private val service: NostrService,
+    private val feedProvider: FeedProvider,
     private val scope: CoroutineScope,
 ) : IPaginator {
     override val isRefreshing = mutableStateOf(false)
@@ -36,7 +35,7 @@ class Paginator(
         isRefreshing.value = true
 
         scope.launch(Dispatchers.IO) {
-            setPage(until = Timestamp.now())
+            page.value = feedProvider.buildFeed(until = Timestamp.now(), setting = feedSetting)
         }.invokeOnCompletion {
             isRefreshing.value = false
         }
@@ -51,16 +50,13 @@ class Paginator(
 
         scope.launch(Dispatchers.IO) {
             val oldest = page.value.minBy { it.createdAt().asSecs() }
-                .createdAt()// TODO: Ask to make Timestamp comparable
-            val untilSecs = oldest.asSecs() - 1u // TODO: Ask to add arithmetic to Timestamp
+                .createdAt()// TODO: Wait for comparable Timestamps
+            val untilSecs = oldest.asSecs() - 1u // TODO: Wait for arithmetics
             val until = Timestamp.fromSecs(untilSecs)
-            setPage(until)
+            page.value =
+                feedProvider.buildFeed(until = until, setting = feedSetting, hasPreviousPage = true)
         }.invokeOnCompletion {
             isSwitchingPage.value = false
         }
-    }
-
-    private suspend fun setPage(until: Timestamp) {
-        TODO("Get pagesize until + all posts of oldest timestamp")
     }
 }

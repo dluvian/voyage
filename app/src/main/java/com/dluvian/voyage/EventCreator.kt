@@ -30,9 +30,8 @@ class EventCreator(
     private val eventPreferences: EventPreferences,
     private val trustProvider: TrustProvider,
     private val topicProvider: TopicProvider,
-    private val bookmarkProvider: BookmarkProvider,
-
-    ) {
+    private val bookmarkProvider: BookmarkProvider
+) {
 
     suspend fun publishPost(
         subject: String,
