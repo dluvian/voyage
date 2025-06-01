@@ -5,6 +5,7 @@ import rust.nostr.sdk.NostrSigner
 
 class KeyStore {
 
+    // Use encryptedSheredPreference anyway
     fun getSigner(): NostrSigner {
         TODO()
     }

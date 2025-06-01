@@ -39,13 +39,10 @@ class NameProvider(private val service: NostrService) {
     }
 
     suspend fun update(event: Event) {
-        if (event.kind() != Kind.fromStd(KindStandard.METADATA)) {
-            return
-        }
+        if (event.kind() != Kind.fromStd(KindStandard.METADATA)) return
+
         val currentTime = mutex.withLock { names[event.author()]?.first?.asSecs() ?: 0u }
-        if (event.createdAt().asSecs() <= currentTime) {
-            return
-        }
+        if (event.createdAt().asSecs() <= currentTime) return
 
         val name = parseName(event)
         mutex.withLock {
@@ -58,14 +55,13 @@ class NameProvider(private val service: NostrService) {
     }
 
     suspend fun reserve(pubkeys: List<PublicKey>) {
-        val missing = mutex.withLock {
-            pubkeys.filterNot { names.keys.contains(it) }
-        }
+        val keys = mutex.withLock { names.keys }.toSet()
+        val missing = pubkeys.filterNot { keys.contains(it) }
         if (missing.isEmpty()) return
 
         val profileFilter = Filter()
             .kind(Kind.fromStd(KindStandard.METADATA))
-            .pubkeys(pubkeys)
+            .authors(pubkeys)
             .limit(pubkeys.size.toULong())
         val dbResult = service.dbQuery(profileFilter).toVec()
         dbResult.forEach { event -> update(event) }
@@ -76,7 +72,7 @@ class NameProvider(private val service: NostrService) {
 
         val subFilter = Filter()
             .kind(Kind.fromStd(KindStandard.METADATA))
-            .pubkeys(dbMissing)
+            .authors(dbMissing)
             .limit(dbMissing.size.toULong())
         service.subscribe(subFilter)
     }
