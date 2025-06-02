@@ -2,6 +2,7 @@ package com.dluvian.voyage.provider
 
 import android.util.Log
 import com.dluvian.voyage.NostrService
+import com.dluvian.voyage.PAGE_SIZE
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import rust.nostr.sdk.Event
@@ -20,7 +21,7 @@ class UpvoteProvider(private val service: NostrService) {
         val upvoteFilter = Filter()
             .author(pubkey)
             .kind(Kind.fromStd(KindStandard.REACTION))
-            .limit(100u) // Load 100 newest upvotes
+            .limit(PAGE_SIZE.toULong().times(2u)) // Load 2 pages worth of upvotes
 
         val dbResult = service.dbQuery(upvoteFilter).toVec()
         if (dbResult.isEmpty()) {
@@ -107,7 +108,7 @@ class UpvoteProvider(private val service: NostrService) {
                 .kind(Kind.fromStd(KindStandard.REACTION))
                 .author(pubkey)
                 .events(dbNeutral) // Referenced as e-tag
-                .limit(dbNeutral.size.toULong() * 2u)
+                .limit(dbNeutral.size.toULong() * 2u) // We may have duplicate upvotes
             service.subscribe(subFilter)
         }
     }
