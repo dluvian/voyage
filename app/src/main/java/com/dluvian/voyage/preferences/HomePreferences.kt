@@ -1,67 +1,63 @@
 package com.dluvian.voyage.preferences
 
 import android.content.Context
-import com.dluvian.voyage.data.filterSetting.WebOfTrustPubkeys
+import com.dluvian.voyage.PAGE_SIZE
 import com.dluvian.voyage.filterSetting.FriendPubkeys
 import com.dluvian.voyage.filterSetting.Global
 import com.dluvian.voyage.filterSetting.HomeFeedSetting
-import com.dluvian.voyage.filterSetting.MyTopics
 import com.dluvian.voyage.filterSetting.NoPubkeys
-import com.dluvian.voyage.filterSetting.NoTopics
+import rust.nostr.sdk.Kind
 
-private const val TOPICS = "topics"
-private const val NO_TOPICS = "no_topics"
-private const val MY_TOPICS = "my_topics"
+private const val WITH_TOPICS = "with_topics"
+
+private const val KINDS = "kinds"
+private const val DEFAULT_KINDS = "1,6" // Only text notes and reposts
 
 private const val PUBKEYS = "pubkeys"
 private const val NO_PUBKEYS = "no_pubkeys"
 private const val FRIENDS = "friends"
-private const val WEB_OF_TRUST = "web_of_trust"
 private const val GLOBAL = "global"
 
-private const val SHOW_ROOTS = "show_roots"
-private const val SHOW_CROSS = "show_cross"
 
 class HomePreferences(context: Context) {
     private val preferences = context.getSharedPreferences(HOME_FILE, Context.MODE_PRIVATE)
 
     fun getHomeFeedSetting(): HomeFeedSetting {
-        val topics = when (preferences.getString(TOPICS, MY_TOPICS)) {
-            NO_TOPICS -> NoTopics
-            MY_TOPICS -> MyTopics
-            else -> MyTopics
-        }
+        val withTopics = preferences.getBoolean(WITH_TOPICS, true)
         val pubkeys = when (preferences.getString(PUBKEYS, FRIENDS)) {
             NO_PUBKEYS -> NoPubkeys
             FRIENDS -> FriendPubkeys
-            WEB_OF_TRUST -> WebOfTrustPubkeys
             GLOBAL -> Global
             else -> FriendPubkeys
         }
+        val kinds = parseKinds(preferences.getString(KINDS, DEFAULT_KINDS) ?: DEFAULT_KINDS)
+
         return HomeFeedSetting(
-            topicSelection = topics,
             pubkeySelection = pubkeys,
-            showRoots = preferences.getBoolean(SHOW_ROOTS, true),
-            showCrossPosts = preferences.getBoolean(SHOW_CROSS, true),
+            withTopics = withTopics,
+            kinds = kinds,
+            pageSize = PAGE_SIZE.toULong()
         )
     }
 
     fun setHomeFeedSettings(setting: HomeFeedSetting) {
-        val topics = when (setting.topicSelection) {
-            MyTopics -> MY_TOPICS
-            NoTopics -> NO_TOPICS
-        }
+        val withTopics = setting.withTopics
         val pubkeys = when (setting.pubkeySelection) {
             NoPubkeys -> NO_PUBKEYS
             FriendPubkeys -> FRIENDS
-            WebOfTrustPubkeys -> WEB_OF_TRUST
             Global -> GLOBAL
         }
+        val kinds = setting.kinds.map { it.asU16().toString() }.joinToString(separator = ",")
         preferences.edit()
-            .putString(TOPICS, topics)
+            .putBoolean(WITH_TOPICS, withTopics)
             .putString(PUBKEYS, pubkeys)
-            .putBoolean(SHOW_ROOTS, setting.showRoots)
-            .putBoolean(SHOW_CROSS, setting.showCrossPosts)
+            .putString(KINDS, kinds)
             .apply()
+    }
+
+    private fun parseKinds(str: String): List<Kind> {
+        return str.split(",")
+            .mapNotNull { it.trim().toUIntOrNull() }
+            .map { TODO("Wait for Kind.parseFromUint") }
     }
 }

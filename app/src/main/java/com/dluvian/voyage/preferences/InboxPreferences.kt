@@ -9,7 +9,6 @@ import com.dluvian.voyage.filterSetting.NoPubkeys
 
 private const val PUBKEYS = "pubkeys"
 private const val FRIENDS = "friends"
-private const val WEB_OF_TRUST = "web_of_trust"
 private const val GLOBAL = "global"
 
 class InboxPreferences(context: Context) {
@@ -18,7 +17,6 @@ class InboxPreferences(context: Context) {
     fun getInboxFeedSetting(): InboxFeedSetting {
         val pubkeys = when (preferences.getString(PUBKEYS, GLOBAL)) {
             FRIENDS -> FriendPubkeys
-            WEB_OF_TRUST -> WebOfTrustPubkeys
             GLOBAL -> Global
             else -> Global
         }
