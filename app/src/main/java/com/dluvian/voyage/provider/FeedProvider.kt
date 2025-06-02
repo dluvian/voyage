@@ -214,10 +214,18 @@ class FeedProvider(
             .sortedByDescending { it.createdAt().asSecs() } // Newest first
             .take(pageSize.toInt())
 
+        val since = if (orderedFeed.size >= pageSize) {
+            // TODO: Wait for comparables and arithmetic
+            val secs = orderedFeed.minBy { it.createdAt().asSecs() }.createdAt().asSecs()
+            Timestamp.fromSecs(secs + 1u) // Don't resub the last item of a full page
+        } else {
+            Timestamp.fromSecs(1u)
+        }
+
         if (!dbOnly) {
             for (filter in filters) {
                 scope.launch {
-                    service.sync(filter)
+                    service.sync(filter.since(since))
                 }
             }
         }
