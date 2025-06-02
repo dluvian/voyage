@@ -9,7 +9,6 @@ import rust.nostr.sdk.EventId
 import rust.nostr.sdk.Filter
 import rust.nostr.sdk.Kind
 import rust.nostr.sdk.KindStandard
-import kotlin.collections.orEmpty
 
 class UpvoteProvider(private val service: NostrService) {
     private val logTag = "UpvoteProvider"
@@ -76,10 +75,6 @@ class UpvoteProvider(private val service: NostrService) {
         }
     }
 
-    suspend fun upvotes(postId: EventId): Set<EventId> {
-        return mutex.withLock { upvotes[postId] }.orEmpty()
-    }
-
     suspend fun filterUpvoted(postIds: Collection<EventId>): List<EventId> {
         if (postIds.isEmpty()) return emptyList()
         val fullMap = mutex.withLock { upvotes.toMap() }
@@ -87,7 +82,7 @@ class UpvoteProvider(private val service: NostrService) {
         return postIds.filterNot { id -> fullMap[id].isNullOrEmpty() }
     }
 
-    suspend fun reserveUpvotes(postIds: List<EventId>) {
+    suspend fun reserveUpvotes(postIds: Collection<EventId>, dbOnly: Boolean) {
         if (postIds.isEmpty()) return
         val upvoted = filterUpvoted(postIds).toSet()
         val neutral = postIds.filterNot { upvoted.contains(it) }
@@ -97,8 +92,8 @@ class UpvoteProvider(private val service: NostrService) {
         val upvoteFilter = Filter()
             .author(pubkey)
             .kind(Kind.fromStd(KindStandard.REACTION))
-            .events(postIds) // Referenced as e-tag
-            .limit(postIds.size.toULong() * 2u)
+            .events(neutral) // Referenced as e-tag
+            .limit(neutral.size.toULong() * 2u)
 
         val dbResult = service.dbQuery(upvoteFilter).toVec()
         val dbPostIds = dbResult.flatMap { it.tags().eventIds() }.toSet()
@@ -107,12 +102,13 @@ class UpvoteProvider(private val service: NostrService) {
         val dbNeutral = neutral.filterNot { dbPostIds.contains(it) }
         if (dbNeutral.isEmpty()) return
 
-        // TODO: Don't spam this
-        val subFilter = Filter()
-            .kind(Kind.fromStd(KindStandard.REACTION))
-            .author(pubkey)
-            .events(dbNeutral) // Referenced as e-tag
-            .limit(dbNeutral.size.toULong() * 2u)
-        service.subscribe(subFilter)
+        if (!dbOnly) {
+            val subFilter = Filter()
+                .kind(Kind.fromStd(KindStandard.REACTION))
+                .author(pubkey)
+                .events(dbNeutral) // Referenced as e-tag
+                .limit(dbNeutral.size.toULong() * 2u)
+            service.subscribe(subFilter)
+        }
     }
 }

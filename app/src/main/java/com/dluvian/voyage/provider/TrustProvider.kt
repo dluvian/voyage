@@ -3,6 +3,11 @@ package com.dluvian.voyage.provider
 import android.util.Log
 import com.dluvian.voyage.Ident
 import com.dluvian.voyage.NostrService
+import com.dluvian.voyage.model.ListedProfile
+import com.dluvian.voyage.model.OneselfProfile
+import com.dluvian.voyage.model.TrustProfile
+import com.dluvian.voyage.model.TrustedProfile
+import com.dluvian.voyage.model.UnknownProfile
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import rust.nostr.sdk.Event
@@ -122,15 +127,25 @@ class TrustProvider(private val service: NostrService) {
         return mutex.withLock { friendEvent?.tags()?.publicKeys().orEmpty() }
     }
 
-    suspend fun filterWebTrust(pubkeys: Collection<PublicKey>): List<PublicKey> {
-        val webPubkeys = webPubkeys()
+    suspend fun getTrustProfiles(pubkeys: Collection<PublicKey>): Map<PublicKey, TrustProfile> {
+        val pubkey = service.pubkey()
+        val listed = filterListTrust(pubkeys).toSet()
+        val trusted = filterWebTrust(pubkeys).toSet()
 
-        return pubkeys.filter { webPubkeys.contains(it) }
+        return pubkeys.map {
+            if (pubkey == it) Pair(it, OneselfProfile(pubkey = it, name = ""))
+            else if (listed.contains(it)) Pair(it, ListedProfile(pubkey = it, name = ""))
+            else if (trusted.contains(it)) Pair(it, TrustedProfile(pubkey = it, name = ""))
+            else Pair(it, UnknownProfile(pubkey = it, name = ""))
+        }.toMap()
     }
 
-    suspend fun reserveWeb(pubkeys: Collection<PublicKey>) {
-        val inWeb = filterWebTrust(pubkeys).toSet()
-        val missing = pubkeys.filterNot { inWeb.contains(it) }
+    suspend fun reserveWeb(pubkeys: Collection<PublicKey>, dbOnly: Boolean) {
+        val nonFriends = pubkeys - friends()
+        if (nonFriends.isEmpty()) return
+
+        val inWeb = filterWebTrust(nonFriends).toSet()
+        val missing = nonFriends.filterNot { inWeb.contains(it) }
         if (missing.isEmpty()) return
 
         val contactFilter = Filter()
@@ -144,21 +159,28 @@ class TrustProvider(private val service: NostrService) {
         val dbMissing = missing.filterNot { dbPubkeys.contains(it) }
         if (dbMissing.isEmpty()) return
 
-        // TODO: Don't spam this
-        val subFilter = Filter()
-            .kind(Kind.fromStd(KindStandard.CONTACT_LIST))
-            .authors(friends())
-            .pubkeys(dbMissing) // Referenced as p-tag
-            .limit(dbMissing.size.toULong())
-        service.subscribe(subFilter)
+        if (!dbOnly) {
+            val subFilter = Filter()
+                .kind(Kind.fromStd(KindStandard.CONTACT_LIST))
+                .authors(friends())
+                .pubkeys(dbMissing) // Referenced as p-tag
+                .limit(dbMissing.size.toULong())
+            service.subscribe(subFilter)
+        }
     }
 
-    suspend fun filterListTrust(pubkeys: Collection<PublicKey>): List<PublicKey> {
+    private suspend fun filterListTrust(pubkeys: Collection<PublicKey>): List<PublicKey> {
         val listPubkeys = mutex.withLock { lists.values }
             .flatMap { (_, pubkeys) -> pubkeys }
             .toSet()
 
         return pubkeys.filter { listPubkeys.contains(it) }
+    }
+
+    private suspend fun filterWebTrust(pubkeys: Collection<PublicKey>): List<PublicKey> {
+        val webPubkeys = webPubkeys()
+
+        return pubkeys.filter { webPubkeys.contains(it) }
     }
 
     private fun Event.toPair(): Pair<Timestamp, Set<PublicKey>> {

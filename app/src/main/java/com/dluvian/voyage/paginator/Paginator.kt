@@ -3,8 +3,8 @@ package com.dluvian.voyage.paginator
 import androidx.compose.runtime.mutableStateOf
 import com.dluvian.voyage.PAGE_SIZE
 import com.dluvian.voyage.filterSetting.FeedSetting
+import com.dluvian.voyage.model.UIEvent
 import com.dluvian.voyage.provider.FeedProvider
-import rust.nostr.sdk.Event
 import rust.nostr.sdk.Timestamp
 
 
@@ -12,7 +12,7 @@ class Paginator(private val feedProvider: FeedProvider) : IPaginator {
     override val isRefreshing = mutableStateOf(false)
     override val isSwitchingPage = mutableStateOf(false)
     override val isNotFirstPage = mutableStateOf(false)
-    override val page = mutableStateOf(emptyList<Event>())
+    override val page = mutableStateOf(emptyList<UIEvent>())
 
     private lateinit var feedSetting: FeedSetting
 
@@ -34,7 +34,7 @@ class Paginator(private val feedProvider: FeedProvider) : IPaginator {
 
     override suspend fun dbRefreshInPlace() {
         // TODO: Wait for comparable Timestamps
-        val until = page.value.maxByOrNull { it.createdAt().asSecs() }?.createdAt()
+        val until = page.value.maxByOrNull { it.event.createdAt().asSecs() }?.event?.createdAt()
         page.value = feedProvider.buildFeed(
             until = until ?: Timestamp.now(),
             setting = feedSetting,
@@ -49,7 +49,8 @@ class Paginator(private val feedProvider: FeedProvider) : IPaginator {
         isNotFirstPage.value = true
 
         val oldest = page.value
-            .minBy { it.createdAt().asSecs() }
+            .minBy { it.event.createdAt().asSecs() }
+            .event
             .createdAt() // TODO: Wait for comparable Timestamps
         val untilSecs = oldest.asSecs() - 1u // TODO: Wait for arithmetics
         val until = Timestamp.fromSecs(untilSecs)

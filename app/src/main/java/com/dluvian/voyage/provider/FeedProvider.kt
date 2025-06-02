@@ -12,13 +12,18 @@ import com.dluvian.voyage.filterSetting.ListFeedSetting
 import com.dluvian.voyage.filterSetting.NoPubkeys
 import com.dluvian.voyage.filterSetting.ProfileFeedSetting
 import com.dluvian.voyage.filterSetting.TopicFeedSetting
+import com.dluvian.voyage.model.TrustProfile
+import com.dluvian.voyage.model.UIEvent
+import com.dluvian.voyage.model.UnknownProfile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import rust.nostr.sdk.Event
+import rust.nostr.sdk.EventId
 import rust.nostr.sdk.Filter
 import rust.nostr.sdk.Kind
 import rust.nostr.sdk.KindStandard
+import rust.nostr.sdk.PublicKey
 import rust.nostr.sdk.Timestamp
 
 class FeedProvider(
@@ -26,6 +31,8 @@ class FeedProvider(
     private val topicProvider: TopicProvider,
     private val trustProvider: TrustProvider,
     private val bookmarkProvider: BookmarkProvider,
+    private val nameProvider: NameProvider,
+    private val upvoteProvider: UpvoteProvider,
 ) {
     private val logTag = "FeedProvider"
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -36,7 +43,7 @@ class FeedProvider(
         until: Timestamp,
         setting: FeedSetting,
         dbOnly: Boolean = false,
-    ): List<Event> {
+    ): List<UIEvent> {
         return when (setting) {
             is HomeFeedSetting -> homeFeed(until, setting, dbOnly)
             is TopicFeedSetting -> topicFeed(until, setting, dbOnly)
@@ -51,7 +58,7 @@ class FeedProvider(
         until: Timestamp,
         setting: HomeFeedSetting,
         dbOnly: Boolean
-    ): List<Event> {
+    ): List<UIEvent> {
         val primaryFeedFilter = when (setting.pubkeySelection) {
             FriendPubkeys -> Filter().authors(trustProvider.friends())
             Global -> Filter()
@@ -74,7 +81,7 @@ class FeedProvider(
         until: Timestamp,
         setting: TopicFeedSetting,
         dbOnly: Boolean
-    ): List<Event> {
+    ): List<UIEvent> {
         val filter = Filter().hashtag(setting.topic)
             .kinds(setting.kinds)
             .until(until)
@@ -91,7 +98,7 @@ class FeedProvider(
         until: Timestamp,
         setting: ProfileFeedSetting,
         dbOnly: Boolean
-    ): List<Event> {
+    ): List<UIEvent> {
         val filter = Filter().author(setting.pubkey)
             .kinds(setting.kinds)
             .until(until)
@@ -108,7 +115,7 @@ class FeedProvider(
         until: Timestamp,
         setting: InboxFeedSetting,
         dbOnly: Boolean
-    ): List<Event> {
+    ): List<UIEvent> {
         val filter = when (setting.pubkeySelection) {
             FriendPubkeys -> Filter().authors(trustProvider.friends())
             Global, NoPubkeys -> Filter()
@@ -129,7 +136,7 @@ class FeedProvider(
         until: Timestamp,
         setting: ListFeedSetting,
         dbOnly: Boolean
-    ): List<Event> {
+    ): List<UIEvent> {
         val kinds = listOf(KindStandard.FOLLOW_SET, KindStandard.INTEREST_SET)
             .map { Kind.fromStd(it) }
         val dbListFilter = Filter().author(service.pubkey()).kinds(kinds).identifier(setting.ident)
@@ -174,7 +181,7 @@ class FeedProvider(
         until: Timestamp,
         setting: BookmarkFeedSetting,
         dbOnly: Boolean
-    ): List<Event> {
+    ): List<UIEvent> {
         val filter = Filter()
             .ids(bookmarkProvider.bookmarks())
             .until(until)
@@ -191,7 +198,7 @@ class FeedProvider(
         filters: List<Filter>,
         pageSize: Int,
         dbOnly: Boolean
-    ): List<Event> {
+    ): List<UIEvent> {
         if (filters.isEmpty()) {
             Log.i(logTag, "No filter provided for building a feed")
             return emptyList()
@@ -215,6 +222,73 @@ class FeedProvider(
             }
         }
 
-        return orderedFeed
+        return enrichEvents(events = orderedFeed, dbOnly = dbOnly)
+    }
+
+    private suspend fun enrichEvents(events: Collection<Event>, dbOnly: Boolean): List<UIEvent> {
+        if (events.isEmpty()) return emptyList()
+
+        val repostedEvents = events.filter { isRepost(it) }
+            .mapNotNull { runCatching { Event.fromJson(it.content()) }.getOrNull() }
+        val allEvents = events + repostedEvents
+        val mentionedPubkeys = allEvents.flatMap { it.tags().publicKeys() }.toSet()
+        val authorPubkeys = allEvents.map { it.author() }.toSet()
+        val eventIds = allEvents.map { it.id() }.toSet()
+
+        nameProvider.reserve(pubkeys = authorPubkeys + mentionedPubkeys, dbOnly = dbOnly)
+        trustProvider.reserveWeb(pubkeys = authorPubkeys, dbOnly = dbOnly)
+        upvoteProvider.reserveUpvotes(postIds = eventIds, dbOnly = dbOnly)
+
+        val upvotes = upvoteProvider.filterUpvoted(eventIds)
+        val bookmarks = bookmarkProvider.bookmarks()
+        val names = nameProvider.names(authorPubkeys)
+        val trustProfiles = trustProvider.getTrustProfiles(pubkeys = authorPubkeys)
+        trustProfiles.forEach { (_, profile) ->
+            val name = names[profile.pubkey].orEmpty()
+            profile.setName(name)
+        }
+
+        return events.map { event ->
+            enrichEvent(
+                event = event,
+                trustProfiles = trustProfiles,
+                upvotes = upvotes,
+                bookmarks = bookmarks,
+                repostedEvents = repostedEvents
+            )
+        }
+    }
+
+    fun enrichEvent(
+        event: Event,
+        trustProfiles: Map<PublicKey, TrustProfile>,
+        upvotes: Collection<EventId>,
+        bookmarks: Collection<EventId>,
+        repostedEvents: Collection<Event>
+    ): UIEvent {
+        val innerEvent = if (isRepost(event)) {
+            repostedEvents.firstOrNull { it.id() == event.tags().eventIds().firstOrNull() }
+        } else null
+
+        return UIEvent(
+            event = event,
+            authorProfile = trustProfiles[event.author()]
+                ?: UnknownProfile(pubkey = event.author()),
+            upvoted = upvotes.contains(event.id()),
+            bookmarked = bookmarks.contains(event.id()),
+            inner = if (innerEvent != null) enrichEvent(
+                event = innerEvent,
+                trustProfiles = trustProfiles,
+                upvotes = upvotes,
+                bookmarks = bookmarks,
+                repostedEvents = repostedEvents
+            )
+            else null
+        )
+    }
+
+    private fun isRepost(event: Event): Boolean {
+        return event.kind() == Kind.fromStd(KindStandard.REPOST)
+                || event.kind() == Kind.fromStd(KindStandard.GENERIC_REPOST)
     }
 }

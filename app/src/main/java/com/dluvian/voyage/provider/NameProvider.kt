@@ -50,19 +50,21 @@ class NameProvider(private val service: NostrService) {
         }
     }
 
-    suspend fun name(pubkey: PublicKey): String? {
-        return mutex.withLock { names[pubkey]?.second }
+    suspend fun names(pubkeys: Collection<PublicKey>): Map<PublicKey, String> {
+        return mutex.withLock { names.filter { (pk, _) -> pubkeys.contains(pk) } }
+            .map { (pk, timedName) -> Pair(pk, timedName.second) }
+            .toMap()
     }
 
-    suspend fun reserve(pubkeys: List<PublicKey>) {
-        val keys = mutex.withLock { names.keys.toSet() }
-        val missing = pubkeys.filterNot { keys.contains(it) }
+    suspend fun reserve(pubkeys: Collection<PublicKey>, dbOnly: Boolean) {
+        val cachedPubkeys = mutex.withLock { names.keys.toSet() }
+        val missing = pubkeys.filterNot { cachedPubkeys.contains(it) }
         if (missing.isEmpty()) return
 
         val profileFilter = Filter()
             .kind(Kind.fromStd(KindStandard.METADATA))
-            .authors(pubkeys)
-            .limit(pubkeys.size.toULong())
+            .authors(missing)
+            .limit(missing.size.toULong())
         val dbResult = service.dbQuery(profileFilter).toVec()
         dbResult.forEach { event -> update(event) }
         val dbPubkeys = dbResult.map { it.author() }.toSet()
@@ -70,12 +72,13 @@ class NameProvider(private val service: NostrService) {
         val dbMissing = missing.filterNot { dbPubkeys.contains(it) }
         if (dbMissing.isEmpty()) return
 
-        // TODO: Don't spam this
-        val subFilter = Filter()
-            .kind(Kind.fromStd(KindStandard.METADATA))
-            .authors(dbMissing)
-            .limit(dbMissing.size.toULong())
-        service.subscribe(subFilter)
+        if (!dbOnly) {
+            val subFilter = Filter()
+                .kind(Kind.fromStd(KindStandard.METADATA))
+                .authors(dbMissing)
+                .limit(dbMissing.size.toULong())
+            service.subscribe(subFilter)
+        }
     }
 
     private fun parseName(event: Event): String {
