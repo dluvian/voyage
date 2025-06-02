@@ -1,7 +1,7 @@
 package com.dluvian.voyage.preferences
 
 import android.content.Context
-import com.dluvian.voyage.data.filterSetting.WebOfTrustPubkeys
+import com.dluvian.voyage.PAGE_SIZE
 import com.dluvian.voyage.filterSetting.FriendPubkeys
 import com.dluvian.voyage.filterSetting.Global
 import com.dluvian.voyage.filterSetting.InboxFeedSetting
@@ -10,6 +10,9 @@ import com.dluvian.voyage.filterSetting.NoPubkeys
 private const val PUBKEYS = "pubkeys"
 private const val FRIENDS = "friends"
 private const val GLOBAL = "global"
+
+private const val KINDS = "kinds"
+private const val DEFAULT_KINDS = "1,1111" // Only text notes and comments
 
 class InboxPreferences(context: Context) {
     private val preferences = context.getSharedPreferences(INBOX_FILE, Context.MODE_PRIVATE)
@@ -20,24 +23,23 @@ class InboxPreferences(context: Context) {
             GLOBAL -> Global
             else -> Global
         }
-        return InboxFeedSetting(pubkeySelection = pubkeys)
+        val kinds = parseKinds(preferences.getString(KINDS, DEFAULT_KINDS) ?: DEFAULT_KINDS)
+        return InboxFeedSetting(
+            pubkeySelection = pubkeys,
+            kinds = kinds,
+            pageSize = PAGE_SIZE.toULong()
+        )
     }
 
     fun setInboxFeedSettings(setting: InboxFeedSetting) {
         val pubkeys = when (setting.pubkeySelection) {
             FriendPubkeys -> FRIENDS
-            WebOfTrustPubkeys -> WEB_OF_TRUST
             Global -> GLOBAL
-            // For some reason I can't model PubkeySelection like:
-            //
-            // InboxPubkeySelection(friends, wot, global): PubkeySelection()
-            // HomePubkeySelection(noPubkeys): InboxPubkeySelection()
-            //
-            // Can't mix those in a when() switch in HomePreferences. So we default to GLOBAL
             NoPubkeys -> GLOBAL
         }
         preferences.edit()
             .putString(PUBKEYS, pubkeys)
+            .putString(KINDS, kindsToString(setting.kinds))
             .apply()
     }
 }

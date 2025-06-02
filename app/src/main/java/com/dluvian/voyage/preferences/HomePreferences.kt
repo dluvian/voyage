@@ -6,7 +6,6 @@ import com.dluvian.voyage.filterSetting.FriendPubkeys
 import com.dluvian.voyage.filterSetting.Global
 import com.dluvian.voyage.filterSetting.HomeFeedSetting
 import com.dluvian.voyage.filterSetting.NoPubkeys
-import rust.nostr.sdk.Kind
 
 private const val WITH_TOPICS = "with_topics"
 
@@ -17,7 +16,6 @@ private const val PUBKEYS = "pubkeys"
 private const val NO_PUBKEYS = "no_pubkeys"
 private const val FRIENDS = "friends"
 private const val GLOBAL = "global"
-
 
 class HomePreferences(context: Context) {
     private val preferences = context.getSharedPreferences(HOME_FILE, Context.MODE_PRIVATE)
@@ -41,23 +39,15 @@ class HomePreferences(context: Context) {
     }
 
     fun setHomeFeedSettings(setting: HomeFeedSetting) {
-        val withTopics = setting.withTopics
         val pubkeys = when (setting.pubkeySelection) {
             NoPubkeys -> NO_PUBKEYS
             FriendPubkeys -> FRIENDS
             Global -> GLOBAL
         }
-        val kinds = setting.kinds.map { it.asU16().toString() }.joinToString(separator = ",")
         preferences.edit()
-            .putBoolean(WITH_TOPICS, withTopics)
+            .putBoolean(WITH_TOPICS, setting.withTopics)
             .putString(PUBKEYS, pubkeys)
-            .putString(KINDS, kinds)
+            .putString(KINDS, kindsToString(setting.kinds))
             .apply()
-    }
-
-    private fun parseKinds(str: String): List<Kind> {
-        return str.split(",")
-            .mapNotNull { it.trim().toUIntOrNull() }
-            .map { TODO("Wait for Kind.parseFromUint") }
     }
 }
