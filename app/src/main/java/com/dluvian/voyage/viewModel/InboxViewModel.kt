@@ -40,7 +40,7 @@ class InboxViewModel(
         when (action) {
             InboxViewInit -> paginator.init(setting.value)
             InboxViewRefresh -> paginator.refresh()
-            InboxViewAppend -> paginator.append()
+            InboxViewAppend -> paginator.nextPage()
             InboxViewOpenFilter -> showFilterMenu.value = true
             InboxViewDismissFilter -> showFilterMenu.value = false
 

@@ -110,7 +110,7 @@ class ProfileViewModel(
     fun handle(action: ProfileViewAction) {
         when (action) {
             ProfileViewRefresh -> refresh()
-            ProfileViewRootAppend -> rootPaginator.append()
+            ProfileViewRootAppend -> rootPaginator.nextPage()
             ProfileViewReplyAppend -> replyPaginator.append()
             ProfileViewLoadLists -> updateLists(pubkey = profile.value.value.inner.pubkey)
         }

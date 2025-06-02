@@ -2,7 +2,7 @@ package com.dluvian.voyage.provider
 
 import android.util.Log
 import com.dluvian.voyage.NostrService
-import com.dluvian.voyage.filterSetting.BookmarksFeedSetting
+import com.dluvian.voyage.filterSetting.BookmarkFeedSetting
 import com.dluvian.voyage.filterSetting.FeedSetting
 import com.dluvian.voyage.filterSetting.FriendPubkeys
 import com.dluvian.voyage.filterSetting.Global
@@ -17,12 +17,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import rust.nostr.sdk.Event
 import rust.nostr.sdk.Filter
+import rust.nostr.sdk.Kind
+import rust.nostr.sdk.KindStandard
 import rust.nostr.sdk.Timestamp
 
 class FeedProvider(
     private val service: NostrService,
     private val topicProvider: TopicProvider,
-    private val trustProvider: TrustProvider
+    private val trustProvider: TrustProvider,
+    private val bookmarkProvider: BookmarkProvider,
 ) {
     private val logTag = "FeedProvider"
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -32,18 +35,23 @@ class FeedProvider(
     suspend fun buildFeed(
         until: Timestamp,
         setting: FeedSetting,
+        dbOnly: Boolean = false,
     ): List<Event> {
         return when (setting) {
-            is HomeFeedSetting -> buildHomeFeed(until, setting)
-            is InboxFeedSetting -> TODO()
-            is ListFeedSetting -> TODO()
-            is ProfileFeedSetting -> TODO()
-            is TopicFeedSetting -> TODO()
-            BookmarksFeedSetting -> TODO()
+            is HomeFeedSetting -> homeFeed(until, setting, dbOnly)
+            is TopicFeedSetting -> topicFeed(until, setting, dbOnly)
+            is ProfileFeedSetting -> profileFeed(until, setting, dbOnly)
+            is InboxFeedSetting -> inboxFeed(until, setting, dbOnly)
+            is ListFeedSetting -> listFeed(until, setting, dbOnly)
+            is BookmarkFeedSetting -> bookmarkFeed(until, setting, dbOnly)
         }
     }
 
-    suspend fun buildHomeFeed(until: Timestamp, setting: HomeFeedSetting): List<Event> {
+    private suspend fun homeFeed(
+        until: Timestamp,
+        setting: HomeFeedSetting,
+        dbOnly: Boolean
+    ): List<Event> {
         val primaryFeedFilter = when (setting.pubkeySelection) {
             FriendPubkeys -> Filter().authors(trustProvider.friends())
             Global -> Filter()
@@ -55,8 +63,137 @@ class FeedProvider(
         val filters = listOfNotNull(primaryFeedFilter, topicFeedFilter)
             .map { it.kinds(setting.kinds).until(until).limit(setting.pageSize) }
 
+        return buildFeedFromFilters(
+            filters = filters,
+            pageSize = setting.pageSize.toInt(),
+            dbOnly = dbOnly
+        )
+    }
+
+    private suspend fun topicFeed(
+        until: Timestamp,
+        setting: TopicFeedSetting,
+        dbOnly: Boolean
+    ): List<Event> {
+        val filter = Filter().hashtag(setting.topic)
+            .kinds(setting.kinds)
+            .until(until)
+            .limit(setting.pageSize)
+
+        return buildFeedFromFilters(
+            filters = listOf(filter),
+            pageSize = setting.pageSize.toInt(),
+            dbOnly = dbOnly
+        )
+    }
+
+    private suspend fun profileFeed(
+        until: Timestamp,
+        setting: ProfileFeedSetting,
+        dbOnly: Boolean
+    ): List<Event> {
+        val filter = Filter().author(setting.pubkey)
+            .kinds(setting.kinds)
+            .until(until)
+            .limit(setting.pageSize)
+
+        return buildFeedFromFilters(
+            filters = listOf(filter),
+            pageSize = setting.pageSize.toInt(),
+            dbOnly = dbOnly
+        )
+    }
+
+    private suspend fun inboxFeed(
+        until: Timestamp,
+        setting: InboxFeedSetting,
+        dbOnly: Boolean
+    ): List<Event> {
+        val filter = when (setting.pubkeySelection) {
+            FriendPubkeys -> Filter().authors(trustProvider.friends())
+            Global, NoPubkeys -> Filter()
+        }
+            .pubkey(service.pubkey())
+            .kinds(setting.kinds)
+            .until(until)
+            .limit(setting.pageSize)
+
+        return buildFeedFromFilters(
+            filters = listOf(filter),
+            pageSize = setting.pageSize.toInt(),
+            dbOnly = dbOnly
+        )
+    }
+
+    private suspend fun listFeed(
+        until: Timestamp,
+        setting: ListFeedSetting,
+        dbOnly: Boolean
+    ): List<Event> {
+        val kinds = listOf(KindStandard.FOLLOW_SET, KindStandard.INTEREST_SET)
+            .map { Kind.fromStd(it) }
+        val dbListFilter = Filter().author(service.pubkey()).kinds(kinds).identifier(setting.ident)
+        val lists = service.dbQuery(dbListFilter).toVec()
+        if (lists.isEmpty()) {
+            Log.w(logTag, "No list with identifier '${setting.ident}' found")
+            return emptyList()
+        }
+
+        val hashtags = lists.firstOrNull { it.kind().asStd() == KindStandard.INTEREST_SET }
+            ?.tags()
+            ?.hashtags()
+            .orEmpty()
+        val pubkeys = lists.firstOrNull { it.kind().asStd() == KindStandard.FOLLOW_SET }
+            ?.tags()
+            ?.publicKeys()
+            .orEmpty()
+        if (hashtags.isEmpty() && pubkeys.isEmpty()) {
+            Log.i(logTag, "Lists with identifier '${setting.ident}' are empty")
+            return emptyList()
+        }
+
+        val filters = mutableListOf<Filter>()
+        if (hashtags.isNotEmpty()) {
+            filters.add(Filter().hashtags(hashtags))
+        }
+        if (pubkeys.isNotEmpty()) {
+            filters.add(Filter().authors(pubkeys))
+        }
+        val enrichedFilters = filters.map {
+            it.kinds(setting.kinds).until(until).limit(setting.pageSize)
+        }
+
+        return buildFeedFromFilters(
+            filters = enrichedFilters,
+            pageSize = setting.pageSize.toInt(),
+            dbOnly = dbOnly
+        )
+    }
+
+    private suspend fun bookmarkFeed(
+        until: Timestamp,
+        setting: BookmarkFeedSetting,
+        dbOnly: Boolean
+    ): List<Event> {
+        val filter = Filter()
+            .ids(bookmarkProvider.bookmarks())
+            .until(until)
+            .limit(setting.pageSize)
+
+        return buildFeedFromFilters(
+            filters = listOf(filter),
+            pageSize = setting.pageSize.toInt(),
+            dbOnly = dbOnly
+        )
+    }
+
+    private suspend fun buildFeedFromFilters(
+        filters: List<Filter>,
+        pageSize: Int,
+        dbOnly: Boolean
+    ): List<Event> {
         if (filters.isEmpty()) {
-            Log.i(logTag, "No filter for home feed selected")
+            Log.i(logTag, "No filter provided for building a feed")
             return emptyList()
         }
 
@@ -68,11 +205,13 @@ class FeedProvider(
         val orderedFeed = feed.distinctBy { it.id() }
             .sortedBy { it.id().toHex() } // Use pow to decide order when createdAt is same
             .sortedByDescending { it.createdAt().asSecs() } // Newest first
-            .take(setting.pageSize.toInt())
+            .take(pageSize.toInt())
 
-        for (filter in filters) {
-            scope.launch {
-                service.sync(filter)
+        if (!dbOnly) {
+            for (filter in filters) {
+                scope.launch {
+                    service.sync(filter)
+                }
             }
         }
 

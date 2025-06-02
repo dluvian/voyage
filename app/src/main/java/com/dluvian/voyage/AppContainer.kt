@@ -16,27 +16,23 @@ import com.dluvian.voyage.provider.UpvoteProvider
 class AppContainer(val context: Context) {
     val snackbar = SnackbarHostState()
 
-    val homePreferences = HomePreferences(context = context)
-    val inboxPreferences = InboxPreferences(context = context)
-    val relayPreferences = RelayPreferences(context = context)
-    val eventPreferences = EventPreferences(context = context)
+    val homePreferences = HomePreferences(context)
+    val inboxPreferences = InboxPreferences(context)
+    val relayPreferences = RelayPreferences(context)
+    val eventPreferences = EventPreferences(context)
 
     val keyStore = KeyStore()
     val oldestUsedEvent = OldestUsedEvent()
+    val threadCollapser = ThreadCollapser()
 
-
-
-    val service = NostrService(
-        relayPreferences = relayPreferences,
-        keyStore = keyStore
-    )
+    val service = NostrService(relayPreferences, keyStore)
 
     val nameProvider = NameProvider(service)
     val trustProvider = TrustProvider(service)
     val topicProvider = TopicProvider(service)
     val bookmarkProvider = BookmarkProvider(service)
     val upvoteProvider = UpvoteProvider(service)
-    val annotatedStringProvider = AnnotatedStringProvider(nameProvider = nameProvider)
+    val annotatedStringProvider = AnnotatedStringProvider(nameProvider)
 
     val eventCreator = EventCreator(
         service,
@@ -47,6 +43,4 @@ class AppContainer(val context: Context) {
     )
 
     val dbSweeper = DatabaseSweeper(service, oldestUsedEvent)
-
-    val threadCollapser = ThreadCollapser()
 }

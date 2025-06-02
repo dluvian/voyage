@@ -48,7 +48,7 @@ class HomeViewModel(
     fun handle(action: HomeViewAction) {
         when (action) {
             HomeViewRefresh -> refresh()
-            HomeViewAppend -> paginator.append()
+            HomeViewAppend -> paginator.nextPage()
             HomeViewSubAccountAndTrustData -> subMyAccountAndTrustData()
             HomeViewOpenFilter -> showFilterMenu.value = true
             HomeViewDismissFilter -> showFilterMenu.value = false

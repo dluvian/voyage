@@ -63,7 +63,7 @@ class TopicViewModel(
                 paginator.refresh()
             }
 
-            TopicViewAppend -> paginator.append()
+            TopicViewAppend -> paginator.nextPage()
             TopicViewLoadLists -> updateLists(topic = currentTopic.value)
         }
     }

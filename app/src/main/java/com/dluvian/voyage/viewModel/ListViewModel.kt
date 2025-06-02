@@ -42,13 +42,13 @@ class ListViewModel(
     fun handle(action: ListViewAction) {
         when (action) {
             ListViewRefresh -> paginator.refresh()
-            ListViewFeedAppend -> paginator.append()
+            ListViewFeedAppend -> paginator.nextPage()
         }
     }
 
     fun openList(identifier: String) {
         isLoading.value = true
-        paginator.reinit(setting = ListFeedSetting(identifier = identifier))
+        paginator.reinit(setting = ListFeedSetting(ident = identifier))
         viewModelScope.launchIO {
             lazyNostrSubscriber.lazySubNip65s(selection = ListPubkeys(identifier = identifier))
             itemSetProvider.loadList(identifier = identifier)

@@ -11,7 +11,7 @@ import com.dluvian.voyage.cmd.BookmarksViewRefresh
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.FeedProvider
-import com.dluvian.voyage.filterSetting.BookmarksFeedSetting
+import com.dluvian.voyage.filterSetting.BookmarkFeedSetting
 import com.dluvian.voyage.filterSetting.PostDetails
 import com.dluvian.voyage.paginator.Paginator
 
@@ -29,9 +29,9 @@ class BookmarksViewModel(
 
     fun handle(action: BookmarksViewAction) {
         when (action) {
-            is BookmarksViewInit -> paginator.init(setting = BookmarksFeedSetting)
+            is BookmarksViewInit -> paginator.init(setting = BookmarkFeedSetting)
             is BookmarksViewRefresh -> refresh()
-            is BookmarksViewAppend -> paginator.append()
+            is BookmarksViewAppend -> paginator.nextPage()
         }
     }
 

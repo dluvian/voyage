@@ -1,24 +1,41 @@
 package com.dluvian.voyage.filterSetting
 
+import com.dluvian.voyage.Ident
 import com.dluvian.voyage.Topic
 import rust.nostr.sdk.Kind
-import rust.nostr.sdk.Nip19Profile
+import rust.nostr.sdk.PublicKey
 
-sealed class FeedSetting
-
-data class InboxFeedSetting(val pubkeySelection: FeedPubkeySelection) : FeedSetting()
-data object BookmarksFeedSetting : FeedSetting()
-
-
-sealed class MainFeedSetting : FeedSetting()
+sealed class FeedSetting(open val pageSize: ULong)
 
 data class HomeFeedSetting(
-    val pubkeySelection: FeedPubkeySelection,
+    val pubkeySelection: PubkeySelection,
     val withTopics: Boolean,
     val kinds: List<Kind>,
-    val pageSize: ULong,
-) : MainFeedSetting()
+    override val pageSize: ULong,
+) : FeedSetting(pageSize = pageSize)
 
-data class TopicFeedSetting(val topic: Topic) : MainFeedSetting()
-data class ProfileFeedSetting(val nprofile: Nip19Profile) : MainFeedSetting()
-data class ListFeedSetting(val identifier: String) : MainFeedSetting()
+data class TopicFeedSetting(
+    val topic: Topic,
+    val kinds: List<Kind>,
+    override val pageSize: ULong
+) : FeedSetting(pageSize = pageSize)
+
+data class ProfileFeedSetting(
+    val pubkey: PublicKey,
+    val kinds: List<Kind>,
+    override val pageSize: ULong
+) : FeedSetting(pageSize = pageSize)
+
+data class InboxFeedSetting(
+    val pubkeySelection: PubkeySelection,
+    val kinds: List<Kind>,
+    override val pageSize: ULong
+) : FeedSetting(pageSize = pageSize)
+
+data class ListFeedSetting(
+    val ident: Ident,
+    val kinds: List<Kind>,
+    override val pageSize: ULong
+) : FeedSetting(pageSize = pageSize)
+
+data class BookmarkFeedSetting(override val pageSize: ULong) : FeedSetting(pageSize = pageSize)
