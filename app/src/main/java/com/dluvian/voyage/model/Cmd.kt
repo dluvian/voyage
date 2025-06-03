@@ -145,6 +145,7 @@ data class InboxViewApplyFilter(val setting: InboxFeedSetting) : InboxViewCmd()
 
 sealed class DiscoverViewCmd : Cmd()
 data object DiscoverViewShow : DiscoverViewCmd()
+data class DiscoverViewEventUpdate(val event: Event) : DiscoverViewCmd()
 data object DiscoverViewRefresh : DiscoverViewCmd()
 
 sealed class FollowListsViewCmd : Cmd()
@@ -167,9 +168,9 @@ data object ListViewRefresh : ListViewCmd()
 data object ListViewFeedAppend : ListViewCmd()
 
 sealed class DrawerViewCmd : Cmd()
-data object DrawerViewSubscribeSets : DrawerViewCmd()
 data class OpenDrawer(val scope: CoroutineScope) : DrawerViewCmd()
 data class CloseDrawer(val scope: CoroutineScope) : DrawerViewCmd()
+data object DrawerViewSubscribeSets : DrawerViewCmd()
 
 sealed class TopicViewCmd : Cmd()
 data object TopicViewRefresh : TopicViewCmd()

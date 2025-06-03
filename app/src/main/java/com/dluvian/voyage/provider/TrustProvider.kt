@@ -26,6 +26,7 @@ class TrustProvider(private val service: NostrService) : IEventUpdate {
     private val web = mutableMapOf<PublicKey, Pair<Timestamp, Set<PublicKey>>>()
     private val lists = mutableMapOf<Ident, Pair<Timestamp, Set<PublicKey>>>()
 
+    // TODO: Call this somewhere
     suspend fun init() {
         val pubkey = service.pubkey()
         val kinds = listOf(KindStandard.CONTACT_LIST, KindStandard.FOLLOW_SET)
@@ -121,6 +122,10 @@ class TrustProvider(private val service: NostrService) : IEventUpdate {
                 Log.d(logTag, "Updating ${event.kind().asU16()} is not supported")
             }
         }
+    }
+
+    suspend fun pubkey(): PublicKey {
+        return service.pubkey()
     }
 
     suspend fun friends(): List<PublicKey> {

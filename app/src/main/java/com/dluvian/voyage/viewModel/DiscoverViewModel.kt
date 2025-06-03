@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.dluvian.voyage.Topic
 import com.dluvian.voyage.model.DiscoverViewCmd
+import com.dluvian.voyage.model.DiscoverViewEventUpdate
 import com.dluvian.voyage.model.DiscoverViewRefresh
 import com.dluvian.voyage.model.DiscoverViewShow
 import com.dluvian.voyage.model.TrustProfile
@@ -28,6 +29,7 @@ class DiscoverViewModel(
         when (cmd) {
             DiscoverViewShow -> TODO()
             DiscoverViewRefresh -> TODO()
+            is DiscoverViewEventUpdate -> TODO()
         }
     }
 }

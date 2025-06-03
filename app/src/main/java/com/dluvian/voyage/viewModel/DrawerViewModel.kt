@@ -1,56 +1,54 @@
 package com.dluvian.voyage.viewModel
 
 import androidx.compose.material3.DrawerState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.voyage.cmd.CloseDrawer
-import com.dluvian.voyage.cmd.DrawerViewAction
-import com.dluvian.voyage.cmd.DrawerViewSubscribeSets
-import com.dluvian.voyage.cmd.OpenDrawer
-import com.dluvian.voyage.core.DELAY_10SEC
-import com.dluvian.voyage.core.utils.launchIO
-import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
-import com.dluvian.voyage.data.provider.ItemSetProvider
-import com.dluvian.voyage.data.provider.ProfileProvider
-import com.dluvian.voyage.provider.IEventUpdate
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.stateIn
+import com.dluvian.voyage.Ident
+import com.dluvian.voyage.model.CloseDrawer
+import com.dluvian.voyage.model.DrawerViewCmd
+import com.dluvian.voyage.model.DrawerViewSubscribeSets
+import com.dluvian.voyage.model.OpenDrawer
+import com.dluvian.voyage.nostr.Subscriber
+import com.dluvian.voyage.provider.NameProvider
+import com.dluvian.voyage.provider.TrustProvider
 import kotlinx.coroutines.launch
+import rust.nostr.sdk.PublicKey
+
+typealias ItemSetMeta = Pair<Ident, String>
 
 class DrawerViewModel(
-    profileProvider: ProfileProvider,
-    itemSetProvider: ItemSetProvider,
     val drawerState: DrawerState,
-    private val lazyNostrSubscriber: LazyNostrSubscriber,
+    private val trustProvider: TrustProvider,
+    private val nameProvider: NameProvider,
+    private val subscriber: Subscriber,
 ) :
-    ViewModel(), IEventUpdate {
-    val personalProfile = profileProvider.getPersonalProfileFlow()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, profileProvider.getDefaultProfile())
-    val itemSetMetas = itemSetProvider.getMySetsFlow()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+    ViewModel() {
+    val myPubkey = mutableStateOf<PublicKey?>(null)
+    val myName = mutableStateOf<String>("")
+    val itemSets = mutableStateOf(emptyList<ItemSetMeta>())
 
-    fun handle(action: DrawerViewAction) {
-        when (action) {
-            is OpenDrawer -> action.scope.launch {
-                drawerState.open()
-            }
-
-            is CloseDrawer -> action.scope.launch {
-                drawerState.close()
-            }
-
-            DrawerViewSubscribeSets -> subSets()
+    init {
+        viewModelScope.launch {
+            myPubkey.value = trustProvider.pubkey()
+            myName.value = myPubkey.value?.toBech32().orEmpty()
         }
     }
 
-    var job: Job? = null
-    private fun subSets() {
-        if (job?.isActive == true) return
-        job = viewModelScope.launchIO {
-            lazyNostrSubscriber.lazySubMySets()
-            delay(DELAY_10SEC)
+    fun handle(cmd: DrawerViewCmd) {
+        when (cmd) {
+            is OpenDrawer -> cmd.scope.launch {
+                drawerState.open()
+                val pubkey = trustProvider.pubkey()
+                myPubkey.value = pubkey
+                myName.value = nameProvider.name(pubkey)
+            }
+
+            is CloseDrawer -> cmd.scope.launch {
+                drawerState.close()
+            }
+
+            DrawerViewSubscribeSets -> TODO()
         }
     }
 }

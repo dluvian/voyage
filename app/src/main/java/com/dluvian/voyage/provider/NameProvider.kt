@@ -1,6 +1,7 @@
 package com.dluvian.voyage.provider
 
 import android.util.Log
+import com.dluvian.voyage.MAX_NAME_LEN
 import com.dluvian.voyage.MAX_PUBKEYS
 import com.dluvian.voyage.nostr.NostrService
 import kotlinx.coroutines.sync.Mutex
@@ -50,6 +51,11 @@ class NameProvider(private val service: NostrService) : IEventUpdate {
         }
     }
 
+    suspend fun name(pubkey: PublicKey): String {
+        return mutex.withLock { names[pubkey] }?.second.orEmpty()
+    }
+
+
     suspend fun names(pubkeys: Collection<PublicKey>): Map<PublicKey, String> {
         return mutex.withLock { names.filter { (pk, _) -> pubkeys.contains(pk) } }
             .map { (pk, timedName) -> Pair(pk, timedName.second) }
@@ -88,6 +94,9 @@ class NameProvider(private val service: NostrService) : IEventUpdate {
             return ""
         }
 
-        return result.getOrNull()?.getName().orEmpty()
+        return result.getOrNull()?.getName()
+            .orEmpty()
+            .filterNot { it.isWhitespace() } // My preferred asthetics
+            .take(MAX_NAME_LEN) // Don't keep monster names in memory
     }
 }
