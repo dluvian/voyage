@@ -26,6 +26,7 @@ import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.core.utils.showToast
 import com.dluvian.voyage.preferences.EventPreferences
 import com.dluvian.voyage.preferences.RelayPreferences
+import com.dluvian.voyage.provider.IEventUpdate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import rust.nostr.sdk.PublicKey
@@ -37,7 +38,7 @@ class SettingsViewModel(
     private val snackbar: SnackbarHostState,
     private val relayPreferences: RelayPreferences,
     private val eventPreferences: EventPreferences,
-) : ViewModel() {
+) : ViewModel(), IEventUpdate {
     val seed = mutableStateOf(emptyList<String>())
     val sendAuth = mutableStateOf(relayPreferences.getSendAuth())
     val isDeleting = mutableStateOf(false)

@@ -30,6 +30,7 @@ import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.upsert.Nip65UpsertDao
 import com.dluvian.voyage.nostr.NostrService
+import com.dluvian.voyage.provider.IEventUpdate
 import kotlinx.coroutines.delay
 
 private const val TAG = "RelayEditorViewModel"
@@ -41,7 +42,7 @@ class RelayEditorViewModel(
     private val nostrService: NostrService,
     private val nip65UpsertDao: Nip65UpsertDao,
     val connectionStatuses: MutableState<Map<RelayUrl, ConnectionStatus>>
-) : ViewModel() {
+) : ViewModel(), IEventUpdate {
     val myRelays = mutableStateOf(emptyList<Nip65Relay>())
     val popularRelays = mutableStateOf(emptyList<RelayUrl>())
     val addIsEnabled = mutableStateOf(getAddIsEnabled(myRelays.value))

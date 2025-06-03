@@ -21,6 +21,7 @@ import com.dluvian.voyage.filterSetting.ItemSetMeta
 import com.dluvian.voyage.filterSetting.PostDetails
 import com.dluvian.voyage.filterSetting.TopicFeedSetting
 import com.dluvian.voyage.paginator.Paginator
+import com.dluvian.voyage.provider.IEventUpdate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -33,7 +34,7 @@ class TopicViewModel(
     private val subCreator: SubscriptionCreator,
     private val topicProvider: TopicProvider,
     private val itemSetProvider: ItemSetProvider,
-) : ViewModel() {
+) : ViewModel(), IEventUpdate {
     val addableLists = mutableStateOf(emptyList<ItemSetMeta>())
     val nonAddableLists = mutableStateOf(emptyList<ItemSetMeta>())
     val currentTopic = mutableStateOf("")

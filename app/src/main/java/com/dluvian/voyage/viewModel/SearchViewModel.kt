@@ -28,6 +28,7 @@ import com.dluvian.voyage.data.nostr.removeNostrUri
 import com.dluvian.voyage.data.provider.SearchProvider
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.data.room.view.SimplePostView
+import com.dluvian.voyage.provider.IEventUpdate
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import rust.nostr.sdk.EventId
@@ -39,7 +40,7 @@ class SearchViewModel(
     private val searchProvider: SearchProvider,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val snackbar: SnackbarHostState,
-) : ViewModel() {
+) : ViewModel(), IEventUpdate {
     val topics = mutableStateOf<List<Topic>>(emptyList())
     val profiles = mutableStateOf<List<AdvancedProfileView>>(emptyList())
     val posts = mutableStateOf<List<SimplePostView>>(emptyList())

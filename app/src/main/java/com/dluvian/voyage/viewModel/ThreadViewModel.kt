@@ -18,6 +18,7 @@ import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.provider.ThreadProvider
 import com.dluvian.voyage.filterSetting.PostDetails
+import com.dluvian.voyage.provider.IEventUpdate
 import com.dluvian.voyage.ui.components.row.mainEvent.ThreadReplyCtx
 import com.dluvian.voyage.ui.components.row.mainEvent.ThreadRootCtx
 import kotlinx.coroutines.delay
@@ -33,7 +34,7 @@ class ThreadViewModel(
     val threadState: LazyListState,
     private val threadProvider: ThreadProvider,
     private val threadCollapser: ThreadCollapser,
-) : ViewModel() {
+) : ViewModel(), IEventUpdate {
 
     val isRefreshing = mutableStateOf(false)
     var parentIsAvailable: StateFlow<Boolean> = MutableStateFlow(false)

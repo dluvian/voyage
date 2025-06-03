@@ -24,6 +24,7 @@ import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.ItemSetProvider
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.filterSetting.CustomPubkeys
+import com.dluvian.voyage.provider.IEventUpdate
 import kotlinx.coroutines.delay
 import java.util.UUID
 
@@ -32,7 +33,7 @@ class EditListViewModel(
     private val snackbar: SnackbarHostState,
     private val itemSetProvider: ItemSetProvider,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
-) : ViewModel() {
+) : ViewModel(), IEventUpdate {
     private val _identifier = mutableStateOf("")
 
     val isLoading = mutableStateOf(false)

@@ -23,6 +23,7 @@ import com.dluvian.voyage.data.room.dao.upsert.ProfileUpsertDao
 import com.dluvian.voyage.data.room.entity.FullProfileEntity
 import com.dluvian.voyage.data.room.entity.ProfileEntity
 import com.dluvian.voyage.nostr.NostrService
+import com.dluvian.voyage.provider.IEventUpdate
 import kotlinx.coroutines.delay
 import rust.nostr.sdk.Event
 
@@ -36,7 +37,7 @@ class EditProfileViewModel(
     private val fullProfileDao: FullProfileDao,
     private val metadataInMemory: MetadataInMemory,
     private val profileUpsertDao: ProfileUpsertDao,
-) : ViewModel() {
+) : ViewModel(), IEventUpdate {
     val isSaving = mutableStateOf(false)
     val fullProfile = mutableStateOf<FullProfileEntity?>(null)
 

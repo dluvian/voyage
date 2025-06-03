@@ -19,6 +19,7 @@ import com.dluvian.voyage.filterSetting.ListFeedSetting
 import com.dluvian.voyage.filterSetting.ListPubkeys
 import com.dluvian.voyage.filterSetting.PostDetails
 import com.dluvian.voyage.paginator.Paginator
+import com.dluvian.voyage.provider.IEventUpdate
 
 class ListViewModel(
     feedProvider: FeedProvider,
@@ -29,7 +30,7 @@ class ListViewModel(
     val itemSetProvider: ItemSetProvider,
     val pagerState: PagerState,
     private val lazyNostrSubscriber: LazyNostrSubscriber
-) : ViewModel() {
+) : ViewModel(), IEventUpdate {
     val isLoading = mutableStateOf(false)
     val tabIndex = mutableIntStateOf(0)
 

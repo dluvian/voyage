@@ -14,13 +14,14 @@ import com.dluvian.voyage.data.provider.FeedProvider
 import com.dluvian.voyage.filterSetting.BookmarkFeedSetting
 import com.dluvian.voyage.filterSetting.PostDetails
 import com.dluvian.voyage.paginator.Paginator
+import com.dluvian.voyage.provider.IEventUpdate
 
 class BookmarksViewModel(
     feedProvider: FeedProvider,
     val feedState: LazyListState,
     val postDetails: State<PostDetails?>,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
-) : ViewModel() {
+) : ViewModel(), IEventUpdate {
     val paginator = Paginator(
         feedProvider = feedProvider,
         subCreator = lazyNostrSubscriber.subCreator,

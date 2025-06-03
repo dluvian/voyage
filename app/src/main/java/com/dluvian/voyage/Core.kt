@@ -71,8 +71,11 @@ class Core(
 
             is RelayNotificationCmd -> when (cmd) {
                 is ReceiveEvent -> {
+                    viewModelScope.launch {
+                        navigator.update(cmd.event)
+                    }
                     for (updatable in appContainer.getEventUpdatables()) {
-                        viewModelScope.launch(Dispatchers.IO) {
+                        viewModelScope.launch {
                             updatable.update(cmd.event)
                         }
                     }

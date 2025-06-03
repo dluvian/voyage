@@ -12,6 +12,7 @@ import com.dluvian.voyage.data.nostr.SIMPLE_WEBSOCKET_URI
 import com.dluvian.voyage.data.nostr.WEBSOCKET_URI
 import com.dluvian.voyage.data.provider.RelayProfileProvider
 import com.dluvian.voyage.data.room.dao.util.CountDao
+import com.dluvian.voyage.provider.IEventUpdate
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +24,7 @@ import rust.nostr.sdk.RelayInformationDocument
 class RelayProfileViewModel(
     private val relayProfileProvider: RelayProfileProvider,
     private val countDao: CountDao,
-) : ViewModel() {
+) : ViewModel(), IEventUpdate {
     val header = mutableStateOf("")
     val profile = mutableStateOf<RelayInformationDocument?>(null)
     val isLoading = mutableStateOf(false)

@@ -12,6 +12,7 @@ import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.ItemSetProvider
 import com.dluvian.voyage.data.provider.ProfileProvider
+import com.dluvian.voyage.provider.IEventUpdate
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
@@ -24,7 +25,7 @@ class DrawerViewModel(
     val drawerState: DrawerState,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
 ) :
-    ViewModel() {
+    ViewModel(), IEventUpdate {
     val personalProfile = profileProvider.getPersonalProfileFlow()
         .stateIn(viewModelScope, SharingStarted.Eagerly, profileProvider.getDefaultProfile())
     val itemSetMetas = itemSetProvider.getMySetsFlow()

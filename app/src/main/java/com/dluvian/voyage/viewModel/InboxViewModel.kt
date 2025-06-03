@@ -19,6 +19,7 @@ import com.dluvian.voyage.filterSetting.InboxFeedSetting
 import com.dluvian.voyage.filterSetting.PostDetails
 import com.dluvian.voyage.paginator.Paginator
 import com.dluvian.voyage.preferences.InboxPreferences
+import com.dluvian.voyage.provider.IEventUpdate
 
 class InboxViewModel(
     feedProvider: FeedProvider,
@@ -26,7 +27,7 @@ class InboxViewModel(
     val postDetails: State<PostDetails?>,
     val feedState: LazyListState,
     private val inboxPreferences: InboxPreferences
-) : ViewModel() {
+) : ViewModel(), IEventUpdate {
     val showFilterMenu: MutableState<Boolean> = mutableStateOf(false)
     val setting: MutableState<InboxFeedSetting> =
         mutableStateOf(inboxPreferences.getInboxFeedSetting())

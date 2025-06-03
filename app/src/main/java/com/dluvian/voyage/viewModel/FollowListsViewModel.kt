@@ -16,6 +16,7 @@ import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
+import com.dluvian.voyage.provider.IEventUpdate
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -30,7 +31,7 @@ class FollowListsViewModel(
     private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val profileProvider: ProfileProvider,
     private val topicProvider: TopicProvider,
-) : ViewModel() {
+) : ViewModel(), IEventUpdate {
     val tabIndex = mutableIntStateOf(0)
     val isRefreshing = mutableStateOf(false)
     val profiles: MutableState<StateFlow<List<AdvancedProfileView>>> =

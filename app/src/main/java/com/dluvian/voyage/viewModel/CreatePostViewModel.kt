@@ -11,13 +11,14 @@ import com.dluvian.voyage.core.DELAY_1SEC
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.core.utils.showToast
 import com.dluvian.voyage.data.interactor.PostSender
+import com.dluvian.voyage.provider.IEventUpdate
 import kotlinx.coroutines.delay
 
 
 class CreatePostViewModel(
     private val postSender: PostSender,
     private val snackbar: SnackbarHostState,
-) : ViewModel() {
+) : ViewModel(), IEventUpdate {
     val isSending = mutableStateOf(false)
 
     fun handle(action: CreatePostViewAction) {

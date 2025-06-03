@@ -15,13 +15,14 @@ import com.dluvian.voyage.core.utils.showToast
 import com.dluvian.voyage.data.interactor.PostSender
 import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.nostr.createNprofile
+import com.dluvian.voyage.provider.IEventUpdate
 import kotlinx.coroutines.delay
 
 class CreateGitIssueViewModel(
     private val postSender: PostSender,
     private val snackbar: SnackbarHostState,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
-) : ViewModel() {
+) : ViewModel(), IEventUpdate {
     val isSendingIssue = mutableStateOf(false)
 
     fun handle(action: CreateGitIssueViewAction) {

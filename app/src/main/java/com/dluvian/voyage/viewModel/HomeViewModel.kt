@@ -21,8 +21,10 @@ import com.dluvian.voyage.filterSetting.HomeFeedSetting
 import com.dluvian.voyage.filterSetting.PostDetails
 import com.dluvian.voyage.paginator.Paginator
 import com.dluvian.voyage.preferences.HomePreferences
+import com.dluvian.voyage.provider.IEventUpdate
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import rust.nostr.sdk.Event
 
 
 class HomeViewModel(
@@ -31,7 +33,7 @@ class HomeViewModel(
     val feedState: LazyListState,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val homePreferences: HomePreferences,
-) : ViewModel() {
+) : ViewModel(), IEventUpdate {
     val showFilterMenu: MutableState<Boolean> = mutableStateOf(false)
     val setting: MutableState<HomeFeedSetting> =
         mutableStateOf(homePreferences.getHomeFeedSetting())
@@ -75,5 +77,9 @@ class HomeViewModel(
     private fun refresh() {
         lazyNostrSubscriber.subCreator.unsubAll()
         paginator.refresh(onSub = { subMyAccountAndTrustData() })
+    }
+
+    override suspend fun update(event: Event) {
+        TODO("Not yet implemented")
     }
 }

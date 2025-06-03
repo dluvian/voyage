@@ -14,6 +14,7 @@ import com.dluvian.voyage.core.EventIdHex
 import com.dluvian.voyage.core.utils.launchIO
 import com.dluvian.voyage.core.utils.showToast
 import com.dluvian.voyage.data.interactor.PostSender
+import com.dluvian.voyage.provider.IEventUpdate
 import kotlinx.coroutines.delay
 import rust.nostr.sdk.Event
 
@@ -22,7 +23,7 @@ private const val TAG = "CreateCrossPostViewModel"
 class CreateCrossPostViewModel(
     private val postSender: PostSender,
     private val snackbar: SnackbarHostState,
-) : ViewModel() {
+) : ViewModel(), IEventUpdate {
     val isSending = mutableStateOf(false)
     private val id: MutableState<EventIdHex?> = mutableStateOf(null)
 

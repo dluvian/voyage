@@ -13,6 +13,7 @@ import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.provider.ProfileProvider
 import com.dluvian.voyage.data.provider.TopicProvider
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
+import com.dluvian.voyage.provider.IEventUpdate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -26,7 +27,7 @@ class DiscoverViewModel(
     private val topicProvider: TopicProvider,
     private val profileProvider: ProfileProvider,
     private val lazyNostrSubscriber: LazyNostrSubscriber,
-) : ViewModel() {
+) : ViewModel(), IEventUpdate {
     private val maxCount = 75
     val isRefreshing = mutableStateOf(false)
     val popularTopics: MutableState<StateFlow<List<TopicFollowState>>> =

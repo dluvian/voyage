@@ -21,6 +21,7 @@ import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
 import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.data.room.dao.EventRelayDao
 import com.dluvian.voyage.data.room.dao.MainEventDao
+import com.dluvian.voyage.provider.IEventUpdate
 import kotlinx.coroutines.delay
 import rust.nostr.sdk.Event
 
@@ -30,7 +31,7 @@ class CreateReplyViewModel(
     private val snackbar: SnackbarHostState,
     private val eventRelayDao: EventRelayDao,
     private val mainEventDao: MainEventDao,
-) : ViewModel() {
+) : ViewModel(), IEventUpdate {
     val isSendingReply = mutableStateOf(false)
     val parent: MutableState<MainEvent?> = mutableStateOf(null)
 

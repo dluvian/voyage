@@ -31,6 +31,7 @@ import com.dluvian.voyage.filterSetting.ItemSetMeta
 import com.dluvian.voyage.filterSetting.ProfileFeedSetting
 import com.dluvian.voyage.filterSetting.ReplyFeedSetting
 import com.dluvian.voyage.paginator.Paginator
+import com.dluvian.voyage.provider.IEventUpdate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -53,7 +54,7 @@ class ProfileViewModel(
     private val eventRelayDao: EventRelayDao,
     private val itemSetProvider: ItemSetProvider,
     private val myPubkeyProvider: IMyPubkeyProvider,
-) : ViewModel() {
+) : ViewModel(), IEventUpdate {
     val tabIndex = mutableIntStateOf(0)
     val addableLists = mutableStateOf(emptyList<ItemSetMeta>())
     val nonAddableLists = mutableStateOf(emptyList<ItemSetMeta>())
