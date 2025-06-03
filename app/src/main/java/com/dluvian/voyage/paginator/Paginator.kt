@@ -5,6 +5,7 @@ import com.dluvian.voyage.PAGE_SIZE
 import com.dluvian.voyage.filterSetting.FeedSetting
 import com.dluvian.voyage.model.UIEvent
 import com.dluvian.voyage.provider.FeedProvider
+import rust.nostr.sdk.Event
 import rust.nostr.sdk.Timestamp
 
 
@@ -16,10 +17,8 @@ class Paginator(private val feedProvider: FeedProvider) : IPaginator {
 
     private lateinit var feedSetting: FeedSetting
 
-    override suspend fun load(setting: FeedSetting) {
+    override fun initSetting(setting: FeedSetting) {
         feedSetting = setting
-
-        refresh()
     }
 
     override suspend fun refresh() {
@@ -61,5 +60,10 @@ class Paginator(private val feedProvider: FeedProvider) : IPaginator {
         )
 
         isSwitchingPage.value = false
+    }
+
+    override suspend fun update(event: Event) {
+        // TODO: Issue: This could be more specific to prevent unnecessary db calls
+        dbRefreshInPlace()
     }
 }

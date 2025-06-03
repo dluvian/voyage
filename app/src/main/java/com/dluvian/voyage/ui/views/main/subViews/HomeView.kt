@@ -10,11 +10,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.dluvian.voyage.model.HomeViewAppend
-import com.dluvian.voyage.model.HomeViewApplyFilter
-import com.dluvian.voyage.model.HomeViewDismissFilter
-import com.dluvian.voyage.model.HomeViewRefresh
-import com.dluvian.voyage.model.HomeViewSubAccountAndTrustData
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.data.filterSetting.WebOfTrustPubkeys
@@ -24,6 +19,11 @@ import com.dluvian.voyage.filterSetting.HomeFeedSetting
 import com.dluvian.voyage.filterSetting.MyTopics
 import com.dluvian.voyage.filterSetting.NoPubkeys
 import com.dluvian.voyage.filterSetting.NoTopics
+import com.dluvian.voyage.model.HomeViewAccountData
+import com.dluvian.voyage.model.HomeViewAppend
+import com.dluvian.voyage.model.HomeViewApplyFilter
+import com.dluvian.voyage.model.HomeViewDismissFilter
+import com.dluvian.voyage.model.HomeViewRefresh
 import com.dluvian.voyage.ui.components.Feed
 import com.dluvian.voyage.ui.components.dialog.BaseActionDialog
 import com.dluvian.voyage.ui.components.selection.FeedPubkeySelectionRadio
@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeView(vm: HomeViewModel, onUpdate: OnUpdate) {
     LaunchedEffect(key1 = Unit) {
-        onUpdate(HomeViewSubAccountAndTrustData)
+        onUpdate(HomeViewAccountData)
     }
 
     Feed(

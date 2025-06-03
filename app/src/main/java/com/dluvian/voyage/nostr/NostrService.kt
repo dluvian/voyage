@@ -36,7 +36,7 @@ class NostrService(
         .automaticAuthentication(relayPreferences.getSendAuth())
     private val admission = NostrAdmission()
 
-    val client = ClientBuilder()
+    private val client = ClientBuilder()
         .signer(keyStore.getSigner())
         .opts(clientOpts)
         .database(NostrDatabase.lmdb("voyage_db"))
@@ -116,6 +116,10 @@ class NostrService(
             val opts = SubscribeAutoCloseOptions().exitPolicy(ReqExitPolicy.ExitOnEose)
             client.subscribeTo(urls = result.failed.keys.toList(), filter = filter, opts = opts)
         }
+    }
+
+    suspend fun unsubAll() {
+        client.unsubscribeAll()
     }
 
     suspend fun close() {

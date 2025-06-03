@@ -4,13 +4,14 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import com.dluvian.voyage.filterSetting.FeedSetting
 import com.dluvian.voyage.model.UIEvent
+import com.dluvian.voyage.provider.IEventUpdate
 
-interface IPaginator {
+interface IPaginator : IEventUpdate {
     val isRefreshing: State<Boolean>
     val isSwitchingPage: State<Boolean>
     val isNotFirstPage: State<Boolean>
     val page: MutableState<List<UIEvent>>
-    suspend fun load(setting: FeedSetting)
+    fun initSetting(setting: FeedSetting)
     suspend fun refresh()
     suspend fun dbRefreshInPlace()
     suspend fun nextPage()
