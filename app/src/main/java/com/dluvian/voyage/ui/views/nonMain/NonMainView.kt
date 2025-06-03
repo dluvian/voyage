@@ -6,12 +6,9 @@ import com.dluvian.voyage.navigator.BookmarkNavView
 import com.dluvian.voyage.navigator.CreateGitIssueNavView
 import com.dluvian.voyage.navigator.CreatePostNavView
 import com.dluvian.voyage.navigator.CrossPostNavView
-import com.dluvian.voyage.navigator.EditExistingListNavView
-import com.dluvian.voyage.navigator.EditNewListNavView
 import com.dluvian.voyage.navigator.EditProfileNavView
 import com.dluvian.voyage.navigator.FollowListsNavView
 import com.dluvian.voyage.navigator.NonMainNavView
-import com.dluvian.voyage.navigator.OpenListNavView
 import com.dluvian.voyage.navigator.ProfileNavView
 import com.dluvian.voyage.navigator.RelayEditorNavView
 import com.dluvian.voyage.navigator.RelayProfileNavView
@@ -20,8 +17,6 @@ import com.dluvian.voyage.navigator.SettingsNavView
 import com.dluvian.voyage.navigator.ThreadNavView
 import com.dluvian.voyage.navigator.ThreadNeventNavView
 import com.dluvian.voyage.navigator.TopicNavView
-import com.dluvian.voyage.ui.views.nonMain.editList.EditListView
-import com.dluvian.voyage.ui.views.nonMain.list.ListView
 import com.dluvian.voyage.ui.views.nonMain.profile.ProfileView
 import com.dluvian.voyage.ui.views.nonMain.topic.TopicView
 
@@ -103,20 +98,6 @@ fun NonMainView(
 
         BookmarkNavView -> BookmarksView(
             vm = core.vmContainer.bookmarkVM,
-            snackbar = core.appContainer.snackbar,
-            onUpdate = core.onUpdate
-        )
-
-        EditNewListNavView, is EditExistingListNavView -> EditListView(
-            vm = core.vmContainer.editListVM,
-            profileSuggestions = core.appContainer.suggestionProvider.profileSuggestions,
-            topicSuggestions = core.appContainer.suggestionProvider.topicSuggestions,
-            snackbar = core.appContainer.snackbar,
-            onUpdate = core.onUpdate
-        )
-
-        is OpenListNavView -> ListView(
-            vm = core.vmContainer.listVM,
             snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate
         )

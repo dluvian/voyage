@@ -18,7 +18,5 @@ data class VMContainer(
     val drawerVM: DrawerViewModel,
     val followListsVM: FollowListsViewModel,
     val bookmarkVM: BookmarkViewModel,
-    val editListVM: EditListViewModel,
-    val listVM: ListViewModel,
     val createGitIssueVM: GitIssueViewModel,
 )

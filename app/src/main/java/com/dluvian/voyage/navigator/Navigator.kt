@@ -2,10 +2,12 @@ package com.dluvian.voyage.navigator
 
 import androidx.compose.runtime.mutableStateOf
 import com.dluvian.voyage.model.BookmarkViewEventUpdate
+import com.dluvian.voyage.model.DiscoverViewEventUpdate
 import com.dluvian.voyage.model.HomeViewEventUpdate
 import com.dluvian.voyage.model.NavCmd
 import com.dluvian.voyage.model.PopNavCmd
 import com.dluvian.voyage.model.PushNavCmd
+import com.dluvian.voyage.model.SetEventForCrossPosting
 import com.dluvian.voyage.provider.IEventUpdate
 import com.dluvian.voyage.viewModel.VMContainer
 import rust.nostr.sdk.Event
@@ -55,16 +57,13 @@ class Navigator(private val vmContainer: VMContainer, private val closeApp: () -
                 is NProfileNavView -> vmContainer.profileVM.openNProfile(navView.nprofile)
                 is TopicNavView -> vmContainer.topicVM.openTopic(navView.topic)
                 is ReplyNavView -> vmContainer.createReplyVM.openParent(navView.parent)
-                is CrossPostNavView -> vmContainer.createCrossPostVM.prepareCrossPost(
-                    navView.event
+                is CrossPostNavView -> vmContainer.createCrossPostVM.handle(
+                    SetEventForCrossPosting(
+                        navView.event
+                    )
                 )
 
                 is RelayProfileNavView -> vmContainer.relayProfileVM.openProfile(relayUrl = navView.relayUrl)
-                is OpenListNavView -> vmContainer.listVM.openList(identifier = navView.identifier)
-                is EditExistingListNavView -> vmContainer.editListVM.editExisting(identifier = navView.identifier)
-
-                EditNewListNavView -> vmContainer.editListVM.createNew()
-
             }
 
             is MainNavView -> when (navView) {
@@ -91,14 +90,11 @@ class Navigator(private val vmContainer: VMContainer, private val closeApp: () -
         // Only update what is on screen
         // Rest receive update via pop/push
         when (stack.value.last()) {
-            DiscoverNavView -> vmContainer.discoverVM.update(event)
+            DiscoverNavView -> vmContainer.discoverVM.handle(DiscoverViewEventUpdate(event))
             HomeNavView -> vmContainer.homeVM.handle(HomeViewEventUpdate(event))
             InboxNavView -> vmContainer.inboxVM.update(event)
             SearchNavView -> vmContainer.searchVM.update(event)
-            is EditExistingListNavView -> vmContainer.editListVM.update(event)
-            EditNewListNavView -> vmContainer.listVM.update(event)
             is NProfileNavView -> vmContainer.profileVM.update(event)
-            is OpenListNavView -> vmContainer.listVM.update(event)
             is ProfileNavView -> vmContainer.profileVM.update(event)
             is RelayProfileNavView -> vmContainer.relayProfileVM.update(event)
             is ReplyNavView -> vmContainer.createReplyVM.update(event)

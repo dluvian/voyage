@@ -3,9 +3,7 @@ package com.dluvian.voyage.nostr
 import com.dluvian.voyage.APP_NAME
 import com.dluvian.voyage.AlreadyFollowedException
 import com.dluvian.voyage.AlreadyUnfollowedException
-import com.dluvian.voyage.EventNotInDatabaseException
 import com.dluvian.voyage.FailedToSignException
-import com.dluvian.voyage.Ident
 import com.dluvian.voyage.Topic
 import com.dluvian.voyage.preferences.EventPreferences
 import com.dluvian.voyage.provider.BookmarkProvider
@@ -18,17 +16,13 @@ import rust.nostr.sdk.Event
 import rust.nostr.sdk.EventBuilder
 import rust.nostr.sdk.EventDeletionRequest
 import rust.nostr.sdk.EventId
-import rust.nostr.sdk.Filter
 import rust.nostr.sdk.GitIssue
 import rust.nostr.sdk.Interests
-import rust.nostr.sdk.Kind
-import rust.nostr.sdk.KindStandard
 import rust.nostr.sdk.Metadata
 import rust.nostr.sdk.PublicKey
 import rust.nostr.sdk.RelayMetadata
 import rust.nostr.sdk.SendEventOutput
 import rust.nostr.sdk.Tag
-import rust.nostr.sdk.TagKind
 import rust.nostr.sdk.TagStandard
 import rust.nostr.sdk.Tags
 
@@ -128,70 +122,10 @@ class EventCreator(
         return Result.success(service.publish(result.getOrThrow()))
     }
 
-    suspend fun publishListDeletion(ident: Ident): Result<SendEventOutput> {
-        val pubkey = service.pubkey()
-        val coords = listOf(
-            Coordinate(
-                kind = Kind.fromStd(KindStandard.FOLLOW_SET),
-                publicKey = pubkey,
-                identifier = ident
-            ),
-            Coordinate(
-                kind = Kind.fromStd(KindStandard.INTEREST_SET),
-                publicKey = pubkey,
-                identifier = ident
-            ),
-        )
-        // TODO: Wait for default nullability
-        val deletion = EventDeletionRequest(ids = emptyList(), coordinates = coords, reason = null)
-        val builder = EventBuilder.delete(request = deletion)
-
-        val result = service.sign(builder)
-        if (result.isFailure) return Result.failure(FailedToSignException())
-
-        return Result.success(service.publish(result.getOrThrow()))
-    }
-
     suspend fun publishNip65(
         relays: Map<String, RelayMetadata?>, // TODO: No RelayUrl struct?
     ): Result<SendEventOutput> {
         val builder = EventBuilder.relayList(relays)
-
-        val result = service.sign(builder)
-        if (result.isFailure) return Result.failure(FailedToSignException())
-
-        return Result.success(service.publish(result.getOrThrow()))
-    }
-
-    suspend fun publishPubkeySet(
-        ident: Ident,
-        title: String,
-        description: String,
-        pubkeys: List<PublicKey>,
-    ): Result<SendEventOutput> {
-        val tags = listOf(
-            Tag.fromStandardized(TagStandard.Title(title)),
-            Tag.fromStandardized(TagStandard.Description(description))
-        )
-        val builder = EventBuilder.followSet(identifier = ident, publicKeys = pubkeys).tags(tags)
-
-        val result = service.sign(builder)
-        if (result.isFailure) return Result.failure(FailedToSignException())
-
-        return Result.success(service.publish(result.getOrThrow()))
-    }
-
-    suspend fun publishTopicSet(
-        ident: String,
-        title: String,
-        description: String,
-        topics: List<Topic>,
-    ): Result<SendEventOutput> {
-        val tags = listOf(
-            Tag.fromStandardized(TagStandard.Title(title)),
-            Tag.fromStandardized(TagStandard.Description(description))
-        )
-        val builder = EventBuilder.interestSet(identifier = ident, hashtags = topics).tags(tags)
 
         val result = service.sign(builder)
         if (result.isFailure) return Result.failure(FailedToSignException())
@@ -279,60 +213,6 @@ class EventCreator(
         current.remove(topic)
         val newTopics = Interests(hashtags = current.toList())
         val builder = EventBuilder.interests(newTopics)
-
-        val result = service.sign(builder)
-        if (result.isFailure) return Result.failure(FailedToSignException())
-
-        return Result.success(service.publish(result.getOrThrow()))
-    }
-
-    suspend fun addPubkeyToList(pubkey: PublicKey, ident: Ident): Result<SendEventOutput> {
-        val filter = Filter()
-            .author(service.pubkey())
-            .kind(Kind.fromStd(KindStandard.FOLLOW_SET))
-            .identifier(ident)
-            .limit(1u)
-        val event = service.dbQuery(filter).firstOrNull()
-        if (event == null) return Result.failure(EventNotInDatabaseException())
-
-        val pubkeys = event.tags().publicKeys().toMutableSet()
-        if (pubkeys.contains(pubkey)) return Result.failure(AlreadyFollowedException())
-
-        pubkeys.add(pubkey)
-        val tags = listOf(
-            event.tags().findStandardized(TagKind.Title),
-            event.tags().findStandardized(TagKind.Description)
-        ).mapNotNull { std -> std?.let { Tag.fromStandardized(std) } }
-        val builder = EventBuilder
-            .followSet(identifier = ident, publicKeys = pubkeys.toList())
-            .tags(tags)
-
-        val result = service.sign(builder)
-        if (result.isFailure) return Result.failure(FailedToSignException())
-
-        return Result.success(service.publish(result.getOrThrow()))
-    }
-
-    suspend fun addTopicToList(topic: Topic, ident: Ident): Result<SendEventOutput> {
-        val filter = Filter()
-            .author(service.pubkey())
-            .kind(Kind.fromStd(KindStandard.INTEREST_SET))
-            .identifier(ident)
-            .limit(1u)
-        val event = service.dbQuery(filter).firstOrNull()
-        if (event == null) return Result.failure(EventNotInDatabaseException())
-
-        val topics = event.tags().hashtags().toMutableSet()
-        if (topics.contains(topic)) return Result.failure(AlreadyFollowedException())
-
-        topics.add(topic)
-        val tags = listOf(
-            event.tags().findStandardized(TagKind.Title),
-            event.tags().findStandardized(TagKind.Description)
-        ).mapNotNull { std -> std?.let { Tag.fromStandardized(std) } }
-        val builder = EventBuilder
-            .interestSet(identifier = ident, hashtags = topics.toList())
-            .tags(tags)
 
         val result = service.sign(builder)
         if (result.isFailure) return Result.failure(FailedToSignException())

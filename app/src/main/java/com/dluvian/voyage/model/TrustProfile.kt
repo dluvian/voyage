@@ -15,7 +15,7 @@ sealed class TrustProfile(open val pubkey: PublicKey, private var name: String) 
 class OneselfProfile(override val pubkey: PublicKey, var name: String) :
     TrustProfile(pubkey = pubkey, name = name)
 
-class ListedProfile(override val pubkey: PublicKey, var name: String) :
+class FriendProfile(override val pubkey: PublicKey, var name: String) :
     TrustProfile(pubkey = pubkey, name = name)
 
 class TrustedProfile(override val pubkey: PublicKey, var name: String) :

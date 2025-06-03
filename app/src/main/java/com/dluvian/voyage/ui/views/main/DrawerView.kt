@@ -2,7 +2,6 @@ package com.dluvian.voyage.ui.views.main
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,8 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
@@ -22,36 +19,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import com.dluvian.voyage.R
 import com.dluvian.voyage.model.ClickBookmarks
-import com.dluvian.voyage.model.ClickCreateList
 import com.dluvian.voyage.model.ClickFollowLists
 import com.dluvian.voyage.model.ClickRelayEditor
 import com.dluvian.voyage.model.ClickSettings
 import com.dluvian.voyage.model.CloseDrawer
-import com.dluvian.voyage.model.DeleteList
-import com.dluvian.voyage.model.DrawerViewSubscribeSets
-import com.dluvian.voyage.model.EditList
-import com.dluvian.voyage.model.OpenList
 import com.dluvian.voyage.model.OpenProfile
-import com.dluvian.voyage.R
-import com.dluvian.voyage.core.ComposableContent
-import com.dluvian.voyage.core.Fn
-import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.data.filterSetting.ItemSetMeta
-import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.ui.theme.AccountIcon
-import com.dluvian.voyage.ui.theme.AddIcon
 import com.dluvian.voyage.ui.theme.BookmarksIcon
 import com.dluvian.voyage.ui.theme.ListIcon
 import com.dluvian.voyage.ui.theme.RelayIcon
 import com.dluvian.voyage.ui.theme.SettingsIcon
-import com.dluvian.voyage.ui.theme.ViewListIcon
 import com.dluvian.voyage.ui.theme.light
 import com.dluvian.voyage.ui.theme.spacing
 import com.dluvian.voyage.viewModel.DrawerViewModel
@@ -65,7 +48,6 @@ fun MainDrawer(
     content: ComposableContent
 ) {
     val personalProfile by vm.personalProfile.collectAsState()
-    val itemSets by vm.itemSetMetas.collectAsState()
     ModalNavigationDrawer(drawerState = vm.drawerState, drawerContent = {
         ModalDrawerSheet {
             LaunchedEffect(key1 = vm.drawerState.isOpen) {
@@ -127,47 +109,10 @@ fun MainDrawer(
                             .padding(vertical = spacing.medium)
                     )
                 }
-                items(itemSets) {
-                    DrawerListItem(meta = it, scope = scope, onUpdate = onUpdate)
-                }
-                item {
-                    DrawerRow(
-                        modifier = Modifier.padding(bottom = spacing.bottomPadding),
-                        label = stringResource(id = R.string.create_a_list),
-                        icon = AddIcon,
-                        onClick = {
-                            onUpdate(ClickCreateList)
-                            onUpdate(CloseDrawer(scope = scope))
-                        })
-                }
             }
         }
     }) {
         content()
-    }
-}
-
-@Composable
-private fun DrawerListItem(meta: ItemSetMeta, scope: CoroutineScope, onUpdate: OnUpdate) {
-    val showMenu = remember { mutableStateOf(false) }
-    Box {
-        ItemSetOptionsMenu(
-            isExpanded = showMenu.value,
-            identifier = meta.identifier,
-            scope = scope,
-            onDismiss = { showMenu.value = false },
-            onUpdate = onUpdate
-        )
-        DrawerRow(
-            label = meta.title,
-            modifier = Modifier.fillMaxWidth(),
-            icon = ViewListIcon,
-            onClick = {
-                onUpdate(OpenList(identifier = meta.identifier))
-                onUpdate(CloseDrawer(scope = scope))
-            },
-            onLongClick = { showMenu.value = true }
-        )
     }
 }
 
@@ -198,38 +143,5 @@ private fun DrawerRow(
         )
         Spacer(modifier = Modifier.width(spacing.xl))
         Text(text = label, color = LocalContentColor.current.light(0.85f))
-    }
-}
-
-@Composable
-private fun ItemSetOptionsMenu(
-    isExpanded: Boolean,
-    identifier: String,
-    scope: CoroutineScope,
-    modifier: Modifier = Modifier,
-    onDismiss: Fn,
-    onUpdate: OnUpdate,
-) {
-    val onCloseDrawer = { onUpdate(CloseDrawer(scope = scope)) }
-    DropdownMenu(
-        modifier = modifier,
-        expanded = isExpanded,
-        onDismissRequest = onDismiss
-    ) {
-        DropdownMenuItem(
-            text = { Text(text = stringResource(R.string.edit_list)) },
-            onClick = {
-                onUpdate(EditList(identifier = identifier))
-                onCloseDrawer()
-                onDismiss()
-            }
-        )
-        DropdownMenuItem(
-            text = { Text(text = stringResource(R.string.delete_list)) },
-            onClick = {
-                onUpdate(DeleteList(ident = identifier, onCloseDrawer = onCloseDrawer))
-                onDismiss()
-            }
-        )
     }
 }

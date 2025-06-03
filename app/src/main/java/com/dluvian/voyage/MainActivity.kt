@@ -17,13 +17,11 @@ import com.dluvian.voyage.viewModel.BookmarkViewModel
 import com.dluvian.voyage.viewModel.CrossPostViewModel
 import com.dluvian.voyage.viewModel.DiscoverViewModel
 import com.dluvian.voyage.viewModel.DrawerViewModel
-import com.dluvian.voyage.viewModel.EditListViewModel
 import com.dluvian.voyage.viewModel.EditProfileViewModel
 import com.dluvian.voyage.viewModel.FollowListsViewModel
 import com.dluvian.voyage.viewModel.GitIssueViewModel
 import com.dluvian.voyage.viewModel.HomeViewModel
 import com.dluvian.voyage.viewModel.InboxViewModel
-import com.dluvian.voyage.viewModel.ListViewModel
 import com.dluvian.voyage.viewModel.PostViewModel
 import com.dluvian.voyage.viewModel.ProfileViewModel
 import com.dluvian.voyage.viewModel.RelayEditorViewModel
@@ -250,26 +248,6 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 feedState = bookmarksFeedState,
                 postDetails = appContainer.postDetailInspector.currentDetails,
                 lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
-            )
-        },
-        editListVM = viewModel {
-            EditListViewModel(
-                itemSetEditor = appContainer.itemSetEditor,
-                snackbar = appContainer.snackbar,
-                itemSetProvider = appContainer.itemSetProvider,
-                lazyNostrSubscriber = appContainer.lazyNostrSubscriber
-            )
-        },
-        listVM = viewModel {
-            ListViewModel(
-                feedProvider = appContainer.feedProvider,
-                postDetails = appContainer.postDetailInspector.currentDetails,
-                feedState = listFeedState,
-                profileState = listProfileState,
-                topicState = listTopicState,
-                itemSetProvider = appContainer.itemSetProvider,
-                pagerState = listViewPagerState,
-                lazyNostrSubscriber = appContainer.lazyNostrSubscriber
             )
         },
         createGitIssueVM = viewModel {

@@ -1,7 +1,6 @@
 package com.dluvian.voyage.model
 
 import android.content.Context
-import com.dluvian.voyage.Ident
 import com.dluvian.voyage.RelayUrl
 import com.dluvian.voyage.Topic
 import com.dluvian.voyage.filterSetting.HomeFeedSetting
@@ -11,15 +10,12 @@ import com.dluvian.voyage.navigator.CreateGitIssueNavView
 import com.dluvian.voyage.navigator.CreatePostNavView
 import com.dluvian.voyage.navigator.CrossPostNavView
 import com.dluvian.voyage.navigator.DiscoverNavView
-import com.dluvian.voyage.navigator.EditExistingListNavView
-import com.dluvian.voyage.navigator.EditNewListNavView
 import com.dluvian.voyage.navigator.EditProfileNavView
 import com.dluvian.voyage.navigator.FollowListsNavView
 import com.dluvian.voyage.navigator.HomeNavView
 import com.dluvian.voyage.navigator.InboxNavView
 import com.dluvian.voyage.navigator.NProfileNavView
 import com.dluvian.voyage.navigator.NavView
-import com.dluvian.voyage.navigator.OpenListNavView
 import com.dluvian.voyage.navigator.ProfileNavView
 import com.dluvian.voyage.navigator.RelayEditorNavView
 import com.dluvian.voyage.navigator.RelayProfileNavView
@@ -58,7 +54,6 @@ sealed class PushNavCmd : NavCmd() {
             ClickRelayEditor -> RelayEditorNavView
             ClickFollowLists -> FollowListsNavView
             ClickBookmarks -> BookmarkNavView
-            ClickCreateList -> EditNewListNavView
             ClickCreateGitIssue -> CreateGitIssueNavView
             is OpenThread -> ThreadNavView(this.event)
             is OpenThreadLink -> ThreadNeventNavView(nevent = this.nevent)
@@ -68,8 +63,6 @@ sealed class PushNavCmd : NavCmd() {
             is OpenReplyCreation -> ReplyNavView(parent = this.parent)
             is OpenCrossPostCreation -> CrossPostNavView(event = this.event)
             is OpenRelayProfile -> RelayProfileNavView(relayUrl = this.relayUrl)
-            is OpenList -> OpenListNavView(identifier = this.identifier)
-            is EditList -> EditExistingListNavView(identifier = this.identifier)
         }
     }
 }
@@ -84,7 +77,6 @@ data object ClickEditProfile : PushNavCmd()
 data object ClickRelayEditor : PushNavCmd()
 data object ClickFollowLists : PushNavCmd()
 data object ClickBookmarks : PushNavCmd()
-data object ClickCreateList : PushNavCmd()
 data object ClickCreateGitIssue : PushNavCmd()
 
 sealed class AdvancedPushNavCmd : PushNavCmd()
@@ -96,8 +88,6 @@ data class OpenTopic(val topic: Topic) : AdvancedPushNavCmd()
 data class OpenReplyCreation(val parent: Event) : AdvancedPushNavCmd()
 data class OpenCrossPostCreation(val event: Event) : AdvancedPushNavCmd()
 data class OpenRelayProfile(val relayUrl: RelayUrl) : AdvancedPushNavCmd()
-data class OpenList(val identifier: Ident) : AdvancedPushNavCmd()
-data class EditList(val identifier: Ident) : AdvancedPushNavCmd()
 
 data class ClickUpvote(val event: Event) : Cmd()
 data class ClickNeutralizeVotes(val event: Event) : Cmd()
@@ -113,11 +103,7 @@ data class UnfollowProfile(val pubkey: PublicKey) : Cmd()
 
 data class CrossPost(val topics: List<Topic>, val event: Event) : Cmd()
 
-data class AddPubkeyToList(val pubkey: PublicKey, val ident: String) : Cmd()
-data class AddTopicToList(val topic: Topic, val ident: String) : Cmd()
 data class Rebroadcast(val event: Event) : Cmd()
-data class DeleteList(val ident: Ident) : Cmd()
-data class SaveList(val ident: Ident) : Cmd() // TODO: add params
 data class DeletePost(val event: Event) : Cmd()
 
 sealed class HomeViewCmd : Cmd()
@@ -159,20 +145,9 @@ data class BookmarkViewEventUpdate(val event: Event) : BookmarkViewCmd()
 data object BookmarksViewRefresh : BookmarkViewCmd()
 data object BookmarksViewNextPage : BookmarkViewCmd()
 
-sealed class EditListViewCmd : Cmd()
-data object EditNewList : EditListViewCmd()
-data class EditExistingList(val ident: Ident) : EditListViewCmd()
-data class EditListViewAddProfile(val profile: Pair<PublicKey, String>) : EditListViewCmd()
-data class EditListViewAddTopic(val topic: Topic) : EditListViewCmd()
-
-sealed class ListViewCmd : Cmd()
-data object ListViewRefresh : ListViewCmd()
-data object ListViewFeedAppend : ListViewCmd()
-
 sealed class DrawerViewCmd : Cmd()
 data class OpenDrawer(val scope: CoroutineScope) : DrawerViewCmd()
 data class CloseDrawer(val scope: CoroutineScope) : DrawerViewCmd()
-data object DrawerViewSubscribeSets : DrawerViewCmd()
 
 sealed class TopicViewCmd : Cmd()
 data object TopicViewRefresh : TopicViewCmd()

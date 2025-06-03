@@ -4,8 +4,6 @@ import android.util.Log
 import androidx.compose.material3.SnackbarDuration
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.voyage.model.AddPubkeyToList
-import com.dluvian.voyage.model.AddTopicToList
 import com.dluvian.voyage.model.BookmarkPost
 import com.dluvian.voyage.model.BookmarkViewCmd
 import com.dluvian.voyage.model.ClickNeutralizeVotes
@@ -16,18 +14,15 @@ import com.dluvian.voyage.model.CreatePostViewCmd
 import com.dluvian.voyage.model.CreateReplyViewCmd
 import com.dluvian.voyage.model.CrossPost
 import com.dluvian.voyage.model.CrossPostViewCmd
-import com.dluvian.voyage.model.DeleteList
 import com.dluvian.voyage.model.DeletePost
 import com.dluvian.voyage.model.DiscoverViewCmd
 import com.dluvian.voyage.model.DrawerViewCmd
-import com.dluvian.voyage.model.EditListViewCmd
 import com.dluvian.voyage.model.EditProfileViewCmd
 import com.dluvian.voyage.model.FollowListsViewCmd
 import com.dluvian.voyage.model.FollowProfile
 import com.dluvian.voyage.model.FollowTopic
 import com.dluvian.voyage.model.HomeViewCmd
 import com.dluvian.voyage.model.InboxViewCmd
-import com.dluvian.voyage.model.ListViewCmd
 import com.dluvian.voyage.model.NavCmd
 import com.dluvian.voyage.model.ProfileViewCmd
 import com.dluvian.voyage.model.Rebroadcast
@@ -36,7 +31,6 @@ import com.dluvian.voyage.model.RelayClosed
 import com.dluvian.voyage.model.RelayEditorViewCmd
 import com.dluvian.voyage.model.RelayNotice
 import com.dluvian.voyage.model.RelayNotificationCmd
-import com.dluvian.voyage.model.SaveList
 import com.dluvian.voyage.model.SearchViewCmd
 import com.dluvian.voyage.model.SettingsViewCmd
 import com.dluvian.voyage.model.ThreadViewCmd
@@ -165,42 +159,6 @@ class Core(
                 }
             }
 
-            is SaveList -> viewModelScope.launch {
-                val pubkeyResult =
-                    appContainer.eventCreator.publishPubkeySet(cmd.ident, TODO(), TODO(), TODO())
-                if (pubkeyResult.isFailure) {
-                    showSnackbarMsg(appContainer.context.getString(R.string.failed_to_sign_profile_list))
-                }
-
-                val topicResult =
-                    appContainer.eventCreator.publishTopicSet(cmd.ident, TODO(), TODO(), TODO())
-                if (topicResult.isFailure) {
-                    showSnackbarMsg(appContainer.context.getString(R.string.failed_to_sign_topic_list))
-                }
-            }
-
-            is DeleteList -> viewModelScope.launch {
-                val result = appContainer.eventCreator.publishListDeletion(cmd.ident)
-                if (result.isFailure) {
-                    showSnackbarMsg(appContainer.context.getString(R.string.failed_to_sign_deletion))
-                }
-                // TODO: Close drawer
-            }
-
-            is AddPubkeyToList -> viewModelScope.launch {
-                val result = appContainer.eventCreator.addPubkeyToList(cmd.pubkey, cmd.ident)
-                if (result.isFailure) {
-                    showSnackbarMsg(appContainer.context.getString(R.string.failed_to_sign_profile_list))
-                }
-            }
-
-            is AddTopicToList -> viewModelScope.launch {
-                val result = appContainer.eventCreator.addTopicToList(cmd.topic, cmd.ident)
-                if (result.isFailure) {
-                    showSnackbarMsg(appContainer.context.getString(R.string.failed_to_sign_topic_list))
-                }
-            }
-
             is BookmarkPost -> viewModelScope.launch {
                 val result = appContainer.eventCreator.addBookmark(cmd.event.id())
                 if (result.isFailure) {
@@ -244,8 +202,6 @@ class Core(
             is InboxViewCmd -> vmContainer.inboxVM.handle(cmd)
             is FollowListsViewCmd -> vmContainer.followListsVM.handle(cmd)
             is BookmarkViewCmd -> vmContainer.bookmarkVM.handle(cmd = cmd)
-            is EditListViewCmd -> vmContainer.editListVM.handle(cmd)
-            is ListViewCmd -> vmContainer.listVM.handle(cmd)
         }
     }
 
