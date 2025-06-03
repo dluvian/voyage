@@ -117,6 +117,7 @@ data class AddPubkeyToList(val pubkey: PublicKey, val ident: String) : Cmd()
 data class AddTopicToList(val topic: Topic, val ident: String) : Cmd()
 data class Rebroadcast(val event: Event) : Cmd()
 data class DeleteList(val ident: Ident) : Cmd()
+data class SaveList(val ident: Ident) : Cmd() // TODO: add params
 data class DeletePost(val event: Event) : Cmd()
 
 sealed class HomeViewCmd : Cmd()
@@ -159,8 +160,9 @@ data object BookmarksViewRefresh : BookmarkViewCmd()
 data object BookmarksViewNextPage : BookmarkViewCmd()
 
 sealed class EditListViewCmd : Cmd()
-data class EditListViewSave(val context: Context, val onGoBack: () -> Unit) : EditListViewCmd()
-data class EditListViewAddProfile(val profile: Pair<PublicKey, Metadata>) : EditListViewCmd()
+data object EditNewList : EditListViewCmd()
+data class EditExistingList(val ident: Ident) : EditListViewCmd()
+data class EditListViewAddProfile(val profile: Pair<PublicKey, String>) : EditListViewCmd()
 data class EditListViewAddTopic(val topic: Topic) : EditListViewCmd()
 
 sealed class ListViewCmd : Cmd()

@@ -14,6 +14,7 @@ import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.model.CreateGitIssueViewCmd
 import com.dluvian.voyage.model.CreatePostViewCmd
 import com.dluvian.voyage.model.CreateReplyViewCmd
+import com.dluvian.voyage.model.CrossPost
 import com.dluvian.voyage.model.CrossPostViewCmd
 import com.dluvian.voyage.model.DeleteList
 import com.dluvian.voyage.model.DeletePost
@@ -35,6 +36,7 @@ import com.dluvian.voyage.model.RelayClosed
 import com.dluvian.voyage.model.RelayEditorViewCmd
 import com.dluvian.voyage.model.RelayNotice
 import com.dluvian.voyage.model.RelayNotificationCmd
+import com.dluvian.voyage.model.SaveList
 import com.dluvian.voyage.model.SearchViewCmd
 import com.dluvian.voyage.model.SettingsViewCmd
 import com.dluvian.voyage.model.ThreadViewCmd
@@ -54,7 +56,7 @@ class Core(
     val closeApp: () -> Unit,
 ) : ViewModel() {
     private val logTag = "Core"
-    val navigator = Navigator(vmContainer = this@Core.bookmarkVM, closeApp = closeApp)
+    val navigator = Navigator(vmContainer = vmContainer, closeApp = closeApp)
 
     val onUpdate: (Cmd) -> Unit = { cmd -> handleCmd(cmd) }
 
@@ -102,7 +104,7 @@ class Core(
                 }
             }
 
-            is DrawerViewCmd -> this@Core.bookmarkVM.drawerVM.handle(action = cmd)
+            is DrawerViewCmd -> vmContainer.drawerVM.handle(cmd)
 
             is ClickUpvote -> viewModelScope.launch {
                 val result = appContainer.eventCreator.publishVote(cmd.event)
@@ -148,10 +150,32 @@ class Core(
                 }
             }
 
+            is CrossPost -> viewModelScope.launch {
+                val result = appContainer.eventCreator.publishCrossPost(cmd.event, cmd.topics)
+                if (result.isFailure) {
+                    showSnackbarMsg(appContainer.context.getString(TODO()))
+                }
+                // TODO: Failure toast, success toast, nav back
+            }
+
             is DeletePost -> viewModelScope.launch {
                 val result = appContainer.eventCreator.publishDelete(listOf(cmd.event.id()))
                 if (result.isFailure) {
                     showSnackbarMsg(appContainer.context.getString(R.string.failed_to_sign_deletion))
+                }
+            }
+
+            is SaveList -> viewModelScope.launch {
+                val pubkeyResult =
+                    appContainer.eventCreator.publishPubkeySet(cmd.ident, TODO(), TODO(), TODO())
+                if (pubkeyResult.isFailure) {
+                    showSnackbarMsg(appContainer.context.getString(R.string.failed_to_sign_profile_list))
+                }
+
+                val topicResult =
+                    appContainer.eventCreator.publishTopicSet(cmd.ident, TODO(), TODO(), TODO())
+                if (topicResult.isFailure) {
+                    showSnackbarMsg(appContainer.context.getString(R.string.failed_to_sign_topic_list))
                 }
             }
 
@@ -204,24 +228,24 @@ class Core(
                 )
             }
 
-            is HomeViewCmd -> this@Core.bookmarkVM.homeVM.handle(action = cmd)
-            is DiscoverViewCmd -> this@Core.bookmarkVM.discoverVM.handle(action = cmd)
-            is ThreadViewCmd -> this@Core.bookmarkVM.threadVM.handle(action = cmd)
-            is TopicViewCmd -> this@Core.bookmarkVM.topicVM.handle(action = cmd)
-            is ProfileViewCmd -> this@Core.bookmarkVM.profileVM.handle(action = cmd)
-            is SettingsViewCmd -> this@Core.bookmarkVM.settingsVM.handle(action = cmd)
-            is CreatePostViewCmd -> this@Core.bookmarkVM.createPostVM.handle(action = cmd)
-            is CreateGitIssueViewCmd -> this@Core.bookmarkVM.createGitIssueVM.handle(action = cmd)
-            is CreateReplyViewCmd -> this@Core.bookmarkVM.createReplyVM.handle(action = cmd)
-            is CrossPostViewCmd -> this@Core.bookmarkVM.createCrossPostVM.handle(action = cmd)
-            is SearchViewCmd -> this@Core.bookmarkVM.searchVM.handle(action = cmd)
-            is EditProfileViewCmd -> this@Core.bookmarkVM.editProfileVM.handle(action = cmd)
-            is RelayEditorViewCmd -> this@Core.bookmarkVM.relayEditorVM.handle(action = cmd)
-            is InboxViewCmd -> this@Core.bookmarkVM.inboxVM.handle(action = cmd)
-            is FollowListsViewCmd -> this@Core.bookmarkVM.followListsVM.handle(action = cmd)
-            is BookmarkViewCmd -> this@Core.bookmarkVM.bookmarkVM.handle(cmd = cmd)
-            is EditListViewCmd -> this@Core.bookmarkVM.editListVM.handle(action = cmd)
-            is ListViewCmd -> this@Core.bookmarkVM.listVM.handle(action = cmd)
+            is HomeViewCmd -> vmContainer.homeVM.handle(cmd)
+            is DiscoverViewCmd -> vmContainer.discoverVM.handle(cmd)
+            is ThreadViewCmd -> vmContainer.threadVM.handle(cmd)
+            is TopicViewCmd -> vmContainer.topicVM.handle(cmd)
+            is ProfileViewCmd -> vmContainer.profileVM.handle(cmd)
+            is SettingsViewCmd -> vmContainer.settingsVM.handle(cmd)
+            is CreatePostViewCmd -> vmContainer.createPostVM.handle(cmd)
+            is CreateGitIssueViewCmd -> vmContainer.createGitIssueVM.handle(cmd)
+            is CreateReplyViewCmd -> vmContainer.createReplyVM.handle(cmd)
+            is CrossPostViewCmd -> vmContainer.createCrossPostVM.handle(cmd)
+            is SearchViewCmd -> vmContainer.searchVM.handle(cmd)
+            is EditProfileViewCmd -> vmContainer.editProfileVM.handle(cmd)
+            is RelayEditorViewCmd -> vmContainer.relayEditorVM.handle(cmd)
+            is InboxViewCmd -> vmContainer.inboxVM.handle(cmd)
+            is FollowListsViewCmd -> vmContainer.followListsVM.handle(cmd)
+            is BookmarkViewCmd -> vmContainer.bookmarkVM.handle(cmd = cmd)
+            is EditListViewCmd -> vmContainer.editListVM.handle(cmd)
+            is ListViewCmd -> vmContainer.listVM.handle(cmd)
         }
     }
 
