@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.model.AddPubkeyToList
 import com.dluvian.voyage.model.AddTopicToList
 import com.dluvian.voyage.model.BookmarkPost
-import com.dluvian.voyage.model.BookmarksViewCmd
+import com.dluvian.voyage.model.BookmarkViewCmd
 import com.dluvian.voyage.model.ClickNeutralizeVotes
 import com.dluvian.voyage.model.ClickUpvote
 import com.dluvian.voyage.model.Cmd
@@ -219,7 +219,7 @@ class Core(
             is RelayEditorViewCmd -> vmContainer.relayEditorVM.handle(action = cmd)
             is InboxViewCmd -> vmContainer.inboxVM.handle(action = cmd)
             is FollowListsViewCmd -> vmContainer.followListsVM.handle(action = cmd)
-            is BookmarksViewCmd -> vmContainer.bookmarksVM.handle(action = cmd)
+            is BookmarkViewCmd -> vmContainer.bookmarksVM.handle(cmd = cmd)
             is EditListViewCmd -> vmContainer.editListVM.handle(action = cmd)
             is ListViewCmd -> vmContainer.listVM.handle(action = cmd)
         }

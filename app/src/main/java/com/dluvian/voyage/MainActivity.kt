@@ -13,7 +13,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.dluvian.voyage.ui.VoyageApp
-import com.dluvian.voyage.viewModel.BookmarksViewModel
+import com.dluvian.voyage.viewModel.BookmarkViewModel
 import com.dluvian.voyage.viewModel.CreateCrossPostViewModel
 import com.dluvian.voyage.viewModel.CreateGitIssueViewModel
 import com.dluvian.voyage.viewModel.CreatePostViewModel
@@ -245,7 +245,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             )
         },
         bookmarksVM = viewModel {
-            BookmarksViewModel(
+            BookmarkViewModel(
                 feedProvider = appContainer.feedProvider,
                 feedState = bookmarksFeedState,
                 postDetails = appContainer.postDetailInspector.currentDetails,

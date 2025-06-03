@@ -8,4 +8,8 @@ class Subscriber(private val service: NostrService) {
     suspend fun subMyData() {
         TODO()
     }
+
+    suspend fun subBookmarks() {
+        TODO()
+    }
 }

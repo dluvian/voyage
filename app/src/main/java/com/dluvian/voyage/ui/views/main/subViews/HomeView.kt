@@ -20,9 +20,9 @@ import com.dluvian.voyage.filterSetting.MyTopics
 import com.dluvian.voyage.filterSetting.NoPubkeys
 import com.dluvian.voyage.filterSetting.NoTopics
 import com.dluvian.voyage.model.HomeViewAccountData
-import com.dluvian.voyage.model.HomeViewAppend
 import com.dluvian.voyage.model.HomeViewApplyFilter
 import com.dluvian.voyage.model.HomeViewDismissFilter
+import com.dluvian.voyage.model.HomeViewNextPage
 import com.dluvian.voyage.model.HomeViewRefresh
 import com.dluvian.voyage.ui.components.Feed
 import com.dluvian.voyage.ui.components.dialog.BaseActionDialog
@@ -44,7 +44,7 @@ fun HomeView(vm: HomeViewModel, onUpdate: OnUpdate) {
         postDetails = vm.postDetails,
         state = vm.feedState,
         onRefresh = { onUpdate(HomeViewRefresh) },
-        onAppend = { onUpdate(HomeViewAppend) },
+        onAppend = { onUpdate(HomeViewNextPage) },
         onUpdate = onUpdate
     )
 

@@ -7,11 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.filterSetting.HomeFeedSetting
 import com.dluvian.voyage.model.HomeViewAccountData
-import com.dluvian.voyage.model.HomeViewAppend
 import com.dluvian.voyage.model.HomeViewApplyFilter
 import com.dluvian.voyage.model.HomeViewCmd
 import com.dluvian.voyage.model.HomeViewDismissFilter
 import com.dluvian.voyage.model.HomeViewEventUpdate
+import com.dluvian.voyage.model.HomeViewNextPage
 import com.dluvian.voyage.model.HomeViewOpenFilter
 import com.dluvian.voyage.model.HomeViewPop
 import com.dluvian.voyage.model.HomeViewPush
@@ -59,7 +59,7 @@ class HomeViewModel(
                 paginator.refresh()
             }
 
-            HomeViewAppend -> viewModelScope.launch(Dispatchers.IO) {
+            HomeViewNextPage -> viewModelScope.launch(Dispatchers.IO) {
                 paginator.nextPage()
             }
 

@@ -11,10 +11,10 @@ import com.dluvian.voyage.cmd.BookmarksViewRefresh
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.ui.components.Feed
 import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
-import com.dluvian.voyage.viewModel.BookmarksViewModel
+import com.dluvian.voyage.viewModel.BookmarkViewModel
 
 @Composable
-fun BookmarksView(vm: BookmarksViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
+fun BookmarksView(vm: BookmarkViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
     LaunchedEffect(key1 = Unit) {
         onUpdate(BookmarksViewInit)
     }
