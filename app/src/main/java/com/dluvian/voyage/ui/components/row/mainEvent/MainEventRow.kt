@@ -17,10 +17,10 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import com.dluvian.voyage.OpenThread
-import com.dluvian.voyage.OpenThreadLink
-import com.dluvian.voyage.ThreadViewShowReplies
-import com.dluvian.voyage.ThreadViewToggleCollapse
+import com.dluvian.voyage.model.OpenThread
+import com.dluvian.voyage.model.OpenThreadLink
+import com.dluvian.voyage.model.ThreadViewShowReplies
+import com.dluvian.voyage.model.ThreadViewToggleCollapse
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.MAX_CONTENT_LINES
 import com.dluvian.voyage.core.MAX_SUBJECT_LINES

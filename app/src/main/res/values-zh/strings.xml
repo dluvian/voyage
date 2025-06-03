@@ -13,7 +13,7 @@
     <string name="no_external_signer_installed">您未安装外部签名器</string>
     <string name="failed_to_get_permission">获取权限失败</string>
     <string name="received_invalid_data">接收到无效数据</string>
-    <string name="failed_to_sign_vote">签名投票失败</string>
+    <string name="failed_to_sign_upvote">签名投票失败</string>
     <string name="failed_to_sign_vote_deletion">签名删除投票失败</string>
     <string name="failed_to_sign_post_deletion">签名删除帖子失败</string>
     <string name="failed_to_sign_list_deletion">签名删除列表失败</string>

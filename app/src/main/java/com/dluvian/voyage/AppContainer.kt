@@ -2,7 +2,7 @@ package com.dluvian.voyage
 
 import android.content.Context
 import androidx.compose.material3.SnackbarHostState
-import com.dluvian.voyage.nostr.NostrHandler
+import com.dluvian.voyage.model.RelayNotificationCmd
 import com.dluvian.voyage.nostr.NostrService
 import com.dluvian.voyage.preferences.EventPreferences
 import com.dluvian.voyage.preferences.HomePreferences
@@ -14,6 +14,7 @@ import com.dluvian.voyage.provider.NameProvider
 import com.dluvian.voyage.provider.TopicProvider
 import com.dluvian.voyage.provider.TrustProvider
 import com.dluvian.voyage.provider.UpvoteProvider
+import kotlinx.coroutines.channels.Channel
 
 class AppContainer(val context: Context) {
     val snackbar = SnackbarHostState()
@@ -26,9 +27,9 @@ class AppContainer(val context: Context) {
     val keyStore = KeyStore()
     val oldestUsedEvent = OldestUsedEvent()
     val threadCollapser = ThreadCollapser()
-    val handler = NostrHandler()
+    val relayChannel = Channel<RelayNotificationCmd>(capacity = Channel.Factory.UNLIMITED)
 
-    val service = NostrService(relayPreferences, keyStore, handler)
+    val service = NostrService(relayPreferences, keyStore, relayChannel)
 
     val nameProvider = NameProvider(service)
     val trustProvider = TrustProvider(service)

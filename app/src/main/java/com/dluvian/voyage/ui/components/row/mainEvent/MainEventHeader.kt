@@ -24,8 +24,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dluvian.voyage.OpenProfile
-import com.dluvian.voyage.OpenTopic
+import com.dluvian.voyage.model.OpenProfile
+import com.dluvian.voyage.model.OpenTopic
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.PubkeyHex

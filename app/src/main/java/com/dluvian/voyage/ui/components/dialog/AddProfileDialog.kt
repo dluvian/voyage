@@ -15,7 +15,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import com.dluvian.voyage.R
-import com.dluvian.voyage.SearchProfileSuggestion
+import com.dluvian.voyage.model.SearchProfileSuggestion
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.data.room.view.AdvancedProfileView

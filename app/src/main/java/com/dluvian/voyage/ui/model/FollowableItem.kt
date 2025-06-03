@@ -1,8 +1,8 @@
 package com.dluvian.voyage.ui.model
 
 import androidx.compose.material3.Icon
-import com.dluvian.voyage.FollowProfile
-import com.dluvian.voyage.FollowTopic
+import com.dluvian.voyage.model.FollowProfile
+import com.dluvian.voyage.model.FollowTopic
 import com.dluvian.voyage.cmd.OpenProfile
 import com.dluvian.voyage.cmd.OpenTopic
 import com.dluvian.voyage.cmd.UnfollowProfile

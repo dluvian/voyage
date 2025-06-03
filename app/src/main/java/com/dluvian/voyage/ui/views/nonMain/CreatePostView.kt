@@ -19,9 +19,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
-import com.dluvian.voyage.GoBack
+import com.dluvian.voyage.model.GoBack
 import com.dluvian.voyage.R
-import com.dluvian.voyage.SendPost
+import com.dluvian.voyage.model.SendPost
 import com.dluvian.voyage.core.MAX_SUBJECT_LINES
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.Topic

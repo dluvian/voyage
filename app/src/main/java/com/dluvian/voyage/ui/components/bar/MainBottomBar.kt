@@ -16,11 +16,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.dluvian.voyage.ClickCreate
-import com.dluvian.voyage.ClickDiscover
-import com.dluvian.voyage.ClickHome
-import com.dluvian.voyage.ClickInbox
-import com.dluvian.voyage.ClickSearch
+import com.dluvian.voyage.model.ClickCreate
+import com.dluvian.voyage.model.ClickDiscover
+import com.dluvian.voyage.model.ClickHome
+import com.dluvian.voyage.model.ClickInbox
+import com.dluvian.voyage.model.ClickSearch
 import com.dluvian.voyage.R
 import com.dluvian.voyage.UIEvent
 import com.dluvian.voyage.core.Fn

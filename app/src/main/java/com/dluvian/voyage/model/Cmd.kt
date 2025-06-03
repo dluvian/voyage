@@ -1,7 +1,10 @@
-package com.dluvian.voyage
+package com.dluvian.voyage.model
 
 import android.content.Context
 import androidx.compose.ui.platform.UriHandler
+import com.dluvian.voyage.Ident
+import com.dluvian.voyage.RelayUrl
+import com.dluvian.voyage.Topic
 import com.dluvian.voyage.core.navigator.BookmarksNavView
 import com.dluvian.voyage.core.navigator.CreateGitIssueNavView
 import com.dluvian.voyage.core.navigator.CreatePostNavView

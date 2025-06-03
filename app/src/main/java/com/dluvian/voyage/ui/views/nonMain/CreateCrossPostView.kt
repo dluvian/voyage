@@ -20,9 +20,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import com.dluvian.voyage.GoBack
+import com.dluvian.voyage.model.GoBack
 import com.dluvian.voyage.R
-import com.dluvian.voyage.SendCrossPost
+import com.dluvian.voyage.model.SendCrossPost
 import com.dluvian.voyage.canAddAnotherTopic
 import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.OnUpdate

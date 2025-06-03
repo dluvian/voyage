@@ -8,9 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
-import com.dluvian.voyage.ProfileViewLoadLists
+import com.dluvian.voyage.model.ProfileViewLoadLists
 import com.dluvian.voyage.R
-import com.dluvian.voyage.TopicViewLoadLists
+import com.dluvian.voyage.model.TopicViewLoadLists
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.model.ItemSetItem

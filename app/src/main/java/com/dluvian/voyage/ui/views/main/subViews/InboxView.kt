@@ -10,11 +10,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.dluvian.voyage.InboxViewAppend
-import com.dluvian.voyage.InboxViewApplyFilter
-import com.dluvian.voyage.InboxViewDismissFilter
-import com.dluvian.voyage.InboxViewInit
-import com.dluvian.voyage.InboxViewRefresh
+import com.dluvian.voyage.model.InboxViewAppend
+import com.dluvian.voyage.model.InboxViewApplyFilter
+import com.dluvian.voyage.model.InboxViewDismissFilter
+import com.dluvian.voyage.model.InboxViewInit
+import com.dluvian.voyage.model.InboxViewRefresh
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.data.filterSetting.WebOfTrustPubkeys

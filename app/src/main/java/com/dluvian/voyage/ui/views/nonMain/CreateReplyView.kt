@@ -24,9 +24,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
-import com.dluvian.voyage.GoBack
+import com.dluvian.voyage.model.GoBack
 import com.dluvian.voyage.R
-import com.dluvian.voyage.SendReply
+import com.dluvian.voyage.model.SendReply
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.model.MainEvent
 import com.dluvian.voyage.data.room.view.AdvancedProfileView

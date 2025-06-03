@@ -19,8 +19,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.dluvian.voyage.DiscoverViewInit
-import com.dluvian.voyage.DiscoverViewRefresh
+import com.dluvian.voyage.model.DiscoverViewInit
+import com.dluvian.voyage.model.DiscoverViewRefresh
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.ui.components.chip.FollowChip

@@ -16,10 +16,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
-import com.dluvian.voyage.ListViewFeedAppend
-import com.dluvian.voyage.ListViewRefresh
-import com.dluvian.voyage.OpenProfile
-import com.dluvian.voyage.OpenTopic
+import com.dluvian.voyage.model.ListViewFeedAppend
+import com.dluvian.voyage.model.ListViewRefresh
+import com.dluvian.voyage.model.OpenProfile
+import com.dluvian.voyage.model.OpenTopic
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.utils.shortenBech32

@@ -13,8 +13,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.dluvian.voyage.EditListViewAddProfile
-import com.dluvian.voyage.EditListViewAddTopic
+import com.dluvian.voyage.model.EditListViewAddProfile
+import com.dluvian.voyage.model.EditListViewAddTopic
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.MAX_KEYS_SQL
 import com.dluvian.voyage.core.OnUpdate

@@ -8,11 +8,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.dluvian.voyage.OpenProfile
-import com.dluvian.voyage.OpenThreadLink
-import com.dluvian.voyage.OpenTopic
+import com.dluvian.voyage.model.OpenProfile
+import com.dluvian.voyage.model.OpenThreadLink
+import com.dluvian.voyage.model.OpenTopic
 import com.dluvian.voyage.R
-import com.dluvian.voyage.SubUnknownProfiles
+import com.dluvian.voyage.model.SubUnknownProfiles
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.TrustType

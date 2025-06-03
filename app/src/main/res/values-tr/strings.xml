@@ -12,7 +12,7 @@
     <string name="no_external_signer_installed">Harici imzalayıcı yüklü değil</string>
     <string name="failed_to_get_permission">İzin alınamadı</string>
     <string name="received_invalid_data">Geçersiz veri alındı</string>
-    <string name="failed_to_sign_vote">Oylama imzalanamadı</string>
+    <string name="failed_to_sign_upvote">Oylama imzalanamadı</string>
     <string name="failed_to_sign_vote_deletion">Oylama silme imzalanamadı</string>
     <string name="failed_to_sign_post_deletion">Gönderi silme imzalanamadı</string>
     <string name="failed_to_sign_list_deletion">Liste silme imzalanamadı</string>

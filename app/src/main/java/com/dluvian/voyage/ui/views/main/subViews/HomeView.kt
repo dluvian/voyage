@@ -10,11 +10,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.dluvian.voyage.HomeViewAppend
-import com.dluvian.voyage.HomeViewApplyFilter
-import com.dluvian.voyage.HomeViewDismissFilter
-import com.dluvian.voyage.HomeViewRefresh
-import com.dluvian.voyage.HomeViewSubAccountAndTrustData
+import com.dluvian.voyage.model.HomeViewAppend
+import com.dluvian.voyage.model.HomeViewApplyFilter
+import com.dluvian.voyage.model.HomeViewDismissFilter
+import com.dluvian.voyage.model.HomeViewRefresh
+import com.dluvian.voyage.model.HomeViewSubAccountAndTrustData
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.data.filterSetting.WebOfTrustPubkeys

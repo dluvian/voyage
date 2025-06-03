@@ -33,10 +33,10 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.dluvian.voyage.OpenLightningWallet
-import com.dluvian.voyage.OpenProfile
-import com.dluvian.voyage.OpenRelayProfile
-import com.dluvian.voyage.ProfileViewRefresh
-import com.dluvian.voyage.ProfileViewRootAppend
+import com.dluvian.voyage.model.OpenProfile
+import com.dluvian.voyage.model.OpenRelayProfile
+import com.dluvian.voyage.model.ProfileViewRefresh
+import com.dluvian.voyage.model.ProfileViewRootAppend
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Bech32
 import com.dluvian.voyage.core.ComposableContent

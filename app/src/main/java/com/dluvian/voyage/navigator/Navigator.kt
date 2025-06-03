@@ -1,9 +1,9 @@
 package com.dluvian.voyage.navigator
 
 import androidx.compose.runtime.mutableStateOf
-import com.dluvian.voyage.NavCmd
-import com.dluvian.voyage.PopNavCmd
-import com.dluvian.voyage.PushNavCmd
+import com.dluvian.voyage.model.NavCmd
+import com.dluvian.voyage.model.PopNavCmd
+import com.dluvian.voyage.model.PushNavCmd
 import com.dluvian.voyage.core.navigator.AdvancedNonMainNavView
 import com.dluvian.voyage.core.navigator.CrossPostCreationNavView
 import com.dluvian.voyage.core.navigator.EditExistingListNavView
