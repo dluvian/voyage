@@ -1,8 +1,8 @@
 package com.dluvian.voyage.provider
 
 import android.util.Log
-import com.dluvian.voyage.NostrService
 import com.dluvian.voyage.Topic
+import com.dluvian.voyage.nostr.NostrService
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import rust.nostr.sdk.Event
@@ -23,7 +23,7 @@ class TopicProvider(private val service: NostrService) {
             .kind(Kind.fromStd(KindStandard.INTERESTS))
             .limit(1u)
 
-        val dbResult = service.dbQuery(topicFilter).first()
+        val dbResult = service.dbQuery(topicFilter).firstOrNull()
         if (dbResult == null) {
             Log.i(logTag, "Topics of $pubkey is not found in database")
             return

@@ -7,7 +7,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.voyage.NostrService
 import com.dluvian.voyage.R
 import com.dluvian.voyage.cmd.AddRelay
 import com.dluvian.voyage.cmd.LoadRelays
@@ -30,6 +29,7 @@ import com.dluvian.voyage.data.nostr.removeTrailingSlashes
 import com.dluvian.voyage.data.nostr.secs
 import com.dluvian.voyage.data.provider.RelayProvider
 import com.dluvian.voyage.data.room.dao.upsert.Nip65UpsertDao
+import com.dluvian.voyage.nostr.NostrService
 import kotlinx.coroutines.delay
 
 private const val TAG = "RelayEditorViewModel"

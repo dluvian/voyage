@@ -5,7 +5,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.voyage.NostrService
 import com.dluvian.voyage.R
 import com.dluvian.voyage.cmd.EditProfileViewAction
 import com.dluvian.voyage.cmd.LoadFullProfile
@@ -23,6 +22,7 @@ import com.dluvian.voyage.data.room.dao.upsert.FullProfileUpsertDao
 import com.dluvian.voyage.data.room.dao.upsert.ProfileUpsertDao
 import com.dluvian.voyage.data.room.entity.FullProfileEntity
 import com.dluvian.voyage.data.room.entity.ProfileEntity
+import com.dluvian.voyage.nostr.NostrService
 import kotlinx.coroutines.delay
 import rust.nostr.sdk.Event
 

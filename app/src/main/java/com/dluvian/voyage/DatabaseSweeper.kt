@@ -1,5 +1,6 @@
 package com.dluvian.voyage
 
+import com.dluvian.voyage.nostr.NostrService
 import rust.nostr.sdk.Filter
 import rust.nostr.sdk.Kind
 import rust.nostr.sdk.KindStandard

@@ -1,11 +1,14 @@
-package com.dluvian.voyage
+package com.dluvian.voyage.nostr
 
 import android.util.Log
+import com.dluvian.voyage.KeyStore
+import com.dluvian.voyage.RelayNotificationCmd
+import com.dluvian.voyage.RelayUrl
 import com.dluvian.voyage.preferences.RelayPreferences
+import kotlinx.coroutines.channels.Channel
 import rust.nostr.sdk.ClientBuilder
 import rust.nostr.sdk.Event
 import rust.nostr.sdk.EventBuilder
-import rust.nostr.sdk.Events
 import rust.nostr.sdk.Filter
 import rust.nostr.sdk.Kind
 import rust.nostr.sdk.KindStandard
@@ -25,17 +28,19 @@ import rust.nostr.sdk.extractRelayList
 class NostrService(
     relayPreferences: RelayPreferences,
     keyStore: KeyStore,
+    private val notificationChannel: Channel<RelayNotificationCmd>
 ) {
     private val logTag = "NostrService"
     private val clientOpts = Options()
         .gossip(true)
         .automaticAuthentication(relayPreferences.getSendAuth())
+    private val admission = NostrAdmission()
 
     val client = ClientBuilder()
         .signer(keyStore.getSigner())
         .opts(clientOpts)
         .database(NostrDatabase.lmdb("voyage_db"))
-        .admitPolicy(RelayChecker())
+        .admitPolicy(admission)
         .build()
 
     suspend fun init() {
@@ -46,6 +51,7 @@ class NostrService(
             client.addRelayWithOpts(url = relay, opts = opts)
         }
 
+        client.handleNotifications(NostrHandler(notificationChannel))
         client.connect()
     }
 
@@ -55,7 +61,7 @@ class NostrService(
             .author(client.signer().getPublicKey())
             .kind(Kind.fromStd(KindStandard.RELAY_LIST))
             .limit(1u)
-        val event = dbQuery(filter).first()
+        val event = dbQuery(filter).firstOrNull()
 
         return if (event != null) {
             extractRelayList(event)
@@ -86,8 +92,11 @@ class NostrService(
         return client.signer().getPublicKey()
     }
 
-    suspend fun dbQuery(filter: Filter): Events {
-        return client.database().query(filter)
+    suspend fun dbQuery(filter: Filter): List<Event> {
+        val events = client.database().query(filter).toVec()
+        admission.addValidatedIds(events.map { it.id() })
+
+        return events
     }
 
     suspend fun dbDelete(filter: Filter) {

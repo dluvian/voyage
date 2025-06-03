@@ -2,12 +2,12 @@ package com.dluvian.voyage.provider
 
 import android.util.Log
 import com.dluvian.voyage.Ident
-import com.dluvian.voyage.NostrService
 import com.dluvian.voyage.model.ListedProfile
 import com.dluvian.voyage.model.OneselfProfile
 import com.dluvian.voyage.model.TrustProfile
 import com.dluvian.voyage.model.TrustedProfile
 import com.dluvian.voyage.model.UnknownProfile
+import com.dluvian.voyage.nostr.NostrService
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import rust.nostr.sdk.Event
@@ -34,7 +34,7 @@ class TrustProvider(private val service: NostrService) {
             .author(pubkey)
             .kinds(kinds)
 
-        val dbResult = service.dbQuery(myFilter).toVec()
+        val dbResult = service.dbQuery(myFilter)
         if (dbResult.isEmpty()) {
             Log.i(logTag, "Trust data of $pubkey is not found in database")
             return
@@ -152,7 +152,7 @@ class TrustProvider(private val service: NostrService) {
             .kind(Kind.fromStd(KindStandard.CONTACT_LIST))
             .pubkeys(missing) // Referenced as p-tag
             .limit(missing.size.toULong())
-        val dbResult = service.dbQuery(contactFilter).toVec()
+        val dbResult = service.dbQuery(contactFilter)
         dbResult.forEach { event -> update(event) }
         val dbPubkeys = dbResult.flatMap { it.tags().publicKeys() }.toSet()
 

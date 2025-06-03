@@ -2,6 +2,8 @@ package com.dluvian.voyage
 
 import android.content.Context
 import androidx.compose.material3.SnackbarHostState
+import com.dluvian.voyage.nostr.NostrHandler
+import com.dluvian.voyage.nostr.NostrService
 import com.dluvian.voyage.preferences.EventPreferences
 import com.dluvian.voyage.preferences.HomePreferences
 import com.dluvian.voyage.preferences.InboxPreferences
@@ -24,8 +26,9 @@ class AppContainer(val context: Context) {
     val keyStore = KeyStore()
     val oldestUsedEvent = OldestUsedEvent()
     val threadCollapser = ThreadCollapser()
+    val handler = NostrHandler()
 
-    val service = NostrService(relayPreferences, keyStore)
+    val service = NostrService(relayPreferences, keyStore, handler)
 
     val nameProvider = NameProvider(service)
     val trustProvider = TrustProvider(service)

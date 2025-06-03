@@ -1,8 +1,8 @@
 package com.dluvian.voyage.provider
 
 import android.util.Log
-import com.dluvian.voyage.NostrService
 import com.dluvian.voyage.PAGE_SIZE
+import com.dluvian.voyage.nostr.NostrService
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import rust.nostr.sdk.Event
@@ -23,7 +23,7 @@ class UpvoteProvider(private val service: NostrService) {
             .kind(Kind.fromStd(KindStandard.REACTION))
             .limit(PAGE_SIZE.toULong().times(2u)) // Load 2 pages worth of upvotes
 
-        val dbResult = service.dbQuery(upvoteFilter).toVec()
+        val dbResult = service.dbQuery(upvoteFilter)
         if (dbResult.isEmpty()) {
             Log.i(logTag, "Upvotes of $pubkey not found in database")
             return
@@ -76,6 +76,10 @@ class UpvoteProvider(private val service: NostrService) {
         }
     }
 
+    suspend fun upvotes(postId: EventId): Set<EventId> {
+        return mutex.withLock { upvotes[postId] }.orEmpty()
+    }
+
     suspend fun filterUpvoted(postIds: Collection<EventId>): List<EventId> {
         if (postIds.isEmpty()) return emptyList()
         val fullMap = mutex.withLock { upvotes.toMap() }
@@ -96,7 +100,7 @@ class UpvoteProvider(private val service: NostrService) {
             .events(neutral) // Referenced as e-tag
             .limit(neutral.size.toULong() * 2u)
 
-        val dbResult = service.dbQuery(upvoteFilter).toVec()
+        val dbResult = service.dbQuery(upvoteFilter)
         val dbPostIds = dbResult.flatMap { it.tags().eventIds() }.toSet()
         dbResult.forEach { update(it) }
 

@@ -1,5 +1,6 @@
 package com.dluvian.voyage
 
+import com.dluvian.voyage.nostr.NostrService
 import com.dluvian.voyage.preferences.EventPreferences
 import com.dluvian.voyage.provider.BookmarkProvider
 import com.dluvian.voyage.provider.TopicProvider
@@ -285,7 +286,7 @@ class EventCreator(
             .kind(Kind.fromStd(KindStandard.FOLLOW_SET))
             .identifier(ident)
             .limit(1u)
-        val event = service.dbQuery(filter).first()
+        val event = service.dbQuery(filter).firstOrNull()
         if (event == null) return Result.failure(EventNotInDatabaseException())
 
         val pubkeys = event.tags().publicKeys().toMutableSet()
@@ -312,7 +313,7 @@ class EventCreator(
             .kind(Kind.fromStd(KindStandard.INTEREST_SET))
             .identifier(ident)
             .limit(1u)
-        val event = service.dbQuery(filter).first()
+        val event = service.dbQuery(filter).firstOrNull()
         if (event == null) return Result.failure(EventNotInDatabaseException())
 
         val topics = event.tags().hashtags().toMutableSet()

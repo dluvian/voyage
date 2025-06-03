@@ -2,7 +2,7 @@ package com.dluvian.voyage.provider
 
 import android.util.Log
 import com.dluvian.voyage.MAX_PUBKEYS
-import com.dluvian.voyage.NostrService
+import com.dluvian.voyage.nostr.NostrService
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import rust.nostr.sdk.Event
@@ -23,7 +23,7 @@ class NameProvider(private val service: NostrService) {
             .kind(Kind.fromStd(KindStandard.METADATA))
             .limit(MAX_PUBKEYS.toULong())
 
-        val dbResult = service.dbQuery(profileFilter).toVec()
+        val dbResult = service.dbQuery(profileFilter)
         if (dbResult.isEmpty()) {
             Log.i(logTag, "No profiles in database")
             return
@@ -65,7 +65,7 @@ class NameProvider(private val service: NostrService) {
             .kind(Kind.fromStd(KindStandard.METADATA))
             .authors(missing)
             .limit(missing.size.toULong())
-        val dbResult = service.dbQuery(profileFilter).toVec()
+        val dbResult = service.dbQuery(profileFilter)
         dbResult.forEach { event -> update(event) }
         val dbPubkeys = dbResult.map { it.author() }.toSet()
 

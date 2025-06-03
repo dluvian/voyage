@@ -1,7 +1,6 @@
 package com.dluvian.voyage.provider
 
 import android.util.Log
-import com.dluvian.voyage.NostrService
 import com.dluvian.voyage.filterSetting.BookmarkFeedSetting
 import com.dluvian.voyage.filterSetting.FeedSetting
 import com.dluvian.voyage.filterSetting.FriendPubkeys
@@ -15,6 +14,7 @@ import com.dluvian.voyage.filterSetting.TopicFeedSetting
 import com.dluvian.voyage.model.TrustProfile
 import com.dluvian.voyage.model.UIEvent
 import com.dluvian.voyage.model.UnknownProfile
+import com.dluvian.voyage.nostr.NostrService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -140,7 +140,7 @@ class FeedProvider(
         val kinds = listOf(KindStandard.FOLLOW_SET, KindStandard.INTEREST_SET)
             .map { Kind.fromStd(it) }
         val dbListFilter = Filter().author(service.pubkey()).kinds(kinds).identifier(setting.ident)
-        val lists = service.dbQuery(dbListFilter).toVec()
+        val lists = service.dbQuery(dbListFilter)
         if (lists.isEmpty()) {
             Log.w(logTag, "No list with identifier '${setting.ident}' found")
             return emptyList()
@@ -206,7 +206,7 @@ class FeedProvider(
 
         val feed = mutableListOf<Event>()
         for (filter in filters) {
-            feed.addAll(service.dbQuery(filter).toVec())
+            feed.addAll(service.dbQuery(filter))
         }
 
         val orderedFeed = feed.distinctBy { it.id() }
