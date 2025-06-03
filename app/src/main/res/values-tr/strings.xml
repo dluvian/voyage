@@ -13,9 +13,6 @@
     <string name="failed_to_get_permission">İzin alınamadı</string>
     <string name="received_invalid_data">Geçersiz veri alındı</string>
     <string name="failed_to_sign_upvote">Oylama imzalanamadı</string>
-    <string name="failed_to_sign_vote_deletion">Oylama silme imzalanamadı</string>
-    <string name="failed_to_sign_post_deletion">Gönderi silme imzalanamadı</string>
-    <string name="failed_to_sign_list_deletion">Liste silme imzalanamadı</string>
     <string name="search">Ara</string>
     <string name="search_">Ara…</string>
     <string name="invalid_nostr_string">Geçersiz nostr dizesi</string>

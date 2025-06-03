@@ -19,7 +19,7 @@ import rust.nostr.sdk.Timestamp
 import kotlin.collections.orEmpty
 
 
-class TrustProvider(private val service: NostrService) {
+class TrustProvider(private val service: NostrService) : IEventUpdate {
     private val logTag = "TrustProvider"
     private val mutex = Mutex()
     private var friendEvent: Event? = null
@@ -62,7 +62,7 @@ class TrustProvider(private val service: NostrService) {
         init()
     }
 
-    suspend fun update(event: Event) {
+    override suspend fun update(event: Event) {
         when (event.kind().asStd()) {
             KindStandard.EVENT_DELETION -> {
                 val pubkey = service.pubkey()

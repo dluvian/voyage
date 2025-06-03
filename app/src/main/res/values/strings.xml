@@ -17,9 +17,7 @@
     <string name="failed_to_get_permission">Failed to get permission</string>
     <string name="received_invalid_data">Received invalid data</string>
     <string name="failed_to_sign_upvote">Failed to sign upvote</string>
-    <string name="failed_to_sign_vote_deletion">Failed to sign vote deletion</string>
-    <string name="failed_to_sign_post_deletion">Failed to sign post deletion</string>
-    <string name="failed_to_sign_list_deletion">Failed to sign list deletion</string>
+    <string name="failed_to_sign_deletion">Failed to sign deletion</string>
     <string name="search">Search</string>
     <string name="search_">Search…</string>
     <string name="invalid_nostr_string">Invalid nostr string</string>
@@ -162,7 +160,7 @@
     <string name="bookmarking_more_than_n_is_not_allowed">Bookmarking more than %d posts is not allowed</string>
     <string name="rebroadcast">Rebroadcast</string>
     <string name="event_json_is_not_available">Event JSON is not available</string>
-    <string name="rebroadcasted_to_n_relays">Rebroadcasted to %d relays</string>
+    <string name="rebroadcasted_to_n_of_m_relays">Rebroadcasted to %d of %d relays</string>
     <string name="failed_to_rebroadcast">Failed to rebroadcast</string>
     <string name="follow_lists">Follow lists</string>
     <string name="open_menu">Open menu</string>
@@ -243,4 +241,6 @@
     <string name="content">Content</string>
     <string name="root_posts">Root posts</string>
     <string name="cross_posts">Cross posts</string>
+    <string name="relay_closed">Relay %s closed: %s</string>
+    <string name="relay_msg">Relay %s: %s</string>
 </resources>

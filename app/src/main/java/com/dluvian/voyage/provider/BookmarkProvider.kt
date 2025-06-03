@@ -11,7 +11,7 @@ import rust.nostr.sdk.Kind
 import rust.nostr.sdk.KindStandard
 
 
-class BookmarkProvider(private val service: NostrService) {
+class BookmarkProvider(private val service: NostrService) : IEventUpdate {
     private val logTag = "BookmarkProvider"
     private val mutex = Mutex()
     private var bookmarkEvent: Event? = null
@@ -39,7 +39,7 @@ class BookmarkProvider(private val service: NostrService) {
         init()
     }
 
-    suspend fun update(event: Event) {
+    override suspend fun update(event: Event) {
         if (event.kind() != Kind.fromStd(KindStandard.BOOKMARKS)) return
 
         val currentTime = mutex.withLock { bookmarkEvent?.createdAt()?.asSecs() ?: 0u }

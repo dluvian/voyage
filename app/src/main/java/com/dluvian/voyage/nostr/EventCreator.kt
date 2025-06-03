@@ -1,6 +1,12 @@
-package com.dluvian.voyage
+package com.dluvian.voyage.nostr
 
-import com.dluvian.voyage.nostr.NostrService
+import com.dluvian.voyage.APP_NAME
+import com.dluvian.voyage.AlreadyFollowedException
+import com.dluvian.voyage.AlreadyUnfollowedException
+import com.dluvian.voyage.EventNotInDatabaseException
+import com.dluvian.voyage.FailedToSignException
+import com.dluvian.voyage.Ident
+import com.dluvian.voyage.Topic
 import com.dluvian.voyage.preferences.EventPreferences
 import com.dluvian.voyage.provider.BookmarkProvider
 import com.dluvian.voyage.provider.TopicProvider

@@ -9,7 +9,7 @@ import rust.nostr.sdk.EventId
 
 class NostrAdmission() : AdmitPolicy {
     val mutex = Mutex()
-    val validatedIds = mutableSetOf<EventId>()
+    val dbIds = mutableSetOf<EventId>()
 
     override suspend fun admitConnection(relayUrl: String): AdmitStatus {
         // Add more logic after supporting (temporary) relay blacklists
@@ -21,19 +21,19 @@ class NostrAdmission() : AdmitPolicy {
         subscriptionId: String,
         event: Event
     ): AdmitStatus {
-        val alreadyValidated = mutex.withLock { validatedIds.contains(event.id()) }
-        if (alreadyValidated) return AdmitStatus.Rejected("Already handled")
-        if (!event.verify()) return AdmitStatus.Rejected("Invalid event")
+        val alreadyInDb = mutex.withLock { dbIds.contains(event.id()) }
+        if (alreadyInDb) return AdmitStatus.Rejected("Already in database")
 
-        mutex.withLock { validatedIds.add(event.id()) }
+        // No need to verify ID and check against subscription filter
+        // https://github.com/rust-nostr/nostr/issues/909#issuecomment-2933648117
 
         return AdmitStatus.Success
     }
 
-    // Add IDs after querying db to prevent re-verifying IDs on admission
-    suspend fun addValidatedIds(ids: Collection<EventId>) {
+    // Add IDs after querying db to prevent rechecking IDs on admission
+    suspend fun addDatabaseIds(ids: Collection<EventId>) {
         mutex.withLock {
-            validatedIds.addAll(ids)
+            dbIds.addAll(ids)
         }
     }
 }

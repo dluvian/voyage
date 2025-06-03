@@ -3,6 +3,7 @@ package com.dluvian.voyage
 import android.content.Context
 import androidx.compose.material3.SnackbarHostState
 import com.dluvian.voyage.model.RelayNotificationCmd
+import com.dluvian.voyage.nostr.EventCreator
 import com.dluvian.voyage.nostr.NostrService
 import com.dluvian.voyage.preferences.EventPreferences
 import com.dluvian.voyage.preferences.HomePreferences
@@ -10,6 +11,7 @@ import com.dluvian.voyage.preferences.InboxPreferences
 import com.dluvian.voyage.preferences.RelayPreferences
 import com.dluvian.voyage.provider.AnnotatedStringProvider
 import com.dluvian.voyage.provider.BookmarkProvider
+import com.dluvian.voyage.provider.IEventUpdate
 import com.dluvian.voyage.provider.NameProvider
 import com.dluvian.voyage.provider.TopicProvider
 import com.dluvian.voyage.provider.TrustProvider
@@ -47,4 +49,8 @@ class AppContainer(val context: Context) {
     )
 
     val dbSweeper = DatabaseSweeper(service, oldestUsedEvent)
+
+    fun getEventUpdatables(): List<IEventUpdate> {
+        return listOf(nameProvider, trustProvider, topicProvider, bookmarkProvider, upvoteProvider)
+    }
 }

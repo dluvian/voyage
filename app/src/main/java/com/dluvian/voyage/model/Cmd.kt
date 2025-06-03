@@ -1,7 +1,6 @@
 package com.dluvian.voyage.model
 
 import android.content.Context
-import androidx.compose.ui.platform.UriHandler
 import com.dluvian.voyage.Ident
 import com.dluvian.voyage.RelayUrl
 import com.dluvian.voyage.Topic
@@ -114,8 +113,6 @@ data class UnfollowProfile(val pubkey: PublicKey) : Cmd()
 
 data class AddPubkeyToList(val pubkey: PublicKey, val ident: String) : Cmd()
 data class AddTopicToList(val topic: Topic, val ident: String) : Cmd()
-data class ClickClickableText(val text: String, val uriHandler: UriHandler) : Cmd()
-data class RegisterUriHandler(val uriHandler: UriHandler) : Cmd()
 data class Rebroadcast(val event: Event) : Cmd()
 data class DeleteList(val ident: Ident) : Cmd()
 data class DeletePost(val event: Event) : Cmd()
@@ -202,11 +199,6 @@ data class SendReply(val parent: Event, val body: String) : CreateReplyViewCmd()
 
 sealed class CreateCrossPostViewCmd : Cmd()
 data class SendCrossPost(val topics: List<Topic>) : CreateCrossPostViewCmd()
-
-sealed class SuggestionCmd : Cmd()
-data class SearchProfileSuggestion(val name: String) : SuggestionCmd()
-data class ClickProfileSuggestion(val profileEvent: Event) : SuggestionCmd()
-data class SearchTopicSuggestion(val topic: Topic) : SuggestionCmd()
 
 sealed class EditProfileViewCmd : Cmd()
 data object LoadFullProfile : EditProfileViewCmd()

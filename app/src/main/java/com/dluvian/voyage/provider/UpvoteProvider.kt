@@ -11,7 +11,7 @@ import rust.nostr.sdk.Filter
 import rust.nostr.sdk.Kind
 import rust.nostr.sdk.KindStandard
 
-class UpvoteProvider(private val service: NostrService) {
+class UpvoteProvider(private val service: NostrService) : IEventUpdate {
     private val logTag = "UpvoteProvider"
     private val mutex = Mutex()
     private val upvotes = mutableMapOf<EventId, MutableSet<EventId>>() // PostId to UpvoteIds
@@ -43,7 +43,7 @@ class UpvoteProvider(private val service: NostrService) {
         init()
     }
 
-    suspend fun update(event: Event) {
+    override suspend fun update(event: Event) {
         when (event.kind().asStd()) {
             KindStandard.EVENT_DELETION -> {
                 val eventIds = event.tags().eventIds()

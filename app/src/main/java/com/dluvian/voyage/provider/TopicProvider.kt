@@ -11,7 +11,7 @@ import rust.nostr.sdk.Kind
 import rust.nostr.sdk.KindStandard
 import kotlin.collections.orEmpty
 
-class TopicProvider(private val service: NostrService) {
+class TopicProvider(private val service: NostrService) : IEventUpdate {
     private val logTag = "TopicProvider"
     private val mutex = Mutex()
     private var topicEvent: Event? = null
@@ -37,7 +37,7 @@ class TopicProvider(private val service: NostrService) {
         init()
     }
 
-    suspend fun update(event: Event) {
+    override suspend fun update(event: Event) {
         if (event.kind() != Kind.fromStd(KindStandard.INTERESTS)) return
 
         val currentTime = mutex.withLock { topicEvent?.createdAt()?.asSecs() ?: 0u }

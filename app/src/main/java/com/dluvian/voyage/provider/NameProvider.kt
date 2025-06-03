@@ -13,7 +13,7 @@ import rust.nostr.sdk.Metadata
 import rust.nostr.sdk.PublicKey
 import rust.nostr.sdk.Timestamp
 
-class NameProvider(private val service: NostrService) {
+class NameProvider(private val service: NostrService) : IEventUpdate {
     private val logTag = "NameProvider"
     private val mutex = Mutex()
     private val names = mutableMapOf<PublicKey, Pair<Timestamp, String>>()
@@ -38,7 +38,7 @@ class NameProvider(private val service: NostrService) {
         }
     }
 
-    suspend fun update(event: Event) {
+    override suspend fun update(event: Event) {
         if (event.kind() != Kind.fromStd(KindStandard.METADATA)) return
 
         val currentTime = mutex.withLock { names[event.author()]?.first?.asSecs() ?: 0u }

@@ -94,7 +94,7 @@ class NostrService(
 
     suspend fun dbQuery(filter: Filter): List<Event> {
         val events = client.database().query(filter).toVec()
-        admission.addValidatedIds(events.map { it.id() })
+        admission.addDatabaseIds(events.map { it.id() })
 
         return events
     }
