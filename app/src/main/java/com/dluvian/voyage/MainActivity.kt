@@ -14,21 +14,21 @@ import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.dluvian.voyage.ui.VoyageApp
 import com.dluvian.voyage.viewModel.BookmarkViewModel
-import com.dluvian.voyage.viewModel.CreateCrossPostViewModel
-import com.dluvian.voyage.viewModel.CreateGitIssueViewModel
-import com.dluvian.voyage.viewModel.CreatePostViewModel
-import com.dluvian.voyage.viewModel.CreateReplyViewModel
+import com.dluvian.voyage.viewModel.CrossPostViewModel
 import com.dluvian.voyage.viewModel.DiscoverViewModel
 import com.dluvian.voyage.viewModel.DrawerViewModel
 import com.dluvian.voyage.viewModel.EditListViewModel
 import com.dluvian.voyage.viewModel.EditProfileViewModel
 import com.dluvian.voyage.viewModel.FollowListsViewModel
+import com.dluvian.voyage.viewModel.GitIssueViewModel
 import com.dluvian.voyage.viewModel.HomeViewModel
 import com.dluvian.voyage.viewModel.InboxViewModel
 import com.dluvian.voyage.viewModel.ListViewModel
+import com.dluvian.voyage.viewModel.PostViewModel
 import com.dluvian.voyage.viewModel.ProfileViewModel
 import com.dluvian.voyage.viewModel.RelayEditorViewModel
 import com.dluvian.voyage.viewModel.RelayProfileViewModel
+import com.dluvian.voyage.viewModel.ReplyViewModel
 import com.dluvian.voyage.viewModel.SearchViewModel
 import com.dluvian.voyage.viewModel.SettingsViewModel
 import com.dluvian.voyage.viewModel.ThreadViewModel
@@ -170,13 +170,13 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             )
         },
         createPostVM = viewModel {
-            CreatePostViewModel(
+            PostViewModel(
                 postSender = appContainer.postSender,
                 snackbar = appContainer.snackbar,
             )
         },
         createReplyVM = viewModel {
-            CreateReplyViewModel(
+            ReplyViewModel(
                 lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
                 postSender = appContainer.postSender,
                 snackbar = appContainer.snackbar,
@@ -206,7 +206,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             )
         },
         createCrossPostVM = viewModel {
-            CreateCrossPostViewModel(
+            CrossPostViewModel(
                 postSender = appContainer.postSender,
                 snackbar = appContainer.snackbar
             )
@@ -244,7 +244,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 topicProvider = appContainer.topicProvider
             )
         },
-        bookmarksVM = viewModel {
+        bookmarkVM = viewModel {
             BookmarkViewModel(
                 feedProvider = appContainer.feedProvider,
                 feedState = bookmarksFeedState,
@@ -273,7 +273,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             )
         },
         createGitIssueVM = viewModel {
-            CreateGitIssueViewModel(
+            GitIssueViewModel(
                 postSender = appContainer.postSender,
                 snackbar = appContainer.snackbar,
                 lazyNostrSubscriber = appContainer.lazyNostrSubscriber

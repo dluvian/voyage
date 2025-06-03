@@ -25,7 +25,7 @@ import com.dluvian.voyage.provider.IEventUpdate
 import kotlinx.coroutines.delay
 import rust.nostr.sdk.Event
 
-class CreateReplyViewModel(
+class ReplyViewModel(
     private val lazyNostrSubscriber: LazyNostrSubscriber,
     private val postSender: PostSender,
     private val snackbar: SnackbarHostState,

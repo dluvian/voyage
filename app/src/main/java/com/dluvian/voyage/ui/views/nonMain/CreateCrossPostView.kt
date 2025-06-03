@@ -20,24 +20,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import com.dluvian.voyage.model.GoBack
 import com.dluvian.voyage.R
-import com.dluvian.voyage.model.SendCrossPost
 import com.dluvian.voyage.canAddAnotherTopic
 import com.dluvian.voyage.core.MAX_TOPICS
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.model.GoBack
+import com.dluvian.voyage.model.SendCrossPost
 import com.dluvian.voyage.ui.components.TopicSelectionColumn
 import com.dluvian.voyage.ui.components.dialog.AddTopicDialog
 import com.dluvian.voyage.ui.components.scaffold.ContentCreationScaffold
 import com.dluvian.voyage.ui.theme.CrossPostIcon
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
-import com.dluvian.voyage.viewModel.CreateCrossPostViewModel
+import com.dluvian.voyage.viewModel.CrossPostViewModel
 
 @Composable
 fun CreateCrossPostView(
-    vm: CreateCrossPostViewModel,
+    vm: CrossPostViewModel,
     topicSuggestions: State<List<Topic>>,
     snackbar: SnackbarHostState,
     onUpdate: OnUpdate

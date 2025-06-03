@@ -20,26 +20,26 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
-import com.dluvian.voyage.model.GoBack
 import com.dluvian.voyage.R
-import com.dluvian.voyage.model.SendGitIssue
-import com.dluvian.voyage.model.SubRepoOwnerRelays
 import com.dluvian.voyage.core.MAX_SUBJECT_LINES
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.model.BugReport
 import com.dluvian.voyage.core.model.EnhancementRequest
 import com.dluvian.voyage.core.model.LabledGitIssue
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
+import com.dluvian.voyage.model.GoBack
+import com.dluvian.voyage.model.SendGitIssue
+import com.dluvian.voyage.model.SubRepoOwnerRelays
 import com.dluvian.voyage.ui.components.scaffold.ContentCreationScaffold
 import com.dluvian.voyage.ui.components.selection.NamedRadio
 import com.dluvian.voyage.ui.components.text.InputWithSuggestions
 import com.dluvian.voyage.ui.components.text.TextInput
 import com.dluvian.voyage.ui.theme.spacing
-import com.dluvian.voyage.viewModel.CreateGitIssueViewModel
+import com.dluvian.voyage.viewModel.GitIssueViewModel
 
 @Composable
 fun CreateGitIssueView(
-    vm: CreateGitIssueViewModel,
+    vm: GitIssueViewModel,
     searchSuggestions: State<List<AdvancedProfileView>>,
     snackbar: SnackbarHostState,
     onUpdate: OnUpdate

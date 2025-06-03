@@ -7,10 +7,10 @@ import com.dluvian.voyage.Core
 import com.dluvian.voyage.cmd.RegisterAccountLauncher
 import com.dluvian.voyage.cmd.RegisterSignerLauncher
 import com.dluvian.voyage.cmd.RegisterUriHandler
-import com.dluvian.voyage.core.navigator.MainNavView
-import com.dluvian.voyage.core.navigator.NonMainNavView
 import com.dluvian.voyage.core.utils.getAccountLauncher
 import com.dluvian.voyage.core.utils.getSignerLauncher
+import com.dluvian.voyage.navigator.MainNavView
+import com.dluvian.voyage.navigator.NonMainNavView
 import com.dluvian.voyage.ui.views.main.MainView
 import com.dluvian.voyage.ui.views.nonMain.NonMainView
 

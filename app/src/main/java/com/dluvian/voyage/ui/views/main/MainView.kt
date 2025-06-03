@@ -2,11 +2,11 @@ package com.dluvian.voyage.ui.views.main
 
 import androidx.compose.runtime.Composable
 import com.dluvian.voyage.Core
-import com.dluvian.voyage.core.navigator.DiscoverNavView
-import com.dluvian.voyage.core.navigator.HomeNavView
-import com.dluvian.voyage.core.navigator.InboxNavView
-import com.dluvian.voyage.core.navigator.MainNavView
-import com.dluvian.voyage.core.navigator.SearchNavView
+import com.dluvian.voyage.navigator.DiscoverNavView
+import com.dluvian.voyage.navigator.HomeNavView
+import com.dluvian.voyage.navigator.InboxNavView
+import com.dluvian.voyage.navigator.MainNavView
+import com.dluvian.voyage.navigator.SearchNavView
 import com.dluvian.voyage.ui.components.scaffold.MainScaffold
 import com.dluvian.voyage.ui.views.main.subViews.DiscoverView
 import com.dluvian.voyage.ui.views.main.subViews.HomeView

@@ -5,11 +5,11 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.navigator.DiscoverNavView
-import com.dluvian.voyage.core.navigator.HomeNavView
-import com.dluvian.voyage.core.navigator.InboxNavView
-import com.dluvian.voyage.core.navigator.MainNavView
-import com.dluvian.voyage.core.navigator.SearchNavView
+import com.dluvian.voyage.navigator.DiscoverNavView
+import com.dluvian.voyage.navigator.HomeNavView
+import com.dluvian.voyage.navigator.InboxNavView
+import com.dluvian.voyage.navigator.MainNavView
+import com.dluvian.voyage.navigator.SearchNavView
 import com.dluvian.voyage.ui.components.bar.MainBottomBar
 import com.dluvian.voyage.ui.components.bar.MainTopAppBar
 import com.dluvian.voyage.ui.views.nonMain.search.SearchScaffold

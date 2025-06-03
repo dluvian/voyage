@@ -18,7 +18,7 @@ import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.provider.IEventUpdate
 import kotlinx.coroutines.delay
 
-class CreateGitIssueViewModel(
+class GitIssueViewModel(
     private val postSender: PostSender,
     private val snackbar: SnackbarHostState,
     private val lazyNostrSubscriber: LazyNostrSubscriber,

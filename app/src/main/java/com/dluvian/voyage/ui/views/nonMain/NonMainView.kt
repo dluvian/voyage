@@ -2,24 +2,24 @@ package com.dluvian.voyage.ui.views.nonMain
 
 import androidx.compose.runtime.Composable
 import com.dluvian.voyage.Core
-import com.dluvian.voyage.core.navigator.BookmarksNavView
-import com.dluvian.voyage.core.navigator.CreateGitIssueNavView
-import com.dluvian.voyage.core.navigator.CreatePostNavView
-import com.dluvian.voyage.core.navigator.CrossPostCreationNavView
-import com.dluvian.voyage.core.navigator.EditExistingListNavView
-import com.dluvian.voyage.core.navigator.EditNewListNavView
-import com.dluvian.voyage.core.navigator.EditProfileNavView
-import com.dluvian.voyage.core.navigator.FollowListsNavView
-import com.dluvian.voyage.core.navigator.NonMainNavView
-import com.dluvian.voyage.core.navigator.OpenListNavView
-import com.dluvian.voyage.core.navigator.ProfileNavView
-import com.dluvian.voyage.core.navigator.RelayEditorNavView
-import com.dluvian.voyage.core.navigator.RelayProfileNavView
-import com.dluvian.voyage.core.navigator.ReplyCreationNavView
-import com.dluvian.voyage.core.navigator.SettingsNavView
-import com.dluvian.voyage.core.navigator.ThreadNavView
-import com.dluvian.voyage.core.navigator.ThreadNeventNavView
-import com.dluvian.voyage.core.navigator.TopicNavView
+import com.dluvian.voyage.navigator.BookmarkNavView
+import com.dluvian.voyage.navigator.CreateGitIssueNavView
+import com.dluvian.voyage.navigator.CreatePostNavView
+import com.dluvian.voyage.navigator.CrossPostNavView
+import com.dluvian.voyage.navigator.EditExistingListNavView
+import com.dluvian.voyage.navigator.EditNewListNavView
+import com.dluvian.voyage.navigator.EditProfileNavView
+import com.dluvian.voyage.navigator.FollowListsNavView
+import com.dluvian.voyage.navigator.NonMainNavView
+import com.dluvian.voyage.navigator.OpenListNavView
+import com.dluvian.voyage.navigator.ProfileNavView
+import com.dluvian.voyage.navigator.RelayEditorNavView
+import com.dluvian.voyage.navigator.RelayProfileNavView
+import com.dluvian.voyage.navigator.ReplyNavView
+import com.dluvian.voyage.navigator.SettingsNavView
+import com.dluvian.voyage.navigator.ThreadNavView
+import com.dluvian.voyage.navigator.ThreadNeventNavView
+import com.dluvian.voyage.navigator.TopicNavView
 import com.dluvian.voyage.ui.views.nonMain.editList.EditListView
 import com.dluvian.voyage.ui.views.nonMain.list.ListView
 import com.dluvian.voyage.ui.views.nonMain.profile.ProfileView
@@ -63,7 +63,7 @@ fun NonMainView(
             onUpdate = core.onUpdate
         )
 
-        is ReplyCreationNavView -> CreateReplyView(
+        is ReplyNavView -> CreateReplyView(
             vm = core.vmContainer.createReplyVM,
             snackbar = core.appContainer.snackbar,
             searchSuggestions = core.appContainer.suggestionProvider.profileSuggestions,
@@ -82,7 +82,7 @@ fun NonMainView(
             onUpdate = core.onUpdate
         )
 
-        is CrossPostCreationNavView -> CreateCrossPostView(
+        is CrossPostNavView -> CreateCrossPostView(
             vm = core.vmContainer.createCrossPostVM,
             topicSuggestions = core.appContainer.suggestionProvider.topicSuggestions,
             snackbar = core.appContainer.snackbar,
@@ -101,8 +101,8 @@ fun NonMainView(
             onUpdate = core.onUpdate
         )
 
-        BookmarksNavView -> BookmarksView(
-            vm = core.vmContainer.bookmarksVM,
+        BookmarkNavView -> BookmarksView(
+            vm = core.vmContainer.bookmarkVM,
             snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate
         )

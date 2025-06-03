@@ -4,16 +4,8 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.voyage.cmd.DiscoverViewAction
-import com.dluvian.voyage.cmd.DiscoverViewInit
-import com.dluvian.voyage.cmd.DiscoverViewRefresh
-import com.dluvian.voyage.core.model.TopicFollowState
-import com.dluvian.voyage.core.utils.launchIO
-import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
-import com.dluvian.voyage.data.provider.ProfileProvider
-import com.dluvian.voyage.data.provider.TopicProvider
-import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.provider.IEventUpdate
+import com.dluvian.voyage.provider.TopicProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

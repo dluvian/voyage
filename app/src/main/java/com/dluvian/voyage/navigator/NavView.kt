@@ -1,4 +1,4 @@
-package com.dluvian.voyage.core.navigator
+package com.dluvian.voyage.navigator
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -38,7 +38,7 @@ data object SettingsNavView : SimpleNonMainNavView()
 data object EditProfileNavView : SimpleNonMainNavView()
 data object RelayEditorNavView : SimpleNonMainNavView()
 data object FollowListsNavView : SimpleNonMainNavView()
-data object BookmarksNavView : SimpleNonMainNavView()
+data object BookmarkNavView : SimpleNonMainNavView()
 data object CreateGitIssueNavView : SimpleNonMainNavView()
 
 sealed class AdvancedNonMainNavView : NonMainNavView()
@@ -47,8 +47,8 @@ data class ThreadNeventNavView(val nevent: Nip19Event) : AdvancedNonMainNavView(
 data class ProfileNavView(val profileEvent: Event) : AdvancedNonMainNavView()
 data class NProfileNavView(val nprofile: Nip19Profile) : AdvancedNonMainNavView()
 data class TopicNavView(val topic: Topic) : AdvancedNonMainNavView()
-data class ReplyCreationNavView(val parent: Event) : AdvancedNonMainNavView()
-data class CrossPostCreationNavView(val event: Event) : AdvancedNonMainNavView()
+data class ReplyNavView(val parent: Event) : AdvancedNonMainNavView()
+data class CrossPostNavView(val event: Event) : AdvancedNonMainNavView()
 data class RelayProfileNavView(val relayUrl: RelayUrl) : AdvancedNonMainNavView()
 data class OpenListNavView(val identifier: String) : AdvancedNonMainNavView()
 data object EditNewListNavView : AdvancedNonMainNavView()

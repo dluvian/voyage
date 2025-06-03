@@ -4,31 +4,31 @@ import android.content.Context
 import com.dluvian.voyage.Ident
 import com.dluvian.voyage.RelayUrl
 import com.dluvian.voyage.Topic
-import com.dluvian.voyage.core.navigator.BookmarksNavView
-import com.dluvian.voyage.core.navigator.CreateGitIssueNavView
-import com.dluvian.voyage.core.navigator.CreatePostNavView
-import com.dluvian.voyage.core.navigator.CrossPostCreationNavView
-import com.dluvian.voyage.core.navigator.DiscoverNavView
-import com.dluvian.voyage.core.navigator.EditExistingListNavView
-import com.dluvian.voyage.core.navigator.EditNewListNavView
-import com.dluvian.voyage.core.navigator.EditProfileNavView
-import com.dluvian.voyage.core.navigator.FollowListsNavView
-import com.dluvian.voyage.core.navigator.HomeNavView
-import com.dluvian.voyage.core.navigator.InboxNavView
-import com.dluvian.voyage.core.navigator.NProfileNavView
-import com.dluvian.voyage.core.navigator.NavView
-import com.dluvian.voyage.core.navigator.OpenListNavView
-import com.dluvian.voyage.core.navigator.ProfileNavView
-import com.dluvian.voyage.core.navigator.RelayEditorNavView
-import com.dluvian.voyage.core.navigator.RelayProfileNavView
-import com.dluvian.voyage.core.navigator.ReplyCreationNavView
-import com.dluvian.voyage.core.navigator.SearchNavView
-import com.dluvian.voyage.core.navigator.SettingsNavView
-import com.dluvian.voyage.core.navigator.ThreadNavView
-import com.dluvian.voyage.core.navigator.ThreadNeventNavView
-import com.dluvian.voyage.core.navigator.TopicNavView
 import com.dluvian.voyage.filterSetting.HomeFeedSetting
 import com.dluvian.voyage.filterSetting.InboxFeedSetting
+import com.dluvian.voyage.navigator.BookmarkNavView
+import com.dluvian.voyage.navigator.CreateGitIssueNavView
+import com.dluvian.voyage.navigator.CreatePostNavView
+import com.dluvian.voyage.navigator.CrossPostNavView
+import com.dluvian.voyage.navigator.DiscoverNavView
+import com.dluvian.voyage.navigator.EditExistingListNavView
+import com.dluvian.voyage.navigator.EditNewListNavView
+import com.dluvian.voyage.navigator.EditProfileNavView
+import com.dluvian.voyage.navigator.FollowListsNavView
+import com.dluvian.voyage.navigator.HomeNavView
+import com.dluvian.voyage.navigator.InboxNavView
+import com.dluvian.voyage.navigator.NProfileNavView
+import com.dluvian.voyage.navigator.NavView
+import com.dluvian.voyage.navigator.OpenListNavView
+import com.dluvian.voyage.navigator.ProfileNavView
+import com.dluvian.voyage.navigator.RelayEditorNavView
+import com.dluvian.voyage.navigator.RelayProfileNavView
+import com.dluvian.voyage.navigator.ReplyNavView
+import com.dluvian.voyage.navigator.SearchNavView
+import com.dluvian.voyage.navigator.SettingsNavView
+import com.dluvian.voyage.navigator.ThreadNavView
+import com.dluvian.voyage.navigator.ThreadNeventNavView
+import com.dluvian.voyage.navigator.TopicNavView
 import kotlinx.coroutines.CoroutineScope
 import rust.nostr.sdk.Event
 import rust.nostr.sdk.EventId
@@ -57,7 +57,7 @@ sealed class PushNavCmd : NavCmd() {
             ClickEditProfile -> EditProfileNavView
             ClickRelayEditor -> RelayEditorNavView
             ClickFollowLists -> FollowListsNavView
-            ClickBookmarks -> BookmarksNavView
+            ClickBookmarks -> BookmarkNavView
             ClickCreateList -> EditNewListNavView
             ClickCreateGitIssue -> CreateGitIssueNavView
             is OpenThread -> ThreadNavView(this.event)
@@ -65,8 +65,8 @@ sealed class PushNavCmd : NavCmd() {
             is OpenNProfile -> NProfileNavView(this.nprofile)
             is OpenProfile -> ProfileNavView(this.profileEvent)
             is OpenTopic -> TopicNavView(topic = this.topic)
-            is OpenReplyCreation -> ReplyCreationNavView(parent = this.parent)
-            is OpenCrossPostCreation -> CrossPostCreationNavView(event = this.event)
+            is OpenReplyCreation -> ReplyNavView(parent = this.parent)
+            is OpenCrossPostCreation -> CrossPostNavView(event = this.event)
             is OpenRelayProfile -> RelayProfileNavView(relayUrl = this.relayUrl)
             is OpenList -> OpenListNavView(identifier = this.identifier)
             is EditList -> EditExistingListNavView(identifier = this.identifier)
@@ -110,6 +110,8 @@ data class UnbookmarkPost(val event: Event) : Cmd()
 
 data class FollowProfile(val pubkey: PublicKey) : Cmd()
 data class UnfollowProfile(val pubkey: PublicKey) : Cmd()
+
+data class CrossPost(val topics: List<Topic>, val event: Event) : Cmd()
 
 data class AddPubkeyToList(val pubkey: PublicKey, val ident: String) : Cmd()
 data class AddTopicToList(val topic: Topic, val ident: String) : Cmd()
@@ -202,8 +204,8 @@ data object SubRepoOwnerRelays : CreateGitIssueViewCmd()
 sealed class CreateReplyViewCmd : Cmd()
 data class SendReply(val parent: Event, val body: String) : CreateReplyViewCmd()
 
-sealed class CreateCrossPostViewCmd : Cmd()
-data class SendCrossPost(val topics: List<Topic>) : CreateCrossPostViewCmd()
+sealed class CrossPostViewCmd : Cmd()
+data class PushEventForCrossPosting(val event: Event) : CrossPostViewCmd()
 
 sealed class EditProfileViewCmd : Cmd()
 data object LoadFullProfile : EditProfileViewCmd()

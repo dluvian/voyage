@@ -15,7 +15,7 @@ import com.dluvian.voyage.provider.IEventUpdate
 import kotlinx.coroutines.delay
 
 
-class CreatePostViewModel(
+class PostViewModel(
     private val postSender: PostSender,
     private val snackbar: SnackbarHostState,
 ) : ViewModel(), IEventUpdate {

@@ -8,11 +8,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.dluvian.voyage.cmd.HomeViewOpenFilter
 import com.dluvian.voyage.cmd.InboxViewOpenFilter
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.navigator.DiscoverNavView
-import com.dluvian.voyage.core.navigator.HomeNavView
-import com.dluvian.voyage.core.navigator.InboxNavView
-import com.dluvian.voyage.core.navigator.MainNavView
-import com.dluvian.voyage.core.navigator.SearchNavView
+import com.dluvian.voyage.navigator.DiscoverNavView
+import com.dluvian.voyage.navigator.HomeNavView
+import com.dluvian.voyage.navigator.InboxNavView
+import com.dluvian.voyage.navigator.MainNavView
+import com.dluvian.voyage.navigator.SearchNavView
 import com.dluvian.voyage.ui.components.button.FilterIconButton
 import com.dluvian.voyage.ui.components.button.MenuIconButton
 

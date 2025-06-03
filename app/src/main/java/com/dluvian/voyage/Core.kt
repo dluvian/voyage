@@ -11,10 +11,10 @@ import com.dluvian.voyage.model.BookmarkViewCmd
 import com.dluvian.voyage.model.ClickNeutralizeVotes
 import com.dluvian.voyage.model.ClickUpvote
 import com.dluvian.voyage.model.Cmd
-import com.dluvian.voyage.model.CreateCrossPostViewCmd
 import com.dluvian.voyage.model.CreateGitIssueViewCmd
 import com.dluvian.voyage.model.CreatePostViewCmd
 import com.dluvian.voyage.model.CreateReplyViewCmd
+import com.dluvian.voyage.model.CrossPostViewCmd
 import com.dluvian.voyage.model.DeleteList
 import com.dluvian.voyage.model.DeletePost
 import com.dluvian.voyage.model.DiscoverViewCmd
@@ -54,7 +54,7 @@ class Core(
     val closeApp: () -> Unit,
 ) : ViewModel() {
     private val logTag = "Core"
-    val navigator = Navigator(vmContainer = vmContainer, closeApp = closeApp)
+    val navigator = Navigator(vmContainer = this@Core.bookmarkVM, closeApp = closeApp)
 
     val onUpdate: (Cmd) -> Unit = { cmd -> handleCmd(cmd) }
 
@@ -102,7 +102,7 @@ class Core(
                 }
             }
 
-            is DrawerViewCmd -> vmContainer.drawerVM.handle(action = cmd)
+            is DrawerViewCmd -> this@Core.bookmarkVM.drawerVM.handle(action = cmd)
 
             is ClickUpvote -> viewModelScope.launch {
                 val result = appContainer.eventCreator.publishVote(cmd.event)
@@ -204,24 +204,24 @@ class Core(
                 )
             }
 
-            is HomeViewCmd -> vmContainer.homeVM.handle(action = cmd)
-            is DiscoverViewCmd -> vmContainer.discoverVM.handle(action = cmd)
-            is ThreadViewCmd -> vmContainer.threadVM.handle(action = cmd)
-            is TopicViewCmd -> vmContainer.topicVM.handle(action = cmd)
-            is ProfileViewCmd -> vmContainer.profileVM.handle(action = cmd)
-            is SettingsViewCmd -> vmContainer.settingsVM.handle(action = cmd)
-            is CreatePostViewCmd -> vmContainer.createPostVM.handle(action = cmd)
-            is CreateGitIssueViewCmd -> vmContainer.createGitIssueVM.handle(action = cmd)
-            is CreateReplyViewCmd -> vmContainer.createReplyVM.handle(action = cmd)
-            is CreateCrossPostViewCmd -> vmContainer.createCrossPostVM.handle(action = cmd)
-            is SearchViewCmd -> vmContainer.searchVM.handle(action = cmd)
-            is EditProfileViewCmd -> vmContainer.editProfileVM.handle(action = cmd)
-            is RelayEditorViewCmd -> vmContainer.relayEditorVM.handle(action = cmd)
-            is InboxViewCmd -> vmContainer.inboxVM.handle(action = cmd)
-            is FollowListsViewCmd -> vmContainer.followListsVM.handle(action = cmd)
-            is BookmarkViewCmd -> vmContainer.bookmarksVM.handle(cmd = cmd)
-            is EditListViewCmd -> vmContainer.editListVM.handle(action = cmd)
-            is ListViewCmd -> vmContainer.listVM.handle(action = cmd)
+            is HomeViewCmd -> this@Core.bookmarkVM.homeVM.handle(action = cmd)
+            is DiscoverViewCmd -> this@Core.bookmarkVM.discoverVM.handle(action = cmd)
+            is ThreadViewCmd -> this@Core.bookmarkVM.threadVM.handle(action = cmd)
+            is TopicViewCmd -> this@Core.bookmarkVM.topicVM.handle(action = cmd)
+            is ProfileViewCmd -> this@Core.bookmarkVM.profileVM.handle(action = cmd)
+            is SettingsViewCmd -> this@Core.bookmarkVM.settingsVM.handle(action = cmd)
+            is CreatePostViewCmd -> this@Core.bookmarkVM.createPostVM.handle(action = cmd)
+            is CreateGitIssueViewCmd -> this@Core.bookmarkVM.createGitIssueVM.handle(action = cmd)
+            is CreateReplyViewCmd -> this@Core.bookmarkVM.createReplyVM.handle(action = cmd)
+            is CrossPostViewCmd -> this@Core.bookmarkVM.createCrossPostVM.handle(action = cmd)
+            is SearchViewCmd -> this@Core.bookmarkVM.searchVM.handle(action = cmd)
+            is EditProfileViewCmd -> this@Core.bookmarkVM.editProfileVM.handle(action = cmd)
+            is RelayEditorViewCmd -> this@Core.bookmarkVM.relayEditorVM.handle(action = cmd)
+            is InboxViewCmd -> this@Core.bookmarkVM.inboxVM.handle(action = cmd)
+            is FollowListsViewCmd -> this@Core.bookmarkVM.followListsVM.handle(action = cmd)
+            is BookmarkViewCmd -> this@Core.bookmarkVM.bookmarkVM.handle(cmd = cmd)
+            is EditListViewCmd -> this@Core.bookmarkVM.editListVM.handle(action = cmd)
+            is ListViewCmd -> this@Core.bookmarkVM.listVM.handle(action = cmd)
         }
     }
 
