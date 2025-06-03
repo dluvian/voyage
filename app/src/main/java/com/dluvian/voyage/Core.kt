@@ -63,6 +63,9 @@ class Core(
 
     init {
         startRelayListener(appContainer.relayChannel)
+        viewModelScope.launch {
+            appContainer.service.init()
+        }
     }
 
     private fun handleCmd(cmd: Cmd) {

@@ -2,8 +2,8 @@ package com.dluvian.voyage.nostr
 
 import android.util.Log
 import com.dluvian.voyage.KeyStore
-import com.dluvian.voyage.model.RelayNotificationCmd
 import com.dluvian.voyage.RelayUrl
+import com.dluvian.voyage.model.RelayNotificationCmd
 import com.dluvian.voyage.preferences.RelayPreferences
 import kotlinx.coroutines.channels.Channel
 import rust.nostr.sdk.ClientBuilder
@@ -43,7 +43,6 @@ class NostrService(
         .admitPolicy(admission)
         .build()
 
-    // TODO: Call this
     suspend fun init() {
         getPersonalRelays().forEach { (relay, meta) ->
             val opts = RelayOptions()
