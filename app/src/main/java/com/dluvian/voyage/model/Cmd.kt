@@ -144,7 +144,7 @@ data object InboxViewDismissFilter : InboxViewCmd()
 data class InboxViewApplyFilter(val setting: InboxFeedSetting) : InboxViewCmd()
 
 sealed class DiscoverViewCmd : Cmd()
-data object DiscoverViewInit : DiscoverViewCmd()
+data object DiscoverViewShow : DiscoverViewCmd()
 data object DiscoverViewRefresh : DiscoverViewCmd()
 
 sealed class FollowListsViewCmd : Cmd()
@@ -152,8 +152,7 @@ data object FollowListsViewInit : FollowListsViewCmd()
 data object FollowListsViewRefresh : FollowListsViewCmd()
 
 sealed class BookmarkViewCmd : Cmd()
-data object BookmarkViewPush : BookmarkViewCmd()
-data object BookmarkViewPop : BookmarkViewCmd()
+data object BookmarkViewShow : BookmarkViewCmd()
 data class BookmarkViewEventUpdate(val event: Event) : BookmarkViewCmd()
 data object BookmarksViewRefresh : BookmarkViewCmd()
 data object BookmarksViewNextPage : BookmarkViewCmd()
@@ -205,7 +204,7 @@ sealed class CreateReplyViewCmd : Cmd()
 data class SendReply(val parent: Event, val body: String) : CreateReplyViewCmd()
 
 sealed class CrossPostViewCmd : Cmd()
-data class PushEventForCrossPosting(val event: Event) : CrossPostViewCmd()
+data class SetEventForCrossPosting(val event: Event) : CrossPostViewCmd()
 
 sealed class EditProfileViewCmd : Cmd()
 data object LoadFullProfile : EditProfileViewCmd()

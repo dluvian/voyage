@@ -7,8 +7,7 @@ import com.dluvian.voyage.PAGE_SIZE
 import com.dluvian.voyage.filterSetting.BookmarkFeedSetting
 import com.dluvian.voyage.model.BookmarkViewCmd
 import com.dluvian.voyage.model.BookmarkViewEventUpdate
-import com.dluvian.voyage.model.BookmarkViewPop
-import com.dluvian.voyage.model.BookmarkViewPush
+import com.dluvian.voyage.model.BookmarkViewShow
 import com.dluvian.voyage.model.BookmarksViewNextPage
 import com.dluvian.voyage.model.BookmarksViewRefresh
 import com.dluvian.voyage.nostr.Subscriber
@@ -24,7 +23,7 @@ class BookmarkViewModel(
     private val subscriber: Subscriber,
 ) : ViewModel() {
     val paginator = Paginator(feedProvider)
-    val hasPushedAtLeastOnce = AtomicBoolean(false)
+    private val inViewAtLeastOnce = AtomicBoolean(false)
 
     init {
         paginator.initSetting(setting = BookmarkFeedSetting(PAGE_SIZE.toULong()))
@@ -32,8 +31,8 @@ class BookmarkViewModel(
 
     fun handle(cmd: BookmarkViewCmd) {
         when (cmd) {
-            BookmarkViewPush -> {
-                if (hasPushedAtLeastOnce.compareAndSet(false, true)) {
+            BookmarkViewShow -> {
+                if (inViewAtLeastOnce.compareAndSet(false, true)) {
                     viewModelScope.launch(Dispatchers.IO) {
                         subscriber.subBookmarks()
                         paginator.refresh()
@@ -43,10 +42,6 @@ class BookmarkViewModel(
                 viewModelScope.launch(Dispatchers.IO) {
                     paginator.dbRefreshInPlace()
                 }
-            }
-
-            BookmarkViewPop -> viewModelScope.launch {
-                paginator.dbRefreshInPlace()
             }
 
             is BookmarkViewEventUpdate -> viewModelScope.launch {
