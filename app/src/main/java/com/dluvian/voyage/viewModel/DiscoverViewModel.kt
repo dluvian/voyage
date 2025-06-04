@@ -5,8 +5,9 @@ import androidx.lifecycle.ViewModel
 import com.dluvian.voyage.TopicFollowState
 import com.dluvian.voyage.model.DiscoverViewCmd
 import com.dluvian.voyage.model.DiscoverViewEventUpdate
+import com.dluvian.voyage.model.DiscoverViewOpen
 import com.dluvian.voyage.model.DiscoverViewRefresh
-import com.dluvian.voyage.model.DiscoverViewShow
+import com.dluvian.voyage.model.DiscoverViewSwitchSigner
 import com.dluvian.voyage.model.TrustProfile
 import com.dluvian.voyage.nostr.NostrService
 import com.dluvian.voyage.provider.TopicProvider
@@ -26,9 +27,10 @@ class DiscoverViewModel(
 
     fun handle(cmd: DiscoverViewCmd) {
         when (cmd) {
-            DiscoverViewShow -> TODO()
+            DiscoverViewOpen -> TODO()
             DiscoverViewRefresh -> TODO()
             is DiscoverViewEventUpdate -> TODO()
+            DiscoverViewSwitchSigner -> TODO()
         }
     }
 }

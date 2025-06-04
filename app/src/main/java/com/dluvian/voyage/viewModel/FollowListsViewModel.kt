@@ -10,9 +10,9 @@ import com.dluvian.voyage.SHORT_DELAY
 import com.dluvian.voyage.TopicFollowState
 import com.dluvian.voyage.model.FollowListsEventUpdate
 import com.dluvian.voyage.model.FollowListsViewCmd
+import com.dluvian.voyage.model.FollowListsViewOpen
 import com.dluvian.voyage.model.FollowListsViewRefresh
 import com.dluvian.voyage.model.FollowedProfile
-import com.dluvian.voyage.model.ShowFollowListsView
 import com.dluvian.voyage.model.TrustProfile
 import com.dluvian.voyage.nostr.NostrService
 import com.dluvian.voyage.provider.NameProvider
@@ -38,7 +38,7 @@ class FollowListsViewModel(
 
     fun handle(cmd: FollowListsViewCmd) {
         when (cmd) {
-            ShowFollowListsView -> {
+            FollowListsViewOpen -> {
                 isEditing.value = false
                 viewModelScope.launch {
                     load(dbOnly = false)

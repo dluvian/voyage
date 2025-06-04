@@ -21,8 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.model.DiscoverViewOpen
 import com.dluvian.voyage.model.DiscoverViewRefresh
-import com.dluvian.voyage.model.DiscoverViewShow
 import com.dluvian.voyage.ui.components.chip.FollowChip
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.text.SectionHeader
@@ -42,7 +42,7 @@ fun DiscoverView(vm: DiscoverViewModel, onUpdate: OnUpdate) {
     val profileState = rememberLazyStaggeredGridState()
 
     LaunchedEffect(key1 = Unit) {
-        onUpdate(DiscoverViewShow)
+        onUpdate(DiscoverViewOpen)
     }
     LaunchedEffect(key1 = isRefreshing) {
         if (isRefreshing) {

@@ -5,26 +5,26 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dluvian.voyage.LONG_DELAY
 import com.dluvian.voyage.filterSetting.HomeFeedSetting
 import com.dluvian.voyage.model.HomeViewApplyFilter
 import com.dluvian.voyage.model.HomeViewCmd
 import com.dluvian.voyage.model.HomeViewDismissFilter
 import com.dluvian.voyage.model.HomeViewEventUpdate
 import com.dluvian.voyage.model.HomeViewNextPage
+import com.dluvian.voyage.model.HomeViewOpen
 import com.dluvian.voyage.model.HomeViewOpenFilter
 import com.dluvian.voyage.model.HomeViewRefresh
-import com.dluvian.voyage.model.HomeViewSubAccountData
-import com.dluvian.voyage.model.ShowHomeView
 import com.dluvian.voyage.nostr.NostrService
 import com.dluvian.voyage.paginator.Paginator
 import com.dluvian.voyage.preferences.HomePreferences
 import com.dluvian.voyage.provider.FeedProvider
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import rust.nostr.sdk.Filter
 import rust.nostr.sdk.Kind
 import rust.nostr.sdk.KindStandard
-import rust.nostr.sdk.Timestamp
 import java.util.concurrent.atomic.AtomicBoolean
 
 
@@ -39,8 +39,8 @@ class HomeViewModel(
         mutableStateOf(homePreferences.getHomeFeedSetting())
     val paginator = Paginator(feedProvider = feedProvider)
 
-    private var lastDataSub = Timestamp.fromSecs(0u)
     private val isSubbingData = AtomicBoolean(false)
+    private val isInitialized = AtomicBoolean(false)
 
     init {
         paginator.initSetting(setting.value)
@@ -48,35 +48,41 @@ class HomeViewModel(
 
     fun handle(cmd: HomeViewCmd) {
         when (cmd) {
-            ShowHomeView -> viewModelScope.launch(Dispatchers.IO) {
-                paginator.dbRefreshInPlace()
+            HomeViewOpen -> {
+                if (isInitialized.compareAndSet(false, true)) {
+                    viewModelScope.launch(Dispatchers.IO) {
+                        paginator.refresh()
+                    }
+                    return
+                }
+                viewModelScope.launch(Dispatchers.IO) {
+                    paginator.dbRefreshInPlace()
+                }
             }
 
             is HomeViewEventUpdate -> viewModelScope.launch(Dispatchers.IO) {
                 paginator.update(cmd.event)
             }
 
-            HomeViewRefresh -> viewModelScope.launch(Dispatchers.IO) {
-                paginator.refresh()
+            HomeViewRefresh -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    paginator.refresh()
+                }
+                if (isSubbingData.compareAndSet(false, true)) {
+                    viewModelScope.launch(Dispatchers.IO) {
+                        val filter = createAccountDataFilter()
+                        // TODO: Issue: Check if inserting outdated events to
+                        //  database causes Notification in HandleNotification
+                        service.sync(filter)
+                        delay(LONG_DELAY)
+                    }.invokeOnCompletion {
+                        isSubbingData.set(false)
+                    }
+                }
             }
 
             HomeViewNextPage -> viewModelScope.launch(Dispatchers.IO) {
                 paginator.nextPage()
-            }
-            HomeViewSubAccountData -> {
-                if (isSubbingData.compareAndSet(false, true)) {
-                    if (Timestamp.now().asSecs() - lastDataSub.asSecs() > 10u) {
-                        viewModelScope.launch(Dispatchers.IO) {
-                            val filter = createAccountDataFilter()
-                            // TODO: Issue: Check if inserting outdated events to
-                            //  database causes Notification in HandleNotification
-                            service.sync(filter)
-                        }.invokeOnCompletion {
-                            lastDataSub = Timestamp.now()
-                            isSubbingData.set(false)
-                        }
-                    }
-                }
             }
 
             HomeViewOpenFilter -> showFilterMenu.value = true

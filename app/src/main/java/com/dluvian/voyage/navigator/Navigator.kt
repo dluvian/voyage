@@ -2,10 +2,10 @@ package com.dluvian.voyage.navigator
 
 import androidx.compose.runtime.mutableStateOf
 import com.dluvian.voyage.model.BookmarkViewEventUpdate
+import com.dluvian.voyage.model.CrossPostViewOpen
 import com.dluvian.voyage.model.DiscoverViewEventUpdate
 import com.dluvian.voyage.model.HomeViewEventUpdate
 import com.dluvian.voyage.model.NavCmd
-import com.dluvian.voyage.model.OpenCrossPostView
 import com.dluvian.voyage.model.PopNavCmd
 import com.dluvian.voyage.model.PushNavCmd
 import com.dluvian.voyage.provider.IEventUpdate
@@ -58,7 +58,7 @@ class Navigator(private val vmContainer: VMContainer, private val closeApp: () -
                 is TopicNavView -> vmContainer.topicVM.openTopic(navView.topic)
                 is ReplyNavView -> vmContainer.createReplyVM.openParent(navView.parent)
                 is CrossPostNavView -> vmContainer.createCrossPostVM.handle(
-                    OpenCrossPostView(
+                    CrossPostViewOpen(
                         navView.event
                     )
                 )

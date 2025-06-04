@@ -4,7 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.dluvian.voyage.Topic
 import com.dluvian.voyage.model.CrossPostViewCmd
-import com.dluvian.voyage.model.OpenCrossPostView
+import com.dluvian.voyage.model.CrossPostViewOpen
 import rust.nostr.sdk.Event
 
 
@@ -14,7 +14,7 @@ class CrossPostViewModel : ViewModel() {
 
     fun handle(cmd: CrossPostViewCmd) {
         when (cmd) {
-            is OpenCrossPostView -> {
+            is CrossPostViewOpen -> {
                 topics.value = emptyList()
                 event.value = cmd.event
             }
