@@ -198,7 +198,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 lazyListState = relayEditorState,
                 relayProvider = appContainer.relayProvider,
                 snackbar = appContainer.snackbar,
-                nostrService = appContainer.service,
+                service = appContainer.service,
                 nip65UpsertDao = appContainer.roomDb.nip65UpsertDao(),
                 connectionStatuses = appContainer.connectionStatuses
             )

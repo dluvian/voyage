@@ -32,6 +32,7 @@ import rust.nostr.sdk.EventId
 import rust.nostr.sdk.Nip19Event
 import rust.nostr.sdk.Nip19Profile
 import rust.nostr.sdk.PublicKey
+import rust.nostr.sdk.RelayMetadata
 
 sealed class Cmd
 
@@ -105,6 +106,7 @@ data class SendPost(val topics: List<Topic>, val subject: String, val content: S
     CoreActionCmd()
 data class SendReply(val parent: Event, val content: String) : CoreActionCmd()
 data class SendGitIssue(val repo: Coordinate, val content: String) : CoreActionCmd()
+data class PublishNip65(val relays: List<Pair<RelayUrl, RelayMetadata>>)
 
 sealed class HomeViewCmd : Cmd()
 data object HomeViewOpen : HomeViewCmd()
@@ -150,12 +152,11 @@ data object TopicViewAppend : TopicViewCmd()
 data object TopicViewLoadLists : TopicViewCmd()
 
 sealed class RelayEditorViewCmd : Cmd()
+data object RelayEditorViewOpen : RelayEditorViewCmd()
 data class AddRelay(val relayUrl: RelayUrl) : RelayEditorViewCmd()
 data class RemoveRelay(val relayUrl: RelayUrl) : RelayEditorViewCmd()
 data class ToggleReadRelay(val relayUrl: RelayUrl) : RelayEditorViewCmd()
 data class ToggleWriteRelay(val relayUrl: RelayUrl) : RelayEditorViewCmd()
-data object SaveRelays : RelayEditorViewCmd()
-data object LoadRelays : RelayEditorViewCmd()
 
 sealed class ProfileViewCmd : Cmd()
 data class ProfileViewPushNprofile(val nprofile: Nip19Profile) : ProfileViewCmd()
