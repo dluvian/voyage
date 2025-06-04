@@ -174,15 +174,14 @@ data class SendPost(
     val topics: List<Topic>,
 ) : CreatePostViewCmd()
 
-sealed class CreateGitIssueViewCmd : Cmd()
-data class SendGitIssue(val issue: String) : CreateGitIssueViewCmd()
-data object SubRepoOwnerRelays : CreateGitIssueViewCmd()
+sealed class GitIssueCmd : Cmd()
+data object OpenGitIssueCreation : GitIssueCmd()
 
 sealed class CreateReplyViewCmd : Cmd()
 data class SendReply(val parent: Event, val body: String) : CreateReplyViewCmd()
 
 sealed class CrossPostViewCmd : Cmd()
-data class SetEventForCrossPosting(val event: Event) : CrossPostViewCmd()
+data class OpenCrossPostView(val event: Event) : CrossPostViewCmd()
 
 sealed class EditProfileViewCmd : Cmd()
 data object ShowEditProfileView : EditProfileViewCmd()

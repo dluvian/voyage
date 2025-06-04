@@ -1,19 +1,23 @@
 package com.dluvian.voyage.viewModel
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.dluvian.voyage.Topic
 import com.dluvian.voyage.model.CrossPostViewCmd
-import com.dluvian.voyage.model.SetEventForCrossPosting
+import com.dluvian.voyage.model.OpenCrossPostView
 import rust.nostr.sdk.Event
 
 
 class CrossPostViewModel : ViewModel() {
-    val event: MutableState<Event?> = mutableStateOf(null)
+    val event = mutableStateOf<Event?>(null)
+    val topics = mutableStateOf(emptyList<Topic>())
 
     fun handle(cmd: CrossPostViewCmd) {
         when (cmd) {
-            is SetEventForCrossPosting -> event.value = cmd.event
+            is OpenCrossPostView -> {
+                topics.value = emptyList()
+                event.value = cmd.event
+            }
         }
     }
 }

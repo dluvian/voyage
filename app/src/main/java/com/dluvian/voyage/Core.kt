@@ -10,7 +10,6 @@ import com.dluvian.voyage.model.ClickNeutralizeVotes
 import com.dluvian.voyage.model.ClickUpvote
 import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.model.CoreActionCmd
-import com.dluvian.voyage.model.CreateGitIssueViewCmd
 import com.dluvian.voyage.model.CreatePostViewCmd
 import com.dluvian.voyage.model.CreateReplyViewCmd
 import com.dluvian.voyage.model.CrossPostViewCmd
@@ -21,6 +20,7 @@ import com.dluvian.voyage.model.EditProfileViewCmd
 import com.dluvian.voyage.model.FollowListsViewCmd
 import com.dluvian.voyage.model.FollowProfile
 import com.dluvian.voyage.model.FollowTopic
+import com.dluvian.voyage.model.GitIssueCmd
 import com.dluvian.voyage.model.HomeViewCmd
 import com.dluvian.voyage.model.InboxViewCmd
 import com.dluvian.voyage.model.NavCmd
@@ -110,7 +110,7 @@ class Core(
             is ProfileViewCmd -> vmContainer.profileVM.handle(cmd)
             is SettingsViewCmd -> vmContainer.settingsVM.handle(cmd)
             is CreatePostViewCmd -> vmContainer.createPostVM.handle(cmd)
-            is CreateGitIssueViewCmd -> vmContainer.createGitIssueVM.handle(cmd)
+            is GitIssueCmd -> vmContainer.createGitIssueVM.handle(cmd)
             is CreateReplyViewCmd -> vmContainer.createReplyVM.handle(cmd)
             is CrossPostViewCmd -> vmContainer.createCrossPostVM.handle(cmd)
             is SearchViewCmd -> vmContainer.searchVM.handle(cmd)
