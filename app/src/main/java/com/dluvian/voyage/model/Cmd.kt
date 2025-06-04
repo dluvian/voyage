@@ -176,7 +176,7 @@ sealed class GitIssueCmd : Cmd()
 data object GitIssueOpen : GitIssueCmd()
 
 sealed class ReplyViewCmd : Cmd()
-data object ReplyView : ReplyViewCmd()
+data class ReplyViewOpen(val uiEvent: UIEvent) : ReplyViewCmd()
 
 sealed class CrossPostViewCmd : Cmd()
 data class CrossPostViewOpen(val event: Event) : CrossPostViewCmd()

@@ -1,101 +1,21 @@
 package com.dluvian.voyage.viewModel
 
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.dluvian.voyage.R
-import com.dluvian.voyage.cmd.CreateReplyViewAction
-import com.dluvian.voyage.cmd.SendReply
-import com.dluvian.voyage.core.DELAY_1SEC
-import com.dluvian.voyage.core.model.Comment
-import com.dluvian.voyage.core.model.CrossPost
-import com.dluvian.voyage.core.model.LegacyReply
-import com.dluvian.voyage.core.model.MainEvent
-import com.dluvian.voyage.core.model.RootPost
-import com.dluvian.voyage.core.utils.launchIO
-import com.dluvian.voyage.core.utils.showToast
-import com.dluvian.voyage.data.interactor.PostSender
-import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
-import com.dluvian.voyage.data.nostr.createNprofile
-import com.dluvian.voyage.data.room.dao.EventRelayDao
-import com.dluvian.voyage.data.room.dao.MainEventDao
-import com.dluvian.voyage.provider.IEventUpdate
-import kotlinx.coroutines.delay
-import rust.nostr.sdk.Event
+import com.dluvian.voyage.model.ReplyViewCmd
+import com.dluvian.voyage.model.ReplyViewOpen
+import com.dluvian.voyage.model.UIEvent
 
-class ReplyViewModel(
-    private val lazyNostrSubscriber: LazyNostrSubscriber,
-    private val postSender: PostSender,
-    private val snackbar: SnackbarHostState,
-    private val eventRelayDao: EventRelayDao,
-    private val mainEventDao: MainEventDao,
-) : ViewModel(), IEventUpdate {
-    val isSendingReply = mutableStateOf(false)
-    val parent: MutableState<MainEvent?> = mutableStateOf(null)
+class ReplyViewModel() : ViewModel() {
+    val parent = mutableStateOf<UIEvent?>(null)
+    val reply = mutableStateOf("")
 
-    fun openParent(parent: Event) {
-        val relevantId = newParent.getRelevantId()
-        if (relevantId == this.parent.value?.id) return
-
-        val relevantPubkey = newParent.getRelevantPubkey()
-        if (relevantPubkey != this.parent.value?.pubkey) {
-            viewModelScope.launchIO {
-                lazyNostrSubscriber.lazySubNip65(nprofile = createNprofile(hex = relevantPubkey))
+    fun handle(cmd: ReplyViewCmd) {
+        when (cmd) {
+            is ReplyViewOpen -> {
+                parent.value = cmd.uiEvent
+                reply.value = ""
             }
         }
-        when (newParent) {
-            is LegacyReply, is Comment -> {
-                viewModelScope.launchIO {
-                    val grandparentAuthor = mainEventDao.getParentAuthor(id = relevantId)
-                    if (grandparentAuthor != null && relevantPubkey != grandparentAuthor) {
-                        lazyNostrSubscriber.lazySubNip65(createNprofile(hex = grandparentAuthor))
-                    }
-                }
-            }
-
-            is RootPost, is CrossPost -> {}
-        }
-
-        this.parent.value = newParent
-    }
-
-    fun handle(action: CreateReplyViewAction) {
-        when (action) {
-            is SendReply -> sendReply(action = action)
-        }
-    }
-
-    private fun sendReply(action: SendReply) {
-        if (isSendingReply.value) return
-
-        isSendingReply.value = true
-        viewModelScope.launchIO {
-            val json = mainEventDao.getJson(id = action.parent.id)
-
-            val result = if (json != null) {
-                postSender.sendReply(
-                    parent = Event.fromJson(json = json),
-                    body = action.body,
-                    relayHint = eventRelayDao.getEventRelay(id = action.parent.id)
-                        ?.ifEmpty { null },
-                )
-            } else {
-                val err = "Can't determine event kind of ${action.parent.getRelevantId()}"
-                Result.failure(IllegalStateException(err))
-            }
-
-            delay(DELAY_1SEC)
-            action.onGoBack()
-            result.onSuccess {
-                snackbar.showToast(viewModelScope, action.context.getString(R.string.reply_created))
-            }.onFailure {
-                snackbar.showToast(
-                    viewModelScope,
-                    action.context.getString(R.string.failed_to_create_reply)
-                )
-            }
-        }.invokeOnCompletion { isSendingReply.value = false }
     }
 }
