@@ -2,73 +2,32 @@ package com.dluvian.voyage.viewModel
 
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.pager.PagerState
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.dluvian.voyage.cmd.FollowListsViewAction
-import com.dluvian.voyage.cmd.FollowListsViewInit
-import com.dluvian.voyage.cmd.FollowListsViewRefresh
-import com.dluvian.voyage.core.DEBOUNCE
-import com.dluvian.voyage.core.model.TopicFollowState
-import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
-import com.dluvian.voyage.data.provider.ProfileProvider
-import com.dluvian.voyage.data.provider.TopicProvider
-import com.dluvian.voyage.data.room.view.AdvancedProfileView
+import com.dluvian.voyage.Topic
+import com.dluvian.voyage.model.FollowListsViewCmd
+import com.dluvian.voyage.model.FollowListsViewRefresh
+import com.dluvian.voyage.model.ShowFollowListsView
+import com.dluvian.voyage.model.TrustProfile
 import com.dluvian.voyage.provider.IEventUpdate
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
+
+typealias TopicFollowState = Pair<Topic, Boolean>
 
 class FollowListsViewModel(
     val contactListState: LazyListState,
     val topicListState: LazyListState,
     val pagerState: PagerState,
-    private val lazyNostrSubscriber: LazyNostrSubscriber,
-    private val profileProvider: ProfileProvider,
-    private val topicProvider: TopicProvider,
 ) : ViewModel(), IEventUpdate {
     val tabIndex = mutableIntStateOf(0)
     val isRefreshing = mutableStateOf(false)
-    val profiles: MutableState<StateFlow<List<AdvancedProfileView>>> =
-        mutableStateOf(MutableStateFlow(emptyList()))
-    val topics: MutableState<StateFlow<List<TopicFollowState>>> =
-        mutableStateOf(MutableStateFlow(emptyList()))
+    val profiles = mutableStateOf(emptyList<TrustProfile>())
+    val topics = mutableStateOf(emptyList<TopicFollowState>())
 
-    fun handle(action: FollowListsViewAction) {
-        when (action) {
-            is FollowListsViewInit -> init()
-            is FollowListsViewRefresh -> refresh(isInit = false)
-        }
-    }
-
-    private var isInitialized = false
-    private fun init() {
-        if (isInitialized) return
-        refresh(isInit = true)
-        isInitialized = true
-    }
-
-    private fun refresh(isInit: Boolean) {
-        if (isRefreshing.value) return
-        isRefreshing.value = true
-
-        viewModelScope.launch {
-            if (!isInit) {
-                lazyNostrSubscriber.lazySubMyAccount()
-                delay(DEBOUNCE)
-            }
-            profiles.value = profileProvider.getMyFriendsFlow()
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), profiles.value.value)
-            topics.value = topicProvider.getMyTopicsFlow()
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), topics.value.value)
-            delay(DEBOUNCE)
-        }.invokeOnCompletion {
-            isRefreshing.value = false
+    fun handle(cmd: FollowListsViewCmd) {
+        when (cmd) {
+            ShowFollowListsView -> TODO()
+            FollowListsViewRefresh -> TODO()
         }
     }
 }

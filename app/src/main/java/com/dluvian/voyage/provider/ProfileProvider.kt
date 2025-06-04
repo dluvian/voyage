@@ -37,7 +37,7 @@ class ProfileProvider(private val service: NostrService) {
         val metadata = runCatching { Metadata.fromJson(dbProfile.content()) }.getOrNull()
         if (metadata == null) Log.i(logTag, "Invalid profile event in database")
         if (subNew) {
-            val since = dbProfile.createdAt().asSecs() + 1u
+            val since = dbProfile.createdAt().asSecs() + 1u // TODO: Upstream
             val newFilter = filter.since(Timestamp.fromSecs(since))
             scope.launch {
                 service.subscribe(newFilter)

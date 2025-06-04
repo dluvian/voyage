@@ -135,7 +135,7 @@ data class DiscoverViewEventUpdate(val event: Event) : DiscoverViewCmd()
 data object DiscoverViewRefresh : DiscoverViewCmd()
 
 sealed class FollowListsViewCmd : Cmd()
-data object FollowListsViewInit : FollowListsViewCmd()
+data object ShowFollowListsView : FollowListsViewCmd()
 data object FollowListsViewRefresh : FollowListsViewCmd()
 
 sealed class BookmarkViewCmd : Cmd()
