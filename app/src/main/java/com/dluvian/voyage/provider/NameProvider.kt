@@ -4,6 +4,9 @@ import android.util.Log
 import com.dluvian.voyage.MAX_NAME_LEN
 import com.dluvian.voyage.MAX_PUBKEYS
 import com.dluvian.voyage.nostr.NostrService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import rust.nostr.sdk.Event
@@ -16,8 +19,10 @@ import rust.nostr.sdk.Timestamp
 
 class NameProvider(private val service: NostrService) : IEventUpdate {
     private val logTag = "NameProvider"
+    private val scope = CoroutineScope(Dispatchers.IO)
     private val mutex = Mutex()
     private val names = mutableMapOf<PublicKey, Pair<Timestamp, String>>()
+
 
     suspend fun init() {
         val profileFilter = Filter()
@@ -83,7 +88,9 @@ class NameProvider(private val service: NostrService) : IEventUpdate {
                 .kind(Kind.fromStd(KindStandard.METADATA))
                 .authors(dbMissing)
                 .limit(dbMissing.size.toULong())
-            service.subscribe(subFilter)
+            scope.launch {
+                service.subscribe(subFilter)
+            }
         }
     }
 

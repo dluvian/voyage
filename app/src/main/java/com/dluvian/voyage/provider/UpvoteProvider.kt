@@ -3,6 +3,9 @@ package com.dluvian.voyage.provider
 import android.util.Log
 import com.dluvian.voyage.PAGE_SIZE
 import com.dluvian.voyage.nostr.NostrService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import rust.nostr.sdk.Event
@@ -13,6 +16,7 @@ import rust.nostr.sdk.KindStandard
 
 class UpvoteProvider(private val service: NostrService) : IEventUpdate {
     private val logTag = "UpvoteProvider"
+    private val scope = CoroutineScope(Dispatchers.IO)
     private val mutex = Mutex()
     private val upvotes = mutableMapOf<EventId, MutableSet<EventId>>() // PostId to UpvoteIds
 
@@ -113,7 +117,9 @@ class UpvoteProvider(private val service: NostrService) : IEventUpdate {
                 .author(pubkey)
                 .events(dbNeutral) // Referenced as e-tag
                 .limit(dbNeutral.size.toULong() * 2u) // We may have duplicate upvotes
-            service.subscribe(subFilter)
+            scope.launch {
+                service.subscribe(subFilter)
+            }
         }
     }
 }

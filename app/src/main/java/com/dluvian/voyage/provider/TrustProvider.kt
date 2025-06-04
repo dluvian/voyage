@@ -7,6 +7,9 @@ import com.dluvian.voyage.model.TrustProfile
 import com.dluvian.voyage.model.TrustedProfile
 import com.dluvian.voyage.model.UnknownProfile
 import com.dluvian.voyage.nostr.NostrService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import rust.nostr.sdk.Event
@@ -20,6 +23,7 @@ import kotlin.collections.orEmpty
 
 class TrustProvider(private val service: NostrService) : IEventUpdate {
     private val logTag = "TrustProvider"
+    private val scope = CoroutineScope(Dispatchers.IO)
     private val mutex = Mutex()
     private var friendEvent: Event? = null
     private val web = mutableMapOf<PublicKey, Pair<Timestamp, Set<PublicKey>>>()
@@ -135,7 +139,9 @@ class TrustProvider(private val service: NostrService) : IEventUpdate {
                 .authors(friends())
                 .pubkeys(dbMissing) // Referenced as p-tag
                 .limit(dbMissing.size.toULong())
-            service.subscribe(subFilter)
+            scope.launch {
+                service.subscribe(subFilter)
+            }
         }
     }
 
