@@ -158,6 +158,9 @@ data class RemoveRelay(val relayUrl: RelayUrl) : RelayEditorViewCmd()
 data class ToggleReadRelay(val relayUrl: RelayUrl) : RelayEditorViewCmd()
 data class ToggleWriteRelay(val relayUrl: RelayUrl) : RelayEditorViewCmd()
 
+sealed class RelayProfileViewCmd : Cmd()
+data class RelayProfileViewOpen(val relayUrl: RelayUrl) : RelayProfileViewCmd()
+
 sealed class ProfileViewCmd : Cmd()
 data class ProfileViewPushNprofile(val nprofile: Nip19Profile) : ProfileViewCmd()
 data class ProfileViewPushPubkey(val pubkey: PublicKey) : ProfileViewCmd()
