@@ -6,22 +6,24 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.filterSetting.HomeFeedSetting
-import com.dluvian.voyage.model.HomeViewAccountData
 import com.dluvian.voyage.model.HomeViewApplyFilter
 import com.dluvian.voyage.model.HomeViewCmd
 import com.dluvian.voyage.model.HomeViewDismissFilter
 import com.dluvian.voyage.model.HomeViewEventUpdate
 import com.dluvian.voyage.model.HomeViewNextPage
 import com.dluvian.voyage.model.HomeViewOpenFilter
-import com.dluvian.voyage.model.HomeViewPop
-import com.dluvian.voyage.model.HomeViewPush
 import com.dluvian.voyage.model.HomeViewRefresh
-import com.dluvian.voyage.nostr.Subscriber
+import com.dluvian.voyage.model.HomeViewSubAccountData
+import com.dluvian.voyage.model.ShowHomeView
+import com.dluvian.voyage.nostr.NostrService
 import com.dluvian.voyage.paginator.Paginator
 import com.dluvian.voyage.preferences.HomePreferences
 import com.dluvian.voyage.provider.FeedProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import rust.nostr.sdk.Filter
+import rust.nostr.sdk.Kind
+import rust.nostr.sdk.KindStandard
 import rust.nostr.sdk.Timestamp
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -29,8 +31,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 class HomeViewModel(
     val feedState: LazyListState,
     private val feedProvider: FeedProvider,
-    private val subscriber: Subscriber,
     private val homePreferences: HomePreferences,
+    private val service: NostrService
 ) : ViewModel() {
     val showFilterMenu: MutableState<Boolean> = mutableStateOf(false)
     val setting: MutableState<HomeFeedSetting> =
@@ -46,7 +48,7 @@ class HomeViewModel(
 
     fun handle(cmd: HomeViewCmd) {
         when (cmd) {
-            HomeViewPush, HomeViewPop -> viewModelScope.launch(Dispatchers.IO) {
+            ShowHomeView -> viewModelScope.launch(Dispatchers.IO) {
                 paginator.dbRefreshInPlace()
             }
 
@@ -55,19 +57,20 @@ class HomeViewModel(
             }
 
             HomeViewRefresh -> viewModelScope.launch(Dispatchers.IO) {
-                subscriber.unsubAll()
                 paginator.refresh()
             }
 
             HomeViewNextPage -> viewModelScope.launch(Dispatchers.IO) {
                 paginator.nextPage()
             }
-
-            HomeViewAccountData -> {
+            HomeViewSubAccountData -> {
                 if (isSubbingData.compareAndSet(false, true)) {
                     if (Timestamp.now().asSecs() - lastDataSub.asSecs() > 10u) {
                         viewModelScope.launch(Dispatchers.IO) {
-                            subscriber.subMyData()
+                            val filter = createAccountDataFilter()
+                            // TODO: Issue: Check if inserting outdated events to
+                            //  database causes Notification in HandleNotification
+                            service.sync(filter)
                         }.invokeOnCompletion {
                             lastDataSub = Timestamp.now()
                             isSubbingData.set(false)
@@ -89,5 +92,17 @@ class HomeViewModel(
                 }
             }
         }
+    }
+
+    private suspend fun createAccountDataFilter(): Filter {
+        val kinds = listOf(
+            KindStandard.BOOKMARKS,
+            KindStandard.RELAY_LIST,
+            KindStandard.CONTACT_LIST,
+            KindStandard.INTERESTS,
+            KindStandard.METADATA
+        ).map { Kind.fromStd(it) }
+
+        return Filter().author(service.pubkey()).kinds(kinds).limit(kinds.size.toULong())
     }
 }

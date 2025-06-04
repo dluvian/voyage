@@ -118,10 +118,6 @@ class NostrService(
         }
     }
 
-    suspend fun unsubAll() {
-        client.unsubscribeAll()
-    }
-
     suspend fun close() {
         client.shutdown()
     }
