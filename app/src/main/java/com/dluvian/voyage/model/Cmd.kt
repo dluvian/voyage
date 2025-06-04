@@ -150,9 +150,10 @@ data class OpenDrawer(val scope: CoroutineScope) : DrawerViewCmd()
 data class CloseDrawer(val scope: CoroutineScope) : DrawerViewCmd()
 
 sealed class TopicViewCmd : Cmd()
+data class TopicViewPush(val topic: Topic) : TopicViewCmd()
+data class TopicViewPop(val topic: Topic) : TopicViewCmd()
 data object TopicViewRefresh : TopicViewCmd()
-data object TopicViewAppend : TopicViewCmd()
-data object TopicViewLoadLists : TopicViewCmd()
+data object TopicViewNextPage : TopicViewCmd()
 
 sealed class RelayEditorViewCmd : Cmd()
 data object RelayEditorViewOpen : RelayEditorViewCmd()
