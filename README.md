@@ -20,16 +20,11 @@ I don't plan to publish this app in the Google Play Store.
 
 ## Some points of difference
 
-- Outbox model: Voyage discovers relays through nip-65 events and encoded relays in
-  nprofiles/nevents. It fetches data only from relays expected to contain the desired information.
-- Sign-in only via an external signer.
+- Outbox model (gossip)
 - App can be used offline because posts are stored locally.
-- Mobile data friendly: Only text is displayed, no videos and no pictures. It also attempts to keep
-  relay connections to a minimum, fetch events only from their respective outbox and not refetch
-  locally cached events.
+- Mobile data friendly: Text only, local cache and negentropy syncing
 - Trust indicator: Each profile has a colored badge which indicates their trust level.
   - Green rectangle: You follow this profile (friend).
-  - 3 stacked green rectangles: This profile is in one of your lists but not your friend.
   - Orange rectangle: You don't follow this profile, but at least one of your friends does.
   - Grey rectangle: You don't follow this profile and neither do any of your friends.
 
@@ -50,9 +45,8 @@ I don't plan to publish this app in the Google Play Store.
 - [NIP-27: Text Note References](https://github.com/nostr-protocol/nips/blob/master/27.md)
 - [NIP-34: git stuff (only writing issues)](https://github.com/nostr-protocol/nips/blob/master/34.md)
 - [NIP-42: Authentication of clients to relays](https://github.com/nostr-protocol/nips/blob/master/42.md)
-- [NIP-51: Lists](https://github.com/nostr-protocol/nips/blob/master/51.md)
-- [NIP-55: Android Signer Application](https://github.com/nostr-protocol/nips/blob/master/55.md)
 - [NIP-65: Relay List Metadata](https://github.com/nostr-protocol/nips/blob/master/65.md)
+- [NIP-77: Negentropy](https://github.com/nostr-protocol/nips/blob/master/77.md)
 
 ## Screenshots
 
