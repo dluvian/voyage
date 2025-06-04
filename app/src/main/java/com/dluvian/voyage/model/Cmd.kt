@@ -184,11 +184,10 @@ sealed class EditProfileViewCmd : Cmd()
 data object EditProfileViewOpen : EditProfileViewCmd()
 
 sealed class SettingsViewCmd : Cmd()
+data object SettingsViewOpen : SettingsViewCmd()
 data object LoadSeed : SettingsViewCmd()
 data class SendAuth(val sendAuth: Boolean) : SettingsViewCmd()
 data class AddClientTag(val addClientTag: Boolean) : SettingsViewCmd()
-data class ExportDatabase(val uiScope: CoroutineScope) : SettingsViewCmd()
-data class ResetDatabase(val uiScope: CoroutineScope) : SettingsViewCmd()
 data class ChangeUpvoteContent(val newContent: String) : SettingsViewCmd()
 
 sealed class SearchViewCmd : Cmd()
