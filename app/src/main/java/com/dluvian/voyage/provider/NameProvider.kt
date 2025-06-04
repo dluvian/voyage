@@ -2,7 +2,6 @@ package com.dluvian.voyage.provider
 
 import android.util.Log
 import com.dluvian.voyage.MAX_NAME_LEN
-import com.dluvian.voyage.MAX_PUBKEYS
 import com.dluvian.voyage.nostr.NostrService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,20 +26,17 @@ class NameProvider(private val service: NostrService) : IEventUpdate {
     suspend fun init() {
         val profileFilter = Filter()
             .kind(Kind.fromStd(KindStandard.METADATA))
-            .limit(MAX_PUBKEYS.toULong())
-
-        val dbResult = service.dbQuery(profileFilter)
-        if (dbResult.isEmpty()) {
-            Log.i(logTag, "No profiles in database")
+            .author(service.pubkey())
+            .limit(1u)
+        val dbResult = service.dbQuery(profileFilter).firstOrNull()
+        if (dbResult == null) {
+            Log.i(logTag, "Profile is not in database")
             return
         }
 
-        val entries = dbResult.map { event ->
-            val value = Pair(event.createdAt(), parseName(event))
-            Pair(event.author(), value)
-        }
+        val pair = Pair(dbResult.createdAt(), parseName(dbResult))
         mutex.withLock {
-            names.putAll(entries)
+            names[dbResult.author()] = pair
         }
     }
 

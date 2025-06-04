@@ -70,8 +70,6 @@ class HomeViewModel(
                 if (isSubbingData.compareAndSet(false, true)) {
                     viewModelScope.launch {
                         val filter = createAccountDataFilter()
-                        // TODO: Issue: Check if inserting outdated events to
-                        //  database causes Notification in HandleNotification
                         service.sync(filter)
                         delay(LONG_DELAY)
                     }.invokeOnCompletion {

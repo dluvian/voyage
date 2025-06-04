@@ -22,6 +22,7 @@ class NostrAdmission() : AdmitPolicy {
         event: Event
     ): AdmitStatus {
         val alreadyInDb = mutex.withLock { dbIds.contains(event.id()) }
+        // TODO: Also check replaceable coords
         if (alreadyInDb) return AdmitStatus.Rejected("Already in database")
 
         // No need to verify ID and check against subscription filter
