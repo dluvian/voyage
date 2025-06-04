@@ -1,7 +1,7 @@
 package com.dluvian.voyage.provider
 
 import android.util.Log
-import com.dluvian.voyage.model.FriendProfile
+import com.dluvian.voyage.model.FollowedProfile
 import com.dluvian.voyage.model.OneselfProfile
 import com.dluvian.voyage.model.TrustProfile
 import com.dluvian.voyage.model.TrustedProfile
@@ -108,7 +108,7 @@ class TrustProvider(private val service: NostrService) : IEventUpdate {
 
         return pubkeys.map {
             if (pubkey == it) Pair(it, OneselfProfile(pubkey = it, name = ""))
-            else if (friends.contains(it)) Pair(it, FriendProfile(pubkey = it, name = ""))
+            else if (friends.contains(it)) Pair(it, FollowedProfile(pubkey = it, name = ""))
             else if (trusted.contains(it)) Pair(it, TrustedProfile(pubkey = it, name = ""))
             else Pair(it, UnknownProfile(pubkey = it, name = ""))
         }.toMap()

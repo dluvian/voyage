@@ -5,5 +5,7 @@ const val PAGE_SIZE = 25
 const val MAX_PUBKEYS = 500
 const val MAX_NAME_LEN = 32
 
+const val SHORT_DELAY = 2000L
+
 private const val DAY_IN_SECS = 24 * 60 * 60
 const val DB_SWEEP_THRESHOLD = (90 * DAY_IN_SECS)
