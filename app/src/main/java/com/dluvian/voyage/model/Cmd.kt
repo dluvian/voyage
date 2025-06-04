@@ -26,6 +26,7 @@ import com.dluvian.voyage.navigator.ThreadNavView
 import com.dluvian.voyage.navigator.ThreadNeventNavView
 import com.dluvian.voyage.navigator.TopicNavView
 import kotlinx.coroutines.CoroutineScope
+import rust.nostr.sdk.Coordinate
 import rust.nostr.sdk.Event
 import rust.nostr.sdk.EventId
 import rust.nostr.sdk.Nip19Event
@@ -88,22 +89,21 @@ data class OpenReplyCreation(val parent: Event) : AdvancedPushNavCmd()
 data class OpenCrossPostCreation(val event: Event) : AdvancedPushNavCmd()
 data class OpenRelayProfile(val relayUrl: RelayUrl) : AdvancedPushNavCmd()
 
-data class ClickUpvote(val event: Event) : Cmd()
-data class ClickNeutralizeVotes(val event: Event) : Cmd()
-
-data class FollowTopic(val topic: Topic) : Cmd()
-data class UnfollowTopic(val topic: Topic) : Cmd()
-
-data class BookmarkPost(val event: Event) : Cmd()
-data class UnbookmarkPost(val event: Event) : Cmd()
-
-data class FollowProfile(val pubkey: PublicKey) : Cmd()
-data class UnfollowProfile(val pubkey: PublicKey) : Cmd()
-
-data class CrossPost(val topics: List<Topic>, val event: Event) : Cmd()
-
-data class Rebroadcast(val event: Event) : Cmd()
-data class DeletePost(val event: Event) : Cmd()
+sealed class CoreActionCmd : Cmd()
+data class ClickUpvote(val event: Event) : CoreActionCmd()
+data class ClickNeutralizeVotes(val event: Event) : CoreActionCmd()
+data class FollowTopic(val topic: Topic) : CoreActionCmd()
+data class UnfollowTopic(val topic: Topic) : CoreActionCmd()
+data class BookmarkPost(val event: Event) : CoreActionCmd()
+data class UnbookmarkPost(val event: Event) : CoreActionCmd()
+data class FollowProfile(val pubkey: PublicKey) : CoreActionCmd()
+data class UnfollowProfile(val pubkey: PublicKey) : CoreActionCmd()
+data class Rebroadcast(val event: Event) : CoreActionCmd()
+data class DeletePost(val event: Event) : CoreActionCmd()
+data class SendCrossPost(val topics: List<Topic>, val event: Event) : CoreActionCmd()
+data class SendPost(val topics: List<Topic>, val content: String) : CoreActionCmd()
+data class SendReply(val parent: Event, val content: String) : CoreActionCmd()
+data class SendGitIssue(val repo: Coordinate, val content: String) : CoreActionCmd()
 
 sealed class HomeViewCmd : Cmd()
 data object HomeViewPush : HomeViewCmd()

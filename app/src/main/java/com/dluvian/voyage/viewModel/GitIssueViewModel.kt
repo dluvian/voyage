@@ -1,62 +1,11 @@
 package com.dluvian.voyage.viewModel
 
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.dluvian.voyage.R
-import com.dluvian.voyage.cmd.CreateGitIssueViewAction
-import com.dluvian.voyage.cmd.SendGitIssue
-import com.dluvian.voyage.cmd.SubRepoOwnerRelays
-import com.dluvian.voyage.core.DELAY_1SEC
-import com.dluvian.voyage.core.DLUVIAN_HEX
-import com.dluvian.voyage.core.utils.launchIO
-import com.dluvian.voyage.core.utils.showToast
-import com.dluvian.voyage.data.interactor.PostSender
-import com.dluvian.voyage.data.nostr.LazyNostrSubscriber
-import com.dluvian.voyage.data.nostr.createNprofile
-import com.dluvian.voyage.provider.IEventUpdate
-import kotlinx.coroutines.delay
+import com.dluvian.voyage.model.BugReport
 
-class GitIssueViewModel(
-    private val postSender: PostSender,
-    private val snackbar: SnackbarHostState,
-    private val lazyNostrSubscriber: LazyNostrSubscriber,
-) : ViewModel(), IEventUpdate {
-    val isSendingIssue = mutableStateOf(false)
-
-    fun handle(action: CreateGitIssueViewAction) {
-        when (action) {
-            is SendGitIssue -> sendIssue(action = action)
-            SubRepoOwnerRelays -> viewModelScope.launchIO {
-                lazyNostrSubscriber.lazySubNip65(createNprofile(hex = DLUVIAN_HEX))
-            }
-        }
-    }
-
-    private fun sendIssue(action: SendGitIssue) {
-        if (isSendingIssue.value) return
-
-        isSendingIssue.value = true
-        viewModelScope.launchIO {
-            val result = postSender.sendGitIssue(
-                issue = action.issue,
-            )
-
-            delay(DELAY_1SEC)
-            action.onGoBack()
-
-            result.onSuccess {
-                snackbar.showToast(
-                    viewModelScope,
-                    action.context.getString(R.string.issue_created)
-                )
-            }.onFailure {
-                snackbar.showToast(
-                    viewModelScope,
-                    action.context.getString(R.string.failed_to_create_issue)
-                )
-            }
-        }.invokeOnCompletion { isSendingIssue.value = false }
-    }
+class GitIssueViewModel() : ViewModel() {
+    val issueType = mutableStateOf(BugReport)
+    val subject = mutableStateOf(false)
+    val content = mutableStateOf("")
 }

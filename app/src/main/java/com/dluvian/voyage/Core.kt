@@ -9,10 +9,10 @@ import com.dluvian.voyage.model.BookmarkViewCmd
 import com.dluvian.voyage.model.ClickNeutralizeVotes
 import com.dluvian.voyage.model.ClickUpvote
 import com.dluvian.voyage.model.Cmd
+import com.dluvian.voyage.model.CoreActionCmd
 import com.dluvian.voyage.model.CreateGitIssueViewCmd
 import com.dluvian.voyage.model.CreatePostViewCmd
 import com.dluvian.voyage.model.CreateReplyViewCmd
-import com.dluvian.voyage.model.CrossPost
 import com.dluvian.voyage.model.CrossPostViewCmd
 import com.dluvian.voyage.model.DeletePost
 import com.dluvian.voyage.model.DiscoverViewCmd
@@ -32,6 +32,7 @@ import com.dluvian.voyage.model.RelayEditorViewCmd
 import com.dluvian.voyage.model.RelayNotice
 import com.dluvian.voyage.model.RelayNotificationCmd
 import com.dluvian.voyage.model.SearchViewCmd
+import com.dluvian.voyage.model.SendCrossPost
 import com.dluvian.voyage.model.SettingsViewCmd
 import com.dluvian.voyage.model.ThreadViewCmd
 import com.dluvian.voyage.model.TopicViewCmd
@@ -64,6 +65,8 @@ class Core(
     private fun handleCmd(cmd: Cmd) {
         when (cmd) {
             is NavCmd -> navigator.handle(cmd = cmd)
+
+            is CoreActionCmd -> handleCoreAction(cmd)
 
             is RelayNotificationCmd -> when (cmd) {
                 is ReceiveEvent -> {
@@ -100,6 +103,27 @@ class Core(
 
             is DrawerViewCmd -> vmContainer.drawerVM.handle(cmd)
 
+            is HomeViewCmd -> vmContainer.homeVM.handle(cmd)
+            is DiscoverViewCmd -> vmContainer.discoverVM.handle(cmd)
+            is ThreadViewCmd -> vmContainer.threadVM.handle(cmd)
+            is TopicViewCmd -> vmContainer.topicVM.handle(cmd)
+            is ProfileViewCmd -> vmContainer.profileVM.handle(cmd)
+            is SettingsViewCmd -> vmContainer.settingsVM.handle(cmd)
+            is CreatePostViewCmd -> vmContainer.createPostVM.handle(cmd)
+            is CreateGitIssueViewCmd -> vmContainer.createGitIssueVM.handle(cmd)
+            is CreateReplyViewCmd -> vmContainer.createReplyVM.handle(cmd)
+            is CrossPostViewCmd -> vmContainer.createCrossPostVM.handle(cmd)
+            is SearchViewCmd -> vmContainer.searchVM.handle(cmd)
+            is EditProfileViewCmd -> vmContainer.editProfileVM.handle(cmd)
+            is RelayEditorViewCmd -> vmContainer.relayEditorVM.handle(cmd)
+            is InboxViewCmd -> vmContainer.inboxVM.handle(cmd)
+            is FollowListsViewCmd -> vmContainer.followListsVM.handle(cmd)
+            is BookmarkViewCmd -> vmContainer.bookmarkVM.handle(cmd = cmd)
+        }
+    }
+
+    private fun handleCoreAction(cmd: CoreActionCmd) {
+        when (cmd) {
             is ClickUpvote -> viewModelScope.launch {
                 val result = appContainer.eventCreator.publishVote(cmd.event)
                 if (result.isFailure) {
@@ -144,7 +168,7 @@ class Core(
                 }
             }
 
-            is CrossPost -> viewModelScope.launch {
+            is SendCrossPost -> viewModelScope.launch {
                 val result = appContainer.eventCreator.publishCrossPost(cmd.event, cmd.topics)
                 if (result.isFailure) {
                     showSnackbarMsg(appContainer.context.getString(TODO()))
@@ -185,23 +209,6 @@ class Core(
                     )
                 )
             }
-
-            is HomeViewCmd -> vmContainer.homeVM.handle(cmd)
-            is DiscoverViewCmd -> vmContainer.discoverVM.handle(cmd)
-            is ThreadViewCmd -> vmContainer.threadVM.handle(cmd)
-            is TopicViewCmd -> vmContainer.topicVM.handle(cmd)
-            is ProfileViewCmd -> vmContainer.profileVM.handle(cmd)
-            is SettingsViewCmd -> vmContainer.settingsVM.handle(cmd)
-            is CreatePostViewCmd -> vmContainer.createPostVM.handle(cmd)
-            is CreateGitIssueViewCmd -> vmContainer.createGitIssueVM.handle(cmd)
-            is CreateReplyViewCmd -> vmContainer.createReplyVM.handle(cmd)
-            is CrossPostViewCmd -> vmContainer.createCrossPostVM.handle(cmd)
-            is SearchViewCmd -> vmContainer.searchVM.handle(cmd)
-            is EditProfileViewCmd -> vmContainer.editProfileVM.handle(cmd)
-            is RelayEditorViewCmd -> vmContainer.relayEditorVM.handle(cmd)
-            is InboxViewCmd -> vmContainer.inboxVM.handle(cmd)
-            is FollowListsViewCmd -> vmContainer.followListsVM.handle(cmd)
-            is BookmarkViewCmd -> vmContainer.bookmarkVM.handle(cmd = cmd)
         }
     }
 
