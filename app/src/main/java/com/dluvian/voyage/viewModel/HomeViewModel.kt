@@ -19,7 +19,6 @@ import com.dluvian.voyage.nostr.NostrService
 import com.dluvian.voyage.paginator.Paginator
 import com.dluvian.voyage.preferences.HomePreferences
 import com.dluvian.voyage.provider.FeedProvider
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import rust.nostr.sdk.Filter
@@ -50,26 +49,26 @@ class HomeViewModel(
         when (cmd) {
             HomeViewOpen -> {
                 if (isInitialized.compareAndSet(false, true)) {
-                    viewModelScope.launch(Dispatchers.IO) {
+                    viewModelScope.launch {
                         paginator.refresh()
                     }
                     return
                 }
-                viewModelScope.launch(Dispatchers.IO) {
+                viewModelScope.launch {
                     paginator.dbRefreshInPlace()
                 }
             }
 
-            is HomeViewEventUpdate -> viewModelScope.launch(Dispatchers.IO) {
+            is HomeViewEventUpdate -> viewModelScope.launch {
                 paginator.update(cmd.event)
             }
 
             HomeViewRefresh -> {
-                viewModelScope.launch(Dispatchers.IO) {
+                viewModelScope.launch {
                     paginator.refresh()
                 }
                 if (isSubbingData.compareAndSet(false, true)) {
-                    viewModelScope.launch(Dispatchers.IO) {
+                    viewModelScope.launch {
                         val filter = createAccountDataFilter()
                         // TODO: Issue: Check if inserting outdated events to
                         //  database causes Notification in HandleNotification
@@ -81,7 +80,7 @@ class HomeViewModel(
                 }
             }
 
-            HomeViewNextPage -> viewModelScope.launch(Dispatchers.IO) {
+            HomeViewNextPage -> viewModelScope.launch {
                 paginator.nextPage()
             }
 
@@ -93,7 +92,7 @@ class HomeViewModel(
                 showFilterMenu.value = false
                 setting.value = cmd.setting
                 paginator.initSetting(setting = cmd.setting)
-                viewModelScope.launch(Dispatchers.IO) {
+                viewModelScope.launch {
                     paginator.refresh()
                 }
             }
