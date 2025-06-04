@@ -32,13 +32,14 @@ class FollowListsViewModel(
 ) : ViewModel() {
     val tabIndex = mutableIntStateOf(0)
     val isRefreshing = mutableStateOf(false)
-    val isEditing = mutableStateOf(false)
+    val isEditing = mutableStateOf(false) // TODO: Set this in UI
     val profiles = mutableStateOf(emptyList<TrustProfile>())
     val topics = mutableStateOf(emptyList<TopicFollowState>())
 
     fun handle(cmd: FollowListsViewCmd) {
         when (cmd) {
             ShowFollowListsView -> {
+                isEditing.value = false
                 viewModelScope.launch {
                     load(dbOnly = false)
                     sub()
@@ -48,6 +49,7 @@ class FollowListsViewModel(
             FollowListsViewRefresh -> {
                 if (isRefreshing.value) return
                 isRefreshing.value = true
+                isEditing.value = false
                 viewModelScope.launch {
                     sub()
                     delay(SHORT_DELAY)
