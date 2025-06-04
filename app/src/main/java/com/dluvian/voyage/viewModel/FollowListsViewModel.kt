@@ -8,16 +8,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.SHORT_DELAY
 import com.dluvian.voyage.TopicFollowState
-import com.dluvian.voyage.model.FollowListsEventUpdate
 import com.dluvian.voyage.model.FollowListsViewCmd
 import com.dluvian.voyage.model.FollowListsViewOpen
 import com.dluvian.voyage.model.FollowListsViewRefresh
 import com.dluvian.voyage.model.FollowedProfile
 import com.dluvian.voyage.model.TrustProfile
 import com.dluvian.voyage.nostr.NostrService
+import com.dluvian.voyage.provider.IEventUpdate
 import com.dluvian.voyage.provider.NameProvider
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import rust.nostr.sdk.Event
 import rust.nostr.sdk.Filter
 import rust.nostr.sdk.Kind
 import rust.nostr.sdk.KindStandard
@@ -29,7 +30,7 @@ class FollowListsViewModel(
     val pagerState: PagerState,
     private val service: NostrService,
     private val nameProvider: NameProvider
-) : ViewModel() {
+) : ViewModel(), IEventUpdate {
     val tabIndex = mutableIntStateOf(0)
     val isRefreshing = mutableStateOf(false)
     val isEditing = mutableStateOf(false) // TODO: Set this in UI
@@ -56,23 +57,6 @@ class FollowListsViewModel(
                     nameProvider.reserve(pubkeys = profiles.value.map { it.pubkey }, dbOnly = false)
                 }.invokeOnCompletion {
                     isRefreshing.value = false
-                }
-            }
-
-            is FollowListsEventUpdate -> if (!isEditing.value) {
-                when (cmd.event.kind().asStd()) {
-                    // TODO: Issue: Update name even when editing
-                    KindStandard.METADATA, KindStandard.CONTACT_LIST -> viewModelScope.launch {
-                        loadProfiles(dbOnly = true)
-                    }
-
-                    KindStandard.INTERESTS -> viewModelScope.launch {
-                        loadTopics()
-                    }
-
-                    else -> {
-
-                    }
                 }
             }
         }
@@ -139,5 +123,22 @@ class FollowListsViewModel(
         }
         val mapped = event.tags().hashtags().distinct().map { Pair(it, true) }
         topics.value = mapped
+    }
+
+    override suspend fun update(event: Event) {
+        when (event.kind().asStd()) {
+            // TODO: Issue: Update name even when editing
+            KindStandard.METADATA, KindStandard.CONTACT_LIST -> viewModelScope.launch {
+                loadProfiles(dbOnly = true)
+            }
+
+            KindStandard.INTERESTS -> viewModelScope.launch {
+                loadTopics()
+            }
+
+            else -> {
+
+            }
+        }
     }
 }

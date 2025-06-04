@@ -138,7 +138,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         profileVM = viewModel {
             ProfileViewModel(
                 feedProvider = appContainer.feedProvider,
-                rootFeedState = profileRootFeedState,
+                noteFeedState = profileRootFeedState,
                 replyFeedState = profileReplyFeedState,
                 profileAboutState = profileAboutState,
                 profileRelayState = profileRelayState,

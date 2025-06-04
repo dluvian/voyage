@@ -16,14 +16,16 @@ import com.dluvian.voyage.model.InboxViewRefresh
 import com.dluvian.voyage.paginator.Paginator
 import com.dluvian.voyage.preferences.InboxPreferences
 import com.dluvian.voyage.provider.FeedProvider
+import com.dluvian.voyage.provider.IEventUpdate
 import kotlinx.coroutines.launch
+import rust.nostr.sdk.Event
 import java.util.concurrent.atomic.AtomicBoolean
 
 class InboxViewModel(
     feedProvider: FeedProvider,
     val feedState: LazyListState,
     private val inboxPreferences: InboxPreferences,
-) : ViewModel() {
+) : ViewModel(), IEventUpdate {
     private val isInitialized = AtomicBoolean(false)
     val showFilterMenu: MutableState<Boolean> = mutableStateOf(false)
     val setting: MutableState<InboxFeedSetting> =
@@ -68,5 +70,9 @@ class InboxViewModel(
                 }
             }
         }
+    }
+
+    override suspend fun update(event: Event) {
+        paginator.update(event)
     }
 }

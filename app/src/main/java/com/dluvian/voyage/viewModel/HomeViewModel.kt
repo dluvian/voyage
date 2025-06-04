@@ -10,7 +10,6 @@ import com.dluvian.voyage.filterSetting.HomeFeedSetting
 import com.dluvian.voyage.model.HomeViewApplyFilter
 import com.dluvian.voyage.model.HomeViewCmd
 import com.dluvian.voyage.model.HomeViewDismissFilter
-import com.dluvian.voyage.model.HomeViewEventUpdate
 import com.dluvian.voyage.model.HomeViewNextPage
 import com.dluvian.voyage.model.HomeViewOpen
 import com.dluvian.voyage.model.HomeViewOpenFilter
@@ -19,8 +18,10 @@ import com.dluvian.voyage.nostr.NostrService
 import com.dluvian.voyage.paginator.Paginator
 import com.dluvian.voyage.preferences.HomePreferences
 import com.dluvian.voyage.provider.FeedProvider
+import com.dluvian.voyage.provider.IEventUpdate
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import rust.nostr.sdk.Event
 import rust.nostr.sdk.Filter
 import rust.nostr.sdk.Kind
 import rust.nostr.sdk.KindStandard
@@ -32,7 +33,7 @@ class HomeViewModel(
     private val feedProvider: FeedProvider,
     private val homePreferences: HomePreferences,
     private val service: NostrService
-) : ViewModel() {
+) : ViewModel(), IEventUpdate {
     val showFilterMenu: MutableState<Boolean> = mutableStateOf(false)
     val setting: MutableState<HomeFeedSetting> =
         mutableStateOf(homePreferences.getHomeFeedSetting())
@@ -57,10 +58,6 @@ class HomeViewModel(
                 viewModelScope.launch {
                     paginator.dbRefreshInPlace()
                 }
-            }
-
-            is HomeViewEventUpdate -> viewModelScope.launch {
-                paginator.update(cmd.event)
             }
 
             HomeViewRefresh -> {
@@ -107,5 +104,9 @@ class HomeViewModel(
         ).map { Kind.fromStd(it) }
 
         return Filter().author(service.pubkey()).kinds(kinds).limit(kinds.size.toULong())
+    }
+
+    override suspend fun update(event: Event) {
+        paginator.update(event)
     }
 }

@@ -10,8 +10,6 @@ import com.dluvian.voyage.model.ClickNeutralizeVotes
 import com.dluvian.voyage.model.ClickUpvote
 import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.model.CoreActionCmd
-import com.dluvian.voyage.model.CreatePostViewCmd
-import com.dluvian.voyage.model.CreateReplyViewCmd
 import com.dluvian.voyage.model.CrossPostViewCmd
 import com.dluvian.voyage.model.DeletePost
 import com.dluvian.voyage.model.DiscoverViewCmd
@@ -24,6 +22,7 @@ import com.dluvian.voyage.model.GitIssueCmd
 import com.dluvian.voyage.model.HomeViewCmd
 import com.dluvian.voyage.model.InboxViewCmd
 import com.dluvian.voyage.model.NavCmd
+import com.dluvian.voyage.model.PostViewCmd
 import com.dluvian.voyage.model.ProfileViewCmd
 import com.dluvian.voyage.model.Rebroadcast
 import com.dluvian.voyage.model.ReceiveEvent
@@ -31,6 +30,7 @@ import com.dluvian.voyage.model.RelayClosed
 import com.dluvian.voyage.model.RelayEditorViewCmd
 import com.dluvian.voyage.model.RelayNotice
 import com.dluvian.voyage.model.RelayNotificationCmd
+import com.dluvian.voyage.model.ReplyViewCmd
 import com.dluvian.voyage.model.SearchViewCmd
 import com.dluvian.voyage.model.SendCrossPost
 import com.dluvian.voyage.model.SettingsViewCmd
@@ -109,9 +109,9 @@ class Core(
             is TopicViewCmd -> vmContainer.topicVM.handle(cmd)
             is ProfileViewCmd -> vmContainer.profileVM.handle(cmd)
             is SettingsViewCmd -> vmContainer.settingsVM.handle(cmd)
-            is CreatePostViewCmd -> vmContainer.createPostVM.handle(cmd)
+            is PostViewCmd -> vmContainer.createPostVM.handle(cmd)
             is GitIssueCmd -> vmContainer.createGitIssueVM.handle(cmd)
-            is CreateReplyViewCmd -> vmContainer.createReplyVM.handle(cmd)
+            is ReplyViewCmd -> vmContainer.createReplyVM.handle(cmd)
             is CrossPostViewCmd -> vmContainer.createCrossPostVM.handle(cmd)
             is SearchViewCmd -> vmContainer.searchVM.handle(cmd)
             is EditProfileViewCmd -> vmContainer.editProfileVM.handle(cmd)

@@ -101,13 +101,13 @@ data class UnfollowProfile(val pubkey: PublicKey) : CoreActionCmd()
 data class Rebroadcast(val event: Event) : CoreActionCmd()
 data class DeletePost(val event: Event) : CoreActionCmd()
 data class SendCrossPost(val topics: List<Topic>, val event: Event) : CoreActionCmd()
-data class SendPost(val topics: List<Topic>, val content: String) : CoreActionCmd()
+data class SendPost(val topics: List<Topic>, val subject: String, val content: String) :
+    CoreActionCmd()
 data class SendReply(val parent: Event, val content: String) : CoreActionCmd()
 data class SendGitIssue(val repo: Coordinate, val content: String) : CoreActionCmd()
 
 sealed class HomeViewCmd : Cmd()
 data object HomeViewOpen : HomeViewCmd()
-data class HomeViewEventUpdate(val event: Event) : HomeViewCmd()
 data object HomeViewRefresh : HomeViewCmd()
 data object HomeViewNextPage : HomeViewCmd()
 data object HomeViewOpenFilter : HomeViewCmd()
@@ -129,17 +129,14 @@ data class InboxViewApplyFilter(val setting: InboxFeedSetting) : InboxViewCmd()
 
 sealed class DiscoverViewCmd : Cmd()
 data object DiscoverViewOpen : DiscoverViewCmd()
-data class DiscoverViewEventUpdate(val event: Event) : DiscoverViewCmd()
 data object DiscoverViewRefresh : DiscoverViewCmd()
 
 sealed class FollowListsViewCmd : Cmd()
 data object FollowListsViewOpen : FollowListsViewCmd()
 data object FollowListsViewRefresh : FollowListsViewCmd()
-data class FollowListsEventUpdate(val event: Event) : FollowListsViewCmd()
 
 sealed class BookmarkViewCmd : Cmd()
 data object BookmarkViewOpen : BookmarkViewCmd()
-data class BookmarkViewEventUpdate(val event: Event) : BookmarkViewCmd()
 data object BookmarksViewRefresh : BookmarkViewCmd()
 data object BookmarksViewNextPage : BookmarkViewCmd()
 
@@ -161,22 +158,21 @@ data object SaveRelays : RelayEditorViewCmd()
 data object LoadRelays : RelayEditorViewCmd()
 
 sealed class ProfileViewCmd : Cmd()
+data class ProfileViewPushNprofile(val nprofile: Nip19Profile) : ProfileViewCmd()
+data class ProfileViewPushPubkey(val pubkey: PublicKey) : ProfileViewCmd()
+data class ProfileViewPopNprofile(val nprofile: Nip19Profile) : ProfileViewCmd()
+data class ProfileViewPopPubkey(val pubkey: PublicKey) : ProfileViewCmd()
 data object ProfileViewRefresh : ProfileViewCmd()
-data object ProfileViewRootAppend : ProfileViewCmd()
-data object ProfileViewLoadLists : ProfileViewCmd()
+data object ProfileViewNextPage : ProfileViewCmd()
 
-sealed class CreatePostViewCmd : Cmd()
-data class SendPost(
-    val header: String,
-    val body: String,
-    val topics: List<Topic>,
-) : CreatePostViewCmd()
+sealed class PostViewCmd : Cmd()
+data object PostViewOpen : PostViewCmd()
 
 sealed class GitIssueCmd : Cmd()
 data object GitIssueOpen : GitIssueCmd()
 
-sealed class CreateReplyViewCmd : Cmd()
-data class SendReply(val parent: Event, val body: String) : CreateReplyViewCmd()
+sealed class ReplyViewCmd : Cmd()
+data object ReplyView : ReplyViewCmd()
 
 sealed class CrossPostViewCmd : Cmd()
 data class CrossPostViewOpen(val event: Event) : CrossPostViewCmd()

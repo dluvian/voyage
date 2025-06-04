@@ -33,10 +33,6 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.dluvian.voyage.OpenLightningWallet
-import com.dluvian.voyage.model.OpenProfile
-import com.dluvian.voyage.model.OpenRelayProfile
-import com.dluvian.voyage.model.ProfileViewRefresh
-import com.dluvian.voyage.model.ProfileViewRootAppend
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Bech32
 import com.dluvian.voyage.core.ComposableContent
@@ -52,6 +48,10 @@ import com.dluvian.voyage.data.nostr.Nip65Relay
 import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
+import com.dluvian.voyage.model.OpenProfile
+import com.dluvian.voyage.model.OpenRelayProfile
+import com.dluvian.voyage.model.ProfileViewRefresh
+import com.dluvian.voyage.model.ProfileViewRootAppend
 import com.dluvian.voyage.ui.components.Feed
 import com.dluvian.voyage.ui.components.SimpleTabPager
 import com.dluvian.voyage.ui.components.icon.ClickableTrustIcon
@@ -93,7 +93,7 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
             pagerState = vm.pagerState,
             onScrollUp = {
                 when (it) {
-                    0 -> scope.launch { vm.rootFeedState.animateScrollToItem(0) }
+                    0 -> scope.launch { vm.noteFeedState.animateScrollToItem(0) }
                     1 -> scope.launch { vm.replyFeedState.animateScrollToItem(0) }
                     3 -> scope.launch { vm.profileAboutState.animateScrollToItem(0) }
                     4 -> scope.launch { vm.profileRelayState.animateScrollToItem(0) }
@@ -105,7 +105,7 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
                 0 -> Feed(
                     paginator = vm.rootPaginator,
                     postDetails = vm.postDetails,
-                    state = vm.rootFeedState,
+                    state = vm.noteFeedState,
                     onRefresh = { onUpdate(ProfileViewRefresh) },
                     onAppend = { onUpdate(ProfileViewRootAppend) },
                     onUpdate = onUpdate,

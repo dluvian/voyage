@@ -22,8 +22,9 @@ class NostrAdmission() : AdmitPolicy {
         event: Event
     ): AdmitStatus {
         val alreadyInDb = mutex.withLock { dbIds.contains(event.id()) }
-        // TODO: Also check replaceable coords
         if (alreadyInDb) return AdmitStatus.Rejected("Already in database")
+        // Outdated replaceables don't trigger notification and can therefore be ignored
+        // See: https://github.com/rust-nostr/nostr/pull/911
 
         // No need to verify ID and check against subscription filter
         // https://github.com/rust-nostr/nostr/issues/909#issuecomment-2933648117

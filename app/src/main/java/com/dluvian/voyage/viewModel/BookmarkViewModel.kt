@@ -7,15 +7,16 @@ import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.PAGE_SIZE
 import com.dluvian.voyage.filterSetting.BookmarkFeedSetting
 import com.dluvian.voyage.model.BookmarkViewCmd
-import com.dluvian.voyage.model.BookmarkViewEventUpdate
 import com.dluvian.voyage.model.BookmarkViewOpen
 import com.dluvian.voyage.model.BookmarksViewNextPage
 import com.dluvian.voyage.model.BookmarksViewRefresh
 import com.dluvian.voyage.nostr.NostrService
 import com.dluvian.voyage.paginator.Paginator
 import com.dluvian.voyage.provider.FeedProvider
+import com.dluvian.voyage.provider.IEventUpdate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import rust.nostr.sdk.Event
 import rust.nostr.sdk.Filter
 import rust.nostr.sdk.Kind
 import rust.nostr.sdk.KindStandard
@@ -26,7 +27,7 @@ class BookmarkViewModel(
     feedProvider: FeedProvider,
     val feedState: LazyListState,
     private val service: NostrService,
-) : ViewModel() {
+) : ViewModel(), IEventUpdate {
     private val logTag = "BookmarkViewModel"
     val paginator = Paginator(feedProvider)
     private val isInitialized = AtomicBoolean(false)
@@ -50,10 +51,6 @@ class BookmarkViewModel(
                 viewModelScope.launch(Dispatchers.IO) {
                     paginator.dbRefreshInPlace()
                 }
-            }
-
-            is BookmarkViewEventUpdate -> viewModelScope.launch {
-                paginator.update(cmd.event)
             }
 
             is BookmarksViewRefresh -> {
@@ -84,5 +81,9 @@ class BookmarkViewModel(
         val since = event.createdAt().asSecs() + 1u
         val newFilter = filter.since(Timestamp.fromSecs(since))
         service.subscribe(newFilter)
+    }
+
+    override suspend fun update(event: Event) {
+        paginator.update(event)
     }
 }
