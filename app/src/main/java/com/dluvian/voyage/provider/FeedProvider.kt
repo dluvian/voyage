@@ -1,6 +1,7 @@
 package com.dluvian.voyage.provider
 
 import android.util.Log
+import com.dluvian.voyage.Topic
 import com.dluvian.voyage.filterSetting.BookmarkFeedSetting
 import com.dluvian.voyage.filterSetting.FeedSetting
 import com.dluvian.voyage.filterSetting.FriendPubkeys
@@ -247,9 +248,10 @@ class FeedProvider(
         trustProvider.reserveWeb(pubkeys = authorPubkeys, dbOnly = dbOnly)
         upvoteProvider.reserveUpvotes(postIds = eventIds, dbOnly = dbOnly)
 
-        val upvotes = upvoteProvider.filterUpvoted(eventIds)
-        val bookmarks = bookmarkProvider.bookmarks()
+        val upvotes = upvoteProvider.filterUpvoted(eventIds).toSet()
+        val bookmarks = bookmarkProvider.bookmarks().toSet()
         val names = nameProvider.names(authorPubkeys)
+        val topics = topicProvider.topics().toSet()
         val trustProfiles = trustProvider.getTrustProfiles(pubkeys = authorPubkeys)
         trustProfiles.forEach { (_, profile) ->
             val name = names[profile.pubkey].orEmpty()
@@ -262,6 +264,7 @@ class FeedProvider(
                 trustProfiles = trustProfiles,
                 upvotes = upvotes,
                 bookmarks = bookmarks,
+                topics = topics,
                 repostedEvents = repostedEvents
             )
         }
@@ -272,8 +275,10 @@ class FeedProvider(
         trustProfiles: Map<PublicKey, TrustProfile>,
         upvotes: Collection<EventId>,
         bookmarks: Collection<EventId>,
+        topics: Collection<Topic>,
         repostedEvents: Collection<Event>
     ): UIEvent {
+        val hashtags = event.tags().hashtags().toSet()
         val innerEvent = if (isRepost(event)) {
             repostedEvents.firstOrNull { it.id() == event.tags().eventIds().firstOrNull() }
         } else null
@@ -284,11 +289,13 @@ class FeedProvider(
                 ?: UnknownProfile(pubkey = event.author()),
             upvoted = upvotes.contains(event.id()),
             bookmarked = bookmarks.contains(event.id()),
+            myTopic = topics.firstOrNull { hashtags.contains(it) },
             inner = if (innerEvent != null) enrichEvent(
                 event = innerEvent,
                 trustProfiles = trustProfiles,
                 upvotes = upvotes,
                 bookmarks = bookmarks,
+                topics = topics,
                 repostedEvents = repostedEvents
             )
             else null
