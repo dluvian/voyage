@@ -1,7 +1,6 @@
 package com.dluvian.voyage.provider
 
 import android.util.Log
-import com.dluvian.voyage.OldestUsedEvent
 import com.dluvian.voyage.Topic
 import com.dluvian.voyage.filterSetting.BookmarkFeedSetting
 import com.dluvian.voyage.filterSetting.FeedSetting
@@ -36,7 +35,7 @@ class FeedProvider(
     private val nameProvider: NameProvider,
     private val upvoteProvider: UpvoteProvider,
     private val annotatedStringProvider: AnnotatedStringProvider, // TODO: Use
-    private val oldestUsedEvent: OldestUsedEvent, // TODO: Use this
+    private val oldestUsedTimestampProvider: OldestUsedTimestampProvider, // TODO: Use this
 ) {
     private val logTag = "FeedProvider"
     private val scope = CoroutineScope(Dispatchers.IO)

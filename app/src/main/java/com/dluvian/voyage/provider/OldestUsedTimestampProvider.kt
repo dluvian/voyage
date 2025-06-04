@@ -1,10 +1,10 @@
-package com.dluvian.voyage
+package com.dluvian.voyage.provider
 
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import rust.nostr.sdk.Timestamp
 
-class OldestUsedEvent {
+class OldestUsedTimestampProvider {
     private val mutex = Mutex()
     private var oldestCreatedAt = Timestamp.now()
 

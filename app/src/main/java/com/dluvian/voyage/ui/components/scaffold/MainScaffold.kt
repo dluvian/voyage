@@ -3,8 +3,7 @@ package com.dluvian.voyage.ui.components.scaffold
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import com.dluvian.voyage.core.ComposableContent
-import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.navigator.DiscoverNavView
 import com.dluvian.voyage.navigator.HomeNavView
 import com.dluvian.voyage.navigator.InboxNavView
@@ -20,7 +19,7 @@ fun MainScaffold(
     snackbar: SnackbarHostState,
     homeFeedState: LazyListState,
     inboxFeedState: LazyListState,
-    onUpdate: OnUpdate,
+    onUpdate: (Cmd) -> Unit,
     content: ComposableContent
 ) {
     when (currentView) {

@@ -135,7 +135,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
             ThreadViewModel(
                 threadState = threadState,
                 service = appContainer.service,
-                oldestUsedEvent = appContainer.oldestUsedEvent
+                oldestUsedTimestampProvider = appContainer.oldestUsedTimestampProvider
             )
         },
         topicVM = viewModel {

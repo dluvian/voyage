@@ -12,7 +12,6 @@ import com.dluvian.voyage.ui.views.main.subViews.DiscoverView
 import com.dluvian.voyage.ui.views.main.subViews.HomeView
 import com.dluvian.voyage.ui.views.main.subViews.InboxView
 import com.dluvian.voyage.ui.views.nonMain.search.SearchView
-import com.dluvian.voyage.viewModel.VMContainer
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
@@ -21,24 +20,24 @@ fun MainView(
     scope: CoroutineScope,
     currentView: MainNavView,
 ) {
-    MainDrawer(vm = VMContainer.drawerVM, scope = scope, onUpdate = core.onUpdate) {
+    MainDrawer(vm = core.vmContainer.drawerVM, scope = scope, onUpdate = core.onUpdate) {
         MainScaffold(
             currentView = currentView,
             snackbar = core.appContainer.snackbar,
-            homeFeedState = VMContainer.homeVM.feedState,
-            inboxFeedState = VMContainer.inboxVM.feedState,
+            homeFeedState = core.vmContainer.homeVM.feedState,
+            inboxFeedState = core.vmContainer.inboxVM.feedState,
             onUpdate = core.onUpdate
         ) {
             when (currentView) {
-                HomeNavView -> HomeView(vm = VMContainer.homeVM, onUpdate = core.onUpdate)
-                InboxNavView -> InboxView(vm = VMContainer.inboxVM, onUpdate = core.onUpdate)
+                HomeNavView -> HomeView(vm = core.vmContainer.homeVM, onUpdate = core.onUpdate)
+                InboxNavView -> InboxView(vm = core.vmContainer.inboxVM, onUpdate = core.onUpdate)
                 SearchNavView -> SearchView(
-                    vm = VMContainer.searchVM,
+                    vm = core.vmContainer.searchVM,
                     onUpdate = core.onUpdate
                 )
 
                 DiscoverNavView -> DiscoverView(
-                    vm = VMContainer.discoverVM,
+                    vm = core.vmContainer.discoverVM,
                     onUpdate = core.onUpdate
                 )
             }

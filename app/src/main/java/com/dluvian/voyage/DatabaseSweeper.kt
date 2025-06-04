@@ -1,6 +1,7 @@
 package com.dluvian.voyage
 
 import com.dluvian.voyage.nostr.NostrService
+import com.dluvian.voyage.provider.OldestUsedTimestampProvider
 import rust.nostr.sdk.Filter
 import rust.nostr.sdk.Kind
 import rust.nostr.sdk.KindStandard
@@ -8,7 +9,7 @@ import rust.nostr.sdk.Timestamp
 
 class DatabaseSweeper(
     private val service: NostrService,
-    private val oldestUsedEvent: OldestUsedEvent
+    private val oldestUsedTimestampProvider: OldestUsedTimestampProvider
 ) {
     suspend fun sweep() {
         val kinds = listOf(
@@ -20,7 +21,7 @@ class DatabaseSweeper(
             .map { Kind.fromStd(it) }
 
         val untilSecs = Timestamp.now().asSecs() - DB_SWEEP_THRESHOLD.toUInt()
-        val oldestSecs = oldestUsedEvent.createdAt().asSecs()
+        val oldestSecs = oldestUsedTimestampProvider.createdAt().asSecs()
         val until = Timestamp.fromSecs(minOf(untilSecs, oldestSecs))
 
         val deletion = Filter().kinds(kinds).until(until)

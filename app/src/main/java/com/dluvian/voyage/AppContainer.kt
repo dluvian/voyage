@@ -14,6 +14,7 @@ import com.dluvian.voyage.provider.BookmarkProvider
 import com.dluvian.voyage.provider.FeedProvider
 import com.dluvian.voyage.provider.IEventUpdate
 import com.dluvian.voyage.provider.NameProvider
+import com.dluvian.voyage.provider.OldestUsedTimestampProvider
 import com.dluvian.voyage.provider.ProfileProvider
 import com.dluvian.voyage.provider.TopicProvider
 import com.dluvian.voyage.provider.TrustProvider
@@ -29,7 +30,7 @@ class AppContainer(val context: Context) {
     val eventPreferences = EventPreferences(context)
 
     val keyStore = KeyStore()
-    val oldestUsedEvent = OldestUsedEvent()
+    val oldestUsedTimestampProvider = OldestUsedTimestampProvider()
     val relayChannel = Channel<RelayNotificationCmd>(capacity = Channel.Factory.UNLIMITED)
 
     val service = NostrService(relayPreferences, keyStore, relayChannel)
@@ -49,7 +50,7 @@ class AppContainer(val context: Context) {
         nameProvider = nameProvider,
         upvoteProvider = upvoteProvider,
         annotatedStringProvider = annotatedStringProvider,
-        oldestUsedEvent = oldestUsedEvent
+        oldestUsedTimestampProvider = oldestUsedTimestampProvider
     )
 
     val eventCreator = EventCreator(
@@ -60,7 +61,7 @@ class AppContainer(val context: Context) {
         bookmarkProvider
     )
 
-    val dbSweeper = DatabaseSweeper(service, oldestUsedEvent)
+    val dbSweeper = DatabaseSweeper(service, oldestUsedTimestampProvider)
 
     fun getEventUpdatables(): List<IEventUpdate> {
         return listOf(nameProvider, trustProvider, topicProvider, bookmarkProvider, upvoteProvider)
