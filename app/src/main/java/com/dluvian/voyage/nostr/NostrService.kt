@@ -36,7 +36,7 @@ class NostrService(
         .automaticAuthentication(relayPreferences.getSendAuth())
     private val admission = NostrAdmission()
 
-    private val client = ClientBuilder()
+    val client = ClientBuilder()
         .signer(keyStore.getSigner())
         .opts(clientOpts)
         .database(NostrDatabase.lmdb("voyage_db"))

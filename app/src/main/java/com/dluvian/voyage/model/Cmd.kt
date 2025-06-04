@@ -28,7 +28,6 @@ import com.dluvian.voyage.navigator.TopicNavView
 import kotlinx.coroutines.CoroutineScope
 import rust.nostr.sdk.Event
 import rust.nostr.sdk.EventId
-import rust.nostr.sdk.Metadata
 import rust.nostr.sdk.Nip19Event
 import rust.nostr.sdk.Nip19Profile
 import rust.nostr.sdk.PublicKey
@@ -185,8 +184,7 @@ sealed class CrossPostViewCmd : Cmd()
 data class SetEventForCrossPosting(val event: Event) : CrossPostViewCmd()
 
 sealed class EditProfileViewCmd : Cmd()
-data object LoadFullProfile : EditProfileViewCmd()
-data class SaveProfile(val metadata: Metadata) : EditProfileViewCmd()
+data object ShowEditProfileView : EditProfileViewCmd()
 
 sealed class SettingsViewCmd : Cmd()
 data object LoadSeed : SettingsViewCmd()

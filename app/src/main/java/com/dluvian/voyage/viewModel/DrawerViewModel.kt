@@ -4,29 +4,22 @@ import androidx.compose.material3.DrawerState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.voyage.Ident
 import com.dluvian.voyage.model.CloseDrawer
 import com.dluvian.voyage.model.DrawerViewCmd
-import com.dluvian.voyage.model.DrawerViewSubscribeSets
 import com.dluvian.voyage.model.OpenDrawer
-import com.dluvian.voyage.nostr.Subscriber
 import com.dluvian.voyage.provider.NameProvider
 import com.dluvian.voyage.provider.TrustProvider
 import kotlinx.coroutines.launch
 import rust.nostr.sdk.PublicKey
 
-typealias ItemSetMeta = Pair<Ident, String>
-
 class DrawerViewModel(
     val drawerState: DrawerState,
     private val trustProvider: TrustProvider,
     private val nameProvider: NameProvider,
-    private val subscriber: Subscriber,
 ) :
     ViewModel() {
     val myPubkey = mutableStateOf<PublicKey?>(null)
     val myName = mutableStateOf<String>("")
-    val itemSets = mutableStateOf(emptyList<ItemSetMeta>())
 
     init {
         viewModelScope.launch {
@@ -47,8 +40,6 @@ class DrawerViewModel(
             is CloseDrawer -> cmd.scope.launch {
                 drawerState.close()
             }
-
-            DrawerViewSubscribeSets -> TODO()
         }
     }
 }
