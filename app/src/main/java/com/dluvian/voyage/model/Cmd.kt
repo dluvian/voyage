@@ -1,6 +1,5 @@
 package com.dluvian.voyage.model
 
-import android.content.Context
 import com.dluvian.voyage.RelayUrl
 import com.dluvian.voyage.Topic
 import com.dluvian.voyage.filterSetting.HomeFeedSetting
@@ -193,13 +192,9 @@ data class ResetDatabase(val uiScope: CoroutineScope) : SettingsViewCmd()
 data class ChangeUpvoteContent(val newContent: String) : SettingsViewCmd()
 
 sealed class SearchViewCmd : Cmd()
-data object SubUnknownProfiles : SearchViewCmd()
+data object SearchViewOpen : SearchViewCmd()
+data class SearchText(val text: String) : SearchViewCmd()
 data class UpdateSearchText(val text: String) : SearchViewCmd()
-data class SearchText(
-    val text: String,
-    val context: Context,
-    val onUpdate: (Cmd) -> Unit
-) : SearchViewCmd()
 
 sealed class RelayNotificationCmd : Cmd()
 data class ReceiveEvent(val event: Event) : RelayNotificationCmd()
