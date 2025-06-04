@@ -21,7 +21,7 @@ import rust.nostr.sdk.Event
 import rust.nostr.sdk.PublicKey
 
 class ProfileViewModel(
-    val noteFeedState: LazyListState,
+    val profileFeedState: LazyListState,
     val profileAboutState: LazyListState,
     val profileRelayState: LazyListState,
     val pagerState: PagerState,
@@ -30,6 +30,7 @@ class ProfileViewModel(
 ) : ViewModel(), IEventUpdate {
     val tabIndex = mutableIntStateOf(0)
     val pubkey = mutableStateOf<PublicKey?>(null)
+    val isMe = mutableStateOf(false)
     val profile = mutableStateOf<rust.nostr.sdk.Metadata?>(null)
     val nip65 = mutableStateOf<Event?>(null)
     val trustedBy = mutableStateOf<TrustProfile?>(null)

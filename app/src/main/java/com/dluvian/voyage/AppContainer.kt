@@ -11,8 +11,10 @@ import com.dluvian.voyage.preferences.InboxPreferences
 import com.dluvian.voyage.preferences.RelayPreferences
 import com.dluvian.voyage.provider.AnnotatedStringProvider
 import com.dluvian.voyage.provider.BookmarkProvider
+import com.dluvian.voyage.provider.FeedProvider
 import com.dluvian.voyage.provider.IEventUpdate
 import com.dluvian.voyage.provider.NameProvider
+import com.dluvian.voyage.provider.ProfileProvider
 import com.dluvian.voyage.provider.TopicProvider
 import com.dluvian.voyage.provider.TrustProvider
 import com.dluvian.voyage.provider.UpvoteProvider
@@ -28,17 +30,27 @@ class AppContainer(val context: Context) {
 
     val keyStore = KeyStore()
     val oldestUsedEvent = OldestUsedEvent()
-    val threadCollapser = ThreadCollapser()
     val relayChannel = Channel<RelayNotificationCmd>(capacity = Channel.Factory.UNLIMITED)
 
     val service = NostrService(relayPreferences, keyStore, relayChannel)
 
+    val profileProvider = ProfileProvider(service)
     val nameProvider = NameProvider(service)
     val trustProvider = TrustProvider(service)
     val topicProvider = TopicProvider(service)
     val bookmarkProvider = BookmarkProvider(service)
     val upvoteProvider = UpvoteProvider(service)
     val annotatedStringProvider = AnnotatedStringProvider(nameProvider)
+    val feedProvider = FeedProvider(
+        service = service,
+        topicProvider = topicProvider,
+        trustProvider = trustProvider,
+        bookmarkProvider = bookmarkProvider,
+        nameProvider = nameProvider,
+        upvoteProvider = upvoteProvider,
+        annotatedStringProvider = annotatedStringProvider,
+        oldestUsedEvent = oldestUsedEvent
+    )
 
     val eventCreator = EventCreator(
         service,

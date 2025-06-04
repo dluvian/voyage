@@ -93,7 +93,7 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
             pagerState = vm.pagerState,
             onScrollUp = {
                 when (it) {
-                    0 -> scope.launch { vm.noteFeedState.animateScrollToItem(0) }
+                    0 -> scope.launch { vm.profileFeedState.animateScrollToItem(0) }
                     1 -> scope.launch { vm.replyFeedState.animateScrollToItem(0) }
                     3 -> scope.launch { vm.profileAboutState.animateScrollToItem(0) }
                     4 -> scope.launch { vm.profileRelayState.animateScrollToItem(0) }
@@ -105,7 +105,7 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnU
                 0 -> Feed(
                     paginator = vm.rootPaginator,
                     postDetails = vm.postDetails,
-                    state = vm.noteFeedState,
+                    state = vm.profileFeedState,
                     onRefresh = { onUpdate(ProfileViewRefresh) },
                     onAppend = { onUpdate(ProfileViewRootAppend) },
                     onUpdate = onUpdate,

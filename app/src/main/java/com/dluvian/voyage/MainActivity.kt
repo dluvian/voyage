@@ -58,7 +58,6 @@ class MainActivity : ComponentActivity() {
                     closeApp = closeApp
                 )
             }
-            appContainer.annotatedStringProvider.setOnUpdate(onUpdate = core.onUpdate)
 
             VoyageApp(core)
         }
@@ -83,8 +82,7 @@ class MainActivity : ComponentActivity() {
 private fun createVMContainer(appContainer: AppContainer): VMContainer {
     // We define states in upper level so that it keeps the scroll position when popping the nav stack
     val homeFeedState = rememberLazyListState()
-    val profileRootFeedState = rememberLazyListState()
-    val profileReplyFeedState = rememberLazyListState()
+    val profileFeedState = rememberLazyListState()
     val profileAboutState = rememberLazyListState()
     val profileRelayState = rememberLazyListState()
     val topicFeedState = rememberLazyListState()
@@ -94,142 +92,89 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
     val topicListState = rememberLazyListState()
     val bookmarksFeedState = rememberLazyListState()
     val relayEditorState = rememberLazyListState()
-    val listFeedState = rememberLazyListState()
-    val listProfileState = rememberLazyListState()
-    val listTopicState = rememberLazyListState()
 
     val profilePagerState = rememberPagerState { 3 }
     val followListsPagerState = rememberPagerState { 2 }
-    val listViewPagerState = rememberPagerState { 4 }
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
 
     return VMContainer(
         homeVM = viewModel {
             HomeViewModel(
-                feedProvider = appContainer.feedProvider,
-                postDetails = appContainer.postDetailInspector.currentDetails,
                 feedState = homeFeedState,
-                lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
-                homePreferences = appContainer.homePreferences
+                feedProvider = appContainer.feedProvider,
+                homePreferences = appContainer.homePreferences,
+                service = appContainer.service
             )
         },
         discoverVM = viewModel {
-            DiscoverViewModel(
-                topicProvider = appContainer.topicProvider,
-                profileProvider = appContainer.profileProvider,
-                lazyNostrSubscriber = appContainer.lazyNostrSubscriber
-            )
+            DiscoverViewModel(appContainer.topicProvider, appContainer.service)
         },
         settingsVM = viewModel {
             SettingsViewModel(
-                snackbar = appContainer.snackbar,
+                nameProvider = appContainer.nameProvider,
+                service = appContainer.service,
                 relayPreferences = appContainer.relayPreferences,
                 eventPreferences = appContainer.eventPreferences,
             )
         },
         searchVM = viewModel {
-            SearchViewModel(
-                searchProvider = appContainer.searchProvider,
-                lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
-                snackbar = appContainer.snackbar,
-            )
+            SearchViewModel(appContainer.service, appContainer.nameProvider)
         },
         profileVM = viewModel {
             ProfileViewModel(
-                feedProvider = appContainer.feedProvider,
-                noteFeedState = profileRootFeedState,
-                replyFeedState = profileReplyFeedState,
+                profileFeedState = profileFeedState,
                 profileAboutState = profileAboutState,
                 profileRelayState = profileRelayState,
                 pagerState = profilePagerState,
-                nostrSubscriber = appContainer.nostrSubscriber,
-                profileProvider = appContainer.profileProvider,
-                itemSetProvider = appContainer.itemSetProvider,
-                myPubkeyProvider = appContainer.accountManager,
+                feedProvider = appContainer.feedProvider,
+                service = appContainer.service
             )
         },
         threadVM = viewModel {
             ThreadViewModel(
-                postDetails = appContainer.postDetailInspector.currentDetails,
                 threadState = threadState,
-                threadProvider = appContainer.threadProvider,
-                threadCollapser = appContainer.threadCollapser,
+                service = appContainer.service,
+                oldestUsedEvent = appContainer.oldestUsedEvent
             )
         },
         topicVM = viewModel {
             TopicViewModel(
                 feedProvider = appContainer.feedProvider,
-                postDetails = appContainer.postDetailInspector.currentDetails,
                 feedState = topicFeedState,
-                subCreator = appContainer.subCreator,
                 topicProvider = appContainer.topicProvider,
-                itemSetProvider = appContainer.itemSetProvider,
             )
         },
         createPostVM = viewModel {
-            PostViewModel(
-                postSender = appContainer.postSender,
-                snackbar = appContainer.snackbar,
-            )
+            PostViewModel()
         },
         createReplyVM = viewModel {
-            ReplyViewModel(
-                lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
-                postSender = appContainer.postSender,
-                snackbar = appContainer.snackbar,
-                eventRelayDao = appContainer.roomDb.eventRelayDao(),
-                mainEventDao = appContainer.roomDb.mainEventDao(),
-            )
+            ReplyViewModel()
         },
         editProfileVM = viewModel {
-            EditProfileViewModel(
-                fullProfileUpsertDao = appContainer.roomDb.fullProfileUpsertDao(),
-                nostrService = appContainer.service,
-                snackbar = appContainer.snackbar,
-                relayProvider = appContainer.relayProvider,
-                fullProfileDao = appContainer.roomDb.fullProfileDao(),
-                metadataInMemory = appContainer.metadataInMemory,
-                profileUpsertDao = appContainer.roomDb.profileUpsertDao()
-            )
+            EditProfileViewModel(appContainer.profileProvider)
         },
         relayEditorVM = viewModel {
-            RelayEditorViewModel(
-                lazyListState = relayEditorState,
-                relayProvider = appContainer.relayProvider,
-                snackbar = appContainer.snackbar,
-                service = appContainer.service,
-                nip65UpsertDao = appContainer.roomDb.nip65UpsertDao(),
-                connectionStatuses = appContainer.connectionStatuses
-            )
+            RelayEditorViewModel(relayEditorState, appContainer.service)
         },
         createCrossPostVM = viewModel {
-            CrossPostViewModel(
-                postSender = appContainer.postSender,
-                snackbar = appContainer.snackbar
-            )
+            CrossPostViewModel()
         },
         relayProfileVM = viewModel {
-            RelayProfileViewModel(
-                relayProfileProvider = appContainer.relayProfileProvider,
-                countDao = appContainer.roomDb.countDao(),
-            )
+            RelayProfileViewModel(appContainer.service)
         },
         inboxVM = viewModel {
             InboxViewModel(
                 feedProvider = appContainer.feedProvider,
-                subCreator = appContainer.lazyNostrSubscriber.subCreator,
-                postDetails = appContainer.postDetailInspector.currentDetails,
                 feedState = inboxFeedState,
                 inboxPreferences = appContainer.inboxPreferences
             )
         },
         drawerVM = viewModel {
             DrawerViewModel(
-                profileProvider = appContainer.profileProvider,
-                itemSetProvider = appContainer.itemSetProvider,
                 drawerState = drawerState,
-                lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
+                trustProvider = appContainer.trustProvider,
+                nameProvider = appContainer.nameProvider
             )
         },
         followListsVM = viewModel {
@@ -237,25 +182,19 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 contactListState = contactListState,
                 topicListState = topicListState,
                 pagerState = followListsPagerState,
-                lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
-                profileProvider = appContainer.profileProvider,
-                topicProvider = appContainer.topicProvider
+                service = appContainer.service,
+                nameProvider = appContainer.nameProvider
             )
         },
         bookmarkVM = viewModel {
             BookmarkViewModel(
                 feedProvider = appContainer.feedProvider,
                 feedState = bookmarksFeedState,
-                postDetails = appContainer.postDetailInspector.currentDetails,
-                lazyNostrSubscriber = appContainer.lazyNostrSubscriber,
+                service = appContainer.service
             )
         },
-        createGitIssueVM = viewModel {
-            GitIssueViewModel(
-                postSender = appContainer.postSender,
-                snackbar = appContainer.snackbar,
-                lazyNostrSubscriber = appContainer.lazyNostrSubscriber
-            )
+        gitIssueVM = viewModel {
+            GitIssueViewModel()
         },
     )
 }

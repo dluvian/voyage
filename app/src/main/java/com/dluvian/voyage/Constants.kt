@@ -2,7 +2,7 @@ package com.dluvian.voyage
 
 const val APP_NAME = "voyage"
 const val PAGE_SIZE = 25
-const val MAX_PUBKEYS = 500
+const val MAX_PUBKEYS = 500 // TODO: Use this
 const val MAX_NAME_LEN = 32
 
 const val SHORT_DELAY = 2000L

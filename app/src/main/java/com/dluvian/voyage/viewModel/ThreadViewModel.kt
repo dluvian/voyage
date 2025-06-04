@@ -4,6 +4,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dluvian.voyage.OldestUsedEvent
 import com.dluvian.voyage.model.ThreadReplyCtx
 import com.dluvian.voyage.model.ThreadRootCtx
 import com.dluvian.voyage.model.ThreadViewCmd
@@ -24,7 +25,8 @@ import rust.nostr.sdk.EventId
 
 class ThreadViewModel(
     val threadState: LazyListState,
-    private val service: NostrService
+    private val service: NostrService,
+    private val oldestUsedEvent: OldestUsedEvent, // TODO: Use this
 ) : ViewModel(), IEventUpdate {
     val isRefreshing = mutableStateOf(false)
     val parentIsAvailable = mutableStateOf(false)

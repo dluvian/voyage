@@ -4,7 +4,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -12,7 +11,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 
 
 @Composable
@@ -23,19 +21,6 @@ fun getTransparentTextFieldColors(): TextFieldColors {
         focusedContainerColor = Color.Transparent,
         unfocusedContainerColor = Color.Transparent
     )
-}
-
-@Composable
-@Stable
-fun getListTabHeaders(numOfProfiles: Int, numOfTopics: Int): List<String> {
-    val profileHeader = stringResource(id = R.string.profiles)
-    val topicHeader = stringResource(id = R.string.topics)
-    return remember(numOfProfiles, numOfTopics) {
-        listOf(
-            profileHeader + if (numOfProfiles > 0) " ($numOfProfiles)" else "",
-            topicHeader + if (numOfTopics > 0) " ($numOfTopics)" else "",
-        )
-    }
 }
 
 @Composable

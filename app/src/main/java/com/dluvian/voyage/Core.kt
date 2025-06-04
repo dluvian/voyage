@@ -30,9 +30,13 @@ import com.dluvian.voyage.model.RelayClosed
 import com.dluvian.voyage.model.RelayEditorViewCmd
 import com.dluvian.voyage.model.RelayNotice
 import com.dluvian.voyage.model.RelayNotificationCmd
+import com.dluvian.voyage.model.RelayProfileViewCmd
 import com.dluvian.voyage.model.ReplyViewCmd
 import com.dluvian.voyage.model.SearchViewCmd
 import com.dluvian.voyage.model.SendCrossPost
+import com.dluvian.voyage.model.SendGitIssue
+import com.dluvian.voyage.model.SendPost
+import com.dluvian.voyage.model.SendReply
 import com.dluvian.voyage.model.SettingsViewCmd
 import com.dluvian.voyage.model.ThreadViewCmd
 import com.dluvian.voyage.model.TopicViewCmd
@@ -110,7 +114,7 @@ class Core(
             is ProfileViewCmd -> vmContainer.profileVM.handle(cmd)
             is SettingsViewCmd -> vmContainer.settingsVM.handle(cmd)
             is PostViewCmd -> vmContainer.createPostVM.handle(cmd)
-            is GitIssueCmd -> vmContainer.createGitIssueVM.handle(cmd)
+            is GitIssueCmd -> vmContainer.gitIssueVM.handle(cmd)
             is ReplyViewCmd -> vmContainer.createReplyVM.handle(cmd)
             is CrossPostViewCmd -> vmContainer.createCrossPostVM.handle(cmd)
             is SearchViewCmd -> vmContainer.searchVM.handle(cmd)
@@ -118,7 +122,8 @@ class Core(
             is RelayEditorViewCmd -> vmContainer.relayEditorVM.handle(cmd)
             is InboxViewCmd -> vmContainer.inboxVM.handle(cmd)
             is FollowListsViewCmd -> vmContainer.followListsVM.handle(cmd)
-            is BookmarkViewCmd -> vmContainer.bookmarkVM.handle(cmd = cmd)
+            is BookmarkViewCmd -> vmContainer.bookmarkVM.handle(cmd)
+            is RelayProfileViewCmd -> vmContainer.relayProfileVM.handle(cmd)
         }
     }
 
@@ -209,6 +214,10 @@ class Core(
                     )
                 )
             }
+
+            is SendGitIssue -> TODO()
+            is SendPost -> TODO()
+            is SendReply -> TODO()
         }
     }
 

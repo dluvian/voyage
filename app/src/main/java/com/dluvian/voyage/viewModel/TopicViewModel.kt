@@ -11,11 +11,13 @@ import com.dluvian.voyage.model.TopicViewRefresh
 import com.dluvian.voyage.paginator.Paginator
 import com.dluvian.voyage.provider.FeedProvider
 import com.dluvian.voyage.provider.IEventUpdate
+import com.dluvian.voyage.provider.TopicProvider
 import rust.nostr.sdk.Event
 
 class TopicViewModel(
     feedProvider: FeedProvider,
     val feedState: LazyListState,
+    val topicProvider: TopicProvider,
 ) : ViewModel(), IEventUpdate {
     val currentTopic = mutableStateOf("")
     var isFollowed = mutableStateOf(false)
