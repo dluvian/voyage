@@ -1,124 +1,58 @@
 package com.dluvian.voyage.viewModel
 
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dluvian.voyage.ThreadCollapser
-import com.dluvian.voyage.cmd.ThreadViewAction
-import com.dluvian.voyage.cmd.ThreadViewRefresh
-import com.dluvian.voyage.cmd.ThreadViewShowReplies
-import com.dluvian.voyage.cmd.ThreadViewToggleCollapse
-import com.dluvian.voyage.core.DELAY_1SEC
-import com.dluvian.voyage.core.EventIdHex
-import com.dluvian.voyage.core.model.MainEvent
-import com.dluvian.voyage.core.model.RootPost
-import com.dluvian.voyage.core.utils.launchIO
-import com.dluvian.voyage.data.provider.ThreadProvider
-import com.dluvian.voyage.filterSetting.PostDetails
+import com.dluvian.voyage.model.ThreadReplyCtx
+import com.dluvian.voyage.model.ThreadRootCtx
+import com.dluvian.voyage.model.ThreadViewCmd
+import com.dluvian.voyage.model.ThreadViewPopNevent
+import com.dluvian.voyage.model.ThreadViewPopUIEvent
+import com.dluvian.voyage.model.ThreadViewPushNevent
+import com.dluvian.voyage.model.ThreadViewPushUIEvent
+import com.dluvian.voyage.model.ThreadViewRefresh
+import com.dluvian.voyage.model.ThreadViewShowReplies
+import com.dluvian.voyage.model.ThreadViewToggleCollapse
+import com.dluvian.voyage.nostr.NostrService
 import com.dluvian.voyage.provider.IEventUpdate
-import com.dluvian.voyage.ui.components.row.mainEvent.ThreadReplyCtx
-import com.dluvian.voyage.ui.components.row.mainEvent.ThreadRootCtx
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import rust.nostr.sdk.Event
-import rust.nostr.sdk.Nip19Event
+import rust.nostr.sdk.EventId
 
 class ThreadViewModel(
-    val postDetails: State<PostDetails?>,
     val threadState: LazyListState,
-    private val threadProvider: ThreadProvider,
-    private val threadCollapser: ThreadCollapser,
+    private val service: NostrService
 ) : ViewModel(), IEventUpdate {
-
     val isRefreshing = mutableStateOf(false)
-    var parentIsAvailable: StateFlow<Boolean> = MutableStateFlow(false)
-    var localRoot: StateFlow<ThreadRootCtx?> = MutableStateFlow(null)
-    val replies: MutableState<StateFlow<List<ThreadReplyCtx>>> =
-        mutableStateOf(MutableStateFlow(emptyList()))
-    val totalReplyCount: MutableState<StateFlow<Int>> = mutableStateOf(MutableStateFlow(0))
-    private val parentIds = mutableStateOf(emptySet<EventIdHex>())
-    private var nevent: Nip19Event? = null
+    val parentIsAvailable = mutableStateOf(false)
+    val root = mutableStateOf<ThreadRootCtx?>(null)
+    val replies = mutableStateOf(emptyList<ThreadReplyCtx>())
 
-    fun openNeventThread(nevent: Nip19Event) {
-        val event = TODO()
-        openThread(event = event)
-    }
+    private val mutex = Mutex()
+    private val collapsedIds = mutableSetOf<EventId>()
 
-    fun openThread(event: Event) {
-        TODO()
-    }
+    fun handle(cmd: ThreadViewCmd) {
+        when (cmd) {
+            is ThreadViewPushNevent -> TODO()
+            is ThreadViewPushUIEvent -> TODO()
+            is ThreadViewPopNevent -> TODO()
+            is ThreadViewPopUIEvent -> TODO()
+            is ThreadViewToggleCollapse -> viewModelScope.launch {
+                mutex.withLock {
+                    val alreadyInSet = collapsedIds.add(cmd.id)
+                    if (alreadyInSet) collapsedIds.remove(cmd.id)
+                }
+            }
 
-    fun handle(action: ThreadViewAction) {
-        when (action) {
-            is ThreadViewRefresh -> refresh()
-            is ThreadViewToggleCollapse -> threadCollapser.toggleCollapse(id = action.id)
-            is ThreadViewShowReplies -> loadReplies(
-                rootId = localRoot.value?.threadableMainEvent?.getRelevantId(),
-                parentId = action.id,
-                isInit = false,
-            )
+            ThreadViewRefresh -> TODO()
+            is ThreadViewShowReplies -> TODO()
         }
     }
 
-    private fun refresh() {
-        if (isRefreshing.value) return
-
-        val currentNevent = nevent ?: return
-        val currentRoot = localRoot.value
-
-        isRefreshing.value = true
-
-        viewModelScope.launchIO {
-            localRoot = threadProvider
-                .getLocalRoot(scope = viewModelScope, nevent = currentNevent, isInit = false)
-                .stateIn(viewModelScope, SharingStarted.Eagerly, currentRoot)
-            parentIsAvailable = threadProvider
-                .getParentIsAvailableFlow(
-                    scope = viewModelScope,
-                    replyId = currentNevent.eventId().toHex()
-                )
-                .stateIn(viewModelScope, SharingStarted.Eagerly, parentIsAvailable.value)
-            replies.value = threadProvider.getReplyCtxs(
-                rootId = currentNevent.eventId().toHex(),
-                parentIds = parentIds.value,
-            )
-                .stateIn(
-                    viewModelScope,
-                    SharingStarted.Eagerly,
-                    replies.value.value
-                )
-            delay(DELAY_1SEC)
-        }.invokeOnCompletion { isRefreshing.value = false }
-    }
-
-    private fun loadReplies(
-        rootId: EventIdHex?,
-        parentId: EventIdHex,
-        isInit: Boolean,
-    ) {
-        if (rootId == null) return
-
-        val init = if (isInit) emptyList() else replies.value.value
-        parentIds.value += rootId
-        parentIds.value += parentId
-        totalReplyCount.value = threadProvider.getTotalReplyCount(rootId = rootId)
-            .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
-        replies.value = threadProvider
-            .getReplyCtxs(rootId = rootId, parentIds = parentIds.value)
-            .stateIn(viewModelScope, SharingStarted.Eagerly, init)
-    }
-
-    private fun checkParentAvailability(replyId: EventIdHex, parentUi: MainEvent?) {
-        if (parentUi is RootPost) return
-
-        parentIsAvailable = threadProvider
-            .getParentIsAvailableFlow(scope = viewModelScope, replyId = replyId)
-            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    override suspend fun update(event: Event) {
+        TODO("Contactslists, profiles, replies")
     }
 }
