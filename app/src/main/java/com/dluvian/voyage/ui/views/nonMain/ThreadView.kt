@@ -18,67 +18,43 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.EventIdHex
-import com.dluvian.voyage.core.model.Comment
-import com.dluvian.voyage.core.model.Comment
-import com.dluvian.voyage.core.model.LegacyReply
-import com.dluvian.voyage.core.model.LegacyReply
-import com.dluvian.voyage.core.model.RootPost
-import com.dluvian.voyage.core.model.RootPost
-import com.dluvian.voyage.core.model.SomeReply
-import com.dluvian.voyage.core.model.SomeReply
-import com.dluvian.voyage.data.nostr.createNevent
-import com.dluvian.voyage.data.nostr.createNevent
+import com.dluvian.voyage.isReply
+import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.model.OpenThreadLink
+import com.dluvian.voyage.model.ThreadReplyCtx
+import com.dluvian.voyage.model.ThreadRootCtx
 import com.dluvian.voyage.model.ThreadViewRefresh
 import com.dluvian.voyage.ui.components.FullHorizontalDivider
-import com.dluvian.voyage.ui.components.bottomSheet.PostDetailsBottomSheet
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
-import com.dluvian.voyage.ui.components.row.uiEvent.ThreadReplyCtx
-import com.dluvian.voyage.ui.components.row.uiEvent.ThreadReplyCtx
-import com.dluvian.voyage.ui.components.row.uiEvent.ThreadRootCtx
-import com.dluvian.voyage.ui.components.row.uiEvent.ThreadRootCtx
 import com.dluvian.voyage.ui.components.row.uiEvent.UIEventRow
 import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
 import com.dluvian.voyage.viewModel.ThreadViewModel
 
-)->Unit
-import com.dluvian.voyage.core.model.Comment
-import com.dluvian.voyage.core.model.LegacyReply
-import com.dluvian.voyage.core.model.RootPost
-import com.dluvian.voyage.core.model.SomeReply
-import com.dluvian.voyage.data.nostr.createNevent
-import com.dluvian.voyage.ui.components.row.uiEvent.ThreadReplyCtx
-import com.dluvian.voyage.ui.components.row.uiEvent.ThreadRootCtx
 
 @Composable
-fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: () -> Unit) {
+fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: (Cmd) -> Unit) {
     SimpleGoBackScaffold(
         header = stringResource(id = R.string.thread),
         snackbar = snackbar,
         onUpdate = onUpdate
     ) {
-        vm.localRoot.collectAsState().value.let { localRoot ->
-            if (localRoot == null) FullLinearProgressIndicator()
-            vm.postDetails.value?.let { details ->
-                PostDetailsBottomSheet(postDetails = details, onUpdate = onUpdate)
-            }
-            localRoot?.let {
+        vm.root.value.let { root ->
+            if (root == null) FullLinearProgressIndicator()
+            root?.let {
                 ThreadViewContent(
-                    localRoot = it,
-                    replies = vm.replies.value.collectAsState().value,
-                    totalReplyCount = vm.totalReplyCount.value.collectAsState().value,
-                    parentIsAvailable = vm.parentIsAvailable.collectAsState().value,
+                    root = it,
+                    replies = vm.replies.value,
+                    replyCount = vm.replyCount.value,
+                    parentIsAvailable = vm.parentIsAvailable.value,
                     isRefreshing = vm.isRefreshing.value,
                     state = vm.threadState,
                     onUpdate = onUpdate
@@ -91,18 +67,18 @@ fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: () ->
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ThreadViewContent(
-    localRoot: ThreadRootCtx,
+    root: ThreadRootCtx,
     replies: List<ThreadReplyCtx>,
-    totalReplyCount: Int,
+    replyCount: UInt,
     parentIsAvailable: Boolean,
     isRefreshing: Boolean,
     state: LazyListState,
-    onUpdate: () -> Unit
+    onUpdate: (Cmd) -> Unit
 ) {
-    val adjustedReplies = remember(localRoot, replies) {
-        when (localRoot.threadableMainEvent) {
-            is RootPost, is Poll -> replies
-            is LegacyReply, is Comment -> replies.map { it.copy(level = it.level + 2) }
+    val adjustedReplies = remember(root, replies) {
+        when (root.uiEvent.event.isReply()) {
+            true -> replies.map { it.copy(level = it.level + 2) }
+            false -> replies
         }
     }
     PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(ThreadViewRefresh) }) {
@@ -111,10 +87,10 @@ private fun ThreadViewContent(
             contentPadding = PaddingValues(bottom = spacing.xxl),
             state = state
         ) {
-            if (parentIsAvailable && localRoot.threadableMainEvent is SomeReply) {
-                val parentId = when (localRoot.threadableMainEvent) {
-                    is LegacyReply -> localRoot.threadableMainEvent.parentId
-                    is Comment -> localRoot.threadableMainEvent.parentId
+            if (parentIsAvailable && root.uiEvent.event.isReply()) {
+                val parentId = when (root.uiEvent) {
+                    is LegacyReply -> root.threadableMainEvent.parentId
+                    is Comment -> root.threadableMainEvent.parentId
                 }
                 if (parentId != null) item {
                     OpenParentButton(
@@ -123,24 +99,18 @@ private fun ThreadViewContent(
                         onUpdate = onUpdate
                     )
                 }
-            } else if (
-                !parentIsAvailable &&
-                localRoot.threadableMainEvent is Comment &&
-                !localRoot.threadableMainEvent.parentIsSupported()
-            ) item {
-                HintText(text = stringResource(id = R.string.parent_event_is_not_supported))
             }
             item {
                 UIEventRow(
-                    ctx = localRoot,
+                    ctx = root,
                     onUpdate = onUpdate
                 )
             }
-            when (localRoot.threadableMainEvent) {
+            when (root.threadableMainEvent) {
                 is RootPost, is Poll -> item { FullHorizontalDivider() }
                 is Comment, is LegacyReply -> {}
             }
-            if (localRoot.mainEvent.replyCount > totalReplyCount) item {
+            if (root.mainEvent.replyCount > replyCount) item {
                 FullLinearProgressIndicator()
             }
             itemsIndexed(adjustedReplies) { i, reply ->
@@ -151,7 +121,7 @@ private fun ThreadViewContent(
                 if (i == adjustedReplies.size - 1) FullHorizontalDivider()
             }
 
-            if (localRoot.mainEvent.replyCount == 0 && adjustedReplies.isEmpty()) item {
+            if (root.mainEvent.replyCount == 0 && adjustedReplies.isEmpty()) item {
                 Column(modifier = Modifier.fillParentMaxHeight(0.5f)) {
                     BaseHint(text = stringResource(id = R.string.no_comments_found))
                 }
