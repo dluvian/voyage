@@ -16,7 +16,6 @@ import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.model.CloseEventDetails
 import com.dluvian.voyage.model.Cmd
-import com.dluvian.voyage.ui.components.text.ClickableRelayUrl
 import com.dluvian.voyage.ui.components.text.ClickableTopic
 import com.dluvian.voyage.ui.components.text.CopyableText
 import com.dluvian.voyage.ui.components.text.SmallHeader
@@ -40,16 +39,6 @@ fun PostDetailsBottomSheet(event: Event, onUpdate: (Cmd) -> Unit) {
                         header = stringResource(id = R.string.time),
                         time = event.createdAt(),
                     )
-                }
-
-                if (postDetails.base.firstSeenIn.isNotEmpty()) item {
-                    SmallHeader(header = stringResource(id = R.string.first_seen_in))
-                    ClickableRelayUrl(
-                        relayUrl = postDetails.base.firstSeenIn,
-                        onUpdate = onUpdate,
-                        onClickAddition = onDismiss
-                    )
-                    Spacer(modifier = Modifier.height(spacing.large))
                 }
 
                 if (!postDetails.client.isNullOrEmpty()) item {
