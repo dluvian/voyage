@@ -10,7 +10,7 @@ import com.dluvian.voyage.core.Fn
 
 @Composable
 fun CountedIconButton(
-    count: Int,
+    count: UInt,
     icon: ImageVector,
     description: String,
     modifier: Modifier = Modifier,
