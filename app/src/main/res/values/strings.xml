@@ -251,4 +251,10 @@
     <string name="replies_v2">Replies v2</string>
     <string name="go_back">Go back</string>
     <string name="kind">Kind</string>
+    <string name="mnemonic_signer">Mnemonic signer</string>
+    <string name="key_signer">Key signer</string>
+    <string name="private_key">Private key</string>
+    <string name="click_to_show_nsec">Click to show nsec</string>
+    <string name="nostr_connect">Nostr connect</string>
+    <string name="click_to_show_nostr_connect_uri">Click to show Nostr Connect URI</string>
 </resources>

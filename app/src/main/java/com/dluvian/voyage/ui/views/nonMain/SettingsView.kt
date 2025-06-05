@@ -31,12 +31,17 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.dluvian.voyage.R
 import com.dluvian.voyage.model.AddClientTag
+import com.dluvian.voyage.model.BunkerSigner
 import com.dluvian.voyage.model.ChangeUpvoteContent
 import com.dluvian.voyage.model.ClickCreateGitIssue
 import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.model.LoadSeed
-import com.dluvian.voyage.model.OpenProfile
+import com.dluvian.voyage.model.MnemonicSigner
+import com.dluvian.voyage.model.NsecSigner
+import com.dluvian.voyage.model.OpenNProfile
 import com.dluvian.voyage.model.SendAuth
+import com.dluvian.voyage.model.SignerType
+import com.dluvian.voyage.shortenedNpub
 import com.dluvian.voyage.ui.components.bottomSheet.SeedBottomSheet
 import com.dluvian.voyage.ui.components.dialog.BaseActionDialog
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
@@ -48,6 +53,7 @@ import com.dluvian.voyage.ui.theme.AccountIcon
 import com.dluvian.voyage.ui.theme.spacing
 import com.dluvian.voyage.viewModel.SettingsViewModel
 import kotlinx.coroutines.CoroutineScope
+import rust.nostr.sdk.Nip19Profile
 
 @Composable
 fun SettingsView(vm: SettingsViewModel, snackbar: SnackbarHostState, onUpdate: (Cmd) -> Unit) {
@@ -61,16 +67,18 @@ fun SettingsView(vm: SettingsViewModel, snackbar: SnackbarHostState, onUpdate: (
 }
 
 @Composable
-private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: () -> Unit) {
+private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: (Cmd) -> Unit) {
     val scope = rememberCoroutineScope()
     LazyColumn {
         if (vm.isLoadingAccount.value) item { FullLinearProgressIndicator() }
-        item {
-            AccountSection(
-                accountType = vm.accountType.value,
-                seed = vm.seed.value,
-                onUpdate = onUpdate
-            )
+        vm.signer.value?.let { signer ->
+            item {
+                AccountSection(
+                    signerType = signer,
+                    vm = vm,
+                    onUpdate = onUpdate
+                )
+            }
         }
         item {
             RelaySection(vm = vm, onUpdate = onUpdate)
@@ -86,42 +94,64 @@ private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: () -> Unit) {
 
 @Composable
 private fun AccountSection(
-    accountType: AccountType,
-    seed: List<String>,
-    onUpdate: () -> Unit
+    signerType: SignerType,
+    vm: SettingsViewModel,
+    onUpdate: (Cmd) -> Unit
 ) {
     SettingsSection(header = stringResource(id = R.string.account)) {
-        val shortenedNpub = remember(accountType) { accountType.publicKey.toShortenedNpub() }
+        val shortenedNpub = remember(signerType) { signerType.pubkey.shortenedNpub() }
         ClickableRow(
-            header = when (accountType) {
-                is ExternalAccount -> stringResource(id = R.string.external_signer)
-                is DefaultAccount -> stringResource(id = R.string.default_account)
+            header = when (signerType) {
+                is BunkerSigner -> stringResource(id = R.string.external_signer)
+                is MnemonicSigner, is NsecSigner -> stringResource(id = R.string.key_signer)
             },
             text = shortenedNpub,
             leadingIcon = AccountIcon,
             onClick = {
-                onUpdate(OpenProfile(nprofile = createNprofile(pubkey = accountType.publicKey)))
+                onUpdate(OpenNProfile(Nip19Profile(signerType.pubkey)))
             }
         ) {
-            AccountRowButton(accountType = accountType, onUpdate = onUpdate)
+            AccountRowButton(signerType = signerType, onUpdate = onUpdate)
         }
-        if (accountType is DefaultAccount) {
-            val showSeed = remember { mutableStateOf(false) }
-            ClickableRow(
-                header = stringResource(id = R.string.recovery_phrase),
-                text = stringResource(id = R.string.click_to_show_recovery_phrase),
-                onClick = { showSeed.value = true }
-            )
-            if (showSeed.value) SeedBottomSheet(
-                seed = seed,
-                onLoadSeed = { onUpdate(LoadSeed) },
-                onDismiss = { showSeed.value = false })
+        when (signerType) {
+            is BunkerSigner -> {
+                val showBunker = remember { mutableStateOf(false) }
+                ClickableRow(
+                    header = stringResource(id = R.string.nostr_connect),
+                    text = stringResource(id = R.string.click_to_show_nostr_connect_uri),
+                    onClick = { showBunker.value = true }
+                )
+                if (showBunker.value) TODO("bunker Bottom sheet")
+            }
+
+            is NsecSigner -> {
+                val showNsec = remember { mutableStateOf(false) }
+                ClickableRow(
+                    header = stringResource(id = R.string.private_key),
+                    text = stringResource(id = R.string.click_to_show_nsec),
+                    onClick = { showNsec.value = true }
+                )
+                if (showNsec.value) TODO("Nsec Bottom sheet")
+            }
+
+            is MnemonicSigner -> {
+                val showSeed = remember { mutableStateOf(false) }
+                ClickableRow(
+                    header = stringResource(id = R.string.recovery_phrase),
+                    text = stringResource(id = R.string.click_to_show_recovery_phrase),
+                    onClick = { showSeed.value = true }
+                )
+                if (showSeed.value) SeedBottomSheet(
+                    seed = vm.seed.value,
+                    onLoadSeed = { onUpdate(LoadSeed) },
+                    onDismiss = { showSeed.value = false })
+            }
         }
     }
 }
 
 @Composable
-private fun RelaySection(vm: SettingsViewModel, onUpdate: () -> Unit) {
+private fun RelaySection(vm: SettingsViewModel, onUpdate: (Cmd) -> Unit) {
     val focusRequester = remember { FocusRequester() }
 
     SettingsSection(header = stringResource(id = R.string.relays)) {
@@ -191,7 +221,7 @@ private fun RelaySection(vm: SettingsViewModel, onUpdate: () -> Unit) {
 private fun DatabaseSection(
     vm: SettingsViewModel,
     scope: CoroutineScope,
-    onUpdate: () -> Unit
+    onUpdate: (Cmd) -> Unit
 ) {
     SettingsSection(header = stringResource(id = R.string.database)) {
         val showThresholdDialog = remember { mutableStateOf(false) }
@@ -252,7 +282,7 @@ private fun DatabaseSection(
 }
 
 @Composable
-private fun AppSection(vm: SettingsViewModel, onUpdate: () -> Unit) {
+private fun AppSection(vm: SettingsViewModel, onUpdate: (Cmd) -> Unit) {
     val focusRequester = remember { FocusRequester() }
 
     SettingsSection(header = stringResource(id = R.string.app)) {
@@ -301,12 +331,12 @@ private fun AppSection(vm: SettingsViewModel, onUpdate: () -> Unit) {
 
 @Composable
 private fun AccountRowButton(
-    accountType: AccountType,
-    onUpdate: () -> Unit
+    signerType: SignerType,
+    onUpdate: (Cmd) -> Unit
 ) {
     val context = LocalContext.current
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-        when (accountType) {
+        when (signerType) {
             is ExternalAccount -> TextButton(onClick = { onUpdate(UseDefaultAccount) }) {
                 Text(text = stringResource(id = R.string.logout))
             }

@@ -198,6 +198,7 @@ data object LoadSeed : SettingsViewCmd()
 data class SendAuth(val sendAuth: Boolean) : SettingsViewCmd()
 data class AddClientTag(val addClientTag: Boolean) : SettingsViewCmd()
 data class ChangeUpvoteContent(val newContent: String) : SettingsViewCmd()
+data class SwitchSigner(val signerType: SignerType) : SettingsViewCmd()
 
 sealed class SearchViewCmd : Cmd()
 data object SearchViewOpen : SearchViewCmd()

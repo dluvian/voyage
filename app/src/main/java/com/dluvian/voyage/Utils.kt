@@ -3,6 +3,7 @@ package com.dluvian.voyage
 import rust.nostr.sdk.Event
 import rust.nostr.sdk.EventId
 import rust.nostr.sdk.KindStandard
+import rust.nostr.sdk.PublicKey
 import rust.nostr.sdk.TagKind
 
 fun Event.isReply(): Boolean {
@@ -29,6 +30,11 @@ fun Event.parentId(): EventId? {
         null -> null
         else -> this.tags().eventIds().firstOrNull()
     }
+}
+
+fun PublicKey.shortenedNpub(): String {
+    val npub = this.toBech32()
+    return npub.take(10) + ":" + npub.takeLast(5)
 }
 
 fun normalizeName(str: String): String {
