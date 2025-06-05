@@ -9,13 +9,8 @@ import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.BookmarkCmd
-import com.dluvian.voyage.model.DeletePost
-import com.dluvian.voyage.model.FollowProfile
 import com.dluvian.voyage.OpenPostInfo
-import com.dluvian.voyage.model.OpenThreadLink
 import com.dluvian.voyage.R
-import com.dluvian.voyage.model.Rebroadcast
-import com.dluvian.voyage.model.UnfollowProfile
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.model.Comment
@@ -33,6 +28,11 @@ import com.dluvian.voyage.core.utils.createProcessTextIntent
 import com.dluvian.voyage.core.utils.getTranslators
 import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.data.nostr.createNeventUri
+import com.dluvian.voyage.model.DeletePost
+import com.dluvian.voyage.model.FollowProfile
+import com.dluvian.voyage.model.OpenThreadNevent
+import com.dluvian.voyage.model.Rebroadcast
+import com.dluvian.voyage.model.UnfollowProfile
 
 @Composable
 fun FeedItemDropdown(
@@ -61,7 +61,7 @@ fun FeedItemDropdown(
             is LegacyReply, is Comment -> SimpleDropdownItem(
                 text = stringResource(id = R.string.open_as_root),
                 onClick = {
-                    onUpdate(OpenThreadLink(nevent = createNevent(hex = mainEvent.id)))
+                    onUpdate(OpenThreadNevent(nevent = createNevent(hex = mainEvent.id)))
                     onDismiss()
                 })
         }

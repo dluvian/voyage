@@ -56,7 +56,7 @@ sealed class PushNavCmd : NavCmd() {
             ClickBookmarks -> BookmarkNavView
             ClickCreateGitIssue -> CreateGitIssueNavView
             is OpenThread -> ThreadNavView(this.event)
-            is OpenThreadLink -> ThreadNeventNavView(nevent = this.nevent)
+            is OpenThreadNevent -> ThreadNeventNavView(nevent = this.nevent)
             is OpenNProfile -> NProfileNavView(this.nprofile)
             is OpenProfile -> ProfileNavView(this.profileEvent)
             is OpenTopic -> TopicNavView(topic = this.topic)
@@ -81,7 +81,7 @@ data object ClickCreateGitIssue : PushNavCmd()
 
 sealed class AdvancedPushNavCmd : PushNavCmd()
 data class OpenThread(val event: Event) : AdvancedPushNavCmd()
-data class OpenThreadLink(val nevent: Nip19Event) : AdvancedPushNavCmd()
+data class OpenThreadNevent(val nevent: Nip19Event) : AdvancedPushNavCmd()
 data class OpenProfile(val profileEvent: Event) : AdvancedPushNavCmd()
 data class OpenNProfile(val nprofile: Nip19Profile) : AdvancedPushNavCmd()
 data class OpenTopic(val topic: Topic) : AdvancedPushNavCmd()

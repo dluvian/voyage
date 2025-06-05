@@ -244,4 +244,5 @@
     <string name="relay_closed">Relay %s closed: %s</string>
     <string name="relay_msg">Relay %s: %s</string>
     <string name="settings">Settings</string>
+    <string name="show_replies">Show replies</string>
 </resources>

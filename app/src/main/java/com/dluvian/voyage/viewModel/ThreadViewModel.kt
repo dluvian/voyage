@@ -32,7 +32,6 @@ class ThreadViewModel(
     val parentIsAvailable = mutableStateOf(false)
     val root = mutableStateOf<ThreadRootCtx?>(null)
     val replies = mutableStateOf(emptyList<ThreadReplyCtx>())
-    val replyCount = mutableStateOf(0u)
 
     private val mutex = Mutex()
     private val collapsedIds = mutableSetOf<EventId>()

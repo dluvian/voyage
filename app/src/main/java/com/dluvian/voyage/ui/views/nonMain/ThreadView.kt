@@ -7,18 +7,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,18 +23,20 @@ import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.isReply
 import com.dluvian.voyage.model.Cmd
-import com.dluvian.voyage.model.OpenThreadLink
+import com.dluvian.voyage.model.OpenThreadNevent
 import com.dluvian.voyage.model.ThreadReplyCtx
 import com.dluvian.voyage.model.ThreadRootCtx
 import com.dluvian.voyage.model.ThreadViewRefresh
+import com.dluvian.voyage.parentId
 import com.dluvian.voyage.ui.components.FullHorizontalDivider
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import com.dluvian.voyage.ui.components.row.uiEvent.UIEventRow
 import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
-import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
 import com.dluvian.voyage.viewModel.ThreadViewModel
+import rust.nostr.sdk.EventId
+import rust.nostr.sdk.Nip19Event
 
 
 @Composable
@@ -53,7 +52,6 @@ fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: (Cmd)
                 ThreadViewContent(
                     root = it,
                     replies = vm.replies.value,
-                    replyCount = vm.replyCount.value,
                     parentIsAvailable = vm.parentIsAvailable.value,
                     isRefreshing = vm.isRefreshing.value,
                     state = vm.threadState,
@@ -69,7 +67,6 @@ fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: (Cmd)
 private fun ThreadViewContent(
     root: ThreadRootCtx,
     replies: List<ThreadReplyCtx>,
-    replyCount: UInt,
     parentIsAvailable: Boolean,
     isRefreshing: Boolean,
     state: LazyListState,
@@ -88,10 +85,7 @@ private fun ThreadViewContent(
             state = state
         ) {
             if (parentIsAvailable && root.uiEvent.event.isReply()) {
-                val parentId = when (root.uiEvent) {
-                    is LegacyReply -> root.threadableMainEvent.parentId
-                    is Comment -> root.threadableMainEvent.parentId
-                }
+                val parentId = root.uiEvent.event.parentId()
                 if (parentId != null) item {
                     OpenParentButton(
                         modifier = Modifier.padding(start = spacing.medium),
@@ -106,12 +100,8 @@ private fun ThreadViewContent(
                     onUpdate = onUpdate
                 )
             }
-            when (root.threadableMainEvent) {
-                is RootPost, is Poll -> item { FullHorizontalDivider() }
-                is Comment, is LegacyReply -> {}
-            }
-            if (root.mainEvent.replyCount > replyCount) item {
-                FullLinearProgressIndicator()
+            if (!root.uiEvent.event.isReply()) item {
+                FullHorizontalDivider()
             }
             itemsIndexed(adjustedReplies) { i, reply ->
                 UIEventRow(
@@ -120,55 +110,37 @@ private fun ThreadViewContent(
                 )
                 if (i == adjustedReplies.size - 1) FullHorizontalDivider()
             }
-
-            if (root.mainEvent.replyCount == 0 && adjustedReplies.isEmpty()) item {
+            if (replies.isEmpty()) item {
                 Column(modifier = Modifier.fillParentMaxHeight(0.5f)) {
                     BaseHint(text = stringResource(id = R.string.no_comments_found))
                 }
             }
-
         }
     }
 }
 
 @Composable
 fun MoreRepliesTextButton(onShowReplies: () -> Unit) {
-    val isLoading = remember { mutableStateOf(false) }
     Row(
         modifier = Modifier.height(IntrinsicSize.Min),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        TextButton(onClick = {
-            onShowReplies()
-            isLoading.value = true
-        }) {
-            if (replyCount == 1) Text(text = stringResource(id = R.string.one_reply))
-            else Text(text = "$replyCount ${stringResource(id = R.string.replies_lowercase)}")
+        TextButton(onClick = onShowReplies) {
+            Text(text = stringResource(id = R.string.show_replies))
         }
-        if (isLoading.value) CircularProgressIndicator(
-            modifier = Modifier.size(sizing.smallIndicator),
-            strokeWidth = sizing.smallIndicatorStrokeWidth
-        )
     }
 }
 
 @Composable
 private fun OpenParentButton(
     modifier: Modifier = Modifier,
-    parentId: EventIdHex,
-    onUpdate: () -> Unit
+    parentId: EventId,
+    onUpdate: (Cmd) -> Unit
 ) {
     TextButton(
         modifier = modifier,
-        onClick = { onUpdate(OpenThreadLink(nevent = createNevent(hex = parentId))) }
+        onClick = { onUpdate(OpenThreadNevent(Nip19Event(parentId))) }
     ) {
         Text(text = stringResource(id = R.string.open_parent))
-    }
-}
-
-@Composable
-private fun HintText(text: String) {
-    TextButton(enabled = false, onClick = { }) {
-        Text(text = text)
     }
 }

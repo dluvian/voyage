@@ -8,11 +8,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.dluvian.voyage.model.OpenProfile
-import com.dluvian.voyage.model.OpenThreadLink
-import com.dluvian.voyage.model.OpenTopic
 import com.dluvian.voyage.R
-import com.dluvian.voyage.model.SubUnknownProfiles
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.TrustType
@@ -20,6 +16,10 @@ import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.data.room.view.SimplePostView
+import com.dluvian.voyage.model.OpenProfile
+import com.dluvian.voyage.model.OpenThreadNevent
+import com.dluvian.voyage.model.OpenTopic
+import com.dluvian.voyage.model.SubUnknownProfiles
 import com.dluvian.voyage.ui.components.row.ClickableProfileRow
 import com.dluvian.voyage.ui.components.row.ClickableRow
 import com.dluvian.voyage.ui.components.row.ClickableTrustIconRow
@@ -96,7 +96,7 @@ private fun SearchViewContent(
                     header = post.subject,
                     content = post.content,
                     onClick = {
-                        onUpdate(OpenThreadLink(nevent = createNevent(hex = post.id)))
+                        onUpdate(OpenThreadNevent(nevent = createNevent(hex = post.id)))
                     },
                 )
             }
