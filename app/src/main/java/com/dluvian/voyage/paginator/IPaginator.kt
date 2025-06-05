@@ -1,6 +1,5 @@
 package com.dluvian.voyage.paginator
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import com.dluvian.voyage.filterSetting.FeedSetting
 import com.dluvian.voyage.model.UIEvent
@@ -10,7 +9,9 @@ interface IPaginator : IEventUpdate {
     val isRefreshing: State<Boolean>
     val isSwitchingPage: State<Boolean>
     val isNotFirstPage: State<Boolean>
-    val page: MutableState<List<UIEvent>>
+    val showNextPageBtn: State<Boolean>
+    val page: State<List<UIEvent>>
+
     fun initSetting(setting: FeedSetting)
     suspend fun refresh()
     suspend fun dbRefreshInPlace()

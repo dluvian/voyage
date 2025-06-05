@@ -20,7 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -31,12 +30,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.FEED_PAGE_SIZE
-import com.dluvian.voyage.core.Fn
-import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.model.Cmd
+import com.dluvian.voyage.model.FeedCtx
 import com.dluvian.voyage.paginator.IPaginator
 import com.dluvian.voyage.showScrollButton
-import com.dluvian.voyage.ui.components.bottomSheet.PostDetailsBottomSheet
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import com.dluvian.voyage.ui.components.row.mainEvent.MainEventRow
@@ -50,45 +47,41 @@ import kotlinx.coroutines.launch
 fun Feed(
     paginator: IPaginator,
     state: LazyListState,
-    onRefresh: Fn,
-    onAppend: Fn,
-    onUpdate: OnUpdate,
+    onRefresh: () -> Unit,
+    onAppend: () -> Unit,
+    onUpdate: (Cmd) -> Unit,
 ) {
     val isRefreshing by paginator.isRefreshing
     val isAppending by paginator.isSwitchingPage
-    val hasMoreRecentItems by paginator.isNotFirstPage
-    val hasPage by paginator.hasPage.value.collectAsState()
-    val pageTimestamps by paginator.pageTimestamps
-    val filteredPage by paginator.filteredPage.value.collectAsState()
+    val isNotFirstPage by paginator.isNotFirstPage
+    val showNextPageBtn by paginator.showNextPageBtn
+    val page by paginator.page
     val scope = rememberCoroutineScope()
     val showProgressIndicator by remember {
-        derivedStateOf { isAppending || (hasPage && pageTimestamps.isEmpty()) }
+        derivedStateOf { isAppending || isRefreshing }
     }
 
     PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = onRefresh) {
         if (showProgressIndicator) FullLinearProgressIndicator()
-        if (!hasPage && pageTimestamps.isEmpty()) BaseHint(stringResource(id = R.string.no_posts_found))
-        postDetails.value?.let { details ->
-            PostDetailsBottomSheet(postDetails = details, onUpdate = onUpdate)
-        }
+        if (page.isEmpty()) BaseHint(stringResource(id = R.string.no_posts_found))
 
         LazyColumn(modifier = Modifier.fillMaxSize(), state = state) {
-            if (hasMoreRecentItems) item {
+            if (isNotFirstPage) item {
                 MostRecentPostsTextButton(onClick = {
                     onRefresh()
                     state.requestScrollToItem(index = 0)
                 })
             }
 
-            items(items = filteredPage) { mainEventCtx ->
+            items(items = page) { uiEvent ->
                 MainEventRow(
-                    ctx = mainEventCtx,
+                    ctx = FeedCtx(uiEvent),
                     onUpdate = onUpdate
                 )
                 FullHorizontalDivider()
             }
 
-            if (pageTimestamps.size >= FEED_PAGE_SIZE) item {
+            if (showNextPageBtn) item {
                 NextPageButton(onAppend = {
                     onAppend()
                     // 1 = Skip TextButton
@@ -103,7 +96,7 @@ fun Feed(
 }
 
 @Composable
-private fun MostRecentPostsTextButton(onClick: Fn) {
+private fun MostRecentPostsTextButton(onClick: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
@@ -115,7 +108,7 @@ private fun MostRecentPostsTextButton(onClick: Fn) {
 }
 
 @Composable
-private fun NextPageButton(onAppend: Fn) {
+private fun NextPageButton(onAppend: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.End
@@ -130,7 +123,7 @@ private fun NextPageButton(onAppend: Fn) {
 }
 
 @Composable
-private fun ScrollUpButton(onScrollToTop: Fn) {
+private fun ScrollUpButton(onScrollToTop: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
