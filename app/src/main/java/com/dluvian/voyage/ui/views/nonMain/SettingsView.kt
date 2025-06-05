@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SnackbarHostState
@@ -27,8 +26,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import com.dluvian.voyage.R
 import com.dluvian.voyage.model.AddClientTag
 import com.dluvian.voyage.model.BunkerSigner
@@ -152,68 +149,12 @@ private fun AccountSection(
 
 @Composable
 private fun RelaySection(vm: SettingsViewModel, onUpdate: (Cmd) -> Unit) {
-    val focusRequester = remember { FocusRequester() }
-
     SettingsSection(header = stringResource(id = R.string.relays)) {
-        val showPortDialog = remember { mutableStateOf(false) }
-        if (showPortDialog.value) {
-            val newPort = remember {
-                mutableStateOf(vm.localRelayPort.value?.toString().orEmpty().toTextFieldValue())
-            }
-            val parsedNewPort = remember(newPort.value) {
-                runCatching { newPort.value.text.toUShort() }.getOrNull()
-            }
-            BaseActionDialog(title = stringResource(id = R.string.local_relay_port),
-                main = {
-                    LaunchedEffect(key1 = Unit) { focusRequester.requestFocus() }
-                    TextField(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(focusRequester = focusRequester),
-                        value = newPort.value,
-                        prefix = { Text(text = LOCAL_WEBSOCKET) },
-                        onValueChange = { newStr ->
-                            if (newStr.text.length <= 5 &&
-                                newStr.text.all { it.isDigit() } &&
-                                !newStr.text.startsWith("0")
-                            ) {
-                                newPort.value = newStr
-                            }
-                        },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Number, imeAction = ImeAction.Done
-                        ),
-                    )
-                },
-                confirmIsEnabled = newPort.value.text.isEmpty() || parsedNewPort != null,
-                onConfirm = { onUpdate(UpdateLocalRelayPort(port = parsedNewPort)) },
-                onDismiss = { showPortDialog.value = false })
-        }
-        val headerSuffix = remember(vm.localRelayPort.value) {
-            vm.localRelayPort.value.let { if (it != null) ": $it" else "" }
-        }
-        ClickableRow(header = stringResource(id = R.string.local_relay_port) + headerSuffix,
-            text = stringResource(id = R.string.port_number_of_your_local_relay),
-            onClick = { showPortDialog.value = true })
-
         ClickableRowCheckbox(
             header = stringResource(id = R.string.authenticate_via_auth),
             text = stringResource(id = R.string.enable_to_authenticate_yourself_to_relays),
             checked = vm.sendAuth.value,
             onClickChange = { onUpdate(SendAuth(sendAuth = it)) })
-
-        ClickableRowCheckbox(
-            header = stringResource(id = R.string.send_bookmarked_post_to_local_relay),
-            text = stringResource(id = R.string.send_post_to_local_relay_after_bookmarking_it),
-            checked = vm.sendBookmarkedToLocalRelay.value,
-            onClickChange = { onUpdate(SendBookmarkedToLocalRelay(sendToLocalRelay = it)) })
-
-        ClickableRowCheckbox(
-            header = stringResource(id = R.string.send_upvoted_post_to_local_relay),
-            text = stringResource(id = R.string.send_post_to_local_relay_after_upvoting_it),
-            checked = vm.sendUpvotedToLocalRelay.value,
-            onClickChange = { onUpdate(SendUpvotedToLocalRelay(it)) })
     }
 }
 
