@@ -99,8 +99,10 @@ private fun Filter(setting: MutableState<HomeFeedSetting>) {
 
         item {
             SmallHeader(header = stringResource(id = R.string.content))
-            val hasKind1 =
-                remember(setting) { setting.value.kinds.contains(Kind.fromStd(KindStandard.TEXT_NOTE)) }
+
+            val hasKind1 = remember(setting) {
+                setting.value.kinds.contains(Kind.fromStd(KindStandard.TEXT_NOTE))
+            }
             NamedCheckbox(
                 isChecked = hasKind1,
                 name = stringResource(id = R.string.posts_and_replies),
@@ -112,8 +114,25 @@ private fun Filter(setting: MutableState<HomeFeedSetting>) {
                     }
                     setting.value = setting.value.copy(kinds = kinds)
                 })
-            val hasCrossPost =
-                remember(setting) { setting.value.kinds.contains(Kind.fromStd(KindStandard.REPOST)) }
+
+            val hasRepliesV2 = remember(setting) {
+                setting.value.kinds.contains(Kind.fromStd(KindStandard.COMMENT))
+            }
+            NamedCheckbox(
+                isChecked = hasRepliesV2,
+                name = stringResource(id = R.string.replies_v2),
+                onClick = {
+                    val kinds = if (hasRepliesV2) {
+                        setting.value.kinds.filterNot { it.asStd() == KindStandard.COMMENT }
+                    } else {
+                        setting.value.kinds + Kind.fromStd(KindStandard.COMMENT)
+                    }
+                    setting.value = setting.value.copy(kinds = kinds)
+                })
+
+            val hasCrossPost = remember(setting) {
+                setting.value.kinds.contains(Kind.fromStd(KindStandard.REPOST))
+            }
             NamedCheckbox(
                 isChecked = hasCrossPost,
                 name = stringResource(id = R.string.cross_posts),
@@ -122,6 +141,21 @@ private fun Filter(setting: MutableState<HomeFeedSetting>) {
                         setting.value.kinds.filterNot { it.asStd() == KindStandard.REPOST }
                     } else {
                         setting.value.kinds + Kind.fromStd(KindStandard.REPOST)
+                    }
+                    setting.value = setting.value.copy(kinds = kinds)
+                })
+
+            val hasCrossPost2 = remember(setting) {
+                setting.value.kinds.contains(Kind.fromStd(KindStandard.GENERIC_REPOST))
+            }
+            NamedCheckbox(
+                isChecked = hasCrossPost2,
+                name = stringResource(id = R.string.generic_cross_posts),
+                onClick = {
+                    val kinds = if (hasCrossPost2) {
+                        setting.value.kinds.filterNot { it.asStd() == KindStandard.GENERIC_REPOST }
+                    } else {
+                        setting.value.kinds + Kind.fromStd(KindStandard.GENERIC_REPOST)
                     }
                     setting.value = setting.value.copy(kinds = kinds)
                 })
