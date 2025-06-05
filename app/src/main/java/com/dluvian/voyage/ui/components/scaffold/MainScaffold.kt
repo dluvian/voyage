@@ -20,7 +20,7 @@ fun MainScaffold(
     homeFeedState: LazyListState,
     inboxFeedState: LazyListState,
     onUpdate: (Cmd) -> Unit,
-    content: ComposableContent
+    content: @Composable () -> Unit
 ) {
     when (currentView) {
         HomeNavView, InboxNavView, DiscoverNavView -> {

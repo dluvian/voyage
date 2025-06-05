@@ -35,7 +35,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.dluvian.voyage.OpenLightningWallet
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Bech32
-import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.MAX_RELAYS
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.model.FriendTrust
@@ -260,7 +259,7 @@ private fun AboutPageTextRow(
     text: String,
     shortenedText: String = text,
     description: String,
-    trailingIcon: ComposableContent = {},
+    trailingIcon: @Composable () -> Unit = {},
 ) {
     val context = LocalContext.current
     val clip = LocalClipboard.current
@@ -369,7 +368,11 @@ private fun RelaySection(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ProfileViewPage(isRefreshing: Boolean, onUpdate: OnUpdate, content: ComposableContent) {
+private fun ProfileViewPage(
+    isRefreshing: Boolean,
+    onUpdate: OnUpdate,
+    content: @Composable () -> Unit
+) {
     PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(ProfileViewRefresh) }) {
         content()
     }

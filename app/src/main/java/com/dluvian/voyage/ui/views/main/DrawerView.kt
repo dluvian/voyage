@@ -16,8 +16,6 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,7 +27,8 @@ import com.dluvian.voyage.model.ClickFollowLists
 import com.dluvian.voyage.model.ClickRelayEditor
 import com.dluvian.voyage.model.ClickSettings
 import com.dluvian.voyage.model.CloseDrawer
-import com.dluvian.voyage.model.OpenProfile
+import com.dluvian.voyage.model.Cmd
+import com.dluvian.voyage.model.OpenNProfile
 import com.dluvian.voyage.ui.theme.AccountIcon
 import com.dluvian.voyage.ui.theme.BookmarksIcon
 import com.dluvian.voyage.ui.theme.ListIcon
@@ -39,30 +38,30 @@ import com.dluvian.voyage.ui.theme.light
 import com.dluvian.voyage.ui.theme.spacing
 import com.dluvian.voyage.viewModel.DrawerViewModel
 import kotlinx.coroutines.CoroutineScope
+import rust.nostr.sdk.Nip19Profile
 
 @Composable
 fun MainDrawer(
     vm: DrawerViewModel,
     scope: CoroutineScope,
-    onUpdate: OnUpdate,
-    content: ComposableContent
+    onUpdate: (Cmd) -> Unit,
+    content: @Composable () -> Unit
 ) {
-    val personalProfile by vm.personalProfile.collectAsState()
+    val pubkey by vm.myPubkey
+    val name by vm.myName
     ModalNavigationDrawer(drawerState = vm.drawerState, drawerContent = {
         ModalDrawerSheet {
-            LaunchedEffect(key1 = vm.drawerState.isOpen) {
-                if (vm.drawerState.isOpen) onUpdate(DrawerViewSubscribeSets)
-            }
             LazyColumn {
                 item { Spacer(modifier = Modifier.height(spacing.screenEdge)) }
                 item {
                     DrawerRow(
-                        label = personalProfile.name,
+                        label = name,
                         icon = AccountIcon,
                         onClick = {
-                            onUpdate(
-                                OpenProfile(nprofile = createNprofile(hex = personalProfile.pubkey))
-                            )
+                            pubkey?.let {
+                                val nprofile = Nip19Profile(it)
+                                onUpdate(OpenNProfile(nprofile))
+                            }
                             onUpdate(CloseDrawer(scope = scope))
                         })
                 }
@@ -122,8 +121,8 @@ private fun DrawerRow(
     icon: ImageVector,
     label: String,
     modifier: Modifier = Modifier,
-    onClick: Fn,
-    onLongClick: Fn = {}
+    onClick: () -> Unit,
+    onLongClick: () -> Unit = {}
 ) {
     Row(
         modifier = modifier

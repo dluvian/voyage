@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.dluvian.voyage.core.ComposableContent
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.model.Comment
 import com.dluvian.voyage.core.model.CrossPost
@@ -25,8 +24,8 @@ import com.dluvian.voyage.ui.theme.spacing
 fun MainEventActions(
     mainEvent: MainEvent,
     onUpdate: OnUpdate,
-    additionalStartAction: ComposableContent = {},
-    additionalEndAction: ComposableContent = {},
+    additionalStartAction: @Composable () -> Unit = {},
+    additionalEndAction: @Composable () -> Unit = {},
 ) {
     Row(
         modifier = Modifier

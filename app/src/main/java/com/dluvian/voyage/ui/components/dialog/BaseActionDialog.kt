@@ -10,13 +10,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.ComposableContent
+import com.dluvian.voyage.core.Fn
+
+Composable () ->Unit
 import com.dluvian.voyage.core.Fn
 
 @Composable
 fun BaseActionDialog(
     title: String,
-    main: ComposableContent,
+    main: @Composable () -> Unit,
     confirmIsEnabled: Boolean = true,
     confirmText: String = stringResource(id = R.string.confirm),
     cancelText: String = stringResource(id = R.string.cancel),

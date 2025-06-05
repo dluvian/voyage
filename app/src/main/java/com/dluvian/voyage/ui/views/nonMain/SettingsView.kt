@@ -29,21 +29,48 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import com.dluvian.voyage.R
+import com.dluvian.voyage.RequestExternalAccount
+import com.dluvian.voyage.UseDefaultAccount
+import com.dluvian.voyage.core.MAX_RETAIN_ROOT
+import com.dluvian.voyage.core.MIN_RETAIN_ROOT
+import com.dluvian.voyage.core.SendBookmarkedToLocalRelay
+import com.dluvian.voyage.core.SendUpvotedToLocalRelay
+import com.dluvian.voyage.core.UpdateLocalRelayPort
+import com.dluvian.voyage.core.UpdateRootPostThreshold
+import com.dluvian.voyage.core.model.AccountType
+import com.dluvian.voyage.core.model.DefaultAccount
+import com.dluvian.voyage.core.model.ExternalAccount
+import com.dluvian.voyage.core.utils.toShortenedNpub
+import com.dluvian.voyage.core.utils.toTextFieldValue
+import com.dluvian.voyage.data.nostr.LOCAL_WEBSOCKET
+import com.dluvian.voyage.data.nostr.createNprofile
 import com.dluvian.voyage.model.AddClientTag
 import com.dluvian.voyage.model.ChangeUpvoteContent
 import com.dluvian.voyage.model.ClickCreateGitIssue
 import com.dluvian.voyage.model.ExportDatabase
 import com.dluvian.voyage.model.LoadSeed
 import com.dluvian.voyage.model.OpenProfile
-import com.dluvian.voyage.R
-import com.dluvian.voyage.RequestExternalAccount
 import com.dluvian.voyage.model.ResetDatabase
 import com.dluvian.voyage.model.SendAuth
-import com.dluvian.voyage.UseDefaultAccount
-import com.dluvian.voyage.core.ComposableContent
+import com.dluvian.voyage.ui.components.bottomSheet.SeedBottomSheet
+import com.dluvian.voyage.ui.components.dialog.BaseActionDialog
+import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
+import com.dluvian.voyage.ui.components.indicator.SmallCircleProgressIndicator
+import com.dluvian.voyage.ui.components.row.ClickableRow
+import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
+import com.dluvian.voyage.ui.components.text.AltSectionHeader
+import com.dluvian.voyage.ui.theme.AccountIcon
+import com.dluvian.voyage.ui.theme.spacing
+import com.dluvian.voyage.viewModel.SettingsViewModel
+import kotlinx.coroutines.CoroutineScope
+
+Composable () ->Unit
 import com.dluvian.voyage.core.MAX_RETAIN_ROOT
 import com.dluvian.voyage.core.MIN_RETAIN_ROOT
-import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.core.(
+
+)->Unit
 import com.dluvian.voyage.core.SendBookmarkedToLocalRelay
 import com.dluvian.voyage.core.SendUpvotedToLocalRelay
 import com.dluvian.voyage.core.UpdateLocalRelayPort
@@ -68,7 +95,7 @@ import com.dluvian.voyage.viewModel.SettingsViewModel
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
-fun SettingsView(vm: SettingsViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
+fun SettingsView(vm: SettingsViewModel, snackbar: SnackbarHostState, onUpdate: () -> Unit) {
     SimpleGoBackScaffold(
         header = stringResource(id = R.string.settings),
         snackbar = snackbar,
@@ -79,7 +106,7 @@ fun SettingsView(vm: SettingsViewModel, snackbar: SnackbarHostState, onUpdate: O
 }
 
 @Composable
-private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: OnUpdate) {
+private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: () -> Unit) {
     val scope = rememberCoroutineScope()
     LazyColumn {
         if (vm.isLoadingAccount.value) item { FullLinearProgressIndicator() }
@@ -106,7 +133,7 @@ private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: OnUpdate) {
 private fun AccountSection(
     accountType: AccountType,
     seed: List<String>,
-    onUpdate: OnUpdate
+    onUpdate: () -> Unit
 ) {
     SettingsSection(header = stringResource(id = R.string.account)) {
         val shortenedNpub = remember(accountType) { accountType.publicKey.toShortenedNpub() }
@@ -139,7 +166,7 @@ private fun AccountSection(
 }
 
 @Composable
-private fun RelaySection(vm: SettingsViewModel, onUpdate: OnUpdate) {
+private fun RelaySection(vm: SettingsViewModel, onUpdate: () -> Unit) {
     val focusRequester = remember { FocusRequester() }
 
     SettingsSection(header = stringResource(id = R.string.relays)) {
@@ -209,7 +236,7 @@ private fun RelaySection(vm: SettingsViewModel, onUpdate: OnUpdate) {
 private fun DatabaseSection(
     vm: SettingsViewModel,
     scope: CoroutineScope,
-    onUpdate: OnUpdate
+    onUpdate: () -> Unit
 ) {
     SettingsSection(header = stringResource(id = R.string.database)) {
         val showThresholdDialog = remember { mutableStateOf(false) }
@@ -270,7 +297,7 @@ private fun DatabaseSection(
 }
 
 @Composable
-private fun AppSection(vm: SettingsViewModel, onUpdate: OnUpdate) {
+private fun AppSection(vm: SettingsViewModel, onUpdate: () -> Unit) {
     val focusRequester = remember { FocusRequester() }
 
     SettingsSection(header = stringResource(id = R.string.app)) {
@@ -320,7 +347,7 @@ private fun AppSection(vm: SettingsViewModel, onUpdate: OnUpdate) {
 @Composable
 private fun AccountRowButton(
     accountType: AccountType,
-    onUpdate: OnUpdate
+    onUpdate: () -> Unit
 ) {
     val context = LocalContext.current
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
@@ -339,7 +366,7 @@ private fun AccountRowButton(
 }
 
 @Composable
-private fun SettingsSection(header: String, content: ComposableContent) {
+private fun SettingsSection(header: String, content: @Composable () -> Unit) {
     Column(modifier = Modifier.fillMaxWidth()) {
         AltSectionHeader(header = header)
         content()

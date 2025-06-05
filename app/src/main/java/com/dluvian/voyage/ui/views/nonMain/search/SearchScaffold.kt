@@ -5,16 +5,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.focus.FocusRequester
-import com.dluvian.voyage.core.ComposableContent
+import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.ui.components.scaffold.VoyageScaffold
+
+Composable () ->Unit
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.ui.components.scaffold.VoyageScaffold
 
 @Composable
 fun SearchScaffold(
     snackbar: SnackbarHostState,
-    bottomBar: ComposableContent = {},
+    bottomBar: @Composable () -> Unit = {},
     onUpdate: OnUpdate,
-    content: ComposableContent
+    content: @Composable () -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(key1 = Unit) {

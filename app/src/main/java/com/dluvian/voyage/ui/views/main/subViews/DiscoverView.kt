@@ -20,7 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.model.DiscoverViewOpen
 import com.dluvian.voyage.model.DiscoverViewRefresh
 import com.dluvian.voyage.ui.components.chip.FollowChip
@@ -33,7 +33,7 @@ import com.dluvian.voyage.viewModel.DiscoverViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DiscoverView(vm: DiscoverViewModel, onUpdate: OnUpdate) {
+fun DiscoverView(vm: DiscoverViewModel, onUpdate: (Cmd) -> Unit) {
     val isRefreshing by vm.isRefreshing
     val topics by vm.popularTopics.value.collectAsState()
     val profiles by vm.popularProfiles.value.collectAsState()

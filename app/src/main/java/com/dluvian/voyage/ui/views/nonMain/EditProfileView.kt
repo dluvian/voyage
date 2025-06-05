@@ -20,12 +20,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import com.dluvian.voyage.R
+import com.dluvian.voyage.core.MAX_SUBJECT_LINES
+import com.dluvian.voyage.core.utils.normalizeName
 import com.dluvian.voyage.model.GoBack
 import com.dluvian.voyage.model.LoadFullProfile
-import com.dluvian.voyage.R
 import com.dluvian.voyage.model.SaveProfile
-import com.dluvian.voyage.core.MAX_SUBJECT_LINES
-import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.ui.components.button.ExpandToggleTextButton
+import com.dluvian.voyage.ui.components.scaffold.SaveableScaffold
+import com.dluvian.voyage.ui.components.text.TextInput
+import com.dluvian.voyage.ui.theme.spacing
+import com.dluvian.voyage.viewModel.EditProfileViewModel
+import rust.nostr.sdk.Metadata
+import rust.nostr.sdk.MetadataRecord
+
+)->Unit
 import com.dluvian.voyage.core.utils.normalizeName
 import com.dluvian.voyage.ui.components.button.ExpandToggleTextButton
 import com.dluvian.voyage.ui.components.scaffold.SaveableScaffold
@@ -39,7 +48,7 @@ import rust.nostr.sdk.MetadataRecord
 fun EditProfileView(
     vm: EditProfileViewModel,
     snackbar: SnackbarHostState,
-    onUpdate: OnUpdate
+    onUpdate: () -> Unit
 ) {
     val isSaving by vm.isSaving
     val fullProfile by vm.fullProfile

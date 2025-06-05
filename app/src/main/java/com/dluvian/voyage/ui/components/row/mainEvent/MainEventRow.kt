@@ -17,11 +17,26 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import com.dluvian.voyage.core.MAX_CONTENT_LINES
+import com.dluvian.voyage.core.MAX_SUBJECT_LINES
+import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.core.model.Comment
+import com.dluvian.voyage.core.model.CrossPost
+import com.dluvian.voyage.core.model.LegacyReply
+import com.dluvian.voyage.core.model.RootPost
+import com.dluvian.voyage.core.model.ThreadableMainEvent
+import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.model.OpenThread
 import com.dluvian.voyage.model.OpenThreadLink
 import com.dluvian.voyage.model.ThreadViewShowReplies
 import com.dluvian.voyage.model.ThreadViewToggleCollapse
-import com.dluvian.voyage.core.ComposableContent
+import com.dluvian.voyage.ui.components.button.footer.CountedCommentButton
+import com.dluvian.voyage.ui.components.button.footer.ReplyIconButton
+import com.dluvian.voyage.ui.components.text.AnnotatedText
+import com.dluvian.voyage.ui.theme.spacing
+import com.dluvian.voyage.ui.views.nonMain.MoreRepliesTextButton
+
+Composable () ->Unit
 import com.dluvian.voyage.core.MAX_CONTENT_LINES
 import com.dluvian.voyage.core.MAX_SUBJECT_LINES
 import com.dluvian.voyage.core.OnUpdate
@@ -190,7 +205,7 @@ private fun MainEventMainRow(
 }
 
 @Composable
-private fun RowWithDivider(level: Int, content: ComposableContent) {
+private fun RowWithDivider(level: Int, content: @Composable () -> Unit) {
     Row(modifier = Modifier.height(IntrinsicSize.Min)) {
         repeat(times = level) {
             VerticalDivider(

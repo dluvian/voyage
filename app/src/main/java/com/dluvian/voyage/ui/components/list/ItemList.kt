@@ -9,13 +9,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.ComposableContent
+import com.dluvian.voyage.ui.components.button.RemoveIconButton
+import com.dluvian.voyage.ui.components.indicator.BaseHint
+import com.dluvian.voyage.ui.components.row.ClickableRow
+
+Composable () ->Unit
 import com.dluvian.voyage.ui.components.button.RemoveIconButton
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.row.ClickableRow
 
 
-typealias ItemProps = Pair<ComposableContent, String>
+typealias ItemProps = Pair<@Composable () -> Unit, String>
 
 @Composable
 fun ItemList(
@@ -23,8 +27,8 @@ fun ItemList(
     state: LazyListState,
     isRemovable: Boolean,
     modifier: Modifier = Modifier,
-    firstRow: ComposableContent = {},
-    lastRow: ComposableContent = {},
+    firstRow: @Composable () -> Unit = {},
+    lastRow: @Composable () -> Unit = {},
     onRemove: (Int) -> Unit = {},
     onClick: (Int) -> Unit = {},
 ) {

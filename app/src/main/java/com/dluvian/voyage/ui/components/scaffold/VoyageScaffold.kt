@@ -9,14 +9,15 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.dluvian.voyage.core.ComposableContent
+
+Composable () ->Unit
 
 @Composable
 fun VoyageScaffold(
     snackbar: SnackbarHostState,
-    topBar: ComposableContent,
-    bottomBar: ComposableContent = {},
-    content: ComposableContent,
+    topBar: @Composable () -> Unit,
+    bottomBar: @Composable () -> Unit = {},
+    content: @Composable () -> Unit,
 ) {
     Scaffold(
         topBar = topBar,

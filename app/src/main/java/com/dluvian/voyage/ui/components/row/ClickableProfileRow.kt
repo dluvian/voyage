@@ -1,7 +1,11 @@
 package com.dluvian.voyage.ui.components.row
 
 import androidx.compose.runtime.Composable
-import com.dluvian.voyage.core.ComposableContent
+import com.dluvian.voyage.core.Fn
+import com.dluvian.voyage.core.model.TrustType
+import com.dluvian.voyage.data.room.view.AdvancedProfileView
+
+Composable () ->Unit
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
@@ -10,7 +14,7 @@ import com.dluvian.voyage.data.room.view.AdvancedProfileView
 @Composable
 fun ClickableProfileRow(
     profile: AdvancedProfileView,
-    trailingContent: ComposableContent = {},
+    trailingContent: @Composable () -> Unit = {},
     onClick: Fn
 ) {
     ClickableTrustIconRow(

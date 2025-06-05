@@ -20,7 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
-import com.dluvian.voyage.core.ComposableContent
+import com.dluvian.voyage.core.Fn
+import com.dluvian.voyage.ui.theme.spacing
+
+Composable () ->Unit
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.ui.theme.spacing
 
@@ -31,7 +34,7 @@ fun ClickableRow(
     leadingIcon: ImageVector?,
     iconTint: Color = LocalContentColor.current,
     onClick: Fn = {},
-    additionalContent: ComposableContent = {},
+    additionalContent: @Composable () -> Unit = {},
 ) {
     val icon = @Composable {
         if (leadingIcon != null) Icon(
@@ -54,11 +57,11 @@ fun ClickableRow(
     header: String,
     modifier: Modifier = Modifier,
     text: String? = null,
-    leadingContent: ComposableContent? = null,
-    trailingContent: ComposableContent? = null,
+    leadingContent: @Composable () -> Unit? = null,
+    trailingContent: @Composable () -> Unit? = null,
     onClick: Fn = {},
     onLongClick: Fn = {},
-    additionalContent: ComposableContent = {},
+    additionalContent: @Composable () -> Unit = {},
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         ClickableBaseRow(
@@ -77,8 +80,8 @@ fun ClickableRow(
 @Composable
 private fun ClickableBaseRow(
     header: String,
-    leadingContent: ComposableContent? = null,
-    trailingContent: ComposableContent? = null,
+    leadingContent: @Composable () -> Unit? = null,
+    trailingContent: @Composable () -> Unit? = null,
     text: String? = null,
     onClick: Fn = {},
     onLongClick: Fn = {},

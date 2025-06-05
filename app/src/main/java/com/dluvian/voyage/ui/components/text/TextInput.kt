@@ -12,7 +12,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
-import com.dluvian.voyage.core.ComposableContent
+import com.dluvian.voyage.getTransparentTextFieldColors
+import com.dluvian.voyage.ui.theme.OnBgLight
+
+Composable () ->Unit
 import com.dluvian.voyage.getTransparentTextFieldColors
 import com.dluvian.voyage.ui.theme.OnBgLight
 
@@ -26,7 +29,7 @@ fun TextInput(
     style: TextStyle = LocalTextStyle.current,
     imeAction: ImeAction = ImeAction.Default,
     keyboardType: KeyboardType = KeyboardType.Text,
-    trailingIcon: ComposableContent = {},
+    trailingIcon: @Composable () -> Unit = {},
 ) {
     TextField(
         modifier = modifier.fillMaxWidth(),

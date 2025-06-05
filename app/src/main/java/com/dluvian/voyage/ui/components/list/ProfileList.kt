@@ -3,7 +3,10 @@ package com.dluvian.voyage.ui.components.list
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import com.dluvian.voyage.core.ComposableContent
+import com.dluvian.voyage.data.room.view.AdvancedProfileView
+import com.dluvian.voyage.ui.components.icon.TrustIcon
+
+Composable () ->Unit
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.ui.components.icon.TrustIcon
 
@@ -12,7 +15,7 @@ fun ProfileList(
     profiles: List<AdvancedProfileView>,
     state: LazyListState,
     isRemovable: Boolean = false,
-    firstRow: ComposableContent = {},
+    firstRow: @Composable () -> Unit = {},
     onRemove: (Int) -> Unit = {},
     onClick: (Int) -> Unit = {},
 ) {

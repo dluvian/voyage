@@ -243,4 +243,5 @@
     <string name="cross_posts">Cross posts</string>
     <string name="relay_closed">Relay %s closed: %s</string>
     <string name="relay_msg">Relay %s: %s</string>
+    <string name="settings">Settings</string>
 </resources>

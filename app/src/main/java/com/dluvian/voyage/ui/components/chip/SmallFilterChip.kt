@@ -8,7 +8,9 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.SelectableChipColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.dluvian.voyage.core.ComposableContent
+import com.dluvian.voyage.core.Fn
+
+Composable () ->Unit
 import com.dluvian.voyage.core.Fn
 
 @Composable
@@ -18,9 +20,9 @@ fun SmallFilterChip(
     isSelected: Boolean = false,
     isEnabled: Boolean = true,
     heightRatio: Float? = null,
-    label: ComposableContent = {},
-    leadingIcon: ComposableContent = {},
-    trailingIcon: ComposableContent = {},
+    label: @Composable () -> Unit = {},
+    leadingIcon: @Composable () -> Unit = {},
+    trailingIcon: @Composable () -> Unit = {},
     colors: SelectableChipColors = FilterChipDefaults.filterChipColors(),
     border: BorderStroke? = AssistChipDefaults.assistChipBorder(enabled = true)
 ) {

@@ -11,15 +11,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.data.filterSetting.WebOfTrustPubkeys
 import com.dluvian.voyage.filterSetting.FriendPubkeys
 import com.dluvian.voyage.filterSetting.Global
 import com.dluvian.voyage.filterSetting.HomeFeedSetting
-import com.dluvian.voyage.filterSetting.MyTopics
 import com.dluvian.voyage.filterSetting.NoPubkeys
-import com.dluvian.voyage.filterSetting.NoTopics
-import com.dluvian.voyage.model.HomeViewAccountData
+import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.model.HomeViewApplyFilter
 import com.dluvian.voyage.model.HomeViewDismissFilter
 import com.dluvian.voyage.model.HomeViewNextPage
@@ -34,7 +30,7 @@ import com.dluvian.voyage.viewModel.HomeViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun HomeView(vm: HomeViewModel, onUpdate: OnUpdate) {
+fun HomeView(vm: HomeViewModel, onUpdate: (Cmd) -> Unit) {
     LaunchedEffect(key1 = Unit) {
         onUpdate(HomeViewAccountData)
     }

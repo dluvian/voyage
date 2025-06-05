@@ -7,12 +7,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
-import com.dluvian.voyage.core.ComposableContent
+
+Composable () ->Unit
 
 @Composable
 fun NamedItem(
     name: String,
-    item: ComposableContent,
+    item: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     color: Color = Color.Unspecified
 ) {
