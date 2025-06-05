@@ -96,7 +96,7 @@ fun NonMainView(
             onUpdate = core.onUpdate
         )
 
-        BookmarkNavView -> BookmarksView(
+        BookmarkNavView -> BookmarkView(
             vm = core.vmContainer.bookmarkVM,
             snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate

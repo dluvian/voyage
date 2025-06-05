@@ -7,9 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.PAGE_SIZE
 import com.dluvian.voyage.filterSetting.BookmarkFeedSetting
 import com.dluvian.voyage.model.BookmarkViewCmd
+import com.dluvian.voyage.model.BookmarkViewNextPage
 import com.dluvian.voyage.model.BookmarkViewOpen
-import com.dluvian.voyage.model.BookmarksViewNextPage
-import com.dluvian.voyage.model.BookmarksViewRefresh
+import com.dluvian.voyage.model.BookmarkViewRefresh
 import com.dluvian.voyage.nostr.NostrService
 import com.dluvian.voyage.paginator.Paginator
 import com.dluvian.voyage.provider.FeedProvider
@@ -53,7 +53,7 @@ class BookmarkViewModel(
                 }
             }
 
-            is BookmarksViewRefresh -> {
+            is BookmarkViewRefresh -> {
                 viewModelScope.launch {
                     subBookmarks()
                 }
@@ -62,7 +62,7 @@ class BookmarkViewModel(
                 }
             }
 
-            is BookmarksViewNextPage -> viewModelScope.launch {
+            is BookmarkViewNextPage -> viewModelScope.launch {
                 paginator.nextPage()
             }
         }

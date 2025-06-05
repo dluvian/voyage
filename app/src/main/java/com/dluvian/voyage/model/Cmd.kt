@@ -144,8 +144,8 @@ data object FollowListsViewRefresh : FollowListsViewCmd()
 
 sealed class BookmarkViewCmd : Cmd()
 data object BookmarkViewOpen : BookmarkViewCmd()
-data object BookmarksViewRefresh : BookmarkViewCmd()
-data object BookmarksViewNextPage : BookmarkViewCmd()
+data object BookmarkViewRefresh : BookmarkViewCmd()
+data object BookmarkViewNextPage : BookmarkViewCmd()
 
 sealed class DrawerViewCmd : Cmd()
 data class OpenDrawer(val scope: CoroutineScope) : DrawerViewCmd()
