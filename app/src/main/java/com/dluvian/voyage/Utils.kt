@@ -19,11 +19,10 @@ fun Event.subject(): String? {
 
 fun Event.parentId(): EventId? {
     return when (this.kind().asStd()) {
-        // TODO: nip10 and nip22 extract
+        // TODO: Upstream nip10 and nip22 extract
         KindStandard.TEXT_NOTE -> this.tags().eventIds().firstOrNull()
         KindStandard.COMMENT -> this.tags().eventIds().firstOrNull()
         null -> null
         else -> this.tags().eventIds().firstOrNull()
     }
 }
-

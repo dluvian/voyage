@@ -19,6 +19,7 @@ import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.model.HomeViewApplyFilter
 import com.dluvian.voyage.model.HomeViewDismissFilter
 import com.dluvian.voyage.model.HomeViewNextPage
+import com.dluvian.voyage.model.HomeViewOpen
 import com.dluvian.voyage.model.HomeViewRefresh
 import com.dluvian.voyage.ui.components.Feed
 import com.dluvian.voyage.ui.components.dialog.BaseActionDialog
@@ -28,16 +29,17 @@ import com.dluvian.voyage.ui.components.text.SmallHeader
 import com.dluvian.voyage.ui.theme.spacing
 import com.dluvian.voyage.viewModel.HomeViewModel
 import kotlinx.coroutines.launch
+import rust.nostr.sdk.Kind
+import rust.nostr.sdk.KindStandard
 
 @Composable
 fun HomeView(vm: HomeViewModel, onUpdate: (Cmd) -> Unit) {
     LaunchedEffect(key1 = Unit) {
-        onUpdate(HomeViewAccountData)
+        onUpdate(HomeViewOpen)
     }
 
     Feed(
         paginator = vm.paginator,
-        postDetails = vm.postDetails,
         state = vm.feedState,
         onRefresh = { onUpdate(HomeViewRefresh) },
         onAppend = { onUpdate(HomeViewNextPage) },
@@ -64,12 +66,12 @@ private fun Filter(setting: MutableState<HomeFeedSetting>) {
         item {
             SmallHeader(header = stringResource(id = R.string.topics))
             NamedCheckbox(
-                isChecked = setting.value.topicSelection.isMyTopics(),
+                isChecked = setting.value.withTopics,
                 name = stringResource(id = R.string.my_topics),
                 onClick = {
-                    setting.value = when (setting.value.topicSelection) {
-                        MyTopics -> setting.value.copy(topicSelection = NoTopics)
-                        NoTopics -> setting.value.copy(topicSelection = MyTopics)
+                    setting.value = when (setting.value.withTopics) {
+                        true -> setting.value.copy(withTopics = false)
+                        false -> setting.value.copy(withTopics = true)
                     }
                 })
         }
@@ -91,30 +93,37 @@ private fun Filter(setting: MutableState<HomeFeedSetting>) {
                 })
             FeedPubkeySelectionRadio(
                 current = setting.value.pubkeySelection,
-                target = WebOfTrustPubkeys,
-                onClick = {
-                    setting.value = setting.value.copy(pubkeySelection = WebOfTrustPubkeys)
-                })
-            FeedPubkeySelectionRadio(
-                current = setting.value.pubkeySelection,
                 target = Global,
                 onClick = { setting.value = setting.value.copy(pubkeySelection = Global) })
         }
 
         item {
             SmallHeader(header = stringResource(id = R.string.content))
+            val hasKind1 =
+                remember(setting) { setting.value.kinds.contains(Kind.fromStd(KindStandard.TEXT_NOTE)) }
             NamedCheckbox(
-                isChecked = setting.value.showRoots,
-                name = stringResource(id = R.string.root_posts),
+                isChecked = hasKind1,
+                name = stringResource(id = R.string.posts_and_replies),
                 onClick = {
-                    setting.value = setting.value.copy(showRoots = !setting.value.showRoots)
+                    val kinds = if (hasKind1) {
+                        setting.value.kinds.filterNot { it.asStd() == KindStandard.TEXT_NOTE }
+                    } else {
+                        setting.value.kinds + Kind.fromStd(KindStandard.TEXT_NOTE)
+                    }
+                    setting.value = setting.value.copy(kinds = kinds)
                 })
+            val hasCrossPost =
+                remember(setting) { setting.value.kinds.contains(Kind.fromStd(KindStandard.REPOST)) }
             NamedCheckbox(
-                isChecked = setting.value.showCrossPosts,
+                isChecked = hasCrossPost,
                 name = stringResource(id = R.string.cross_posts),
                 onClick = {
-                    setting.value =
-                        setting.value.copy(showCrossPosts = !setting.value.showCrossPosts)
+                    val kinds = if (hasCrossPost) {
+                        setting.value.kinds.filterNot { it.asStd() == KindStandard.REPOST }
+                    } else {
+                        setting.value.kinds + Kind.fromStd(KindStandard.REPOST)
+                    }
+                    setting.value = setting.value.copy(kinds = kinds)
                 })
         }
     }

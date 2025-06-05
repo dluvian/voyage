@@ -5,6 +5,7 @@ import rust.nostr.sdk.Kind
 internal fun parseKinds(str: String): List<Kind> {
     return str.split(",")
         .mapNotNull { it.trim().toUShortOrNull() }
+        .distinct()
         .map { Kind(it) }
 }
 
