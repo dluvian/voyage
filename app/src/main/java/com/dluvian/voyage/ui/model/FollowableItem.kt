@@ -6,10 +6,15 @@ import com.dluvian.voyage.Topic
 import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.model.FollowProfile
 import com.dluvian.voyage.model.FollowTopic
+import com.dluvian.voyage.model.FollowedProfile
+import com.dluvian.voyage.model.OneselfProfile
 import com.dluvian.voyage.model.OpenNProfile
-import com.dluvian.voyage.model.OpenProfile
 import com.dluvian.voyage.model.OpenTopic
+import com.dluvian.voyage.model.TrustProfile
+import com.dluvian.voyage.model.TrustedProfile
+import com.dluvian.voyage.model.UnfollowProfile
 import com.dluvian.voyage.model.UnfollowTopic
+import com.dluvian.voyage.model.UnknownProfile
 import com.dluvian.voyage.ui.components.button.FollowButton
 import com.dluvian.voyage.ui.components.icon.TrustIcon
 import com.dluvian.voyage.ui.theme.HashtagIcon
@@ -23,14 +28,21 @@ sealed class FollowableItem(
 )
 
 data class FollowableProfileItem(
-    val profile: AdvancedProfileView,
+    val profile: TrustProfile,
     val onUpdate: (Cmd) -> Unit,
 ) : FollowableItem(
-    label = profile.name,
+    label = profile.uiName(),
     icon = { TrustIcon(profile = profile) },
     button = {
         FollowButton(
-            isFollowed = profile.isFriend,
+            isFollowed = when (profile) {
+                is FollowedProfile -> true
+                is OneselfProfile, is TrustedProfile, is UnknownProfile -> false
+            },
+            isEnabled = when (profile) {
+                is FollowedProfile, is TrustedProfile, is UnknownProfile -> false
+                is OneselfProfile -> false
+            },
             onFollow = { onUpdate(FollowProfile(pubkey = profile.pubkey)) },
             onUnfollow = { onUpdate(UnfollowProfile(pubkey = profile.pubkey)) },
         )

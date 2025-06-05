@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.rememberCoroutineScope
-import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.ui.components.SimpleTabPager
 import com.dluvian.voyage.ui.components.indicator.ComingSoon
 import com.dluvian.voyage.ui.model.FollowableItem
@@ -24,7 +23,7 @@ fun ProfileAndTopicList(
     pagerState: PagerState,
     words: MutableState<List<String>>? = null,
     wordState: LazyListState? = null,
-    onRefresh: Fn,
+    onRefresh: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     SimpleTabPager(
