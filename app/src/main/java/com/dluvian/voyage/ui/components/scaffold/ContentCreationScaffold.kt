@@ -5,13 +5,10 @@ import androidx.compose.runtime.Composable
 import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.ui.components.bar.ContentCreationTopAppBar
 
-import com.dluvian.voyage.ui.components.bar.ContentCreationTopAppBar
-
 
 @Composable
 fun ContentCreationScaffold(
     showSendButton: Boolean,
-    isSendingContent: Boolean,
     snackbar: SnackbarHostState,
     title: String? = null,
     onSend: () -> Unit,
@@ -23,7 +20,6 @@ fun ContentCreationScaffold(
         topBar = {
             ContentCreationTopAppBar(
                 showSendButton = showSendButton,
-                isSendingContent = isSendingContent,
                 title = title,
                 onSend = onSend,
                 onUpdate = onUpdate

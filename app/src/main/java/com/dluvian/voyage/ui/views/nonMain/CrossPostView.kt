@@ -14,19 +14,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import com.dluvian.voyage.MAX_TOPICS
 import com.dluvian.voyage.R
 import com.dluvian.voyage.Topic
-import com.dluvian.voyage.canAddAnotherTopic
-import com.dluvian.voyage.core.MAX_TOPICS
-import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.model.Cmd
-import com.dluvian.voyage.model.GoBack
 import com.dluvian.voyage.model.SendCrossPost
 import com.dluvian.voyage.ui.components.TopicSelectionColumn
 import com.dluvian.voyage.ui.components.dialog.AddTopicDialog
@@ -35,33 +30,33 @@ import com.dluvian.voyage.ui.theme.CrossPostIcon
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
 import com.dluvian.voyage.viewModel.CrossPostViewModel
+import rust.nostr.sdk.Event
 
 @Composable
-fun CreateCrossPostView(
+fun CrossPostView(
     vm: CrossPostViewModel,
     topicSuggestions: State<List<Topic>>,
     snackbar: SnackbarHostState,
     onUpdate: (Cmd) -> Unit
 ) {
-    val isSending by vm.isSending
-    val selectedTopics = remember { mutableStateOf(emptyList<Topic>()) }
-
     ContentCreationScaffold(
         showSendButton = false,
-        isSendingContent = isSending,
         snackbar = snackbar,
         title = stringResource(
             id = R.string.cross_post_to_topics_n_of_m,
-            selectedTopics.value.size, MAX_TOPICS
+            vm.topics.value.size, MAX_TOPICS
         ),
         onSend = { }, // We don't use top bar for sending
         onUpdate = onUpdate,
     ) {
-        CreateCrossPostViewContent(
-            topicSuggestions = topicSuggestions.value,
-            selectedTopics = selectedTopics,
-            onUpdate = onUpdate
-        )
+        vm.event.value?.let { event ->
+            CreateCrossPostViewContent(
+                topicSuggestions = topicSuggestions.value,
+                selectedTopics = vm.topics,
+                event = event,
+                onUpdate = onUpdate
+            )
+        }
     }
 }
 
@@ -69,12 +64,12 @@ fun CreateCrossPostView(
 private fun CreateCrossPostViewContent(
     topicSuggestions: List<Topic>,
     selectedTopics: MutableState<List<Topic>>,
+    event: Event,
     onUpdate: (Cmd) -> Unit,
 ) {
     val showTopicSelection = remember { mutableStateOf(false) }
     if (showTopicSelection.value) AddTopicDialog(
         topicSuggestions = topicSuggestions,
-        showNext = canAddAnotherTopic(selectedItemLength = selectedTopics.value.size),
         onAdd = { topic -> selectedTopics.value += topic },
         onDismiss = { showTopicSelection.value = false },
         onUpdate = onUpdate
@@ -92,6 +87,7 @@ private fun CreateCrossPostViewContent(
                 .fillMaxWidth()
                 .padding(vertical = spacing.xxl, horizontal = spacing.bigScreenEdge),
             selectedTopics = selectedTopics,
+            event = event,
             onUpdate = onUpdate
         )
     }
@@ -101,19 +97,13 @@ private fun CreateCrossPostViewContent(
 private fun CrossPostButton(
     modifier: Modifier = Modifier,
     selectedTopics: State<List<Topic>>,
+    event: Event,
     onUpdate: (Cmd) -> Unit
 ) {
-    val context = LocalContext.current
-
     Button(
         modifier = modifier,
         onClick = {
-            onUpdate(
-                SendCrossPost(
-                    topics = selectedTopics.value,
-                    context = context,
-                    onGoBack = { onUpdate(GoBack) })
-            )
+            onUpdate(SendCrossPost(selectedTopics.value, event))
         }) {
         Icon(
             modifier = Modifier.size(sizing.smallIndicator),

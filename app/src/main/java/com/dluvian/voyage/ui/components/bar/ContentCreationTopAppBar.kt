@@ -1,21 +1,15 @@
 package com.dluvian.voyage.ui.components.bar
 
 import androidx.compose.foundation.basicMarquee
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.ui.components.button.SendIconButton
-import com.dluvian.voyage.ui.components.indicator.SmallCircleProgressIndicator
-import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
 fun ContentCreationTopAppBar(
     showSendButton: Boolean,
-    isSendingContent: Boolean,
     title: String? = null,
     onSend: () -> Unit,
     onUpdate: (Cmd) -> Unit
@@ -29,13 +23,8 @@ fun ContentCreationTopAppBar(
             )
         },
         actions = {
-            if (showSendButton && !isSendingContent) {
-                SendIconButton(onSend = onSend)
-            }
-            if (isSendingContent) {
-                SmallCircleProgressIndicator()
-                Spacer(modifier = Modifier.padding(start = spacing.small))
-            }
+            // TODO: Prevent double clicking
+            if (showSendButton) SendIconButton(onSend = onSend)
         },
         onUpdate = onUpdate
     )

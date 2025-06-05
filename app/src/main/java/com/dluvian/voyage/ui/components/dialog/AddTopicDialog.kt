@@ -25,7 +25,6 @@ import com.dluvian.voyage.ui.theme.sizing
 @Composable
 fun AddTopicDialog(
     topicSuggestions: List<Topic>,
-    showNext: Boolean,
     onAdd: (Topic) -> Unit,
     onDismiss: () -> Unit,
     onUpdate: (Cmd) -> Unit
@@ -71,7 +70,7 @@ fun AddTopicDialog(
             }
         },
         nextButton = {
-            if (showNext && showConfirmationButton) {
+            if (showConfirmationButton) {
                 TextButton(
                     onClick = {
                         onAdd(cleanInput)

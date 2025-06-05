@@ -77,7 +77,7 @@ fun NonMainView(
             onUpdate = core.onUpdate
         )
 
-        is CrossPostNavView -> CreateCrossPostView(
+        is CrossPostNavView -> CrossPostView(
             vm = core.vmContainer.createCrossPostVM,
             topicSuggestions = core.appContainer.suggestionProvider.topicSuggestions,
             snackbar = core.appContainer.snackbar,

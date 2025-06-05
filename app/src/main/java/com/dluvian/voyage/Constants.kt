@@ -3,6 +3,7 @@ package com.dluvian.voyage
 const val APP_NAME = "voyage"
 const val PAGE_SIZE = 25
 const val MAX_PUBKEYS = 500 // TODO: Use this
+const val MAX_TOPICS = 5
 const val MAX_NAME_LEN = 32
 const val MAX_LINES_SUBJECT = 3
 const val MAX_LINES_CONTENT = 12
