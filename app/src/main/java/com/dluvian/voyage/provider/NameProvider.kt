@@ -1,7 +1,7 @@
 package com.dluvian.voyage.provider
 
 import android.util.Log
-import com.dluvian.voyage.MAX_NAME_LEN
+import com.dluvian.voyage.normalizeName
 import com.dluvian.voyage.nostr.NostrService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -97,9 +97,6 @@ class NameProvider(private val service: NostrService) : IEventUpdate {
             return ""
         }
 
-        return result.getOrNull()?.getName()
-            .orEmpty()
-            .filterNot { it.isWhitespace() } // My preferred asthetics
-            .take(MAX_NAME_LEN) // Don't keep monster names in memory
+        return normalizeName(result.getOrNull()?.getName().orEmpty())
     }
 }

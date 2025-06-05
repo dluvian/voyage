@@ -30,3 +30,9 @@ fun Event.parentId(): EventId? {
         else -> this.tags().eventIds().firstOrNull()
     }
 }
+
+fun normalizeName(str: String): String {
+    return str
+        .filterNot { it.isWhitespace() } // My preferred asthetics
+        .take(MAX_NAME_LEN) // Don't keep monster names
+}
