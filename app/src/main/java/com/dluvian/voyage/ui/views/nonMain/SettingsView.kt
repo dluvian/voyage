@@ -6,18 +6,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Slider
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -42,14 +38,12 @@ import com.dluvian.voyage.shortenedNpub
 import com.dluvian.voyage.ui.components.bottomSheet.SeedBottomSheet
 import com.dluvian.voyage.ui.components.dialog.BaseActionDialog
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
-import com.dluvian.voyage.ui.components.indicator.SmallCircleProgressIndicator
 import com.dluvian.voyage.ui.components.row.ClickableRow
 import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.ui.components.text.AltSectionHeader
 import com.dluvian.voyage.ui.theme.AccountIcon
 import com.dluvian.voyage.ui.theme.spacing
 import com.dluvian.voyage.viewModel.SettingsViewModel
-import kotlinx.coroutines.CoroutineScope
 import rust.nostr.sdk.Nip19Profile
 
 @Composable
@@ -79,9 +73,6 @@ private fun SettingsViewContent(vm: SettingsViewModel, onUpdate: (Cmd) -> Unit) 
         }
         item {
             RelaySection(vm = vm, onUpdate = onUpdate)
-        }
-        item {
-            DatabaseSection(vm = vm, scope = scope, onUpdate = onUpdate)
         }
         item {
             AppSection(vm = vm, onUpdate = onUpdate)
@@ -155,70 +146,6 @@ private fun RelaySection(vm: SettingsViewModel, onUpdate: (Cmd) -> Unit) {
             text = stringResource(id = R.string.enable_to_authenticate_yourself_to_relays),
             checked = vm.sendAuth.value,
             onClickChange = { onUpdate(SendAuth(sendAuth = it)) })
-    }
-}
-
-@Composable
-private fun DatabaseSection(
-    vm: SettingsViewModel,
-    scope: CoroutineScope,
-    onUpdate: (Cmd) -> Unit
-) {
-    SettingsSection(header = stringResource(id = R.string.database)) {
-        val showThresholdDialog = remember { mutableStateOf(false) }
-        if (showThresholdDialog.value) {
-            val newNum = remember { mutableFloatStateOf(vm.rootPostThreshold.intValue.toFloat()) }
-            BaseActionDialog(title = stringResource(id = R.string.threshold) + ": ${newNum.floatValue.toInt()}",
-                main = {
-                    Slider(
-                        modifier = Modifier.padding(horizontal = spacing.bigScreenEdge),
-                        value = newNum.floatValue,
-                        onValueChange = { newNum.floatValue = it },
-                        valueRange = MIN_RETAIN_ROOT..MAX_RETAIN_ROOT
-                    )
-                },
-                onConfirm = {
-                    onUpdate(UpdateRootPostThreshold(threshold = newNum.floatValue))
-                },
-                onDismiss = { showThresholdDialog.value = false })
-        }
-
-        ClickableRow(header = stringResource(
-            id = R.string.keep_at_least_n_root_posts, vm.rootPostThreshold.intValue
-        ), text = stringResource(
-            id = R.string.currently_n_root_posts_in_db,
-            vm.currentRootPostCount.collectAsState().value
-        ), onClick = { showThresholdDialog.value = true })
-
-        val isExporting = vm.isExporting.value
-        val exportCount = vm.exportCount.intValue
-        ClickableRow(
-            header = stringResource(id = R.string.export_database),
-            text = if (isExporting && exportCount > 0) {
-                stringResource(id = R.string.exporting_n_posts, exportCount)
-            } else {
-                stringResource(id = R.string.export_your_posts_and_bookmarks)
-            },
-            onClick = { onUpdate(ExportDatabase(uiScope = scope)) },
-            trailingContent = {
-                if (isExporting) SmallCircleProgressIndicator()
-            })
-
-        val isDeleting = vm.isDeleting.value
-        val showDeleteDialog = remember { mutableStateOf(false) }
-        if (showDeleteDialog.value) BaseActionDialog(
-            title = stringResource(id = R.string.delete_posts),
-            text = stringResource(id = R.string.are_you_sure_you_want_to_delete_all_posts_from_the_database),
-            confirmText = stringResource(id = R.string.delete),
-            onConfirm = { onUpdate(ResetDatabase(uiScope = scope)) },
-            onDismiss = { showDeleteDialog.value = false })
-        ClickableRow(
-            header = stringResource(id = R.string.delete_posts),
-            text = stringResource(id = R.string.remove_all_posts_from_database),
-            onClick = { showDeleteDialog.value = true },
-            trailingContent = {
-                if (isDeleting) SmallCircleProgressIndicator()
-            })
     }
 }
 
