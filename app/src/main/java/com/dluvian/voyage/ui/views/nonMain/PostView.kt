@@ -19,12 +19,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
+import com.dluvian.voyage.MAX_LINES_SUBJECT
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.MAX_SUBJECT_LINES
-import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.data.room.view.AdvancedProfileView
-import com.dluvian.voyage.model.GoBack
+import com.dluvian.voyage.Topic
+import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.model.SendPost
+import com.dluvian.voyage.model.TrustProfile
 import com.dluvian.voyage.ui.components.row.TopicSelectionRow
 import com.dluvian.voyage.ui.components.scaffold.ContentCreationScaffold
 import com.dluvian.voyage.ui.components.text.InputWithSuggestions
@@ -35,7 +35,7 @@ import com.dluvian.voyage.viewModel.PostViewModel
 @Composable
 fun PostView(
     vm: PostViewModel,
-    searchSuggestions: State<List<AdvancedProfileView>>,
+    searchSuggestions: State<List<TrustProfile>>,
     topicSuggestions: State<List<Topic>>,
     snackbar: SnackbarHostState,
     onUpdate: (Cmd) -> Unit
@@ -56,17 +56,15 @@ fun PostView(
 
     ContentCreationScaffold(
         showSendButton = showSendButton,
-        isSendingContent = vm.isSending.value,
         snackbar = snackbar,
         title = stringResource(R.string.post),
         onSend = {
             onUpdate(
                 SendPost(
-                    header = header.value.text,
-                    body = body.value.text,
                     topics = topics.value,
-                    context = context,
-                    onGoBack = { onUpdate(GoBack) })
+                    subject = header.value.text,
+                    content = body.value.text,
+                )
             )
         },
         onUpdate = onUpdate,
@@ -74,7 +72,6 @@ fun PostView(
         CreatePostContent(
             header = header,
             body = body,
-            options = options,
             topicSuggestions = topicSuggestions.value,
             selectedTopics = topics,
             searchSuggestions = searchSuggestions.value,
@@ -90,7 +87,7 @@ private fun CreatePostContent(
     body: MutableState<TextFieldValue>,
     topicSuggestions: List<Topic>,
     selectedTopics: MutableState<List<Topic>>,
-    searchSuggestions: List<AdvancedProfileView>,
+    searchSuggestions: List<TrustProfile>,
     focusRequester: FocusRequester,
     onUpdate: (Cmd) -> Unit,
 ) {
@@ -108,7 +105,7 @@ private fun CreatePostContent(
         TextInput(
             value = header.value,
             onValueChange = { txt -> header.value = txt },
-            maxLines = MAX_SUBJECT_LINES,
+            maxLines = MAX_LINES_SUBJECT,
             placeholder = stringResource(id = R.string.subject_optional),
             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
         )
