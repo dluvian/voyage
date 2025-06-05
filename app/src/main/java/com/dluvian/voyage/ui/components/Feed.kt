@@ -36,7 +36,7 @@ import com.dluvian.voyage.paginator.IPaginator
 import com.dluvian.voyage.showScrollButton
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
-import com.dluvian.voyage.ui.components.row.mainEvent.MainEventRow
+import com.dluvian.voyage.ui.components.row.uiEvent.UIEventRow
 import com.dluvian.voyage.ui.theme.ScrollUpIcon
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
@@ -74,7 +74,7 @@ fun Feed(
             }
 
             items(items = page) { uiEvent ->
-                MainEventRow(
+                UIEventRow(
                     ctx = FeedCtx(uiEvent),
                     onUpdate = onUpdate
                 )

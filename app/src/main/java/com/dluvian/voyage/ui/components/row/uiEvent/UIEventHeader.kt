@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.components.row.mainEvent
+package com.dluvian.voyage.ui.components.row.uiEvent
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
@@ -24,8 +24,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dluvian.voyage.model.OpenProfile
-import com.dluvian.voyage.model.OpenTopic
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.PubkeyHex
@@ -36,6 +34,8 @@ import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.core.model.Poll
 import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.data.nostr.createNprofile
+import com.dluvian.voyage.model.OpenProfile
+import com.dluvian.voyage.model.OpenTopic
 import com.dluvian.voyage.ui.components.button.OptionsButton
 import com.dluvian.voyage.ui.components.icon.ClickableTrustIcon
 import com.dluvian.voyage.ui.components.text.AnnotatedText

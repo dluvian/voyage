@@ -1,12 +1,12 @@
 package com.dluvian.voyage.model
 
-sealed class UICtx(open val event: UIEvent)
-class FeedCtx(override val event: UIEvent) : UICtx(event = event)
-class ThreadRootCtx(override val event: UIEvent) : UICtx(event = event)
+sealed class UICtx(open val uiEvent: UIEvent)
+class FeedCtx(override val uiEvent: UIEvent) : UICtx(uiEvent = uiEvent)
+class ThreadRootCtx(override val uiEvent: UIEvent, val replyCount: UInt) : UICtx(uiEvent = uiEvent)
 class ThreadReplyCtx(
-    override val event: UIEvent,
+    override val uiEvent: UIEvent,
     val isOp: Boolean,
     val level: Int,
     val isCollapsed: Boolean,
     val hasReplies: Boolean
-) : UICtx(event = event)
+) : UICtx(uiEvent = uiEvent)

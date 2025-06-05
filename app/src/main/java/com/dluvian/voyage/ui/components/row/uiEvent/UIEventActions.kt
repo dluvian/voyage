@@ -1,4 +1,4 @@
-package com.dluvian.voyage.ui.components.row.mainEvent
+package com.dluvian.voyage.ui.components.row.uiEvent
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -21,8 +21,8 @@ import com.dluvian.voyage.ui.theme.OPBlue
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
-fun MainEventActions(
-    mainEvent: MainEvent,
+fun UIEventActions(
+    uiEvent: MainEvent,
     onUpdate: OnUpdate,
     additionalStartAction: @Composable () -> Unit = {},
     additionalEndAction: @Composable () -> Unit = {},
@@ -39,23 +39,23 @@ fun MainEventActions(
         }
         Spacer(modifier = Modifier.width(spacing.tiny))
         Row(verticalAlignment = Alignment.CenterVertically) {
-            if (mainEvent.isBookmarked) {
-                BookmarkIconButton(relevantId = mainEvent.getRelevantId(), onUpdate = onUpdate)
+            if (uiEvent.isBookmarked) {
+                BookmarkIconButton(relevantId = uiEvent.getRelevantId(), onUpdate = onUpdate)
                 Spacer(modifier = Modifier.width(spacing.large))
             }
-            when (mainEvent) {
+            when (uiEvent) {
                 is CrossPost,
                 is RootPost,
                 is Comment,
                 is LegacyReply -> {
-                    CrossPostIconButton(relevantId = mainEvent.getRelevantId(), onUpdate = onUpdate)
+                    CrossPostIconButton(relevantId = uiEvent.getRelevantId(), onUpdate = onUpdate)
                     Spacer(modifier = Modifier.width(spacing.large))
                 }
             }
             additionalEndAction()
             Spacer(modifier = Modifier.width(spacing.large))
             OPBlue
-            UpvoteButton(mainEvent = mainEvent, onUpdate = onUpdate)
+            UpvoteButton(mainEvent = uiEvent, onUpdate = onUpdate)
         }
     }
 }

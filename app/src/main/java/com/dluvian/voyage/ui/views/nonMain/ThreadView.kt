@@ -26,11 +26,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.EventIdHex
-import com.dluvian.voyage.core.Fn
+import com.dluvian.voyage.core.model.Comment
 import com.dluvian.voyage.core.model.Comment
 import com.dluvian.voyage.core.model.LegacyReply
+import com.dluvian.voyage.core.model.LegacyReply
+import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.model.SomeReply
+import com.dluvian.voyage.core.model.SomeReply
+import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.data.nostr.createNevent
 import com.dluvian.voyage.model.OpenThreadLink
 import com.dluvian.voyage.model.ThreadViewRefresh
@@ -38,9 +42,11 @@ import com.dluvian.voyage.ui.components.FullHorizontalDivider
 import com.dluvian.voyage.ui.components.bottomSheet.PostDetailsBottomSheet
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
-import com.dluvian.voyage.ui.components.row.mainEvent.MainEventRow
-import com.dluvian.voyage.ui.components.row.mainEvent.ThreadReplyCtx
-import com.dluvian.voyage.ui.components.row.mainEvent.ThreadRootCtx
+import com.dluvian.voyage.ui.components.row.uiEvent.ThreadReplyCtx
+import com.dluvian.voyage.ui.components.row.uiEvent.ThreadReplyCtx
+import com.dluvian.voyage.ui.components.row.uiEvent.ThreadRootCtx
+import com.dluvian.voyage.ui.components.row.uiEvent.ThreadRootCtx
+import com.dluvian.voyage.ui.components.row.uiEvent.UIEventRow
 import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
@@ -52,17 +58,8 @@ import com.dluvian.voyage.core.model.LegacyReply
 import com.dluvian.voyage.core.model.RootPost
 import com.dluvian.voyage.core.model.SomeReply
 import com.dluvian.voyage.data.nostr.createNevent
-import com.dluvian.voyage.ui.components.FullHorizontalDivider
-import com.dluvian.voyage.ui.components.bottomSheet.PostDetailsBottomSheet
-import com.dluvian.voyage.ui.components.indicator.BaseHint
-import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
-import com.dluvian.voyage.ui.components.row.mainEvent.MainEventRow
-import com.dluvian.voyage.ui.components.row.mainEvent.ThreadReplyCtx
-import com.dluvian.voyage.ui.components.row.mainEvent.ThreadRootCtx
-import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
-import com.dluvian.voyage.ui.theme.sizing
-import com.dluvian.voyage.ui.theme.spacing
-import com.dluvian.voyage.viewModel.ThreadViewModel
+import com.dluvian.voyage.ui.components.row.uiEvent.ThreadReplyCtx
+import com.dluvian.voyage.ui.components.row.uiEvent.ThreadRootCtx
 
 @Composable
 fun ThreadView(vm: ThreadViewModel, snackbar: SnackbarHostState, onUpdate: () -> Unit) {
@@ -134,7 +131,7 @@ private fun ThreadViewContent(
                 HintText(text = stringResource(id = R.string.parent_event_is_not_supported))
             }
             item {
-                MainEventRow(
+                UIEventRow(
                     ctx = localRoot,
                     onUpdate = onUpdate
                 )
@@ -147,7 +144,7 @@ private fun ThreadViewContent(
                 FullLinearProgressIndicator()
             }
             itemsIndexed(adjustedReplies) { i, reply ->
-                MainEventRow(
+                UIEventRow(
                     ctx = reply,
                     onUpdate = onUpdate
                 )
@@ -165,7 +162,7 @@ private fun ThreadViewContent(
 }
 
 @Composable
-fun MoreRepliesTextButton(replyCount: Int, onShowReplies: Fn) {
+fun MoreRepliesTextButton(onShowReplies: () -> Unit) {
     val isLoading = remember { mutableStateOf(false) }
     Row(
         modifier = Modifier.height(IntrinsicSize.Min),

@@ -6,7 +6,7 @@ import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.cmd.OpenReplyCreation
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.ui.components.row.mainEvent.MainEventCtx
+import com.dluvian.voyage.ui.components.row.uiEvent.MainEventCtx
 import com.dluvian.voyage.ui.theme.CommentIcon
 
 @Composable
