@@ -22,8 +22,8 @@ class DiscoverViewModel(
     private val maxCount = 75
 
     val isRefreshing = mutableStateOf(false)
-    val popularTopics = mutableStateOf(emptyList<TopicFollowState>())
-    val popularProfiles = mutableStateOf(emptyList<TrustProfile>())
+    val topics = mutableStateOf(emptyList<TopicFollowState>())
+    val profiles = mutableStateOf(emptyList<TrustProfile>())
 
     fun handle(cmd: DiscoverViewCmd) {
         when (cmd) {

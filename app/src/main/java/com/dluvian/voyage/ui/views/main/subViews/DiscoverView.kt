@@ -14,7 +14,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -35,8 +34,8 @@ import com.dluvian.voyage.viewModel.DiscoverViewModel
 @Composable
 fun DiscoverView(vm: DiscoverViewModel, onUpdate: (Cmd) -> Unit) {
     val isRefreshing by vm.isRefreshing
-    val topics by vm.popularTopics.value.collectAsState()
-    val profiles by vm.popularProfiles.value.collectAsState()
+    val topics by vm.topics
+    val profiles by vm.profiles
 
     val topicState = rememberLazyStaggeredGridState()
     val profileState = rememberLazyStaggeredGridState()
@@ -52,8 +51,8 @@ fun DiscoverView(vm: DiscoverViewModel, onUpdate: (Cmd) -> Unit) {
     }
 
     val followableTopics = remember(topics) {
-        topics.map {
-            FollowableTopicItem(topic = it.topic, isFollowed = it.isFollowed, onUpdate = onUpdate)
+        topics.map { (topic, followed) ->
+            FollowableTopicItem(topic = topic, isFollowed = followed, onUpdate = onUpdate)
         }
     }
     val followableProfiles = remember(profiles) {
