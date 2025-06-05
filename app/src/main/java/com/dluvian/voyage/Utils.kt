@@ -17,6 +17,10 @@ fun Event.subject(): String? {
     return this.tags().find(TagKind.Subject)?.content()?.trim()
 }
 
+fun Event.client(): String? {
+    return this.tags().find(TagKind.Client)?.content()?.trim()
+}
+
 fun Event.parentId(): EventId? {
     return when (this.kind().asStd()) {
         // TODO: Upstream nip10 and nip22 extract
