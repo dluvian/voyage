@@ -1,5 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="app_name" translatable="false">Voyage</string>
+    <string name="version">Version</string>
     <string name="version_nr" translatable="false">v0.17.5</string>
     <string name="comment">Comment</string>
     <string name="upvote">Upvote</string>
@@ -257,4 +258,5 @@
     <string name="click_to_show_nsec">Click to show nsec</string>
     <string name="nostr_connect">Nostr connect</string>
     <string name="click_to_show_nostr_connect_uri">Click to show Nostr Connect URI</string>
+    <string name="login_with_different_account">Login with different account</string>
 </resources>

@@ -20,8 +20,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
 import com.dluvian.voyage.R
 import com.dluvian.voyage.model.AddClientTag
 import com.dluvian.voyage.model.BunkerSigner
@@ -99,7 +99,7 @@ private fun AccountSection(
                 onUpdate(OpenNProfile(Nip19Profile(signerType.pubkey)))
             }
         ) {
-            AccountRowButton(signerType = signerType, onUpdate = onUpdate)
+            AccountRowButton(onUpdate = onUpdate)
         }
         when (signerType) {
             is BunkerSigner -> {
@@ -156,7 +156,7 @@ private fun AppSection(vm: SettingsViewModel, onUpdate: (Cmd) -> Unit) {
     SettingsSection(header = stringResource(id = R.string.app)) {
         val showUpvoteDialog = remember { mutableStateOf(false) }
         if (showUpvoteDialog.value) {
-            val newUpvote = remember { mutableStateOf(vm.currentUpvote.value.toTextFieldValue()) }
+            val newUpvote = remember { mutableStateOf(TextFieldValue(vm.currentUpvote.value)) }
             BaseActionDialog(title = stringResource(id = R.string.upvote_event_content),
                 main = {
                     LaunchedEffect(key1 = Unit) { focusRequester.requestFocus() }
@@ -199,22 +199,16 @@ private fun AppSection(vm: SettingsViewModel, onUpdate: (Cmd) -> Unit) {
 
 @Composable
 private fun AccountRowButton(
-    signerType: SignerType,
     onUpdate: (Cmd) -> Unit
 ) {
-    val context = LocalContext.current
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-        when (signerType) {
-            is ExternalAccount -> TextButton(onClick = { onUpdate(UseDefaultAccount) }) {
-                Text(text = stringResource(id = R.string.logout))
-            }
-
-            is DefaultAccount -> TextButton(onClick = {
-                onUpdate(RequestExternalAccount(context = context))
-            }) {
-                Text(text = stringResource(id = R.string.login_with_external_signer))
-            }
+        val showLoginDialog = remember { mutableStateOf(false) }
+        TextButton(onClick = {
+            showLoginDialog.value = true
+        }) {
+            Text(text = stringResource(id = R.string.login_with_different_account))
         }
+        // TODO: Show login dialog for inputting nsec, mnemonic or nsecbunker
     }
 }
 
