@@ -26,6 +26,7 @@ import com.dluvian.voyage.model.NavCmd
 import com.dluvian.voyage.model.PostViewCmd
 import com.dluvian.voyage.model.ProfileViewCmd
 import com.dluvian.voyage.model.PublishNip65
+import com.dluvian.voyage.model.PublishProfile
 import com.dluvian.voyage.model.Rebroadcast
 import com.dluvian.voyage.model.ReceiveEvent
 import com.dluvian.voyage.model.RelayClosed
@@ -224,6 +225,7 @@ class Core(
             is PublishNip65 -> TODO()
             is ShowEventDetails -> TODO()
             is CloseEventDetails -> TODO()
+            is PublishProfile -> TODO()
         }
     }
 

@@ -16,6 +16,7 @@ import com.dluvian.voyage.provider.IEventUpdate
 import com.dluvian.voyage.provider.NameProvider
 import com.dluvian.voyage.provider.OldestUsedTimestampProvider
 import com.dluvian.voyage.provider.ProfileProvider
+import com.dluvian.voyage.provider.SuggestionProvider
 import com.dluvian.voyage.provider.TopicProvider
 import com.dluvian.voyage.provider.TrustProvider
 import com.dluvian.voyage.provider.UpvoteProvider
@@ -35,6 +36,7 @@ class AppContainer(val context: Context) {
 
     val service = NostrService(relayPreferences, keyStore, relayChannel)
 
+    val suggestionProvider = SuggestionProvider()
     val profileProvider = ProfileProvider(service)
     val nameProvider = NameProvider(service)
     val trustProvider = TrustProvider(service)

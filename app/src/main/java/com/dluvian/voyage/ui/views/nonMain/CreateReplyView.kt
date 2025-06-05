@@ -25,23 +25,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.model.MainEvent
-import com.dluvian.voyage.data.room.view.AdvancedProfileView
+import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.model.GoBack
 import com.dluvian.voyage.model.SendReply
-import com.dluvian.voyage.ui.components.bottomSheet.FullPostBottomSheet
-import com.dluvian.voyage.ui.components.scaffold.ContentCreationScaffold
-import com.dluvian.voyage.ui.components.text.InputWithSuggestions
-import com.dluvian.voyage.ui.components.text.TextInput
-import com.dluvian.voyage.ui.theme.ExpandIcon
-import com.dluvian.voyage.ui.theme.spacing
-import com.dluvian.voyage.viewModel.ReplyViewModel
-
-)->Unit
-import com.dluvian.voyage.core.model.MainEvent
-import com.dluvian.voyage.data.room.view.AdvancedProfileView
-import com.dluvian.voyage.model.GoBack
-import com.dluvian.voyage.model.SendReply
+import com.dluvian.voyage.model.TrustProfile
 import com.dluvian.voyage.ui.components.bottomSheet.FullPostBottomSheet
 import com.dluvian.voyage.ui.components.scaffold.ContentCreationScaffold
 import com.dluvian.voyage.ui.components.text.InputWithSuggestions
@@ -53,9 +40,9 @@ import com.dluvian.voyage.viewModel.ReplyViewModel
 @Composable
 fun CreateReplyView(
     vm: ReplyViewModel,
-    searchSuggestions: State<List<AdvancedProfileView>>,
+    searchSuggestions: State<List<TrustProfile>>,
     snackbar: SnackbarHostState,
-    onUpdate: () -> Unit
+    onUpdate: (Cmd) -> Unit
 ) {
     val isSendingResponse by vm.isSendingReply
     val response = remember { mutableStateOf(TextFieldValue()) }

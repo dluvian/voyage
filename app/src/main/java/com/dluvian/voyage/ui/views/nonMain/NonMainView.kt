@@ -8,6 +8,7 @@ import com.dluvian.voyage.navigator.CreatePostNavView
 import com.dluvian.voyage.navigator.CrossPostNavView
 import com.dluvian.voyage.navigator.EditProfileNavView
 import com.dluvian.voyage.navigator.FollowListsNavView
+import com.dluvian.voyage.navigator.NProfileNavView
 import com.dluvian.voyage.navigator.NonMainNavView
 import com.dluvian.voyage.navigator.ProfileNavView
 import com.dluvian.voyage.navigator.RelayEditorNavView
@@ -29,8 +30,8 @@ fun NonMainView(
         CreatePostNavView -> CreatePostView(
             vm = core.vmContainer.createPostVM,
             snackbar = core.appContainer.snackbar,
-            searchSuggestions = core.appContainer.suggestionProvider.profileSuggestions,
-            topicSuggestions = core.appContainer.suggestionProvider.topicSuggestions,
+            searchSuggestions = core.appContainer.suggestionProvider.profiles,
+            topicSuggestions = core.appContainer.suggestionProvider.topics,
             onUpdate = core.onUpdate
         )
 
@@ -40,7 +41,7 @@ fun NonMainView(
             onUpdate = core.onUpdate
         )
 
-        is ProfileNavView -> ProfileView(
+        is ProfileNavView, is NProfileNavView -> ProfileView(
             vm = core.vmContainer.profileVM,
             snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate
@@ -61,7 +62,7 @@ fun NonMainView(
         is ReplyNavView -> CreateReplyView(
             vm = core.vmContainer.createReplyVM,
             snackbar = core.appContainer.snackbar,
-            searchSuggestions = core.appContainer.suggestionProvider.profileSuggestions,
+            searchSuggestions = core.appContainer.suggestionProvider.profiles,
             onUpdate = core.onUpdate
         )
 
@@ -79,7 +80,7 @@ fun NonMainView(
 
         is CrossPostNavView -> CrossPostView(
             vm = core.vmContainer.createCrossPostVM,
-            topicSuggestions = core.appContainer.suggestionProvider.topicSuggestions,
+            topicSuggestions = core.appContainer.suggestionProvider.topics,
             snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate
         )
@@ -103,9 +104,9 @@ fun NonMainView(
         )
 
         CreateGitIssueNavView -> CreateGitIssueView(
-            vm = core.vmContainer.createGitIssueVM,
+            vm = core.vmContainer.gitIssueVM,
             snackbar = core.appContainer.snackbar,
-            searchSuggestions = core.appContainer.suggestionProvider.profileSuggestions,
+            searchSuggestions = core.appContainer.suggestionProvider.profiles,
             onUpdate = core.onUpdate
         )
     }
