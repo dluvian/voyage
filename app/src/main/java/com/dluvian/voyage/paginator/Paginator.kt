@@ -9,10 +9,13 @@ import rust.nostr.sdk.Event
 import rust.nostr.sdk.Timestamp
 
 
-class Paginator(private val feedProvider: FeedProvider) : IPaginator {
+class Paginator(
+    private val feedProvider: FeedProvider,
+) : IPaginator {
     override val isRefreshing = mutableStateOf(false)
     override val isSwitchingPage = mutableStateOf(false)
     override val isNotFirstPage = mutableStateOf(false)
+    override val showNextPageBtn = mutableStateOf(false)
     override val page = mutableStateOf(emptyList<UIEvent>())
 
     private lateinit var feedSetting: FeedSetting
@@ -29,6 +32,7 @@ class Paginator(private val feedProvider: FeedProvider) : IPaginator {
         page.value = feedProvider.buildFeed(until = Timestamp.now(), setting = feedSetting)
 
         isRefreshing.value = false
+        showNextPageBtn.value = showNextPageBtn()
     }
 
     override suspend fun dbRefreshInPlace() {
@@ -39,6 +43,7 @@ class Paginator(private val feedProvider: FeedProvider) : IPaginator {
             setting = feedSetting,
             dbOnly = true
         )
+        showNextPageBtn.value = showNextPageBtn()
     }
 
     override suspend fun nextPage() {
@@ -60,10 +65,13 @@ class Paginator(private val feedProvider: FeedProvider) : IPaginator {
         )
 
         isSwitchingPage.value = false
+        showNextPageBtn.value = showNextPageBtn()
     }
 
     override suspend fun update(event: Event) {
         // TODO: Issue: This could be more specific to prevent unnecessary db calls
         dbRefreshInPlace()
     }
+
+    private fun showNextPageBtn() = page.value.size >= feedSetting.pageSize.toInt()
 }
