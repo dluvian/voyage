@@ -16,13 +16,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import com.dluvian.voyage.R
+import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.model.SearchText
 import com.dluvian.voyage.model.UpdateSearchText
-import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.ui.components.button.GoBackIconButton
 import com.dluvian.voyage.ui.theme.RoundedChip
 
@@ -32,7 +31,7 @@ fun SearchTopAppBar(focusRequester: FocusRequester, onUpdate: (Cmd) -> Unit) {
     val text = remember {
         mutableStateOf("")
     }
-    val context = LocalContext.current
+
     TopAppBar(
         title = {
             TextField(

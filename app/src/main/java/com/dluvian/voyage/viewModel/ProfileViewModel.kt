@@ -18,6 +18,7 @@ import com.dluvian.voyage.paginator.Paginator
 import com.dluvian.voyage.provider.FeedProvider
 import com.dluvian.voyage.provider.IEventUpdate
 import rust.nostr.sdk.Event
+import rust.nostr.sdk.Metadata
 import rust.nostr.sdk.PublicKey
 
 class ProfileViewModel(
@@ -31,7 +32,7 @@ class ProfileViewModel(
     val tabIndex = mutableIntStateOf(0)
     val pubkey = mutableStateOf<PublicKey?>(null)
     val isMe = mutableStateOf(false)
-    val profile = mutableStateOf<rust.nostr.sdk.Metadata?>(null)
+    val profile = mutableStateOf<Metadata?>(null)
     val nip65 = mutableStateOf<Event?>(null)
     val trustedBy = mutableStateOf<TrustProfile?>(null)
     val paginator = Paginator(feedProvider = feedProvider)

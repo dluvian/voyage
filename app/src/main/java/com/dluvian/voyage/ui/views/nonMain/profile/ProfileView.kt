@@ -32,25 +32,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import com.dluvian.voyage.OpenLightningWallet
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.Bech32
-import com.dluvian.voyage.core.MAX_RELAYS
-
-import com.dluvian.voyage.core.model.FriendTrust
-import com.dluvian.voyage.core.utils.copyAndToast
-import com.dluvian.voyage.core.utils.getSimpleLauncher
-import com.dluvian.voyage.core.utils.shortenBech32
-import com.dluvian.voyage.core.utils.takeRandom
-import com.dluvian.voyage.core.utils.toBech32
-import com.dluvian.voyage.data.nostr.Nip65Relay
-import com.dluvian.voyage.data.nostr.RelayUrl
-import com.dluvian.voyage.data.nostr.createNprofile
-import com.dluvian.voyage.data.room.view.AdvancedProfileView
+import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.model.OpenProfile
 import com.dluvian.voyage.model.OpenRelayProfile
 import com.dluvian.voyage.model.ProfileViewRefresh
-import com.dluvian.voyage.model.ProfileViewRootAppend
 import com.dluvian.voyage.ui.components.Feed
 import com.dluvian.voyage.ui.components.SimpleTabPager
 import com.dluvian.voyage.ui.components.icon.ClickableTrustIcon
@@ -70,8 +56,8 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: (Cmd) -> Unit) {
-    val profile by vm.profile.value.collectAsState()
-    val nip65Relays by vm.nip65Relays.value.collectAsState()
+    val profile by vm.profile
+    val nip65 by vm.nip65
     val headers = listOf(
         stringResource(id = R.string.posts),
         stringResource(id = R.string.about),
@@ -81,8 +67,6 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: (Cm
 
     ProfileScaffold(
         profile = profile,
-        addableLists = vm.addableLists.value,
-        nonAddableLists = vm.nonAddableLists.value,
         snackbar = snackbar,
         onUpdate = onUpdate
     ) {

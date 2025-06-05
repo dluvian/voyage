@@ -6,13 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
-import com.dluvian.voyage.cmd.ClickEditProfile
-import com.dluvian.voyage.cmd.FollowProfile
-import com.dluvian.voyage.cmd.UnfollowProfile
-import com.dluvian.voyage.core.model.ItemSetProfile
-import com.dluvian.voyage.data.filterSetting.FullProfileUI
-import com.dluvian.voyage.data.filterSetting.ItemSetMeta
 import com.dluvian.voyage.model.Cmd
+import com.dluvian.voyage.model.TrustProfile
 import com.dluvian.voyage.ui.components.bar.SimpleGoBackTopAppBar
 import com.dluvian.voyage.ui.components.button.FollowButton
 import com.dluvian.voyage.ui.components.button.ProfileOrTopicOptionButton
@@ -20,9 +15,7 @@ import com.dluvian.voyage.ui.components.button.ProfileOrTopicOptionButton
 
 @Composable
 fun ProfileTopAppBar(
-    profile: FullProfileUI,
-    addableLists: List<ItemSetMeta>,
-    nonAddableLists: List<ItemSetMeta>,
+    profile: TrustProfile,
     onUpdate: (Cmd) -> Unit
 ) {
     SimpleGoBackTopAppBar(

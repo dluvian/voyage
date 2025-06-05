@@ -3,47 +3,33 @@ package com.dluvian.voyage.ui.views.nonMain.search
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.(
-
-Cmd)-> Unit
-import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.model.TrustType
-import com.dluvian.voyage.data.nostr.createNevent
-import com.dluvian.voyage.data.nostr.createNprofile
-import com.dluvian.voyage.data.room.view.AdvancedProfileView
-import com.dluvian.voyage.data.room.view.SimplePostView
-import com.dluvian.voyage.model.OpenProfile
-import com.dluvian.voyage.model.OpenThreadNevent
+import com.dluvian.voyage.Topic
+import com.dluvian.voyage.model.Cmd
+import com.dluvian.voyage.model.OpenNProfile
 import com.dluvian.voyage.model.OpenTopic
-import com.dluvian.voyage.model.SubUnknownProfiles
+import com.dluvian.voyage.model.TrustProfile
 import com.dluvian.voyage.ui.components.row.ClickableProfileRow
 import com.dluvian.voyage.ui.components.row.ClickableRow
-import com.dluvian.voyage.ui.components.row.ClickableTrustIconRow
 import com.dluvian.voyage.ui.components.text.SectionHeader
 import com.dluvian.voyage.ui.theme.HashtagIcon
 import com.dluvian.voyage.ui.theme.spacing
 import com.dluvian.voyage.viewModel.SearchViewModel
+import rust.nostr.sdk.Nip19Profile
 
 @Composable
 fun SearchView(vm: SearchViewModel, onUpdate: (Cmd) -> Unit) {
     val topics by vm.topics
     val profiles by vm.profiles
-    val posts by vm.posts
-
-    LaunchedEffect(key1 = Unit) {
-        onUpdate(SubUnknownProfiles)
-    }
 
     SearchViewContent(
         topics = topics,
         profiles = profiles,
-        posts = posts,
         onUpdate = onUpdate
     )
 }
@@ -51,8 +37,7 @@ fun SearchView(vm: SearchViewModel, onUpdate: (Cmd) -> Unit) {
 @Composable
 private fun SearchViewContent(
     topics: List<Topic>,
-    profiles: List<AdvancedProfileView>,
-    posts: List<SimplePostView>,
+    profiles: List<TrustProfile>,
     onUpdate: (Cmd) -> Unit
 ) {
     LazyColumn(
@@ -78,29 +63,8 @@ private fun SearchViewContent(
                 ClickableProfileRow(
                     profile = profile,
                     onClick = {
-                        onUpdate(OpenProfile(nprofile = createNprofile(hex = profile.pubkey)))
+                        onUpdate(OpenNProfile(Nip19Profile(profile.pubkey)))
                     })
-            }
-        }
-
-        if (posts.isNotEmpty()) {
-            item {
-                SectionHeader(header = stringResource(id = R.string.posts))
-            }
-            items(posts) { post ->
-                ClickableTrustIconRow(
-                    trustType = TrustType.from(
-                        isOneself = post.authorIsOneself,
-                        isFriend = post.authorIsFriend,
-                        isWebOfTrust = post.authorIsTrusted,
-                        isInList = post.authorIsInList,
-                    ),
-                    header = post.subject,
-                    content = post.content,
-                    onClick = {
-                        onUpdate(OpenThreadNevent(nevent = createNevent(hex = post.id)))
-                    },
-                )
             }
         }
     }
