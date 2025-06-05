@@ -5,12 +5,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
-import com.dluvian.voyage.cmd.ClickSearch
-import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.model.ClickSearch
+import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.ui.theme.SearchIcon
 
 @Composable
-fun SearchIconButton(onUpdate: OnUpdate) {
+fun SearchIconButton(onUpdate: (Cmd) -> Unit) {
     IconButton(onClick = { onUpdate(ClickSearch) }) {
         Icon(imageVector = SearchIcon, contentDescription = stringResource(id = R.string.search))
     }

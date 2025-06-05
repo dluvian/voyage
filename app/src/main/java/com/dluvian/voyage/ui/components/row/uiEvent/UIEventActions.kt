@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.model.Comment
 import com.dluvian.voyage.core.model.CrossPost
 import com.dluvian.voyage.core.model.LegacyReply
@@ -23,7 +22,7 @@ import com.dluvian.voyage.ui.theme.spacing
 @Composable
 fun UIEventActions(
     uiEvent: MainEvent,
-    onUpdate: OnUpdate,
+    onUpdate: (Cmd) -> Unit,
     additionalStartAction: @Composable () -> Unit = {},
     additionalEndAction: @Composable () -> Unit = {},
 ) {
@@ -55,7 +54,7 @@ fun UIEventActions(
             additionalEndAction()
             Spacer(modifier = Modifier.width(spacing.large))
             OPBlue
-            UpvoteButton(mainEvent = uiEvent, onUpdate = onUpdate)
+            UpvoteButton(uiEvent = uiEvent, onUpdate = onUpdate)
         }
     }
 }

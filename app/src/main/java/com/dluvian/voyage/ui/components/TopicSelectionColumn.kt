@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.MAX_TOPICS
-import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.ui.components.list.TopicList
 import com.dluvian.voyage.ui.components.row.AddRow
@@ -19,7 +18,7 @@ fun TopicSelectionColumn(
     topicSuggestions: List<Topic>,
     selectedTopics: MutableState<List<Topic>>,
     modifier: Modifier = Modifier,
-    onUpdate: OnUpdate
+    onUpdate: (Cmd) -> Unit
 ) {
     val showDialog = remember { mutableStateOf(false) }
     TopicSelectionContainer(

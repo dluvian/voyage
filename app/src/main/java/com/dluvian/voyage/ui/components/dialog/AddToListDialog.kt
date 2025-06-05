@@ -7,11 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
-import com.dluvian.voyage.cmd.AddItemToList
-import com.dluvian.voyage.core.Fn
-import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.model.ItemSetItem
-import com.dluvian.voyage.data.filterSetting.ItemSetMeta
+import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.ui.components.selection.NamedCheckbox
 import kotlinx.coroutines.CoroutineScope
 
@@ -21,8 +17,8 @@ fun AddToListDialog(
     addableLists: List<ItemSetMeta>,
     nonAddableLists: List<ItemSetMeta>,
     scope: CoroutineScope,
-    onUpdate: OnUpdate,
-    onDismiss: Fn
+    onUpdate: (Cmd) -> Unit,
+    onDismiss: () -> Unit
 ) {
     val context = LocalContext.current
     AlertDialog(

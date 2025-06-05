@@ -9,7 +9,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.core.(
+
+Cmd)-> Unit
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.TrustType
 import com.dluvian.voyage.data.nostr.createNevent
@@ -29,7 +31,7 @@ import com.dluvian.voyage.ui.theme.spacing
 import com.dluvian.voyage.viewModel.SearchViewModel
 
 @Composable
-fun SearchView(vm: SearchViewModel, onUpdate: OnUpdate) {
+fun SearchView(vm: SearchViewModel, onUpdate: (Cmd) -> Unit) {
     val topics by vm.topics
     val profiles by vm.profiles
     val posts by vm.posts
@@ -51,7 +53,7 @@ private fun SearchViewContent(
     topics: List<Topic>,
     profiles: List<AdvancedProfileView>,
     posts: List<SimplePostView>,
-    onUpdate: OnUpdate
+    onUpdate: (Cmd) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),

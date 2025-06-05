@@ -3,13 +3,7 @@ package com.dluvian.voyage.ui.components.bar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import com.dluvian.voyage.core.ComposableRowContent
-import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.ui.components.button.GoBackIconButton
-
-Composable () ->Unit
-import com.dluvian.voyage.core.ComposableRowContent
-import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.ui.components.button.GoBackIconButton
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -17,7 +11,7 @@ import com.dluvian.voyage.ui.components.button.GoBackIconButton
 fun GoBackTopAppBar(
     title: @Composable () -> Unit = {},
     actions: ComposableRowContent = {},
-    onUpdate: OnUpdate
+    onUpdate: (Cmd) -> Unit
 ) {
     TopAppBar(
         title = title,

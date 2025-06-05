@@ -8,6 +8,7 @@ import com.dluvian.voyage.model.BookmarkPost
 import com.dluvian.voyage.model.BookmarkViewCmd
 import com.dluvian.voyage.model.ClickNeutralizeVotes
 import com.dluvian.voyage.model.ClickUpvote
+import com.dluvian.voyage.model.CloseEventDetails
 import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.model.CoreActionCmd
 import com.dluvian.voyage.model.CrossPostViewCmd
@@ -24,6 +25,7 @@ import com.dluvian.voyage.model.InboxViewCmd
 import com.dluvian.voyage.model.NavCmd
 import com.dluvian.voyage.model.PostViewCmd
 import com.dluvian.voyage.model.ProfileViewCmd
+import com.dluvian.voyage.model.PublishNip65
 import com.dluvian.voyage.model.Rebroadcast
 import com.dluvian.voyage.model.ReceiveEvent
 import com.dluvian.voyage.model.RelayClosed
@@ -38,6 +40,7 @@ import com.dluvian.voyage.model.SendGitIssue
 import com.dluvian.voyage.model.SendPost
 import com.dluvian.voyage.model.SendReply
 import com.dluvian.voyage.model.SettingsViewCmd
+import com.dluvian.voyage.model.ShowEventDetails
 import com.dluvian.voyage.model.ThreadViewCmd
 import com.dluvian.voyage.model.TopicViewCmd
 import com.dluvian.voyage.model.UnbookmarkPost
@@ -189,14 +192,14 @@ class Core(
             }
 
             is BookmarkPost -> viewModelScope.launch {
-                val result = appContainer.eventCreator.addBookmark(cmd.event.id())
+                val result = appContainer.eventCreator.addBookmark(cmd.id)
                 if (result.isFailure) {
                     showSnackbarMsg(appContainer.context.getString(R.string.failed_to_sign_bookmarks))
                 }
             }
 
             is UnbookmarkPost -> viewModelScope.launch {
-                val result = appContainer.eventCreator.removeBookmark(cmd.event.id())
+                val result = appContainer.eventCreator.removeBookmark(cmd.id)
                 if (result.isFailure) {
                     showSnackbarMsg(appContainer.context.getString(R.string.failed_to_sign_bookmarks))
                 }
@@ -218,6 +221,9 @@ class Core(
             is SendGitIssue -> TODO()
             is SendPost -> TODO()
             is SendReply -> TODO()
+            is PublishNip65 -> TODO()
+            is ShowEventDetails -> TODO()
+            is CloseEventDetails -> TODO()
         }
     }
 

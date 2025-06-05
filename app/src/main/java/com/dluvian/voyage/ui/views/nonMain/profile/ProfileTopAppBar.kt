@@ -9,10 +9,10 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.cmd.ClickEditProfile
 import com.dluvian.voyage.cmd.FollowProfile
 import com.dluvian.voyage.cmd.UnfollowProfile
-import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.model.ItemSetProfile
 import com.dluvian.voyage.data.filterSetting.FullProfileUI
 import com.dluvian.voyage.data.filterSetting.ItemSetMeta
+import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.ui.components.bar.SimpleGoBackTopAppBar
 import com.dluvian.voyage.ui.components.button.FollowButton
 import com.dluvian.voyage.ui.components.button.ProfileOrTopicOptionButton
@@ -23,7 +23,7 @@ fun ProfileTopAppBar(
     profile: FullProfileUI,
     addableLists: List<ItemSetMeta>,
     nonAddableLists: List<ItemSetMeta>,
-    onUpdate: OnUpdate
+    onUpdate: (Cmd) -> Unit
 ) {
     SimpleGoBackTopAppBar(
         title = profile.inner.name,

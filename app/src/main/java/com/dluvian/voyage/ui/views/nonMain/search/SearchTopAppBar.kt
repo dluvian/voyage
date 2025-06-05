@@ -22,13 +22,13 @@ import androidx.compose.ui.text.input.ImeAction
 import com.dluvian.voyage.R
 import com.dluvian.voyage.model.SearchText
 import com.dluvian.voyage.model.UpdateSearchText
-import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.ui.components.button.GoBackIconButton
 import com.dluvian.voyage.ui.theme.RoundedChip
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchTopAppBar(focusRequester: FocusRequester, onUpdate: OnUpdate) {
+fun SearchTopAppBar(focusRequester: FocusRequester, onUpdate: (Cmd) -> Unit) {
     val text = remember {
         mutableStateOf("")
     }
@@ -42,7 +42,7 @@ fun SearchTopAppBar(focusRequester: FocusRequester, onUpdate: OnUpdate) {
                     .focusRequester(focusRequester),
                 value = text.value,
                 onValueChange = { newText ->
-                    onUpdate(UpdateSearchText(text = newText))
+                    onUpdate(UpdateSearchText(newText))
                     text.value = newText
                 },
                 placeholder = { Text(text = stringResource(id = R.string.search_)) },
@@ -58,7 +58,7 @@ fun SearchTopAppBar(focusRequester: FocusRequester, onUpdate: OnUpdate) {
                 keyboardActions = KeyboardActions(
                     onSearch = {
                         onUpdate(
-                            SearchText(text = text.value, context = context, onUpdate = onUpdate)
+                            SearchText(text.value)
                         )
                     },
                 ),

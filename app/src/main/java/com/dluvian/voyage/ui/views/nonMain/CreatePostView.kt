@@ -21,7 +21,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.MAX_SUBJECT_LINES
-import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.data.room.view.AdvancedProfileView
 import com.dluvian.voyage.model.GoBack
@@ -39,7 +38,7 @@ fun CreatePostView(
     searchSuggestions: State<List<AdvancedProfileView>>,
     topicSuggestions: State<List<Topic>>,
     snackbar: SnackbarHostState,
-    onUpdate: OnUpdate
+    onUpdate: (Cmd) -> Unit
 ) {
     val header = remember { mutableStateOf(TextFieldValue()) }
     val body = remember { mutableStateOf(TextFieldValue()) }
@@ -93,7 +92,7 @@ private fun CreatePostContent(
     selectedTopics: MutableState<List<Topic>>,
     searchSuggestions: List<AdvancedProfileView>,
     focusRequester: FocusRequester,
-    onUpdate: OnUpdate,
+    onUpdate: (Cmd) -> Unit,
 ) {
     InputWithSuggestions(
         body = body,

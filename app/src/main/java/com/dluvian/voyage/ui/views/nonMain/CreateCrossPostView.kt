@@ -21,10 +21,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
+import com.dluvian.voyage.Topic
 import com.dluvian.voyage.canAddAnotherTopic
 import com.dluvian.voyage.core.MAX_TOPICS
-import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.model.GoBack
 import com.dluvian.voyage.model.SendCrossPost
 import com.dluvian.voyage.ui.components.TopicSelectionColumn
@@ -40,7 +41,7 @@ fun CreateCrossPostView(
     vm: CrossPostViewModel,
     topicSuggestions: State<List<Topic>>,
     snackbar: SnackbarHostState,
-    onUpdate: OnUpdate
+    onUpdate: (Cmd) -> Unit
 ) {
     val isSending by vm.isSending
     val selectedTopics = remember { mutableStateOf(emptyList<Topic>()) }
@@ -68,7 +69,7 @@ fun CreateCrossPostView(
 private fun CreateCrossPostViewContent(
     topicSuggestions: List<Topic>,
     selectedTopics: MutableState<List<Topic>>,
-    onUpdate: OnUpdate,
+    onUpdate: (Cmd) -> Unit,
 ) {
     val showTopicSelection = remember { mutableStateOf(false) }
     if (showTopicSelection.value) AddTopicDialog(
@@ -100,7 +101,7 @@ private fun CreateCrossPostViewContent(
 private fun CrossPostButton(
     modifier: Modifier = Modifier,
     selectedTopics: State<List<Topic>>,
-    onUpdate: OnUpdate
+    onUpdate: (Cmd) -> Unit
 ) {
     val context = LocalContext.current
 

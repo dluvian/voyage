@@ -10,7 +10,6 @@ import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.cmd.FollowListsViewInit
 import com.dluvian.voyage.cmd.FollowListsViewRefresh
-import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.ui.components.list.ProfileAndTopicList
 import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.ui.model.FollowableProfileItem
@@ -18,7 +17,11 @@ import com.dluvian.voyage.ui.model.FollowableTopicItem
 import com.dluvian.voyage.viewModel.FollowListsViewModel
 
 @Composable
-fun FollowListsView(vm: FollowListsViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
+fun FollowListsView(
+    vm: FollowListsViewModel,
+    snackbar: SnackbarHostState,
+    onUpdate: (Cmd) -> Unit
+) {
     val isRefreshing by vm.isRefreshing
     val profilesRaw by vm.profiles.value.collectAsState()
     val topicsRaw by vm.topics.value.collectAsState()

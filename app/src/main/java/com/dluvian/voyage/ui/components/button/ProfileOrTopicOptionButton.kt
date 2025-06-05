@@ -8,15 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
-import com.dluvian.voyage.model.ProfileViewLoadLists
 import com.dluvian.voyage.R
-import com.dluvian.voyage.model.TopicViewLoadLists
-import com.dluvian.voyage.core.Fn
-import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.model.ItemSetItem
-import com.dluvian.voyage.core.model.ItemSetProfile
-import com.dluvian.voyage.core.model.ItemSetTopic
-import com.dluvian.voyage.data.filterSetting.ItemSetMeta
+import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.ui.components.dialog.AddToListDialog
 import com.dluvian.voyage.ui.components.dropdown.SimpleDropdownItem
 import com.dluvian.voyage.ui.theme.HorizMoreIcon
@@ -28,7 +21,7 @@ fun ProfileOrTopicOptionButton(
     addableLists: List<ItemSetMeta>,
     nonAddableLists: List<ItemSetMeta>,
     scope: CoroutineScope,
-    onUpdate: OnUpdate
+    onUpdate: (Cmd) -> Unit
 ) {
     val showMenu = remember { mutableStateOf(false) }
 
@@ -65,7 +58,7 @@ private fun ActionMenu(
     addableLists: List<ItemSetMeta>,
     nonAddableLists: List<ItemSetMeta>,
     scope: CoroutineScope,
-    onUpdate: OnUpdate,
+    onUpdate: (Cmd) -> Unit,
     onDismiss: Fn
 ) {
     val showAddToList = remember { mutableStateOf(false) }

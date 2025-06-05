@@ -25,7 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.OnUpdate
+
 import com.dluvian.voyage.core.PubkeyHex
 import com.dluvian.voyage.core.Topic
 import com.dluvian.voyage.core.model.Comment
@@ -50,7 +50,7 @@ import com.dluvian.voyage.ui.theme.spacing
 @Composable
 fun MainEventHeader(
     ctx: MainEventCtx,
-    onUpdate: OnUpdate
+    onUpdate: (Cmd) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -93,7 +93,7 @@ fun MainEventHeader(
 @Composable
 private fun MainEventHeaderIconsAndName(
     ctx: MainEventCtx,
-    onUpdate: OnUpdate
+    onUpdate: (Cmd) -> Unit
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         ClickableTrustIcon(
@@ -123,7 +123,7 @@ private fun MainEventHeaderIconsAndName(
 }
 
 @Composable
-private fun CrossPostIcon(crossPost: CrossPost, onUpdate: OnUpdate) {
+private fun CrossPostIcon(crossPost: CrossPost, onUpdate: (Cmd) -> Unit) {
     Icon(
         modifier = Modifier
             .size(sizing.smallIndicator)
@@ -145,7 +145,7 @@ private fun CrossPostIcon(crossPost: CrossPost, onUpdate: OnUpdate) {
 }
 
 @Composable
-private fun BorderedTopic(topic: Topic, onUpdate: OnUpdate) {
+private fun BorderedTopic(topic: Topic, onUpdate: (Cmd) -> Unit) {
     Box(
         modifier = Modifier
             .border(

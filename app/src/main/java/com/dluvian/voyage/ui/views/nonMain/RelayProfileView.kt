@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
@@ -28,7 +28,11 @@ import com.dluvian.voyage.viewModel.RelayProfileViewModel
 import rust.nostr.sdk.RelayInformationDocument
 
 @Composable
-fun RelayProfileView(vm: RelayProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
+fun RelayProfileView(
+    vm: RelayProfileViewModel,
+    snackbar: SnackbarHostState,
+    onUpdate: (Cmd) -> Unit
+) {
     val header by vm.header
     val profile by vm.profile
     val isLoading by vm.isLoading

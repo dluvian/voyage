@@ -6,12 +6,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
-import com.dluvian.voyage.cmd.OpenDrawer
-import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.model.Cmd
+import com.dluvian.voyage.model.OpenDrawer
 import com.dluvian.voyage.ui.theme.MenuIcon
 
 @Composable
-fun MenuIconButton(onUpdate: OnUpdate) {
+fun MenuIconButton(onUpdate: (Cmd) -> Unit) {
     val scope = rememberCoroutineScope()
     IconButton(onClick = { onUpdate(OpenDrawer(scope = scope)) }) {
         Icon(

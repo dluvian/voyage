@@ -13,22 +13,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import com.dluvian.voyage.ClosePostInfo
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.utils.getFullDateTime
-import com.dluvian.voyage.data.filterSetting.PostDetails
+import com.dluvian.voyage.model.CloseEventDetails
+import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.ui.components.text.ClickableRelayUrl
 import com.dluvian.voyage.ui.components.text.ClickableTopic
 import com.dluvian.voyage.ui.components.text.CopyableText
 import com.dluvian.voyage.ui.components.text.SmallHeader
 import com.dluvian.voyage.ui.theme.spacing
+import rust.nostr.sdk.Event
+import rust.nostr.sdk.Timestamp
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostDetailsBottomSheet(postDetails: PostDetails, onUpdate: OnUpdate) {
-    val onDismiss = { onUpdate(ClosePostInfo) }
+fun PostDetailsBottomSheet(event: Event, onUpdate: (Cmd) -> Unit) {
+    val onDismiss = { onUpdate(CloseEventDetails) }
     ModalBottomSheet(onDismissRequest = onDismiss) {
         BottomSheetColumn(header = stringResource(id = R.string.post_details)) {
             LazyColumn(
@@ -38,7 +38,7 @@ fun PostDetailsBottomSheet(postDetails: PostDetails, onUpdate: OnUpdate) {
                 item {
                     SimpleTimeSection(
                         header = stringResource(id = R.string.time),
-                        time = postDetails.base.createdAt,
+                        time = event.createdAt(),
                     )
                 }
 
@@ -90,9 +90,9 @@ private fun SimpleSection(header: String, content: String) {
 }
 
 @Composable
-private fun SimpleTimeSection(header: String, time: Long) {
+private fun SimpleTimeSection(header: String, time: Timestamp) {
     SimpleSection(
         header = header,
-        content = getFullDateTime(ctx = LocalContext.current, createdAt = time)
+        content = getFullDateTime(ctx = LocalContext.current, createdAt = time.asSecs())
     )
 }

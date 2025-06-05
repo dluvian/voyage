@@ -5,9 +5,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.style.TextOverflow
-import com.dluvian.voyage.cmd.HomeViewOpenFilter
-import com.dluvian.voyage.cmd.InboxViewOpenFilter
-import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.navigator.DiscoverNavView
 import com.dluvian.voyage.navigator.HomeNavView
 import com.dluvian.voyage.navigator.InboxNavView
@@ -20,7 +18,7 @@ import com.dluvian.voyage.ui.components.button.MenuIconButton
 @Composable
 fun MainTopAppBar(
     currentView: MainNavView,
-    onUpdate: OnUpdate = {}
+    onUpdate: (Cmd) -> Unit = {}
 ) {
     TopAppBar(
         title = {
@@ -40,7 +38,7 @@ fun MainTopAppBar(
 }
 
 @Composable
-private fun MainFilter(currentView: MainNavView, onUpdate: OnUpdate) {
+private fun MainFilter(currentView: MainNavView, onUpdate: (Cmd) -> Unit) {
     when (currentView) {
         HomeNavView -> FilterIconButton(onClick = { onUpdate(HomeViewOpenFilter) })
 

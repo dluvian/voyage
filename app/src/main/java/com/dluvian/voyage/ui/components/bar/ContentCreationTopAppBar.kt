@@ -7,7 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.dluvian.voyage.core.Fn
-import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.ui.components.button.SendIconButton
 import com.dluvian.voyage.ui.components.indicator.SmallCircleProgressIndicator
 import com.dluvian.voyage.ui.theme.spacing
@@ -17,8 +17,8 @@ fun ContentCreationTopAppBar(
     showSendButton: Boolean,
     isSendingContent: Boolean,
     title: String? = null,
-    onSend: Fn,
-    onUpdate: OnUpdate
+    onSend: () -> Unit,
+    onUpdate: (Cmd) -> Unit
 ) {
     GoBackTopAppBar(
         title = {

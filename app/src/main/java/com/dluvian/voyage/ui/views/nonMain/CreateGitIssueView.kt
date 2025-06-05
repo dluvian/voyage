@@ -22,7 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.MAX_SUBJECT_LINES
-import com.dluvian.voyage.core.OnUpdate
+
 import com.dluvian.voyage.core.model.BugReport
 import com.dluvian.voyage.core.model.EnhancementRequest
 import com.dluvian.voyage.core.model.LabledGitIssue
@@ -42,7 +42,7 @@ fun CreateGitIssueView(
     vm: GitIssueViewModel,
     searchSuggestions: State<List<AdvancedProfileView>>,
     snackbar: SnackbarHostState,
-    onUpdate: OnUpdate
+    onUpdate: (Cmd) -> Unit
 ) {
     val header = remember { mutableStateOf(TextFieldValue()) }
     val body = remember { mutableStateOf(TextFieldValue()) }
@@ -98,7 +98,7 @@ private fun CreateGitIssueContent(
     type: MutableState<LabledGitIssue>,
     searchSuggestions: List<AdvancedProfileView>,
     focusRequester: FocusRequester,
-    onUpdate: OnUpdate,
+    onUpdate: (Cmd) -> Unit,
 ) {
     InputWithSuggestions(
         body = body,

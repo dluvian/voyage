@@ -15,10 +15,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import com.dluvian.voyage.R
-import com.dluvian.voyage.model.SearchProfileSuggestion
-import com.dluvian.voyage.core.Fn
-import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.data.room.view.AdvancedProfileView
+import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.ui.components.row.ClickableProfileRow
 import com.dluvian.voyage.ui.theme.sizing
 
@@ -26,8 +23,8 @@ import com.dluvian.voyage.ui.theme.sizing
 fun AddProfileDialog(
     profileSuggestions: List<AdvancedProfileView>,
     onAdd: (AdvancedProfileView) -> Unit,
-    onDismiss: Fn,
-    onUpdate: OnUpdate
+    onDismiss: () -> Unit,
+    onUpdate: (Cmd) -> Unit
 ) {
     val input = remember { mutableStateOf(TextFieldValue("")) }
     val focusRequester = remember { FocusRequester() }
@@ -54,7 +51,7 @@ private fun Input(
     profileSuggestions: List<AdvancedProfileView>,
     focusRequester: FocusRequester,
     onAdd: (AdvancedProfileView) -> Unit,
-    onUpdate: OnUpdate
+    onUpdate: (Cmd) -> Unit
 ) {
     Column {
         TextField(

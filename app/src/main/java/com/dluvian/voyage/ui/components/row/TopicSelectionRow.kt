@@ -9,9 +9,8 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.dluvian.voyage.core.MAX_TOPICS
-import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.Topic
+import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.ui.components.TopicSelectionContainer
 import com.dluvian.voyage.ui.components.chip.AddTopicChip
 import com.dluvian.voyage.ui.components.chip.TopicChip
@@ -22,7 +21,7 @@ import com.dluvian.voyage.ui.theme.spacing
 fun TopicSelectionRow(
     topicSuggestions: List<Topic>,
     selectedTopics: MutableState<List<Topic>>,
-    onUpdate: OnUpdate
+    onUpdate: (Cmd) -> Unit
 ) {
     val showDialog = remember { mutableStateOf(false) }
     TopicSelectionContainer(
@@ -36,9 +35,10 @@ fun TopicSelectionRow(
                 .fillMaxWidth()
                 .padding(start = spacing.bigScreenEdge)
         ) {
-            if (selectedTopics.value.size < MAX_TOPICS) item {
+            item {
                 AddTopicChip(onOpenTopicSelection = { showDialog.value = true })
             }
+
             items(selectedTopics.value) {
                 TopicChip(
                     modifier = Modifier.padding(horizontal = spacing.small),

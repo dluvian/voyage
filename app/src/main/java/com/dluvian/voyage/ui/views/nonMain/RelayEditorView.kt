@@ -42,7 +42,6 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.model.RemoveRelay
 import com.dluvian.voyage.model.ToggleReadRelay
 import com.dluvian.voyage.model.ToggleWriteRelay
-import com.dluvian.voyage.core.OnUpdate
 import com.dluvian.voyage.core.model.Connected
 import com.dluvian.voyage.core.model.ConnectionStatus
 import com.dluvian.voyage.core.model.Waiting
@@ -62,7 +61,11 @@ import com.dluvian.voyage.viewModel.RelayEditorViewModel
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
-fun RelayEditorView(vm: RelayEditorViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
+fun RelayEditorView(
+    vm: RelayEditorViewModel,
+    snackbar: SnackbarHostState,
+    onUpdate: (Cmd) -> Unit
+) {
     val myRelays by vm.myRelays
     val popularRelays by vm.popularRelays
     val addIsEnabled by vm.addIsEnabled
@@ -110,7 +113,7 @@ private fun RelayEditorViewContent(
     addIsEnabled: Boolean,
     state: LazyListState,
     scope: CoroutineScope,
-    onUpdate: OnUpdate,
+    onUpdate: (Cmd) -> Unit,
 ) {
     val connectedRelays = remember(connectionStatuses) {
         connectionStatuses.filter { (_, status) -> status is Connected }.keys.toList()
@@ -167,7 +170,7 @@ private fun LazyListScope.addSection(
     connectionStatuses: Map<RelayUrl, ConnectionStatus>,
     scope: CoroutineScope,
     showCount: Boolean = false,
-    onUpdate: OnUpdate
+    onUpdate: (Cmd) -> Unit
 ) {
     if (relays.isNotEmpty()) {
         item { Spacer(modifier = Modifier.height(spacing.xxl)) }
@@ -195,7 +198,7 @@ private fun LazyListScope.addSection(
 }
 
 @Composable
-private fun AddRelayRow(scope: CoroutineScope, onUpdate: OnUpdate) {
+private fun AddRelayRow(scope: CoroutineScope, onUpdate: (Cmd) -> Unit) {
     val input = remember { mutableStateOf("") }
     val focus = LocalFocusManager.current
     val context = LocalContext.current
@@ -232,7 +235,7 @@ private fun NormalRelayRow(
     isAddable: Boolean,
     connectionStatus: ConnectionStatus?,
     scope: CoroutineScope,
-    onUpdate: OnUpdate
+    onUpdate: (Cmd) -> Unit
 ) {
     val context = LocalContext.current
     RelayRow(relayUrl = relayUrl, connectionStatus = connectionStatus, onUpdate = onUpdate) {
@@ -253,7 +256,7 @@ private fun MyRelayRow(
     relay: Nip65Relay,
     connectionStatus: ConnectionStatus,
     isDeletable: Boolean,
-    onUpdate: OnUpdate
+    onUpdate: (Cmd) -> Unit
 ) {
     RelayRow(
         relayUrl = relay.url,
@@ -295,7 +298,7 @@ private fun MyRelayRow(
 @Composable
 private fun RelayRow(
     relayUrl: RelayUrl,
-    onUpdate: OnUpdate,
+    onUpdate: (Cmd) -> Unit,
     connectionStatus: ConnectionStatus?,
     secondRow: @Composable () -> Unit = {},
     trailingContent: @Composable () -> Unit = {},

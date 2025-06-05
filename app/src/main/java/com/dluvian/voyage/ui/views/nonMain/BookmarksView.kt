@@ -5,16 +5,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
-import com.dluvian.voyage.cmd.BookmarksViewAppend
-import com.dluvian.voyage.cmd.BookmarksViewInit
-import com.dluvian.voyage.cmd.BookmarksViewRefresh
-import com.dluvian.voyage.core.OnUpdate
+import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.ui.components.Feed
 import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.viewModel.BookmarkViewModel
 
 @Composable
-fun BookmarksView(vm: BookmarkViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
+fun BookmarksView(vm: BookmarkViewModel, snackbar: SnackbarHostState, onUpdate: (Cmd) -> Unit) {
     LaunchedEffect(key1 = Unit) {
         onUpdate(BookmarksViewInit)
     }

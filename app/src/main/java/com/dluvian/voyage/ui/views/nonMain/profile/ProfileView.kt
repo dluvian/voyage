@@ -36,7 +36,7 @@ import com.dluvian.voyage.OpenLightningWallet
 import com.dluvian.voyage.R
 import com.dluvian.voyage.core.Bech32
 import com.dluvian.voyage.core.MAX_RELAYS
-import com.dluvian.voyage.core.OnUpdate
+
 import com.dluvian.voyage.core.model.FriendTrust
 import com.dluvian.voyage.core.utils.copyAndToast
 import com.dluvian.voyage.core.utils.getSimpleLauncher
@@ -69,7 +69,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: OnUpdate) {
+fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: (Cmd) -> Unit) {
     val profile by vm.profile.value.collectAsState()
     val nip65Relays by vm.nip65Relays.value.collectAsState()
     val headers = listOf(
@@ -176,7 +176,7 @@ private fun AboutPage(
     state: LazyListState,
     scope: CoroutineScope,
     modifier: Modifier = Modifier,
-    onUpdate: OnUpdate
+    onUpdate: (Cmd) -> Unit
 ) {
     ProfileViewPage(isRefreshing = isRefreshing, onUpdate = onUpdate) {
         LazyColumn(modifier = modifier, state = state) {
@@ -296,7 +296,7 @@ fun RelayPage(
     isRefreshing: Boolean,
     state: LazyListState,
     modifier: Modifier = Modifier,
-    onUpdate: OnUpdate,
+    onUpdate: (Cmd) -> Unit,
 ) {
     ProfileViewPage(isRefreshing = isRefreshing, onUpdate = onUpdate) {
         if (nip65Relays.isEmpty() &&
@@ -349,7 +349,7 @@ fun RelayPage(
 private fun RelaySection(
     header: String,
     relays: List<RelayUrl>,
-    onUpdate: OnUpdate
+    onUpdate: (Cmd) -> Unit
 ) {
     Text(text = header, fontWeight = FontWeight.SemiBold)
     Spacer(modifier = Modifier.height(spacing.small))
@@ -370,7 +370,7 @@ private fun RelaySection(
 @Composable
 private fun ProfileViewPage(
     isRefreshing: Boolean,
-    onUpdate: OnUpdate,
+    onUpdate: (Cmd) -> Unit,
     content: @Composable () -> Unit
 ) {
     PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = { onUpdate(ProfileViewRefresh) }) {

@@ -2,12 +2,8 @@ package com.dluvian.voyage.ui.views.nonMain.topic
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import com.dluvian.voyage.cmd.FollowTopic
-import com.dluvian.voyage.cmd.UnfollowTopic
-import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.core.model.ItemSetTopic
-import com.dluvian.voyage.data.filterSetting.ItemSetMeta
+import com.dluvian.voyage.Topic
+import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.ui.components.bar.SimpleGoBackTopAppBar
 import com.dluvian.voyage.ui.components.button.FollowButton
 import com.dluvian.voyage.ui.components.button.ProfileOrTopicOptionButton
@@ -18,7 +14,7 @@ fun TopicTopAppBar(
     isFollowed: Boolean,
     addableLists: List<ItemSetMeta>,
     nonAddableLists: List<ItemSetMeta>,
-    onUpdate: OnUpdate
+    onUpdate: (Cmd) -> Unit
 ) {
     SimpleGoBackTopAppBar(
         title = "#$topic",
