@@ -14,7 +14,7 @@ import com.dluvian.voyage.model.UICtx
 import com.dluvian.voyage.ui.theme.CommentIcon
 
 @Composable
-fun CountedCommentButton(ctx: UICtx, modifier: Modifier = Modifier, onUpdate: (Cmd) -> Unit) {
+fun CountedReplyButton(ctx: UICtx, modifier: Modifier = Modifier, onUpdate: (Cmd) -> Unit) {
     val replyCount = remember(ctx) {
         when (ctx) {
             is FeedCtx, is ThreadReplyCtx -> 0u

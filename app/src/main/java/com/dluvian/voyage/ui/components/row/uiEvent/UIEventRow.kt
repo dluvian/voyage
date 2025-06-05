@@ -31,7 +31,7 @@ import com.dluvian.voyage.model.ThreadViewShowReplies
 import com.dluvian.voyage.model.ThreadViewToggleCollapse
 import com.dluvian.voyage.model.UICtx
 import com.dluvian.voyage.subject
-import com.dluvian.voyage.ui.components.button.footer.CountedCommentButton
+import com.dluvian.voyage.ui.components.button.footer.CountedReplyButton
 import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.theme.spacing
 import com.dluvian.voyage.ui.views.nonMain.MoreRepliesTextButton
@@ -161,7 +161,7 @@ private fun UIEventMainRow(
 
                 },
                 additionalEndAction = {
-                    CountedCommentButton(ctx = ctx, onUpdate = onUpdate)
+                    CountedReplyButton(ctx = ctx, onUpdate = onUpdate)
                 })
         }
     }

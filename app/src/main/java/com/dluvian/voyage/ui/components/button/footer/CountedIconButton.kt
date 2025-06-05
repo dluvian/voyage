@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.dluvian.voyage.core.Fn
 
 @Composable
 fun CountedIconButton(
@@ -14,10 +13,10 @@ fun CountedIconButton(
     icon: ImageVector,
     description: String,
     modifier: Modifier = Modifier,
-    onClick: Fn
+    onClick: () -> Unit
 ) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         FooterIconButton(icon = icon, description = description, onClick = onClick)
-        if (count > 0) Text(text = count.toString())
+        if (count > 0u) Text(text = count.toString())
     }
 }
