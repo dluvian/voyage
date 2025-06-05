@@ -16,20 +16,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
+import com.dluvian.voyage.MAX_LINES_SUBJECT
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.MAX_SUBJECT_LINES
-
-import com.dluvian.voyage.core.model.BugReport
-import com.dluvian.voyage.core.model.EnhancementRequest
-import com.dluvian.voyage.core.model.LabledGitIssue
-import com.dluvian.voyage.data.room.view.AdvancedProfileView
-import com.dluvian.voyage.model.GoBack
+import com.dluvian.voyage.model.BugReport
+import com.dluvian.voyage.model.Cmd
+import com.dluvian.voyage.model.EnhancementRequest
+import com.dluvian.voyage.model.GitIssueType
 import com.dluvian.voyage.model.SendGitIssue
-import com.dluvian.voyage.model.SubRepoOwnerRelays
+import com.dluvian.voyage.model.TrustProfile
 import com.dluvian.voyage.ui.components.scaffold.ContentCreationScaffold
 import com.dluvian.voyage.ui.components.selection.NamedRadio
 import com.dluvian.voyage.ui.components.text.InputWithSuggestions
@@ -38,43 +35,30 @@ import com.dluvian.voyage.ui.theme.spacing
 import com.dluvian.voyage.viewModel.GitIssueViewModel
 
 @Composable
-fun CreateGitIssueView(
+fun GitIssueView(
     vm: GitIssueViewModel,
-    searchSuggestions: State<List<AdvancedProfileView>>,
+    searchSuggestions: State<List<TrustProfile>>,
     snackbar: SnackbarHostState,
     onUpdate: (Cmd) -> Unit
 ) {
     val header = remember { mutableStateOf(TextFieldValue()) }
     val body = remember { mutableStateOf(TextFieldValue()) }
-    val type: MutableState<LabledGitIssue> = remember { mutableStateOf(BugReport()) }
-    val context = LocalContext.current
+    val type: MutableState<GitIssueType> = remember { mutableStateOf(BugReport) }
 
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(key1 = Unit) {
-        onUpdate(SubRepoOwnerRelays)
         focusRequester.requestFocus()
     }
 
     ContentCreationScaffold(
         showSendButton = header.value.text.isNotBlank(),
-        isSendingContent = vm.isSendingIssue.value,
         snackbar = snackbar,
         onSend = {
             onUpdate(
                 SendGitIssue(
-                    issue = when (val issue = type.value) {
-                        is BugReport -> issue.copy(
-                            header = header.value.text,
-                            body = body.value.text
-                        )
-
-                        is EnhancementRequest -> issue.copy(
-                            header = header.value.text,
-                            body = body.value.text
-                        )
-                    },
-                    context = context,
-                    onGoBack = { onUpdate(GoBack) }
+                    type = type.value,
+                    header = header.value.text,
+                    content = body.value.text,
                 )
             )
         },
@@ -95,8 +79,8 @@ fun CreateGitIssueView(
 private fun CreateGitIssueContent(
     header: MutableState<TextFieldValue>,
     body: MutableState<TextFieldValue>,
-    type: MutableState<LabledGitIssue>,
-    searchSuggestions: List<AdvancedProfileView>,
+    type: MutableState<GitIssueType>,
+    searchSuggestions: List<TrustProfile>,
     focusRequester: FocusRequester,
     onUpdate: (Cmd) -> Unit,
 ) {
@@ -111,7 +95,7 @@ private fun CreateGitIssueContent(
                 .fillMaxWidth()
                 .focusRequester(focusRequester),
             value = header.value,
-            maxLines = MAX_SUBJECT_LINES,
+            maxLines = MAX_LINES_SUBJECT,
             onValueChange = { txt -> header.value = txt },
             placeholder = stringResource(id = R.string.subject),
             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
@@ -126,20 +110,20 @@ private fun CreateGitIssueContent(
 }
 
 @Composable
-private fun IssueTypeSelection(type: MutableState<LabledGitIssue>) {
+private fun IssueTypeSelection(type: MutableState<GitIssueType>) {
     LazyRow(modifier = Modifier.fillMaxWidth()) {
         item {
             NamedRadio(
                 isSelected = type.value is BugReport,
                 name = stringResource(id = R.string.bug_report),
-                onClick = { type.value = BugReport() })
+                onClick = { type.value = BugReport })
         }
         item { Spacer(modifier = Modifier.width(spacing.large)) }
         item {
             NamedRadio(
                 isSelected = type.value is EnhancementRequest,
                 name = stringResource(id = R.string.enhancement_request),
-                onClick = { type.value = EnhancementRequest() })
+                onClick = { type.value = EnhancementRequest })
         }
     }
 }

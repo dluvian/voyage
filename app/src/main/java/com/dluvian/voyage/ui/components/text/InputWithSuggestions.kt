@@ -13,27 +13,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
-import com.dluvian.voyage.data.nostr.NOSTR_URI
-import com.dluvian.voyage.data.room.view.AdvancedProfileView
-import com.dluvian.voyage.model.ClickProfileSuggestion
-import com.dluvian.voyage.model.SearchProfileSuggestion
-import com.dluvian.voyage.ui.components.row.ClickableProfileRow
-import rust.nostr.sdk.PublicKey
-
-Composable () ->Unit
-import com.dluvian.voyage.core.(
-
-)->Unit
-import com.dluvian.voyage.data.nostr.NOSTR_URI
-import com.dluvian.voyage.data.room.view.AdvancedProfileView
+import com.dluvian.voyage.model.Cmd
+import com.dluvian.voyage.model.TrustProfile
 import com.dluvian.voyage.ui.components.row.ClickableProfileRow
 import rust.nostr.sdk.PublicKey
 
 @Composable
 fun InputWithSuggestions(
     body: MutableState<TextFieldValue>,
-    searchSuggestions: List<AdvancedProfileView>,
-    onUpdate: () -> Unit,
+    searchSuggestions: List<TrustProfile>,
+    onUpdate: (Cmd) -> Unit,
     input: @Composable () -> Unit
 ) {
     val showSuggestions = remember { mutableStateOf(false) }

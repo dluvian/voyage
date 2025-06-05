@@ -38,7 +38,7 @@ import com.dluvian.voyage.ui.theme.spacing
 import com.dluvian.voyage.viewModel.ReplyViewModel
 
 @Composable
-fun CreateReplyView(
+fun ReplyView(
     vm: ReplyViewModel,
     searchSuggestions: State<List<TrustProfile>>,
     snackbar: SnackbarHostState,

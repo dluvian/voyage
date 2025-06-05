@@ -33,7 +33,7 @@ import com.dluvian.voyage.ui.theme.spacing
 import com.dluvian.voyage.viewModel.PostViewModel
 
 @Composable
-fun CreatePostView(
+fun PostView(
     vm: PostViewModel,
     searchSuggestions: State<List<AdvancedProfileView>>,
     topicSuggestions: State<List<Topic>>,

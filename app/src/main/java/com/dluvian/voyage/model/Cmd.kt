@@ -25,7 +25,6 @@ import com.dluvian.voyage.navigator.ThreadNavView
 import com.dluvian.voyage.navigator.ThreadNeventNavView
 import com.dluvian.voyage.navigator.TopicNavView
 import kotlinx.coroutines.CoroutineScope
-import rust.nostr.sdk.Coordinate
 import rust.nostr.sdk.Event
 import rust.nostr.sdk.EventId
 import rust.nostr.sdk.Metadata
@@ -105,7 +104,8 @@ data class SendCrossPost(val topics: List<Topic>, val event: Event) : CoreAction
 data class SendPost(val topics: List<Topic>, val subject: String, val content: String) :
     CoreActionCmd()
 data class SendReply(val parent: Event, val content: String) : CoreActionCmd()
-data class SendGitIssue(val repo: Coordinate, val content: String) : CoreActionCmd()
+data class SendGitIssue(val type: GitIssueType, val header: String, val content: String) :
+    CoreActionCmd()
 data class PublishNip65(val relays: List<Pair<RelayUrl, RelayMetadata>>) : CoreActionCmd()
 data class PublishProfile(val metadata: Metadata) : CoreActionCmd()
 data class ShowEventDetails(val event: Event) : CoreActionCmd()

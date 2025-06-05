@@ -27,7 +27,7 @@ fun NonMainView(
     currentView: NonMainNavView,
 ) {
     when (currentView) {
-        CreatePostNavView -> CreatePostView(
+        CreatePostNavView -> PostView(
             vm = core.vmContainer.createPostVM,
             snackbar = core.appContainer.snackbar,
             searchSuggestions = core.appContainer.suggestionProvider.profiles,
@@ -59,7 +59,7 @@ fun NonMainView(
             onUpdate = core.onUpdate
         )
 
-        is ReplyNavView -> CreateReplyView(
+        is ReplyNavView -> ReplyView(
             vm = core.vmContainer.createReplyVM,
             snackbar = core.appContainer.snackbar,
             searchSuggestions = core.appContainer.suggestionProvider.profiles,
@@ -103,7 +103,7 @@ fun NonMainView(
             onUpdate = core.onUpdate
         )
 
-        CreateGitIssueNavView -> CreateGitIssueView(
+        CreateGitIssueNavView -> GitIssueView(
             vm = core.vmContainer.gitIssueVM,
             snackbar = core.appContainer.snackbar,
             searchSuggestions = core.appContainer.suggestionProvider.profiles,
