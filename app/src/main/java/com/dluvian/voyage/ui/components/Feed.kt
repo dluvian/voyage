@@ -20,7 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -35,7 +34,6 @@ import com.dluvian.voyage.R
 import com.dluvian.voyage.core.FEED_PAGE_SIZE
 import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.core.OnUpdate
-import com.dluvian.voyage.data.filterSetting.PostDetails
 import com.dluvian.voyage.paginator.IPaginator
 import com.dluvian.voyage.showScrollButton
 import com.dluvian.voyage.ui.components.bottomSheet.PostDetailsBottomSheet
@@ -51,7 +49,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun Feed(
     paginator: IPaginator,
-    postDetails: State<PostDetails?>,
     state: LazyListState,
     onRefresh: Fn,
     onAppend: Fn,
