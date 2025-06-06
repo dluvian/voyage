@@ -8,7 +8,7 @@ import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.utils.copyAndToast
+import com.dluvian.voyage.copyAndToast
 
 @Composable
 fun CopyableText(

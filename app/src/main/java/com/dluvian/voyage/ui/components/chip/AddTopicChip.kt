@@ -8,11 +8,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.ui.theme.AddIcon
 
 @Composable
-fun AddTopicChip(onOpenTopicSelection: Fn, modifier: Modifier = Modifier) {
+fun AddTopicChip(onOpenTopicSelection: () -> Unit, modifier: Modifier = Modifier) {
     SmallFilterChip(
         modifier = modifier,
         onClick = onOpenTopicSelection,

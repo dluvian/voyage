@@ -7,8 +7,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.model.MainEvent
 import com.dluvian.voyage.model.Cmd
+import com.dluvian.voyage.model.UIEvent
 import com.dluvian.voyage.ui.components.button.footer.FooterIconButton
 import com.dluvian.voyage.ui.components.dropdown.FeedItemDropdown
 import com.dluvian.voyage.ui.theme.OnBgLight
@@ -16,14 +16,14 @@ import com.dluvian.voyage.ui.theme.VertMoreIcon
 
 @Composable
 fun OptionsButton(
-    mainEvent: MainEvent,
+    uiEvent: UIEvent,
     onUpdate: (Cmd) -> Unit,
 ) {
     val showMenu = remember { mutableStateOf(false) }
     Box(contentAlignment = Alignment.CenterEnd) {
         FeedItemDropdown(
             isOpen = showMenu.value,
-            uiEvent = mainEvent,
+            uiEvent = uiEvent,
             onDismiss = { showMenu.value = false },
             onUpdate = onUpdate,
         )

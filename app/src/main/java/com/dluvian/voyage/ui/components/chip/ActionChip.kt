@@ -16,7 +16,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.ui.theme.RoundedChip
 import com.dluvian.voyage.ui.theme.spacing
 
@@ -26,7 +25,7 @@ fun ActionChip(
     description: String,
     count: Int = 0,
     tint: Color = MaterialTheme.colorScheme.primary,
-    onClick: Fn,
+    onClick: () -> Unit,
     topPadding: Dp = 0.dp
 ) {
     Row(

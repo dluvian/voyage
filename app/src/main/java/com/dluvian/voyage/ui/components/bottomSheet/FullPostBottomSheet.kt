@@ -12,13 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.ui.components.text.AnnotatedText
 import com.dluvian.voyage.ui.theme.spacing
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FullPostBottomSheet(content: AnnotatedString, onDismiss: Fn) {
+fun FullPostBottomSheet(content: AnnotatedString, onDismiss: () -> Unit) {
     ModalBottomSheet(onDismissRequest = onDismiss) {
         BottomSheetColumn(header = stringResource(id = R.string.original_post)) {
             Column(

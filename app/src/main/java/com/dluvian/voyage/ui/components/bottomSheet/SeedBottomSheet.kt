@@ -13,14 +13,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.ui.components.indicator.FullLinearProgressIndicator
 import com.dluvian.voyage.ui.components.text.IndexedText
 import com.dluvian.voyage.ui.theme.spacing
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SeedBottomSheet(seed: List<String>, onLoadSeed: Fn, onDismiss: Fn) {
+fun SeedBottomSheet(seed: List<String>, onLoadSeed: () -> Unit, onDismiss: () -> Unit) {
     LaunchedEffect(key1 = Unit) {
         onLoadSeed()
     }

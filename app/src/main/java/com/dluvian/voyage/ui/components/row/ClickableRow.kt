@@ -1,5 +1,6 @@
 package com.dluvian.voyage.ui.components.row
 
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,11 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
-import com.dluvian.voyage.core.Fn
-import com.dluvian.voyage.ui.theme.spacing
-
-Composable () ->Unit
-import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
@@ -33,7 +29,7 @@ fun ClickableRow(
     text: String? = null,
     leadingIcon: ImageVector?,
     iconTint: Color = LocalContentColor.current,
-    onClick: Fn = {},
+    onClick: () -> Unit = {},
     additionalContent: @Composable () -> Unit = {},
 ) {
     val icon = @Composable {
@@ -46,7 +42,11 @@ fun ClickableRow(
     ClickableRow(
         header = header,
         text = text,
-        leadingContent = if (leadingIcon == null) null else icon,
+        leadingContent = if (leadingIcon == null) {
+            {}
+        } else {
+            icon
+        },
         onClick = onClick,
         additionalContent = additionalContent
     )
@@ -57,10 +57,10 @@ fun ClickableRow(
     header: String,
     modifier: Modifier = Modifier,
     text: String? = null,
-    leadingContent: @Composable () -> Unit? = null,
-    trailingContent: @Composable () -> Unit? = null,
-    onClick: Fn = {},
-    onLongClick: Fn = {},
+    leadingContent: @Composable () -> Unit = { },
+    trailingContent: @Composable () -> Unit = { },
+    onClick: () -> Unit = {},
+    onLongClick: () -> Unit = {},
     additionalContent: @Composable () -> Unit = {},
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -76,15 +76,17 @@ fun ClickableRow(
     }
 }
 
+typealias ComposableContent = @Composable () -> Unit
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ClickableBaseRow(
     header: String,
-    leadingContent: @Composable () -> Unit? = null,
-    trailingContent: @Composable () -> Unit? = null,
+    leadingContent: ComposableContent? = null,
+    trailingContent: ComposableContent? = null,
     text: String? = null,
-    onClick: Fn = {},
-    onLongClick: Fn = {},
+    onClick: () -> Unit = {},
+    onLongClick: () -> Unit = {},
 ) {
     Row(
         modifier = Modifier

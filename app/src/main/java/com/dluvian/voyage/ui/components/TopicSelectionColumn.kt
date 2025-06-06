@@ -6,9 +6,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import com.dluvian.voyage.MAX_TOPICS
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.MAX_TOPICS
-import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.Topic
+import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.ui.components.list.TopicList
 import com.dluvian.voyage.ui.components.row.AddRow
 

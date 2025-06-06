@@ -8,14 +8,11 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.SelectableChipColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.dluvian.voyage.core.Fn
 
-Composable () ->Unit
-import com.dluvian.voyage.core.Fn
 
 @Composable
 fun SmallFilterChip(
-    onClick: Fn,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     isSelected: Boolean = false,
     isEnabled: Boolean = true,

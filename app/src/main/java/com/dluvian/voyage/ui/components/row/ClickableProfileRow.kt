@@ -1,30 +1,19 @@
 package com.dluvian.voyage.ui.components.row
 
 import androidx.compose.runtime.Composable
-import com.dluvian.voyage.core.Fn
-import com.dluvian.voyage.core.model.TrustType
-import com.dluvian.voyage.data.room.view.AdvancedProfileView
+import com.dluvian.voyage.model.TrustProfile
 
-Composable () ->Unit
-import com.dluvian.voyage.core.Fn
-import com.dluvian.voyage.core.model.TrustType
-import com.dluvian.voyage.data.room.view.AdvancedProfileView
+
 
 
 @Composable
 fun ClickableProfileRow(
-    profile: AdvancedProfileView,
+    profile: TrustProfile,
     trailingContent: @Composable () -> Unit = {},
-    onClick: Fn
+    onClick: () -> Unit
 ) {
     ClickableTrustIconRow(
-        trustType = TrustType.from(
-            isOneself = profile.isMe,
-            isFriend = profile.isFriend,
-            isWebOfTrust = profile.isWebOfTrust,
-            isInList = profile.isInList,
-        ),
-        header = profile.name,
+        profile = profile,
         trailingContent = trailingContent,
         onClick = onClick,
     )

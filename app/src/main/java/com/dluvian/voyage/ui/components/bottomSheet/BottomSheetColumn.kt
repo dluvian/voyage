@@ -12,10 +12,6 @@ import androidx.compose.ui.Modifier
 import com.dluvian.voyage.ui.theme.OnBgLight
 import com.dluvian.voyage.ui.theme.spacing
 
-Composable () ->Unit
-import com.dluvian.voyage.ui.theme.OnBgLight
-import com.dluvian.voyage.ui.theme.spacing
-
 @Composable
 fun BottomSheetColumn(header: String, content: @Composable () -> Unit) {
     Column(

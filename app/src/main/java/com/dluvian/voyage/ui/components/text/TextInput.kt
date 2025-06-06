@@ -15,9 +15,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import com.dluvian.voyage.getTransparentTextFieldColors
 import com.dluvian.voyage.ui.theme.OnBgLight
 
-Composable () ->Unit
-import com.dluvian.voyage.getTransparentTextFieldColors
-import com.dluvian.voyage.ui.theme.OnBgLight
 
 @Composable
 fun TextInput(

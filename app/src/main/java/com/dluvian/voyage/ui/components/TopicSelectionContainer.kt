@@ -3,7 +3,6 @@ package com.dluvian.voyage.ui.components
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import com.dluvian.voyage.Topic
-import com.dluvian.voyage.ui.components.dialog.AddTopicDialog
 import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.ui.components.dialog.AddTopicDialog
 
@@ -17,7 +16,6 @@ fun TopicSelectionContainer(
 ) {
     if (showDialog.value) AddTopicDialog(
         topicSuggestions = topicSuggestions,
-        showNext = canAddAnotherTopic(selectedItemLength = selectedTopics.value.size),
         onAdd = { topic ->
             if (!selectedTopics.value.contains(topic)) {
                 selectedTopics.value += topic

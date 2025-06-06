@@ -1,6 +1,7 @@
 package com.dluvian.voyage.provider
 
 import android.util.Log
+import androidx.compose.ui.text.AnnotatedString
 import com.dluvian.voyage.Topic
 import com.dluvian.voyage.filterSetting.BookmarkFeedSetting
 import com.dluvian.voyage.filterSetting.FeedSetting
@@ -287,6 +288,7 @@ class FeedProvider(
 
         return UIEvent(
             event = event,
+            annotatedContent = AnnotatedString(event.content()), // TODO: annotate
             authorProfile = trustProfiles[event.author()]
                 ?: UnknownProfile(pubkey = event.author()),
             upvoted = upvotes.contains(event.id()),

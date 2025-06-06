@@ -18,6 +18,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import com.dluvian.voyage.R
 import com.dluvian.voyage.Topic
 import com.dluvian.voyage.model.Cmd
+import com.dluvian.voyage.model.SearchTopicSuggestion
 import com.dluvian.voyage.ui.components.row.ClickableRow
 import com.dluvian.voyage.ui.theme.HashtagIcon
 import com.dluvian.voyage.ui.theme.sizing
@@ -31,10 +32,10 @@ fun AddTopicDialog(
 ) {
     val input = remember { mutableStateOf(TextFieldValue("")) }
     val cleanInput = remember(input.value) {
-        input.value.text.normalizeTopic()
+        input.value.text
     }
     val showConfirmationButton = remember(cleanInput) {
-        cleanInput.isNotEmpty() && cleanInput.isBareTopicStr()
+        cleanInput.isNotEmpty()
     }
     val focusRequester = remember { FocusRequester() }
 
@@ -97,7 +98,7 @@ private fun Input(
             value = input.value,
             onValueChange = {
                 input.value = it
-                onUpdate(SearchTopicSuggestion(topic = it.text))
+                onUpdate(SearchTopicSuggestion(it.text))
             },
             placeholder = { Text(text = stringResource(id = R.string.search_)) })
         if (input.value.text.isNotEmpty()) {

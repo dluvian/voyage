@@ -53,7 +53,7 @@ fun FeedItemDropdown(
         if (uiEvent.event.isReply()) SimpleDropdownItem(
             text = stringResource(id = R.string.open_as_root),
             onClick = {
-                onUpdate(OpenThread(uiEvent.event))
+                onUpdate(OpenThread(uiEvent))
                 onDismiss()
             })
 

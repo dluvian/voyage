@@ -9,7 +9,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.dluvian.voyage.core.Fn
 
 @Composable
 fun ActionButton(
@@ -17,8 +16,8 @@ fun ActionButton(
     activeLabel: String,
     unactiveLabel: String,
     isEnabled: Boolean = true,
-    onActivate: Fn,
-    onDeactivate: Fn
+    onActivate: () -> Unit,
+    onDeactivate: () -> Unit
 ) {
     Button(
         modifier = Modifier.height(ButtonDefaults.MinHeight),

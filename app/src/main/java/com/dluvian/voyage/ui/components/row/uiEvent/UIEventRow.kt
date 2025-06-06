@@ -83,7 +83,7 @@ private fun UIEventMainRow(
         when (ctx) {
             is ThreadReplyCtx -> onUpdate(ThreadViewToggleCollapse(id = ctx.uiEvent.event.id()))
             is FeedCtx -> {
-                val event = ctx.uiEvent.inner?.event ?: ctx.uiEvent.event
+                val event = ctx.uiEvent.inner ?: ctx.uiEvent
                 onUpdate(OpenThread(event))
             }
 
@@ -98,7 +98,7 @@ private fun UIEventMainRow(
             .padding(vertical = spacing.bigScreenEdge)
             .padding(start = spacing.bigScreenEdge)
     ) {
-        MainEventHeader(
+        UIEventHeader(
             ctx = ctx,
             onUpdate = onUpdate,
         )

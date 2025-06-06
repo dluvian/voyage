@@ -9,10 +9,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.dluvian.voyage.core.model.Comment
-import com.dluvian.voyage.core.model.CrossPost
-import com.dluvian.voyage.core.model.LegacyReply
-import com.dluvian.voyage.core.model.MainEvent
+import com.dluvian.voyage.model.Cmd
+import com.dluvian.voyage.model.UIEvent
 import com.dluvian.voyage.ui.components.button.footer.BookmarkIconButton
 import com.dluvian.voyage.ui.components.button.footer.CrossPostIconButton
 import com.dluvian.voyage.ui.components.button.footer.UpvoteButton
@@ -21,7 +19,7 @@ import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
 fun UIEventActions(
-    uiEvent: MainEvent,
+    uiEvent: UIEvent,
     onUpdate: (Cmd) -> Unit,
     additionalStartAction: @Composable () -> Unit = {},
     additionalEndAction: @Composable () -> Unit = {},
@@ -38,7 +36,7 @@ fun UIEventActions(
         }
         Spacer(modifier = Modifier.width(spacing.tiny))
         Row(verticalAlignment = Alignment.CenterVertically) {
-            if (uiEvent.isBookmarked) {
+            if (uiEvent.bookmarked) {
                 BookmarkIconButton(relevantId = uiEvent.getRelevantId(), onUpdate = onUpdate)
                 Spacer(modifier = Modifier.width(spacing.large))
             }

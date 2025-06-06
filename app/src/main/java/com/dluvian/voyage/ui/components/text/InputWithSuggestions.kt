@@ -13,7 +13,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
+import com.dluvian.voyage.model.ClickProfileSuggestion
 import com.dluvian.voyage.model.Cmd
+import com.dluvian.voyage.model.SearchProfileSuggestion
 import com.dluvian.voyage.model.TrustProfile
 import com.dluvian.voyage.ui.components.row.ClickableProfileRow
 import rust.nostr.sdk.PublicKey
@@ -35,7 +37,7 @@ fun InputWithSuggestions(
             return@remember false
         }
         showSuggestions.value = stringUntilCursor.contains("@")
-        if (showSuggestions.value) onUpdate(SearchProfileSuggestion(name = mentionedName))
+        if (showSuggestions.value) onUpdate(SearchProfileSuggestion(mentionedName))
         true
     }
 
@@ -58,8 +60,8 @@ fun InputWithSuggestions(
 
 @Composable
 private fun SearchSuggestions(
-    suggestions: List<AdvancedProfileView>,
-    onReplaceSuggestion: (AdvancedProfileView) -> Unit,
+    suggestions: List<TrustProfile>,
+    onReplaceSuggestion: (TrustProfile) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -76,7 +78,7 @@ private fun SearchSuggestions(
     }
 }
 
-private fun TextFieldValue.replaceWithSuggestion(pubkey: String): TextFieldValue {
+private fun TextFieldValue.replaceWithSuggestion(pubkey: PublicKey): TextFieldValue {
     val stringUntilCursor = this.text.take(this.selection.end)
     val stringAfterCursor = this.text.drop(this.selection.end)
     val mentionedName = stringUntilCursor.takeLastWhile { it != '@' }
