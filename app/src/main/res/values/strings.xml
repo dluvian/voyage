@@ -259,4 +259,7 @@
     <string name="nostr_connect">Nostr connect</string>
     <string name="click_to_show_nostr_connect_uri">Click to show Nostr Connect URI</string>
     <string name="login_with_different_account">Login with different account</string>
+    <string name="bytes_received">Bytes received</string>
+    <string name="bytes_sent">Bytes sent</string>
+    <string name="success_rate">Success rate</string>
 </resources>

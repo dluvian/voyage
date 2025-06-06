@@ -11,8 +11,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -25,6 +25,7 @@ import com.dluvian.voyage.ui.components.scaffold.SimpleGoBackScaffold
 import com.dluvian.voyage.ui.components.text.CopyableText
 import com.dluvian.voyage.ui.theme.spacing
 import com.dluvian.voyage.viewModel.RelayProfileViewModel
+import rust.nostr.sdk.Relay
 import rust.nostr.sdk.RelayInformationDocument
 
 @Composable
@@ -35,8 +36,8 @@ fun RelayProfileView(
 ) {
     val header by vm.header
     val profile by vm.profile
+    val relay by vm.relay
     val isLoading by vm.isLoading
-    val postsInDb by vm.postsInDb.value.collectAsState()
 
     SimpleGoBackScaffold(
         header = header,
@@ -46,7 +47,7 @@ fun RelayProfileView(
         RelayProfileViewContent(
             url = header,
             profile = profile,
-            postsInDb = postsInDb,
+            relay = relay,
             isLoading = isLoading
         )
     }
@@ -56,11 +57,12 @@ fun RelayProfileView(
 private fun RelayProfileViewContent(
     url: String,
     profile: RelayInformationDocument?,
-    postsInDb: Int,
+    relay: Relay?,
     isLoading: Boolean
 ) {
     if (isLoading) FullLinearProgressIndicator()
     else if (profile == null) BaseHint(stringResource(id = R.string.relay_profile_not_found))
+    val stats = remember(relay) { relay?.stats() }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -71,13 +73,27 @@ private fun RelayProfileViewContent(
         )
     ) {
         item { InfoRow(infoType = stringResource(id = R.string.url), value = url) }
-        item {
-            InfoRow(
-                infoType = stringResource(id = R.string.posts_in_db),
-                value = postsInDb.toString()
-            )
-        }
         item { InfoRow(infoType = stringResource(id = R.string.name), value = profile?.name()) }
+        if (stats != null) {
+            item {
+                InfoRow(
+                    infoType = stringResource(id = R.string.bytes_received),
+                    value = stats.bytesReceived().toString()
+                )
+            }
+            item {
+                InfoRow(
+                    infoType = stringResource(id = R.string.bytes_sent),
+                    value = stats.bytesSent().toString()
+                )
+            }
+            item {
+                InfoRow(
+                    infoType = stringResource(id = R.string.success_rate),
+                    value = stats.successRate().toString()
+                )
+            }
+        }
         item {
             InfoRow(
                 infoType = stringResource(id = R.string.description),
