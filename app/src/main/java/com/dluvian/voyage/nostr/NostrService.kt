@@ -1,5 +1,6 @@
 package com.dluvian.voyage.nostr
 
+import android.content.Context
 import android.util.Log
 import com.dluvian.voyage.KeyStore
 import com.dluvian.voyage.RelayUrl
@@ -26,6 +27,7 @@ import rust.nostr.sdk.SyncOptions
 import rust.nostr.sdk.extractRelayList
 
 class NostrService(
+    context: Context,
     relayPreferences: RelayPreferences,
     keyStore: KeyStore,
     private val relayChannel: Channel<RelayNotificationCmd>
@@ -39,7 +41,7 @@ class NostrService(
     val client = ClientBuilder()
         .signer(keyStore.getSigner())
         .opts(clientOpts)
-        .database(NostrDatabase.lmdb("voyage_db"))
+        .database(NostrDatabase.lmdb(context.filesDir.path))
         .admitPolicy(admission)
         .build()
 
@@ -110,7 +112,11 @@ class NostrService(
 
     suspend fun sync(filter: Filter) {
         val opts = SyncOptions().direction(direction = SyncDirection.DOWN)
-        val result = client.sync(filter = filter, opts = opts)
+        val result = runCatching { client.sync(filter = filter, opts = opts) }.getOrNull()
+        if (result == null) {
+            Log.i(logTag, "negentropy failed")
+            return
+        }
         if (result.failed.isNotEmpty()) {
             Log.i(logTag, "Failed to sync with ${result.failed.keys}")
             val opts = SubscribeAutoCloseOptions().exitPolicy(ReqExitPolicy.ExitOnEose)

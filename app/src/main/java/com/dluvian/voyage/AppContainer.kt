@@ -30,11 +30,11 @@ class AppContainer(val context: Context) {
     val relayPreferences = RelayPreferences(context)
     val eventPreferences = EventPreferences(context)
 
-    val keyStore = KeyStore()
+    val keyStore = KeyStore(context)
     val oldestUsedTimestampProvider = OldestUsedTimestampProvider()
     val relayChannel = Channel<RelayNotificationCmd>(capacity = Channel.Factory.UNLIMITED)
 
-    val service = NostrService(relayPreferences, keyStore, relayChannel)
+    val service = NostrService(context, relayPreferences, keyStore, relayChannel)
 
     val suggestionProvider = SuggestionProvider()
     val profileProvider = ProfileProvider(service)
