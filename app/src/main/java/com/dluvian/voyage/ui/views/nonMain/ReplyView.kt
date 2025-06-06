@@ -20,15 +20,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import com.dluvian.voyage.R
 import com.dluvian.voyage.model.Cmd
-import com.dluvian.voyage.model.GoBack
 import com.dluvian.voyage.model.SendReply
 import com.dluvian.voyage.model.TrustProfile
+import com.dluvian.voyage.model.UIEvent
 import com.dluvian.voyage.ui.components.bottomSheet.FullPostBottomSheet
 import com.dluvian.voyage.ui.components.scaffold.ContentCreationScaffold
 import com.dluvian.voyage.ui.components.text.InputWithSuggestions
@@ -44,11 +43,9 @@ fun ReplyView(
     snackbar: SnackbarHostState,
     onUpdate: (Cmd) -> Unit
 ) {
-    val isSendingResponse by vm.isSendingReply
-    val response = remember { mutableStateOf(TextFieldValue()) }
+    val reply by vm.reply
     val parent by vm.parent
     val suggestions by searchSuggestions
-    val context = LocalContext.current
 
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(key1 = Unit) {
@@ -56,25 +53,18 @@ fun ReplyView(
     }
 
     ContentCreationScaffold(
-        showSendButton = response.value.text.isNotBlank(),
-        isSendingContent = isSendingResponse,
+        showSendButton = reply.text.isNotBlank(),
         snackbar = snackbar,
         onSend = {
             parent?.let {
-                onUpdate(
-                    SendReply(
-                        parent = it,
-                        body = response.value.text,
-                        context = context,
-                        onGoBack = { onUpdate(GoBack) })
-                )
+                onUpdate(SendReply(parent = it.event, content = reply.text))
             }
         },
         onUpdate = onUpdate,
     ) {
         CreateReplyViewContent(
             parent = parent,
-            response = response,
+            reply = vm.reply,
             searchSuggestions = suggestions,
             focusRequester = focusRequester,
             onUpdate = onUpdate
@@ -84,19 +74,19 @@ fun ReplyView(
 
 @Composable
 private fun CreateReplyViewContent(
-    parent: MainEvent?,
-    response: MutableState<TextFieldValue>,
-    searchSuggestions: List<AdvancedProfileView>,
+    parent: UIEvent?,
+    reply: MutableState<TextFieldValue>,
+    searchSuggestions: List<TrustProfile>,
     focusRequester: FocusRequester,
-    onUpdate: () -> Unit,
+    onUpdate: (Cmd) -> Unit,
 ) {
     InputWithSuggestions(
-        body = response,
+        body = reply,
         searchSuggestions = searchSuggestions,
         onUpdate = onUpdate
     ) {
         if (parent != null) {
-            Parent(parent = parent)
+            Parent(parent)
             HorizontalDivider(
                 modifier = Modifier
                     .padding(horizontal = spacing.screenEdge)
@@ -108,18 +98,18 @@ private fun CreateReplyViewContent(
             modifier = Modifier
                 .fillMaxSize()
                 .focusRequester(focusRequester),
-            value = response.value,
-            onValueChange = { txt -> response.value = txt },
+            value = reply.value,
+            onValueChange = { txt -> reply.value = txt },
             placeholder = stringResource(id = R.string.your_reply),
         )
     }
 }
 
 @Composable
-private fun Parent(parent: MainEvent) {
+private fun Parent(parent: UIEvent) {
     val showFullParent = remember { mutableStateOf(false) }
     if (showFullParent.value) FullPostBottomSheet(
-        content = parent.content,
+        content = parent.annotatedContent,
         onDismiss = { showFullParent.value = false })
     Row(
         modifier = Modifier
@@ -129,7 +119,7 @@ private fun Parent(parent: MainEvent) {
     ) {
         Text(
             modifier = Modifier.weight(weight = 1f, fill = true),
-            text = parent.content,
+            text = parent.annotatedContent,
             maxLines = 3,
             overflow = TextOverflow.Ellipsis
         )

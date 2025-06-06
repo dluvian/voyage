@@ -15,7 +15,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -40,18 +39,15 @@ fun PostView(
     snackbar: SnackbarHostState,
     onUpdate: (Cmd) -> Unit
 ) {
-    val header = remember { mutableStateOf(TextFieldValue()) }
-    val body = remember { mutableStateOf(TextFieldValue()) }
     val topics = remember { mutableStateOf(emptyList<Topic>()) }
-    val context = LocalContext.current
 
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(key1 = Unit) {
         focusRequester.requestFocus()
     }
 
-    val showSendButton = remember(body.value) {
-        body.value.text.isNotBlank()
+    val showSendButton = remember(vm.content.value) {
+        vm.content.value.text.isNotBlank()
     }
 
     ContentCreationScaffold(
@@ -62,16 +58,16 @@ fun PostView(
             onUpdate(
                 SendPost(
                     topics = topics.value,
-                    subject = header.value.text,
-                    content = body.value.text,
+                    subject = vm.subject.value.text,
+                    content = vm.content.value.text,
                 )
             )
         },
         onUpdate = onUpdate,
     ) {
         CreatePostContent(
-            header = header,
-            body = body,
+            header = vm.subject,
+            body = vm.content,
             topicSuggestions = topicSuggestions.value,
             selectedTopics = topics,
             searchSuggestions = searchSuggestions.value,
