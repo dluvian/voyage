@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
+import com.dluvian.voyage.copyAndToast
 import com.dluvian.voyage.isReply
 import com.dluvian.voyage.model.BookmarkPost
 import com.dluvian.voyage.model.Cmd
@@ -23,6 +24,7 @@ import com.dluvian.voyage.model.TrustedProfile
 import com.dluvian.voyage.model.UIEvent
 import com.dluvian.voyage.model.UnfollowProfile
 import com.dluvian.voyage.model.UnknownProfile
+import rust.nostr.sdk.Nip19Event
 
 @Composable
 fun FeedItemDropdown(
@@ -60,12 +62,7 @@ fun FeedItemDropdown(
             text = stringResource(id = R.string.copy_uri),
             onClick = {
                 copyAndToast(
-                    text = createNeventUri(
-                        hex = uiEvent.getRelevantId(),
-                        author = uiEvent.getRelevantPubkey(),
-                        relays = listOf(uiEvent.relayUrl).filter { it.isNotEmpty() },
-                        kind = uiEvent.getRelevantKind()
-                    ),
+                    text = Nip19Event.fromEvent(uiEvent.event).toNostrUri(),
                     toast = idCopiedToast,
                     context = context,
                     clip = clip
@@ -78,7 +75,7 @@ fun FeedItemDropdown(
             text = stringResource(id = R.string.copy_content),
             onClick = {
                 copyAndToast(
-                    text = uiEvent.content,
+                    text = uiEvent.event.content(),
                     toast = contentCopiedToast,
                     context = context,
                     clip = clip
