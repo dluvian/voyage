@@ -34,6 +34,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.dluvian.voyage.MAX_RELAYS
 import com.dluvian.voyage.R
 import com.dluvian.voyage.RelayUrl
+import com.dluvian.voyage.copyAndToast
 import com.dluvian.voyage.lightning
 import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.model.FollowedProfile

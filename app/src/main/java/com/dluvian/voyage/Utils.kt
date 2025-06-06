@@ -1,5 +1,10 @@
 package com.dluvian.voyage
 
+import android.content.ClipData
+import android.content.Context
+import android.widget.Toast
+import androidx.compose.ui.platform.Clipboard
+import androidx.compose.ui.text.AnnotatedString
 import rust.nostr.sdk.Event
 import rust.nostr.sdk.EventId
 import rust.nostr.sdk.KindStandard
@@ -49,4 +54,14 @@ fun normalizeName(str: String): String {
     return str
         .filterNot { it.isWhitespace() } // My preferred asthetics
         .take(MAX_NAME_LEN) // Don't keep monster names
+}
+
+fun copyAndToast(text: String, toast: String, context: Context, clip: Clipboard) {
+    copyAndToast(text = AnnotatedString(text), toast = toast, context = context, clip = clip)
+}
+
+fun copyAndToast(text: AnnotatedString, toast: String, context: Context, clip: Clipboard) {
+    val data = ClipData.newPlainText(text.text, text.text)
+    clip.nativeClipboard.setPrimaryClip(data)
+    Toast.makeText(context, toast, Toast.LENGTH_SHORT).show()
 }
