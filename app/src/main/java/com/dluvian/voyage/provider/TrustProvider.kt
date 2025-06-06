@@ -28,7 +28,6 @@ class TrustProvider(private val service: NostrService) : IEventUpdate {
     private var friendEvent: Event? = null
     private val web = mutableMapOf<PublicKey, Pair<Timestamp, Set<PublicKey>>>()
 
-    // TODO: Call this somewhere
     suspend fun init() {
         val pubkey = service.pubkey()
         val myFilter = Filter()
@@ -89,7 +88,6 @@ class TrustProvider(private val service: NostrService) : IEventUpdate {
             }
 
             else -> {
-                Log.d(logTag, "Updating ${event.kind().asU16()} is not supported")
             }
         }
     }

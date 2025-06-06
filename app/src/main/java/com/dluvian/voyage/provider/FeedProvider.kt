@@ -64,10 +64,11 @@ class FeedProvider(
         dbOnly: Boolean
     ): List<UIEvent> {
         val primaryFeedFilter = when (setting.pubkeySelection) {
-            FriendPubkeys -> Filter().authors(trustProvider.friends())
+            FriendPubkeys -> Filter().authors(trustProvider.friends()) // TODO: null if friends is empty
             Global -> Filter()
             NoPubkeys -> null
         }
+        // TODO: Null if topics is empty
         val topicFeedFilter = if (setting.withTopics) Filter().hashtags(topicProvider.topics())
         else null
 

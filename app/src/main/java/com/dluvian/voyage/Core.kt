@@ -70,6 +70,14 @@ class Core(
         startRelayListener(appContainer.relayChannel)
         viewModelScope.launch {
             appContainer.service.init()
+            appContainer.nameProvider.init()
+            appContainer.trustProvider.init()
+            appContainer.topicProvider.init()
+            appContainer.upvoteProvider.init()
+            appContainer.bookmarkProvider.init()
+        }.invokeOnCompletion { Log.i(logTag, "Finished initializing", it) }
+        viewModelScope.launch {
+            appContainer.service.handleNotifications()
         }
     }
 

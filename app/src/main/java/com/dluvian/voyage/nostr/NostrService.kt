@@ -52,12 +52,12 @@ class NostrService(
                 .write(meta == null || meta == RelayMetadata.WRITE)
             client.addRelayWithOpts(url = relay, opts = opts)
         }
-
-        client.handleNotifications(NostrHandler(relayChannel))
         client.connect()
     }
+    suspend fun handleNotifications() {
+        client.handleNotifications(NostrHandler(relayChannel))
+    }
 
-    // TODO: No RelayUrl struct in nostr-sdk ?
     private suspend fun getPersonalRelays(): Map<RelayUrl, RelayMetadata?> {
         val filter = Filter()
             .author(client.signer().getPublicKey())
@@ -66,8 +66,10 @@ class NostrService(
         val event = dbQuery(filter).firstOrNull()
 
         return if (event != null) {
+            Log.i(logTag, "Initialize with nip65")
             extractRelayList(event)
         } else {
+            Log.i(logTag, "Initialize with hard coded relays")
             mapOf(
                 Pair("wss://nos.lol", null),
                 Pair("wss://relay.damus.io", null),

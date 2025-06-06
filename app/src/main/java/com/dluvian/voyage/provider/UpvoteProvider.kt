@@ -71,11 +71,10 @@ class UpvoteProvider(private val service: NostrService) : IEventUpdate {
             }
 
             null -> {
-                Log.w(logTag, "${event.kind().asU16()} has no KindStandard")
+                Log.w(logTag, "kind ${event.kind().asU16()} has no KindStandard")
             }
 
             else -> {
-                Log.d(logTag, "Updating ${event.kind().asU16()} is not supported")
             }
         }
     }

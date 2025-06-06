@@ -1,5 +1,6 @@
 package com.dluvian.voyage.nostr
 
+import android.util.Log
 import com.dluvian.voyage.model.ReceiveEvent
 import com.dluvian.voyage.model.RelayClosed
 import com.dluvian.voyage.model.RelayNotice
@@ -11,11 +12,14 @@ import rust.nostr.sdk.RelayMessage
 import rust.nostr.sdk.RelayMessageEnum
 
 class NostrHandler(private val relayChannel: Channel<RelayNotificationCmd>) : HandleNotification {
+    private val logTag = "NostrHandler"
+
     override suspend fun handle(
         relayUrl: String,
         subscriptionId: String,
         event: Event
     ) {
+        Log.d(logTag, "Received event kind ${event.kind().asU16()} from $relayUrl")
         relayChannel.send(ReceiveEvent(event))
     }
 
