@@ -10,6 +10,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.copyAndToast
+import com.dluvian.voyage.createProcessTextIntent
+import com.dluvian.voyage.getTranslators
 import com.dluvian.voyage.isReply
 import com.dluvian.voyage.model.BookmarkPost
 import com.dluvian.voyage.model.Cmd
@@ -121,7 +123,7 @@ fun FeedItemDropdown(
                     onClick = {
                         launcher.launch(
                             createProcessTextIntent(
-                                text = uiEvent.content.text,
+                                text = uiEvent.annotatedContent.text,
                                 info = translator
                             )
                         )

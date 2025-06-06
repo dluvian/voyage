@@ -2,6 +2,9 @@ package com.dluvian.voyage
 
 import android.content.ClipData
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.widget.Toast
 import androidx.compose.ui.platform.Clipboard
 import androidx.compose.ui.text.AnnotatedString
@@ -64,4 +67,25 @@ fun copyAndToast(text: AnnotatedString, toast: String, context: Context, clip: C
     val data = ClipData.newPlainText(text.text, text.text)
     clip.nativeClipboard.setPrimaryClip(data)
     Toast.makeText(context, toast, Toast.LENGTH_SHORT).show()
+}
+
+fun getTranslators(packageManager: PackageManager): List<ResolveInfo> {
+    return packageManager
+        .queryIntentActivities(createBaseProcessTextIntent(), 0)
+        .filter { it.activityInfo.name.contains("translate") } // lmao
+}
+
+fun createProcessTextIntent(text: String, info: ResolveInfo): Intent {
+    return createBaseProcessTextIntent()
+        .putExtra(Intent.EXTRA_PROCESS_TEXT, text)
+        .setClassName(
+            info.activityInfo.packageName,
+            info.activityInfo.name
+        )
+}
+
+private fun createBaseProcessTextIntent(): Intent {
+    return Intent()
+        .setAction(Intent.ACTION_PROCESS_TEXT)
+        .setType("text/plain")
 }
