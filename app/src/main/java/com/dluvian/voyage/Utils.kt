@@ -3,6 +3,7 @@ package com.dluvian.voyage
 import rust.nostr.sdk.Event
 import rust.nostr.sdk.EventId
 import rust.nostr.sdk.KindStandard
+import rust.nostr.sdk.Metadata
 import rust.nostr.sdk.PublicKey
 import rust.nostr.sdk.TagKind
 
@@ -33,8 +34,15 @@ fun Event.parentId(): EventId? {
 }
 
 fun PublicKey.shortenedNpub(): String {
-    val npub = this.toBech32()
+    return shortenNpub(this.toBech32())
+}
+
+fun shortenNpub(npub: String): String {
     return npub.take(10) + ":" + npub.takeLast(5)
+}
+
+fun Metadata.lightning(): String? {
+    return this.getLud16() ?: this.getLud06()
 }
 
 fun normalizeName(str: String): String {

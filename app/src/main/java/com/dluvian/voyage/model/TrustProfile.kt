@@ -1,10 +1,11 @@
 package com.dluvian.voyage.model
 
+import com.dluvian.voyage.shortenedNpub
 import rust.nostr.sdk.PublicKey
 
 sealed class TrustProfile(open val pubkey: PublicKey, private var name: String) {
     fun uiName(): String {
-        return if (name.isNotBlank()) name else pubkey.toHex()
+        return if (name.isNotBlank()) name else pubkey.shortenedNpub()
     }
 
     fun setName(name: String) {

@@ -5,12 +5,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
-import com.dluvian.voyage.core.model.FriendTrust
-import com.dluvian.voyage.core.model.IsInListTrust
-import com.dluvian.voyage.core.model.NoTrust
-import com.dluvian.voyage.core.model.Oneself
-import com.dluvian.voyage.core.model.TrustType
-import com.dluvian.voyage.core.model.WebTrust
+import com.dluvian.voyage.model.FollowedProfile
+import com.dluvian.voyage.model.OneselfProfile
+import com.dluvian.voyage.model.TrustProfile
+import com.dluvian.voyage.model.TrustedProfile
+import com.dluvian.voyage.model.UnknownProfile
 
 val TallPoppyRed = Color(0xFFB92B27)
 val Purple = Color(0xFFb5179e)
@@ -93,11 +92,11 @@ val OnBgLight: Color
 
 @Stable
 @Composable
-fun getTrustColor(trustType: TrustType): Color {
-    return when (trustType) {
-        Oneself -> FriendColor
-        FriendTrust, IsInListTrust -> FriendColor
-        WebTrust -> WotColor
-        NoTrust -> MaterialTheme.colorScheme.onBackground.light(0.2f)
+fun getTrustColor(profile: TrustProfile): Color {
+    return when (profile) {
+        is OneselfProfile -> FriendColor
+        is FollowedProfile -> FriendColor
+        is TrustedProfile -> WotColor
+        is UnknownProfile -> MaterialTheme.colorScheme.onBackground.light(0.2f)
     }
 }

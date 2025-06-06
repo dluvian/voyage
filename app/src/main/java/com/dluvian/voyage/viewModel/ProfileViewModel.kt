@@ -19,7 +19,6 @@ import com.dluvian.voyage.provider.FeedProvider
 import com.dluvian.voyage.provider.IEventUpdate
 import rust.nostr.sdk.Event
 import rust.nostr.sdk.Metadata
-import rust.nostr.sdk.PublicKey
 
 class ProfileViewModel(
     val profileFeedState: LazyListState,
@@ -30,9 +29,8 @@ class ProfileViewModel(
     private val service: NostrService,
 ) : ViewModel(), IEventUpdate {
     val tabIndex = mutableIntStateOf(0)
-    val pubkey = mutableStateOf<PublicKey?>(null)
-    val isMe = mutableStateOf(false)
-    val profile = mutableStateOf<Metadata?>(null)
+    val profile = mutableStateOf<TrustProfile?>(null)
+    val meta = mutableStateOf<Metadata>(Metadata())
     val nip65 = mutableStateOf<Event?>(null)
     val trustedBy = mutableStateOf<TrustProfile?>(null)
     val paginator = Paginator(feedProvider = feedProvider)

@@ -7,6 +7,7 @@ const val MAX_TOPICS = 5
 const val MAX_NAME_LEN = 32
 const val MAX_LINES_SUBJECT = 3
 const val MAX_LINES_CONTENT = 12
+const val MAX_RELAYS = 5
 
 const val SHORT_DELAY = 2000L
 const val LONG_DELAY = 3 * SHORT_DELAY

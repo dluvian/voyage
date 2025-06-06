@@ -19,7 +19,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -32,11 +31,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import com.dluvian.voyage.MAX_RELAYS
 import com.dluvian.voyage.R
+import com.dluvian.voyage.RelayUrl
+import com.dluvian.voyage.lightning
 import com.dluvian.voyage.model.Cmd
-import com.dluvian.voyage.model.OpenProfile
+import com.dluvian.voyage.model.FollowedProfile
+import com.dluvian.voyage.model.OpenNProfile
 import com.dluvian.voyage.model.OpenRelayProfile
+import com.dluvian.voyage.model.ProfileViewNextPage
 import com.dluvian.voyage.model.ProfileViewRefresh
+import com.dluvian.voyage.model.TrustProfile
+import com.dluvian.voyage.shortenNpub
 import com.dluvian.voyage.ui.components.Feed
 import com.dluvian.voyage.ui.components.SimpleTabPager
 import com.dluvian.voyage.ui.components.icon.ClickableTrustIcon
@@ -51,13 +57,17 @@ import com.dluvian.voyage.ui.theme.OpenIcon
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
 import com.dluvian.voyage.viewModel.ProfileViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import rust.nostr.sdk.Nip19Profile
+import rust.nostr.sdk.RelayMetadata
+import rust.nostr.sdk.extractRelayList
 
 @Composable
 fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: (Cmd) -> Unit) {
     val profile by vm.profile
+    val meta by vm.meta
     val nip65 by vm.nip65
+    val trustedBy by vm.trustedBy
     val headers = listOf(
         stringResource(id = R.string.posts),
         stringResource(id = R.string.about),
@@ -65,85 +75,87 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: (Cm
     )
     val scope = rememberCoroutineScope()
 
-    ProfileScaffold(
-        profile = profile,
-        snackbar = snackbar,
-        onUpdate = onUpdate
-    ) {
-        SimpleTabPager(
-            headers = headers,
-            index = vm.tabIndex,
-            pagerState = vm.pagerState,
-            onScrollUp = {
-                when (it) {
-                    0 -> scope.launch { vm.profileFeedState.animateScrollToItem(0) }
-                    1 -> scope.launch { vm.replyFeedState.animateScrollToItem(0) }
-                    3 -> scope.launch { vm.profileAboutState.animateScrollToItem(0) }
-                    4 -> scope.launch { vm.profileRelayState.animateScrollToItem(0) }
-                    else -> {}
-                }
-            },
+    profile?.let { profilerino ->
+        ProfileScaffold(
+            profile = profilerino,
+            snackbar = snackbar,
+            onUpdate = onUpdate
         ) {
-            when (it) {
-                0 -> Feed(
-                    paginator = vm.rootPaginator,
-                    postDetails = vm.postDetails,
-                    state = vm.profileFeedState,
-                    onRefresh = { onUpdate(ProfileViewRefresh) },
-                    onAppend = { onUpdate(ProfileViewRootAppend) },
-                    onUpdate = onUpdate,
-                )
+            SimpleTabPager(
+                headers = headers,
+                index = vm.tabIndex,
+                pagerState = vm.pagerState,
+                onScrollUp = {
+                    when (it) {
+                        0 -> scope.launch { vm.profileFeedState.animateScrollToItem(0) }
+                        1 -> scope.launch { vm.profileAboutState.animateScrollToItem(0) }
+                        2 -> scope.launch { vm.profileRelayState.animateScrollToItem(0) }
+                        else -> {}
+                    }
+                },
+            ) {
+                when (it) {
+                    0 -> Feed(
+                        paginator = vm.paginator,
+                        state = vm.profileFeedState,
+                        onRefresh = { onUpdate(ProfileViewRefresh) },
+                        onAppend = { onUpdate(ProfileViewNextPage) },
+                        onUpdate = onUpdate,
+                    )
 
-                1 -> AboutPage(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = spacing.bigScreenEdge),
-                    npub = remember(profile.inner.pubkey) { profile.inner.pubkey.toBech32() },
-                    nprofile = remember(profile.inner.pubkey, nip65Relays) {
-                        createNprofile(
-                            hex = profile.inner.pubkey,
-                            relays = nip65Relays.filter { relay -> relay.isWrite }
-                                .takeRandom(MAX_RELAYS)
-                                .map(Nip65Relay::url)
-                        ).toBech32()
-                    },
-                    lightning = profile.lightning,
-                    trustedBy = if (profile.inner.showTrustedBy()) {
-                        vm.trustedBy.value.collectAsState().value
-                    } else {
-                        null
-                    },
-                    about = profile.about,
-                    isRefreshing = vm.rootPaginator.isRefreshing.value,
-                    state = vm.profileAboutState,
-                    scope = scope,
-                    onUpdate = onUpdate
-                )
+                    1 -> AboutPage(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = spacing.bigScreenEdge),
+                        npub = remember(profilerino) { profilerino.pubkey.toBech32() },
+                        nprofile = remember(profilerino, nip65) {
+                            Nip19Profile(
+                                profilerino.pubkey,
+                                nip65?.let { extractRelayList(it).keys.take(MAX_RELAYS) }
+                                    ?: emptyList()
+                            ).toBech32()
+                        },
+                        lightning = meta.lightning(),
+                        trustedBy = trustedBy,
+                        about = AnnotatedString(meta.getAbout().orEmpty()),
+                        isRefreshing = vm.paginator.isRefreshing.value,
+                        state = vm.profileAboutState,
+                        onUpdate = onUpdate
+                    )
 
-                2 -> RelayPage(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = spacing.bigScreenEdge),
-                    nip65Relays = remember(nip65Relays) {
-                        nip65Relays.filter { relay -> relay.isRead && relay.isWrite }
-                            .map(Nip65Relay::url)
-                    },
-                    readOnlyRelays = remember(nip65Relays) {
-                        nip65Relays.filter { relay -> relay.isRead && !relay.isWrite }
-                            .map(Nip65Relay::url)
-                    },
-                    writeOnlyRelays = remember(nip65Relays) {
-                        nip65Relays.filter { relay -> relay.isWrite && !relay.isRead }
-                            .map(Nip65Relay::url)
-                    },
-                    seenInRelays = vm.seenInRelays.value.collectAsState().value,
-                    isRefreshing = vm.rootPaginator.isRefreshing.value,
-                    state = vm.profileRelayState,
-                    onUpdate = onUpdate
-                )
+                    2 -> RelayPage(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = spacing.bigScreenEdge),
+                        nip65Relays = remember(nip65) {
+                            nip65?.let { extractRelayList(it) }
+                                ?.toList()
+                                .orEmpty()
+                                .filter { (_, relayMeta) -> relayMeta == null }
+                                .map { (url, _) -> url }
+                        },
+                        readOnlyRelays = remember(nip65) {
+                            nip65?.let { extractRelayList(it) }
+                                ?.toList()
+                                .orEmpty()
+                                .filter { (_, relayMeta) -> relayMeta == RelayMetadata.READ }
+                                .map { (url, _) -> url }
+                        },
+                        writeOnlyRelays = remember(nip65) {
+                            nip65?.let { extractRelayList(it) }
+                                ?.toList()
+                                .orEmpty()
+                                .filter { (_, relayMeta) -> relayMeta == RelayMetadata.WRITE }
+                                .map { (url, _) -> url }
+                        },
+                        isRefreshing = vm.paginator.isRefreshing.value,
+                        state = vm.profileRelayState,
+                        onUpdate = onUpdate
+                    )
 
-                else -> ComingSoon()
+                    else -> ComingSoon()
 
+                }
             }
         }
     }
@@ -151,14 +163,13 @@ fun ProfileView(vm: ProfileViewModel, snackbar: SnackbarHostState, onUpdate: (Cm
 
 @Composable
 private fun AboutPage(
-    npub: Bech32,
-    nprofile: Bech32,
+    npub: String,
+    nprofile: String,
     lightning: String?,
-    trustedBy: AdvancedProfileView?,
+    trustedBy: TrustProfile?,
     about: AnnotatedString?,
     isRefreshing: Boolean,
     state: LazyListState,
-    scope: CoroutineScope,
     modifier: Modifier = Modifier,
     onUpdate: (Cmd) -> Unit
 ) {
@@ -171,7 +182,7 @@ private fun AboutPage(
                         .padding(top = spacing.screenEdge),
                     icon = KeyIcon,
                     text = npub,
-                    shortenedText = npub.shortenBech32(),
+                    shortenedText = shortenNpub(npub),
                     description = stringResource(id = R.string.npub)
                 )
             }
@@ -180,7 +191,7 @@ private fun AboutPage(
                     modifier = Modifier.padding(vertical = spacing.medium),
                     icon = KeyIcon,
                     text = nprofile,
-                    shortenedText = nprofile.shortenBech32(),
+                    shortenedText = shortenNpub(npub),
                     description = stringResource(id = R.string.nprofile)
                 )
             }
@@ -191,19 +202,20 @@ private fun AboutPage(
                     text = lightning,
                     description = stringResource(id = R.string.lightning_address),
                     trailingIcon = {
-                        val launcher = getSimpleLauncher()
+                        // TODO: val launcher = getSimpleLauncher()
                         Icon(
                             modifier = Modifier
                                 .padding(start = spacing.medium)
                                 .size(sizing.smallIndicator)
                                 .clickable {
-                                    onUpdate(
-                                        OpenLightningWallet(
-                                            address = lightning,
-                                            launcher = launcher,
-                                            scope = scope,
-                                        )
-                                    )
+                                    // TODO:
+//                                    onUpdate(
+//                                        OpenLightningWallet(
+//                                            address = lightning,
+//                                            launcher = launcher,
+//                                            scope = scope,
+//                                        )
+//                                    )
                                 },
                             imageVector = OpenIcon,
                             contentDescription = stringResource(id = R.string.open_lightning_address_in_wallet)
@@ -211,14 +223,13 @@ private fun AboutPage(
                     }
                 )
             }
-            if (trustedBy != null && trustedBy.isFriend) item {
+            if (trustedBy != null && trustedBy is FollowedProfile) item {
                 Column(modifier = Modifier.padding(vertical = spacing.small)) {
                     SmallHeader(header = stringResource(id = R.string.semi_trusted_bc_you_follow))
                     ClickableTrustIcon(
-                        trustType = FriendTrust,
-                        authorName = trustedBy.name,
+                        profile = trustedBy,
                         onClick = {
-                            onUpdate(OpenProfile(nprofile = createNprofile(hex = trustedBy.pubkey)))
+                            onUpdate(OpenNProfile(Nip19Profile(trustedBy.pubkey)))
                         }
                     )
                 }
@@ -276,7 +287,6 @@ fun RelayPage(
     nip65Relays: List<RelayUrl>,
     readOnlyRelays: List<RelayUrl>,
     writeOnlyRelays: List<RelayUrl>,
-    seenInRelays: List<RelayUrl>,
     isRefreshing: Boolean,
     state: LazyListState,
     modifier: Modifier = Modifier,
@@ -285,8 +295,7 @@ fun RelayPage(
     ProfileViewPage(isRefreshing = isRefreshing, onUpdate = onUpdate) {
         if (nip65Relays.isEmpty() &&
             readOnlyRelays.isEmpty() &&
-            writeOnlyRelays.isEmpty() &&
-            seenInRelays.isEmpty()
+            writeOnlyRelays.isEmpty()
         ) BaseHint(stringResource(id = R.string.no_relays_found))
 
         LazyColumn(
@@ -314,14 +323,6 @@ fun RelayPage(
                 RelaySection(
                     header = stringResource(id = R.string.relay_list_write_only),
                     relays = writeOnlyRelays,
-                    onUpdate = onUpdate
-                )
-            }
-
-            if (seenInRelays.isNotEmpty()) item {
-                RelaySection(
-                    header = stringResource(id = R.string.seen_in),
-                    relays = seenInRelays,
                     onUpdate = onUpdate
                 )
             }
