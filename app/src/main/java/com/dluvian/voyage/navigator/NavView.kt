@@ -6,6 +6,7 @@ import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.RelayUrl
 import com.dluvian.voyage.Topic
+import com.dluvian.voyage.model.UIEvent
 import rust.nostr.sdk.Event
 import rust.nostr.sdk.Nip19Event
 import rust.nostr.sdk.Nip19Profile
@@ -42,11 +43,10 @@ data object BookmarkNavView : SimpleNonMainNavView()
 data object CreateGitIssueNavView : SimpleNonMainNavView()
 
 sealed class AdvancedNonMainNavView : NonMainNavView()
-data class ThreadNavView(val event: Event) : AdvancedNonMainNavView()
+data class ThreadNavView(val event: UIEvent) : AdvancedNonMainNavView()
 data class ThreadNeventNavView(val nevent: Nip19Event) : AdvancedNonMainNavView()
-data class ProfileNavView(val profileEvent: Event) : AdvancedNonMainNavView()
-data class NProfileNavView(val nprofile: Nip19Profile) : AdvancedNonMainNavView()
+data class ProfileNavView(val nprofile: Nip19Profile) : AdvancedNonMainNavView()
 data class TopicNavView(val topic: Topic) : AdvancedNonMainNavView()
-data class ReplyNavView(val parent: Event) : AdvancedNonMainNavView()
+data class ReplyNavView(val parent: UIEvent) : AdvancedNonMainNavView()
 data class CrossPostNavView(val event: Event) : AdvancedNonMainNavView()
 data class RelayProfileNavView(val relayUrl: RelayUrl) : AdvancedNonMainNavView()

@@ -145,10 +145,10 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
                 topicProvider = appContainer.topicProvider,
             )
         },
-        createPostVM = viewModel {
+        postVM = viewModel {
             PostViewModel()
         },
-        createReplyVM = viewModel {
+        replyVM = viewModel {
             ReplyViewModel()
         },
         editProfileVM = viewModel {
@@ -157,7 +157,7 @@ private fun createVMContainer(appContainer: AppContainer): VMContainer {
         relayEditorVM = viewModel {
             RelayEditorViewModel(relayEditorState, appContainer.service)
         },
-        createCrossPostVM = viewModel {
+        crossPostVM = viewModel {
             CrossPostViewModel()
         },
         relayProfileVM = viewModel {

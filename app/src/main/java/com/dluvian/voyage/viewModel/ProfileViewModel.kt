@@ -8,9 +8,7 @@ import androidx.lifecycle.ViewModel
 import com.dluvian.voyage.model.ProfileViewCmd
 import com.dluvian.voyage.model.ProfileViewNextPage
 import com.dluvian.voyage.model.ProfileViewPopNprofile
-import com.dluvian.voyage.model.ProfileViewPopPubkey
 import com.dluvian.voyage.model.ProfileViewPushNprofile
-import com.dluvian.voyage.model.ProfileViewPushPubkey
 import com.dluvian.voyage.model.ProfileViewRefresh
 import com.dluvian.voyage.model.TrustProfile
 import com.dluvian.voyage.nostr.NostrService
@@ -39,9 +37,7 @@ class ProfileViewModel(
         when (cmd) {
             ProfileViewNextPage -> TODO()
             is ProfileViewPopNprofile -> TODO()
-            is ProfileViewPopPubkey -> TODO()
             is ProfileViewPushNprofile -> TODO()
-            is ProfileViewPushPubkey -> TODO()
             ProfileViewRefresh -> TODO()
         }
     }

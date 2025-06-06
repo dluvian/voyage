@@ -13,7 +13,6 @@ import com.dluvian.voyage.navigator.EditProfileNavView
 import com.dluvian.voyage.navigator.FollowListsNavView
 import com.dluvian.voyage.navigator.HomeNavView
 import com.dluvian.voyage.navigator.InboxNavView
-import com.dluvian.voyage.navigator.NProfileNavView
 import com.dluvian.voyage.navigator.NavView
 import com.dluvian.voyage.navigator.ProfileNavView
 import com.dluvian.voyage.navigator.RelayEditorNavView
@@ -57,7 +56,7 @@ sealed class PushNavCmd : NavCmd() {
             ClickCreateGitIssue -> CreateGitIssueNavView
             is OpenThread -> ThreadNavView(this.event)
             is OpenThreadNevent -> ThreadNeventNavView(nevent = this.nevent)
-            is OpenNProfile -> NProfileNavView(this.nprofile)
+            is OpenNProfile -> ProfileNavView(this.nprofile)
             is OpenProfile -> ProfileNavView(this.profileEvent)
             is OpenTopic -> TopicNavView(topic = this.topic)
             is OpenReplyCreation -> ReplyNavView(parent = this.parent)
@@ -80,12 +79,12 @@ data object ClickBookmarks : PushNavCmd()
 data object ClickCreateGitIssue : PushNavCmd()
 
 sealed class AdvancedPushNavCmd : PushNavCmd()
-data class OpenThread(val event: Event) : AdvancedPushNavCmd()
+data class OpenThread(val event: UIEvent) : AdvancedPushNavCmd()
 data class OpenThreadNevent(val nevent: Nip19Event) : AdvancedPushNavCmd()
 data class OpenProfile(val profileEvent: Event) : AdvancedPushNavCmd()
 data class OpenNProfile(val nprofile: Nip19Profile) : AdvancedPushNavCmd()
 data class OpenTopic(val topic: Topic) : AdvancedPushNavCmd()
-data class OpenReplyCreation(val parent: Event) : AdvancedPushNavCmd()
+data class OpenReplyCreation(val parent: UIEvent) : AdvancedPushNavCmd()
 data class OpenCrossPostCreation(val event: Event) : AdvancedPushNavCmd()
 data class OpenRelayProfile(val relayUrl: RelayUrl) : AdvancedPushNavCmd()
 
@@ -172,9 +171,7 @@ data class RelayProfileViewOpen(val relayUrl: RelayUrl) : RelayProfileViewCmd()
 
 sealed class ProfileViewCmd : Cmd()
 data class ProfileViewPushNprofile(val nprofile: Nip19Profile) : ProfileViewCmd()
-data class ProfileViewPushPubkey(val pubkey: PublicKey) : ProfileViewCmd()
 data class ProfileViewPopNprofile(val nprofile: Nip19Profile) : ProfileViewCmd()
-data class ProfileViewPopPubkey(val pubkey: PublicKey) : ProfileViewCmd()
 data object ProfileViewRefresh : ProfileViewCmd()
 data object ProfileViewNextPage : ProfileViewCmd()
 

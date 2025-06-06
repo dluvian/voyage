@@ -8,7 +8,6 @@ import com.dluvian.voyage.navigator.CreatePostNavView
 import com.dluvian.voyage.navigator.CrossPostNavView
 import com.dluvian.voyage.navigator.EditProfileNavView
 import com.dluvian.voyage.navigator.FollowListsNavView
-import com.dluvian.voyage.navigator.NProfileNavView
 import com.dluvian.voyage.navigator.NonMainNavView
 import com.dluvian.voyage.navigator.ProfileNavView
 import com.dluvian.voyage.navigator.RelayEditorNavView
@@ -28,7 +27,7 @@ fun NonMainView(
 ) {
     when (currentView) {
         CreatePostNavView -> PostView(
-            vm = core.vmContainer.createPostVM,
+            vm = core.vmContainer.postVM,
             snackbar = core.appContainer.snackbar,
             searchSuggestions = core.appContainer.suggestionProvider.profiles,
             topicSuggestions = core.appContainer.suggestionProvider.topics,
@@ -41,7 +40,7 @@ fun NonMainView(
             onUpdate = core.onUpdate
         )
 
-        is ProfileNavView, is NProfileNavView -> ProfileView(
+        is ProfileNavView, is ProfileNavView -> ProfileView(
             vm = core.vmContainer.profileVM,
             snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate
@@ -60,7 +59,7 @@ fun NonMainView(
         )
 
         is ReplyNavView -> ReplyView(
-            vm = core.vmContainer.createReplyVM,
+            vm = core.vmContainer.replyVM,
             snackbar = core.appContainer.snackbar,
             searchSuggestions = core.appContainer.suggestionProvider.profiles,
             onUpdate = core.onUpdate
@@ -79,7 +78,7 @@ fun NonMainView(
         )
 
         is CrossPostNavView -> CrossPostView(
-            vm = core.vmContainer.createCrossPostVM,
+            vm = core.vmContainer.crossPostVM,
             topicSuggestions = core.appContainer.suggestionProvider.topics,
             snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate

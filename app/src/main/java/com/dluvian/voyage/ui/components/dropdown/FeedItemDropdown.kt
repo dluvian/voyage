@@ -97,7 +97,6 @@ fun FeedItemDropdown(
         SimpleDropdownItem(
             text = stringResource(id = R.string.rebroadcast),
             onClick = {
-                // RelevantId bc repost json is not saved in db
                 onUpdate(Rebroadcast(uiEvent.event))
                 onDismiss()
             }
