@@ -13,4 +13,8 @@ data class UIEvent(
     val bookmarked: Boolean,
     val myTopic: Topic?,
     val inner: UIEvent? = null // For example for reposts
-)
+) {
+    fun eventInnerFirst(): Event {
+        return inner?.event ?: event
+    }
+}

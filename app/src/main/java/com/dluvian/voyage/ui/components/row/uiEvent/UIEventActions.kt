@@ -37,18 +37,13 @@ fun UIEventActions(
         Spacer(modifier = Modifier.width(spacing.tiny))
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (uiEvent.bookmarked) {
-                BookmarkIconButton(relevantId = uiEvent.getRelevantId(), onUpdate = onUpdate)
+                BookmarkIconButton(uiEvent.event.id(), onUpdate)
                 Spacer(modifier = Modifier.width(spacing.large))
             }
-            when (uiEvent) {
-                is CrossPost,
-                is RootPost,
-                is Comment,
-                is LegacyReply -> {
-                    CrossPostIconButton(relevantId = uiEvent.getRelevantId(), onUpdate = onUpdate)
-                    Spacer(modifier = Modifier.width(spacing.large))
-                }
-            }
+
+            CrossPostIconButton(uiEvent.eventInnerFirst(), onUpdate)
+            Spacer(modifier = Modifier.width(spacing.large))
+
             additionalEndAction()
             Spacer(modifier = Modifier.width(spacing.large))
             OPBlue

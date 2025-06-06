@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.dluvian.voyage.model.BookmarkPost
 import com.dluvian.voyage.model.BookmarkViewCmd
 import com.dluvian.voyage.model.ClickNeutralizeVotes
+import com.dluvian.voyage.model.ClickProfileSuggestion
 import com.dluvian.voyage.model.ClickUpvote
 import com.dluvian.voyage.model.CloseEventDetails
 import com.dluvian.voyage.model.Cmd
@@ -35,6 +36,8 @@ import com.dluvian.voyage.model.RelayNotice
 import com.dluvian.voyage.model.RelayNotificationCmd
 import com.dluvian.voyage.model.RelayProfileViewCmd
 import com.dluvian.voyage.model.ReplyViewCmd
+import com.dluvian.voyage.model.SearchProfileSuggestion
+import com.dluvian.voyage.model.SearchTopicSuggestion
 import com.dluvian.voyage.model.SearchViewCmd
 import com.dluvian.voyage.model.SendCrossPost
 import com.dluvian.voyage.model.SendGitIssue
@@ -226,6 +229,9 @@ class Core(
             is ShowEventDetails -> TODO()
             is CloseEventDetails -> TODO()
             is PublishProfile -> TODO()
+            is ClickProfileSuggestion -> TODO()
+            is SearchProfileSuggestion -> TODO()
+            is SearchTopicSuggestion -> TODO()
         }
     }
 
