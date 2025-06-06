@@ -106,7 +106,7 @@ data class SendPost(val topics: List<Topic>, val subject: String, val content: S
 data class SendReply(val parent: Event, val content: String) : CoreActionCmd()
 data class SendGitIssue(val type: GitIssueType, val header: String, val content: String) :
     CoreActionCmd()
-data class PublishNip65(val relays: List<Pair<RelayUrl, RelayMetadata>>) : CoreActionCmd()
+data class PublishNip65(val relays: List<Pair<RelayUrl, RelayMetadata?>>) : CoreActionCmd()
 data class PublishProfile(val metadata: Metadata) : CoreActionCmd()
 data class ShowEventDetails(val event: Event) : CoreActionCmd()
 data object CloseEventDetails : CoreActionCmd()
@@ -165,6 +165,7 @@ data class AddRelay(val relayUrl: RelayUrl) : RelayEditorViewCmd()
 data class RemoveRelay(val relayUrl: RelayUrl) : RelayEditorViewCmd()
 data class ToggleReadRelay(val relayUrl: RelayUrl) : RelayEditorViewCmd()
 data class ToggleWriteRelay(val relayUrl: RelayUrl) : RelayEditorViewCmd()
+data object RelayConnectionUpdated : RelayEditorViewCmd()
 
 sealed class RelayProfileViewCmd : Cmd()
 data class RelayProfileViewOpen(val relayUrl: RelayUrl) : RelayProfileViewCmd()

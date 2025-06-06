@@ -12,20 +12,34 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import com.dluvian.voyage.core.model.ConnectionStatus
-import com.dluvian.voyage.core.model.Waiting
+import androidx.compose.ui.graphics.Color
 import com.dluvian.voyage.ui.theme.sizing
+import rust.nostr.sdk.RelayStatus
 
 @Composable
-fun ConnectionDot(connectionStatus: ConnectionStatus) {
+fun ConnectionDot(status: RelayStatus) {
     val backgroundColor = MaterialTheme.colorScheme.background
     val infiniteTransition = rememberInfiniteTransition(label = "Connection dot")
+    val color = remember(status) {
+        when (status) {
+            RelayStatus.INITIALIZED, RelayStatus.PENDING, RelayStatus.CONNECTING -> Color.Yellow
+            RelayStatus.CONNECTED -> Color.Green
+            RelayStatus.DISCONNECTED -> Color.LightGray
+            RelayStatus.TERMINATED, RelayStatus.BANNED -> Color.Red
+        }
+    }
+    val isBlinking = remember(status) {
+        when (status) {
+            RelayStatus.INITIALIZED, RelayStatus.PENDING, RelayStatus.CONNECTING -> true
+            RelayStatus.CONNECTED, RelayStatus.DISCONNECTED, RelayStatus.TERMINATED, RelayStatus.BANNED -> false
+        }
+    }
     val animatedColor by infiniteTransition.animateColor(
-        initialValue = if (connectionStatus is Waiting) backgroundColor
-        else connectionStatus.getColor(),
-        targetValue = connectionStatus.getColor(),
+        initialValue = if (isBlinking) backgroundColor else color,
+        targetValue = color,
         animationSpec = infiniteRepeatable(tween(600), RepeatMode.Reverse),
         label = "connection color"
     )
@@ -36,3 +50,4 @@ fun ConnectionDot(connectionStatus: ConnectionStatus) {
             .background(color = animatedColor)
     )
 }
+

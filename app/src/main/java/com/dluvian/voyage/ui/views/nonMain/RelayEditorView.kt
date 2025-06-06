@@ -23,31 +23,23 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import com.dluvian.voyage.model.AddRelay
-import com.dluvian.voyage.model.GoBack
-import com.dluvian.voyage.model.LoadRelays
 import com.dluvian.voyage.R
+import com.dluvian.voyage.RelayUrl
+import com.dluvian.voyage.model.AddRelay
+import com.dluvian.voyage.model.Cmd
+import com.dluvian.voyage.model.PublishNip65
 import com.dluvian.voyage.model.RemoveRelay
 import com.dluvian.voyage.model.ToggleReadRelay
 import com.dluvian.voyage.model.ToggleWriteRelay
-import com.dluvian.voyage.core.model.Connected
-import com.dluvian.voyage.core.model.ConnectionStatus
-import com.dluvian.voyage.core.model.Waiting
-import com.dluvian.voyage.data.nostr.LOCAL_WEBSOCKET
-import com.dluvian.voyage.data.nostr.Nip65Relay
-import com.dluvian.voyage.data.nostr.RelayUrl
 import com.dluvian.voyage.ui.components.ConnectionDot
 import com.dluvian.voyage.ui.components.scaffold.SaveableScaffold
 import com.dluvian.voyage.ui.components.selection.NamedCheckbox
@@ -58,7 +50,9 @@ import com.dluvian.voyage.ui.theme.DeleteIcon
 import com.dluvian.voyage.ui.theme.sizing
 import com.dluvian.voyage.ui.theme.spacing
 import com.dluvian.voyage.viewModel.RelayEditorViewModel
-import kotlinx.coroutines.CoroutineScope
+import rust.nostr.sdk.Relay
+import rust.nostr.sdk.RelayMetadata
+import rust.nostr.sdk.RelayStatus
 
 @Composable
 fun RelayEditorView(
@@ -66,40 +60,24 @@ fun RelayEditorView(
     snackbar: SnackbarHostState,
     onUpdate: (Cmd) -> Unit
 ) {
-    val myRelays by vm.myRelays
-    val popularRelays by vm.popularRelays
+    val nip65 by vm.nip65
+    val poolRelays by vm.poolRelays
     val addIsEnabled by vm.addIsEnabled
-    val isSaving by vm.isSaving
-    val connectionStatuses by vm.connectionStatuses
-    val scope = rememberCoroutineScope()
-    val context = LocalContext.current
-
-    LaunchedEffect(key1 = Unit) {
-        onUpdate(LoadRelays)
-    }
 
     SaveableScaffold(
         showSaveButton = true,
-        isSaving = isSaving,
         snackbar = snackbar,
         title = stringResource(id = R.string.relays),
         onSave = {
-            onUpdate(
-                SaveRelays(
-                    context = context,
-                    onGoBack = { onUpdate(GoBack) },
-                )
-            )
+            onUpdate(PublishNip65(relays = nip65))
         },
         onUpdate = onUpdate
     ) {
         RelayEditorViewContent(
-            myRelays = myRelays,
-            popularRelays = popularRelays,
-            connectionStatuses = connectionStatuses,
+            nip65 = nip65,
+            poolRelays = poolRelays,
             addIsEnabled = addIsEnabled,
             state = vm.lazyListState,
-            scope = scope,
             onUpdate = onUpdate
         )
     }
@@ -107,56 +85,49 @@ fun RelayEditorView(
 
 @Composable
 private fun RelayEditorViewContent(
-    myRelays: List<Nip65Relay>,
-    popularRelays: List<RelayUrl>,
-    connectionStatuses: Map<RelayUrl, ConnectionStatus>,
+    nip65: List<Pair<RelayUrl, RelayMetadata?>>,
+    poolRelays: Map<RelayUrl, Relay>,
     addIsEnabled: Boolean,
     state: LazyListState,
-    scope: CoroutineScope,
     onUpdate: (Cmd) -> Unit,
 ) {
-    val connectedRelays = remember(connectionStatuses) {
-        connectionStatuses.filter { (_, status) -> status is Connected }.keys.toList()
-    }
+    val poolList = remember(poolRelays) { poolRelays.values.toList() }
 
     LazyColumn(modifier = Modifier.fillMaxSize(), state = state) {
         item { SectionHeader(header = stringResource(id = R.string.my_relays)) }
 
-        itemsIndexed(items = myRelays) { index, relay ->
+        itemsIndexed(items = nip65) { index, (url, meta) ->
             MyRelayRow(
-                relay = relay,
-                connectionStatus = connectionStatuses[relay.url] ?: Waiting,
-                isDeletable = myRelays.size > 1,
+                relay = url,
+                meta = meta,
+                status = poolRelays[url]?.status() ?: RelayStatus.DISCONNECTED,
+                isDeletable = nip65.size > 1,
                 onUpdate = onUpdate,
             )
-            if (index != myRelays.size - 1) {
+            if (index != nip65.size - 1) {
                 HorizontalDivider()
             }
         }
 
         if (addIsEnabled) item {
-            AddRelayRow(scope = scope, onUpdate = onUpdate)
+            AddRelayRow(onUpdate)
             Spacer(modifier = Modifier.height(spacing.xxl))
         }
 
         addSection(
-            titleId = R.string.connected_relays,
-            relays = connectedRelays,
+            titleId = R.string.relay_pool,
+            relays = poolList,
             addIsEnabled = addIsEnabled,
-            myRelays = myRelays,
-            connectionStatuses = connectionStatuses,
-            scope = scope,
+            myRelays = nip65,
             showCount = true,
             onUpdate = onUpdate
         )
 
         addSection(
             titleId = R.string.popular_relays,
-            relays = popularRelays,
+            relays = poolList,
             addIsEnabled = addIsEnabled,
-            myRelays = myRelays,
-            connectionStatuses = connectionStatuses,
-            scope = scope,
+            myRelays = nip65,
             onUpdate = onUpdate
         )
     }
@@ -164,11 +135,9 @@ private fun RelayEditorViewContent(
 
 private fun LazyListScope.addSection(
     titleId: Int,
-    relays: List<RelayUrl>,
+    relays: List<Relay>,
     addIsEnabled: Boolean,
-    myRelays: List<Nip65Relay>,
-    connectionStatuses: Map<RelayUrl, ConnectionStatus>,
-    scope: CoroutineScope,
+    myRelays: List<Pair<RelayUrl, RelayMetadata?>>,
     showCount: Boolean = false,
     onUpdate: (Cmd) -> Unit
 ) {
@@ -180,14 +149,11 @@ private fun LazyListScope.addSection(
                     .let { if (showCount) it + " (${relays.size})" else it }
             )
         }
-        itemsIndexed(items = relays) { index, relayUrl ->
+        itemsIndexed(items = relays) { index, relay ->
             NormalRelayRow(
-                relayUrl = relayUrl,
-                isAddable = addIsEnabled &&
-                        myRelays.none { it.url == relayUrl } &&
-                        !relayUrl.startsWith(LOCAL_WEBSOCKET),
-                connectionStatus = connectionStatuses[relayUrl],
-                scope = scope,
+                relayUrl = relay.url(),
+                isAddable = addIsEnabled && myRelays.none { (myUrl, _) -> myUrl == relay.url() },
+                status = relay.status(),
                 onUpdate = onUpdate,
             )
             if (index != relays.size - 1) {
@@ -198,13 +164,12 @@ private fun LazyListScope.addSection(
 }
 
 @Composable
-private fun AddRelayRow(scope: CoroutineScope, onUpdate: (Cmd) -> Unit) {
+private fun AddRelayRow(onUpdate: (Cmd) -> Unit) {
     val input = remember { mutableStateOf("") }
     val focus = LocalFocusManager.current
-    val context = LocalContext.current
 
     val onDone = {
-        onUpdate(AddRelay(relayUrl = input.value, scope = scope, context = context))
+        onUpdate(AddRelay(input.value))
         input.value = ""
         focus.clearFocus()
     }
@@ -233,15 +198,13 @@ private fun AddRelayRow(scope: CoroutineScope, onUpdate: (Cmd) -> Unit) {
 private fun NormalRelayRow(
     relayUrl: RelayUrl,
     isAddable: Boolean,
-    connectionStatus: ConnectionStatus?,
-    scope: CoroutineScope,
+    status: RelayStatus?,
     onUpdate: (Cmd) -> Unit
 ) {
-    val context = LocalContext.current
-    RelayRow(relayUrl = relayUrl, connectionStatus = connectionStatus, onUpdate = onUpdate) {
+    RelayRow(relayUrl = relayUrl, status = status, onUpdate = onUpdate) {
         if (isAddable) IconButton(
             modifier = Modifier.size(sizing.relayActionButton),
-            onClick = { onUpdate(AddRelay(relayUrl = relayUrl, scope = scope, context = context)) }
+            onClick = { onUpdate(AddRelay(relayUrl)) }
         ) {
             Icon(
                 imageVector = AddIcon,
@@ -253,39 +216,40 @@ private fun NormalRelayRow(
 
 @Composable
 private fun MyRelayRow(
-    relay: Nip65Relay,
-    connectionStatus: ConnectionStatus,
+    relay: RelayUrl,
+    meta: RelayMetadata?,
+    status: RelayStatus,
     isDeletable: Boolean,
     onUpdate: (Cmd) -> Unit
 ) {
     RelayRow(
-        relayUrl = relay.url,
+        relayUrl = relay,
         onUpdate = onUpdate,
-        connectionStatus = connectionStatus,
+        status = status,
         secondRow = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 NamedCheckbox(
-                    isChecked = relay.isRead,
+                    isChecked = meta == null || meta == RelayMetadata.READ,
                     name = stringResource(id = R.string.read),
-                    isEnabled = relay.isWrite || !relay.isRead,
-                    onClick = { onUpdate(ToggleReadRelay(relayUrl = relay.url)) }
+                    isEnabled = meta != RelayMetadata.READ,
+                    onClick = { onUpdate(ToggleReadRelay(relay)) }
                 )
                 Spacer(modifier = Modifier.width(spacing.xxl))
                 NamedCheckbox(
-                    isChecked = relay.isWrite,
+                    isChecked = meta == null || meta == RelayMetadata.WRITE,
                     name = stringResource(id = R.string.write),
-                    isEnabled = relay.isRead || !relay.isWrite,
-                    onClick = { onUpdate(ToggleWriteRelay(relayUrl = relay.url)) }
+                    isEnabled = meta != RelayMetadata.WRITE,
+                    onClick = { onUpdate(ToggleWriteRelay(relay)) }
                 )
             }
         },
         trailingContent = {
             if (isDeletable) IconButton(
                 modifier = Modifier.size(sizing.relayActionButton),
-                onClick = { onUpdate(RemoveRelay(relayUrl = relay.url)) }) {
+                onClick = { onUpdate(RemoveRelay(relay)) }) {
                 Icon(
                     imageVector = DeleteIcon,
                     contentDescription = stringResource(id = R.string.remove_relay)
@@ -299,7 +263,7 @@ private fun MyRelayRow(
 private fun RelayRow(
     relayUrl: RelayUrl,
     onUpdate: (Cmd) -> Unit,
-    connectionStatus: ConnectionStatus?,
+    status: RelayStatus?,
     secondRow: @Composable () -> Unit = {},
     trailingContent: @Composable () -> Unit = {},
 ) {
@@ -313,10 +277,8 @@ private fun RelayRow(
     ) {
         Column(Modifier.weight(weight = 1f, fill = false)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                if (connectionStatus != null) {
-                    ConnectionDot(connectionStatus = connectionStatus)
+                ConnectionDot(status ?: RelayStatus.DISCONNECTED)
                     Spacer(modifier = Modifier.width(spacing.medium))
-                }
                 ClickableRelayUrl(relayUrl = relayUrl, onUpdate = onUpdate)
             }
             secondRow()

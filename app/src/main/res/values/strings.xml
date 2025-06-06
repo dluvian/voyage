@@ -262,4 +262,5 @@
     <string name="bytes_received">Bytes received</string>
     <string name="bytes_sent">Bytes sent</string>
     <string name="success_rate">Success rate</string>
+    <string name="relay_pool">Relay pool</string>
 </resources>
