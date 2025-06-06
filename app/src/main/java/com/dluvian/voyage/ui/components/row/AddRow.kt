@@ -4,12 +4,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.ui.theme.AddIcon
 import com.dluvian.voyage.ui.theme.spacing
 
 @Composable
-fun AddRow(header: String, onClick: Fn) {
+fun AddRow(header: String, onClick: () -> Unit) {
     ClickableRow(
         header = header,
         leadingContent = {

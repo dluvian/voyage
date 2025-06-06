@@ -11,7 +11,7 @@ import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.Topic
 import com.dluvian.voyage.model.Cmd
-import com.dluvian.voyage.model.OpenNProfile
+import com.dluvian.voyage.model.OpenProfile
 import com.dluvian.voyage.model.OpenTopic
 import com.dluvian.voyage.model.TrustProfile
 import com.dluvian.voyage.ui.components.row.ClickableProfileRow
@@ -63,7 +63,7 @@ private fun SearchViewContent(
                 ClickableProfileRow(
                     profile = profile,
                     onClick = {
-                        onUpdate(OpenNProfile(Nip19Profile(profile.pubkey)))
+                        onUpdate(OpenProfile(Nip19Profile(profile.pubkey)))
                     })
             }
         }

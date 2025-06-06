@@ -8,7 +8,7 @@ import com.dluvian.voyage.model.FollowProfile
 import com.dluvian.voyage.model.FollowTopic
 import com.dluvian.voyage.model.FollowedProfile
 import com.dluvian.voyage.model.OneselfProfile
-import com.dluvian.voyage.model.OpenNProfile
+import com.dluvian.voyage.model.OpenProfile
 import com.dluvian.voyage.model.OpenTopic
 import com.dluvian.voyage.model.TrustProfile
 import com.dluvian.voyage.model.TrustedProfile
@@ -47,7 +47,7 @@ data class FollowableProfileItem(
             onUnfollow = { onUpdate(UnfollowProfile(pubkey = profile.pubkey)) },
         )
     },
-    onOpen = { onUpdate(OpenNProfile(Nip19Profile(profile.pubkey))) }
+    onOpen = { onUpdate(OpenProfile(Nip19Profile(profile.pubkey))) }
 )
 
 data class FollowableTopicItem(

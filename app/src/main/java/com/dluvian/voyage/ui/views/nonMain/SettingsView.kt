@@ -31,7 +31,7 @@ import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.model.LoadSeed
 import com.dluvian.voyage.model.MnemonicSigner
 import com.dluvian.voyage.model.NsecSigner
-import com.dluvian.voyage.model.OpenNProfile
+import com.dluvian.voyage.model.OpenProfile
 import com.dluvian.voyage.model.SendAuth
 import com.dluvian.voyage.model.SignerType
 import com.dluvian.voyage.shortenedNpub
@@ -96,7 +96,7 @@ private fun AccountSection(
             text = shortenedNpub,
             leadingIcon = AccountIcon,
             onClick = {
-                onUpdate(OpenNProfile(Nip19Profile(signerType.pubkey)))
+                onUpdate(OpenProfile(Nip19Profile(signerType.pubkey)))
             }
         ) {
             AccountRowButton(onUpdate = onUpdate)

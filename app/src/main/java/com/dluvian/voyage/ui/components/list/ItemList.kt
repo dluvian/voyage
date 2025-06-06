@@ -13,10 +13,6 @@ import com.dluvian.voyage.ui.components.button.RemoveIconButton
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.row.ClickableRow
 
-Composable () ->Unit
-import com.dluvian.voyage.ui.components.button.RemoveIconButton
-import com.dluvian.voyage.ui.components.indicator.BaseHint
-import com.dluvian.voyage.ui.components.row.ClickableRow
 
 
 typealias ItemProps = Pair<@Composable () -> Unit, String>

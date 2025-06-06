@@ -258,7 +258,7 @@ class FeedProvider(
         val trustProfiles = trustProvider.getTrustProfiles(pubkeys = authorPubkeys)
         trustProfiles.forEach { (_, profile) ->
             val name = names[profile.pubkey].orEmpty()
-            profile.setName(name)
+            profile.setRawName(name)
         }
 
         return events.map { event ->

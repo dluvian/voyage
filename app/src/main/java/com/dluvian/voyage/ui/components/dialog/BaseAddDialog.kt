@@ -9,17 +9,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.Fn
-
-Composable () ->Unit
-import com.dluvian.voyage.core.Fn
 
 @Composable
 fun BaseAddDialog(
     header: String,
     focusRequester: FocusRequester,
     main: @Composable () -> Unit,
-    onDismiss: Fn,
+    onDismiss: () -> Unit,
     confirmButton: @Composable () -> Unit = {},
     nextButton: @Composable () -> Unit = {}
 ) {

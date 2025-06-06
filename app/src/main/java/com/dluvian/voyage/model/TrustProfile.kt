@@ -8,7 +8,7 @@ sealed class TrustProfile(open val pubkey: PublicKey, private var name: String) 
         return if (name.isNotBlank()) name else pubkey.shortenedNpub()
     }
 
-    fun setName(name: String) {
+    fun setRawName(name: String) {
         this.name = name
     }
 }

@@ -47,6 +47,7 @@ class TrustProvider(private val service: NostrService) : IEventUpdate {
         }
     }
 
+    // TODO: Ayooo
     suspend fun switchSigner() {
         mutex.withLock {
             friendEvent = null

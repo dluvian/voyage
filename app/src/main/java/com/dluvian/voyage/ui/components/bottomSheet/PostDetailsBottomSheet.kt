@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
 import com.dluvian.voyage.client
+import com.dluvian.voyage.getFullDateTime
 import com.dluvian.voyage.model.CloseEventDetails
 import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.ui.components.text.CopyableText
@@ -85,6 +86,6 @@ private fun SimpleSection(header: String, content: String) {
 private fun SimpleTimeSection(header: String, time: Timestamp) {
     SimpleSection(
         header = header,
-        content = getFullDateTime(ctx = LocalContext.current, createdAt = time.asSecs())
+        content = getFullDateTime(ctx = LocalContext.current, createdAt = time.asSecs().toLong())
     )
 }

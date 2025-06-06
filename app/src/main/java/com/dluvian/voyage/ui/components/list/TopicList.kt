@@ -6,11 +6,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.dluvian.voyage.core.Topic
-import com.dluvian.voyage.ui.theme.HashtagIcon
-
-Composable () ->Unit
-import com.dluvian.voyage.core.Topic
+import com.dluvian.voyage.Topic
 import com.dluvian.voyage.ui.theme.HashtagIcon
 
 @Composable

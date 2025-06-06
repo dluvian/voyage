@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.dluvian.voyage.R
-import com.dluvian.voyage.core.Fn
 import com.dluvian.voyage.ui.components.indicator.BaseHint
 import com.dluvian.voyage.ui.components.row.ClickableRow
 import com.dluvian.voyage.ui.model.FollowableItem
@@ -22,7 +21,7 @@ fun FollowList(
     rows: List<FollowableItem>,
     isRefreshing: Boolean,
     state: LazyListState,
-    onRefresh: Fn,
+    onRefresh: () -> Unit,
 ) {
     PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = onRefresh) {
         if (rows.isEmpty()) BaseHint(text = stringResource(id = R.string.list_is_empty))

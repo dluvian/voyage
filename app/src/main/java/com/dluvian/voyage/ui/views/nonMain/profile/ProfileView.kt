@@ -38,7 +38,7 @@ import com.dluvian.voyage.copyAndToast
 import com.dluvian.voyage.lightning
 import com.dluvian.voyage.model.Cmd
 import com.dluvian.voyage.model.FollowedProfile
-import com.dluvian.voyage.model.OpenNProfile
+import com.dluvian.voyage.model.OpenProfile
 import com.dluvian.voyage.model.OpenRelayProfile
 import com.dluvian.voyage.model.ProfileViewNextPage
 import com.dluvian.voyage.model.ProfileViewRefresh
@@ -230,7 +230,7 @@ private fun AboutPage(
                     ClickableTrustIcon(
                         profile = trustedBy,
                         onClick = {
-                            onUpdate(OpenNProfile(Nip19Profile(trustedBy.pubkey)))
+                            onUpdate(OpenProfile(Nip19Profile(trustedBy.pubkey)))
                         }
                     )
                 }

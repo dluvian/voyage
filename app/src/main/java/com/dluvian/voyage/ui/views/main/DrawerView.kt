@@ -28,7 +28,7 @@ import com.dluvian.voyage.model.ClickRelayEditor
 import com.dluvian.voyage.model.ClickSettings
 import com.dluvian.voyage.model.CloseDrawer
 import com.dluvian.voyage.model.Cmd
-import com.dluvian.voyage.model.OpenNProfile
+import com.dluvian.voyage.model.OpenProfile
 import com.dluvian.voyage.ui.theme.AccountIcon
 import com.dluvian.voyage.ui.theme.BookmarksIcon
 import com.dluvian.voyage.ui.theme.ListIcon
@@ -60,7 +60,7 @@ fun MainDrawer(
                         onClick = {
                             pubkey?.let {
                                 val nprofile = Nip19Profile(it)
-                                onUpdate(OpenNProfile(nprofile))
+                                onUpdate(OpenProfile(nprofile))
                             }
                             onUpdate(CloseDrawer(scope = scope))
                         })
