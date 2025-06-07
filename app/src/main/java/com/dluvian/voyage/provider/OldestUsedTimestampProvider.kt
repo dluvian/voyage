@@ -15,7 +15,6 @@ class OldestUsedTimestampProvider {
     suspend fun updateCreatedAt(createdAt: Timestamp?) {
         if (createdAt == null) return
         mutex.withLock {
-            // TODO: Upstream: Wait for arithmetics
             if (createdAt.asSecs() < oldestCreatedAt.asSecs()) {
                 oldestCreatedAt = createdAt
             }

@@ -60,7 +60,7 @@ class TrustProvider(private val service: NostrService) : IEventUpdate {
             KindStandard.CONTACT_LIST -> {
                 if (event.author() == service.pubkey()) {
                     val currentTime = mutex.withLock { friendEvent?.createdAt()?.asSecs() ?: 0u }
-                    if (event.createdAt().asSecs() <= currentTime) return // TODO: Wait for compare
+                    if (event.createdAt().asSecs() <= currentTime) return
                     val friends = event.tags().publicKeys().toSet()
                     mutex.withLock {
                         friendEvent = event
@@ -73,7 +73,7 @@ class TrustProvider(private val service: NostrService) : IEventUpdate {
                 if (!friends().contains(event.author())) return
 
                 val currentTime = mutex.withLock { web[event.author()]?.first?.asSecs() ?: 0u }
-                if (event.createdAt().asSecs() <= currentTime) return // TODO: Wait for compare
+                if (event.createdAt().asSecs() <= currentTime) return
 
                 // Prevent bloating up web of trust in memory
                 // by limiting each pubkey to a single occurrence

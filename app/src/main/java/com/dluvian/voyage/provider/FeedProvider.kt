@@ -35,7 +35,7 @@ class FeedProvider(
     private val bookmarkProvider: BookmarkProvider,
     private val nameProvider: NameProvider,
     private val upvoteProvider: UpvoteProvider,
-    private val annotatedStringProvider: AnnotatedStringProvider, // TODO: Annotate
+    private val annotatedStringProvider: AnnotatedStringProvider,
     private val oldestUsedTimestampProvider: OldestUsedTimestampProvider,
 ) {
     private val logTag = "FeedProvider"

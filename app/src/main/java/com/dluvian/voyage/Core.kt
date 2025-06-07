@@ -144,6 +144,7 @@ class Core(
     }
 
     private fun handleCoreAction(cmd: CoreActionCmd) {
+        // TODO: Prevent double clicking
         when (cmd) {
             is ClickUpvote -> viewModelScope.launch {
                 val result = appContainer.eventCreator.publishVote(cmd.event)

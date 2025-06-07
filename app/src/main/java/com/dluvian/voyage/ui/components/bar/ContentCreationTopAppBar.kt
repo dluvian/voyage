@@ -23,7 +23,6 @@ fun ContentCreationTopAppBar(
             )
         },
         actions = {
-            // TODO: Prevent double clicking
             if (showSendButton) SendIconButton(onSend = onSend)
         },
         onUpdate = onUpdate

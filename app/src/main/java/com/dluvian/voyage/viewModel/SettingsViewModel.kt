@@ -24,7 +24,7 @@ class SettingsViewModel(
     private val eventPreferences: EventPreferences,
 ) : ViewModel() {
     val signer = mutableStateOf<SignerType?>(null)
-    val seed = mutableStateOf(emptyList<String>()) // TODO: Is this ok?
+    val seed = mutableStateOf(emptyList<String>())
     val nsec = mutableStateOf<SecretKey?>(null)
     val nsecBunker = mutableStateOf<NostrConnectUri?>(null)
     val sendAuth = mutableStateOf(relayPreferences.getSendAuth())

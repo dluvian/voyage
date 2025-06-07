@@ -77,7 +77,6 @@ class BookmarkViewModel(
             service.subscribe(filter)
             return
         }
-        // TODO: Upstream
         val since = event.createdAt().asSecs() + 1u
         val newFilter = filter.since(Timestamp.fromSecs(since))
         service.subscribe(newFilter)

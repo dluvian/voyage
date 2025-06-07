@@ -124,7 +124,6 @@ class FollowListsViewModel(
 
     override suspend fun update(event: Event) {
         when (event.kind().asStd()) {
-            // TODO: Issue: Update name even when editing
             KindStandard.METADATA, KindStandard.CONTACT_LIST -> viewModelScope.launch {
                 loadProfiles(dbOnly = true)
             }
