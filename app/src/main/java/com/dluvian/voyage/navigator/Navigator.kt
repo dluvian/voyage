@@ -1,14 +1,25 @@
 package com.dluvian.voyage.navigator
 
 import androidx.compose.runtime.mutableStateOf
+import com.dluvian.voyage.model.BookmarkViewOpen
 import com.dluvian.voyage.model.CrossPostViewOpen
+import com.dluvian.voyage.model.DiscoverViewOpen
+import com.dluvian.voyage.model.EditProfileViewOpen
+import com.dluvian.voyage.model.FollowListsViewOpen
+import com.dluvian.voyage.model.GitIssueViewOpen
+import com.dluvian.voyage.model.HomeViewOpen
+import com.dluvian.voyage.model.InboxViewOpen
 import com.dluvian.voyage.model.NavCmd
 import com.dluvian.voyage.model.PopNavCmd
+import com.dluvian.voyage.model.PostViewOpen
 import com.dluvian.voyage.model.ProfileViewPopNprofile
 import com.dluvian.voyage.model.ProfileViewPushNprofile
 import com.dluvian.voyage.model.PushNavCmd
+import com.dluvian.voyage.model.RelayEditorViewOpen
 import com.dluvian.voyage.model.RelayProfileViewOpen
 import com.dluvian.voyage.model.ReplyViewOpen
+import com.dluvian.voyage.model.SearchViewOpen
+import com.dluvian.voyage.model.SettingsViewOpen
 import com.dluvian.voyage.model.ThreadViewPopNevent
 import com.dluvian.voyage.model.ThreadViewPopUIEvent
 import com.dluvian.voyage.model.ThreadViewPushNevent
@@ -104,21 +115,21 @@ class Navigator(private val vmContainer: VMContainer, private val closeApp: () -
             }
 
             is MainNavView -> when (navView) {
-                DiscoverNavView -> TODO()
-                HomeNavView -> TODO()
-                InboxNavView -> TODO()
-                SearchNavView -> TODO()
+                DiscoverNavView -> vmContainer.discoverVM.handle(DiscoverViewOpen)
+                HomeNavView -> vmContainer.homeVM.handle(HomeViewOpen)
+                InboxNavView -> vmContainer.inboxVM.handle(InboxViewOpen)
+                SearchNavView -> vmContainer.searchVM.handle(SearchViewOpen)
             }
 
 
             is SimpleNonMainNavView -> when (navView) {
-                BookmarkNavView -> TODO()
-                CreateGitIssueNavView -> TODO()
-                CreatePostNavView -> TODO()
-                EditProfileNavView -> TODO()
-                FollowListsNavView -> TODO()
-                RelayEditorNavView -> TODO()
-                SettingsNavView -> TODO()
+                BookmarkNavView -> vmContainer.bookmarkVM.handle(BookmarkViewOpen)
+                CreateGitIssueNavView -> vmContainer.gitIssueVM.handle(GitIssueViewOpen)
+                PostNavView -> vmContainer.postVM.handle(PostViewOpen)
+                EditProfileNavView -> vmContainer.editProfileVM.handle(EditProfileViewOpen)
+                FollowListsNavView -> vmContainer.followListsVM.handle(FollowListsViewOpen)
+                RelayEditorNavView -> vmContainer.relayEditorVM.handle(RelayEditorViewOpen)
+                SettingsNavView -> vmContainer.settingsVM.handle(SettingsViewOpen)
             }
         }
     }
@@ -141,7 +152,7 @@ class Navigator(private val vmContainer: VMContainer, private val closeApp: () -
             EditProfileNavView,
             is ReplyNavView,
             CreateGitIssueNavView,
-            CreatePostNavView,
+            PostNavView,
             SettingsNavView,
             is RelayProfileNavView,
             is CrossPostNavView -> {

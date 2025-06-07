@@ -4,7 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.dluvian.voyage.model.BugReport
 import com.dluvian.voyage.model.GitIssueCmd
-import com.dluvian.voyage.model.GitIssueOpen
+import com.dluvian.voyage.model.GitIssueViewOpen
 
 class GitIssueViewModel() : ViewModel() {
     val issueType = mutableStateOf(BugReport)
@@ -13,7 +13,7 @@ class GitIssueViewModel() : ViewModel() {
 
     fun handle(cmd: GitIssueCmd) {
         when (cmd) {
-            GitIssueOpen -> {
+            GitIssueViewOpen -> {
                 issueType.value = BugReport
                 subject.value = ""
                 content.value = ""

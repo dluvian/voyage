@@ -4,11 +4,11 @@ import androidx.compose.runtime.Composable
 import com.dluvian.voyage.Core
 import com.dluvian.voyage.navigator.BookmarkNavView
 import com.dluvian.voyage.navigator.CreateGitIssueNavView
-import com.dluvian.voyage.navigator.CreatePostNavView
 import com.dluvian.voyage.navigator.CrossPostNavView
 import com.dluvian.voyage.navigator.EditProfileNavView
 import com.dluvian.voyage.navigator.FollowListsNavView
 import com.dluvian.voyage.navigator.NonMainNavView
+import com.dluvian.voyage.navigator.PostNavView
 import com.dluvian.voyage.navigator.ProfileNavView
 import com.dluvian.voyage.navigator.RelayEditorNavView
 import com.dluvian.voyage.navigator.RelayProfileNavView
@@ -26,7 +26,7 @@ fun NonMainView(
     currentView: NonMainNavView,
 ) {
     when (currentView) {
-        CreatePostNavView -> PostView(
+        PostNavView -> PostView(
             vm = core.vmContainer.postVM,
             snackbar = core.appContainer.snackbar,
             searchSuggestions = core.appContainer.suggestionProvider.profiles,
@@ -40,7 +40,7 @@ fun NonMainView(
             onUpdate = core.onUpdate
         )
 
-        is ProfileNavView, is ProfileNavView -> ProfileView(
+        is ProfileNavView -> ProfileView(
             vm = core.vmContainer.profileVM,
             snackbar = core.appContainer.snackbar,
             onUpdate = core.onUpdate

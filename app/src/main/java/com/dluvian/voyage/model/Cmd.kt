@@ -6,7 +6,6 @@ import com.dluvian.voyage.filterSetting.HomeFeedSetting
 import com.dluvian.voyage.filterSetting.InboxFeedSetting
 import com.dluvian.voyage.navigator.BookmarkNavView
 import com.dluvian.voyage.navigator.CreateGitIssueNavView
-import com.dluvian.voyage.navigator.CreatePostNavView
 import com.dluvian.voyage.navigator.CrossPostNavView
 import com.dluvian.voyage.navigator.DiscoverNavView
 import com.dluvian.voyage.navigator.EditProfileNavView
@@ -14,6 +13,7 @@ import com.dluvian.voyage.navigator.FollowListsNavView
 import com.dluvian.voyage.navigator.HomeNavView
 import com.dluvian.voyage.navigator.InboxNavView
 import com.dluvian.voyage.navigator.NavView
+import com.dluvian.voyage.navigator.PostNavView
 import com.dluvian.voyage.navigator.ProfileNavView
 import com.dluvian.voyage.navigator.RelayEditorNavView
 import com.dluvian.voyage.navigator.RelayProfileNavView
@@ -45,7 +45,7 @@ sealed class PushNavCmd : NavCmd() {
         return when (this) {
             ClickHome -> HomeNavView
             ClickDiscover -> DiscoverNavView
-            ClickCreate -> CreatePostNavView
+            ClickCreate -> PostNavView
             ClickInbox -> InboxNavView
             ClickSettings -> SettingsNavView
             ClickSearch -> SearchNavView
@@ -180,7 +180,7 @@ sealed class PostViewCmd : Cmd()
 data object PostViewOpen : PostViewCmd()
 
 sealed class GitIssueCmd : Cmd()
-data object GitIssueOpen : GitIssueCmd()
+data object GitIssueViewOpen : GitIssueCmd()
 
 sealed class ReplyViewCmd : Cmd()
 data class ReplyViewOpen(val uiEvent: UIEvent) : ReplyViewCmd()
