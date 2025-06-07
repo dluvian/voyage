@@ -233,7 +233,7 @@ class FeedProvider(
 
         if (!dbOnly) {
             for (filter in filters) {
-                scope.launch {
+                scope.launch(Dispatchers.IO) {
                     service.sync(filter.since(since))
                 }
             }

@@ -1,5 +1,6 @@
 package com.dluvian.voyage.navigator
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.dluvian.voyage.model.BookmarkViewOpen
 import com.dluvian.voyage.model.CrossPostViewOpen
@@ -26,16 +27,24 @@ import com.dluvian.voyage.model.ThreadViewPushNevent
 import com.dluvian.voyage.model.ThreadViewPushUIEvent
 import com.dluvian.voyage.model.TopicViewPop
 import com.dluvian.voyage.model.TopicViewPush
-import com.dluvian.voyage.provider.IEventUpdate
 import com.dluvian.voyage.viewModel.VMContainer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.launch
 import rust.nostr.sdk.Event
 
 private sealed class NavAction()
 private object Push : NavAction()
 private object Pop : NavAction()
 
-class Navigator(private val vmContainer: VMContainer, private val closeApp: () -> Unit) :
-    IEventUpdate {
+class Navigator(
+    private val vmContainer: VMContainer,
+    private val closeApp: () -> Unit,
+    private val eventUpdateChannel: Channel<Event>
+) {
+    private val logTag = "Navigator"
+    private val scope = CoroutineScope(Dispatchers.Main)
     val stack = mutableStateOf<List<NavView>>(listOf(HomeNavView))
 
     fun handle(cmd: NavCmd) {
@@ -134,30 +143,36 @@ class Navigator(private val vmContainer: VMContainer, private val closeApp: () -
         }
     }
 
-    override suspend fun update(event: Event) {
-        // Only update what is on screen
-        // Rest receive update via pop/push
-        when (stack.value.last()) {
-            DiscoverNavView -> vmContainer.discoverVM.update(event)
-            HomeNavView -> vmContainer.homeVM.update(event)
-            InboxNavView -> vmContainer.inboxVM.update(event)
-            SearchNavView -> vmContainer.searchVM.update(event)
-            is ProfileNavView -> vmContainer.profileVM.update(event)
-            is ThreadNavView -> vmContainer.threadVM.update(event)
-            is ThreadNeventNavView -> vmContainer.threadVM.update(event)
-            is TopicNavView -> vmContainer.topicVM.update(event)
-            BookmarkNavView -> vmContainer.bookmarkVM.update(event)
-            FollowListsNavView -> vmContainer.followListsVM.update(event)
-            RelayEditorNavView -> vmContainer.relayEditorVM.update(event)
-            EditProfileNavView,
-            is ReplyNavView,
-            CreateGitIssueNavView,
-            PostNavView,
-            SettingsNavView,
-            is RelayProfileNavView,
-            is CrossPostNavView -> {
+    private fun listenToEventUpdates() {
+        scope.launch(Dispatchers.Main) {
+            while (true) {
+                val event = eventUpdateChannel.receive()
+                when (stack.value.last()) {
+                    DiscoverNavView -> vmContainer.discoverVM.update(event)
+                    HomeNavView -> vmContainer.homeVM.update(event)
+                    InboxNavView -> vmContainer.inboxVM.update(event)
+                    SearchNavView -> vmContainer.searchVM.update(event)
+                    is ProfileNavView -> vmContainer.profileVM.update(event)
+                    is ThreadNavView -> vmContainer.threadVM.update(event)
+                    is ThreadNeventNavView -> vmContainer.threadVM.update(event)
+                    is TopicNavView -> vmContainer.topicVM.update(event)
+                    BookmarkNavView -> vmContainer.bookmarkVM.update(event)
+                    FollowListsNavView -> vmContainer.followListsVM.update(event)
+                    RelayEditorNavView -> vmContainer.relayEditorVM.update(event)
+                    EditProfileNavView,
+                    is ReplyNavView,
+                    CreateGitIssueNavView,
+                    PostNavView,
+                    SettingsNavView,
+                    is RelayProfileNavView,
+                    is CrossPostNavView -> {
 
+                    }
+                }
             }
+        }.invokeOnCompletion {
+            Log.w(logTag, "Event listener closed")
+            listenToEventUpdates()
         }
     }
 }

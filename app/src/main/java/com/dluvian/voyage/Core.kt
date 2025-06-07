@@ -21,6 +21,7 @@ import com.dluvian.voyage.model.FollowListsViewCmd
 import com.dluvian.voyage.model.FollowProfile
 import com.dluvian.voyage.model.FollowTopic
 import com.dluvian.voyage.model.GitIssueCmd
+import com.dluvian.voyage.model.GoBack
 import com.dluvian.voyage.model.HomeViewCmd
 import com.dluvian.voyage.model.InboxViewCmd
 import com.dluvian.voyage.model.NavCmd
@@ -54,6 +55,7 @@ import com.dluvian.voyage.navigator.Navigator
 import com.dluvian.voyage.viewModel.VMContainer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.onFailure
 import kotlinx.coroutines.launch
 
 class Core(
@@ -62,7 +64,11 @@ class Core(
     val closeApp: () -> Unit,
 ) : ViewModel() {
     private val logTag = "Core"
-    val navigator = Navigator(vmContainer = vmContainer, closeApp = closeApp)
+    val navigator = Navigator(
+        vmContainer = vmContainer,
+        closeApp = closeApp,
+        eventUpdateChannel = appContainer.eventUpdateChannel
+    )
 
     val onUpdate: (Cmd) -> Unit = { cmd -> handleCmd(cmd) }
 
@@ -89,10 +95,9 @@ class Core(
 
             is RelayNotificationCmd -> when (cmd) {
                 is ReceiveEvent -> {
-                    // TODO: actor in navigator to prevent spamming launch
-                    viewModelScope.launch(Dispatchers.IO) {
-                        navigator.update(cmd.event)
-                    }
+                    appContainer.eventUpdateChannel.trySend(cmd.event)
+                        .onFailure { Log.w(logTag, "Failed to notify event update") }
+
                     for (updatable in appContainer.getEventUpdatables()) {
                         viewModelScope.launch(Dispatchers.IO) {
                             updatable.update(cmd.event)
@@ -259,6 +264,7 @@ class Core(
                         total
                     )
                 )
+                handleCmd(GoBack)
             }
 
             is SendPost -> viewModelScope.launch(Dispatchers.IO) {
@@ -280,6 +286,7 @@ class Core(
                         total
                     )
                 )
+                handleCmd(GoBack)
             }
 
             is SendReply -> viewModelScope.launch(Dispatchers.IO) {
@@ -297,6 +304,7 @@ class Core(
                         total
                     )
                 )
+                handleCmd(GoBack)
             }
 
             is PublishNip65 -> viewModelScope.launch(Dispatchers.IO) {
@@ -314,6 +322,7 @@ class Core(
                         total
                     )
                 )
+                handleCmd(GoBack)
             }
 
             is PublishProfile -> viewModelScope.launch(Dispatchers.IO) {
@@ -331,6 +340,7 @@ class Core(
                         total
                     )
                 )
+                handleCmd(GoBack)
             }
 
             is ClickProfileSuggestion -> TODO()

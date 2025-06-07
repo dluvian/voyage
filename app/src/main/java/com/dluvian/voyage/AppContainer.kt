@@ -21,6 +21,7 @@ import com.dluvian.voyage.provider.TopicProvider
 import com.dluvian.voyage.provider.TrustProvider
 import com.dluvian.voyage.provider.UpvoteProvider
 import kotlinx.coroutines.channels.Channel
+import rust.nostr.sdk.Event
 
 class AppContainer(val context: Context) {
     val snackbar = SnackbarHostState()
@@ -33,6 +34,7 @@ class AppContainer(val context: Context) {
     val keyStore = KeyStore(context)
     val oldestUsedTimestampProvider = OldestUsedTimestampProvider()
     val relayChannel = Channel<RelayNotificationCmd>(capacity = Channel.Factory.UNLIMITED)
+    val eventUpdateChannel = Channel<Event>(capacity = Channel.Factory.UNLIMITED)
 
     val service = NostrService(context, relayPreferences, keyStore, relayChannel)
 
