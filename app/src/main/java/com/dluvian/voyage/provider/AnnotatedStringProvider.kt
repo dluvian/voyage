@@ -39,7 +39,6 @@ class AnnotatedStringProvider(private val nameProvider: NameProvider) {
 //        val cached = cache[str]
 //        if (cached != null) return cached
 //
-//        // TODO: Use NostrParser
 //        val urls = extractUrls(str)
 //        val nostrMentions = extractNostrMentions(str)
 //        val tokens = (urls + nostrMentions).toMutableList()
@@ -75,7 +74,6 @@ class AnnotatedStringProvider(private val nameProvider: NameProvider) {
 //                            val nprofile = if (nostrMention is NprofileMention) {
 //                                nostrMention.nprofile
 //                            } else {
-//                                // TODO: createNprofile(hex = nostrMention.hex)
 //                                Nip19Profile.fromBech32("LOL")
 //                            }
 //                            val mentionedName = nameProvider.getName(nprofile = nprofile)

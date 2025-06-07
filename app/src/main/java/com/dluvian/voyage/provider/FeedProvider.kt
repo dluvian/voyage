@@ -35,14 +35,12 @@ class FeedProvider(
     private val bookmarkProvider: BookmarkProvider,
     private val nameProvider: NameProvider,
     private val upvoteProvider: UpvoteProvider,
-    private val annotatedStringProvider: AnnotatedStringProvider, // TODO: Use
-    private val oldestUsedTimestampProvider: OldestUsedTimestampProvider, // TODO: Use this
+    private val annotatedStringProvider: AnnotatedStringProvider, // TODO: Annotate
+    private val oldestUsedTimestampProvider: OldestUsedTimestampProvider,
 ) {
     private val logTag = "FeedProvider"
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    // TODO: Events are currently skipped
-    //  if a page ends in a createdAt of which there are more events available
     suspend fun buildFeed(
         until: Timestamp,
         setting: FeedSetting,
@@ -214,13 +212,15 @@ class FeedProvider(
             feed.addAll(service.dbQuery(filter))
         }
 
+        val oldest = feed.minByOrNull { it.createdAt().asSecs() }?.createdAt()
+        oldestUsedTimestampProvider.updateCreatedAt(oldest)
+
         val orderedFeed = feed.distinctBy { it.id() }
             .sortedBy { it.id().toHex() } // Use pow to decide order when createdAt is same
             .sortedByDescending { it.createdAt().asSecs() } // Newest first
             .take(pageSize.toInt())
 
         val since = if (orderedFeed.size >= pageSize) {
-            // TODO: Wait for comparables and arithmetic
             val secs = orderedFeed.minBy { it.createdAt().asSecs() }.createdAt().asSecs()
             Timestamp.fromSecs(secs + 1u) // Don't resub the last item of a full page
         } else {
