@@ -4,6 +4,7 @@ import com.dluvian.voyage.APP_NAME
 import com.dluvian.voyage.AlreadyFollowedException
 import com.dluvian.voyage.AlreadyUnfollowedException
 import com.dluvian.voyage.FailedToSignException
+import com.dluvian.voyage.RelayUrl
 import com.dluvian.voyage.Topic
 import com.dluvian.voyage.preferences.EventPreferences
 import com.dluvian.voyage.provider.BookmarkProvider
@@ -45,7 +46,6 @@ class EventCreator(
         tags.addAll(Tags.fromText(content).toVec())
 
         if (eventPreferences.isAddingClientTag()) {
-            // TODO: Wait for default nullability
             tags.add(Tag.fromStandardized(TagStandard.Client(name = APP_NAME, address = null)))
         }
 
@@ -64,7 +64,6 @@ class EventCreator(
         val tags = Tags.fromText(content).toVec().toMutableList()
 
         if (eventPreferences.isAddingClientTag()) {
-            // TODO: Wait for default nullability
             tags.add(Tag.fromStandardized(TagStandard.Client(name = APP_NAME, address = null)))
         }
 
@@ -86,7 +85,6 @@ class EventCreator(
         val tags = topics.map { topic -> Tag.hashtag(topic) }.toMutableList()
 
         if (eventPreferences.isAddingClientTag()) {
-            // TODO: Wait for default nullability
             tags.add(Tag.fromStandardized(TagStandard.Client(name = APP_NAME, address = null)))
         }
 
@@ -112,7 +110,6 @@ class EventCreator(
         eventIds: List<EventId>,
         coords: List<Coordinate> = emptyList(),
     ): Result<SendEventOutput> {
-        // TODO: Wait for default nullability
         val deletion = EventDeletionRequest(ids = eventIds, coordinates = coords, reason = null)
         val builder = EventBuilder.delete(request = deletion)
 
@@ -123,7 +120,7 @@ class EventCreator(
     }
 
     suspend fun publishNip65(
-        relays: Map<String, RelayMetadata?>, // TODO: No RelayUrl struct?
+        relays: Map<RelayUrl, RelayMetadata?>,
     ): Result<SendEventOutput> {
         val builder = EventBuilder.relayList(relays)
 
@@ -169,7 +166,7 @@ class EventCreator(
         if (current.contains(pubkey)) return Result.failure(AlreadyFollowedException())
 
         current.add(pubkey)
-        val newContacts = current.map { Contact(it, null, null) } // TODO: Wait for nullability
+        val newContacts = current.map { Contact(it, null, null) }
         val builder = EventBuilder.contactList(contacts = newContacts)
 
         val result = service.sign(builder)
@@ -183,7 +180,7 @@ class EventCreator(
         if (!current.contains(pubkey)) return Result.failure(AlreadyFollowedException())
 
         current.remove(pubkey)
-        val newContacts = current.map { Contact(it, null, null) } // TODO: Wait for nullability
+        val newContacts = current.map { Contact(it, null, null) }
         val builder = EventBuilder.contactList(contacts = newContacts)
 
         val result = service.sign(builder)

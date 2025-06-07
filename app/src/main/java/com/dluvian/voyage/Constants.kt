@@ -14,3 +14,7 @@ const val LONG_DELAY = 3 * SHORT_DELAY
 
 private const val DAY_IN_SECS = 24 * 60 * 60
 const val DB_SWEEP_THRESHOLD = (90 * DAY_IN_SECS)
+
+// TODO: Upstream: remove all "xyz = null" after default nullability
+// TODO: Upstream: Comparable Timestamps: Check all timestamp.asSecs() calls
+// TODO: Upstream: Timestamp arithmetics (+/-1): Check all timestamp.asSecs() calls

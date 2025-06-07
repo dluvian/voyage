@@ -2,10 +2,18 @@ package com.dluvian.voyage.paginator
 
 import androidx.compose.runtime.mutableStateOf
 import com.dluvian.voyage.PAGE_SIZE
+import com.dluvian.voyage.filterSetting.BookmarkFeedSetting
 import com.dluvian.voyage.filterSetting.FeedSetting
+import com.dluvian.voyage.filterSetting.HomeFeedSetting
+import com.dluvian.voyage.filterSetting.InboxFeedSetting
+import com.dluvian.voyage.filterSetting.ListFeedSetting
+import com.dluvian.voyage.filterSetting.ProfileFeedSetting
+import com.dluvian.voyage.filterSetting.TopicFeedSetting
 import com.dluvian.voyage.model.UIEvent
 import com.dluvian.voyage.provider.FeedProvider
 import rust.nostr.sdk.Event
+import rust.nostr.sdk.Kind
+import rust.nostr.sdk.KindStandard
 import rust.nostr.sdk.Timestamp
 
 
@@ -36,7 +44,6 @@ class Paginator(
     }
 
     override suspend fun dbRefreshInPlace() {
-        // TODO: Wait for comparable Timestamps
         val until = page.value.maxByOrNull { it.event.createdAt().asSecs() }?.event?.createdAt()
         page.value = feedProvider.buildFeed(
             until = until ?: Timestamp.now(),
@@ -55,8 +62,8 @@ class Paginator(
         val oldest = page.value
             .minBy { it.event.createdAt().asSecs() }
             .event
-            .createdAt() // TODO: Wait for comparable Timestamps
-        val untilSecs = oldest.asSecs() - 1u // TODO: Wait for arithmetics
+            .createdAt()
+        val untilSecs = oldest.asSecs() - 1u
         val until = Timestamp.fromSecs(untilSecs)
         page.value = feedProvider.buildFeed(
             until = until,
@@ -68,9 +75,29 @@ class Paginator(
         showNextPageBtn.value = showNextPageBtn()
     }
 
+    private val relevantKinds = listOf(
+        KindStandard.CONTACT_LIST, KindStandard.METADATA,
+        KindStandard.INTERESTS, KindStandard.BOOKMARKS
+    ).map { Kind.fromStd(it) }
+
     override suspend fun update(event: Event) {
-        // TODO: Issue: This could be more specific to prevent unnecessary db calls
-        dbRefreshInPlace()
+        val kinds = when (val setting = feedSetting) {
+            is BookmarkFeedSetting -> null
+            is HomeFeedSetting -> setting.kinds
+            is InboxFeedSetting -> setting.kinds
+            is ListFeedSetting -> setting.kinds
+            is ProfileFeedSetting -> setting.kinds
+            is TopicFeedSetting -> setting.kinds
+        }
+
+        if (kinds == null) {
+            dbRefreshInPlace()
+            return
+        }
+
+        if (kinds.contains(event.kind()) || relevantKinds.contains(event.kind())) {
+            dbRefreshInPlace()
+        }
     }
 
     private fun showNextPageBtn() = page.value.size >= feedSetting.pageSize.toInt()
