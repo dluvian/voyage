@@ -68,7 +68,7 @@ class Core(
 
     init {
         startRelayListener(appContainer.relayChannel)
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             appContainer.service.init()
             appContainer.nameProvider.init()
             appContainer.trustProvider.init()
@@ -76,7 +76,7 @@ class Core(
             appContainer.upvoteProvider.init()
             appContainer.bookmarkProvider.init()
         }.invokeOnCompletion { Log.i(logTag, "Finished initializing", it) }
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             appContainer.service.handleNotifications()
         }
     }
@@ -90,11 +90,11 @@ class Core(
             is RelayNotificationCmd -> when (cmd) {
                 is ReceiveEvent -> {
                     // TODO: actor in navigator to prevent spamming launch
-                    viewModelScope.launch {
+                    viewModelScope.launch(Dispatchers.IO) {
                         navigator.update(cmd.event)
                     }
                     for (updatable in appContainer.getEventUpdatables()) {
-                        viewModelScope.launch {
+                        viewModelScope.launch(Dispatchers.IO) {
                             updatable.update(cmd.event)
                         }
                     }
@@ -110,7 +110,7 @@ class Core(
                     )
                 }
 
-                is RelayNotice -> viewModelScope.launch {
+                is RelayNotice -> viewModelScope.launch(Dispatchers.IO) {
                     showSnackbarMsg(
                         appContainer.context.getString(
                             R.string.relay_msg,
@@ -144,17 +144,15 @@ class Core(
     }
 
     private fun handleCoreAction(cmd: CoreActionCmd) {
-        // TODO: Prevent double clicking
         when (cmd) {
-            is ClickUpvote -> viewModelScope.launch {
+            is ClickUpvote -> viewModelScope.launch(Dispatchers.IO) {
                 val result = appContainer.eventCreator.publishVote(cmd.event)
                 if (result.isFailure) {
                     showSnackbarMsg(appContainer.context.getString(R.string.failed_to_sign_upvote))
                 }
-                // TODO: Show relay success when user enables it in settings
             }
 
-            is ClickNeutralizeVotes -> viewModelScope.launch {
+            is ClickNeutralizeVotes -> viewModelScope.launch(Dispatchers.IO) {
                 val ids = appContainer.upvoteProvider.upvotes(cmd.event.id())
                 val result = appContainer.eventCreator.publishDelete(eventIds = ids.toList())
                 if (result.isFailure) {
@@ -162,64 +160,73 @@ class Core(
                 }
             }
 
-            is FollowProfile -> viewModelScope.launch {
+            is FollowProfile -> viewModelScope.launch(Dispatchers.IO) {
                 val result = appContainer.eventCreator.followProfile(cmd.pubkey)
                 if (result.isFailure) {
                     showSnackbarMsg(appContainer.context.getString(R.string.failed_to_sign_contact_list))
                 }
             }
 
-            is UnfollowProfile -> viewModelScope.launch {
+            is UnfollowProfile -> viewModelScope.launch(Dispatchers.IO) {
                 val result = appContainer.eventCreator.unfollowProfile(cmd.pubkey)
                 if (result.isFailure) {
                     showSnackbarMsg(appContainer.context.getString(R.string.failed_to_sign_contact_list))
                 }
             }
 
-            is FollowTopic -> viewModelScope.launch {
+            is FollowTopic -> viewModelScope.launch(Dispatchers.IO) {
                 val result = appContainer.eventCreator.followTopic(cmd.topic)
                 if (result.isFailure) {
                     showSnackbarMsg(appContainer.context.getString(R.string.failed_to_sign_topic_list))
                 }
             }
 
-            is UnfollowTopic -> viewModelScope.launch {
+            is UnfollowTopic -> viewModelScope.launch(Dispatchers.IO) {
                 val result = appContainer.eventCreator.unfollowTopic(cmd.topic)
                 if (result.isFailure) {
                     showSnackbarMsg(appContainer.context.getString(R.string.failed_to_sign_topic_list))
                 }
             }
 
-            is SendCrossPost -> viewModelScope.launch {
+            is SendCrossPost -> viewModelScope.launch(Dispatchers.IO) {
                 val result = appContainer.eventCreator.publishCrossPost(cmd.event, cmd.topics)
                 if (result.isFailure) {
-                    showSnackbarMsg(appContainer.context.getString(TODO()))
+                    showSnackbarMsg(appContainer.context.getString(R.string.failed_to_sign_cross_post))
                 }
-                // TODO: Failure toast, success toast, nav back
+                val output = result.getOrNull() ?: return@launch
+                val success = output.success.size
+                val total = output.failed.keys.size + success
+                showSnackbarMsg(
+                    appContainer.context.getString(
+                        R.string.published_cross_post_to_n_of_m_relays,
+                        success,
+                        total
+                    )
+                )
             }
 
-            is DeletePost -> viewModelScope.launch {
+            is DeletePost -> viewModelScope.launch(Dispatchers.IO) {
                 val result = appContainer.eventCreator.publishDelete(listOf(cmd.event.id()))
                 if (result.isFailure) {
                     showSnackbarMsg(appContainer.context.getString(R.string.failed_to_sign_deletion))
                 }
             }
 
-            is BookmarkPost -> viewModelScope.launch {
+            is BookmarkPost -> viewModelScope.launch(Dispatchers.IO) {
                 val result = appContainer.eventCreator.addBookmark(cmd.id)
                 if (result.isFailure) {
                     showSnackbarMsg(appContainer.context.getString(R.string.failed_to_sign_bookmarks))
                 }
             }
 
-            is UnbookmarkPost -> viewModelScope.launch {
+            is UnbookmarkPost -> viewModelScope.launch(Dispatchers.IO) {
                 val result = appContainer.eventCreator.removeBookmark(cmd.id)
                 if (result.isFailure) {
                     showSnackbarMsg(appContainer.context.getString(R.string.failed_to_sign_bookmarks))
                 }
             }
 
-            is Rebroadcast -> viewModelScope.launch {
+            is Rebroadcast -> viewModelScope.launch(Dispatchers.IO) {
                 val result = appContainer.service.rebroadcast(cmd.event)
                 val success = result.success.size
                 val total = result.failed.size + success
@@ -232,16 +239,105 @@ class Core(
                 )
             }
 
-            is SendGitIssue -> TODO()
-            is SendPost -> TODO()
-            is SendReply -> TODO()
-            is PublishNip65 -> TODO()
-            is ShowEventDetails -> TODO()
-            is CloseEventDetails -> TODO()
-            is PublishProfile -> TODO()
+            is SendGitIssue -> viewModelScope.launch(Dispatchers.IO) {
+                val result = appContainer.eventCreator.publishGitIssue(
+                    repoCoord = VOYAGE_REPO_COORDINATE,
+                    subject = cmd.header,
+                    content = cmd.content,
+                    label = cmd.type.label()
+                )
+                if (result.isFailure) {
+                    showSnackbarMsg(appContainer.context.getString(R.string.failed_to_sign_git_issue))
+                }
+                val output = result.getOrNull() ?: return@launch
+                val success = output.success.size
+                val total = output.failed.keys.size + success
+                showSnackbarMsg(
+                    appContainer.context.getString(
+                        R.string.published_git_issue_to_n_of_m_relays,
+                        success,
+                        total
+                    )
+                )
+            }
+
+            is SendPost -> viewModelScope.launch(Dispatchers.IO) {
+                val result = appContainer.eventCreator.publishPost(
+                    subject = cmd.subject,
+                    content = cmd.content,
+                    topics = cmd.topics
+                )
+                if (result.isFailure) {
+                    showSnackbarMsg(appContainer.context.getString(R.string.failed_to_sign_post))
+                }
+                val output = result.getOrNull() ?: return@launch
+                val success = output.success.size
+                val total = output.failed.keys.size + success
+                showSnackbarMsg(
+                    appContainer.context.getString(
+                        R.string.published_post_to_n_of_m_relays,
+                        success,
+                        total
+                    )
+                )
+            }
+
+            is SendReply -> viewModelScope.launch(Dispatchers.IO) {
+                val result = appContainer.eventCreator.publishReply(cmd.content, cmd.parent)
+                if (result.isFailure) {
+                    showSnackbarMsg(appContainer.context.getString(R.string.failed_to_sign_reply))
+                }
+                val output = result.getOrNull() ?: return@launch
+                val success = output.success.size
+                val total = output.failed.keys.size + success
+                showSnackbarMsg(
+                    appContainer.context.getString(
+                        R.string.published_reply_to_n_of_m_relays,
+                        success,
+                        total
+                    )
+                )
+            }
+
+            is PublishNip65 -> viewModelScope.launch(Dispatchers.IO) {
+                val result = appContainer.eventCreator.publishNip65(cmd.relays)
+                if (result.isFailure) {
+                    showSnackbarMsg(appContainer.context.getString(R.string.failed_to_sign_relay_list))
+                }
+                val output = result.getOrNull() ?: return@launch
+                val success = output.success.size
+                val total = output.failed.keys.size + success
+                showSnackbarMsg(
+                    appContainer.context.getString(
+                        R.string.published_relay_list_to_n_of_m_relays,
+                        success,
+                        total
+                    )
+                )
+            }
+
+            is PublishProfile -> viewModelScope.launch(Dispatchers.IO) {
+                val result = appContainer.eventCreator.publishProfile(cmd.metadata)
+                if (result.isFailure) {
+                    showSnackbarMsg(appContainer.context.getString(R.string.failed_to_sign_profile))
+                }
+                val output = result.getOrNull() ?: return@launch
+                val success = output.success.size
+                val total = output.failed.keys.size + success
+                showSnackbarMsg(
+                    appContainer.context.getString(
+                        R.string.published_profile_to_n_of_m_relays,
+                        success,
+                        total
+                    )
+                )
+            }
+
             is ClickProfileSuggestion -> TODO()
             is SearchProfileSuggestion -> TODO()
             is SearchTopicSuggestion -> TODO()
+            is ShowEventDetails -> TODO()
+            is CloseEventDetails -> TODO()
         }
     }
 
@@ -265,7 +361,7 @@ class Core(
     }
 
     override fun onCleared() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Main) {
             appContainer.service.close()
         }
         super.onCleared()

@@ -1,7 +1,6 @@
 package com.dluvian.voyage.provider
 
 import android.util.Log
-import androidx.compose.ui.text.AnnotatedString
 import com.dluvian.voyage.Topic
 import com.dluvian.voyage.filterSetting.BookmarkFeedSetting
 import com.dluvian.voyage.filterSetting.FeedSetting
@@ -35,7 +34,7 @@ class FeedProvider(
     private val bookmarkProvider: BookmarkProvider,
     private val nameProvider: NameProvider,
     private val upvoteProvider: UpvoteProvider,
-    private val annotatedStringProvider: AnnotatedStringProvider,
+    private val annotator: AnnotatedStringProvider,
     private val oldestUsedTimestampProvider: OldestUsedTimestampProvider,
 ) {
     private val logTag = "FeedProvider"
@@ -294,7 +293,7 @@ class FeedProvider(
 
         return UIEvent(
             event = event,
-            annotatedContent = AnnotatedString(event.content()), // TODO: annotate
+            annotatedContent = annotator.annotate(event.content()),
             authorProfile = trustProfiles[event.author()]
                 ?: UnknownProfile(pubkey = event.author()),
             upvoted = upvotes.contains(event.id()),

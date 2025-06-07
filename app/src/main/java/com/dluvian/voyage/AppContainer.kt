@@ -51,7 +51,7 @@ class AppContainer(val context: Context) {
         bookmarkProvider = bookmarkProvider,
         nameProvider = nameProvider,
         upvoteProvider = upvoteProvider,
-        annotatedStringProvider = annotatedStringProvider,
+        annotator = annotatedStringProvider,
         oldestUsedTimestampProvider = oldestUsedTimestampProvider
     )
 

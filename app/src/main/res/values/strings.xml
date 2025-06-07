@@ -84,7 +84,6 @@
     <string name="enter_your_website">Enter your website</string>
     <string name="enter_your_banner_url">Enter your banner URL</string>
     <string name="profile_updated">Profile updated</string>
-    <string name="failed_to_sign_profile">Failed to sign profile</string>
     <string name="recovery_phrase">Recovery phrase</string>
     <string name="click_to_show_recovery_phrase">Click to show recovery phrase</string>
     <string name="unfollow">Unfollow</string>
@@ -104,7 +103,6 @@
     <string name="read">Read</string>
     <string name="write">Write</string>
     <string name="relay_list_updated">Relay list updated</string>
-    <string name="failed_to_sign_relay_list">Failed to sign relay list</string>
     <string name="you_dont_have_any_read_relays_configured">You don\'t have any read-relays configured</string>
     <string name="you_dont_have_any_write_relays_configured">You don\'t have any write-relays configured</string>
     <string name="relay_list">Relay list</string>
@@ -177,7 +175,6 @@
     <string name="add">Add</string>
     <string name="cancel">Cancel</string>
     <string name="custom_list_updated">Custom list updated</string>
-    <string name="failed_to_sign_profile_list">Failed to sign profile list</string>
     <string name="delete_list">Delete list</string>
     <string name="edit_list">Edit list</string>
     <string name="feed">Feed</string>
@@ -264,4 +261,16 @@
     <string name="success_rate">Success rate</string>
     <string name="relay_pool">Relay pool</string>
     <string name="create">Create</string>
+    <string name="failed_to_sign_cross_post">Failed to sign cross-post</string>
+    <string name="failed_to_sign_git_issue">Failed to sign git issue</string>
+    <string name="failed_to_sign_post">Failed to sign post</string>
+    <string name="failed_to_sign_reply">Failed to sign post</string>
+    <string name="failed_to_sign_relay_list">Failed to sign relay list</string>
+    <string name="failed_to_sign_profile">Failed to sign profile</string>
+    <string name="published_cross_post_to_n_of_m_relays">Published cross-post to %d of %d relays</string>
+    <string name="published_git_issue_to_n_of_m_relays">Published git issue to %d of %d relays</string>
+    <string name="published_post_to_n_of_m_relays">Published post to %d of %d relays</string>
+    <string name="published_reply_to_n_of_m_relays">Published reply to %d of %d relays</string>
+    <string name="published_relay_list_to_n_of_m_relays">Published relay list to %d of %d relays</string>
+    <string name="published_profile_to_n_of_m_relays">Published profile to %d of %d relays</string>
 </resources>

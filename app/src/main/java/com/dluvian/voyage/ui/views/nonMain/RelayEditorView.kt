@@ -69,7 +69,7 @@ fun RelayEditorView(
         snackbar = snackbar,
         title = stringResource(id = R.string.relays),
         onSave = {
-            onUpdate(PublishNip65(relays = nip65))
+            onUpdate(PublishNip65(relays = nip65.toMap()))
         },
         onUpdate = onUpdate
     ) {
