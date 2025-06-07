@@ -15,6 +15,7 @@ class DatabaseSweeper(
         val kinds = listOf(
             KindStandard.TEXT_NOTE,
             KindStandard.REPOST,
+            KindStandard.GENERIC_REPOST,
             KindStandard.COMMENT,
             KindStandard.REACTION
         )
