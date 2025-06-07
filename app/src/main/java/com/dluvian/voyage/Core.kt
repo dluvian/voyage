@@ -89,6 +89,7 @@ class Core(
 
             is RelayNotificationCmd -> when (cmd) {
                 is ReceiveEvent -> {
+                    // TODO: actor in navigator to prevent spamming launch
                     viewModelScope.launch {
                         navigator.update(cmd.event)
                     }
