@@ -1,0 +1,1 @@
+<p><i>Voyage</i> is a lightweight nostr client for Android with a Reddit-like UI.</p><p>The app can be used offline because posts are stored locally. It is mobile data friendly: Only text is displayed, no videos and no pictures. It also attempts to keep relay connections to a minimum, fetch events only from their respective outbox and not refetch locally cached events.</p>
